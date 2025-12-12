@@ -1,0 +1,11 @@
+[Unit]
+Description=Schedule FUTON vitality scanner refreshes
+
+[Timer]
+OnCalendar=hourly
+AccuracySec=5m
+Persistent=true
+Unit=vitality-scanner.service
+
+[Install]
+WantedBy=timers.target

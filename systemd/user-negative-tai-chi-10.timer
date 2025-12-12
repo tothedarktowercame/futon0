@@ -1,0 +1,10 @@
+[Unit]
+Description=Schedule Tai Chi reminder (10 min lead)
+
+[Timer]
+OnCalendar=Wed,Thu 18:50
+Persistent=true
+Unit=negative-tai-chi-10.service
+
+[Install]
+WantedBy=timers.target

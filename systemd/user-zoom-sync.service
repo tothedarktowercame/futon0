@@ -1,0 +1,10 @@
+[Unit]
+Description=Copy Zoom R4 tracks and update titles (user scope)
+After=zoom-mount.service
+Requires=zoom-mount.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/joe/code/futon0
+ExecStart=/usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source /media/joe/R4_SD --dest /home/joe/media/zoomr4
+ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF'

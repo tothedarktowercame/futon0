@@ -1,0 +1,8 @@
+[Unit]
+Description=Detect Zoom R4 SD card by UUID
+
+[Path]
+PathExists=/dev/disk/by-uuid/6970-2CEF
+
+[Install]
+WantedBy=default.target

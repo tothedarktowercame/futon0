@@ -1,0 +1,85 @@
+{
+  "generated_at": "2025-12-12T19:53:37.188205+00:00",
+  "lookback_hours": 24,
+  "filesystem": [
+    {
+      "label": "code",
+      "path": "/home/joe/code",
+      "exists": true,
+      "lookback_hours": 24,
+      "recent_files": 4,
+      "latest_mtime": "2025-12-12T19:31:47.815217",
+      "top_children": [
+        {
+          "name": "futon3",
+          "recent_files": 2
+        },
+        {
+          "name": "PAUSE",
+          "recent_files": 1
+        },
+        {
+          "name": "futon0",
+          "recent_files": 1
+        }
+      ],
+      "scan_duration_seconds": 0.004
+    },
+    {
+      "label": "zoomr4",
+      "path": "/home/joe/media/zoomr4",
+      "exists": false,
+      "lookback_hours": 24,
+      "imports": {
+        "total": 57,
+        "recent": [
+          {
+            "title": "2025-11-30 12:06 \u2014 track4 01",
+            "recorded_date": "2025/11-30",
+            "ingested_at": "2025-12-08T13:18:26.649347",
+            "mp3": "media/zoomr4/mp3/2025/11-30/20251130_120600_track4-01.mp3",
+            "copied_to": "media/zoomr4/incoming/2025/11-30/20251130_120600_track4-01.wav"
+          },
+          {
+            "title": "2025-11-30 11:37 \u2014 track3 01",
+            "recorded_date": "2025/11-30",
+            "ingested_at": "2025-12-08T13:18:24.106624",
+            "mp3": "media/zoomr4/mp3/2025/11-30/20251130_113759_track3-01.mp3",
+            "copied_to": "media/zoomr4/incoming/2025/11-30/20251130_113759_track3-01.wav"
+          },
+          {
+            "title": "2025-11-30 11:28 \u2014 track2 01",
+            "recorded_date": "2025/11-30",
+            "ingested_at": "2025-12-08T13:18:21.538998",
+            "mp3": "media/zoomr4/mp3/2025/11-30/20251130_112854_track2-01.mp3",
+            "copied_to": "media/zoomr4/incoming/2025/11-30/20251130_112854_track2-01.wav"
+          },
+          {
+            "title": "2025-11-30 11:28 \u2014 track1 01",
+            "recorded_date": "2025/11-30",
+            "ingested_at": "2025-12-08T13:18:18.846414",
+            "mp3": "media/zoomr4/mp3/2025/11-30/20251130_112854_track1-01.mp3",
+            "copied_to": "media/zoomr4/incoming/2025/11-30/20251130_112854_track1-01.wav"
+          },
+          {
+            "title": "2025-11-30 12:13 \u2014 bounce 01",
+            "recorded_date": "2025/11-30",
+            "ingested_at": "2025-12-08T13:18:16.438102",
+            "mp3": "media/zoomr4/mp3/2025/11-30/20251130_121302_bounce-01.mp3",
+            "copied_to": "media/zoomr4/incoming/2025/11-30/20251130_121302_bounce-01.wav"
+          }
+        ]
+      }
+    }
+  ],
+  "tatami": {
+    "log_path": "/home/joe/code/futon3/resources/tatami/logs/sessions.jsonl",
+    "exists": true,
+    "lookback_hours": 24,
+    "event_count": 9,
+    "events_in_lookback": 9,
+    "last_event": "2025-12-12T19:22:38.733000+00:00",
+    "hours_since_last": 0.52,
+    "gap_warning": false
+  }
+}

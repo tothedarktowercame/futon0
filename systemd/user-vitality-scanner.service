@@ -1,0 +1,8 @@
+[Unit]
+Description=Run FUTON vitality scanner snapshot
+ConditionPathExists=%h/code/futon0/scripts/vitality_scanner.py
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/code/futon0
+ExecStart=%h/code/futon0/scripts/vitality_scanner.py --quiet --output %h/code/futon3/resources/vitality/latest_scan.json

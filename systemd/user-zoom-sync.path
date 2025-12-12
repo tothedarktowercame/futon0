@@ -1,0 +1,9 @@
+[Unit]
+Description=Trigger Zoom R4 ingest when the SD card is detected (user scope)
+
+[Path]
+PathExists=/dev/disk/by-uuid/6970-2CEF
+Unit=zoom-sync.service
+
+[Install]
+WantedBy=default.target

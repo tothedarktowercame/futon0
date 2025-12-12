@@ -1,0 +1,8 @@
+[Unit]
+Description=Refresh FUTON git vitality snapshot
+ConditionPathExists=%h/code/futon0/scripts/git_vitality_sync.sh
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/code/futon0
+ExecStart=%h/code/futon0/scripts/git_vitality_sync.sh

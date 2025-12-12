@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch for Zoom R4 mount and trigger ingest
+
+[Path]
+PathExists=/media/%u/ZOOMR4
+
+[Install]
+WantedBy=default.target

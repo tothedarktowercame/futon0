@@ -1,0 +1,11 @@
+[Unit]
+Description=Mount Zoom R4 SD card
+DefaultDependencies=no
+After=systemd-udevd.service
+Requires=systemd-udevd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bash -c 'mkdir -p /media/joe/R4_SD && (mountpoint -q /media/joe/R4_SD || mount -t exfat -o uid=1000,gid=1000,umask=0077 UUID=6970-2CEF /media/joe/R4_SD)'
+ExecStop=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && umount -l /media/joe/R4_SD'

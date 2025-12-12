@@ -1,0 +1,15 @@
+[Unit]
+Description=Copy Zoom R4 tracks and update titles
+After=zoom-mount.service
+Requires=zoom-mount.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/joe/code/futon0
+User=joe
+Group=joe
+Environment=DISPLAY=:0
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+ExecStart=/usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source /media/joe/R4_SD --dest /home/joe/media/zoomr4
+ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && umount -l /media/joe/R4_SD'

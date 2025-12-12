@@ -1,0 +1,10 @@
+[Unit]
+Description=Schedule nightly shutdown reminder (30 min lead)
+
+[Timer]
+OnCalendar=Mon..Sun 20:30
+Persistent=true
+Unit=negative-curfew-30.service
+
+[Install]
+WantedBy=timers.target

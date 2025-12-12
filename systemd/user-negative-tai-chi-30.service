@@ -1,0 +1,7 @@
+[Unit]
+Description=Reminder: leave for Tai Chi (30 min lead)
+ConditionPathExists=%h/code/futon0/scripts/negative_space_notify.py
+
+[Service]
+Type=oneshot
+ExecStart=%h/code/futon0/scripts/negative_space_notify.py --title "Tai Chi" --body "Class at 19:00 → leave by 18:00." --urgency normal

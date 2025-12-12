@@ -1,0 +1,7 @@
+[Unit]
+Description=Reminder: nightly shutdown (30 min lead)
+ConditionPathExists=%h/code/futon0/scripts/negative_space_notify.py
+
+[Service]
+Type=oneshot
+ExecStart=%h/code/futon0/scripts/negative_space_notify.py --title "Wrap up" --body "Aim to finish by 21:00 today." --urgency low

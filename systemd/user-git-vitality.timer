@@ -1,0 +1,11 @@
+[Unit]
+Description=Schedule FUTON git vitality snapshot refreshes
+
+[Timer]
+OnCalendar=hourly
+AccuracySec=5m
+Persistent=true
+Unit=git-vitality.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,19 @@
+{
+  "lookback_hours": 24,
+  "output": "data/vitality/latest_scan.json",
+  "filesystem": [
+    {"label": "code", "path": "~/code", "max_depth": 1, "top_n": 5},
+    {"label": "zoomr4",
+     "path": "~/media/zoomr4",
+     "max_depth": 3,
+     "top_n": 5,
+     "import_index": "~/code/futon0/data/zoom_sync_index.json",
+     "import_limit": 5}
+  ],
+  "tatami": {
+    "log_path": "~/code/futon3/resources/tatami/logs/sessions.jsonl",
+    "format": "jsonl",
+    "timestamp_field": "timestamp",
+    "gap_warning_hours": 24
+  }
+}

@@ -1,0 +1,9 @@
+[Unit]
+Description=Mount Zoom R4 SD card (user scope)
+After=paths.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bash -c 'mkdir -p /media/joe/R4_SD && (mountpoint -q /media/joe/R4_SD || /usr/bin/udisksctl mount --block-device /dev/disk/by-uuid/6970-2CEF --no-user-interaction)'
+ExecStop=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF'
