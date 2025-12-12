@@ -4,7 +4,7 @@
   "filesystem": [
     {"label": "code", "path": "~/code", "max_depth": 1, "top_n": 5},
     {"label": "zoomr4",
-     "path": "~/media/zoomr4",
+     "path": "~/zoomr4",
      "max_depth": 3,
      "top_n": 5,
      "import_index": "~/code/futon0/data/zoom_sync_index.json",
