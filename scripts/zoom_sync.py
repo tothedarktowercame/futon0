@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import errno
 import hashlib
 import json
 import os
@@ -12,16 +13,40 @@ import re
 import shutil
 import subprocess
 import sys
+import time
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterable, List, Tuple
 
 DEFAULT_SOURCE = Path("/media") / os.environ.get("USER", "") / "ZOOMR4"
-DEFAULT_DEST = Path.home() / "media" / "zoomr4"
+DEFAULT_DEST = Path(os.path.expanduser(os.environ.get("ZOOM_SYNC_DEST") or str(Path.home() / "code" / "storage" / "zoomr4")))
 DEFAULT_LOG = Path(__file__).resolve().parent.parent / "data" / "zoom_sync_index.json"
 DEFAULT_TITLES = Path(__file__).resolve().parent.parent / "data" / "zoom_titles.json"
 DEFAULT_TITLE_FILE = "TITLES.TXT"
+CATALOG_SCHEMA_VERSION = 1
+PROJECT_FOLDER_RE = re.compile(r"\d{8}_\d{3}")
+DEFAULT_STATUS = "hold"
+VALID_STATUSES = {"hold", "archive", "trash"}
+STATUS_ALIASES = {
+    "keep": "hold",
+    "stay": "hold",
+    "hold": "hold",
+    "archive": "archive",
+    "skip": "archive",
+    "trash": "trash",
+    "delete": "trash",
+    "drop": "trash",
+}
+USER_FIELDS = {"title", "status", "artist", "album", "notes"}
 
 
+def normalize_status(value: str | None) -> str | None:
+    if not value:
+        return None
+    slug = value.strip().lower()
+    if slug in VALID_STATUSES:
+        return slug
+    return STATUS_ALIASES.get(slug)
 
 
 def notify(title: str, body: str) -> None:
@@ -44,6 +69,8 @@ def parse_args() -> argparse.Namespace:
                         help="Friendly title index (default: %(default)s)")
     parser.add_argument("--ffmpeg", default=shutil.which("ffmpeg") or "ffmpeg",
                         help="ffmpeg binary used for MP3 conversion")
+    parser.add_argument("--ffprobe", default=shutil.which("ffprobe") or "ffprobe",
+                        help="ffprobe binary used to gather duration/channel metadata")
     parser.add_argument("--no-convert", action="store_true",
                         help="Skip MP3 generation even if ffmpeg is present")
     parser.add_argument("--dry-run", action="store_true",
@@ -56,12 +83,32 @@ def parse_args() -> argparse.Namespace:
                         help="Skip writing the recorder title file")
     parser.add_argument("--title", action="append", default=[], metavar="SHA=Title",
                         help="Assign a friendly title and exit (may be repeated)")
+    parser.add_argument("--status", action="append", default=[], metavar="SHA=STATUS",
+                        help="Set the catalog status (hold/archive/trash) and exit; may be repeated")
+    parser.add_argument("--tag", action="append", default=[], metavar="SHA=TAG",
+                        help="Add TAG to the catalog entry (may be repeated)")
+    parser.add_argument("--untag", action="append", default=[], metavar="SHA=TAG",
+                        help="Remove TAG from the catalog entry (may be repeated)")
+    parser.add_argument("--list", action="store_true",
+                        help="List catalog entries sorted by recorded date and exit")
+    parser.add_argument("--list-status", choices=sorted(VALID_STATUSES),
+                        help="Filter --list output by status (requires --list)")
+    parser.add_argument("--list-limit", type=int,
+                        help="Optional limit for --list output")
     parser.add_argument("--list-missing-titles", action="store_true",
                         help="List recordings missing titles and exit")
     parser.add_argument("--refresh-titles", action="store_true",
                         help="Rewrite only the recorder title file from existing metadata")
+    parser.add_argument("--title-manifest-status", default="all",
+                        choices=["all", *sorted(VALID_STATUSES)],
+                        help="Which catalog status to include in the recorder title file "
+                             "(default: %(default)s)")
     parser.add_argument("--auto-title-missing", action="store_true",
                         help="Fill missing titles from base names/timestamps and exit")
+    parser.add_argument("--scan-attempts", type=int, default=10,
+                        help="How many times to retry scanning the recorder (default: %(default)s)")
+    parser.add_argument("--scan-delay", type=float, default=1.0,
+                        help="Seconds to wait between scan attempts (default: %(default)s)")
     return parser.parse_args()
 
 
@@ -71,13 +118,22 @@ def load_index(path: Path) -> Dict[str, Dict]:
     with path.open() as handle:
         data = json.load(handle)
     entries = data.get("entries", [])
-    return {entry["sha256"]: entry for entry in entries}
+    catalog: Dict[str, Dict] = {}
+    for entry in entries:
+        sha = entry.get("sha256")
+        if not sha:
+            continue
+        normalized = dict(entry)
+        normalize_catalog_entry(normalized)
+        catalog[sha] = normalized
+    return catalog
 
 
 def save_index(path: Path, entries: Dict[str, Dict]) -> None:
     payload = {
+        "schema_version": CATALOG_SCHEMA_VERSION,
         "updated_at": dt.datetime.now().isoformat(),
-        "entries": sorted(entries.values(), key=lambda e: e["ingested_at"]),
+        "entries": sorted(entries.values(), key=entry_sort_key),
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as handle:
@@ -103,7 +159,192 @@ def save_titles(path: Path, entries: Dict[str, Dict]) -> None:
         json.dump(payload, handle, indent=2)
 
 
-def assign_titles(titles: Dict[str, Dict], assignments: List[str]) -> List[str]:
+def entry_sort_key(entry: Dict[str, Dict]) -> Tuple[str, str]:
+    recorded = entry.get("recorded_at") or entry.get("recorded_date") or entry.get("ingested_at") or ""
+    return recorded, entry.get("sha256") or ""
+
+
+def derive_project_metadata(source: str | None) -> Tuple[str | None, str | None]:
+    if not source:
+        return None, None
+    try:
+        path = Path(source)
+    except TypeError:
+        return None, None
+    folder: str | None = None
+    project_path: str | None = None
+    parts = path.parts
+    for idx, part in enumerate(parts):
+        if PROJECT_FOLDER_RE.fullmatch(part):
+            folder = part
+            parent = parts[idx - 1] if idx and parts[idx - 1].lower().startswith("r4_project") else None
+            if parent:
+                project_path = str(Path(parent) / part)
+            else:
+                project_path = part
+            break
+    return project_path, folder
+
+
+def ensure_recorded_metadata(entry: Dict[str, Dict]) -> bool:
+    base = entry.get("base_name")
+    if not base:
+        source = entry.get("source")
+        if source:
+            base = Path(source).stem
+    if not base:
+        return False
+    match = re.match(r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})_(.+)", base)
+    if not match:
+        return False
+    year, month, day, hour, minute, second, _tail = match.groups()
+    try:
+        recorded = dt.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
+    except ValueError:
+        return False
+    changed = False
+    if not entry.get("recorded_at"):
+        entry["recorded_at"] = recorded.isoformat()
+        changed = True
+    if not entry.get("recorded_date"):
+        entry["recorded_date"] = f"{year}/{month}-{day}"
+        changed = True
+    return changed
+
+
+def merge_tags(existing: Iterable[str] | None, extra: Iterable[str]) -> List[str]:
+    tags = {tag for tag in (existing or []) if tag}
+    tags.update(tag for tag in extra if tag)
+    return sorted(tags)
+
+
+def remove_tags(existing: Iterable[str] | None, to_remove: Iterable[str]) -> List[str]:
+    remove = {tag for tag in to_remove if tag}
+    return sorted(tag for tag in (existing or []) if tag and tag not in remove)
+
+
+def parse_assignments(pairs: Iterable[str]) -> List[Tuple[str, str]]:
+    assignments: List[Tuple[str, str]] = []
+    for raw in pairs:
+        if "=" not in raw:
+            raise SystemExit(f"invalid assignment '{raw}', expected SHA=VALUE")
+        sha, value = raw.split("=", 1)
+        sha = sha.strip()
+        value = value.strip()
+        if not sha or not value:
+            raise SystemExit(f"invalid assignment '{raw}', expected SHA=VALUE")
+        assignments.append((sha, value))
+    return assignments
+
+
+def assign_tags(catalog: Dict[str, Dict], pairs: Iterable[str], remove: bool = False) -> List[str]:
+    updated: List[str] = []
+    assignments = parse_assignments(pairs)
+    for sha, tag in assignments:
+        entry = catalog.get(sha)
+        if not entry:
+            continue
+        existing = entry.get("tags")
+        if remove:
+            merged = remove_tags(existing, [tag])
+        else:
+            merged = merge_tags(existing, [tag])
+        if merged != existing:
+            entry["tags"] = merged
+            normalize_catalog_entry(entry)
+            updated.append(sha)
+    return updated
+
+
+def normalize_catalog_entry(entry: Dict[str, Dict]) -> bool:
+    changed = False
+    desired_status = normalize_status(entry.get("status")) or DEFAULT_STATUS
+    if entry.get("status") != desired_status:
+        entry["status"] = desired_status
+        changed = True
+
+    tags = entry.get("tags")
+    if tags is None:
+        entry["tags"] = []
+        changed = True
+    elif not isinstance(tags, list):
+        entry["tags"] = list(tags)
+        changed = True
+
+    if ensure_recorded_metadata(entry):
+        changed = True
+
+    project_path, project_folder = derive_project_metadata(entry.get("source"))
+    if project_path and entry.get("project_path") != project_path:
+        entry["project_path"] = project_path
+        changed = True
+    if project_folder and entry.get("project_folder") != project_folder:
+        entry["project_folder"] = project_folder
+        changed = True
+    if project_folder and entry.get("recorder_project") != project_folder:
+        entry["recorder_project"] = project_folder
+        changed = True
+
+    source = entry.get("source")
+    if source:
+        recorder_file = Path(source).name
+        if entry.get("recorder_file") != recorder_file:
+            entry["recorder_file"] = recorder_file
+            changed = True
+
+    base = (entry.get("base_name") or "").upper()
+    recorder_file_name = (entry.get("recorder_file") or "").upper()
+    derived_tags: List[str] = []
+    if project_folder:
+        derived_tags.append(f"project:{project_folder}")
+    if "BOUNCE" in recorder_file_name or "BOUNCE" in base:
+        derived_tags.append("bounce")
+    elif "TRACK" in recorder_file_name or "TRACK" in base:
+        derived_tags.append("track")
+    merged = merge_tags(entry.get("tags"), derived_tags)
+    if merged != entry.get("tags"):
+        entry["tags"] = merged
+        changed = True
+
+    return changed
+
+
+def merge_legacy_titles(catalog: Dict[str, Dict], titles_path: Path) -> bool:
+    if not titles_path.exists():
+        return False
+    legacy = load_titles(titles_path)
+    changed = False
+    for sha, legacy_entry in legacy.items():
+        entry = catalog.setdefault(sha, {"sha256": sha})
+        if legacy_entry.get("title") and entry.get("title") != legacy_entry["title"]:
+            entry["title"] = legacy_entry["title"]
+            changed = True
+        for key in ("base_name", "source"):
+            if legacy_entry.get(key) and not entry.get(key):
+                entry[key] = legacy_entry[key]
+                changed = True
+        normalize_catalog_entry(entry)
+    return changed
+
+
+def export_titles_view(path: Path, catalog: Dict[str, Dict]) -> None:
+    snapshot: Dict[str, Dict] = {}
+    for sha, entry in catalog.items():
+        payload = {"sha256": sha}
+        for key in ("base_name", "source", "title"):
+            value = entry.get(key)
+            if value:
+                payload[key] = value
+        snapshot[sha] = payload
+    save_titles(path, snapshot)
+
+
+def persist_catalog(args: argparse.Namespace, catalog: Dict[str, Dict]) -> None:
+    save_index(args.log, catalog)
+    export_titles_view(args.titles, catalog)
+
+
+def assign_titles(catalog: Dict[str, Dict], assignments: List[str]) -> List[str]:
     updated = []
     for item in assignments:
         if "=" not in item:
@@ -113,17 +354,42 @@ def assign_titles(titles: Dict[str, Dict], assignments: List[str]) -> List[str]:
         title = title.strip()
         if not sha:
             raise SystemExit("Missing SHA in --title assignment.")
-        entry = titles.get(sha)
+        entry = catalog.get(sha)
         if not entry:
             entry = {"sha256": sha}
-            titles[sha] = entry
+            catalog[sha] = entry
         entry["title"] = title
+        normalize_catalog_entry(entry)
         updated.append(sha)
     return updated
 
 
-def missing_titles(titles: Dict[str, Dict]) -> Dict[str, Dict]:
-    return {sha: entry for sha, entry in titles.items() if not entry.get("title")}
+def assign_statuses(catalog: Dict[str, Dict], assignments: List[str]) -> List[str]:
+    updated = []
+    for item in assignments:
+        if "=" not in item:
+            raise SystemExit(f"Invalid --status value '{item}'. Use SHA=Status format.")
+        sha, status = item.split("=", 1)
+        sha = sha.strip()
+        status = status.strip()
+        if not sha:
+            raise SystemExit("Missing SHA in --status assignment.")
+        normalized = normalize_status(status)
+        if not normalized:
+            raise SystemExit(f"Unknown status '{status}'. Use one of: {', '.join(sorted(VALID_STATUSES))}.")
+        entry = catalog.get(sha)
+        if not entry:
+            entry = {"sha256": sha}
+            catalog[sha] = entry
+        if entry.get("status") != normalized:
+            entry["status"] = normalized
+            updated.append(sha)
+        normalize_catalog_entry(entry)
+    return updated
+
+
+def missing_titles(catalog: Dict[str, Dict]) -> Dict[str, Dict]:
+    return {sha: entry for sha, entry in catalog.items() if not entry.get("title")}
 
 
 def slugify(name: str) -> str:
@@ -195,18 +461,62 @@ def find_wavs(source: Path, pattern: str) -> List[Path]:
     return sorted(source.rglob(pattern))
 
 
-def write_title_manifest(source: Path, titles: Dict[str, Dict], file_name: str, dry_run: bool) -> None:
+def find_wavs_with_retry(source: Path, pattern: str, attempts: int, delay: float) -> List[Path]:
+    """Scan the recorder, retrying briefly if the mount isn't ready yet."""
+    last_error: OSError | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            return find_wavs(source, pattern)
+        except OSError as exc:
+            if exc.errno not in {errno.EIO, errno.ESTALE, errno.ENODEV}:
+                raise
+            last_error = exc
+            if attempt < attempts:
+                log(f"recorder not ready ({exc}); retrying in {delay:.1f}s [{attempt}/{attempts}]")
+                time.sleep(delay)
+    raise SystemExit(f"Failed to scan recorder at {source}: {last_error}")
+
+
+def write_title_manifest(
+    source: Path,
+    catalog: Dict[str, Dict],
+    file_name: str,
+    dry_run: bool,
+    status_filter: str = "all",
+) -> None:
     if not source.exists():
         return
-    lines = ["Zoom R4 Track Titles", f"Updated: {dt.datetime.now().isoformat()}", ""]
-    entries = sorted(titles.values(), key=lambda e: e.get("base_name") or e.get("sha256"))
-    if not entries:
+    lines = [
+        "Zoom R4 Track Titles",
+        f"Updated: {dt.datetime.now().isoformat()}",
+        f"Status filter: {status_filter}",
+        "",
+    ]
+    grouped: Dict[str, List[Tuple[str, str]]] = defaultdict(list)
+    for entry in catalog.values():
+        if status_filter != "all":
+            status = entry.get("status") or DEFAULT_STATUS
+            if status != status_filter:
+                continue
+        src = entry.get("source")
+        if not src:
+            continue
+        project = entry.get("recorder_project")
+        if not project:
+            _project_path, project = derive_project_metadata(src)
+        recorder_file = entry.get("recorder_file") or Path(src).name
+        if not recorder_file:
+            continue
+        title = entry.get("title") or "UNTITLED"
+        grouped[project or "(unknown project)"].append((recorder_file, title))
+    if not grouped:
         lines.append("(no recordings indexed yet)")
     else:
-        for entry in entries:
-            base = entry.get("base_name") or entry["sha256"]
-            title = entry.get("title") or "UNTITLED"
-            lines.append(f"{base} :: {title}")
+        for project in sorted(grouped):
+            lines.append(project)
+            for recorder_file, title in sorted(grouped[project]):
+                lines.append(f"  {recorder_file} :: {title}")
+            lines.append("")
     target = source / file_name
     contents = "\n".join(lines) + "\n"
     if dry_run:
@@ -219,36 +529,130 @@ def write_title_manifest(source: Path, titles: Dict[str, Dict], file_name: str, 
         print(f"[zoom-sync] failed to write {target}: {exc}", file=sys.stderr)
 
 
-def fill_missing_titles(titles: Dict[str, Dict]) -> int:
+def fill_missing_titles(catalog: Dict[str, Dict]) -> int:
     updated = 0
-    for entry in titles.values():
+    for entry in catalog.values():
         if entry.get("title"):
             continue
         title = friendly_title(entry)
         if title:
             entry["title"] = title
+            normalize_catalog_entry(entry)
             updated += 1
     return updated
 
 
-def sync_index_titles(log_path: Path, titles: Dict[str, Dict]) -> int:
-    if not log_path.exists():
-        return 0
-    known = load_index(log_path)
-    updated = 0
-    for sha, entry in known.items():
-        title = titles.get(sha, {}).get("title")
-        if title and entry.get("title") != title:
-            entry["title"] = title
-            updated += 1
-    if updated:
-        save_index(log_path, known)
-    return updated
+def probe_audio(ffprobe: str | None, wav_path: Path) -> Dict[str, float | int]:
+    if not ffprobe:
+        return {}
+    cmd = [
+        ffprobe,
+        "-v",
+        "error",
+        "-select_streams",
+        "a:0",
+        "-show_entries",
+        "format=duration:stream=channels,bit_rate",
+        "-of",
+        "json",
+        str(wav_path),
+    ]
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    if proc.returncode != 0:
+        return {}
+    result: Dict[str, float | int] = {}
+    try:
+        payload = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError:
+        return result
+    duration = payload.get("format", {}).get("duration")
+    if duration:
+        try:
+            result["duration"] = float(duration)
+        except (TypeError, ValueError):
+            pass
+    streams = payload.get("streams") or []
+    if streams:
+        stream = streams[0]
+        channels = stream.get("channels")
+        if channels is not None:
+            try:
+                result["channel_count"] = int(channels)
+            except (TypeError, ValueError):
+                pass
+        bitrate = stream.get("bit_rate") or payload.get("format", {}).get("bit_rate")
+        if bitrate:
+            try:
+                result["bitrate"] = int(bitrate)
+            except (TypeError, ValueError):
+                try:
+                    result["bitrate"] = int(float(bitrate))
+                except (TypeError, ValueError):
+                    pass
+    return result
 
 
-def ingest(args: argparse.Namespace, titles: Dict[str, Dict]) -> None:
-    known = load_index(args.log)
-    files = find_wavs(args.source, args.pattern)
+def truncate(text: str, width: int) -> str:
+    if len(text) <= width:
+        return text
+    if width <= 3:
+        return text[:width]
+    return text[: width - 3] + "..."
+
+
+def format_recorded(entry: Dict[str, Dict]) -> str:
+    recorded = entry.get("recorded_at")
+    if recorded:
+        try:
+            return dt.datetime.fromisoformat(recorded).strftime("%Y-%m-%d %H:%M")
+        except ValueError:
+            return recorded[:16]
+    if entry.get("recorded_date"):
+        return entry["recorded_date"]
+    return "?"
+
+
+def sorted_catalog_entries(catalog: Dict[str, Dict]) -> List[Dict[str, Dict]]:
+    return sorted(catalog.values(), key=entry_sort_key)
+
+
+def list_catalog(catalog: Dict[str, Dict], status_filter: str | None = None, limit: int | None = None) -> None:
+    rows: List[Dict[str, Dict]] = []
+    for entry in sorted_catalog_entries(catalog):
+        if status_filter and entry.get("status") != status_filter:
+            continue
+        rows.append(entry)
+    if not rows:
+        if status_filter:
+            log(f"no catalog entries with status '{status_filter}'")
+        else:
+            log("catalog is empty")
+        return
+    header = f"{'Recorded':16} {'Status':8} {'Project':14} {'Title':40} MP3"
+    print(header)
+    print("-" * len(header))
+    if limit is None:
+        selected = rows
+    else:
+        selected = rows[: max(limit, 0)]
+    for entry in selected:
+        recorded = format_recorded(entry)
+        status = entry.get("status") or DEFAULT_STATUS
+        project = entry.get("project_folder") or "-"
+        title = entry.get("title") or entry.get("base_name") or entry.get("sha256", "")[:12]
+        title_display = truncate(title, 40)
+        project_display = truncate(project, 14)
+        mp3_path = entry.get("mp3") or entry.get("copied_to") or ""
+        print(f"{recorded:16} {status:8} {project_display:14} {title_display:40} {mp3_path}")
+
+
+def ingest(args: argparse.Namespace, catalog: Dict[str, Dict]) -> None:
+    path_cache = {}
+    for entry in catalog.values():
+        src = entry.get("source")
+        if src:
+            path_cache[src] = entry
+    files = find_wavs_with_retry(args.source, args.pattern, args.scan_attempts, args.scan_delay)
     if not files:
         log(f"no files matching {args.pattern} under {args.source}")
         notify("Zoom ingest", "No files found on the recorder")
@@ -258,13 +662,26 @@ def ingest(args: argparse.Namespace, titles: Dict[str, Dict]) -> None:
     ffmpeg_available = not args.no_convert and shutil.which(args.ffmpeg)
     if not ffmpeg_available and not args.no_convert:
         log(f"ffmpeg not found at {args.ffmpeg}; skipping conversion")
+    ffprobe_binary: str | None = None
+    if not args.dry_run:
+        probe_candidate = shutil.which(args.ffprobe) if args.ffprobe else None
+        if probe_candidate:
+            ffprobe_binary = probe_candidate
+        else:
+            log(f"ffprobe not found at {args.ffprobe}; duration/channel metadata will be skipped")
     new_entries = 0
     for wav in files:
-        sha = compute_sha(wav)
-        if sha in known:
+        stat = wav.stat()
+        cache_entry = path_cache.get(str(wav))
+        sha = None
+        if cache_entry and cache_entry.get("source_mtime") == stat.st_mtime and cache_entry.get("source_size") == stat.st_size:
+            sha = cache_entry["sha256"]
+        else:
+            sha = compute_sha(wav)
+        if sha in catalog:
             log(f"skip existing {wav} (already ingested)")
             continue
-        ts = dt.datetime.fromtimestamp(wav.stat().st_mtime)
+        ts = dt.datetime.fromtimestamp(stat.st_mtime)
         day = ts.strftime("%Y/%m-%d")
         slug = slugify(wav.stem)
         base_name = f"{ts.strftime('%Y%m%d_%H%M%S')}_{slug}"
@@ -277,42 +694,67 @@ def ingest(args: argparse.Namespace, titles: Dict[str, Dict]) -> None:
                 mp3_path = convert_to_mp3(args.ffmpeg, copied, mp3_dest, args.dry_run)
             except Exception as exc:  # pylint: disable=broad-except
                 print(f"[zoom-sync] mp3 conversion failed for {copied}: {exc}", file=sys.stderr)
-        known[sha] = {
-            "sha256": sha,
-            "source": str(wav),
-            "copied_to": str(copied),
-            "mp3": str(mp3_path) if mp3_path else None,
-            "recorded_date": day,
-            "ingested_at": dt.datetime.now().isoformat(),
-            "base_name": base_name,
-            "title": titles.get(sha, {}).get("title"),
-        }
-        entry = titles.get(sha) or {"sha256": sha}
-        entry.setdefault("base_name", base_name)
-        entry.setdefault("source", str(wav))
-        titles[sha] = entry
+        recorded_at = dt.datetime.fromtimestamp(stat.st_mtime)
+        project_path, project_folder = derive_project_metadata(str(wav))
+        derived_tags: List[str] = []
+        if project_folder:
+            derived_tags.append(f"project:{project_folder}")
+        name_upper = wav.name.upper()
+        if "BOUNCE" in name_upper:
+            derived_tags.append("bounce")
+        elif "TRACK" in name_upper:
+            derived_tags.append("track")
+        existing = catalog.get(sha, {})
+        entry_data = dict(existing)
+        entry_data["sha256"] = sha
+        entry_data["source"] = str(wav)
+        entry_data["copied_to"] = str(copied)
+        if mp3_path:
+            entry_data["mp3"] = str(mp3_path)
+        entry_data["recorded_date"] = day
+        entry_data["recorded_at"] = recorded_at.isoformat()
+        entry_data["ingested_at"] = dt.datetime.now().isoformat()
+        entry_data["base_name"] = base_name
+        entry_data["source_mtime"] = stat.st_mtime
+        entry_data["source_size"] = stat.st_size
+        entry_data["recorder_file"] = wav.name
+        if project_path:
+            entry_data["project_path"] = project_path
+        if project_folder:
+            entry_data["project_folder"] = project_folder
+            entry_data["recorder_project"] = project_folder
+        if ffprobe_binary and not args.dry_run:
+            metadata = probe_audio(ffprobe_binary, copied)
+            entry_data.update(metadata)
+        entry_data["tags"] = merge_tags(existing.get("tags"), derived_tags)
+        if existing.get("title"):
+            entry_data["title"] = existing["title"]
+        if existing.get("status"):
+            entry_data["status"] = existing["status"]
+        normalize_catalog_entry(entry_data)
+        catalog[sha] = entry_data
+        path_cache[str(wav)] = entry_data
         new_entries += 1
     if new_entries:
         if args.dry_run:
             log(f"dry run complete ({new_entries} new files detected)")
             notify("Zoom ingest", f"Dry run: {new_entries} files would be copied")
         else:
-            save_index(args.log, known)
-            save_titles(args.titles, titles)
+            persist_catalog(args, catalog)
             log(f"ingested {new_entries} new file(s); index updated at {args.log}")
             notify("Zoom ingest", f"Copied {new_entries} new track(s)")
     else:
         log("no new files detected")
         notify("Zoom ingest", "No new tracks detected")
-    missing = missing_titles(titles)
+    missing = missing_titles(catalog)
     if missing:
         log(f"{len(missing)} recording(s) missing titles. Use --title SHA=Name to label them.")
     if not args.no_title_file:
-        write_title_manifest(args.source, titles, args.title_file_name, args.dry_run)
+        write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
 
 
-def list_missing(titles: Dict[str, Dict]) -> None:
-    missing = missing_titles(titles)
+def list_missing(catalog: Dict[str, Dict]) -> None:
+    missing = missing_titles(catalog)
     if not missing:
         log("all recordings have titles")
         return
@@ -324,45 +766,75 @@ def list_missing(titles: Dict[str, Dict]) -> None:
 
 def main() -> None:
     args = parse_args()
-    titles = load_titles(args.titles)
+    catalog = load_index(args.log)
+    if merge_legacy_titles(catalog, args.titles):
+        persist_catalog(args, catalog)
 
     if args.title:
-        updated = assign_titles(titles, args.title)
-        save_titles(args.titles, titles)
-        log(f"updated titles for {len(updated)} recording(s)")
-        if not args.no_title_file:
-            write_title_manifest(args.source, titles, args.title_file_name, args.dry_run)
-        sync_count = sync_index_titles(args.log, titles)
-        if sync_count:
-            log(f"refreshed {sync_count} index entr(ies) with new titles")
+        updated = assign_titles(catalog, args.title)
+        if updated:
+            persist_catalog(args, catalog)
+            log(f"updated titles for {len(updated)} recording(s)")
+            if not args.no_title_file:
+                write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
+        else:
+            log("no catalog entries matched the provided titles")
+        return
+
+    if args.status:
+        updated = assign_statuses(catalog, args.status)
+        if updated:
+            persist_catalog(args, catalog)
+            log(f"updated status for {len(updated)} recording(s)")
+        else:
+            log("no catalog entries matched the provided status assignments")
+        return
+
+    if args.tag:
+        updated = assign_tags(catalog, args.tag, remove=False)
+        if updated:
+            persist_catalog(args, catalog)
+            log(f"tagged {len(updated)} recording(s)")
+        else:
+            log("no catalog entries matched the provided tags")
+        return
+
+    if args.untag:
+        updated = assign_tags(catalog, args.untag, remove=True)
+        if updated:
+            persist_catalog(args, catalog)
+            log(f"untagged {len(updated)} recording(s)")
+        else:
+            log("no catalog entries matched the provided tags")
+        return
+
+    if args.list or args.list_status or args.list_limit:
+        list_catalog(catalog, args.list_status, args.list_limit)
         return
 
     if args.list_missing_titles:
-        list_missing(titles)
+        list_missing(catalog)
         return
 
     if args.refresh_titles:
         if not args.no_title_file:
-            write_title_manifest(args.source, titles, args.title_file_name, args.dry_run)
+            write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
         else:
             log("--refresh-titles requested but --no-title-file also set; nothing to do")
         return
 
     if args.auto_title_missing:
-        filled = fill_missing_titles(titles)
+        filled = fill_missing_titles(catalog)
         if filled:
-            save_titles(args.titles, titles)
+            persist_catalog(args, catalog)
             log(f"auto-filled titles for {filled} recording(s)")
-            sync_count = sync_index_titles(args.log, titles)
-            if sync_count:
-                log(f"refreshed {sync_count} index entr(ies) with new titles")
             if not args.no_title_file:
-                write_title_manifest(args.source, titles, args.title_file_name, args.dry_run)
+                write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
         else:
             log("no missing titles detected; nothing to auto-fill")
         return
 
-    ingest(args, titles)
+    ingest(args, catalog)
 
 
 if __name__ == "__main__":
