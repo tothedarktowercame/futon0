@@ -8,16 +8,17 @@ Two automation hooks live here while FUTON1 stabilises:
 3. Optional automation: copy `systemd/user-git-vitality.service` and `systemd/user-git-vitality.timer` into `~/.config/systemd/user/` as `git-vitality.service`/`git-vitality.timer`, then run `systemctl --user daemon-reload && systemctl --user enable --now git-vitality.timer` for an hourly refresh.
 
 ## Zoom R4 ingest
-- `scripts/zoom_sync.py --source /media/$USER/ZOOMR4 --dest ~/media/zoomr4` copies WAV recordings off the Zoom R4, tracks hashes in `data/zoom_sync_index.json`, and optionally converts them to MP3.
-- Friendly titles live in `data/zoom_titles.json`. After a plug-in ingest run you can label untitled tracks via `python3 scripts/zoom_sync.py --title SHA=MySong`. The script writes `TITLES.TXT` back to the recorder so upcoming takes are easy to spot.
-- When you need placeholder names, run `python3 scripts/zoom_sync.py --auto-title-missing` to fill gaps using timestamps + base names (it also refreshes `data/zoom_sync_index.json` with the derived titles).
+- `scripts/zoom_sync.py --source /media/$USER/ZOOMR4 --dest ~/code/storage/zoomr4` copies WAV recordings off the Zoom R4, converts to MP3 when `ffmpeg` is present, and now normalizes `~/code/storage/zoomr4/meta/zoom_sync_index.json` as the single catalog (schema fields include SHA, recorder project, derived tags, mp3 path, duration/channel counts via `ffprobe`, and the curation status). The helper still regenerates `~/code/storage/zoomr4/meta/zoom_titles.json` for legacy callers but every edit flows through the catalog. Override the locations with `ZOOM_SYNC_META_DIR` or `ZOOM_SYNC_INDEX`/`ZOOM_SYNC_TITLES`.
+- Update metadata inline via `python3 scripts/zoom_sync.py --title SHA=MySong` and `--status SHA=hold|archive|trash`. Each edit persists to the catalog, rewrites per-project `TITLES.TXT` entries on the recorder (`TRACK1_01.WAV :: My Chorus`), and keeps `~/code/storage/zoomr4` in sync with the recorder library; use `hold` for “Zoom + disk”, `archive` for “disk only”, and `trash` once you’re ready to delete from both.
+- `python3 scripts/zoom_sync.py --list` (plus `--list-status hold` or `--list-limit 20`) prints the library sorted by recorded date so you can skim takes from the terminal. `--list-missing-titles` and `--auto-title-missing` still help fill friendly timestamp titles for recorder files that haven’t been curated yet.
 - Enable automatic ingest via the sample `systemd/zoom-sync.path` + `.service` units documented in `systemd/README.md`.
 
 ## Vitality scanner stub
-- `python3 scripts/vitality_scanner.py` inspects directories listed in `data/vitality_scanner.json`, counts files touched during the current lookback window, optionally parses Tatami logs, and writes a summary JSON payload (default `data/vitality/latest_scan.json`).
-- Adjust `data/vitality_scanner.json` to point at the directories/Tatami export you want to monitor, then call the script from cron/systemd alongside `git_vitality_sync.sh` to start the 30–45 day baseline run mentioned in the devmap.
-- The sample `systemd/user-vitality-scanner.*` units run the scanner hourly and write straight into `../futon3/resources/vitality/latest_scan.json`, so Futon3’s Stack HUD stays live without manual copies; install them the same way as the git vitality timer in `systemd/README.md`.
-- Each filesystem entry now supports an optional `import_index`/`import_limit`. Point `import_index` at `data/zoom_sync_index.json` (or any JSON index with `entries`) and the Stack HUD will report how many assets were already imported even if the drive is offline; this is how `zoomr4` shows “| 57 imported” along with the latest track titles.
+- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.vitality.scanner` (source: `scripts/futon0/vitality/scanner.clj`) inspects directories listed in `data/vitality_scanner.json`, counts files touched during the current lookback window, optionally parses Tatami logs, and writes a summary JSON payload (default `data/vitality/latest_scan.json`).
+- Adjust `data/vitality_scanner.json` to point at the directories/Tatami export you want to monitor, then call the scanner from cron/systemd alongside `git_vitality_sync.sh` to start the 30–45 day baseline run mentioned in the devmap.
+- The sample `systemd/user-vitality-scanner.service` + `.timer` units run the scanner hourly and write straight into `../futon3/resources/vitality/latest_scan.json`, so Futon3’s Stack HUD stays live without manual copies. For more responsive updates, enable `systemd/user-vitality-scanner.path` to trigger scans on futon directory changes (throttled); details live in `systemd/README.md`.
+- Each filesystem entry now supports an optional `import_index`/`import_limit`. Point `import_index` at `~/code/storage/zoomr4/meta/zoom_sync_index.json` (or any JSON index with `entries`) and the Stack HUD will report how many assets were already imported even if the drive is offline; this is how `zoomr4` shows “| 57 imported” along with the latest track titles.
+- `data/vitality_scanner.json` now advertises `storage_status` so the futon0 vitality HUD raises a warning (“storage not backed up”) until the storage roots in `~/code/storage` are mirrored to offline media.
 - Until the dedicated Stack HUD surface lands, Futon3 renders this telemetry inside the
   Tatami context pane (to keep the data visible); treat that integration as a preview
   rather than the final UI.
@@ -33,3 +34,15 @@ Two automation hooks live here while FUTON1 stabilises:
 - Futon3’s Stack HUD exposes “Voice typing: Start/Stop” buttons that launch both `ydotoold` (using `my-chatgpt-shell-ydotoold-command`) and the voice client, so you can toggle dictation without touching a terminal. Output lands in the `*Stack Voice Typing*` buffer for debugging.
 - When the HUD reports “Voice typing: ON | pid …” it means both `ydotoold` and the recognizer are live; if it shows “unconfigured” double‑check `my-chatgpt-shell-voice-command` or the udev permissions on `/dev/uinput`. The hot reload block above it works the same way for Emacs auto‑eval.
 
+## Elisp tests
+
+Run the futon0 contrib ERT tests:
+```bash
+emacs -Q --batch \
+  -L ~/code/futon0/contrib \
+  -L ~/code/futon0/contrib/test \
+  -l ~/code/futon0/contrib/test/stack-hud-test.el \
+  -l ~/code/futon0/contrib/test/stack-doc-test.el \
+  -l ~/code/futon0/contrib/test/voice-typing-test.el \
+  --eval "(ert-run-tests-batch-and-exit t)"
+```

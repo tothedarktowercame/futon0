@@ -9,19 +9,49 @@ mkdir -p ~/.config/systemd/user
 cp systemd/user-zoom-mount.service ~/.config/systemd/user/zoom-mount.service
 cp systemd/user-zoom-mount.path ~/.config/systemd/user/zoom-mount.path
 cp systemd/user-zoom-sync.service ~/.config/systemd/user/zoom-sync.service
-cp systemd/user-zoom-sync.path ~/.config/systemd/user/zoom-sync.path
 
 systemctl --user daemon-reload
-systemctl --user enable --now zoom-mount.path zoom-sync.path
+systemctl --user enable --now zoom-mount.path
 ```
 
 `zoom-mount.path` watches for the SD card's UUID and ensures the
-`zoom-mount.service` oneshot mounts `/media/joe/R4_SD` exactly once per
-insertion. `zoom-sync.path` uses the same trigger but starts
-`zoom-sync.service`, which now requires the mount unit so the ingest helper
-only runs while the card is mounted, then unmounts via `ExecStopPost`. Disable
-the automation via `systemctl --user disable --now zoom-mount.path
-zoom-sync.path` if you need to stop auto-ingest temporarily.
+`zoom-mount.service` oneshot mounts the card once per insertion. The user
+service creates `/media/joe/R4_SD` as a stable symlink even if `udisksctl`
+chooses a suffixed mount point (for example `/media/joe/R4_SD1`). Once mounted,
+the mount service kicks off `zoom-sync.service` for a single ingest run. After
+the sync finishes it unmounts the card automatically; replugging mounts a new
+instance and triggers another run. Disable the automation via
+`systemctl --user disable --now zoom-mount.path` if you need to stop auto-ingest
+temporarily.
+
+## Automation contracts
+
+These contracts define the intended behavior so future debugging can validate
+each step independently.
+
+- Mount contract: plugging in the Zoom R4 triggers `zoom-mount.path`, and
+  `zoom-mount.service` mounts the card and exposes a stable mount path at
+  `/media/joe/R4_SD` (or a symlink to the udisks mount).
+- Trigger contract: a successful mount triggers exactly one sync run. The
+  trigger is owned by `zoom-mount.service` (ExecStartPost).
+- Sync contract: `zoom-sync.service` runs `scripts/zoom_sync.py` against the
+  mounted card and only ingests new/updated files (old content is skipped via
+  the catalog fingerprints).
+- Progress contract: sync emits notifications and logs all output to
+  `~/code/storage/zoomr4/meta/zoom_sync.log` (override with `ZOOM_SYNC_RUN_LOG`).
+- Unmount contract: after sync completes, the card is unmounted automatically
+  by `zoom-sync.service`.
+- No-loop contract: the sync does not rerun until the card is unplugged and
+  replugged.
+
+## Debug checklist
+
+If any contract fails, start here:
+
+- Mount logs: `journalctl --user -u zoom-mount.service -b --no-pager | tail -n 80`
+- Trigger logs: `journalctl --user -u zoom-mount.service -b --no-pager | tail -n 80`
+- Sync logs: `journalctl --user -u zoom-sync.service -b --no-pager | tail -n 80`
+- File log: `tail -n 200 /home/joe/code/storage/zoomr4/meta/zoom_sync.log`
 
 ## Git vitality timer
 
@@ -55,10 +85,19 @@ systemctl --user daemon-reload
 systemctl --user enable --now vitality-scanner.timer
 ```
 
-The service runs `scripts/vitality_scanner.py --quiet --output
-../futon3/resources/vitality/latest_scan.json`, so the Stack HUD always sees a
-fresh `latest_scan.json` without manual copies. Adjust `OnCalendar` inside the
-timer if you want a different cadence.
+The service runs the Clojure scanner (`scripts/futon0/vitality/scanner.clj`) and writes
+straight into `../futon3/resources/vitality/latest_scan.json`, so the Stack HUD
+always sees a fresh `latest_scan.json` without manual copies. Adjust
+`OnCalendar` inside the timer if you want a different cadence.
+
+For more aggressive updates, enable the optional path unit so changes inside
+`~/code/futon0`–`~/code/futon7` trigger a scan (throttled to once every 30s):
+
+```bash
+cp systemd/user-vitality-scanner.path ~/.config/systemd/user/vitality-scanner.path
+systemctl --user daemon-reload
+systemctl --user enable --now vitality-scanner.path
+```
 
 ## Negative-space reminders
 

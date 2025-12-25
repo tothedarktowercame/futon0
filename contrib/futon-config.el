@@ -6,6 +6,10 @@
 ;;; Code:
 (add-to-list 'load-path "/home/joe/code/futon0/contrib/")
 
+;; Zoom R4 ingest metadata lives in storage (override here for local tools).
+(setenv "ZOOM_SYNC_DEST" "/home/joe/code/storage/zoomr4")
+(setenv "ZOOM_SYNC_META_DIR" "/home/joe/code/storage/zoomr4/meta")
+
 ;; Hot reload defaults (override as needed).
 (setq my-chatgpt-shell-hot-reload-files
       '("../futon3/contrib/aob-chatgpt.el"

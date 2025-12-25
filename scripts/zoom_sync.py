@@ -21,9 +21,19 @@ from typing import Dict, Iterable, List, Tuple
 
 DEFAULT_SOURCE = Path("/media") / os.environ.get("USER", "") / "ZOOMR4"
 DEFAULT_DEST = Path(os.path.expanduser(os.environ.get("ZOOM_SYNC_DEST") or str(Path.home() / "code" / "storage" / "zoomr4")))
-DEFAULT_LOG = Path(__file__).resolve().parent.parent / "data" / "zoom_sync_index.json"
-DEFAULT_RUN_LOG = Path(__file__).resolve().parent.parent / "data" / "zoom_sync.log"
-DEFAULT_TITLES = Path(__file__).resolve().parent.parent / "data" / "zoom_titles.json"
+DEFAULT_META_DIR = Path(os.path.expanduser(os.environ.get("ZOOM_SYNC_META_DIR") or str(DEFAULT_DEST / "meta")))
+
+
+def env_path(name: str, fallback: Path) -> Path:
+    value = os.environ.get(name)
+    if value:
+        return Path(os.path.expanduser(value))
+    return fallback
+
+
+DEFAULT_LOG = env_path("ZOOM_SYNC_INDEX", DEFAULT_META_DIR / "zoom_sync_index.json")
+DEFAULT_RUN_LOG = env_path("ZOOM_SYNC_RUN_LOG", DEFAULT_META_DIR / "zoom_sync.log")
+DEFAULT_TITLES = env_path("ZOOM_SYNC_TITLES", DEFAULT_META_DIR / "zoom_titles.json")
 DEFAULT_TITLE_FILE = "TITLES.TXT"
 CATALOG_SCHEMA_VERSION = 1
 PROJECT_FOLDER_RE = re.compile(r"\d{8}_\d{3}")
@@ -66,11 +76,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dest", type=Path, default=DEFAULT_DEST,
                         help="Destination root for archived audio (default: %(default)s)")
     parser.add_argument("--log", type=Path, default=DEFAULT_LOG,
-                        help="JSON index recording ingested files (default: %(default)s)")
+                        help="JSON index recording ingested files (default: %(default)s, env: ZOOM_SYNC_INDEX)")
     parser.add_argument("--run-log", type=Path, default=DEFAULT_RUN_LOG,
-                        help="Append run output to this log file (default: %(default)s)")
+                        help="Append run output to this log file (default: %(default)s, env: ZOOM_SYNC_RUN_LOG)")
     parser.add_argument("--titles", type=Path, default=DEFAULT_TITLES,
-                        help="Friendly title index (default: %(default)s)")
+                        help="Friendly title index (default: %(default)s, env: ZOOM_SYNC_TITLES)")
     parser.add_argument("--ffmpeg", default=shutil.which("ffmpeg") or "ffmpeg",
                         help="ffmpeg binary used for MP3 conversion")
     parser.add_argument("--ffprobe", default=shutil.which("ffprobe") or "ffprobe",
