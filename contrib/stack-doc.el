@@ -107,10 +107,10 @@
    ((string-prefix-p "No filesystem activity recorded in the last scan window" msg)
     (let ((lookback (stack-doc--stack-vitality-lookback vitality)))
       (if lookback
-          (format "Scan window is the last %s hours. Configure lookback_hours in futon0/data/vitality_scanner.json." lookback)
-        "Scan window duration is set by lookback_hours in futon0/data/vitality_scanner.json.")))
+          (format "Scan window is the last %s hours. Configure lookback_hours in ~/code/storage/futon0/vitality/vitality_scanner.json." lookback)
+        "Scan window duration is set by lookback_hours in ~/code/storage/futon0/vitality/vitality_scanner.json.")))
    ((string-prefix-p "No futon activity recorded in the last" msg)
-    "No recent mtimes across futon0–futon7 within the 7-day window. The window is fixed at 168h in vitality_scanner.py.")
+    "No recent mtimes across futon0–futon7 within the 7-day window. The window is fixed at 168h in futon0.vitality.scanner.")
    ((string= msg "Tatami activity gap exceeds configured window.")
     (let* ((tatami (plist-get vitality :tatami))
            (gap (plist-get tatami :gap-warning))
@@ -118,11 +118,11 @@
            (hours (plist-get tatami :hours-since)))
       (cond
        ((and hours lookback)
-        (format "Tatami gap exceeds %s hours; last event %s hours ago. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session. Configure tatami.gap_warning_hours in futon0/data/vitality_scanner.json."
+        (format "Tatami gap exceeds %s hours; last event %s hours ago. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session. Configure tatami.gap_warning_hours in ~/code/storage/futon0/vitality/vitality_scanner.json."
                 lookback hours))
        (lookback
-        (format "Tatami gap warning threshold is %s hours. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session. Configure tatami.gap_warning_hours in futon0/data/vitality_scanner.json." lookback))
-       (t "Tatami gap warning threshold is set in futon0/data/vitality_scanner.json. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session."))))
+        (format "Tatami gap warning threshold is %s hours. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session. Configure tatami.gap_warning_hours in ~/code/storage/futon0/vitality/vitality_scanner.json." lookback))
+       (t "Tatami gap warning threshold is set in ~/code/storage/futon0/vitality/vitality_scanner.json. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session."))))
    (t nil)))
 
 (defun stack-doc--stack-vitality-lookback (vitality)
@@ -131,7 +131,7 @@
       (stack-doc--stack-vitality-lookback-from-file)))
 
 (defun stack-doc--stack-vitality-lookback-from-file ()
-  (let ((path "/home/joe/code/futon0/data/vitality_scanner.json"))
+  (let ((path "/home/joe/code/storage/futon0/vitality/vitality_scanner.json"))
     (when (file-readable-p path)
       (with-temp-buffer
         (insert-file-contents path)
@@ -146,7 +146,7 @@
           (error nil))))))
 
 (defun stack-doc--stack-vitality-config ()
-  (let* ((path "/home/joe/code/futon0/data/vitality_scanner.json")
+  (let* ((path "/home/joe/code/storage/futon0/vitality/vitality_scanner.json")
          (mtime (nth 5 (file-attributes path))))
     (if (and stack-doc--stack-vitality-config-cache
              (equal mtime stack-doc--stack-vitality-config-mtime))
@@ -199,12 +199,12 @@
          (schedule (stack-doc--stack-vitality-timer-schedule)))
     (cond
      ((and lookback entries)
-      (format "Filesystem + Tatami vitality summary. %s filesystem entries; scan window: %s hours. Last scan: %s. %s. Config: futon0/data/vitality_scanner.json."
+      (format "Filesystem + Tatami vitality summary. %s filesystem entries; scan window: %s hours. Last scan: %s. %s. Config: ~/code/storage/futon0/vitality/vitality_scanner.json."
               entries lookback (or generated-at "unknown") schedule))
      (lookback
-      (format "Filesystem + Tatami vitality summary. Scan window: %s hours. Last scan: %s. %s. Config: futon0/data/vitality_scanner.json."
+      (format "Filesystem + Tatami vitality summary. Scan window: %s hours. Last scan: %s. %s. Config: ~/code/storage/futon0/vitality/vitality_scanner.json."
               lookback (or generated-at "unknown") schedule))
-     (t (format "Filesystem + Tatami vitality summary from the latest scan. Last scan: %s. %s. Config: futon0/data/vitality_scanner.json."
+     (t (format "Filesystem + Tatami vitality summary from the latest scan. Last scan: %s. %s. Config: ~/code/storage/futon0/vitality/vitality_scanner.json."
                 (or generated-at "unknown") schedule)))))
 
 (defun stack-doc--stack-vitality-timer-schedule ()

@@ -315,7 +315,7 @@ The value is passed to `display-buffer-in-side-window'."
         (insert "\n"))
       (insert "  ⚠️ Futon3 server reload needed (using file fallback for liveness).\n\n"))
      (t
-      (insert "  Futon liveness: unavailable (run vitality_scanner.py)\n\n")))))
+      (insert "  Futon liveness: unavailable (run futon0.vitality.scanner)\n\n")))))
 
 (defun my-chatgpt-shell--insert-stack-hud (stack)
   (let ((vitality (plist-get stack :vitality))

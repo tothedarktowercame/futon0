@@ -85,10 +85,11 @@ systemctl --user daemon-reload
 systemctl --user enable --now vitality-scanner.timer
 ```
 
-The service runs the Clojure scanner (`scripts/futon0/vitality/scanner.clj`) and writes
-straight into `../futon3/resources/vitality/latest_scan.json`, so the Stack HUD
-always sees a fresh `latest_scan.json` without manual copies. Adjust
-`OnCalendar` inside the timer if you want a different cadence.
+The service runs the Clojure scanner (`scripts/futon0/vitality/scanner.clj`), reading
+`~/code/storage/futon0/vitality/vitality_scanner.json` and writing straight into
+`../futon3/resources/vitality/latest_scan.json`, so the Stack HUD always sees a
+fresh `latest_scan.json` without manual copies. Adjust `OnCalendar` inside the
+timer if you want a different cadence.
 
 For more aggressive updates, enable the optional path unit so changes inside
 `~/code/futon0`–`~/code/futon7` trigger a scan (throttled to once every 30s):

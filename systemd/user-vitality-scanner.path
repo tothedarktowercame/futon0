@@ -1,0 +1,20 @@
+[Unit]
+Description=Trigger FUTON vitality scanner on futon activity
+StartLimitIntervalSec=0
+StartLimitBurst=0
+
+[Path]
+PathChanged=%h/code/futon0
+PathChanged=%h/code/futon1
+PathChanged=%h/code/futon2
+PathChanged=%h/code/futon3
+PathChanged=%h/code/futon4
+PathChanged=%h/code/futon5
+PathChanged=%h/code/futon6
+PathChanged=%h/code/futon7
+Unit=vitality-scanner.service
+TriggerLimitIntervalSec=30
+TriggerLimitBurst=1
+
+[Install]
+WantedBy=default.target

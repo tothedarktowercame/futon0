@@ -14,11 +14,12 @@ Two automation hooks live here while FUTON1 stabilises:
 - Enable automatic ingest via the sample `systemd/zoom-sync.path` + `.service` units documented in `systemd/README.md`.
 
 ## Vitality scanner stub
-- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.vitality.scanner` (source: `scripts/futon0/vitality/scanner.clj`) inspects directories listed in `data/vitality_scanner.json`, counts files touched during the current lookback window, optionally parses Tatami logs, and writes a summary JSON payload (default `data/vitality/latest_scan.json`).
-- Adjust `data/vitality_scanner.json` to point at the directories/Tatami export you want to monitor, then call the scanner from cron/systemd alongside `git_vitality_sync.sh` to start the 30–45 day baseline run mentioned in the devmap.
+- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.vitality.scanner` (source: `scripts/futon0/vitality/scanner.clj`) inspects directories listed in `~/code/storage/futon0/vitality/vitality_scanner.json`, counts files touched during the current lookback window, optionally parses Tatami logs, and writes a summary JSON payload (default `~/code/storage/futon0/vitality/latest_scan.json`).
+- Adjust `~/code/storage/futon0/vitality/vitality_scanner.json` to point at the directories/Tatami export you want to monitor, then call the scanner from cron/systemd alongside `git_vitality_sync.sh` to start the 30–45 day baseline run mentioned in the devmap.
 - The sample `systemd/user-vitality-scanner.service` + `.timer` units run the scanner hourly and write straight into `../futon3/resources/vitality/latest_scan.json`, so Futon3’s Stack HUD stays live without manual copies. For more responsive updates, enable `systemd/user-vitality-scanner.path` to trigger scans on futon directory changes (throttled); details live in `systemd/README.md`.
 - Each filesystem entry now supports an optional `import_index`/`import_limit`. Point `import_index` at `~/code/storage/zoomr4/meta/zoom_sync_index.json` (or any JSON index with `entries`) and the Stack HUD will report how many assets were already imported even if the drive is offline; this is how `zoomr4` shows “| 57 imported” along with the latest track titles.
-- `data/vitality_scanner.json` now advertises `storage_status` so the futon0 vitality HUD raises a warning (“storage not backed up”) until the storage roots in `~/code/storage` are mirrored to offline media.
+- The vitality JSON data stores are a practical prototype for now; revisit this later for real-time, concurrent state management instead of periodic JSON snapshots.
+- `~/code/storage/futon0/vitality/vitality_scanner.json` advertises `storage_status` so the futon0 vitality HUD raises a warning (“storage not backed up”) until the storage roots in `~/code/storage` are mirrored to offline media.
 - Until the dedicated Stack HUD surface lands, Futon3 renders this telemetry inside the
   Tatami context pane (to keep the data visible); treat that integration as a preview
   rather than the final UI.
