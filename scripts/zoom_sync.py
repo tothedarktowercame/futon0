@@ -15,12 +15,14 @@ import subprocess
 import sys
 import time
 from collections import defaultdict
+from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 from typing import Dict, Iterable, List, Tuple
 
 DEFAULT_SOURCE = Path("/media") / os.environ.get("USER", "") / "ZOOMR4"
 DEFAULT_DEST = Path(os.path.expanduser(os.environ.get("ZOOM_SYNC_DEST") or str(Path.home() / "code" / "storage" / "zoomr4")))
 DEFAULT_LOG = Path(__file__).resolve().parent.parent / "data" / "zoom_sync_index.json"
+DEFAULT_RUN_LOG = Path(__file__).resolve().parent.parent / "data" / "zoom_sync.log"
 DEFAULT_TITLES = Path(__file__).resolve().parent.parent / "data" / "zoom_titles.json"
 DEFAULT_TITLE_FILE = "TITLES.TXT"
 CATALOG_SCHEMA_VERSION = 1
@@ -65,6 +67,8 @@ def parse_args() -> argparse.Namespace:
                         help="Destination root for archived audio (default: %(default)s)")
     parser.add_argument("--log", type=Path, default=DEFAULT_LOG,
                         help="JSON index recording ingested files (default: %(default)s)")
+    parser.add_argument("--run-log", type=Path, default=DEFAULT_RUN_LOG,
+                        help="Append run output to this log file (default: %(default)s)")
     parser.add_argument("--titles", type=Path, default=DEFAULT_TITLES,
                         help="Friendly title index (default: %(default)s)")
     parser.add_argument("--ffmpeg", default=shutil.which("ffmpeg") or "ffmpeg",
@@ -457,7 +461,7 @@ def convert_to_mp3(ffmpeg: str, wav_path: Path, mp3_path: Path, dry_run: bool) -
 
 def find_wavs(source: Path, pattern: str) -> List[Path]:
     if not source.exists():
-        raise SystemExit(f"Source mount not found: {source}")
+        raise FileNotFoundError(errno.ENOENT, f"Source mount not found: {source}")
     return sorted(source.rglob(pattern))
 
 
@@ -468,7 +472,7 @@ def find_wavs_with_retry(source: Path, pattern: str, attempts: int, delay: float
         try:
             return find_wavs(source, pattern)
         except OSError as exc:
-            if exc.errno not in {errno.EIO, errno.ESTALE, errno.ENODEV}:
+            if exc.errno not in {errno.EIO, errno.ESTALE, errno.ENODEV, errno.ENOENT}:
                 raise
             last_error = exc
             if attempt < attempts:
@@ -648,17 +652,55 @@ def list_catalog(catalog: Dict[str, Dict], status_filter: str | None = None, lim
 
 def ingest(args: argparse.Namespace, catalog: Dict[str, Dict]) -> None:
     path_cache = {}
+    fingerprint_cache = {}
     for entry in catalog.values():
         src = entry.get("source")
         if src:
             path_cache[src] = entry
+        project_folder = entry.get("project_folder") or entry.get("recorder_project")
+        recorder_file = entry.get("recorder_file")
+        source_size = entry.get("source_size")
+        source_mtime = entry.get("source_mtime")
+        if project_folder and recorder_file and source_size is not None and source_mtime is not None:
+            fingerprint_cache[(project_folder, recorder_file, source_size, source_mtime)] = entry
+    log(f"scanning {args.source} for {args.pattern}")
     files = find_wavs_with_retry(args.source, args.pattern, args.scan_attempts, args.scan_delay)
     if not files:
         log(f"no files matching {args.pattern} under {args.source}")
         notify("Zoom ingest", "No files found on the recorder")
         return
-    log(f"found {len(files)} candidate file(s) to scan")
-    notify("Zoom ingest", f"Scanning {len(files)} files on the recorder")
+    candidates: List[Tuple[Path, os.stat_result]] = []
+    for wav in files:
+        stat = wav.stat()
+        cache_entry = path_cache.get(str(wav))
+        if not cache_entry:
+            _project_path, project_folder = derive_project_metadata(str(wav))
+            if project_folder:
+                cache_entry = fingerprint_cache.get((project_folder, wav.name, stat.st_size, stat.st_mtime))
+        if cache_entry and cache_entry.get("source_mtime") == stat.st_mtime and cache_entry.get("source_size") == stat.st_size:
+            continue
+        candidates.append((wav, stat))
+    candidate_projects: Dict[str, List[Tuple[Path, os.stat_result]]] = defaultdict(list)
+    for wav, stat in candidates:
+        _project_path, project_folder = derive_project_metadata(str(wav))
+        project_key = project_folder or "(unknown project)"
+        candidate_projects[project_key].append((wav, stat))
+    project_names = sorted(candidate_projects, key=lambda name: (name == "(unknown project)", name))
+    existing_projects = {
+        entry.get("project_folder")
+        for entry in catalog.values()
+        if entry.get("project_folder")
+    }
+    new_project_count = sum(
+        1 for name in project_names if name != "(unknown project)" and name not in existing_projects
+    )
+    log(
+        f"found {len(files)} candidate file(s); {len(candidates)} new/updated across {len(project_names)} project(s)"
+    )
+    notify(
+        "Zoom ingest",
+        f"Found {len(files)} files ({len(candidates)} new/updated) across {len(project_names)} projects ({new_project_count} new)",
+    )
     ffmpeg_available = not args.no_convert and shutil.which(args.ffmpeg)
     if not ffmpeg_available and not args.no_convert:
         log(f"ffmpeg not found at {args.ffmpeg}; skipping conversion")
@@ -670,71 +712,99 @@ def ingest(args: argparse.Namespace, catalog: Dict[str, Dict]) -> None:
         else:
             log(f"ffprobe not found at {args.ffprobe}; duration/channel metadata will be skipped")
     new_entries = 0
-    for wav in files:
-        stat = wav.stat()
-        cache_entry = path_cache.get(str(wav))
-        sha = None
-        if cache_entry and cache_entry.get("source_mtime") == stat.st_mtime and cache_entry.get("source_size") == stat.st_size:
-            sha = cache_entry["sha256"]
-        else:
-            sha = compute_sha(wav)
-        if sha in catalog:
-            log(f"skip existing {wav} (already ingested)")
+    updated_existing = 0
+    had_candidates = bool(candidates)
+    if not candidates:
+        log("no new files to ingest")
+        notify("Zoom ingest", "No new tracks detected")
+    for idx, project in enumerate(project_names, start=1):
+        project_files = sorted(candidate_projects[project], key=lambda item: item[0])
+        new_project_files: List[Tuple[Path, os.stat_result, str]] = []
+        for wav, stat in project_files:
+            cache_entry = path_cache.get(str(wav))
+            if cache_entry and cache_entry.get("source_mtime") == stat.st_mtime and cache_entry.get("source_size") == stat.st_size:
+                sha = cache_entry["sha256"]
+            else:
+                sha = compute_sha(wav)
+            existing_entry = catalog.get(sha)
+            if existing_entry:
+                updated = False
+                if existing_entry.get("source_mtime") != stat.st_mtime:
+                    existing_entry["source_mtime"] = stat.st_mtime
+                    updated = True
+                if existing_entry.get("source_size") != stat.st_size:
+                    existing_entry["source_size"] = stat.st_size
+                    updated = True
+                if existing_entry.get("source") != str(wav):
+                    existing_entry["source"] = str(wav)
+                    updated = True
+                if updated:
+                    normalize_catalog_entry(existing_entry)
+                    catalog[sha] = existing_entry
+                    path_cache[str(wav)] = existing_entry
+                    updated_existing += 1
+                log(f"skip existing {wav} (already ingested)")
+                continue
+            new_project_files.append((wav, stat, sha))
+        if not new_project_files:
             continue
-        ts = dt.datetime.fromtimestamp(stat.st_mtime)
-        day = ts.strftime("%Y/%m-%d")
-        slug = slugify(wav.stem)
-        base_name = f"{ts.strftime('%Y%m%d_%H%M%S')}_{slug}"
-        wav_dest = args.dest / "incoming" / day / f"{base_name}.wav"
-        mp3_dest = args.dest / "mp3" / day / f"{base_name}.mp3"
-        copied = copy_file(wav, wav_dest, args.dry_run)
-        mp3_path = None
-        if ffmpeg_available:
-            try:
-                mp3_path = convert_to_mp3(args.ffmpeg, copied, mp3_dest, args.dry_run)
-            except Exception as exc:  # pylint: disable=broad-except
-                print(f"[zoom-sync] mp3 conversion failed for {copied}: {exc}", file=sys.stderr)
-        recorded_at = dt.datetime.fromtimestamp(stat.st_mtime)
-        project_path, project_folder = derive_project_metadata(str(wav))
-        derived_tags: List[str] = []
-        if project_folder:
-            derived_tags.append(f"project:{project_folder}")
-        name_upper = wav.name.upper()
-        if "BOUNCE" in name_upper:
-            derived_tags.append("bounce")
-        elif "TRACK" in name_upper:
-            derived_tags.append("track")
-        existing = catalog.get(sha, {})
-        entry_data = dict(existing)
-        entry_data["sha256"] = sha
-        entry_data["source"] = str(wav)
-        entry_data["copied_to"] = str(copied)
-        if mp3_path:
-            entry_data["mp3"] = str(mp3_path)
-        entry_data["recorded_date"] = day
-        entry_data["recorded_at"] = recorded_at.isoformat()
-        entry_data["ingested_at"] = dt.datetime.now().isoformat()
-        entry_data["base_name"] = base_name
-        entry_data["source_mtime"] = stat.st_mtime
-        entry_data["source_size"] = stat.st_size
-        entry_data["recorder_file"] = wav.name
-        if project_path:
-            entry_data["project_path"] = project_path
-        if project_folder:
-            entry_data["project_folder"] = project_folder
-            entry_data["recorder_project"] = project_folder
-        if ffprobe_binary and not args.dry_run:
-            metadata = probe_audio(ffprobe_binary, copied)
-            entry_data.update(metadata)
-        entry_data["tags"] = merge_tags(existing.get("tags"), derived_tags)
-        if existing.get("title"):
-            entry_data["title"] = existing["title"]
-        if existing.get("status"):
-            entry_data["status"] = existing["status"]
-        normalize_catalog_entry(entry_data)
-        catalog[sha] = entry_data
-        path_cache[str(wav)] = entry_data
-        new_entries += 1
+        log(f"syncing project {idx}/{len(project_names)}: {project} ({len(new_project_files)} files)")
+        notify("Zoom ingest", f"Syncing project {idx}/{len(project_names)}: {project}")
+        for wav, stat, sha in new_project_files:
+            ts = dt.datetime.fromtimestamp(stat.st_mtime)
+            day = ts.strftime("%Y/%m-%d")
+            slug = slugify(wav.stem)
+            base_name = f"{ts.strftime('%Y%m%d_%H%M%S')}_{slug}"
+            wav_dest = args.dest / "incoming" / day / f"{base_name}.wav"
+            mp3_dest = args.dest / "mp3" / day / f"{base_name}.mp3"
+            copied = copy_file(wav, wav_dest, args.dry_run)
+            mp3_path = None
+            if ffmpeg_available:
+                try:
+                    mp3_path = convert_to_mp3(args.ffmpeg, copied, mp3_dest, args.dry_run)
+                except Exception as exc:  # pylint: disable=broad-except
+                    print(f"[zoom-sync] mp3 conversion failed for {copied}: {exc}", file=sys.stderr)
+            recorded_at = dt.datetime.fromtimestamp(stat.st_mtime)
+            project_path, project_folder = derive_project_metadata(str(wav))
+            derived_tags: List[str] = []
+            if project_folder:
+                derived_tags.append(f"project:{project_folder}")
+            name_upper = wav.name.upper()
+            if "BOUNCE" in name_upper:
+                derived_tags.append("bounce")
+            elif "TRACK" in name_upper:
+                derived_tags.append("track")
+            existing = catalog.get(sha, {})
+            entry_data = dict(existing)
+            entry_data["sha256"] = sha
+            entry_data["source"] = str(wav)
+            entry_data["copied_to"] = str(copied)
+            if mp3_path:
+                entry_data["mp3"] = str(mp3_path)
+            entry_data["recorded_date"] = day
+            entry_data["recorded_at"] = recorded_at.isoformat()
+            entry_data["ingested_at"] = dt.datetime.now().isoformat()
+            entry_data["base_name"] = base_name
+            entry_data["source_mtime"] = stat.st_mtime
+            entry_data["source_size"] = stat.st_size
+            entry_data["recorder_file"] = wav.name
+            if project_path:
+                entry_data["project_path"] = project_path
+            if project_folder:
+                entry_data["project_folder"] = project_folder
+                entry_data["recorder_project"] = project_folder
+            if ffprobe_binary and not args.dry_run:
+                metadata = probe_audio(ffprobe_binary, copied)
+                entry_data.update(metadata)
+            entry_data["tags"] = merge_tags(existing.get("tags"), derived_tags)
+            if existing.get("title"):
+                entry_data["title"] = existing["title"]
+            if existing.get("status"):
+                entry_data["status"] = existing["status"]
+            normalize_catalog_entry(entry_data)
+            catalog[sha] = entry_data
+            path_cache[str(wav)] = entry_data
+            new_entries += 1
     if new_entries:
         if args.dry_run:
             log(f"dry run complete ({new_entries} new files detected)")
@@ -743,7 +813,10 @@ def ingest(args: argparse.Namespace, catalog: Dict[str, Dict]) -> None:
             persist_catalog(args, catalog)
             log(f"ingested {new_entries} new file(s); index updated at {args.log}")
             notify("Zoom ingest", f"Copied {new_entries} new track(s)")
-    else:
+    elif updated_existing and not args.dry_run:
+        persist_catalog(args, catalog)
+        log(f"updated {updated_existing} catalog entry mtime/size fields")
+    elif had_candidates:
         log("no new files detected")
         notify("Zoom ingest", "No new tracks detected")
     missing = missing_titles(catalog)
@@ -770,71 +843,74 @@ def main() -> None:
     if merge_legacy_titles(catalog, args.titles):
         persist_catalog(args, catalog)
 
-    if args.title:
-        updated = assign_titles(catalog, args.title)
-        if updated:
-            persist_catalog(args, catalog)
-            log(f"updated titles for {len(updated)} recording(s)")
+    args.run_log.parent.mkdir(parents=True, exist_ok=True)
+    with args.run_log.open("a", encoding="utf-8") as handle, redirect_stdout(handle), redirect_stderr(handle):
+        log(f"run started at {dt.datetime.now().isoformat()}")
+        if args.title:
+            updated = assign_titles(catalog, args.title)
+            if updated:
+                persist_catalog(args, catalog)
+                log(f"updated titles for {len(updated)} recording(s)")
+                if not args.no_title_file:
+                    write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
+            else:
+                log("no catalog entries matched the provided titles")
+            return
+
+        if args.status:
+            updated = assign_statuses(catalog, args.status)
+            if updated:
+                persist_catalog(args, catalog)
+                log(f"updated status for {len(updated)} recording(s)")
+            else:
+                log("no catalog entries matched the provided status assignments")
+            return
+
+        if args.tag:
+            updated = assign_tags(catalog, args.tag, remove=False)
+            if updated:
+                persist_catalog(args, catalog)
+                log(f"tagged {len(updated)} recording(s)")
+            else:
+                log("no catalog entries matched the provided tags")
+            return
+
+        if args.untag:
+            updated = assign_tags(catalog, args.untag, remove=True)
+            if updated:
+                persist_catalog(args, catalog)
+                log(f"untagged {len(updated)} recording(s)")
+            else:
+                log("no catalog entries matched the provided tags")
+            return
+
+        if args.list or args.list_status or args.list_limit:
+            list_catalog(catalog, args.list_status, args.list_limit)
+            return
+
+        if args.list_missing_titles:
+            list_missing(catalog)
+            return
+
+        if args.refresh_titles:
             if not args.no_title_file:
                 write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
-        else:
-            log("no catalog entries matched the provided titles")
-        return
+            else:
+                log("--refresh-titles requested but --no-title-file also set; nothing to do")
+            return
 
-    if args.status:
-        updated = assign_statuses(catalog, args.status)
-        if updated:
-            persist_catalog(args, catalog)
-            log(f"updated status for {len(updated)} recording(s)")
-        else:
-            log("no catalog entries matched the provided status assignments")
-        return
+        if args.auto_title_missing:
+            filled = fill_missing_titles(catalog)
+            if filled:
+                persist_catalog(args, catalog)
+                log(f"auto-filled titles for {filled} recording(s)")
+                if not args.no_title_file:
+                    write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
+            else:
+                log("no missing titles detected; nothing to auto-fill")
+            return
 
-    if args.tag:
-        updated = assign_tags(catalog, args.tag, remove=False)
-        if updated:
-            persist_catalog(args, catalog)
-            log(f"tagged {len(updated)} recording(s)")
-        else:
-            log("no catalog entries matched the provided tags")
-        return
-
-    if args.untag:
-        updated = assign_tags(catalog, args.untag, remove=True)
-        if updated:
-            persist_catalog(args, catalog)
-            log(f"untagged {len(updated)} recording(s)")
-        else:
-            log("no catalog entries matched the provided tags")
-        return
-
-    if args.list or args.list_status or args.list_limit:
-        list_catalog(catalog, args.list_status, args.list_limit)
-        return
-
-    if args.list_missing_titles:
-        list_missing(catalog)
-        return
-
-    if args.refresh_titles:
-        if not args.no_title_file:
-            write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
-        else:
-            log("--refresh-titles requested but --no-title-file also set; nothing to do")
-        return
-
-    if args.auto_title_missing:
-        filled = fill_missing_titles(catalog)
-        if filled:
-            persist_catalog(args, catalog)
-            log(f"auto-filled titles for {filled} recording(s)")
-            if not args.no_title_file:
-                write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
-        else:
-            log("no missing titles detected; nothing to auto-fill")
-        return
-
-    ingest(args, catalog)
+        ingest(args, catalog)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,21 @@
 [Unit]
 Description=Mount Zoom R4 SD card (user scope)
 After=paths.target
+StartLimitIntervalSec=0
+StartLimitBurst=0
 
 [Service]
 Type=oneshot
-RemainAfterExit=yes
-ExecStart=/usr/bin/bash -c 'mkdir -p /media/joe/R4_SD && (mountpoint -q /media/joe/R4_SD || /usr/bin/udisksctl mount --block-device /dev/disk/by-uuid/6970-2CEF --no-user-interaction)'
-ExecStop=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF'
+ExecStart=/usr/bin/bash -c '\
+  target=/media/joe/R4_SD; \
+  mkdir -p /media/joe; \
+  if mountpoint -q "$target"; then exit 0; fi; \
+  if [ -e "$target" ] && ! mountpoint -q "$target"; then rm -rf "$target"; fi; \
+  output=$(/usr/bin/udisksctl mount --no-user-interaction --block-device /dev/disk/by-uuid/6970-2CEF); \
+  status=$?; \
+  echo "$output"; \
+  if [ $status -ne 0 ]; then exit $status; fi; \
+  mount_point=$(/usr/bin/lsblk -no MOUNTPOINT /dev/disk/by-uuid/6970-2CEF | head -n1); \
+  if [ -n "$mount_point" ] && [ "$mount_point" != "$target" ]; then ln -sfn "$mount_point" "$target"; fi; \
+'
+ExecStartPost=/home/joe/code/futon0/scripts/zoom_mount_trigger.sh

@@ -1,10 +1,25 @@
 [Unit]
 Description=Copy Zoom R4 tracks and update titles (user scope)
-After=zoom-mount.service
-Requires=zoom-mount.service
+StartLimitIntervalSec=0
+StartLimitBurst=0
 
 [Service]
 Type=oneshot
 WorkingDirectory=/home/joe/code/futon0
-ExecStart=/usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source /media/joe/R4_SD --dest /home/joe/media/zoomr4
-ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF'
+ExecStart=/usr/bin/bash -c '\
+  source=$(/usr/bin/lsblk -no MOUNTPOINT /dev/disk/by-uuid/6970-2CEF | head -n1); \
+  if [ -z "$source" ]; then \
+    for candidate in /media/%u/R4_SD*/R4_Project; do \
+      if [ -d "$candidate" ]; then \
+        source=$(/usr/bin/dirname "$candidate"); \
+        break; \
+      fi; \
+    done; \
+  fi; \
+  if [ -z "$source" ]; then \
+    echo "zoom-sync: mount point not found"; \
+    exit 1; \
+  fi; \
+  exec /usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source "$source" --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2; \
+'
+ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF || true'
