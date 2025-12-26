@@ -89,6 +89,10 @@ def parse_args() -> argparse.Namespace:
                         help="Skip MP3 generation even if ffmpeg is present")
     parser.add_argument("--dry-run", action="store_true",
                         help="Report actions without copying or converting")
+    parser.add_argument("--delete-from-recorder", action="store_true",
+                        help="Delete recorder files whose catalog status is archive or trash")
+    parser.add_argument("--rename-hold", action="store_true",
+                        help="Rename recorder files for hold entries using the catalog title")
     parser.add_argument("--pattern", default="*.WAV",
                         help="Glob for files to ingest (default: %(default)s)")
     parser.add_argument("--title-file-name", default=DEFAULT_TITLE_FILE,
@@ -442,6 +446,22 @@ def unique_path(path: Path) -> Path:
         candidate = path.with_name(f"{path.stem}-{counter}{path.suffix}")
         counter += 1
     return candidate
+
+
+def safe_recorder_filename(title: str, suffix: str) -> str:
+    name = title.strip()
+    if not name:
+        return ""
+    name = name.replace("/", "-")
+    if os.altsep:
+        name = name.replace(os.altsep, "-")
+    # Keep filenames FAT-safe: ASCII only, strip control chars and reserved symbols.
+    name = name.replace("\u2014", "-").replace("\u2013", "-")
+    name = name.encode("ascii", "ignore").decode("ascii")
+    name = re.sub(r"[<>:\"/\\\\|?*]", "", name)
+    name = re.sub(r"[\x00-\x1f]", "", name)
+    name = re.sub(r"\s+", " ", name).strip(" .")
+    return f"{name}{suffix}"
 
 
 def copy_file(src: Path, dest: Path, dry_run: bool) -> Path:
@@ -847,6 +867,128 @@ def list_missing(catalog: Dict[str, Dict]) -> None:
         print(f"  {sha} :: {base}")
 
 
+def rename_hold_titles(args: argparse.Namespace, catalog: Dict[str, Dict]) -> int:
+    if not args.source.exists():
+        log(f"recorder not mounted at {args.source}; skipping renames")
+        return 0
+    source_root = args.source.resolve()
+    updated = 0
+    for entry in catalog.values():
+        status = entry.get("status") or DEFAULT_STATUS
+        if status != "hold":
+            continue
+        title = entry.get("title")
+        if not title:
+            continue
+        src = entry.get("source")
+        if not src:
+            continue
+        try:
+            src_path = Path(src).resolve()
+        except OSError:
+            continue
+        if source_root not in src_path.parents:
+            continue
+        if not src_path.is_file():
+            continue
+        suffix = src_path.suffix or ".WAV"
+        new_name = safe_recorder_filename(title, suffix)
+        if not new_name:
+            continue
+        if src_path.name == new_name:
+            continue
+        target = src_path.with_name(new_name)
+        if target.exists() and target != src_path:
+            target = unique_path(target)
+        if args.dry_run:
+            log(f"would rename {src_path.name} → {target.name}")
+            continue
+        try:
+            src_path.rename(target)
+            entry["source"] = str(target)
+            entry["recorder_file"] = target.name
+            normalize_catalog_entry(entry)
+            updated += 1
+            log(f"renamed {src_path.name} → {target.name}")
+        except OSError as exc:
+            print(f"[zoom-sync] failed to rename {src_path}: {exc}", file=sys.stderr)
+    return updated
+
+
+def delete_from_recorder(args: argparse.Namespace, catalog: Dict[str, Dict]) -> int:
+    if not args.source.exists():
+        log(f"recorder not mounted at {args.source}; skipping deletions")
+        return 0
+    source_root = args.source.resolve()
+    targets: List[Path] = []
+    for entry in catalog.values():
+        status = entry.get("status") or DEFAULT_STATUS
+        if status not in {"archive", "trash"}:
+            continue
+        src = entry.get("source")
+        if not src:
+            continue
+        try:
+            src_path = Path(src).resolve()
+        except OSError:
+            continue
+        if source_root not in src_path.parents:
+            continue
+        if not src_path.is_file():
+            continue
+        targets.append(src_path)
+    if not targets:
+        log("no recorder files eligible for deletion")
+        return 0
+    deleted = 0
+    for target in sorted(set(targets)):
+        if args.dry_run:
+            log(f"would delete {target}")
+            continue
+        try:
+            target.unlink()
+            log(f"deleted {target}")
+            deleted += 1
+        except OSError as exc:
+            print(f"[zoom-sync] failed to delete {target}: {exc}", file=sys.stderr)
+    return deleted
+
+
+def cleanup_empty_projects(args: argparse.Namespace) -> int:
+    if not args.source.exists():
+        return 0
+    projects_root = args.source / "R4_Project"
+    if not projects_root.exists():
+        return 0
+    removed = 0
+    for project_dir in sorted(projects_root.iterdir()):
+        if not project_dir.is_dir():
+            continue
+        try:
+            contents = list(project_dir.iterdir())
+        except OSError:
+            continue
+        has_wav = any(item.is_file() and item.suffix.lower() == ".wav" for item in contents)
+        if has_wav:
+            continue
+        if args.dry_run:
+            log(f"would remove project with no wavs {project_dir}")
+            continue
+        for item in contents:
+            if item.is_file():
+                try:
+                    item.unlink()
+                except OSError as exc:
+                    print(f"[zoom-sync] failed to remove {item}: {exc}", file=sys.stderr)
+        try:
+            project_dir.rmdir()
+            removed += 1
+            log(f"removed project with no wavs {project_dir}")
+        except OSError as exc:
+            print(f"[zoom-sync] failed to remove {project_dir}: {exc}", file=sys.stderr)
+    return removed
+
+
 def main() -> None:
     args = parse_args()
     catalog = load_index(args.log)
@@ -921,6 +1063,22 @@ def main() -> None:
             return
 
         ingest(args, catalog)
+        renamed = 0
+        if args.rename_hold:
+            renamed = rename_hold_titles(args, catalog)
+            if renamed:
+                persist_catalog(args, catalog)
+                if not args.no_title_file:
+                    write_title_manifest(args.source, catalog, args.title_file_name, args.dry_run, args.title_manifest_status)
+            summary = f"{'Dry run: ' if args.dry_run else ''}renamed {renamed} hold track(s)"
+            notify("Zoom rename", summary)
+        if args.delete_from_recorder:
+            deleted = delete_from_recorder(args, catalog)
+            summary = f"{'Dry run: ' if args.dry_run else ''}deleted {deleted} track(s)"
+            notify("Zoom delete", summary)
+            removed_projects = cleanup_empty_projects(args)
+            summary = f"{'Dry run: ' if args.dry_run else ''}removed {removed_projects} empty project(s)"
+            notify("Zoom cleanup", summary)
 
 
 if __name__ == "__main__":

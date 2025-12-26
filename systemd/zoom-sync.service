@@ -11,5 +11,5 @@ Group=joe
 Environment=DISPLAY=:0
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-ExecStart=/usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source /media/joe/R4_SD --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2
+ExecStart=/usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source /media/joe/R4_SD --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2 --rename-hold --delete-from-recorder
 ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && umount -l /media/joe/R4_SD || true'
