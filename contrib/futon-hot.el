@@ -42,11 +42,49 @@ Each entry can be absolute or relative to `futon-hot-root'."
   :type 'boolean
   :group 'futon-hot)
 
+(defcustom futon-hot-keymap-reload-enabled t
+  "When non-nil, reset keymaps defined in hot-reloaded files before eval."
+  :type 'boolean
+  :group 'futon-hot)
+
 (defvar my-chatgpt-shell--hot-reload-enabled nil)
 (defvar my-chatgpt-shell--hot-reload-watches nil)
 (defvar my-chatgpt-shell--hot-reload-pending nil)
 (defvar my-chatgpt-shell--hot-reload-timer nil)
 (defvar my-chatgpt-shell--last-hot-reload nil)
+
+(defvar futon-hot--keymap-index (make-hash-table :test 'equal)
+  "Map of filename -> list of mode map symbols seen in that file.")
+
+(defun futon-hot--buffer-keymap-symbols (&optional buffer)
+  "Return a list of mode map symbols defined in BUFFER."
+  (with-current-buffer (or buffer (current-buffer))
+    (let ((symbols '())
+          (seen (make-hash-table :test 'equal)))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward
+                "(def\\(var\\|const\\|var-keymap\\)\\_>\\s-*\\([[:alnum:]-]+-mode-map\\)\\_>"
+                nil t)
+          (let* ((name (match-string 2))
+                 (sym (intern name)))
+            (unless (gethash sym seen)
+              (puthash sym t seen)
+              (push sym symbols)))))
+      (nreverse symbols))))
+
+(defun futon-hot--remember-keymaps (file buffer)
+  (when (and file futon-hot-keymap-reload-enabled)
+    (puthash file (futon-hot--buffer-keymap-symbols buffer) futon-hot--keymap-index)))
+
+(defun futon-hot--reset-keymaps (file &optional buffer)
+  "Reset keymaps defined in FILE or BUFFER before re-eval."
+  (when (and file futon-hot-keymap-reload-enabled)
+    (let ((symbols (or (and buffer (futon-hot--buffer-keymap-symbols buffer))
+                       (gethash file futon-hot--keymap-index))))
+      (dolist (sym symbols)
+        (when (and (boundp sym) (keymapp (symbol-value sym)))
+          (ignore-errors (makunbound sym)))))))
 
 (defun my-chatgpt-shell--hot-reload-feature-available-p ()
   (require 'filenotify nil t))
@@ -129,7 +167,9 @@ Each entry can be absolute or relative to `futon-hot-root'."
             (if (derived-mode-p 'emacs-lisp-mode)
                 (condition-case err
                     (progn
+                     (futon-hot--reset-keymaps file (current-buffer))
                       (eval-buffer)
+                      (futon-hot--remember-keymaps file (current-buffer))
                       (setq my-chatgpt-shell--last-hot-reload (current-time))
                       (message "Stack hot reload: evaluated %s"
                                (file-name-nondirectory file)))

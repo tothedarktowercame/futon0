@@ -9,25 +9,33 @@
 ;; Zoom R4 ingest metadata lives in storage (override here for local tools).
 (setenv "ZOOM_SYNC_DEST" "/home/joe/code/storage/zoomr4")
 (setenv "ZOOM_SYNC_META_DIR" "/home/joe/code/storage/zoomr4/meta")
+(setq arxana-media-index-path "/home/joe/code/storage/zoomr4/meta/zoom_sync_index.json")
+
+(require 'futon-hot)
 
 ;; Hot reload defaults (override as needed).
 (setq my-chatgpt-shell-hot-reload-files
       '("../futon3/contrib/aob-chatgpt.el"
         "../futon4/dev/arxana-patterns.el"
+        "../futon4/dev/arxana-media.el"
+        "../futon4/dev/arxana-store.el"
         "../futon4/dev/arxana-docbook.el"
         "../futon4/dev/arxana-lab.el"
 	"../futon0/contrib/futon-config.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
+(my-chatgpt-shell-hot-reload-enable)
+
 ;; Stack/Arxana frame naming (used by sway rules).
 (setq my-chatgpt-shell-stack-frame-name "Stack HUD")
-(setq my-chatgpt-shell-stack-frame-fullscreen t)
+(setq my-chatgpt-shell-stack-frame-fullscreen nil)
+
 (setq arxana-patterns-frame-name "Arxana")
 (setq arxana-patterns-frame-fullscreen nil)
 
 ;; Lab browser root (keeps lab views working across frames).
-(setq arxana-lab-root "/home/joe/code/futon4/lab")
+(setq arxana-lab-root "/home/joe/code/storage/lab")
 
 ;;; Set up tatami — my custom integration layer between local futon stack and ChatGPT
 
@@ -45,6 +53,14 @@
 (setq tatami-verbose nil)
 (setq tatami-start-command (list my-tatami--clojure "-M:server"))
 (setq tatami-startup-wait 20)
+
+;;; Set up Futon4
+
+(setq futon4-base-url "http://localhost:8080/api/alpha")
+(setq futon4-enable-sync t)
+
+(load-file "~/code/futon4/dev/bootstrap.el")
+(arxana-load)
 
 (provide 'futon-config)
 
