@@ -7,18 +7,16 @@ StartLimitBurst=0
 Type=oneshot
 WorkingDirectory=/home/joe/code/futon0
 ExecStart=/usr/bin/bash -c '\
-  source=$(/usr/bin/lsblk -no MOUNTPOINT /dev/disk/by-uuid/6970-2CEF | head -n1); \
+  source=""; \
+  for candidate in /media/%u/R4_SD*/R4_Project; do \
+    if [ -d "$candidate" ]; then \
+      source=$(/usr/bin/dirname "$candidate"); \
+      break; \
+    fi; \
+  done; \
   if [ -z "$source" ]; then \
-    for candidate in /media/%u/R4_SD*/R4_Project; do \
-      if [ -d "$candidate" ]; then \
-        source=$(/usr/bin/dirname "$candidate"); \
-        break; \
-      fi; \
-    done; \
-  fi; \
-  if [ -z "$source" ]; then \
-    echo "zoom-sync: mount point not found"; \
-    exit 1; \
+    echo "zoom-sync: mount point not found; skipping"; \
+    exit 0; \
   fi; \
   exec /usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source "$source" --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2 --rename-hold --delete-from-recorder; \
 '
