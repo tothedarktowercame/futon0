@@ -6,6 +6,7 @@
 ;;; Code:
 
 (require 'stack-render)
+(require 'stack-hud)
 
 (defconst futon0--futon3-bridge-path
   "/home/joe/code/futon3/contrib/futon3-bridge.el"
@@ -24,6 +25,7 @@
     (if stack
         (progn
           (stack-hud--render-context stack)
+          (stack-hud-log-snapshot stack)
           (when-let ((win (get-buffer-window my-chatgpt-shell-stack-buffer-name t)))
             (select-window win)
             (raise-frame (window-frame win))))

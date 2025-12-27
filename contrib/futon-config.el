@@ -6,6 +6,9 @@
 ;;; Code:
 (add-to-list 'load-path "/home/joe/code/futon0/contrib/")
 
+;; Stack HUD entry point.
+(require 'stack-entry)
+
 ;; Zoom R4 ingest metadata lives in storage (override here for local tools).
 (setenv "ZOOM_SYNC_DEST" "/home/joe/code/storage/zoomr4")
 (setenv "ZOOM_SYNC_META_DIR" "/home/joe/code/storage/zoomr4/meta")
@@ -21,7 +24,10 @@
         "../futon4/dev/arxana-store.el"
         "../futon4/dev/arxana-docbook.el"
         "../futon4/dev/arxana-lab.el"
-	"../futon0/contrib/futon-config.el"))
+        "../futon0/contrib/futon-config.el"
+        "../futon0/contrib/stack-entry.el"
+        "../futon0/contrib/stack-hud.el"
+        "../futon0/contrib/stack-render.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 

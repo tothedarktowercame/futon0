@@ -29,6 +29,18 @@ The value is passed to `display-buffer-in-side-window'."
   :type 'boolean
   :group 'tatami-integration)
 
+(defcustom stack-hud-devmap-root "/home/joe/code/futon3"
+  "Root directory for devmap files referenced by boundary entries."
+  :type 'directory
+  :group 'tatami-integration)
+
+(defcustom stack-hud-log-dir "/home/joe/code/storage/futon0/vitality/stack-hud"
+  "Directory where Stack HUD snapshots are logged."
+  :type 'directory
+  :group 'tatami-integration)
+
+(defvar stack-hud--last-log-day nil)
+
 (defun my-chatgpt-shell--stack-status-symbol (value)
   (cond
    ((symbolp value) value)
@@ -86,6 +98,29 @@ The value is passed to `display-buffer-in-side-window'."
               (plist-get data :futon_activity))
           (error nil))))))
 
+(defun my-chatgpt-shell--stack-zoomr4-status-counts ()
+  (let ((path (and (boundp 'arxana-media-index-path) arxana-media-index-path)))
+    (when (and path (file-readable-p path))
+      (with-temp-buffer
+        (insert-file-contents path)
+        (condition-case nil
+            (let* ((json-object-type 'plist)
+                   (json-array-type 'list)
+                   (json-key-type 'symbol)
+                   (data (if (fboundp 'json-parse-buffer)
+                             (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
+                           (json-read)))
+                   (entries (plist-get data :entries))
+                   (counts (list (cons "hold" 0)
+                                 (cons "archive" 0)
+                                 (cons "trash" 0))))
+              (dolist (entry entries)
+                (let ((status (or (plist-get entry :status) "hold")))
+                  (when (assoc status counts)
+                    (setcdr (assoc status counts) (1+ (cdr (assoc status counts)))))))
+              counts)
+          (error nil))))))
+
 (defun my-chatgpt-shell--stack-format-timestamp (ms)
   (when (numberp ms)
     (format-time-string "%H:%M" (seconds-to-time (/ ms 1000)))))
@@ -129,7 +164,8 @@ The value is passed to `display-buffer-in-side-window'."
 
 (defun my-chatgpt-shell--insert-stack-vitality (vitality)
   (let ((filesystem (plist-get vitality :filesystem))
-        (tatami (plist-get vitality :tatami)))
+        (tatami (plist-get vitality :tatami))
+        (zoomr4-status (my-chatgpt-shell--stack-zoomr4-status-counts)))
     (when (or filesystem tatami)
       (insert "  Vitality:\n")
       (dolist (entry filesystem)
@@ -138,21 +174,28 @@ The value is passed to `display-buffer-in-side-window'."
                (top (my-chatgpt-shell--stack-top-children (plist-get entry :top-children)))
                (imports (plist-get entry :imports))
                (import-total (and imports (plist-get imports :total)))
+               (hold-text (if (and (string= label "zoomr4") zoomr4-status)
+                              (let ((hold (cdr (assoc "hold" zoomr4-status)))
+                                    (trash (cdr (assoc "trash" zoomr4-status))))
+                                (concat
+                                 (if hold (format " | hold %s" hold) "")
+                                 (if trash (format " | trash %s" trash) "")))
+                            ""))
                (import-text (if (and import-total (> import-total 0))
-                                (format " | %s imported" import-total)
+                                (format " | %s processed" import-total)
                               "")))
-          (insert (format "    %s: %d files%s%s\n"
+          (insert (format "    %s: %d recent%s%s\n"
                           label
                           recent
                           (if top (format " (%s)" top) "")
-                          import-text))
+                          (concat hold-text import-text)))
           (when-let* ((recent-imports (and imports (plist-get imports :recent))))
             (dolist (item (seq-take recent-imports 3))
               (let ((title (or (plist-get item :title) "untitled"))
                     (recorded (plist-get item :recorded_date)))
                 (insert (format "      • %s%s\n"
                                 title
-                                (if recorded (format " (%s)" recorded) "")))))))
+                                (if recorded (format " (%s)" recorded) ""))))))))
       (when tatami
         (if (plist-get tatami :exists)
             (insert (format "    Tatami: last %s (%s)%s\n"
@@ -161,7 +204,7 @@ The value is passed to `display-buffer-in-side-window'."
                              (plist-get tatami :hours-since))
                             (if (plist-get tatami :gap-warning) " ⚠️" "")))
           (insert "    Tatami: log missing\n")))
-      (insert "\n")))))
+      (insert "\n"))))
 
 (defun my-chatgpt-shell--insert-stack-git (git)
   (when git
@@ -198,16 +241,44 @@ The value is passed to `display-buffer-in-side-window'."
                         'action (lambda (_btn)
                                   (my-chatgpt-shell--stack-open-lab-files kind)))))
 
+(defun stack-hud--open-devmap (path title)
+  (let* ((full (if (file-name-absolute-p path)
+                   path
+                 (expand-file-name path stack-hud-devmap-root))))
+    (if (file-readable-p full)
+        (progn
+          (find-file-other-window full)
+          (goto-char (point-min))
+          (when (search-forward title nil t)
+            (beginning-of-line)))
+      (message "Devmap not found: %s" full))))
+
 (defun my-chatgpt-shell--insert-stack-boundary (boundary)
   (let* ((critical (plist-get boundary :critical))
          (futons (plist-get boundary :futons)))
     (unless (seq-empty-p critical)
-      (insert "  Boundary gaps:\n")
+      (let* ((milestone (plist-get boundary :milestone-prototype))
+             (label (if milestone
+                        (format "  Boundary gaps (<= Prototype %s):\n" milestone)
+                      "  Boundary gaps:\n")))
+        (insert label))
       (dolist (entry (seq-take critical 4))
         (insert (format "    %s missing %s (last %s)\n"
                         (or (plist-get entry :id) "f?")
-                        (or (plist-get entry :missing_evidence) 0)
-                        (or (plist-get entry :last_modified) "n/a"))))
+                        (format "%s evidence blocks" (or (plist-get entry :missing_evidence) 0))
+                        (or (plist-get entry :last_modified) "n/a")))
+        (when-let ((titles (plist-get entry :missing_evidence_titles)))
+          (let ((path (plist-get entry :path)))
+            (dolist (title titles)
+              (insert "      • ")
+              (if path
+                  (insert-text-button title
+                                      'follow-link t
+                                      'help-echo "Open missing evidence block"
+                                      'action (lambda (_btn)
+                                                (stack-hud--open-devmap path title)))
+                (insert title))
+              (insert "\n")))))
       (insert "\n"))
     (when (seqp futons)
       (let ((rows (seq-filter (lambda (entry)
@@ -374,6 +445,92 @@ The value is passed to `display-buffer-in-side-window'."
                       (push (make-string gap ?\s) row-parts))))
                 (aset rows row (apply #'concat (nreverse row-parts)))))
             (concat (string-join (append rows nil) "\n") "\n")))))))
+
+(defun stack-hud--today-string ()
+  (format-time-string "%Y-%m-%d"))
+
+(defun stack-hud--log-path (day)
+  (expand-file-name (format "%s.jsonl" day) stack-hud-log-dir))
+
+(defun stack-hud--summary-path (day)
+  (expand-file-name (format "%s.summary.json" day) stack-hud-log-dir))
+
+(defun stack-hud--jsonify (value)
+  (cond
+   ((keywordp value) (substring (symbol-name value) 1))
+   ((symbolp value) (symbol-name value))
+   ((hash-table-p value)
+    (let (items)
+      (maphash (lambda (k v)
+                 (push (cons (stack-hud--jsonify k) (stack-hud--jsonify v)) items))
+               value)
+      (nreverse items)))
+   ((and (listp value) (car value) (keywordp (car value)))
+    (let (items)
+      (while value
+        (let ((key (pop value))
+              (val (pop value)))
+          (push (cons (stack-hud--jsonify key) (stack-hud--jsonify val)) items)))
+      (nreverse items)))
+   ((listp value)
+    (mapcar #'stack-hud--jsonify value))
+   (t value)))
+
+(defun stack-hud--decode-json (line)
+  (if (fboundp 'json-parse-string)
+      (json-parse-string line :object-type 'alist :array-type 'list :null-object nil :false-object nil)
+    (let ((json-object-type 'alist)
+          (json-array-type 'list)
+          (json-key-type 'symbol))
+      (json-read-from-string line))))
+
+(defun stack-hud--compact-day (day)
+  (let* ((raw (stack-hud--log-path day))
+         (summary (stack-hud--summary-path day)))
+    (when (file-exists-p raw)
+      (with-temp-buffer
+        (insert-file-contents raw)
+        (let* ((lines (seq-filter (lambda (line) (not (string-empty-p line)))
+                                  (split-string (buffer-string) "\n")))
+               (first-line (car lines))
+               (last-line (car (last lines))))
+          (when (and first-line last-line)
+            (let* ((first (stack-hud--decode-json first-line))
+                   (last (stack-hud--decode-json last-line))
+                   (payload `(("date" . ,day)
+                              ("first" . ,first)
+                              ("last" . ,last))))
+              (make-directory stack-hud-log-dir t)
+              (with-temp-file summary
+                (insert (json-encode payload)))))
+          (delete-file raw))))))
+
+(defun stack-hud--maybe-compact (today)
+  (when (file-directory-p stack-hud-log-dir)
+    (dolist (file (directory-files stack-hud-log-dir t "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\.jsonl\\'"))
+      (let ((day (file-name-base file)))
+        (unless (string= day today)
+          (let ((summary (stack-hud--summary-path day)))
+            (if (file-exists-p summary)
+                (ignore-errors (delete-file file))
+              (stack-hud--compact-day day))))))))
+
+(defun stack-hud-log-snapshot (stack)
+  "Append a Stack HUD snapshot and compact the previous day on date rollover."
+  (condition-case err
+      (let* ((today (stack-hud--today-string))
+             (payload `(("timestamp" . ,(format-time-string "%Y-%m-%dT%H:%M:%S%z"))
+                        ("stack" . ,(stack-hud--jsonify stack))))
+             (log-path (stack-hud--log-path today)))
+        (stack-hud--maybe-compact today)
+        (make-directory stack-hud-log-dir t)
+        (with-temp-buffer
+          (insert (json-encode payload) "\n")
+          (append-to-file (point-min) (point-max) log-path))
+        (setq stack-hud--last-log-day today))
+    (error
+     (message "Stack HUD log failed: %s" (error-message-string err)))))
+
 (provide 'stack-hud)
 
 ;;; stack-hud.el ends here
