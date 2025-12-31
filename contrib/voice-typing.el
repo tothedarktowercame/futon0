@@ -8,7 +8,7 @@
 
 (require 'subr-x)
 
-(defcustom my-chatgpt-shell-voice-command "/home/joe/opt/voice-typing-linux/voice --layout dvorak"
+(defcustom my-chatgpt-shell-voice-command "/home/joe/opt/voice-typing-linux/voice --layout dvorak --enter-keyword rocket"
   "Command used to start the Futon voice typing interface.
 Value can be a string (executed via the user shell) or a list of program
 and arguments passed directly to `start-process'."
