@@ -66,6 +66,8 @@
     "Hot reload status for Stack tooling. Toggle to enable/disable watchers.")
    ((string-prefix-p "  Voice typing:" line)
     "Voice typing status and controls for the Stack HUD.")
+   ((string-prefix-p "  Pattern sync:" line)
+    "Futon3→Futon1 pattern sync status, diff count, and sync action.")
    ((string-prefix-p "  Focus/Profile:" line)
     "Current focus anchors and profile summary from Tatami.")
    ((string-prefix-p "    Anchors:" line)
@@ -113,9 +115,13 @@
     "No recent mtimes across futon0–futon7 within the 7-day window. The window is fixed at 168h in futon0.vitality.scanner.")
    ((string= msg "Tatami activity gap exceeds configured window.")
     (let* ((tatami (plist-get vitality :tatami))
-           (gap (plist-get tatami :gap-warning))
-           (lookback (plist-get tatami :lookback-hours))
-           (hours (plist-get tatami :hours-since)))
+           (gap (or (plist-get tatami :gap-warning)
+                    (plist-get tatami :gap_warning)))
+           (lookback (or (plist-get tatami :lookback-hours)
+                         (plist-get tatami :lookback_hours)))
+           (hours (or (plist-get tatami :hours-since)
+                      (plist-get tatami :hours_since)
+                      (plist-get tatami :hours_since_last))))
       (cond
        ((and hours lookback)
         (format "Tatami gap exceeds %s hours; last event %s hours ago. To clear, open M-x chatgpt-shell and send a turn so Tatami logs a session. Configure tatami.gap_warning_hours in ~/code/storage/futon0/vitality/vitality_scanner.json."
@@ -127,7 +133,9 @@
 
 (defun stack-doc--stack-vitality-lookback (vitality)
   (or (plist-get vitality :lookback-hours)
+      (plist-get vitality :lookback_hours)
       (plist-get (plist-get vitality :tatami) :lookback-hours)
+      (plist-get (plist-get vitality :tatami) :lookback_hours)
       (stack-doc--stack-vitality-lookback-from-file)))
 
 (defun stack-doc--stack-vitality-lookback-from-file ()

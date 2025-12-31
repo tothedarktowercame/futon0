@@ -6,6 +6,7 @@
 ;;; Code:
 
 (require 'json)
+(require 'url)
 (require 'seq)
 (require 'subr-x)
 (require 'voice-typing)
@@ -39,7 +40,249 @@ The value is passed to `display-buffer-in-side-window'."
   :type 'directory
   :group 'tatami-integration)
 
+(defcustom stack-hud-pattern-sync-root "/home/joe/code/futon3"
+  "Root directory for Futon3 when running pattern sync."
+  :type 'directory
+  :group 'tatami-integration)
+
+(defcustom stack-hud-futon1-api-base (or (getenv "FUTON1_API_BASE")
+                                         "http://localhost:8080/api/alpha")
+  "Base URL for Futon1 API (used for reachability + sync)."
+  :type 'string
+  :group 'tatami-integration)
+
+(defcustom stack-hud-futon1-profile (getenv "FUTON1_PROFILE")
+  "Futon1 profile header used for API calls."
+  :type 'string
+  :group 'tatami-integration)
+
+(defcustom stack-hud-pattern-sync-cache-seconds 60
+  "Seconds to cache pattern sync status in the Stack HUD."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-vitality-scan-path "/home/joe/code/futon3/resources/vitality/latest_scan.json"
+  "Path to the futon vitality snapshot consumed by the Stack HUD."
+  :type 'file
+  :group 'tatami-integration)
+
+(defcustom stack-hud-vitality-scan-stale-minutes 30
+  "Refresh vitality snapshot when the file is older than this many minutes."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-vitality-scan-min-interval-seconds 30
+  "Minimum seconds between vitality scan invocations."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-vitality-scan-command
+  '("bb" "/home/joe/code/futon0/scripts/futon0/vitality/scanner.bb" "--"
+    "--quiet"
+    "--config" "/home/joe/code/storage/futon0/vitality/vitality_scanner.json"
+    "--output" "/home/joe/code/futon3/resources/vitality/latest_scan.json")
+  "Command used to refresh the vitality snapshot."
+  :type '(repeat string)
+  :group 'tatami-integration)
+
+(defcustom stack-hud-boundary-scan-path "/home/joe/code/futon4/boundary.edn"
+  "Path to the boundary snapshot consumed by the Stack HUD."
+  :type 'file
+  :group 'tatami-integration)
+
+(defcustom stack-hud-boundary-scan-stale-minutes 120
+  "Refresh boundary snapshot when the file is older than this many minutes."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-boundary-scan-min-interval-seconds 120
+  "Minimum seconds between boundary scan invocations."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-boundary-scan-command
+  '("clojure"
+    "-Sdeps" "{:deps {org.clojure/data.json {:mvn/version \"2.5.0\"}}}"
+    "-M" "/home/joe/code/futon4/dev/boundary-generate.clj"
+    "--repo-root" "/home/joe/code/futon4"
+    "--output" "/home/joe/code/futon4/boundary.edn")
+  "Command used to refresh the boundary snapshot."
+  :type '(repeat string)
+  :group 'tatami-integration)
+
 (defvar stack-hud--last-log-day nil)
+(defvar stack-hud--pattern-sync-cache nil)
+(defvar stack-hud--pattern-sync-cache-time 0)
+(defvar stack-hud--pattern-sync-last-error nil)
+(defvar stack-hud--pattern-sync-last-output nil)
+(defvar stack-hud--last-vitality-scan-time 0)
+(defvar stack-hud--last-boundary-scan-time 0)
+
+(defun stack-hud--futon1-root-url ()
+  (when (and stack-hud-futon1-api-base
+             (not (string-empty-p stack-hud-futon1-api-base)))
+    (let ((base (string-trim stack-hud-futon1-api-base)))
+      (replace-regexp-in-string
+       "/api/\\(alpha\\|%CE%B1\\|%ce%b1\\)/?\\'" "" base))))
+
+(defun stack-hud--futon1-health-url ()
+  (when-let ((root (stack-hud--futon1-root-url)))
+    (concat root "/healthz")))
+
+(defun stack-hud--futon1-reachable-p ()
+  (condition-case nil
+      (when-let ((url (stack-hud--futon1-health-url)))
+        (let ((buf (url-retrieve-synchronously url t t 2.0)))
+          (when buf
+            (with-current-buffer buf
+              (goto-char (point-min))
+              (let ((status (when (re-search-forward "HTTP/[^ ]+ \\([0-9]+\\)" nil t)
+                              (string-to-number (match-string 1)))))
+                (kill-buffer buf)
+                (and status (<= 200 status 299)))))))
+    (error nil)))
+
+(defun stack-hud--pattern-sync-command (&optional diff)
+  (let ((cmd (list "clj" "-M" "-m" "scripts.pattern-sync"
+                   "--root" stack-hud-pattern-sync-root)))
+    (when diff
+      (setq cmd (append cmd '("--diff" "--registry"))))
+    (when (and stack-hud-futon1-api-base
+               (not (string-empty-p stack-hud-futon1-api-base)))
+      (setq cmd (append cmd (list "--api-base" stack-hud-futon1-api-base))))
+    (when (and stack-hud-futon1-profile
+               (not (string-empty-p stack-hud-futon1-profile)))
+      (setq cmd (append cmd (list "--profile" stack-hud-futon1-profile))))
+    cmd))
+
+(defun stack-hud--vitality-scan-stale-p (path now)
+  (let* ((attrs (and path (file-attributes path)))
+         (mtime (and attrs (file-attribute-modification-time attrs))))
+    (if (and mtime (numberp stack-hud-vitality-scan-stale-minutes))
+        (> (- now (float-time mtime))
+           (* 60 stack-hud-vitality-scan-stale-minutes))
+      t)))
+
+(defun stack-hud--maybe-refresh-vitality-scan ()
+  (when (and stack-hud-vitality-scan-command
+             (listp stack-hud-vitality-scan-command))
+    (let ((now (float-time)))
+      (when (and (> (- now stack-hud--last-vitality-scan-time)
+                    stack-hud-vitality-scan-min-interval-seconds)
+                 (stack-hud--vitality-scan-stale-p stack-hud-vitality-scan-path now))
+        (setq stack-hud--last-vitality-scan-time now)
+        (condition-case nil
+            (apply #'call-process
+                   (car stack-hud-vitality-scan-command)
+                   nil nil nil
+                   (cdr stack-hud-vitality-scan-command))
+          (error nil))))))
+
+(defun stack-hud--boundary-scan-stale-p (path now)
+  (let* ((attrs (and path (file-attributes path)))
+         (mtime (and attrs (file-attribute-modification-time attrs))))
+    (if (and mtime (numberp stack-hud-boundary-scan-stale-minutes))
+        (> (- now (float-time mtime))
+           (* 60 stack-hud-boundary-scan-stale-minutes))
+      t)))
+
+(defun stack-hud--maybe-refresh-boundary-scan ()
+  (when (and stack-hud-boundary-scan-command
+             (listp stack-hud-boundary-scan-command))
+    (let ((now (float-time)))
+      (when (and (> (- now stack-hud--last-boundary-scan-time)
+                    stack-hud-boundary-scan-min-interval-seconds)
+                 (stack-hud--boundary-scan-stale-p stack-hud-boundary-scan-path now))
+        (setq stack-hud--last-boundary-scan-time now)
+        (condition-case nil
+            (apply #'call-process
+                   (car stack-hud-boundary-scan-command)
+                   nil nil nil
+                   (cdr stack-hud-boundary-scan-command))
+          (error nil))))))
+
+(defun stack-hud--call-command (cmd)
+  (condition-case err
+      (when (and cmd (file-directory-p stack-hud-pattern-sync-root))
+        (with-temp-buffer
+          (let* ((default-directory stack-hud-pattern-sync-root)
+                 (status (apply #'call-process (car cmd) nil (list t t) nil (cdr cmd)))
+                 (output (string-trim (buffer-string)))
+                 (line (car (split-string output "\n"))))
+            (setq stack-hud--pattern-sync-last-output output)
+            (if (and (numberp status) (zerop status))
+                (progn
+                  (setq stack-hud--pattern-sync-last-error nil)
+                  output)
+              (setq stack-hud--pattern-sync-last-error
+                    (format "pattern-sync failed (status %s): %s"
+                            status (or line "no output")))
+              nil))))
+    (error
+     (setq stack-hud--pattern-sync-last-error (error-message-string err))
+     nil)))
+
+(defun stack-hud--pattern-sync-parse-summary (output)
+  (when output
+    (let* ((line (car (seq-filter (lambda (row)
+                                    (string-prefix-p "Plan summary:" row))
+                                  (split-string output "\n"))))
+           (summary (and line (string-trim (string-remove-prefix "Plan summary:" line))))
+           (entity (when (and summary (string-match ":ensure-entity \\([0-9]+\\)" summary))
+                     (string-to-number (match-string 1 summary))))
+           (relation (when (and summary (string-match ":ensure-relation \\([0-9]+\\)" summary))
+                       (string-to-number (match-string 1 summary)))))
+      (when (or entity relation)
+        (list :ensure-entity (or entity 0)
+              :ensure-relation (or relation 0)
+              :total (+ (or entity 0) (or relation 0)))))))
+
+(defun stack-hud--pattern-sync-diff ()
+  (when (and stack-hud-futon1-api-base
+             (not (string-empty-p stack-hud-futon1-api-base)))
+    (let* ((cmd (stack-hud--pattern-sync-command t))
+           (output (stack-hud--call-command cmd)))
+      (stack-hud--pattern-sync-parse-summary output))))
+
+(defun stack-hud--pattern-sync-status ()
+  (let ((now (float-time)))
+    (if (and stack-hud--pattern-sync-cache
+             (< (- now stack-hud--pattern-sync-cache-time) stack-hud-pattern-sync-cache-seconds))
+        stack-hud--pattern-sync-cache
+      (let* ((reachable (stack-hud--futon1-reachable-p))
+             (diff (when reachable
+                     (stack-hud--pattern-sync-diff)))
+             (status (list :reachable reachable
+                           :diff diff
+                           :diff-error stack-hud--pattern-sync-last-error
+                           :checked-at (current-time-string))))
+        (setq stack-hud--pattern-sync-cache status
+              stack-hud--pattern-sync-cache-time now)
+        status))))
+
+(defun stack-hud--pattern-sync-reset-cache ()
+  (setq stack-hud--pattern-sync-cache nil)
+  (setq stack-hud--pattern-sync-cache-time 0))
+
+(defun stack-hud--pattern-sync-run ()
+  (interactive)
+  (let ((cmd (stack-hud--pattern-sync-command nil))
+        (buffer (get-buffer-create "*Pattern Sync*")))
+    (unless (and cmd (file-directory-p stack-hud-pattern-sync-root))
+      (user-error "Pattern sync root is unavailable"))
+    (with-current-buffer buffer
+      (let ((inhibit-read-only t))
+        (erase-buffer)))
+    (let* ((default-directory stack-hud-pattern-sync-root)
+           (proc (apply #'start-process "pattern-sync" buffer (car cmd) (cdr cmd))))
+      (set-process-sentinel
+       proc
+       (lambda (process event)
+         (when (memq (process-status process) '(exit signal))
+           (stack-hud--pattern-sync-reset-cache)
+           (message "Pattern sync finished: %s" (string-trim event))
+           (when (fboundp 'my-chatgpt-shell--maybe-render-context)
+             (my-chatgpt-shell--maybe-render-context))))))))
 
 (defun my-chatgpt-shell--stack-status-symbol (value)
   (cond
@@ -83,8 +326,21 @@ The value is passed to `display-buffer-in-side-window'."
       (when clean
         (string-join clean ", ")))))
 
-(defun my-chatgpt-shell--stack-futon-activity-from-file ()
-  (let ((path "/home/joe/code/futon3/resources/vitality/latest_scan.json"))
+(defun stack-hud--parse-iso-time (text)
+  (when (and text (stringp text))
+    (ignore-errors (date-to-time text))))
+
+(defun stack-hud--file-time-newer-p (a b)
+  (let ((ta (stack-hud--parse-iso-time a))
+        (tb (stack-hud--parse-iso-time b)))
+    (cond
+     ((and ta tb) (time-less-p tb ta))
+     (ta t)
+     (t nil))))
+
+(defun my-chatgpt-shell--stack-vitality-from-file ()
+  (stack-hud--maybe-refresh-vitality-scan)
+  (let ((path stack-hud-vitality-scan-path))
     (when (file-readable-p path)
       (with-temp-buffer
         (insert-file-contents path)
@@ -95,7 +351,7 @@ The value is passed to `display-buffer-in-side-window'."
                    (data (if (fboundp 'json-parse-buffer)
                              (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
                            (json-read))))
-              (plist-get data :futon_activity))
+              data)
           (error nil))))))
 
 (defun my-chatgpt-shell--stack-zoomr4-status-counts ()
@@ -170,9 +426,12 @@ The value is passed to `display-buffer-in-side-window'."
       (insert "  Vitality:\n")
       (dolist (entry filesystem)
         (let* ((label (or (plist-get entry :label) "?"))
-               (recent (or (plist-get entry :recent-files) 0))
-               (top (my-chatgpt-shell--stack-top-children (plist-get entry :top-children)))
                (imports (plist-get entry :imports))
+               (import-recent (plist-get imports :recent-imports))
+               (recent (if (and (string= label "zoomr4") import-recent)
+                           import-recent
+                         (or (plist-get entry :recent-files) 0)))
+               (top (my-chatgpt-shell--stack-top-children (plist-get entry :top-children)))
                (import-total (and imports (plist-get imports :total)))
                (hold-text (if (and (string= label "zoomr4") zoomr4-status)
                               (let ((hold (cdr (assoc "hold" zoomr4-status)))
@@ -184,11 +443,12 @@ The value is passed to `display-buffer-in-side-window'."
                (import-text (if (and import-total (> import-total 0))
                                 (format " | %s processed" import-total)
                               "")))
-          (insert (format "    %s: %d recent%s%s\n"
-                          label
-                          recent
-                          (if top (format " (%s)" top) "")
-                          (concat hold-text import-text)))
+          (unless (string= label "code")
+            (insert (format "    %s: %d recent%s%s\n"
+                            label
+                            recent
+                            (if top (format " (%s)" top) "")
+                            (concat hold-text import-text))))
           (when-let* ((recent-imports (and imports (plist-get imports :recent))))
             (dolist (item (seq-take recent-imports 3))
               (let ((title (or (plist-get item :title) "untitled"))
@@ -198,11 +458,17 @@ The value is passed to `display-buffer-in-side-window'."
                                 (if recorded (format " (%s)" recorded) ""))))))))
       (when tatami
         (if (plist-get tatami :exists)
-            (insert (format "    Tatami: last %s (%s)%s\n"
-                            (or (plist-get tatami :last-event) "n/a")
-                            (my-chatgpt-shell--stack-format-hours
-                             (plist-get tatami :hours-since))
-                            (if (plist-get tatami :gap-warning) " ⚠️" "")))
+            (let ((last-event (or (plist-get tatami :last-event)
+                                  (plist-get tatami :last_event)))
+                  (hours-since (or (plist-get tatami :hours-since)
+                                   (plist-get tatami :hours_since)
+                                   (plist-get tatami :hours_since_last)))
+                  (gap-warning (or (plist-get tatami :gap-warning)
+                                   (plist-get tatami :gap_warning))))
+              (insert (format "    Tatami: last %s (%s)%s\n"
+                              (or last-event "n/a")
+                              (my-chatgpt-shell--stack-format-hours hours-since)
+                              (if gap-warning " ⚠️" ""))))
           (insert "    Tatami: log missing\n")))
       (insert "\n"))))
 
@@ -256,6 +522,7 @@ The value is passed to `display-buffer-in-side-window'."
 (defun my-chatgpt-shell--insert-stack-boundary (boundary)
   (let* ((critical (plist-get boundary :critical))
          (futons (plist-get boundary :futons)))
+    ;; TODO: hyperlinks are not being shown because (seq-empty-p rows) never passes, why?
     (unless (seq-empty-p critical)
       (let* ((milestone (plist-get boundary :milestone-prototype))
              (label (if milestone
@@ -361,18 +628,70 @@ The value is passed to `display-buffer-in-side-window'."
         (insert (format " | pid %s" (process-id proc))))
       (insert "\n\n")))))
 
+(defun my-chatgpt-shell--insert-stack-pattern-sync ()
+  (let* ((status (stack-hud--pattern-sync-status))
+         (reachable (plist-get status :reachable))
+         (diff (plist-get status :diff))
+         (diff-error (plist-get status :diff-error))
+         (total (plist-get diff :total))
+         (entity (plist-get diff :ensure-entity))
+         (relation (plist-get diff :ensure-relation)))
+    (insert "  Pattern sync: ")
+    (cond
+     ((or (null stack-hud-futon1-api-base)
+          (string-empty-p stack-hud-futon1-api-base))
+      (insert "unconfigured"))
+     ((eq reachable nil)
+      (insert "futon1 unknown"))
+     (reachable
+      (insert "futon1 ok"))
+     (t
+      (insert "futon1 down")))
+    (cond
+     (diff
+      (insert (format " | diff %s" (or total 0)))
+      (when (and entity relation)
+        (insert (format " (entity %s, rel %s)" entity relation))))
+     ((and reachable diff-error)
+      (insert (format " | diff error: %s" diff-error)))
+     (reachable
+      (insert " | diff n/a")))
+    (insert " ")
+    (cond
+     ((and diff (numberp total) (> total 0))
+      (insert-text-button "Sync now"
+                          'help-echo "Push filesystem patterns into Futon1"
+                          'action (lambda (_event)
+                                    (stack-hud--pattern-sync-run))
+                          'follow-link t))
+     ((and reachable diff-error)
+      (insert "check diff"))
+     (t
+      (insert "clean")))
+    (insert "\n\n")))
+
 (defun my-chatgpt-shell--insert-stack-futon-liveness (vitality)
   (let* ((activity (plist-get vitality :futon-activity))
-         (fallback (and (null activity)
-                        (my-chatgpt-shell--stack-futon-activity-from-file))))
+         (vitality-generated (or (plist-get vitality :generated-at)
+                                 (plist-get vitality :generated_at)))
+         (file-vitality (my-chatgpt-shell--stack-vitality-from-file))
+         (file-activity (plist-get file-vitality :futon_activity))
+         (file-generated (plist-get file-vitality :generated_at))
+         (use-file (and (listp file-activity)
+                        file-activity
+                        (or (not (listp activity))
+                            (not activity)
+                            (stack-hud--file-time-newer-p file-generated vitality-generated))))
+         (fallback (and (not use-file) (null activity) file-activity))
+         (selected (if use-file file-activity activity)))
     (cond
-     ((and (listp activity) activity)
+     ((and (listp selected) selected)
       (insert "  Futon liveness: ")
       (let ((parts (mapcar (lambda (entry)
                              (let ((fid (plist-get entry :id))
                                    (bucket (or (plist-get entry :bucket) "n/a")))
                                (format "%s(%s)" fid bucket)))
-                           activity)))
+                           selected)))
         (insert (string-join parts " "))
         (insert "\n\n")))
      ((and (listp fallback) fallback)
@@ -406,6 +725,7 @@ The value is passed to `display-buffer-in-side-window'."
     (my-chatgpt-shell--insert-stack-futon-liveness vitality)
     (my-chatgpt-shell--insert-stack-hot-reload)
     (my-chatgpt-shell--insert-stack-voice)
+    (my-chatgpt-shell--insert-stack-pattern-sync)
     (my-chatgpt-shell--insert-stack-focus-profile focus-profile)
     (my-chatgpt-shell--insert-stack-vitality vitality)
     (my-chatgpt-shell--insert-stack-git git)
