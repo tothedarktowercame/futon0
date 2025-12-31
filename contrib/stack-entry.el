@@ -20,7 +20,11 @@
         (load-file futon0--futon3-bridge-path)
       (user-error "Futon3 bridge not found at %s" futon0--futon3-bridge-path)))
   (my-futon3-ensure-running)
-  (let* ((status (or (my-futon3-refresh-status) my-futon3-last-status))
+  (let* ((boundary-updated (stack-hud--maybe-refresh-boundary-scan))
+         (status (or (my-futon3-refresh-status) my-futon3-last-status))
+         (status (if boundary-updated
+                     (or (my-futon3-refresh-status) status)
+                   status))
          (stack (and status (plist-get status :stack))))
     (if stack
         (progn

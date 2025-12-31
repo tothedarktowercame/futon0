@@ -85,7 +85,7 @@ The value is passed to `display-buffer-in-side-window'."
   :type '(repeat string)
   :group 'tatami-integration)
 
-(defcustom stack-hud-boundary-scan-path "/home/joe/code/futon4/boundary.edn"
+(defcustom stack-hud-boundary-scan-path "/home/joe/code/futon3/boundary.edn"
   "Path to the boundary snapshot consumed by the Stack HUD."
   :type 'file
   :group 'tatami-integration)
@@ -101,11 +101,9 @@ The value is passed to `display-buffer-in-side-window'."
   :group 'tatami-integration)
 
 (defcustom stack-hud-boundary-scan-command
-  '("clojure"
-    "-Sdeps" "{:deps {org.clojure/data.json {:mvn/version \"2.5.0\"}}}"
-    "-M" "/home/joe/code/futon4/dev/boundary-generate.clj"
-    "--repo-root" "/home/joe/code/futon4"
-    "--output" "/home/joe/code/futon4/boundary.edn")
+  '("python3"
+    "/home/joe/code/futon3/scripts/devmap_readiness.py"
+    "--output" "/home/joe/code/futon3/boundary.edn")
   "Command used to refresh the boundary snapshot."
   :type '(repeat string)
   :group 'tatami-integration)
@@ -195,10 +193,11 @@ The value is passed to `display-buffer-in-side-window'."
                  (stack-hud--boundary-scan-stale-p stack-hud-boundary-scan-path now))
         (setq stack-hud--last-boundary-scan-time now)
         (condition-case nil
-            (apply #'call-process
-                   (car stack-hud-boundary-scan-command)
-                   nil nil nil
-                   (cdr stack-hud-boundary-scan-command))
+            (let ((status (apply #'call-process
+                                 (car stack-hud-boundary-scan-command)
+                                 nil nil nil
+                                 (cdr stack-hud-boundary-scan-command))))
+              (eq status 0))
           (error nil))))))
 
 (defun stack-hud--call-command (cmd)
@@ -515,14 +514,13 @@ The value is passed to `display-buffer-in-side-window'."
         (progn
           (find-file-other-window full)
           (goto-char (point-min))
-          (when (search-forward title nil t)
+          (when (and title (search-forward title nil t))
             (beginning-of-line)))
       (message "Devmap not found: %s" full))))
 
 (defun my-chatgpt-shell--insert-stack-boundary (boundary)
   (let* ((critical (plist-get boundary :critical))
          (futons (plist-get boundary :futons)))
-    ;; TODO: hyperlinks are not being shown because (seq-empty-p rows) never passes, why?
     (unless (seq-empty-p critical)
       (let* ((milestone (plist-get boundary :milestone-prototype))
              (label (if milestone
@@ -530,10 +528,21 @@ The value is passed to `display-buffer-in-side-window'."
                       "  Boundary gaps:\n")))
         (insert label))
       (dolist (entry (seq-take critical 4))
-        (insert (format "    %s missing %s (last %s)\n"
-                        (or (plist-get entry :id) "f?")
-                        (format "%s evidence blocks" (or (plist-get entry :missing_evidence) 0))
-                        (or (plist-get entry :last_modified) "n/a")))
+        (let ((fid (or (plist-get entry :id) "f?"))
+              (missing (or (plist-get entry :missing_evidence) 0))
+              (last-modified (or (plist-get entry :last_modified) "n/a"))
+              (path (plist-get entry :path)))
+          (insert "    ")
+          (if path
+              (insert-text-button fid
+                                  'follow-link t
+                                  'help-echo "Open devmap"
+                                  'action (lambda (_btn)
+                                            (stack-hud--open-devmap path nil)))
+            (insert fid))
+          (insert (format " missing %s (last %s)\n"
+                          (format "%s evidence blocks" missing)
+                          last-modified)))
         (when-let ((titles (plist-get entry :missing_evidence_titles)))
           (let ((path (plist-get entry :path)))
             (dolist (title titles)
