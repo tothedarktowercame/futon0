@@ -749,30 +749,31 @@ The value is passed to `display-buffer-in-side-window'."
          (total (plist-get diff :total))
          (entity (plist-get diff :ensure-entity))
          (relation (plist-get diff :ensure-relation))
+         (lines '())
          (extras '()))
     (insert "  Pattern sync: ")
     (cond
      ((or (null stack-hud-futon1-api-base)
           (string-empty-p stack-hud-futon1-api-base))
-      (insert "unconfigured"))
+      (push "unconfigured" lines))
      ((eq reachable nil)
-      (insert "futon1 unknown"))
+      (push "futon1 unknown" lines))
      (reachable
-      (insert "futon1 ok"))
+      (push "futon1 ok" lines))
      (t
-      (insert "futon1 down")))
+      (push "futon1 down" lines)))
     (cond
      (diff
-      (insert (format " | diff %s" (or total 0)))
+      (push (format "diff %s" (or total 0)) lines)
       (when (and entity relation)
-        (insert (format " (entity %s, rel %s)" entity relation))))
+        (push (format "diff detail: entity %s, rel %s" entity relation) lines)))
      ((and reachable diff-error)
-      (insert (format " | diff error: %s" diff-error)))
+      (push (format "diff err: %s" diff-error) lines))
      (reachable
-      (insert " | diff n/a")))
+      (push "diff n/a" lines)))
     (when verify
       (if (plist-get verify :ok?)
-          (insert " | invariants ok")
+          (push "inv ok" lines)
         (let* ((count (plist-get verify :pattern-count))
                (issues (plist-get verify :issues))
                (sample (plist-get verify :sample))
@@ -782,13 +783,15 @@ The value is passed to `display-buffer-in-side-window'."
                                         (format "%s=%s" (car pair) (cdr pair)))
                                       issues)
                               ", "))))
-          (insert (format " | invariants: %s patterns" (or count 0)))
+          (push (format "inv fail: %s" (or count 0)) lines)
           (when issue-text
-            (insert (format " (%s)" issue-text)))
+            (push (format "inv detail: %s" issue-text) lines))
           (when (and (listp sample) sample)
             (push (format "Patterns failing: %s"
                           (string-join sample ", "))
                   extras)))))
+    (when lines
+      (insert (string-join (nreverse lines) "\n    ")))
     (insert " ")
     (cond
      ((and diff (numberp total) (> total 0))
