@@ -115,6 +115,8 @@ The value is passed to `display-buffer-in-side-window'."
 (defvar stack-hud--pattern-sync-last-output nil)
 (defvar stack-hud--last-vitality-scan-time 0)
 (defvar stack-hud--last-boundary-scan-time 0)
+(defvar stack-hud--vitality-config-cache nil)
+(defvar stack-hud--vitality-config-mtime nil)
 
 (defun stack-hud--futon1-root-url ()
   (when (and stack-hud-futon1-api-base
@@ -155,11 +157,47 @@ The value is passed to `display-buffer-in-side-window'."
 
 (defun stack-hud--vitality-scan-stale-p (path now)
   (let* ((attrs (and path (file-attributes path)))
-         (mtime (and attrs (file-attribute-modification-time attrs))))
-    (if (and mtime (numberp stack-hud-vitality-scan-stale-minutes))
-        (> (- now (float-time mtime))
-           (* 60 stack-hud-vitality-scan-stale-minutes))
-      t)))
+         (mtime (and attrs (file-attribute-modification-time attrs)))
+         (age-stale (if (and mtime (numberp stack-hud-vitality-scan-stale-minutes))
+                        (> (- now (float-time mtime))
+                           (* 60 stack-hud-vitality-scan-stale-minutes))
+                      t)))
+    (or age-stale
+        (stack-hud--vitality-log-newer-p mtime))))
+
+(defun stack-hud--vitality-config ()
+  (let* ((path "/home/joe/code/storage/futon0/vitality/vitality_scanner.json")
+         (mtime (and (file-exists-p path) (nth 5 (file-attributes path)))))
+    (if (and stack-hud--vitality-config-cache
+             (equal mtime stack-hud--vitality-config-mtime))
+        stack-hud--vitality-config-cache
+      (when (file-readable-p path)
+        (with-temp-buffer
+          (insert-file-contents path)
+          (condition-case nil
+              (let* ((json-object-type 'plist)
+                     (json-array-type 'list)
+                     (json-key-type 'symbol)
+                     (data (if (fboundp 'json-parse-buffer)
+                               (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
+                             (json-read))))
+                (setq stack-hud--vitality-config-cache data
+                      stack-hud--vitality-config-mtime mtime)
+                data)
+            (error nil)))))))
+
+(defun stack-hud--vitality-log-newer-p (scan-mtime)
+  (when scan-mtime
+    (let* ((config (stack-hud--vitality-config))
+           (tatami (plist-get config :tatami))
+           (log-path (and tatami (plist-get tatami :log_path))))
+      (when (and log-path (stringp log-path))
+        (let* ((expanded (expand-file-name (substitute-in-file-name log-path)))
+               (attrs (and (file-exists-p expanded)
+                           (file-attributes expanded)))
+               (log-mtime (and attrs (file-attribute-modification-time attrs))))
+          (and log-mtime
+               (time-less-p scan-mtime log-mtime)))))))
 
 (defun stack-hud--maybe-refresh-vitality-scan ()
   (when (and stack-hud-vitality-scan-command
