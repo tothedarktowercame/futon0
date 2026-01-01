@@ -78,13 +78,24 @@ Each entry can be absolute or relative to `futon-hot-root'."
     (puthash file (futon-hot--buffer-keymap-symbols buffer) futon-hot--keymap-index)))
 
 (defun futon-hot--reset-keymaps (file &optional buffer)
-  "Reset keymaps defined in FILE or BUFFER before re-eval."
+  "Reset keymaps defined in FILE or BUFFER before re-eval.
+
+Return an alist of (SYMBOL . VALUE) pairs for keymaps that were unbound."
   (when (and file futon-hot-keymap-reload-enabled)
     (let ((symbols (or (and buffer (futon-hot--buffer-keymap-symbols buffer))
-                       (gethash file futon-hot--keymap-index))))
+                       (gethash file futon-hot--keymap-index)))
+          (saved nil))
       (dolist (sym symbols)
         (when (and (boundp sym) (keymapp (symbol-value sym)))
-          (ignore-errors (makunbound sym)))))))
+          (push (cons sym (symbol-value sym)) saved)
+          (ignore-errors (makunbound sym))))
+      saved)))
+
+(defun futon-hot--restore-keymaps (saved)
+  "Restore keymaps from SAVED as returned by `futon-hot--reset-keymaps`."
+  (dolist (entry saved)
+    (when (consp entry)
+      (set (car entry) (cdr entry)))))
 
 (defun my-chatgpt-shell--hot-reload-feature-available-p ()
   (require 'filenotify nil t))
@@ -165,18 +176,19 @@ Each entry can be absolute or relative to `futon-hot-root'."
                        (file-name-nondirectory file))
             (revert-buffer :ignore-auto :noconfirm)
             (if (derived-mode-p 'emacs-lisp-mode)
-                (condition-case err
-                    (progn
-                     (futon-hot--reset-keymaps file (current-buffer))
-                      (eval-buffer)
-                      (futon-hot--remember-keymaps file (current-buffer))
-                      (setq my-chatgpt-shell--last-hot-reload (current-time))
-                      (message "Stack hot reload: evaluated %s"
-                               (file-name-nondirectory file)))
-                  (error
-                   (message "Stack hot reload: error in %s (%s)"
-                            (file-name-nondirectory file)
-                            (error-message-string err))))
+                (let ((saved (futon-hot--reset-keymaps file (current-buffer))))
+                  (condition-case err
+                      (progn
+                        (eval-buffer)
+                        (futon-hot--remember-keymaps file (current-buffer))
+                        (setq my-chatgpt-shell--last-hot-reload (current-time))
+                        (message "Stack hot reload: evaluated %s"
+                                 (file-name-nondirectory file)))
+                    (error
+                     (futon-hot--restore-keymaps saved)
+                     (message "Stack hot reload: error in %s (%s)"
+                              (file-name-nondirectory file)
+                              (error-message-string err)))))
               (message "Stack hot reload: %s is not an Emacs Lisp buffer."
                        (file-name-nondirectory file)))))))))
 
@@ -219,6 +231,16 @@ Each entry can be absolute or relative to `futon-hot-root'."
                               missing)
                       ", ")))))))
   my-chatgpt-shell--hot-reload-enabled)
+
+(defun my-chatgpt-shell-hot-reload-refresh (&optional enable)
+  "Rebuild hot reload watchers.
+With ENABLE non-nil, enable hot reload if it is currently disabled."
+  (interactive)
+  (let ((was my-chatgpt-shell--hot-reload-enabled))
+    (when was
+      (my-chatgpt-shell-hot-reload-disable))
+    (when (or was enable)
+      (my-chatgpt-shell-hot-reload-enable))))
 
 (defun my-chatgpt-shell-hot-reload-disable ()
   "Disable Stack hot reload watchers."

@@ -14,6 +14,11 @@
 (defvar my-chatgpt-shell--stack-frame nil
   "Frame hosting the Stack HUD when rendered in its own frame.")
 
+(defcustom futon-hud-log-context-window-creates t
+  "When non-nil, log when the Tatami Context window is created."
+  :type 'boolean
+  :group 'tatami-integration)
+
 (defcustom stack-hud-context-font-scale 1.0
   "Relative font scale for the Stack/Tatami HUD buffers.
 Set to nil or 1.0 to leave the default face size unchanged."
@@ -95,6 +100,10 @@ Set to nil or 1.0 to leave the default face size unchanged."
         (when (window-live-p win)
           (set-window-dedicated-p win t)
           (set-window-parameter win 'tatami-context-owner (current-buffer))
+          (when futon-hud-log-context-window-creates
+            (message "Tatami Context window created by %s (buffer %s)"
+                     (or this-command "unknown")
+                     (buffer-name (current-buffer))))
           (setq my-chatgpt-shell--context-window win))))))
 
 (defun my-chatgpt-shell--ensure-stack-window (buf)

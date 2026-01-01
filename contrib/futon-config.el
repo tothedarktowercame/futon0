@@ -4,7 +4,12 @@
 ;; Centralize Futon-related customizations here to avoid scattered overrides.
 
 ;;; Code:
+
+;;; Futon 0:
+
 (add-to-list 'load-path "/home/joe/code/futon0/contrib/")
+
+(add-to-list 'load-path "/home/joe/code/futon3/contrib/")
 
 ;; Stack HUD entry point.
 (require 'stack-entry)
@@ -14,24 +19,41 @@
 (setenv "ZOOM_SYNC_META_DIR" "/home/joe/code/storage/zoomr4/meta")
 (setq arxana-media-index-path "/home/joe/code/storage/zoomr4/meta/zoom_sync_index.json")
 
+;; Stack mini-HUD documentation
+
+(setq my-chatgpt-shell-stack-doc-popup-mode 'buffer)
+
 (require 'futon-hot)
+(require 'subr-x)
 
 ;; Hot reload defaults (override as needed).
 (setq my-chatgpt-shell-hot-reload-files
-      '("../futon3/contrib/aob-chatgpt.el"
+      '("../futon3/contrib/flexiarg.el"
+	"../futon3/contrib/aob-chatgpt.el"
         "../futon4/dev/arxana-patterns.el"
+        "../futon4/dev/arxana-browser-core.el"
+        "../futon4/dev/arxana-browser-code.el"
         "../futon4/dev/arxana-media.el"
         "../futon4/dev/arxana-store.el"
         "../futon4/dev/arxana-docbook.el"
         "../futon4/dev/arxana-lab.el"
         "../futon0/contrib/futon-config.el"
+        "../futon0/contrib/futon-helper.el"
         "../futon0/contrib/stack-entry.el"
         "../futon0/contrib/stack-hud.el"
         "../futon0/contrib/stack-render.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
-(my-chatgpt-shell-hot-reload-enable)
+(my-chatgpt-shell-hot-reload-refresh t)
+
+(require 'futon-helper)
+
+;;; Futon 3:
+
+(require 'flexiarg)
+
+;;; Futon 4:
 
 ;; Stack/Arxana frame naming (used by sway rules).
 (setq my-chatgpt-shell-stack-frame-name "Stack HUD")
@@ -59,6 +81,10 @@
 (setq tatami-verbose nil)
 (setq tatami-start-command (list my-tatami--clojure "-M:server"))
 (setq tatami-startup-wait 20)
+
+;; Piper TTS defaults for transcript_commentary.py.
+(setenv "PIPER_MODEL" "/home/joe/code/tts/voices/en_GB-semaine-medium.onnx")
+(setenv "PIPER_CONFIG" "/home/joe/code/tts/voices/en_GB-semaine-medium.onnx.json")
 
 ;;; Set up Futon4
 
