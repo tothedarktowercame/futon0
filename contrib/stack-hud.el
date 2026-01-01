@@ -129,6 +129,31 @@ The value is passed to `display-buffer-in-side-window'."
   (when-let ((root (stack-hud--futon1-root-url)))
     (concat root "/healthz")))
 
+(defun stack-hud--futon1-api-url (path)
+  (when (and stack-hud-futon1-api-base
+             (not (string-empty-p stack-hud-futon1-api-base)))
+    (concat (string-trim-right stack-hud-futon1-api-base "/") path)))
+
+(defun stack-hud--fetch-json (url &optional headers)
+  (condition-case nil
+      (let ((url-request-extra-headers headers))
+        (when-let ((buf (url-retrieve-synchronously url t t 2.0)))
+          (with-current-buffer buf
+            (goto-char (point-min))
+            (when (re-search-forward "\n\n" nil t)
+              (let* ((json-object-type 'plist)
+                     (json-array-type 'list)
+                     (json-key-type 'symbol)
+                     (data (if (fboundp 'json-parse-buffer)
+                               (json-parse-buffer :object-type 'plist
+                                                  :array-type 'list
+                                                  :null-object nil
+                                                  :false-object nil)
+                             (json-read))))
+                (kill-buffer buf)
+                data)))))
+    (error nil)))
+
 (defun stack-hud--futon1-reachable-p ()
   (condition-case nil
       (when-let ((url (stack-hud--futon1-health-url)))
@@ -141,6 +166,37 @@ The value is passed to `display-buffer-in-side-window'."
                 (kill-buffer buf)
                 (and status (<= 200 status 299)))))))
     (error nil)))
+
+(defun stack-hud--pattern-sync-verify-summary (payload)
+  (when payload
+    (let* ((ok (plist-get payload :ok?))
+           (results (plist-get payload :results))
+           (patterns (make-hash-table :test 'equal))
+           (issues (make-hash-table :test 'equal)))
+      (dolist (result results)
+        (unless (plist-get result :ok?)
+          (dolist (failure (plist-get result :failures))
+            (let ((name (or (plist-get failure :pattern-name)
+                            (plist-get failure :pattern-id)))
+                  (issue (plist-get failure :issue)))
+              (when name
+                (puthash name t patterns))
+              (when issue
+                (puthash issue (1+ (gethash issue issues 0)) issues))))))
+      (let* ((pattern-count (hash-table-count patterns))
+             (issue-list (let (items)
+                           (maphash (lambda (k v)
+                                      (push (cons k v) items))
+                                    issues)
+                           (sort items (lambda (a b) (> (cdr a) (cdr b))))))
+             (names (let (items)
+                      (maphash (lambda (k _v) (push k items)) patterns)
+                      (sort items #'string<)))
+             (sample (seq-take names 3)))
+        (list :ok? (and ok (zerop pattern-count))
+              :pattern-count pattern-count
+              :issues issue-list
+              :sample sample)))))
 
 (defun stack-hud--pattern-sync-command (&optional diff)
   (let ((cmd (list "clj" "-M" "-m" "scripts.pattern-sync"
@@ -289,9 +345,18 @@ The value is passed to `display-buffer-in-side-window'."
       (let* ((reachable (stack-hud--futon1-reachable-p))
              (diff (when reachable
                      (stack-hud--pattern-sync-diff)))
+             (verify (when reachable
+                       (let* ((headers (when (and stack-hud-futon1-profile
+                                                  (not (string-empty-p stack-hud-futon1-profile)))
+                                         `(("X-Profile" . ,stack-hud-futon1-profile))))
+                              (payload (stack-hud--fetch-json
+                                        (stack-hud--futon1-api-url "/meta/model/verify")
+                                        headers)))
+                         (stack-hud--pattern-sync-verify-summary payload))))
              (status (list :reachable reachable
                            :diff diff
                            :diff-error stack-hud--pattern-sync-last-error
+                           :verify verify
                            :checked-at (current-time-string))))
         (setq stack-hud--pattern-sync-cache status
               stack-hud--pattern-sync-cache-time now)
@@ -680,9 +745,11 @@ The value is passed to `display-buffer-in-side-window'."
          (reachable (plist-get status :reachable))
          (diff (plist-get status :diff))
          (diff-error (plist-get status :diff-error))
+         (verify (plist-get status :verify))
          (total (plist-get diff :total))
          (entity (plist-get diff :ensure-entity))
-         (relation (plist-get diff :ensure-relation)))
+         (relation (plist-get diff :ensure-relation))
+         (extras '()))
     (insert "  Pattern sync: ")
     (cond
      ((or (null stack-hud-futon1-api-base)
@@ -703,6 +770,25 @@ The value is passed to `display-buffer-in-side-window'."
       (insert (format " | diff error: %s" diff-error)))
      (reachable
       (insert " | diff n/a")))
+    (when verify
+      (if (plist-get verify :ok?)
+          (insert " | invariants ok")
+        (let* ((count (plist-get verify :pattern-count))
+               (issues (plist-get verify :issues))
+               (sample (plist-get verify :sample))
+               (issue-text (when issues
+                             (string-join
+                              (mapcar (lambda (pair)
+                                        (format "%s=%s" (car pair) (cdr pair)))
+                                      issues)
+                              ", "))))
+          (insert (format " | invariants: %s patterns" (or count 0)))
+          (when issue-text
+            (insert (format " (%s)" issue-text)))
+          (when (and (listp sample) sample)
+            (push (format "Patterns failing: %s"
+                          (string-join sample ", "))
+                  extras)))))
     (insert " ")
     (cond
      ((and diff (numberp total) (> total 0))
@@ -715,7 +801,10 @@ The value is passed to `display-buffer-in-side-window'."
       (insert "check diff"))
      (t
       (insert "clean")))
-    (insert "\n\n")))
+    (insert "\n")
+    (dolist (line (nreverse extras))
+      (insert (format "    %s\n" line)))
+    (insert "\n")))
 
 (defun my-chatgpt-shell--insert-stack-futon-liveness (vitality)
   (let* ((activity (plist-get vitality :futon-activity))
