@@ -87,7 +87,7 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 
 ## Dependencies on other layers
 
-- [ ] **futon1 ticket**: expose XTDB endpoint/path for affect inference
+- [X] **futon1 ticket**: expose XTDB endpoint/path for affect inference
   - Needed for timestamp correlation with time envelope
   - Blocks: unclocked activity detection, affect heuristics
 
@@ -100,3 +100,45 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 - futon1 was intended to do some of this — may need another iteration
 - Potential: build out a model of actual affects/perceptions that feeds the predictive layer
 - Cross-reference: futon2/futon3 active inference work
+
+## Optional experimental harness ticket (naturalistic protocol sketch)
+
+Instrument two streams:
+
+- Stream A: affect events / transitions
+  - Explicit tags (fast)
+  - Optional candidate detection via novelty-within-10-minutes
+- Stream E: effectiveness signals
+  - “New term” events (PlanetMath proxy)
+  - “New artifact label” events (function names, namespaces, pattern IDs, commit tokens, TODO headings)
+  - Lightweight activity markers (run, jump rope, rehearsal, etc.) if already logged
+
+Define windows:
+
+- Primary: very short (e.g., 10 minutes) to respect momentariness
+- Secondary: medium (e.g., same day) for robustness checks only
+
+Compute correlations with confounds in mind:
+
+- Compare minutes/episodes with at least one affect event vs minutes/episodes without
+- Rate of effectiveness events per unit time
+- Within-person comparisons over weeks (baseline shifts)
+
+Make “affect-surface online” measurable:
+
+- Affect events per 100 turns
+- Transitions with certificates per week
+- Proportion of affect events that lead to a consequence candidate (even if curated later)
+
+Interpretation discipline:
+
+- You’re not proving “affect causes effectiveness.”
+- You’re testing whether articulation of affect is associated with downstream actionable consequences and predicts better progress metrics.
+
+What this buys you:
+
+- Observational, longitudinal, within-subject (no lab)
+- Compatible with the Spinoza/AIF stance:
+  - Affect surface is a controllable interface layer
+  - Effect side operationalized via novelty + artifacts
+  - Link inspectable via certificates, not just statistics
