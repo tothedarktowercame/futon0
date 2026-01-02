@@ -33,6 +33,7 @@
         "../futon4/dev/arxana-patterns.el"
         "../futon4/dev/arxana-browser-core.el"
         "../futon4/dev/arxana-browser-code.el"
+        "../futon4/dev/arxana-browser-patterns.el"
         "../futon4/dev/arxana-media.el"
         "../futon4/dev/arxana-store.el"
         "../futon4/dev/arxana-docbook.el"
@@ -51,6 +52,7 @@
 
 ;;; Futon 3:
 
+(setq tatami-actor "Joe Corneli")
 (require 'flexiarg)
 
 ;;; Futon 4:
@@ -71,15 +73,19 @@
 (load-file "~/code/futon1/contrib/tatami.el")
 (require 'tatami)
 
+
 (setq tatami-profile "default")
 (setq tatami-data-directory "/home/joe/code/futon1/data/")
-(setq tatami-start-directory "/home/joe/code/futon1/")
+
+(setq tatami-start-directory "/home/joe/code/futon1")
+(setq tatami-start-command '("./scripts/run_api.sh"))
+
 (setq tatami-base-url "http://localhost:8080")
 (defvar my-tatami--clojure (or (executable-find "clojure") "clojure"))
 (unless (and my-tatami--clojure (file-executable-p my-tatami--clojure))
   (message "Warning: could not locate a runnable clojure executable; tatami auto-start may fail."))
+
 (setq tatami-verbose nil)
-(setq tatami-start-command (list my-tatami--clojure "-M:server"))
 (setq tatami-startup-wait 20)
 
 ;; Piper TTS defaults for transcript_commentary.py.

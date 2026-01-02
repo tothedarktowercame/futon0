@@ -5,4 +5,4 @@ ConditionPathExists=%h/code/futon0/scripts/futon0/vitality/scanner.clj
 [Service]
 Type=oneshot
 WorkingDirectory=%h/code/futon0
-ExecStart=/usr/bin/clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.vitality.scanner --quiet --config %h/code/storage/futon0/vitality/vitality_scanner.json --output %h/code/futon3/resources/vitality/latest_scan.json
+ExecStart=/usr/bin/env bb %h/code/futon0/scripts/futon0/vitality/scanner.bb -- --quiet --config %h/code/storage/futon0/vitality/vitality_scanner.json --output %h/code/futon3/resources/vitality/latest_scan.json

@@ -1,6 +1,7 @@
 (ns futon0.vitality.scanner
   "Emit a lightweight vitality snapshot for cron/systemd ingestion."
   (:require [clojure.data.json :as json]
+            [clojure.java.shell :as shell]
             [clojure.string :as str])
   (:import (java.io File)
            (java.nio.file Files LinkOption Path Paths)
@@ -28,6 +29,7 @@
       out
       (let [[flag value & rest] args]
         (cond
+          (= flag "--") (recur (if value (cons value rest) rest) out)
           (= flag "--config") (recur rest (assoc out :config (File. value)))
           (= flag "--output") (recur rest (assoc out :output (File. value)))
           (= flag "--quiet") (recur rest (assoc out :quiet true))
@@ -70,6 +72,31 @@
     (Files/isSymbolicLink (.toPath file))
     (catch Exception _ false)))
 
+(defn- git-output [^File root args]
+  (try
+    (let [{:keys [exit out]} (apply shell/sh "git" "-C" (.getPath root) args)]
+      (when (zero? exit) out))
+    (catch Exception _ nil)))
+
+(defn- git-latest-activity-ms [^File root]
+  (when (and root (.exists root) (.isDirectory root)
+             (.exists (File. root ".git")))
+    (let [commit-out (git-output root ["log" "-1" "--format=%ct"])
+          commit-ms (when (seq commit-out)
+                      (* 1000 (Long/parseLong (str/trim commit-out))))
+          paths-out (git-output root ["ls-files" "-m" "-o" "--exclude-standard" "-z"])
+          paths (when (seq paths-out)
+                  (remove str/blank? (str/split paths-out #"\u0000")))
+          dirty-ms (when (seq paths)
+                     (reduce (fn [acc path]
+                               (let [file (File. root path)
+                                     mtime (when (.exists file) (.lastModified file))]
+                                 (if (and mtime (> mtime (or acc 0))) mtime acc)))
+                             nil
+                             paths))]
+      (when (or commit-ms dirty-ms)
+        (max (or commit-ms 0) (or dirty-ms 0))))))
+
 (defn- bucket-hours [hours]
   (cond
     (nil? hours) nil
@@ -82,7 +109,23 @@
     (< hours 168) "7"
     :else "7+"))
 
-(defn- summarize-imports [entry]
+(defn- parse-timestamp [raw]
+  (let [text (str/trim (or raw ""))]
+    (when (seq text)
+      (let [normalized (if (str/ends-with? text "Z")
+                         (str (subs text 0 (dec (count text))) "+00:00")
+                         text)]
+        (or (try
+              (Instant/parse normalized)
+              (catch DateTimeParseException _ nil))
+            (try
+              (.toInstant (OffsetDateTime/parse normalized))
+              (catch DateTimeParseException _ nil))
+            (try
+              (.toInstant (.atZone (LocalDateTime/parse normalized) ZoneOffset/UTC))
+              (catch DateTimeParseException _ nil)))))))
+
+(defn- summarize-imports [entry now lookback-hours]
   (when-let [index-path (:import_index entry)]
     (let [path (expand-path index-path)
           payload (read-json-file path)
@@ -103,16 +146,26 @@
                                              :copied_to (:copied_to item)}]
                                    (into {}
                                          (filter (comp some? val) info))))))
+              threshold (.minus now (Duration/ofHours (long lookback-hours)))
+              recent-imports (count
+                              (filter (fn [item]
+                                        (when-let [stamp (or (:ingested_at item)
+                                                            (:recorded_at item)
+                                                            (:recorded_date item))]
+                                          (when-let [parsed (parse-timestamp stamp)]
+                                            (not (.isBefore parsed threshold)))))
+                                      entries))
               total (count entries)]
           {"total" total
-           "recent" recent})))))
+           "recent" recent
+           "recent_imports" recent-imports})))))
 
 (defn- scan-filesystem [entry now default-lookback]
   (let [label (or (:label entry) (:path entry))
         root (expand-path (:path entry))
         lookback (int (or (:lookback_hours entry) default-lookback))
         cutoff (- (.toEpochMilli now) (* lookback 3600000))
-        imports (summarize-imports entry)
+        imports (summarize-imports entry now lookback)
         max-depth (int (or (:max_depth entry) 2))
         top-n (int (or (:top_n entry) 5))
         base-summary {"label" label
@@ -164,22 +217,6 @@
                    "scan_duration_seconds"
                    (Double/parseDouble (format "%.3f" duration))}]
         (merge summary stats)))))
-
-(defn- parse-timestamp [raw]
-  (let [text (str/trim (or raw ""))]
-    (when (seq text)
-      (let [normalized (if (str/ends-with? text "Z")
-                         (str (subs text 0 (dec (count text))) "+00:00")
-                         text)]
-        (or (try
-              (Instant/parse normalized)
-              (catch DateTimeParseException _ nil))
-            (try
-              (.toInstant (OffsetDateTime/parse normalized))
-              (catch DateTimeParseException _ nil))
-            (try
-              (.toInstant (.atZone (LocalDateTime/parse normalized) ZoneOffset/UTC))
-              (catch DateTimeParseException _ nil)))))))
 
 (defn- scan-tatami [entry now default-lookback]
   (let [log-path (expand-path (or (:log_path entry) ""))
@@ -264,24 +301,11 @@
                          "exists" (.exists root)}]
               (if-not (.exists root)
                 entry
-                (let [queue (doto (ArrayDeque.) (.add root))
-                      latest-ts (atom nil)]
-                  (while (not (.isEmpty queue))
-                    (let [^File dir (.remove queue)
-                          dirname (dir-name dir)]
-                      (when (and dirname (not (contains? futon-ignore-dirs dirname))
-                                 (not (str/starts-with? dirname ".")))
-                        (when-let [items (safe-list-files dir)]
-                          (doseq [child items]
-                            (when-not (symlink? child)
-                              (if (.isDirectory child)
-                                (.add queue child)
-                                (let [fname (.getName child)]
-                                  (when-not (str/starts-with? fname ".")
-                                    (let [mtime (.lastModified child)]
-                                      (swap! latest-ts #(if % (max % mtime) mtime))))))))))))
-                  (if-let [latest @latest-ts]
-                    (let [last-event (Instant/ofEpochMilli latest)
+                (let [latest-ms (or (git-latest-activity-ms root)
+                                    (let [mtime (.lastModified root)]
+                                      (when (pos? mtime) mtime)))]
+                  (if latest-ms
+                    (let [last-event (Instant/ofEpochMilli latest-ms)
                           hours-since (/ (double (.toMinutes (Duration/between last-event now))) 60.0)]
                       (assoc entry
                              "last_mtime" (.toString last-event)
