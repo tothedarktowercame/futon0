@@ -877,7 +877,8 @@ The value is passed to `display-buffer-in-side-window'."
     (buffer-string)))
 
 (defun my-chatgpt-shell--stack-columnize (text window)
-  (let* ((width (window-body-width window))
+  (let* ((text (or text ""))
+         (width (window-body-width window))
          (height (window-body-height window))
          (lines (split-string text "\n"))
          (line-count (length lines))

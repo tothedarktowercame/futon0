@@ -48,6 +48,12 @@
 
 (my-chatgpt-shell-hot-reload-refresh t)
 
+(add-hook 'my-chatgpt-shell-hot-reload-after-eval-hook
+          #'arxana-reload-after-hot-reload)
+
+(add-hook 'my-chatgpt-shell-hot-reload-after-batch-hook
+          #'arxana-reload-after-hot-reload-batch)
+
 (require 'futon-helper)
 
 ;;; Futon 3:
