@@ -224,6 +224,20 @@ Return an alist of (SYMBOL . VALUE) pairs for keymaps that were unbound."
       (run-hook-with-args 'my-chatgpt-shell-hot-reload-after-batch-hook))))
 
 (defun hot-reload-do-reload ()
+  "Force a hot-reload pass for pending files."
+  (interactive)
+  (let ((files (seq-uniq my-chatgpt-shell--hot-reload-pending #'string=)))
+    (setq my-chatgpt-shell--hot-reload-pending nil)
+    (let ((my-chatgpt-shell--hot-reload-batch-p t))
+      (if files
+          (progn
+            (dolist (file files)
+              (my-chatgpt-shell--hot-reload-apply file))
+            (run-hook-with-args 'my-chatgpt-shell-hot-reload-after-batch-hook)
+            (message "Hot reload: reloaded %d pending file(s)." (length files)))
+        (message "Hot reload: no pending changes (use hot-reload-do-reload-all).")))))
+
+(defun hot-reload-do-reload-all ()
   "Force a hot-reload pass for all configured files."
   (interactive)
   (let ((my-chatgpt-shell--hot-reload-batch-p t))
