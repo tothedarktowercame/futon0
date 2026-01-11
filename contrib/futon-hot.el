@@ -258,6 +258,7 @@ Return an alist of (SYMBOL . VALUE) pairs for keymaps that were unbound."
              (format "Stack hot reload: skipped %s (buffer has unsaved edits)."
                      (file-name-nondirectory file)))
           (revert-buffer :ignore-auto :noconfirm)
+          (normal-mode)
           (if (derived-mode-p 'emacs-lisp-mode)
               (let ((saved (futon-hot--reset-keymaps file (current-buffer))))
                 (setq err (condition-case e

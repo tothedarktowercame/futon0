@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'json)
 (require 'url)
 (require 'seq)
@@ -60,6 +61,18 @@ The value is passed to `display-buffer-in-side-window'."
   "Seconds to cache pattern sync status in the Stack HUD."
   :type 'integer
   :group 'tatami-integration)
+(defcustom stack-hud-pattern-sync-timeout-seconds 5
+  "Seconds to allow pattern sync status checks before timing out."
+  :type 'integer
+  :group 'tatami-integration)
+(defcustom stack-hud-pattern-sync-async t
+  "When non-nil, refresh pattern sync status asynchronously."
+  :type 'boolean
+  :group 'tatami-integration)
+(defcustom stack-hud-disable-pattern-sync nil
+  "When non-nil, skip pattern sync status checks in the Stack HUD."
+  :type 'boolean
+  :group 'tatami-integration)
 
 (defcustom stack-hud-vitality-scan-path "/home/joe/code/futon3/resources/vitality/latest_scan.json"
   "Path to the futon vitality snapshot consumed by the Stack HUD."
@@ -108,11 +121,17 @@ The value is passed to `display-buffer-in-side-window'."
   :type '(repeat string)
   :group 'tatami-integration)
 
+(defcustom stack-hud-command-timeout-seconds 15
+  "Seconds to allow blocking Stack HUD commands before timing out."
+  :type 'integer
+  :group 'tatami-integration)
+
 (defvar stack-hud--last-log-day nil)
 (defvar stack-hud--pattern-sync-cache nil)
 (defvar stack-hud--pattern-sync-cache-time 0)
 (defvar stack-hud--pattern-sync-last-error nil)
 (defvar stack-hud--pattern-sync-last-output nil)
+(defvar stack-hud--pattern-sync-refresh-in-flight nil)
 (defvar stack-hud--last-vitality-scan-time 0)
 (defvar stack-hud--last-boundary-scan-time 0)
 (defvar stack-hud--vitality-config-cache nil)
@@ -264,10 +283,12 @@ The value is passed to `display-buffer-in-side-window'."
                  (stack-hud--vitality-scan-stale-p stack-hud-vitality-scan-path now))
         (setq stack-hud--last-vitality-scan-time now)
         (condition-case nil
-            (apply #'call-process
-                   (car stack-hud-vitality-scan-command)
-                   nil nil nil
-                   (cdr stack-hud-vitality-scan-command))
+            (with-timeout (stack-hud-command-timeout-seconds
+                           (error "Stack HUD vitality scan timed out"))
+              (apply #'call-process
+                     (car stack-hud-vitality-scan-command)
+                     nil nil nil
+                     (cdr stack-hud-vitality-scan-command)))
           (error nil))))))
 
 (defun stack-hud--boundary-scan-stale-p (path now)
@@ -287,10 +308,12 @@ The value is passed to `display-buffer-in-side-window'."
                  (stack-hud--boundary-scan-stale-p stack-hud-boundary-scan-path now))
         (setq stack-hud--last-boundary-scan-time now)
         (condition-case nil
-            (let ((status (apply #'call-process
-                                 (car stack-hud-boundary-scan-command)
-                                 nil nil nil
-                                 (cdr stack-hud-boundary-scan-command))))
+            (let ((status (with-timeout (stack-hud-command-timeout-seconds
+                                         (error "Stack HUD boundary scan timed out"))
+                            (apply #'call-process
+                                   (car stack-hud-boundary-scan-command)
+                                   nil nil nil
+                                   (cdr stack-hud-boundary-scan-command)))))
               (eq status 0))
           (error nil))))))
 
@@ -299,7 +322,9 @@ The value is passed to `display-buffer-in-side-window'."
       (when (and cmd (file-directory-p stack-hud-pattern-sync-root))
         (with-temp-buffer
           (let* ((default-directory stack-hud-pattern-sync-root)
-                 (status (apply #'call-process (car cmd) nil (list t t) nil (cdr cmd)))
+                 (status (with-timeout (stack-hud-command-timeout-seconds
+                                        (error "Stack HUD pattern sync timed out"))
+                           (apply #'call-process (car cmd) nil (list t t) nil (cdr cmd))))
                  (output (string-trim (buffer-string)))
                  (line (car (split-string output "\n"))))
             (setq stack-hud--pattern-sync-last-output output)
@@ -337,34 +362,219 @@ The value is passed to `display-buffer-in-side-window'."
            (output (stack-hud--call-command cmd)))
       (stack-hud--pattern-sync-parse-summary output))))
 
+(defun stack-hud--pattern-sync-refresh-async ()
+  (when (and (not stack-hud--pattern-sync-refresh-in-flight)
+             (file-directory-p stack-hud-pattern-sync-root))
+    (setq stack-hud--pattern-sync-refresh-in-flight t)
+    (let ((state (list :reachable nil
+                       :diff nil
+                       :diff-error nil
+                       :verify nil))
+          (pending 0))
+      (cl-labels
+          ((finalize ()
+             (setq stack-hud--pattern-sync-cache state
+                   stack-hud--pattern-sync-cache-time (float-time)
+                   stack-hud--pattern-sync-refresh-in-flight nil))
+           (mark-done ()
+             (setq pending (1- pending))
+             (when (<= pending 0)
+               (finalize)))
+           (parse-json-buffer ()
+             (let ((json-object-type 'plist)
+                   (json-array-type 'list)
+                   (json-key-type 'symbol))
+               (when (re-search-forward "\n\n" nil t)
+                 (if (fboundp 'json-parse-buffer)
+                     (json-parse-buffer :object-type 'plist
+                                        :array-type 'list
+                                        :null-object nil
+                                        :false-object nil)
+                   (json-read)))))
+           (start-verify ()
+             (let ((url (stack-hud--futon1-api-url "/meta/model/verify")))
+               (if (not url)
+                   (mark-done)
+                 (let ((timeout stack-hud-pattern-sync-timeout-seconds)
+                       (timer nil))
+                   (setq pending (1+ pending))
+                   (setq timer
+                         (run-at-time
+                          timeout nil
+                          (lambda ()
+                            (setq timer nil)
+                            (setq stack-hud--pattern-sync-last-error
+                                  "pattern sync verify timed out")
+                            (setq state (plist-put state :diff-error
+                                                   stack-hud--pattern-sync-last-error))
+                            (mark-done))))
+                   (url-retrieve
+                    url
+                    (lambda (status)
+                      (when (timerp timer)
+                        (cancel-timer timer))
+                      (let ((err (plist-get status :error)))
+                        (if err
+                            (setq stack-hud--pattern-sync-last-error
+                                  (format "verify error: %s" err))
+                          (setq stack-hud--pattern-sync-last-error nil)
+                          (let ((payload (save-excursion
+                                           (goto-char (point-min))
+                                           (ignore-errors (parse-json-buffer)))))
+                            (setq state (plist-put state :verify
+                                                   (stack-hud--pattern-sync-verify-summary payload))))))
+                      (setq state (plist-put state :diff-error
+                                             stack-hud--pattern-sync-last-error))
+                      (kill-buffer (current-buffer))
+                      (mark-done))
+                    nil t t)))))
+           (start-diff ()
+             (let ((cmd (stack-hud--pattern-sync-command t)))
+               (if (not cmd)
+                   (mark-done)
+                 (let* ((default-directory stack-hud-pattern-sync-root)
+                        (buffer (generate-new-buffer " *stack-hud-pattern-sync*"))
+                        (proc (make-process :name "stack-hud-pattern-sync-diff"
+                                            :buffer buffer
+                                            :command cmd
+                                            :noquery t))
+                        (timeout stack-hud-pattern-sync-timeout-seconds)
+                        (done nil)
+                        (timer nil))
+                   (setq pending (1+ pending))
+                   (setq timer
+                         (run-at-time
+                          timeout nil
+                          (lambda ()
+                            (when (and (not done) (process-live-p proc))
+                              (setq done t)
+                              (kill-process proc)
+                              (setq stack-hud--pattern-sync-last-error
+                                    "pattern sync diff timed out")
+                              (setq state (plist-put state :diff nil))
+                              (setq state (plist-put state :diff-error
+                                                     stack-hud--pattern-sync-last-error))
+                              (mark-done)))))
+                   (set-process-sentinel
+                    proc
+                    (lambda (process _event)
+                      (when (and (not done)
+                                 (memq (process-status process) '(exit signal)))
+                        (setq done t)
+                        (when (timerp timer)
+                          (cancel-timer timer))
+                        (let* ((status (process-exit-status process))
+                               (output (with-current-buffer (process-buffer process)
+                                         (buffer-string)))
+                               (line (car (split-string output "\n"))))
+                          (setq stack-hud--pattern-sync-last-output output)
+                          (if (and (numberp status) (zerop status))
+                              (setq stack-hud--pattern-sync-last-error nil)
+                            (setq stack-hud--pattern-sync-last-error
+                                  (format "pattern-sync failed (status %s): %s"
+                                          status (or line "no output"))))
+                          (setq state (plist-put state :diff
+                                                 (stack-hud--pattern-sync-parse-summary output)))
+                          (setq state (plist-put state :diff-error
+                                                 stack-hud--pattern-sync-last-error)))
+                        (kill-buffer (process-buffer process))
+                        (mark-done))))))))
+           (start-reachable ()
+             (let ((url (stack-hud--futon1-health-url)))
+               (if (not url)
+                   (finalize)
+                 (let ((timeout stack-hud-pattern-sync-timeout-seconds)
+                       (timer nil))
+                   (setq timer
+                         (run-at-time
+                          timeout nil
+                          (lambda ()
+                            (setq timer nil)
+                            (setq stack-hud--pattern-sync-last-error
+                                  "pattern sync reachability timed out")
+                            (setq state (plist-put state :reachable nil))
+                            (setq state (plist-put state :diff-error
+                                                   stack-hud--pattern-sync-last-error))
+                            (finalize))))
+                   (url-retrieve
+                    url
+                    (lambda (status)
+                      (when (timerp timer)
+                        (cancel-timer timer))
+                      (let ((ok nil)
+                            (err (plist-get status :error)))
+                        (if err
+                            (setq stack-hud--pattern-sync-last-error
+                                  (format "reachability error: %s" err))
+                          (goto-char (point-min))
+                          (when (re-search-forward "HTTP/[^ ]+ \\([0-9]+\\)" nil t)
+                            (let ((code (string-to-number (match-string 1))))
+                              (setq ok (<= 200 code 299))))
+                          (setq stack-hud--pattern-sync-last-error nil))
+                        (setq state (plist-put state :reachable ok))
+                        (kill-buffer (current-buffer))
+                        (if ok
+                            (progn
+                              (start-diff)
+                              (start-verify)
+                              (when (<= pending 0)
+                                (finalize)))
+                          (finalize))))
+                    nil t t)))))
+        (start-reachable))))))
+
 (defun stack-hud--pattern-sync-status ()
-  (let ((now (float-time)))
-    (if (and stack-hud--pattern-sync-cache
-             (< (- now stack-hud--pattern-sync-cache-time) stack-hud-pattern-sync-cache-seconds))
-        stack-hud--pattern-sync-cache
-      (let* ((reachable (stack-hud--futon1-reachable-p))
-             (diff (when reachable
-                     (stack-hud--pattern-sync-diff)))
-             (verify (when reachable
-                       (let* ((headers (when (and stack-hud-futon1-profile
-                                                  (not (string-empty-p stack-hud-futon1-profile)))
-                                         `(("X-Profile" . ,stack-hud-futon1-profile))))
-                              (payload (stack-hud--fetch-json
-                                        (stack-hud--futon1-api-url "/meta/model/verify")
-                                        headers)))
-                         (stack-hud--pattern-sync-verify-summary payload))))
-             (status (list :reachable reachable
-                           :diff diff
-                           :diff-error stack-hud--pattern-sync-last-error
-                           :verify verify
-                           :checked-at (current-time-string))))
-        (setq stack-hud--pattern-sync-cache status
-              stack-hud--pattern-sync-cache-time now)
-        status))))
+  (if stack-hud-pattern-sync-async
+      (let* ((now (float-time))
+             (stale (or (null stack-hud--pattern-sync-cache)
+                        (>= (- now stack-hud--pattern-sync-cache-time)
+                            stack-hud-pattern-sync-cache-seconds))))
+        (when stale
+          (stack-hud--pattern-sync-refresh-async))
+        (let ((status (or stack-hud--pattern-sync-cache
+                          (list :reachable nil
+                                :diff nil
+                                :diff-error "pattern sync pending"
+                                :verify nil
+                                :checked-at nil))))
+          (if stack-hud--pattern-sync-refresh-in-flight
+              (plist-put (copy-sequence status) :diff-pending t)
+            status)))
+    (with-timeout (stack-hud-pattern-sync-timeout-seconds
+                   (list :reachable nil
+                         :diff nil
+                         :diff-error "pattern sync status timed out"
+                         :verify nil
+                         :checked-at (current-time-string)))
+      (let ((now (float-time)))
+        (if (and stack-hud--pattern-sync-cache
+                 (< (- now stack-hud--pattern-sync-cache-time)
+                    stack-hud-pattern-sync-cache-seconds))
+            stack-hud--pattern-sync-cache
+          (let* ((reachable (stack-hud--futon1-reachable-p))
+                 (diff (when reachable
+                         (stack-hud--pattern-sync-diff)))
+                 (verify (when reachable
+                           (let* ((headers (when (and stack-hud-futon1-profile
+                                                      (not (string-empty-p stack-hud-futon1-profile)))
+                                             `(("X-Profile" . ,stack-hud-futon1-profile))))
+                                  (payload (stack-hud--fetch-json
+                                            (stack-hud--futon1-api-url "/meta/model/verify")
+                                            headers)))
+                             (stack-hud--pattern-sync-verify-summary payload))))
+                 (status (list :reachable reachable
+                               :diff diff
+                               :diff-error stack-hud--pattern-sync-last-error
+                               :verify verify
+                               :checked-at (current-time-string))))
+            (setq stack-hud--pattern-sync-cache status
+                  stack-hud--pattern-sync-cache-time now)
+            status))))))
 
 (defun stack-hud--pattern-sync-reset-cache ()
   (setq stack-hud--pattern-sync-cache nil)
-  (setq stack-hud--pattern-sync-cache-time 0))
+  (setq stack-hud--pattern-sync-cache-time 0)
+  (setq stack-hud--pattern-sync-refresh-in-flight nil))
 
 (defun stack-hud--pattern-sync-run ()
   (interactive)
@@ -741,73 +951,78 @@ The value is passed to `display-buffer-in-side-window'."
       (insert "\n\n")))))
 
 (defun my-chatgpt-shell--insert-stack-pattern-sync ()
-  (let* ((status (stack-hud--pattern-sync-status))
-         (reachable (plist-get status :reachable))
+  (if stack-hud-disable-pattern-sync
+      (insert "  Pattern sync: skipped\n\n")
+    (let* ((status (stack-hud--pattern-sync-status))
+           (reachable (plist-get status :reachable))
          (diff (plist-get status :diff))
+         (diff-pending (plist-get status :diff-pending))
          (diff-error (plist-get status :diff-error))
          (verify (plist-get status :verify))
-         (total (plist-get diff :total))
-         (entity (plist-get diff :ensure-entity))
-         (relation (plist-get diff :ensure-relation))
-         (lines '())
-         (extras '()))
-    (insert "  Pattern sync: ")
-    (cond
-     ((or (null stack-hud-futon1-api-base)
-          (string-empty-p stack-hud-futon1-api-base))
-      (push "unconfigured" lines))
-     ((eq reachable nil)
-      (push "futon1 unknown" lines))
-     (reachable
-      (push "futon1 ok" lines))
-     (t
-      (push "futon1 down" lines)))
+           (total (plist-get diff :total))
+           (entity (plist-get diff :ensure-entity))
+           (relation (plist-get diff :ensure-relation))
+           (lines '())
+           (extras '()))
+      (insert "  Pattern sync: ")
+      (cond
+       ((or (null stack-hud-futon1-api-base)
+            (string-empty-p stack-hud-futon1-api-base))
+        (push "unconfigured" lines))
+       ((eq reachable nil)
+        (push "futon1 unknown" lines))
+       (reachable
+        (push "futon1 ok" lines))
+       (t
+        (push "futon1 down" lines)))
     (cond
      (diff
       (push (format "diff %s" (or total 0)) lines)
       (when (and entity relation)
         (push (format "diff detail: entity %s, rel %s" entity relation) lines)))
+     (diff-pending
+      (push "diff pending" lines))
      ((and reachable diff-error)
       (push (format "diff err: %s" diff-error) lines))
      (reachable
       (push "diff n/a" lines)))
-    (when verify
-      (if (plist-get verify :ok?)
-          (push "inv ok" lines)
-        (let* ((count (plist-get verify :pattern-count))
-               (issues (plist-get verify :issues))
-               (sample (plist-get verify :sample))
-               (issue-text (when issues
-                             (string-join
-                              (mapcar (lambda (pair)
-                                        (format "%s=%s" (car pair) (cdr pair)))
-                                      issues)
-                              ", "))))
-          (push (format "inv fail: %s" (or count 0)) lines)
-          (when issue-text
-            (push (format "inv detail: %s" issue-text) lines))
-          (when (and (listp sample) sample)
-            (push (format "Patterns failing: %s"
-                          (string-join sample ", "))
-                  extras)))))
-    (when lines
-      (insert (string-join (nreverse lines) "\n    ")))
-    (insert " ")
-    (cond
-     ((and diff (numberp total) (> total 0))
-      (insert-text-button "Sync now"
-                          'help-echo "Push filesystem patterns into Futon1"
-                          'action (lambda (_event)
-                                    (stack-hud--pattern-sync-run))
-                          'follow-link t))
-     ((and reachable diff-error)
-      (insert "check diff"))
-     (t
-      (insert "clean")))
-    (insert "\n")
-    (dolist (line (nreverse extras))
-      (insert (format "    %s\n" line)))
-    (insert "\n")))
+      (when verify
+        (if (plist-get verify :ok?)
+            (push "inv ok" lines)
+          (let* ((count (plist-get verify :pattern-count))
+                 (issues (plist-get verify :issues))
+                 (sample (plist-get verify :sample))
+                 (issue-text (when issues
+                               (string-join
+                                (mapcar (lambda (pair)
+                                          (format "%s=%s" (car pair) (cdr pair)))
+                                        issues)
+                                ", "))))
+            (push (format "inv fail: %s" (or count 0)) lines)
+            (when issue-text
+              (push (format "inv detail: %s" issue-text) lines))
+            (when (and (listp sample) sample)
+              (push (format "Patterns failing: %s"
+                            (string-join sample ", "))
+                    extras)))))
+      (when lines
+        (insert (string-join (nreverse lines) "\n    ")))
+      (insert " ")
+      (cond
+       ((and diff (numberp total) (> total 0))
+        (insert-text-button "Sync now"
+                            'help-echo "Push filesystem patterns into Futon1"
+                            'action (lambda (_event)
+                                      (stack-hud--pattern-sync-run))
+                            'follow-link t))
+       ((and reachable diff-error)
+        (insert "check diff"))
+       (t
+        (insert "clean")))
+      (insert "\n")
+      (dolist (line (nreverse extras))
+        (insert (format "    %s\n" line)))
+      (insert "\n"))))
 
 (defun my-chatgpt-shell--insert-stack-futon-liveness (vitality)
   (let* ((activity (plist-get vitality :futon-activity))

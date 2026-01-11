@@ -12,6 +12,7 @@
 
 (require 'json)
 (require 'subr-x)
+(require 'seq)
 
 (defgroup futon-helper nil
   "Convenience helpers for Futon tooling."
@@ -21,7 +22,7 @@
   "Number of lines to scan backward for Codex M-: requests."
   :type 'integer)
 
-(defcustom futon-codex-request-regexp "M-:"
+(defcustom futon-codex-request-regexp "^\\s-*M-:\\s-*"
   "Regexp used to find Codex eval requests in output text."
   :type 'regexp)
 
@@ -52,6 +53,15 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
 (defcustom futon-codex-session-preview-chars 25
   "Maximum number of characters to show at the start of session previews."
   :type 'integer)
+
+(defcustom futon-codex-session-select-mode 'latest
+  "How to choose a Codex session when multiple candidates exist."
+  :type '(choice (const latest) (const prompt)))
+
+(defcustom futon-codex-session-message-limit nil
+  "How many recent messages to scan for Codex requests.
+When nil, scan all messages in the session."
+  :type '(choice (const nil) integer))
 
 (defcustom futon-codex-report-header "\u2014\u2014REPORT-FOR-CODEX\u2014\u2014"
   "Header line for generated Codex reports."
@@ -101,6 +111,11 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
          (preview (nth 2 parts)))
     (list session-id file preview)))
 
+(defun futon-helper--session-mtime (path)
+  (let ((attrs (and path (file-attributes path))))
+    (or (and attrs (file-attribute-modification-time attrs))
+        (current-time))))
+
 (defun futon-helper--select-session ()
   "Return (SESSION-ID . FILE) for the chosen Codex session."
   (if (and futon-codex--session-cache
@@ -136,11 +151,20 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
                         lines))
                (choice (if (= (length candidates) 1)
                            (car candidates)
-                         (assoc (completing-read "Codex session: "
-                                                 (mapcar #'car candidates)
-                                                 nil
-                                                 t)
-                                candidates)))
+                         (pcase futon-codex-session-select-mode
+                           ('latest
+                            (car (sort (copy-sequence candidates)
+                                       (lambda (a b)
+                                         (let ((file-a (nth 1 (cdr a)))
+                                               (file-b (nth 1 (cdr b))))
+                                           (time-less-p (futon-helper--session-mtime file-b)
+                                                        (futon-helper--session-mtime file-a)))))))
+                           (_
+                            (assoc (completing-read "Codex session: "
+                                                    (mapcar #'car candidates)
+                                                    nil
+                                                    t)
+                                   candidates)))))
                (parsed (cdr choice))
                (selected (cons (nth 0 parsed) (nth 1 parsed))))
           (unless (and (nth 0 parsed) (nth 1 parsed))
@@ -197,13 +221,16 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
          (parts (cond
                  ((vectorp content) (append content nil))
                  ((listp content) content)
-                 (t nil))))
-    (when parts
-      (string-trim
-       (mapconcat (lambda (part)
-                    (or (futon-helper--get part 'text) ""))
-                  parts
-                  "")))))
+                 (t nil)))
+         (text (when parts
+                 (string-trim
+                  (mapconcat (lambda (part)
+                               (or (futon-helper--get part 'text) ""))
+                             parts
+                             "")))))
+    (or text
+        (futon-helper--get message 'message)
+        (futon-helper--get message 'text))))
 
 (defun futon-helper--event-message-text (payload role)
   "Return text from an event message PAYLOAD for ROLE."
@@ -241,6 +268,39 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
                 (setq last-text text))))))
         (forward-line 1))
       last-text)))
+
+(defun futon-helper--recent-message-texts (session-file &optional limit)
+  "Return a list of recent message texts from SESSION-FILE."
+  (let ((limit (or limit futon-codex-session-message-limit))
+        (texts '()))
+    (with-temp-buffer
+      (insert-file-contents session-file)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let* ((line (buffer-substring-no-properties
+                      (line-beginning-position)
+                      (line-end-position)))
+               (obj (futon-helper--json-parse-line line))
+               (type (futon-helper--get obj 'type))
+               (payload (futon-helper--get obj 'payload))
+               (role (futon-helper--get payload 'role))
+               (text nil))
+          (cond
+           ((and (string= type "response_item")
+                 (string= (futon-helper--get payload 'type) "message")
+                 (member role '("assistant" "user")))
+            (setq text (futon-helper--extract-message-text payload)))
+           ((string= type "event_msg")
+            (setq text (or (futon-helper--event-message-text payload "assistant")
+                           (futon-helper--event-message-text payload "user")))))
+          (when (and text (not (string-empty-p text)))
+            (push text texts)))
+        (forward-line 1)))
+    (let* ((ordered (nreverse texts))
+           (count (length ordered)))
+      (if (and (integerp limit) (> count limit))
+          (seq-subseq ordered (- count limit))
+        ordered))))
 
 (defun futon-helper--last-assistant-message (session-file)
   "Return the last assistant message text from SESSION-FILE."
@@ -283,62 +343,74 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
 (defun futon-helper--extract-request (line)
   "Return (EXPR-TEXT . EXPR) from LINE or nil if it can't be read."
   (let* ((trimmed (string-trim line "[`[:space:]]+" "[`[:space:]]+"))
+         (trimmed (string-trim (replace-regexp-in-string
+                                futon-codex-request-regexp "" trimmed)))
          (read-result (condition-case nil
                           (read-from-string trimmed)
                         (error nil))))
     (when read-result
       (let* ((expr (car read-result))
              (idx (cdr read-result))
-             (expr-text (string-trim (substring trimmed 0 idx)
-                                     "[`[:space:]]+"
-                                     "[`[:space:]]+")))
-        (cons expr-text expr)))))
+             (rest (string-trim (substring trimmed idx))))
+        (when (string-empty-p rest)
+          (cons trimmed expr))))))
+
+(defun futon-helper--skip-report-line-p (line)
+  (or (string= line futon-codex-report-header)
+      (string= line futon-codex-report-footer)))
 
 (defun futon-helper--collect-codex-requests-in-lines (lines)
   "Collect Codex M-: requests from LINES."
-  (let (entries)
-    (dolist (line lines)
-      (when (string-match futon-codex-request-regexp line)
-        (let* ((after (substring line (match-end 0)))
-               (request (futon-helper--extract-request after)))
-          (when request
-            (let* ((expr-text (car request))
-                   (expr (cdr request))
-                   (errorp nil)
-                   (result (condition-case err
-                               (eval expr t)
-                             (error
-                              (setq errorp t)
-                              err)))
-                   (entry (list :expr-text expr-text
-                                :result result
-                                :error errorp)))
-              (push entry entries))))))
-    (nreverse entries)))
+  (let ((entries '())
+        (in-report nil)
+        (i 0)
+        (n (length lines)))
+    (while (< i n)
+      (let ((line (nth i lines)))
+        (cond
+         ((futon-helper--skip-report-line-p line)
+          (setq in-report (string= line futon-codex-report-header))
+          (setq i (1+ i)))
+         (in-report
+          (setq i (1+ i)))
+         ((string-match futon-codex-request-regexp line)
+          (let ((acc line)
+                (j i)
+                (request nil))
+            (while (and (null request) (< j n))
+              (setq request (futon-helper--extract-request acc))
+              (when (null request)
+                (setq j (1+ j))
+                (when (< j n)
+                  (setq acc (concat acc "\n" (nth j lines))))))
+            (setq i (1+ j))
+            (when request
+              (let* ((expr-text (car request))
+                     (expr (cdr request))
+                     (errorp nil)
+                     (result (condition-case err
+                                 (eval expr t)
+                               (error
+                                (setq errorp t)
+                                err)))
+                     (entry (list :expr-text expr-text
+                                  :result result
+                                  :error errorp)))
+                (push entry entries)))))
+         (t (setq i (1+ i))))))
+    (let ((seen (make-hash-table :test 'equal))
+          (uniq '()))
+      (dolist (entry (nreverse entries))
+        (let ((key (plist-get entry :expr-text)))
+          (unless (gethash key seen)
+            (puthash key t seen)
+            (push entry uniq))))
+      (nreverse uniq))))
 
 (defun futon-helper--collect-codex-requests (start end)
   "Collect Codex M-: requests in region between START and END."
-  (let (entries)
-    (save-excursion
-      (goto-char start)
-      (while (re-search-forward futon-codex-request-regexp end t)
-        (let* ((line (buffer-substring-no-properties
-                      (point) (line-end-position)))
-               (request (futon-helper--extract-request line)))
-          (when request
-            (let* ((expr-text (car request))
-                   (expr (cdr request))
-                   (errorp nil)
-                   (result (condition-case err
-                               (eval expr t)
-                             (error
-                              (setq errorp t)
-                              err)))
-                   (entry (list :expr-text expr-text
-                                :result result
-                                :error errorp)))
-              (push entry entries))))))
-    (nreverse entries)))
+  (let ((lines (split-string (buffer-substring-no-properties start end) "\n")))
+    (futon-helper--collect-codex-requests-in-lines lines)))
 
 (defun futon-helper--format-codex-report (entries)
   "Format ENTRIES as a Codex report block."
@@ -370,15 +442,12 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
            ('session
             (let* ((session (futon-helper--select-session))
                    (session-file (cdr session))
-                   (text (or (futon-helper--last-assistant-message session-file)
-                             (futon-helper--last-user-message session-file))))
-              (if text
-                  (futon-helper--collect-codex-requests-in-lines
-                   (split-string text "\n"))
-                (if (derived-mode-p 'eat-mode)
-                    (let ((region (futon-helper--scan-region)))
-                      (futon-helper--collect-codex-requests (car region) (cdr region)))
-                  (user-error "No message text found in %s" session-file)))))
+                   (texts (futon-helper--recent-message-texts session-file))
+                   (lines (and texts (split-string (string-join texts "\n") "\n")))
+                   (entries (and lines
+                                 (futon-helper--collect-codex-requests-in-lines lines))))
+              (or entries
+                  (user-error "No M-: requests found in %s" session-file))))
            (_ (user-error "Unknown report source: %s" futon-codex-report-source)))))
     (unless entries
       (user-error "No M-: requests found in recent output"))
