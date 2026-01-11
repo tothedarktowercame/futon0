@@ -30,7 +30,8 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 ## Affect markers from open-world ingest
 
 - Source: FUTON1 open-world capture (XTDB or equivalent)
-- Path/endpoint: TBD — needs futon1 documentation check
+- Path/endpoint: `FUTON1_API_BASE` + `/api/alpha/affect-transitions` (requires `actor_id`)
+- Telemetry companion: `/api/alpha/affect-labels` for aggregate label counts
 - Heuristic: infer from typing activity / session patterns
 - Code update: may be required to emit affect-relevant signals
 - Acceptable lag: daily (batch with vitality scanner)
@@ -90,6 +91,7 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 - [X] **futon1 ticket**: expose XTDB endpoint/path for affect inference
   - Needed for timestamp correlation with time envelope
   - Blocks: unclocked activity detection, affect heuristics
+  - Now served via `futon0.rhythm.affect` (API-backed ingest to `affect.jsonl`)
 
 ## Future directions
 

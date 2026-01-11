@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import argparse
 import os
+import shlex
 import subprocess
+import tempfile
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -85,6 +88,62 @@ def stitch_segments(segments: list[Path], pause_seconds: float, output_path: Pat
     run(cmd)
 
 
+def parse_cmd(cmd: str) -> list[str]:
+    return shlex.split(cmd)
+
+
+def sweeten_with_easyeffects(
+    input_mp3: Path,
+    output_mp3: Path,
+    preset_name: str,
+    easyeffects_cmd: str,
+    pw_play_cmd: str,
+    pw_record_cmd: str,
+    sink_name: str,
+    monitor_name: str,
+) -> None:
+    service_proc = subprocess.Popen([*parse_cmd(easyeffects_cmd), "--service-mode"])
+    tmp_wav_path: Path | None = None
+    try:
+        time.sleep(0.5)
+        run([*parse_cmd(easyeffects_cmd), "-l", preset_name])
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_wav:
+            tmp_wav_path = Path(tmp_wav.name)
+        record_proc = subprocess.Popen([*parse_cmd(pw_record_cmd), "--target", monitor_name, str(tmp_wav_path)])
+        try:
+            run([*parse_cmd(pw_play_cmd), "--target", sink_name, str(input_mp3)])
+        finally:
+            record_proc.terminate()
+            try:
+                record_proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                record_proc.kill()
+        run(
+            [
+                "ffmpeg",
+                "-y",
+                "-i",
+                str(tmp_wav_path),
+                "-codec:a",
+                "libmp3lame",
+                "-q:a",
+                "2",
+                str(output_mp3),
+            ]
+        )
+    finally:
+        if tmp_wav_path and tmp_wav_path.exists():
+            try:
+                tmp_wav_path.unlink()
+            except OSError:
+                pass
+        service_proc.terminate()
+        try:
+            service_proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            service_proc.kill()
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Transcript -> commentary -> TTS -> stitched podcast mp3.")
     ap.add_argument("transcript", help="Path to transcript text file (UTF-8).")
@@ -105,6 +164,19 @@ def main() -> None:
     ap.add_argument("--piper-bin", default=DEFAULT_PIPER_BIN, help="Piper binary (env PIPER_BIN).")
     ap.add_argument("--pause-seconds", type=float, default=DEFAULT_PAUSE, help="Silence between segments.")
     ap.add_argument("--output-mp3", default=None, help="Final stitched mp3 path.")
+    ap.add_argument("--easyeffects-preset", default="Podcast", help="EasyEffects output preset name.")
+    ap.add_argument(
+        "--easyeffects-mode",
+        choices=["replace", "sidecar"],
+        default="sidecar",
+        help="Replace the stitched mp3 or write a sidecar sweetened mp3.",
+    )
+    ap.add_argument("--easyeffects-suffix", default="_sweet", help="Sidecar filename suffix before .mp3.")
+    ap.add_argument("--easyeffects-bin", default="easyeffects", help="EasyEffects command (supports flatpak).")
+    ap.add_argument("--pw-play-bin", default="pw-play", help="pw-play command.")
+    ap.add_argument("--pw-record-bin", default="pw-record", help="pw-record command.")
+    ap.add_argument("--easyeffects-sink", default="Easy Effects Sink", help="EasyEffects sink name.")
+    ap.add_argument("--easyeffects-monitor", default="Easy Effects Sink Monitor", help="EasyEffects monitor name.")
     args = ap.parse_args()
 
     transcript_path = Path(args.transcript).expanduser().resolve()
@@ -156,6 +228,25 @@ def main() -> None:
 
     segments = collect_segments(audio_dir)
     stitch_segments(segments, args.pause_seconds, output_mp3)
+    if args.easyeffects_preset:
+        if args.easyeffects_mode == "replace":
+            sweetened_mp3 = output_mp3.with_name(f"{output_mp3.stem}_sweetening_tmp{output_mp3.suffix}")
+        else:
+            sweetened_mp3 = output_mp3.with_name(f"{output_mp3.stem}{args.easyeffects_suffix}{output_mp3.suffix}")
+        sweeten_with_easyeffects(
+            input_mp3=output_mp3,
+            output_mp3=sweetened_mp3,
+            preset_name=args.easyeffects_preset,
+            easyeffects_cmd=args.easyeffects_bin,
+            pw_play_cmd=args.pw_play_bin,
+            pw_record_cmd=args.pw_record_bin,
+            sink_name=args.easyeffects_sink,
+            monitor_name=args.easyeffects_monitor,
+        )
+        if args.easyeffects_mode == "replace":
+            os.replace(sweetened_mp3, output_mp3)
+        else:
+            print(f"Wrote sweetened podcast: {sweetened_mp3}")
     if output_mp3.parent == audio_dir:
         update_latest_symlink(audio_dir, output_mp3)
     print(f"Wrote stitched podcast: {output_mp3}")

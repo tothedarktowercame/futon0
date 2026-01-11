@@ -66,6 +66,9 @@ tracks the concrete scripts and operational notes that back those entries.
 ## Quarterly rhythm analysis
 - `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.quarterly --write` correlates envelope summaries with affect markers (see `data/affect_markers.json`) and writes `quarterly.json` into `~/code/backups/`. Provide `--affect <path>` to point at a local `affect.jsonl`.
 
+## Affect transitions ingest (FUTON1)
+- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.affect --api-base http://localhost:8080 --actor-id :open-world-ingest.nlp/ego --write` fetches FUTON1 affect transitions and emits `~/code/storage/futon0/vitality/affect.jsonl` (or `--output`) for quarterly correlation. Use `--append` for incremental daily runs and pass `--lookback-hours`, `--since`, or `--until` to control the window.
+
 ## Voice typing bridge
 
 - `opt/voice-typing-linux/voice` launches `enhanced-voice-typing.py`, a faster-whisper + VAD loop tuned for this stack. Pass `--layout dvorak` (or keep the default `qwerty`) and optional `--enter-key KEYWORD` to control how transcripts are mapped and when Enter is sent.
