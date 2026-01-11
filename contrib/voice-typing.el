@@ -8,7 +8,8 @@
 
 (require 'subr-x)
 
-(defcustom my-chatgpt-shell-voice-command "/home/joe/opt/voice-typing-linux/voice --layout dvorak --enter-keyword rocket"
+(defcustom my-chatgpt-shell-voice-command
+  '("/home/joe/opt/voice-typing-linux/voice" "--layout" "dvorak" "--enter-keyword" "rocket")
   "Command used to start the Futon voice typing interface.
 Value can be a string (executed via the user shell) or a list of program
 and arguments passed directly to `start-process'."
@@ -31,6 +32,11 @@ Value can be a string (shell command) or a list passed to `start-process'."
 
 (defvar my-chatgpt-shell--voice-process nil)
 (defvar my-chatgpt-shell--ydotoold-process nil)
+
+(defun my-chatgpt-shell--voice-refresh-hud ()
+  "Refresh the Stack HUD without touching the Tatami Context HUD."
+  (when (fboundp 'stack-hud--refresh-buffer)
+    (stack-hud--refresh-buffer)))
 
 (defun my-chatgpt-shell--voice-command-list ()
   (let ((cmd my-chatgpt-shell-voice-command))
@@ -55,7 +61,7 @@ Value can be a string (shell command) or a list passed to `start-process'."
   (when (eq proc my-chatgpt-shell--voice-process)
     (setq my-chatgpt-shell--voice-process nil)
     (message "Stack voice typing stopped (%s)" (string-trim event))
-    (my-chatgpt-shell--maybe-render-context)))
+    (my-chatgpt-shell--voice-refresh-hud)))
 
 (defun my-chatgpt-shell-voice-start ()
   "Start the Futon voice typing process."
@@ -68,7 +74,7 @@ Value can be a string (shell command) or a list passed to `start-process'."
            (args (cdr cmd))
            (buffer (get-buffer-create my-chatgpt-shell-voice-buffer-name))
            (process-environment
-            (cons (format "YDOTOOL_SOCKET_PATH=%s" my-chatgpt-shell-voice-socket-path)
+            (cons (format "YDOTOOL_SOCKET=%s" my-chatgpt-shell-voice-socket-path)
                   process-environment))
            (proc (apply #'start-process "stack-voice"
                         buffer program args)))
@@ -77,7 +83,7 @@ Value can be a string (shell command) or a list passed to `start-process'."
       (setq my-chatgpt-shell--voice-process proc)
       (message "Stack voice typing started (buffer %s)."
                my-chatgpt-shell-voice-buffer-name)
-      (my-chatgpt-shell--maybe-render-context)
+      (my-chatgpt-shell--voice-refresh-hud)
       proc)))
 
 (defun my-chatgpt-shell-voice-stop ()
@@ -122,10 +128,10 @@ Value can be a string (shell command) or a list passed to `start-process'."
                                      (when (string-match-p "finished" event)
                                        (message "Stack ydotoold stopped (%s)" (string-trim event)))
                                      (setq my-chatgpt-shell--ydotoold-process nil)
-                                     (my-chatgpt-shell--maybe-render-context)))
+                                     (my-chatgpt-shell--voice-refresh-hud)))
         (setq my-chatgpt-shell--ydotoold-process proc)
         (message "Stack ydotoold started (socket %s)." my-chatgpt-shell-voice-socket-path)
-        (my-chatgpt-shell--maybe-render-context)
+        (my-chatgpt-shell--voice-refresh-hud)
         proc))))
 
 (defun my-chatgpt-shell--voice-stop-ydotoold ()

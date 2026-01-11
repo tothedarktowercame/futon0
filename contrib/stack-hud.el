@@ -593,8 +593,15 @@ The value is passed to `display-buffer-in-side-window'."
          (when (memq (process-status process) '(exit signal))
            (stack-hud--pattern-sync-reset-cache)
            (message "Pattern sync finished: %s" (string-trim event))
-           (when (fboundp 'my-chatgpt-shell--maybe-render-context)
-             (my-chatgpt-shell--maybe-render-context))))))))
+           (stack-hud--refresh-buffer)))))))
+
+(defun stack-hud--refresh-buffer ()
+  "Re-render the Stack HUD without touching the Tatami Context HUD."
+  (let* ((buf (get-buffer my-chatgpt-shell-stack-buffer-name))
+         (state (when (and buf (boundp 'stack-doc--stack-last-state))
+                  (buffer-local-value 'stack-doc--stack-last-state buf))))
+    (when (and state (fboundp 'stack-hud--render-context))
+      (stack-hud--render-context state))))
 
 (defun my-chatgpt-shell--stack-status-symbol (value)
   (cond
@@ -925,7 +932,7 @@ The value is passed to `display-buffer-in-side-window'."
                           'help-echo "Toggle Stack hot reload watchers"
                           'action (lambda (_event)
                                     (my-chatgpt-shell-hot-reload-toggle)
-                                    (my-chatgpt-shell--maybe-render-context))
+                                    (stack-hud--refresh-buffer))
                           'follow-link t)
       (when delta
         (insert (format " | last reload %s"

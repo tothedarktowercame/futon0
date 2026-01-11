@@ -18,6 +18,10 @@
   "When non-nil, log when the Tatami Context window is created."
   :type 'boolean
   :group 'tatami-integration)
+(defcustom futon-hud-suppress-context-window-from-stack t
+  "When non-nil, skip creating Tatami Context windows from Stack HUD buffers."
+  :type 'boolean
+  :group 'tatami-integration)
 
 (defcustom stack-hud-context-font-scale 1.0
   "Relative font scale for the Stack/Tatami HUD buffers.
@@ -41,14 +45,18 @@ Set to nil or 1.0 to leave the default face size unchanged."
   (setq my-chatgpt-shell--context-window nil))
 
 (defun my-chatgpt-shell--delete-stack-window ()
-  (when (my-chatgpt-shell--stack-window-owned-p)
-    (set-window-parameter my-chatgpt-shell--stack-window 'tatami-context-owner nil)
-    (set-window-parameter my-chatgpt-shell--stack-window 'tatami-stack-owner nil)
-    (set-window-dedicated-p my-chatgpt-shell--stack-window nil)
-    (if (one-window-p t)
-        (set-window-buffer my-chatgpt-shell--stack-window (get-buffer-create "*scratch*"))
-      (delete-window my-chatgpt-shell--stack-window)))
-  (setq my-chatgpt-shell--stack-window nil))
+  (let ((win my-chatgpt-shell--stack-window))
+    (when (my-chatgpt-shell--stack-window-owned-p win)
+      (set-window-parameter win 'tatami-context-owner nil)
+      (set-window-parameter win 'tatami-stack-owner nil)
+      (set-window-dedicated-p win nil)
+      (let ((one-window (with-selected-frame (window-frame win)
+                          (one-window-p t)))
+            (root-window (not (window-parent win))))
+        (if (or one-window root-window)
+            (set-window-buffer win (get-buffer-create "*scratch*"))
+          (delete-window win))))
+    (setq my-chatgpt-shell--stack-window nil)))
 
 (defun my-chatgpt-shell--stack-frame ()
   (let ((existing (or (and (frame-live-p my-chatgpt-shell--stack-frame)
@@ -87,24 +95,29 @@ Set to nil or 1.0 to leave the default face size unchanged."
 
 (defun my-chatgpt-shell--ensure-context-window (buf)
   "Display BUF in the dedicated Tatami HUD side window near the active frame."
-  (my-chatgpt-shell--prepare-context-buffer buf)
-  (if (and (window-live-p my-chatgpt-shell--context-window)
-           (eq (window-buffer my-chatgpt-shell--context-window) buf))
-      my-chatgpt-shell--context-window
-    (let ((frame (window-frame (selected-window))))
-      (my-chatgpt-shell--delete-tatami-window)
-      (let ((win (with-selected-frame frame
-                   (display-buffer-in-side-window buf '((side . right)
-                                                        (slot . 0)
-                                                        (window-width . 0.4))))))
-        (when (window-live-p win)
-          (set-window-dedicated-p win t)
-          (set-window-parameter win 'tatami-context-owner (current-buffer))
-          (when futon-hud-log-context-window-creates
-            (message "Tatami Context window created by %s (buffer %s)"
-                     (or this-command "unknown")
-                     (buffer-name (current-buffer))))
-          (setq my-chatgpt-shell--context-window win))))))
+  (if (and futon-hud-suppress-context-window-from-stack
+           (boundp 'my-chatgpt-shell-stack-buffer-name)
+           (eq (current-buffer) (get-buffer my-chatgpt-shell-stack-buffer-name))
+           (not (eq this-command 'my-chatgpt-shell-toggle-context)))
+      (get-buffer-window buf)
+    (my-chatgpt-shell--prepare-context-buffer buf)
+    (if (and (window-live-p my-chatgpt-shell--context-window)
+             (eq (window-buffer my-chatgpt-shell--context-window) buf))
+        my-chatgpt-shell--context-window
+      (let ((frame (window-frame (selected-window))))
+        (my-chatgpt-shell--delete-tatami-window)
+        (let ((win (with-selected-frame frame
+                     (display-buffer-in-side-window buf '((side . right)
+                                                          (slot . 0)
+                                                          (window-width . 0.4))))))
+          (when (window-live-p win)
+            (set-window-dedicated-p win t)
+            (set-window-parameter win 'tatami-context-owner (current-buffer))
+            (when futon-hud-log-context-window-creates
+              (message "Tatami Context window created by %s (buffer %s)"
+                       (or this-command "unknown")
+                       (buffer-name (current-buffer))))
+            (setq my-chatgpt-shell--context-window win)))))))
 
 (defun my-chatgpt-shell--ensure-stack-window (buf)
   "Display BUF in the dedicated Stack HUD frame."

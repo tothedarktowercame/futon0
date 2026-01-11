@@ -72,7 +72,7 @@ tracks the concrete scripts and operational notes that back those entries.
 ## Voice typing bridge
 
 - `opt/voice-typing-linux/voice` launches `enhanced-voice-typing.py`, a faster-whisper + VAD loop tuned for this stack. Pass `--layout dvorak` (or keep the default `qwerty`) and optional `--enter-key KEYWORD` to control how transcripts are mapped and when Enter is sent.
-- The script prefers a per-user ydotool socket (`/run/user/$UID/ydotoold/socket`) and advertises that path via `YDOTOOL_SOCKET_PATH`. Make sure the `ydotoold` binary can access `/dev/uinput` (either join the `uinput` group or apply the udev rule in `docs/systemd/README.md`).
+- The script prefers a per-user ydotool socket (`/run/user/$UID/ydotoold/socket`) and advertises that path via `YDOTOOL_SOCKET`. Make sure the `ydotoold` binary can access `/dev/uinput` (either join the `uinput` group or apply the udev rule in `docs/systemd/README.md`).
 - Futon3’s Stack HUD exposes “Voice typing: Start/Stop” buttons that launch both `ydotoold` (using `my-chatgpt-shell-ydotoold-command`) and the voice client, so you can toggle dictation without touching a terminal. Output lands in the `*Stack Voice Typing*` buffer for debugging.
 - When the HUD reports “Voice typing: ON | pid …” it means both `ydotoold` and the recognizer are live; if it shows “unconfigured” double‑check `my-chatgpt-shell-voice-command` or the udev permissions on `/dev/uinput`. The hot reload block above it works the same way for Emacs auto‑eval.
 - TODO: Trace why toggling voice typing sometimes opens `*Tatami Context*` and log the initiating command so it can be suppressed.
