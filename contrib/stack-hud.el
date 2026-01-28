@@ -268,6 +268,26 @@ The value is passed to `display-buffer-in-side-window'."
         (setq stack-hud--musn-cache-time now)))
     stack-hud--musn-cache))
 
+(defvar stack-hud--musn-vitality-cache nil)
+(defvar stack-hud--musn-vitality-cache-time 0)
+(defvar stack-hud--musn-vitality-cache-seconds 60)
+
+(defun stack-hud--musn-vitality ()
+  "Fetch vitality scan data from MUSN server, using cache if fresh."
+  (let* ((now (float-time))
+         (stale (or (null stack-hud--musn-vitality-cache)
+                    (>= (- now stack-hud--musn-vitality-cache-time)
+                        stack-hud--musn-vitality-cache-seconds))))
+    (when stale
+      (condition-case nil
+          (when-let ((url (stack-hud--musn-url "/musn/vitality")))
+            (let ((resp (stack-hud--fetch-json url)))
+              (when (plist-get resp :ok)
+                (setq stack-hud--musn-vitality-cache (plist-get resp :vitality))
+                (setq stack-hud--musn-vitality-cache-time now))))
+        (error nil)))
+    stack-hud--musn-vitality-cache))
+
 (defun stack-hud--pattern-sync-verify-summary (payload)
   (when payload
     (let* ((ok (plist-get payload :ok?))
@@ -740,20 +760,25 @@ The value is passed to `display-buffer-in-side-window'."
      (t nil))))
 
 (defun my-chatgpt-shell--stack-vitality-from-file ()
-  (stack-hud--maybe-refresh-vitality-scan)
-  (let ((path stack-hud-vitality-scan-path))
-    (when (file-readable-p path)
-      (with-temp-buffer
-        (insert-file-contents path)
-        (condition-case nil
-            (let* ((json-object-type 'plist)
-                   (json-array-type 'list)
-                   (json-key-type 'symbol)
-                   (data (if (fboundp 'json-parse-buffer)
-                             (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
-                           (json-read))))
-              data)
-          (error nil))))))
+  ;; Try MUSN first if configured
+  (or (when (and stack-hud-musn-url (not (string-empty-p stack-hud-musn-url)))
+        (stack-hud--musn-vitality))
+      ;; Fall back to local file
+      (progn
+        (stack-hud--maybe-refresh-vitality-scan)
+        (let ((path stack-hud-vitality-scan-path))
+          (when (file-readable-p path)
+            (with-temp-buffer
+              (insert-file-contents path)
+              (condition-case nil
+                  (let* ((json-object-type 'plist)
+                         (json-array-type 'list)
+                         (json-key-type 'symbol)
+                         (data (if (fboundp 'json-parse-buffer)
+                                   (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
+                                 (json-read))))
+                    data)
+                (error nil))))))))
 
 (defun my-chatgpt-shell--stack-zoomr4-status-counts ()
   (let ((path (and (boundp 'arxana-media-index-path) arxana-media-index-path)))
