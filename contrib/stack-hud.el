@@ -255,10 +255,14 @@ The value is passed to `display-buffer-in-side-window'."
                                       (seq-filter
                                        #'identity
                                        (mapcar (lambda (e)
-                                                 (let ((a (plist-get e :agent)))
+                                                 (let ((a (or (plist-get e :agent)
+                                                              (plist-get e 'agent)
+                                                              (cdr (assq 'agent e))
+                                                              (cdr (assoc "agent" e)))))
                                                    (cond
                                                     ((stringp a) a)
                                                     ((symbolp a) (symbol-name a))
+                                                    ((keywordp a) (substring (symbol-name a) 1))
                                                     (t nil))))
                                                entries))))))
         (setq stack-hud--musn-cache-time now)))
