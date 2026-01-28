@@ -225,7 +225,9 @@ The value is passed to `display-buffer-in-side-window'."
   (condition-case nil
       (when-let ((url (stack-hud--musn-url
                        (format "/musn/activity/entries?limit=%d" (or limit 20)))))
-        (stack-hud--fetch-json url))
+        (let ((resp (stack-hud--fetch-json url)))
+          (when (plist-get resp :ok)
+            (plist-get resp :entries))))
     (error nil)))
 
 (defun stack-hud--musn-status ()
@@ -250,10 +252,15 @@ The value is passed to `display-buffer-in-side-window'."
                     :affect-count (or affect-count 0)
                     :recent-agents (when entries
                                      (seq-uniq
-                                      (seq-take
-                                       (mapcar (lambda (e) (plist-get e :agent))
-                                               entries)
-                                       5)))))
+                                      (seq-filter
+                                       #'identity
+                                       (mapcar (lambda (e)
+                                                 (let ((a (plist-get e :agent)))
+                                                   (cond
+                                                    ((stringp a) a)
+                                                    ((symbolp a) (symbol-name a))
+                                                    (t nil))))
+                                               entries))))))
         (setq stack-hud--musn-cache-time now)))
     stack-hud--musn-cache))
 
