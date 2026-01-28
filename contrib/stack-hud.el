@@ -52,6 +52,12 @@ The value is passed to `display-buffer-in-side-window'."
   :type 'string
   :group 'tatami-integration)
 
+(defcustom stack-hud-musn-url (or (getenv "MUSN_URL")
+                                  "http://localhost:6065")
+  "Base URL for MUSN server (activity stream, affect events)."
+  :type 'string
+  :group 'tatami-integration)
+
 (defcustom stack-hud-futon1-profile (getenv "FUTON1_PROFILE")
   "Futon1 profile header used for API calls."
   :type 'string
@@ -136,6 +142,9 @@ The value is passed to `display-buffer-in-side-window'."
 (defvar stack-hud--last-boundary-scan-time 0)
 (defvar stack-hud--vitality-config-cache nil)
 (defvar stack-hud--vitality-config-mtime nil)
+(defvar stack-hud--musn-cache nil)
+(defvar stack-hud--musn-cache-time 0)
+(defvar stack-hud--musn-cache-seconds 30)
 
 (defun stack-hud--futon1-root-url ()
   (when (and stack-hud-futon1-api-base
@@ -185,6 +194,68 @@ The value is passed to `display-buffer-in-side-window'."
                 (kill-buffer buf)
                 (and status (<= 200 status 299)))))))
     (error nil)))
+
+;; MUSN integration
+
+(defun stack-hud--musn-url (path)
+  "Build a MUSN URL for PATH."
+  (when (and stack-hud-musn-url
+             (not (string-empty-p stack-hud-musn-url)))
+    (concat (string-trim-right stack-hud-musn-url "/") path)))
+
+(defun stack-hud--musn-health ()
+  "Check MUSN server health. Returns plist with :ok and :error."
+  (condition-case err
+      (when-let ((url (stack-hud--musn-url "/health")))
+        (let ((buf (url-retrieve-synchronously url t t 2.0)))
+          (if (not buf)
+              (list :ok nil :error "no response")
+            (with-current-buffer buf
+              (goto-char (point-min))
+              (let ((status (when (re-search-forward "HTTP/[^ ]+ \\([0-9]+\\)" nil t)
+                              (string-to-number (match-string 1)))))
+                (kill-buffer buf)
+                (if (and status (<= 200 status 299))
+                    (list :ok t :error nil)
+                  (list :ok nil :error (format "HTTP %s" status))))))))
+    (error (list :ok nil :error (format "%s" err)))))
+
+(defun stack-hud--musn-activity-entries (&optional limit)
+  "Fetch recent activity entries from MUSN. Returns list of entries."
+  (condition-case nil
+      (when-let ((url (stack-hud--musn-url
+                       (format "/musn/activity/entries?limit=%d" (or limit 20)))))
+        (stack-hud--fetch-json url))
+    (error nil)))
+
+(defun stack-hud--musn-status ()
+  "Get MUSN status, using cache if fresh."
+  (let* ((now (float-time))
+         (stale (or (null stack-hud--musn-cache)
+                    (>= (- now stack-hud--musn-cache-time)
+                        stack-hud--musn-cache-seconds))))
+    (when stale
+      (let* ((health (stack-hud--musn-health))
+             (entries (when (plist-get health :ok)
+                        (stack-hud--musn-activity-entries 10)))
+             (affect-count (when entries
+                             (length (seq-filter
+                                      (lambda (e)
+                                        (equal (plist-get e :event/type)
+                                               "affect/transition"))
+                                      entries)))))
+        (setq stack-hud--musn-cache
+              (list :health health
+                    :activity-count (length (or entries '()))
+                    :affect-count (or affect-count 0)
+                    :recent-agents (when entries
+                                     (seq-uniq
+                                      (seq-take
+                                       (mapcar (lambda (e) (plist-get e :agent))
+                                               entries)
+                                       5)))))
+        (setq stack-hud--musn-cache-time now)))
+    stack-hud--musn-cache))
 
 (defun stack-hud--pattern-sync-verify-summary (payload)
   (when payload
@@ -957,6 +1028,37 @@ The value is passed to `display-buffer-in-side-window'."
         (insert (format " | pid %s" (process-id proc))))
       (insert "\n\n")))))
 
+(defun my-chatgpt-shell--insert-stack-musn ()
+  "Insert MUSN status section into the Stack HUD."
+  (insert "  MUSN: ")
+  (cond
+   ((or (null stack-hud-musn-url)
+        (string-empty-p stack-hud-musn-url))
+    (insert "unconfigured\n\n"))
+   (t
+    (let* ((status (stack-hud--musn-status))
+           (health (plist-get status :health))
+           (ok (plist-get health :ok))
+           (err (plist-get health :error))
+           (activity-count (plist-get status :activity-count))
+           (affect-count (plist-get status :affect-count))
+           (agents (plist-get status :recent-agents)))
+      (if ok
+          (progn
+            (insert "ok")
+            (when (and activity-count (> activity-count 0))
+              (insert (format " | %d recent" activity-count)))
+            (when (and affect-count (> affect-count 0))
+              (insert (format " | %d affect" affect-count)))
+            (when agents
+              (insert (format " | agents: %s"
+                              (string-join
+                               (mapcar (lambda (a) (format "%s" a))
+                                       (seq-take agents 3))
+                               ", ")))))
+        (insert (format "down (%s)" (or err "unknown"))))
+      (insert "\n\n")))))
+
 (defun my-chatgpt-shell--insert-stack-pattern-sync ()
   (if stack-hud-disable-pattern-sync
       (insert "  Pattern sync: skipped\n\n")
@@ -1086,6 +1188,7 @@ The value is passed to `display-buffer-in-side-window'."
     (my-chatgpt-shell--insert-stack-futon-liveness vitality)
     (my-chatgpt-shell--insert-stack-hot-reload)
     (my-chatgpt-shell--insert-stack-voice)
+    (my-chatgpt-shell--insert-stack-musn)
     (my-chatgpt-shell--insert-stack-pattern-sync)
     (my-chatgpt-shell--insert-stack-focus-profile focus-profile)
     (my-chatgpt-shell--insert-stack-vitality vitality)
