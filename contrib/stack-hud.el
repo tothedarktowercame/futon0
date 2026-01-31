@@ -1248,7 +1248,8 @@ Returns t if connection succeeds, nil otherwise."
               (setq up-count (1+ up-count))
             (setq down-count (1+ down-count))
             (push name down-names))))
-      (insert (format "    Local: %d up" up-count))
+      (let ((total (+ up-count down-count)))
+        (insert (format "    Local: %d/%d up" up-count total)))
       (when (> down-count 0)
         (insert (propertize (format " | %d DOWN: %s"
                                     down-count
@@ -1281,18 +1282,20 @@ Returns t if connection succeeds, nil otherwise."
                        url-host))
                (up-count 0)
                (down-count 0)
+               (total-count 0)
                (down-names '()))
           (dolist (svc services)
             (let ((name (plist-get svc :name))
                   (status (plist-get svc :status)))
               (cond
-               ((eq status 'up) (setq up-count (1+ up-count)))
-               ((equal status "up") (setq up-count (1+ up-count)))
+               ((eq status 'up) (setq up-count (1+ up-count) total-count (1+ total-count)))
+               ((equal status "up") (setq up-count (1+ up-count) total-count (1+ total-count)))
                ((eq status 'disabled) nil)
                ((equal status "disabled") nil)
-               (t (setq down-count (1+ down-count))
+               (t (setq down-count (1+ down-count) total-count (1+ total-count))
                   (push name down-names)))))
-          (insert (format "    Remote: %d up" up-count))
+          (let ((total (if (> total-count 0) total-count (+ up-count down-count))))
+            (insert (format "    Remote: %d/%d up" up-count total)))
           (when (> down-count 0)
             (insert (propertize (format " | %d DOWN: %s"
                                         down-count
