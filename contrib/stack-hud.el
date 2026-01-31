@@ -132,6 +132,38 @@ The value is passed to `display-buffer-in-side-window'."
   :type 'integer
   :group 'tatami-integration)
 
+(defcustom stack-hud-blocks
+  '((:key liveness     :enabled t)
+    (:key services     :enabled t)
+    (:key hot-reload   :enabled t)
+    (:key voice        :enabled t)
+    (:key musn         :enabled t)
+    (:key pattern-sync :enabled t)
+    (:key focus        :enabled t)
+    (:key vitality     :enabled t)
+    (:key git          :enabled t)
+    (:key boundary     :enabled t)
+    (:key reminders    :enabled t))
+  "Ordered list of HUD blocks to display.
+Each entry is a plist with :key and :enabled.
+Set :enabled to nil to hide a block.
+Reorder the list to change display order.
+
+Available blocks:
+  liveness     - Futon liveness status (f0, f1, etc.)
+  services     - Local and remote service status
+  hot-reload   - Emacs hot reload watcher status
+  voice        - Voice typing status
+  musn         - MUSN server status and activity
+  pattern-sync - Pattern sync with Futon1
+  focus        - Focus/Profile from graph memory
+  vitality     - Filesystem and Tatami vitality
+  git          - Git streak and activity
+  boundary     - Devmap boundary gaps
+  reminders    - Upcoming reminders"
+  :type '(repeat (plist :key-type symbol :value-type sexp))
+  :group 'tatami-integration)
+
 (defvar stack-hud--last-log-day nil)
 (defvar stack-hud--pattern-sync-cache nil)
 (defvar stack-hud--pattern-sync-cache-time 0)
@@ -145,6 +177,34 @@ The value is passed to `display-buffer-in-side-window'."
 (defvar stack-hud--musn-cache nil)
 (defvar stack-hud--musn-cache-time 0)
 (defvar stack-hud--musn-cache-seconds 30)
+
+;; Local services configuration
+(defcustom stack-hud-local-services
+  '(("Transport" . 5050)
+    ("Forum WS" . 5055)
+    ("MUSN HTTP" . 6065)
+    ("IRC" . 6667)
+    ("Agency" . 7070))
+  "List of local services to check. Each entry is (NAME . PORT)."
+  :type '(alist :key-type string :value-type integer)
+  :group 'tatami-integration)
+
+(defcustom stack-hud-services-cache-seconds 30
+  "Seconds to cache local service status."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-remote-stack-url nil
+  "URL to fetch remote stack status from transport service.
+Example: \"http://linode.example.com:5050/stack/status\".
+When set, the Stack HUD will show both local and remote service status."
+  :type '(choice (const nil) string)
+  :group 'tatami-integration)
+
+(defvar stack-hud--services-cache nil)
+(defvar stack-hud--services-cache-time 0)
+(defvar stack-hud--remote-stack-cache nil)
+(defvar stack-hud--remote-stack-cache-time 0)
 
 (defun stack-hud--futon1-root-url ()
   (when (and stack-hud-futon1-api-base
@@ -287,6 +347,72 @@ The value is passed to `display-buffer-in-side-window'."
                 (setq stack-hud--musn-vitality-cache-time now))))
         (error nil)))
     stack-hud--musn-vitality-cache))
+
+;; Local services status
+
+(defun stack-hud--port-open-p (port &optional host)
+  "Check if PORT is open on HOST (default 127.0.0.1).
+Returns t if connection succeeds, nil otherwise."
+  (condition-case nil
+      (let* ((host (or host "127.0.0.1"))
+             (proc (make-network-process
+                    :name "stack-hud-port-check"
+                    :host host
+                    :service port
+                    :nowait nil
+                    :family 'ipv4)))
+        (when proc
+          (delete-process proc)
+          t))
+    (error nil)))
+
+(defun stack-hud--check-local-services ()
+  "Check all configured local services. Returns alist of (NAME . STATUS)."
+  (mapcar (lambda (entry)
+            (let ((name (car entry))
+                  (port (cdr entry)))
+              (cons name (if (stack-hud--port-open-p port) 'up 'down))))
+          stack-hud-local-services))
+
+(defun stack-hud--services-status ()
+  "Get local services status, using cache if fresh."
+  (let* ((now (float-time))
+         (stale (or (null stack-hud--services-cache)
+                    (>= (- now stack-hud--services-cache-time)
+                        stack-hud-services-cache-seconds))))
+    (when stale
+      (setq stack-hud--services-cache (stack-hud--check-local-services))
+      (setq stack-hud--services-cache-time now))
+    stack-hud--services-cache))
+
+(defun stack-hud--services-reset-cache ()
+  "Clear the services status cache to force a refresh."
+  (setq stack-hud--services-cache nil)
+  (setq stack-hud--services-cache-time 0)
+  (setq stack-hud--remote-stack-cache nil)
+  (setq stack-hud--remote-stack-cache-time 0))
+
+(defun stack-hud--fetch-remote-stack ()
+  "Fetch stack status from remote transport service."
+  (when (and stack-hud-remote-stack-url
+             (not (string-empty-p stack-hud-remote-stack-url)))
+    (condition-case nil
+        (let ((resp (stack-hud--fetch-json stack-hud-remote-stack-url)))
+          (when (plist-get resp :ok)
+            (plist-get resp :stack)))
+      (error nil))))
+
+(defun stack-hud--remote-stack-status ()
+  "Get remote stack status, using cache if fresh."
+  (when stack-hud-remote-stack-url
+    (let* ((now (float-time))
+           (stale (or (null stack-hud--remote-stack-cache)
+                      (>= (- now stack-hud--remote-stack-cache-time)
+                          stack-hud-services-cache-seconds))))
+      (when stale
+        (setq stack-hud--remote-stack-cache (stack-hud--fetch-remote-stack))
+        (setq stack-hud--remote-stack-cache-time now))
+      stack-hud--remote-stack-cache)))
 
 (defun stack-hud--pattern-sync-verify-summary (payload)
   (when payload
@@ -1095,6 +1221,82 @@ The value is passed to `display-buffer-in-side-window'."
         (insert (format "down (%s)" (or err "unknown"))))
       (insert "\n\n")))))
 
+(defun my-chatgpt-shell--insert-stack-services ()
+  "Insert local and remote services status section into the Stack HUD."
+  (insert "  Services:\n")
+  ;; Local services
+  (when stack-hud-local-services
+    (let* ((status (stack-hud--services-status))
+           (up-count 0)
+           (down-count 0)
+           (down-names '()))
+      (dolist (entry status)
+        (let ((name (car entry))
+              (state (cdr entry)))
+          (if (eq state 'up)
+              (setq up-count (1+ up-count))
+            (setq down-count (1+ down-count))
+            (push name down-names))))
+      (insert (format "    Local: %d up" up-count))
+      (when (> down-count 0)
+        (insert (propertize (format " | %d DOWN: %s"
+                                    down-count
+                                    (string-join (nreverse down-names) ", "))
+                            'face 'error)))
+      (insert "\n")
+      ;; Show details when something is down
+      (when (> down-count 0)
+        (dolist (entry status)
+          (let ((name (car entry))
+                (state (cdr entry))
+                (port (cdr (assoc (car entry) stack-hud-local-services))))
+            (insert (format "      %s (%d): %s\n"
+                            name
+                            (or port 0)
+                            (if (eq state 'up) "up"
+                              (propertize "DOWN" 'face 'error)))))))))
+  ;; Remote services
+  (when stack-hud-remote-stack-url
+    (let ((remote (stack-hud--remote-stack-status)))
+      (if (not remote)
+          (insert (propertize "    Remote: unreachable\n" 'face 'warning))
+        (let* ((services (plist-get remote :services))
+               (host (or (plist-get remote :host) "remote"))
+               (up-count 0)
+               (down-count 0)
+               (down-names '()))
+          (dolist (svc services)
+            (let ((name (plist-get svc :name))
+                  (status (plist-get svc :status)))
+              (cond
+               ((eq status 'up) (setq up-count (1+ up-count)))
+               ((equal status "up") (setq up-count (1+ up-count)))
+               ((eq status 'disabled) nil)
+               ((equal status "disabled") nil)
+               (t (setq down-count (1+ down-count))
+                  (push name down-names)))))
+          (insert (format "    Remote: %d up" up-count))
+          (when (> down-count 0)
+            (insert (propertize (format " | %d DOWN: %s"
+                                        down-count
+                                        (string-join (nreverse down-names) ", "))
+                                'face 'error)))
+          (insert (format " (via %s)\n" host))
+          ;; Show details when something is down
+          (when (> down-count 0)
+            (dolist (svc services)
+              (let ((name (plist-get svc :name))
+                    (port (plist-get svc :port))
+                    (status (plist-get svc :status)))
+                (unless (or (eq status 'disabled) (equal status "disabled"))
+                  (insert (format "      %s (%s): %s\n"
+                                  name
+                                  (or port "?")
+                                  (if (or (eq status 'up) (equal status "up"))
+                                      "up"
+                                    (propertize "DOWN" 'face 'error))))))))))))
+  (insert "\n"))
+
 (defun my-chatgpt-shell--insert-stack-pattern-sync ()
   (if stack-hud-disable-pattern-sync
       (insert "  Pattern sync: skipped\n\n")
@@ -1206,31 +1408,63 @@ The value is passed to `display-buffer-in-side-window'."
      (t
       (insert "  Futon liveness: unavailable (run futon0.vitality.scanner)\n\n")))))
 
+(defun stack-hud--block-enabled-p (key)
+  "Return non-nil if block KEY is enabled in `stack-hud-blocks'."
+  (let ((block (seq-find (lambda (b) (eq (plist-get b :key) key))
+                         stack-hud-blocks)))
+    (and block (plist-get block :enabled))))
+
+(defun stack-hud--block-render-fn (key)
+  "Return the render function for block KEY."
+  (pcase key
+    ('liveness     #'my-chatgpt-shell--insert-stack-futon-liveness)
+    ('services     #'my-chatgpt-shell--insert-stack-services)
+    ('hot-reload   #'my-chatgpt-shell--insert-stack-hot-reload)
+    ('voice        #'my-chatgpt-shell--insert-stack-voice)
+    ('musn         #'my-chatgpt-shell--insert-stack-musn)
+    ('pattern-sync #'my-chatgpt-shell--insert-stack-pattern-sync)
+    ('focus        #'my-chatgpt-shell--insert-stack-focus-profile)
+    ('vitality     #'my-chatgpt-shell--insert-stack-vitality)
+    ('git          #'my-chatgpt-shell--insert-stack-git)
+    ('boundary     #'my-chatgpt-shell--insert-stack-boundary)
+    ('reminders    #'my-chatgpt-shell--insert-stack-reminders)
+    (_ nil)))
+
+(defun stack-hud--block-takes-arg-p (key)
+  "Return non-nil if block KEY's render function takes an argument."
+  (memq key '(liveness focus vitality git boundary reminders)))
+
+(defun stack-hud--block-arg (key stack)
+  "Return the argument to pass to block KEY's render function."
+  (pcase key
+    ('liveness  (plist-get stack :vitality))
+    ('focus     (plist-get stack :focus-profile))
+    ('vitality  (plist-get stack :vitality))
+    ('git       (plist-get stack :git))
+    ('boundary  (plist-get stack :boundary))
+    ('reminders (plist-get stack :reminders))
+    (_ nil)))
+
 (defun my-chatgpt-shell--insert-stack-hud (stack)
-  (let ((vitality (plist-get stack :vitality))
-        (git (plist-get stack :git))
-        (boundary (plist-get stack :boundary))
-        (reminders (plist-get stack :reminders))
-        (focus-profile (plist-get stack :focus-profile))
-        (warnings (plist-get stack :warnings)))
+  "Insert the Stack HUD into the current buffer.
+Blocks are rendered according to `stack-hud-blocks' configuration."
+  (let ((warnings (plist-get stack :warnings)))
     (insert (propertize "Stack HUD" 'face 'bold) "\n")
     (unless (seq-empty-p warnings)
       (dolist (msg warnings)
         (let ((start (point)))
           (insert (format "  ⚠️ %s\n" msg))
-          (when-let ((doc (stack-doc--stack-warning-doc msg vitality)))
-            (add-text-properties start (1- (point)) `(stack-doc ,doc))))))
-      (insert "\n")
-    (my-chatgpt-shell--insert-stack-futon-liveness vitality)
-    (my-chatgpt-shell--insert-stack-hot-reload)
-    (my-chatgpt-shell--insert-stack-voice)
-    (my-chatgpt-shell--insert-stack-musn)
-    (my-chatgpt-shell--insert-stack-pattern-sync)
-    (my-chatgpt-shell--insert-stack-focus-profile focus-profile)
-    (my-chatgpt-shell--insert-stack-vitality vitality)
-    (my-chatgpt-shell--insert-stack-git git)
-    (my-chatgpt-shell--insert-stack-boundary boundary)
-    (my-chatgpt-shell--insert-stack-reminders reminders)))
+          (when-let ((doc (stack-doc--stack-warning-doc msg (plist-get stack :vitality))))
+            (add-text-properties start (1- (point)) `(stack-doc ,doc)))))
+      (insert "\n"))
+    ;; Render enabled blocks in configured order
+    (dolist (block stack-hud-blocks)
+      (let ((key (plist-get block :key)))
+        (when (plist-get block :enabled)
+          (when-let ((fn (stack-hud--block-render-fn key)))
+            (if (stack-hud--block-takes-arg-p key)
+                (funcall fn (stack-hud--block-arg key stack))
+              (funcall fn))))))))
 
 (defun my-chatgpt-shell--stack-hud-string (stack)
   (with-temp-buffer
@@ -1351,6 +1585,56 @@ The value is passed to `display-buffer-in-side-window'."
         (setq stack-hud--last-log-day today))
     (error
      (message "Stack HUD log failed: %s" (error-message-string err)))))
+
+;; =============================================================================
+;; Block configuration commands
+;; =============================================================================
+
+(defun stack-hud-toggle-block (key)
+  "Toggle the enabled state of block KEY.
+With prefix argument, prompt for block to toggle."
+  (interactive
+   (list (intern
+          (completing-read
+           "Toggle block: "
+           (mapcar (lambda (b)
+                     (let ((k (plist-get b :key))
+                           (enabled (plist-get b :enabled)))
+                       (format "%s%s" k (if enabled "" " (off)"))))
+                   stack-hud-blocks)
+           nil t))))
+  ;; Strip " (off)" suffix if present
+  (when (string-match "\\` *\\([^ ]+\\)" (symbol-name key))
+    (setq key (intern (match-string 1 (symbol-name key)))))
+  (let ((found nil))
+    (setq stack-hud-blocks
+          (mapcar (lambda (b)
+                    (if (eq (plist-get b :key) key)
+                        (progn
+                          (setq found t)
+                          (plist-put (copy-sequence b) :enabled
+                                     (not (plist-get b :enabled))))
+                      b))
+                  stack-hud-blocks))
+    (if found
+        (progn
+          (message "Block '%s' is now %s"
+                   key
+                   (if (stack-hud--block-enabled-p key) "enabled" "disabled"))
+          (stack-hud--refresh-buffer))
+      (message "Unknown block: %s" key))))
+
+(defun stack-hud-list-blocks ()
+  "Display the current block configuration."
+  (interactive)
+  (with-output-to-temp-buffer "*Stack HUD Blocks*"
+    (princ "Stack HUD Blocks:\n\n")
+    (dolist (block stack-hud-blocks)
+      (let ((key (plist-get block :key))
+            (enabled (plist-get block :enabled)))
+        (princ (format "  %-14s %s\n"
+                       key
+                       (if enabled "enabled" "DISABLED")))))))
 
 (provide 'stack-hud)
 
