@@ -195,6 +195,19 @@ Available blocks:
   :type 'integer
   :group 'tatami-integration)
 
+(defcustom stack-hud-services-detail 'names
+  "How much detail to show for service breakdowns.
+
+nil        - summary line only (default counts)
+names      - show service names without per-service status
+down-only  - show per-service status only when something is down
+always     - always show per-service status lines"
+  :type '(choice (const :tag "Summary only" nil)
+                 (const :tag "Names only" names)
+                 (const :tag "Down only" down-only)
+                 (const :tag "Always show status" always))
+  :group 'tatami-integration)
+
 (defcustom stack-hud-remote-stack-url nil
   "URL to fetch remote stack status from transport service.
 Example: \"http://linode.example.com:5050/stack/status\".
@@ -424,6 +437,17 @@ Returns t if connection succeeds, nil otherwise."
      ((and host port) (format "%s:%s" host port))
      (host host)
      (t "remote"))))
+
+(defun stack-hud--service-disabled-p (status)
+  (or (eq status 'disabled)
+      (equal status "disabled")))
+
+(defun stack-hud--services-detail-mode-p (mode down-count)
+  (pcase mode
+    ('always t)
+    ('down-only (> down-count 0))
+    ('names t)
+    (_ nil)))
 
 (defun stack-hud--pattern-sync-verify-summary (payload)
   (when payload
@@ -1240,10 +1264,12 @@ Returns t if connection succeeds, nil otherwise."
     (let* ((status (stack-hud--services-status))
            (up-count 0)
            (down-count 0)
+           (names '())
            (down-names '()))
       (dolist (entry status)
         (let ((name (car entry))
               (state (cdr entry)))
+          (push name names)
           (if (eq state 'up)
               (setq up-count (1+ up-count))
             (setq down-count (1+ down-count))
@@ -1256,8 +1282,11 @@ Returns t if connection succeeds, nil otherwise."
                                     (string-join (nreverse down-names) ", "))
                             'face 'error)))
       (insert "\n")
-      ;; Show details when something is down
-      (when (> down-count 0)
+      (cond
+       ((eq stack-hud-services-detail 'names)
+        (insert (format "      Services: %s\n"
+                        (string-join (nreverse names) ", "))))
+       ((stack-hud--services-detail-mode-p stack-hud-services-detail down-count)
         (dolist (entry status)
           (let ((name (car entry))
                 (state (cdr entry))
@@ -1266,7 +1295,7 @@ Returns t if connection succeeds, nil otherwise."
                             name
                             (or port 0)
                             (if (eq state 'up) "up"
-                              (propertize "DOWN" 'face 'error)))))))))
+                              (propertize "DOWN" 'face 'error))))))))))
   ;; Remote services
   (when stack-hud-remote-stack-url
     (let ((remote (stack-hud--remote-stack-status)))
@@ -1283,15 +1312,18 @@ Returns t if connection succeeds, nil otherwise."
                (up-count 0)
                (down-count 0)
                (total-count 0)
+               (names '())
                (down-names '()))
           (dolist (svc services)
             (let ((name (plist-get svc :name))
                   (status (plist-get svc :status)))
+              (push name names)
               (cond
-               ((eq status 'up) (setq up-count (1+ up-count) total-count (1+ total-count)))
-               ((equal status "up") (setq up-count (1+ up-count) total-count (1+ total-count)))
-               ((eq status 'disabled) nil)
-               ((equal status "disabled") nil)
+               ((eq status 'up)
+                (setq up-count (1+ up-count) total-count (1+ total-count)))
+               ((equal status "up")
+                (setq up-count (1+ up-count) total-count (1+ total-count)))
+               ((stack-hud--service-disabled-p status) nil)
                (t (setq down-count (1+ down-count) total-count (1+ total-count))
                   (push name down-names)))))
           (let ((total (if (> total-count 0) total-count (+ up-count down-count))))
@@ -1302,19 +1334,22 @@ Returns t if connection succeeds, nil otherwise."
                                         (string-join (nreverse down-names) ", "))
                                 'face 'error)))
           (insert (format " (via %s)\n" host))
-          ;; Show details when something is down
-          (when (> down-count 0)
+          (cond
+           ((eq stack-hud-services-detail 'names)
+            (insert (format "      Services: %s\n"
+                            (string-join (nreverse names) ", "))))
+           ((stack-hud--services-detail-mode-p stack-hud-services-detail down-count)
             (dolist (svc services)
               (let ((name (plist-get svc :name))
                     (port (plist-get svc :port))
                     (status (plist-get svc :status)))
-                (unless (or (eq status 'disabled) (equal status "disabled"))
+                (unless (stack-hud--service-disabled-p status)
                   (insert (format "      %s (%s): %s\n"
                                   name
                                   (or port "?")
                                   (if (or (eq status 'up) (equal status "up"))
                                       "up"
-                                    (propertize "DOWN" 'face 'error))))))))))))
+                                    (propertize "DOWN" 'face 'error)))))))))))))
   (insert "\n"))
 
 (defun my-chatgpt-shell--insert-stack-pattern-sync ()
