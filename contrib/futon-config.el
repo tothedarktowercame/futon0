@@ -38,6 +38,7 @@
         "../futon4/dev/arxana-browser-code.el"
         "../futon4/dev/arxana-browser-patterns.el"
         "../futon4/dev/arxana-browser-patterns-hud.el"
+        "../futon4/dev/arxana-browser-forum.el"
         "../futon4/dev/arxana-browser.el"
         "../futon4/dev/arxana-docbook-core.el"
         "../futon4/dev/arxana-media.el"
