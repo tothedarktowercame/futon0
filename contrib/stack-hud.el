@@ -8,6 +8,7 @@
 (require 'cl-lib)
 (require 'json)
 (require 'url)
+(require 'url-parse)
 (require 'seq)
 (require 'subr-x)
 (require 'voice-typing)
@@ -413,6 +414,16 @@ Returns t if connection succeeds, nil otherwise."
         (setq stack-hud--remote-stack-cache (stack-hud--fetch-remote-stack))
         (setq stack-hud--remote-stack-cache-time now))
       stack-hud--remote-stack-cache)))
+
+(defun stack-hud--remote-stack-host-label ()
+  "Return a stable host label for the remote stack."
+  (let* ((url (url-generic-parse-url (or stack-hud-remote-stack-url "")))
+         (host (url-host url))
+         (port (url-port url)))
+    (cond
+     ((and host port) (format "%s:%s" host port))
+     (host host)
+     (t "remote"))))
 
 (defun stack-hud--pattern-sync-verify-summary (payload)
   (when payload
@@ -1261,7 +1272,13 @@ Returns t if connection succeeds, nil otherwise."
       (if (not remote)
           (insert (propertize "    Remote: unreachable\n" 'face 'warning))
         (let* ((services (plist-get remote :services))
-               (host (or (plist-get remote :host) "remote"))
+               (reported-host (plist-get remote :host))
+               (url-host (stack-hud--remote-stack-host-label))
+               (host (if (and reported-host
+                              (not (string-empty-p reported-host))
+                              (not (string= reported-host "127.0.0.1")))
+                         reported-host
+                       url-host))
                (up-count 0)
                (down-count 0)
                (down-names '()))
