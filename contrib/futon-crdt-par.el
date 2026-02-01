@@ -48,6 +48,14 @@
   "Current MUSN session ID for PAR submission.
 Set this to associate PAR with an active Lab session.")
 
+(defvar futon-par-session-ids nil
+  "List of session IDs for multi-agent PAR.
+When set, PAR is written to all sessions as a nexus point.")
+
+(defvar futon-par-participants nil
+  "List of participant names for multi-agent PAR.
+E.g., (:fucodex :fuclaude :joe)")
+
 (defun futon-crdt--display-name ()
   "Get display name for CRDT session."
   (or futon-crdt-display-name user-login-name "futon-user"))
@@ -154,6 +162,85 @@ SESSION-ID defaults to `futon-par-session-id' or prompts if nil."
   (interactive "sSession ID: ")
   (setq futon-par-session-id session-id)
   (message "PAR session set to: %s" session-id))
+
+(defun futon-par-submit-multi ()
+  "Submit PAR to multiple sessions as a shared nexus point.
+Uses `futon-par-session-ids' for target sessions.
+The same PAR appears in all session timelines with cross-references."
+  (interactive)
+  (unless futon-par-session-ids
+    (user-error "No sessions set. Use `futon-par-add-session' first"))
+  (let* ((content (buffer-string))
+         (sections (futon-par--parse-sections content))
+         (par-id (format "par-joint-%s" (format-time-string "%Y%m%d-%H%M%S")))
+         (timestamp (format-time-string "%Y-%m-%dT%H:%M:%SZ" nil t))
+         (url (concat futon-musn-endpoint "/musn/par/multi"))
+         (payload (json-encode
+                   `(("par/id" . ,par-id)
+                     ("par/timestamp" . ,timestamp)
+                     ("par/sessions" . ,futon-par-session-ids)
+                     ("par/participants" . ,futon-par-participants)
+                     ("par/questions" . ,sections)
+                     ("par/tags" . ["joint" "nexus"])))))
+    (let ((url-request-method "POST")
+          (url-request-extra-headers '(("Content-Type" . "application/json")))
+          (url-request-data payload))
+      (url-retrieve
+       url
+       (lambda (status)
+         (if (plist-get status :error)
+             (message "Multi-PAR submit failed: %S" (plist-get status :error))
+           (goto-char url-http-end-of-headers)
+           (let ((resp (json-read)))
+             (if (eq (alist-get 'ok resp) t)
+                 (message "PAR submitted to %d sessions: %s"
+                          (length futon-par-session-ids)
+                          (mapconcat #'identity futon-par-session-ids ", "))
+               (message "Multi-PAR error: %s" (alist-get 'err resp))))))
+       nil t t)))
+  (message "Submitting joint PAR to %d sessions..." (length futon-par-session-ids)))
+
+(defun futon-par-add-session (session-id)
+  "Add SESSION-ID to the multi-agent PAR session list."
+  (interactive "sSession ID to add: ")
+  (add-to-list 'futon-par-session-ids session-id)
+  (message "Sessions: %s" (mapconcat #'identity futon-par-session-ids ", ")))
+
+(defun futon-par-add-participant (name)
+  "Add NAME to the PAR participants list."
+  (interactive "sParticipant name: ")
+  (add-to-list 'futon-par-participants (intern (concat ":" name)))
+  (message "Participants: %s" futon-par-participants))
+
+(defun futon-par-clear-multi ()
+  "Clear multi-session PAR state."
+  (interactive)
+  (setq futon-par-session-ids nil
+        futon-par-participants nil)
+  (message "Multi-PAR state cleared"))
+
+(defun futon-start-joint-par (title &rest participants)
+  "Start a collaborative PAR for multiple PARTICIPANTS.
+TITLE is the PAR session title.
+PARTICIPANTS are symbols like :fucodex :fuclaude :joe.
+
+Example: (futon-start-joint-par \"Lab Upload Standup\" :fucodex :fuclaude :joe)"
+  (interactive "sJoint PAR title: ")
+  (setq futon-par-session-ids nil
+        futon-par-participants (or participants
+                                   (mapcar #'intern
+                                           (split-string
+                                            (read-string "Participants (space-separated): ")))))
+  (let ((buf (futon-start-par title)))
+    (with-current-buffer buf
+      (goto-char (point-min))
+      (end-of-line)
+      (insert (format "\n# Participants: %s"
+                      (mapconcat (lambda (p) (substring (symbol-name p) 1))
+                                 futon-par-participants ", ")))
+      (insert "\n# Type: Joint/Nexus PAR (appears in all participant timelines)"))
+    (message "Joint PAR started. Add sessions with `futon-par-add-session', submit with `futon-par-submit-multi'")
+    buf))
 
 (defun futon-par-list-sessions ()
   "List active MUSN Lab sessions and allow selection."
