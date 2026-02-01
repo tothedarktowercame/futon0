@@ -48,6 +48,17 @@
   "Current MUSN session ID for PAR submission.
 Set this to associate PAR with an active Lab session.")
 
+(defcustom futon-par-jsonl-path nil
+  "Path to session JSONL for local PAR sidecar writes.
+When set, PAR submissions also append to a .par.edn sidecar next to this JSONL."
+  :type '(choice (const nil) string)
+  :group 'futon-crdt)
+
+(defcustom futon-par-sidecar-path nil
+  "Explicit path to a .par.edn sidecar file to append PAR entries."
+  :type '(choice (const nil) string)
+  :group 'futon-crdt)
+
 (defvar futon-par-session-ids nil
   "List of session IDs for multi-agent PAR.
 When set, PAR is written to all sessions as a nexus point.")
@@ -136,11 +147,18 @@ SESSION-ID defaults to `futon-par-session-id' or prompts if nil."
     (user-error "No session ID provided. Set `futon-par-session-id' or provide one"))
   (let* ((content (buffer-string))
          (sections (futon-par--parse-sections content))
+         (par-title (futon-par--extract-title content))
+         (par-id (format "par-%s" (format-time-string "%Y%m%d-%H%M%S")))
+         (timestamp (format-time-string "%Y-%m-%dT%H:%M:%SZ" nil t))
          (url (concat futon-musn-endpoint "/musn/par"))
          (payload (json-encode
                    `(("session/id" . ,session-id)
                      ("par/questions" . ,sections)
                      ("par/tags" . ["checkpoint"])))))
+    (when-let ((sidecar-path (futon-par--sidecar-path)))
+      (futon-par--append-sidecar!
+       sidecar-path
+       (futon-par--format-par-edn par-id timestamp par-title sections '(:checkpoint))))
     (let ((url-request-method "POST")
           (url-request-extra-headers '(("Content-Type" . "application/json")))
           (url-request-data payload))
@@ -162,6 +180,12 @@ SESSION-ID defaults to `futon-par-session-id' or prompts if nil."
   (interactive "sSession ID: ")
   (setq futon-par-session-id session-id)
   (message "PAR session set to: %s" session-id))
+
+(defun futon-par-set-jsonl-path (path)
+  "Set the JSONL PATH used for local PAR sidecar writes."
+  (interactive "fSession JSONL path: ")
+  (setq futon-par-jsonl-path (expand-file-name path))
+  (message "PAR JSONL path set to: %s" futon-par-jsonl-path))
 
 (defun futon-par-submit-multi ()
   "Submit PAR to multiple sessions as a shared nexus point.
@@ -287,6 +311,72 @@ Example: (futon-start-joint-par \"Lab Upload Standup\" :fucodex :fuclaude :joe)"
                  (answer (string-trim (buffer-substring-no-properties start end))))
             (push (cons (car q) answer) result)))))
     (nreverse result)))
+
+(defun futon-par--extract-title (content)
+  "Extract PAR title from CONTENT."
+  (if (string-match "^# PAR: \\(.*\\)$" content)
+      (string-trim (match-string 1 content))
+    "Session Review"))
+
+(defun futon-par--sidecar-path ()
+  "Resolve sidecar path from explicit setting or JSONL path."
+  (cond
+   (futon-par-sidecar-path (expand-file-name futon-par-sidecar-path))
+   (futon-par-jsonl-path
+    (let ((path (expand-file-name futon-par-jsonl-path)))
+      (if (string-match "\\.jsonl\\'" path)
+          (replace-regexp-in-string "\\.jsonl\\'" ".par.edn" path)
+        (concat path ".par.edn"))))
+   (t nil)))
+
+(defun futon-par--edn-escape (value)
+  "Escape VALUE for safe EDN string."
+  (let ((s (or value "")))
+    (setq s (replace-regexp-in-string "\\\\" "\\\\\\\\" s))
+    (setq s (replace-regexp-in-string "\"" "\\\\\"" s))
+    (setq s (replace-regexp-in-string "\n" "\\\\n" s))
+    s))
+
+(defun futon-par--format-par-edn (par-id timestamp title sections tags)
+  "Format a PAR entry as an EDN map string."
+  (let ((tag-str (if (and tags (not (null tags)))
+                     (concat "["
+                             (mapconcat (lambda (t) (format "%s" t)) tags " ")
+                             "]")
+                   "[]")))
+    (format "{:id \"%s\" :timestamp \"%s\" :title \"%s\" :tags %s :questions {:intention \"%s\" :happening \"%s\" :perspectives \"%s\" :learned \"%s\" :forward \"%s\"}}"
+            (futon-par--edn-escape par-id)
+            (futon-par--edn-escape timestamp)
+            (futon-par--edn-escape title)
+            tag-str
+            (futon-par--edn-escape (cdr (assoc "intention" sections)))
+            (futon-par--edn-escape (cdr (assoc "happening" sections)))
+            (futon-par--edn-escape (cdr (assoc "perspectives" sections)))
+            (futon-par--edn-escape (cdr (assoc "learned" sections)))
+            (futon-par--edn-escape (cdr (assoc "forward" sections))))))
+
+(defun futon-par--append-sidecar! (sidecar-path par-edn)
+  "Append PAR-EDN string to SIDECAR-PATH."
+  (let* ((path (expand-file-name sidecar-path))
+         (dir (file-name-directory path)))
+    (when dir
+      (make-directory dir t))
+    (if (file-exists-p path)
+        (let* ((content (with-temp-buffer
+                          (insert-file-contents path)
+                          (buffer-string)))
+               (trimmed (string-trim content)))
+          (if (and (string-prefix-p "[" trimmed)
+                   (string-suffix-p "]" trimmed))
+              (let* ((body (substring trimmed 0 (1- (length trimmed))))
+                     (updated (concat (string-trim-right body) " " par-edn "]")))
+                (with-temp-file path
+                  (insert updated)))
+            (with-temp-file path
+              (insert "[" par-edn "]"))))
+      (with-temp-file path
+        (insert "[" par-edn "]")))
+    (message "Wrote PAR sidecar: %s" path)))
 
 (provide 'futon-crdt-par)
 
