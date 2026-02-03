@@ -22,8 +22,8 @@
   "PAR peripheral for AI agents."
   :group 'futon)
 
-(defcustom par-peripheral-crdt-host "localhost"
-  "CRDT server host."
+(defcustom par-peripheral-crdt-host "127.0.0.1"
+  "CRDT server host. Use 127.0.0.1 instead of localhost to avoid IPv6 issues."
   :type 'string
   :group 'futon-par-peripheral)
 
@@ -133,38 +133,48 @@ Do not repeat what others have said. Just provide your answer, no preamble."
       (message "[par-peripheral] %s contributed to %s"
                par-peripheral-agent-id section-name))))
 
-(defun par-peripheral--wait-for-buffer (buffer-pattern &optional timeout)
-  "Wait for a buffer matching BUFFER-PATTERN to appear.
-TIMEOUT defaults to 60 seconds."
+(defun par-peripheral--wait-for-crdt-buffer (session buffer-pattern &optional timeout)
+  "Wait for a buffer matching BUFFER-PATTERN in CRDT SESSION.
+TIMEOUT defaults to 60 seconds. Returns the network-name if found."
   (let ((timeout (or timeout 60))
-        (start-time (current-time)))
-    (while (and (not (seq-find (lambda (b)
-                                 (string-match-p buffer-pattern (buffer-name b)))
-                               (buffer-list)))
+        (start-time (current-time))
+        (found nil))
+    (while (and (not found)
                 (< (float-time (time-subtract (current-time) start-time)) timeout))
-      (sleep-for 1))
-    (seq-find (lambda (b)
-                (string-match-p buffer-pattern (buffer-name b)))
-              (buffer-list))))
+      (let ((buffer-table (crdt--session-buffer-table session)))
+        (when buffer-table
+          (maphash (lambda (network-name _v)
+                     (when (string-match-p buffer-pattern network-name)
+                       (setq found network-name)))
+                   buffer-table)))
+      (unless found
+        (sleep-for 1)))
+    found))
 
 (defun par-peripheral-connect ()
   "Connect to the CRDT server."
   (interactive)
-  (let ((url (format "%s:%d" par-peripheral-crdt-host par-peripheral-crdt-port)))
+  ;; Use ein:// prefix for plain (non-TLS) connection
+  (let ((url (format "ein://%s:%d" par-peripheral-crdt-host par-peripheral-crdt-port)))
     (message "[par-peripheral] Connecting to CRDT at %s..." url)
     (crdt-connect url par-peripheral-agent-id)
     (message "[par-peripheral] Connected to CRDT")))
 
 (defun par-peripheral-join-par (par-title)
-  "Join the PAR buffer with PAR-TITLE."
-  (let ((buffer-pattern (format "\\*PAR.*%s" (regexp-quote par-title))))
-    (message "[par-peripheral] Waiting for PAR buffer: %s" par-title)
-    (let ((buf (par-peripheral--wait-for-buffer buffer-pattern 120)))
-      (if buf
+  "Join the PAR buffer with PAR-TITLE via CRDT."
+  (let* ((session (car crdt--session-list))
+         (buffer-pattern (format "\\*PAR.*%s" (regexp-quote par-title))))
+    (unless session
+      (error "[par-peripheral] No CRDT session found"))
+    (message "[par-peripheral] Waiting for PAR buffer in CRDT: %s" par-title)
+    (let ((network-name (par-peripheral--wait-for-crdt-buffer session buffer-pattern 120)))
+      (if network-name
           (progn
-            (setq par-peripheral-par-buffer buf)
-            (message "[par-peripheral] Joined PAR buffer: %s" (buffer-name buf)))
-        (error "[par-peripheral] Timeout waiting for PAR buffer")))))
+            (message "[par-peripheral] Found CRDT buffer: %s" network-name)
+            (crdt-switch-to-buffer session network-name)
+            (setq par-peripheral-par-buffer (current-buffer))
+            (message "[par-peripheral] Joined PAR buffer: %s" (buffer-name par-peripheral-par-buffer)))
+        (error "[par-peripheral] Timeout waiting for PAR buffer in CRDT")))))
 
 (defun par-peripheral-contribute ()
   "Contribute to all relevant PAR sections."
