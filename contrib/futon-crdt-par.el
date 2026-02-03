@@ -248,8 +248,12 @@ The same PAR appears in all session timelines with cross-references."
 TITLE is the PAR session title.
 PARTICIPANTS are symbols like :fucodex :fuclaude :joe.
 
+Automatically ensures CRDT server is running and shares the buffer.
+
 Example: (futon-start-joint-par \"Lab Upload Standup\" :fucodex :fuclaude :joe)"
   (interactive "sJoint PAR title: ")
+  ;; Ensure CRDT server is running before creating PAR
+  (futon-crdt-ensure-server)
   (setq futon-par-session-ids nil
         futon-par-participants (or participants
                                    (mapcar #'intern
