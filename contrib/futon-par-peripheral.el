@@ -107,9 +107,10 @@ Uses /agency/page to send synchronously to a connected agent."
           (alist-get 'error inner-response)))))
 
 (defun par-peripheral--get-par-context ()
-  "Get the current PAR buffer content for context."
+  "Get the current PAR buffer content for context.
+Strips text properties to avoid CRDT metadata causing HTTP encoding issues."
   (with-current-buffer par-peripheral-par-buffer
-    (buffer-string)))
+    (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun par-peripheral--contribute-to-section (section-name question)
   "Have the agent contribute to SECTION-NAME by answering QUESTION."
