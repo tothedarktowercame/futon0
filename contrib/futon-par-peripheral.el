@@ -115,22 +115,24 @@ Uses /agency/page to send synchronously to a connected agent."
   "Have the agent contribute to SECTION-NAME by answering QUESTION."
   (message "[par-peripheral] %s contributing to %s..."
            par-peripheral-agent-id section-name)
+  ;; Re-read buffer to get latest contributions from other agents
+  (sleep-for 2)
   (let* ((context (par-peripheral--get-par-context))
-         (prompt (format "You are participating in a Post-Action Review (PAR).
-
-Current PAR state:
+         (prompt (format "PAR contribution needed. Current PAR:
 %s
 
-Your task: Answer this PAR question from your perspective as %s.
-Question: %s
+You are %s. Answer briefly (1-2 sentences max):
+%s
 
-Keep your response concise (2-4 sentences). Focus on your unique perspective.
-Do not repeat what others have said. Just provide your answer, no preamble."
+Read what others wrote above. Add your unique perspective only. No preamble, just your answer."
                          context par-peripheral-agent-id question))
          (response (par-peripheral--call-agent prompt)))
     (when response
       (par-peripheral--insert-contribution section-name response)
       (message "[par-peripheral] %s contributed to %s"
+               par-peripheral-agent-id section-name))
+    (unless response
+      (message "[par-peripheral] WARNING: No response from %s for %s"
                par-peripheral-agent-id section-name))))
 
 (defun par-peripheral--wait-for-crdt-buffer (session buffer-pattern &optional timeout)
@@ -187,25 +189,24 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
   (interactive)
   (setq par-peripheral-state 'contributing)
 
-  ;; Agents typically contribute to sections 2, 3, 4
-  ;; Section 1 (intention) is usually pre-filled
-  ;; Section 5 (forward) is often collaborative at the end
+  ;; Section 1 (intention) is pre-filled by the human
+  ;; Agents contribute to sections 2-5
 
   (par-peripheral--contribute-to-section
    "happening"
-   "What actually happened? What approaches did you take and what worked?")
-
-  (sleep-for 2) ; Brief pause between sections
+   "What happened in this session? What worked?")
 
   (par-peripheral--contribute-to-section
    "perspectives"
-   "What's your unique perspective on what occurred? What did you notice?")
-
-  (sleep-for 2)
+   "What's a different angle on this? What did others miss?")
 
   (par-peripheral--contribute-to-section
    "learned"
-   "What explicit takeaways emerged from your work? What did you learn?")
+   "What's the key takeaway or lesson?")
+
+  (par-peripheral--contribute-to-section
+   "forward"
+   "What should change next time?")
 
   (setq par-peripheral-state 'done)
   (message "[par-peripheral] %s finished contributing" par-peripheral-agent-id))
