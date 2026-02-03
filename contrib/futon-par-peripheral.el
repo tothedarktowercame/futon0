@@ -171,11 +171,15 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
       (if network-name
           (progn
             (message "[par-peripheral] Found CRDT buffer: %s" network-name)
-            ;; Use crdt--do-to-buffer with set-buffer for batch mode compatibility
+            ;; Use crdt--with-buffer-name-pull with :sync t to wait for buffer sync
             (let ((crdt--session session))
-              (crdt--with-buffer-name-pull (network-name)
-                (setq par-peripheral-par-buffer (current-buffer))))
-            (message "[par-peripheral] Joined PAR buffer: %s" (buffer-name par-peripheral-par-buffer)))
+              (crdt--with-buffer-name-pull (network-name :sync t)
+                (setq par-peripheral-par-buffer (current-buffer))
+                (message "[par-peripheral] Inside buffer: %s" (buffer-name))))
+            (message "[par-peripheral] Joined PAR buffer: %s"
+                     (if par-peripheral-par-buffer
+                         (buffer-name par-peripheral-par-buffer)
+                       "NIL!")))
         (error "[par-peripheral] Timeout waiting for PAR buffer in CRDT")))))
 
 (defun par-peripheral-contribute ()
