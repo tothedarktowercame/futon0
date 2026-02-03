@@ -14,6 +14,10 @@
 ;; Stack HUD entry point.
 (require 'stack-entry)
 
+(require 'stack-hud)
+
+(setq stack-hud-services-detail 'names)
+
 ;; Zoom R4 ingest metadata lives in storage (override here for local tools).
 (setenv "ZOOM_SYNC_DEST" "/home/joe/code/storage/zoomr4")
 (setenv "ZOOM_SYNC_META_DIR" "/home/joe/code/storage/zoomr4/meta")
