@@ -84,13 +84,15 @@ Returns point after the section header, before the next section."
           (insert (format "\n\n**%s:** %s" par-peripheral-agent-id text)))))))
 
 (defun par-peripheral--call-agent (prompt)
-  "Call the agent via Agency /agency/run and return the response text.
-PROMPT is the instruction for what to contribute."
-  (let* ((url (format "%s/agency/run" par-peripheral-agency-url))
+  "Call the agent via Agency /agency/page and return the response text.
+PROMPT is the instruction for what to contribute.
+Uses /agency/page to send synchronously to a connected agent."
+  (let* ((url (format "%s/agency/page" par-peripheral-agency-url))
+         (timeout-ms (* par-peripheral-timeout 1000)) ; Convert to milliseconds
          (payload (json-encode
                    `(("agent-id" . ,par-peripheral-agent-id)
-                     ("peripheral" . "chat")
-                     ("prompt" . ,prompt))))
+                     ("prompt" . ,prompt)
+                     ("timeout-ms" . ,timeout-ms))))
          (url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json")))
          (url-request-data payload)
@@ -99,7 +101,10 @@ PROMPT is the instruction for what to contribute."
       (goto-char url-http-end-of-headers)
       (setq response (json-read))
       (kill-buffer))
-    (alist-get 'response response)))
+    ;; Response structure: {:ok true :response {:result "..." ...}}
+    (let ((inner-response (alist-get 'response response)))
+      (or (alist-get 'result inner-response)
+          (alist-get 'error inner-response)))))
 
 (defun par-peripheral--get-par-context ()
   "Get the current PAR buffer content for context."
