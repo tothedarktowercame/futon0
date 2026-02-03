@@ -84,14 +84,13 @@ Returns point after the section header, before the next section."
           (insert (format "\n\n**%s:** %s" par-peripheral-agent-id text)))))))
 
 (defun par-peripheral--call-agent (prompt)
-  "Call the agent via Agency and return the response text.
+  "Call the agent via Agency /agency/run and return the response text.
 PROMPT is the instruction for what to contribute."
-  (let* ((url (format "%s/agency/dispatch" par-peripheral-agency-url))
+  (let* ((url (format "%s/agency/run" par-peripheral-agency-url))
          (payload (json-encode
-                   `(("agent" . ,par-peripheral-agent-id)
-                     ("task" . "par-contribute")
-                     ("prompt" . ,prompt)
-                     ("timeout" . ,par-peripheral-timeout))))
+                   `(("agent-id" . ,par-peripheral-agent-id)
+                     ("peripheral" . "chat")
+                     ("prompt" . ,prompt))))
          (url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json")))
          (url-request-data payload)
@@ -148,7 +147,7 @@ TIMEOUT defaults to 60 seconds."
   (interactive)
   (let ((url (format "%s:%d" par-peripheral-crdt-host par-peripheral-crdt-port)))
     (message "[par-peripheral] Connecting to CRDT at %s..." url)
-    (crdt-connect url)
+    (crdt-connect url par-peripheral-agent-id)
     (message "[par-peripheral] Connected to CRDT")))
 
 (defun par-peripheral-join-par (par-title)
