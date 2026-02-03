@@ -171,8 +171,10 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
       (if network-name
           (progn
             (message "[par-peripheral] Found CRDT buffer: %s" network-name)
-            (crdt-switch-to-buffer session network-name)
-            (setq par-peripheral-par-buffer (current-buffer))
+            ;; Use crdt--do-to-buffer with set-buffer for batch mode compatibility
+            (let ((crdt--session session))
+              (crdt--with-buffer-name-pull (network-name)
+                (setq par-peripheral-par-buffer (current-buffer))))
             (message "[par-peripheral] Joined PAR buffer: %s" (buffer-name par-peripheral-par-buffer)))
         (error "[par-peripheral] Timeout waiting for PAR buffer in CRDT")))))
 
