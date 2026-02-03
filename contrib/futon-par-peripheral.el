@@ -236,7 +236,7 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
 (defun par-peripheral-run ()
   "Entry point for batch mode.
 Reads config from environment variables."
-  (let ((host (or (getenv "CRDT_HOST") "localhost"))
+  (let ((host (or (getenv "CRDT_HOST") "127.0.0.1"))  ; Use 127.0.0.1 to avoid IPv6 issues
         (port (string-to-number (or (getenv "CRDT_PORT") "6530")))
         (agent-id (or (getenv "AGENT_ID") "agent"))
         (par-title (or (getenv "PAR_TITLE") "Untitled PAR"))
