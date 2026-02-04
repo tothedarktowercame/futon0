@@ -186,7 +186,11 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
 (defun par-peripheral-join-par (par-title)
   "Join the PAR buffer with PAR-TITLE via CRDT."
   (let* ((session (car crdt--session-list))
-         (session-url (and session (crdt--session-url session)))
+         (session-url (and session
+                           (or (when (fboundp 'crdt--session-url)
+                                 (ignore-errors (crdt--session-url session)))
+                               (when (fboundp 'crdt--session-urlstr)
+                                 (ignore-errors (crdt--session-urlstr session))))))
          (buffer-pattern (format "\\*PAR.*%s" (regexp-quote par-title))))
     (unless session
       (error "[par-peripheral] No CRDT session found"))
