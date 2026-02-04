@@ -186,10 +186,13 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
                 (message "[par-peripheral] Inside buffer: %s" (buffer-name))))
             ;; Give CRDT time to sync buffer content
             (sleep-for 5)
-            (message "[par-peripheral] Joined PAR buffer: %s"
-                     (if par-peripheral-par-buffer
-                         (buffer-name par-peripheral-par-buffer)
-                       "NIL!")))
+            ;; Fallback: ensure the buffer is resolved by name
+            (unless par-peripheral-par-buffer
+              (setq par-peripheral-par-buffer (get-buffer network-name)))
+            (if par-peripheral-par-buffer
+                (message "[par-peripheral] Joined PAR buffer: %s"
+                         (buffer-name par-peripheral-par-buffer))
+              (error "[par-peripheral] Failed to resolve PAR buffer: %s" network-name)))
         (error "[par-peripheral] Timeout waiting for PAR buffer in CRDT")))))
 
 (defun par-peripheral-contribute ()
