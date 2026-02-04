@@ -172,18 +172,26 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
 (defun par-peripheral-connect ()
   "Connect to the CRDT server."
   (interactive)
+  ;; Disconnect any stale sessions first to avoid session confusion
+  (when crdt--session-list
+    (message "[par-peripheral] Cleaning up %d stale session(s)..." (length crdt--session-list))
+    (dolist (session crdt--session-list)
+      (ignore-errors (crdt-disconnect session))))
   ;; Use ein:// prefix for plain (non-TLS) connection
   (let ((url (format "ein://%s:%d" par-peripheral-crdt-host par-peripheral-crdt-port)))
     (message "[par-peripheral] Connecting to CRDT at %s..." url)
     (crdt-connect url par-peripheral-agent-id)
-    (message "[par-peripheral] Connected to CRDT")))
+    (message "[par-peripheral] Connected to CRDT, session count: %d" (length crdt--session-list))))
 
 (defun par-peripheral-join-par (par-title)
   "Join the PAR buffer with PAR-TITLE via CRDT."
   (let* ((session (car crdt--session-list))
+         (session-url (and session (crdt--session-url session)))
          (buffer-pattern (format "\\*PAR.*%s" (regexp-quote par-title))))
     (unless session
       (error "[par-peripheral] No CRDT session found"))
+    (message "[par-peripheral] Using session: %s (of %d total)"
+             session-url (length crdt--session-list))
     (message "[par-peripheral] Waiting for PAR buffer in CRDT: %s" par-title)
     (let ((network-name (par-peripheral--wait-for-crdt-buffer session buffer-pattern 120)))
       (if network-name
