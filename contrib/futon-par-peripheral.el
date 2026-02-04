@@ -159,6 +159,16 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
         (sleep-for 1)))
     found))
 
+(defun par-peripheral--resolve-par-buffer (session network-name)
+  "Resolve the local buffer for NETWORK-NAME within SESSION."
+  (let* ((buffer-table (crdt--session-buffer-table session))
+         (buf (and buffer-table (gethash network-name buffer-table))))
+    (or (and (buffer-live-p buf) buf)
+        (get-buffer network-name)
+        (seq-find (lambda (b)
+                    (string-prefix-p network-name (buffer-name b)))
+                  (buffer-list)))))
+
 (defun par-peripheral-connect ()
   "Connect to the CRDT server."
   (interactive)
@@ -185,11 +195,13 @@ TIMEOUT defaults to 60 seconds. Returns the network-name if found."
                 (setq par-peripheral-par-buffer (current-buffer))
                 (message "[par-peripheral] Inside buffer: %s" (buffer-name))))
             ;; Give CRDT time to sync buffer content
-            (sleep-for 5)
-            ;; Fallback: ensure the buffer is resolved by name
-            (unless par-peripheral-par-buffer
-              (setq par-peripheral-par-buffer (get-buffer network-name)))
-            (if par-peripheral-par-buffer
+            (let ((deadline (+ (float-time) 20.0)))
+              (while (and (not (buffer-live-p par-peripheral-par-buffer))
+                          (< (float-time) deadline))
+                (setq par-peripheral-par-buffer
+                      (par-peripheral--resolve-par-buffer session network-name))
+                (sleep-for 0.5)))
+            (if (buffer-live-p par-peripheral-par-buffer)
                 (message "[par-peripheral] Joined PAR buffer: %s"
                          (buffer-name par-peripheral-par-buffer))
               (error "[par-peripheral] Failed to resolve PAR buffer: %s" network-name)))
