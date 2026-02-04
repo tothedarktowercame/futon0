@@ -73,15 +73,35 @@ Returns point after the section header, before the next section."
               (match-beginning 0)
             (point-max)))))))
 
-(defun par-peripheral--insert-contribution (section-name text)
-  "Insert TEXT into SECTION-NAME of the PAR buffer."
+(defun par-peripheral--already-contributed-p (section-name)
+  "Check if this agent already contributed to SECTION-NAME."
   (with-current-buffer par-peripheral-par-buffer
     (save-excursion
       (goto-char (point-min))
       (let ((pattern (cdr (assoc section-name par-peripheral-sections))))
         (when (re-search-forward pattern nil t)
-          (end-of-line)
-          (insert (format "\n\n**%s:** %s" par-peripheral-agent-id text)))))))
+          (let ((section-start (point))
+                (section-end (or (save-excursion
+                                   (when (re-search-forward "\\*\\*[0-9]\\." nil t)
+                                     (match-beginning 0)))
+                                 (point-max))))
+            (goto-char section-start)
+            (re-search-forward (format "\\*\\*%s:\\*\\*" (regexp-quote par-peripheral-agent-id))
+                               section-end t)))))))
+
+(defun par-peripheral--insert-contribution (section-name text)
+  "Insert TEXT into SECTION-NAME of the PAR buffer.
+Skip if this agent already contributed to this section."
+  (if (par-peripheral--already-contributed-p section-name)
+      (message "[par-peripheral] %s already contributed to %s, skipping"
+               par-peripheral-agent-id section-name)
+    (with-current-buffer par-peripheral-par-buffer
+      (save-excursion
+        (goto-char (point-min))
+        (let ((pattern (cdr (assoc section-name par-peripheral-sections))))
+          (when (re-search-forward pattern nil t)
+            (end-of-line)
+            (insert (format "\n\n**%s:** %s" par-peripheral-agent-id text))))))))
 
 (defun par-peripheral--call-agent (prompt)
   "Call the agent via Agency /agency/page and return the response text.
