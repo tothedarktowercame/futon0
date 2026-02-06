@@ -185,7 +185,8 @@ Available blocks:
     ("Forum WS" . 5055)
     ("MUSN HTTP" . 6065)
     ("IRC" . 6667)
-    ("Agency" . 7070))
+    ("Agency" . 7070)
+    ("Futon1 API" . 8080))
   "List of local services to check. Each entry is (NAME . PORT)."
   :type '(alist :key-type string :value-type integer)
   :group 'tatami-integration)
