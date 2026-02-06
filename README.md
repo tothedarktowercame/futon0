@@ -1,11 +1,162 @@
-# FUTON0 utility scripts
+# futon0 — Utilities & Stack HUD
 
-Two automation hooks live here while FUTON1 stabilises:
+futon0 is the foundation layer of the futon stack. It collects operational
+data (git activity, audio recordings, vitality scans), exposes the Stack HUD
+that summarizes health across all layers, and provides utility scripts that
+other futons depend on. Think of it as the "instrumentation and data collection"
+layer—it doesn't store facts (that's futon1) or coordinate agents (that's futon3),
+but it feeds both with raw signals.
+
+## The Futon Stack
+
+```mermaid
+flowchart TB
+    subgraph F0["futon0 — Utilities & HUD"]
+        direction LR
+        scripts["Scripts<br/>(git vitality, Zoom, voice)"]
+        hud["Stack HUD<br/>(boundary gaps, reminders)"]
+    end
+
+    subgraph F1["futon1 — Storage"]
+        direction LR
+        xtdb["XTDB<br/>(entities, relations)"]
+        api["HTTP API<br/>(:8080)"]
+    end
+
+    subgraph F2["futon2 — AIF Lab"]
+        direction LR
+        ants["Ant Simulation<br/>(pattern experiments)"]
+    end
+
+    subgraph F3["futon3 — Interface Layer"]
+        direction LR
+        musn["MUSN<br/>(sessions, transport)"]
+        patterns["Pattern Library<br/>(flexiargs, sigils)"]
+        agency["Agency<br/>(agent coordination)"]
+    end
+
+    subgraph F3A["futon3a — Sidecar"]
+        direction LR
+        portal["Portal<br/>(Drawbridge queries)"]
+    end
+
+    subgraph F4["futon4 — Arxana"]
+        direction LR
+        arxana["Hypertext Client<br/>(scholia, links)"]
+    end
+
+    subgraph F5["futon5 — Meta-Patterns"]
+        direction LR
+        mmca["MMCA<br/>(cellular automata)"]
+    end
+
+    F0 --> F3
+    F1 --> F3
+    F2 --> F3
+    F3A --> F3
+    F4 --> F1
+    F5 --> F3
+```
+
+| Layer | Purpose | Key Entry Points |
+|-------|---------|------------------|
+| **futon0** | Data collection, utilities, Stack HUD | `scripts/git_vitality_sync.sh`, `scripts/zoom_sync.py` |
+| **futon1** | Persistent storage (XTDB), knowledge graph | `clojure -M:api` → `:8080` |
+| **futon2** | AIF ant simulation, pattern experiments | `clj -M:run`, `clj -M:viz` |
+| **futon3** | Interface layer: MUSN, patterns, Agency | `make dev` → `:5050/:6060/:6065` |
+| **futon3a** | Sidecar queries via Drawbridge | `scripts/portal` |
+| **futon4** | Arxana hypertext client (Emacs) | `dev/bootstrap.el` |
+| **futon5** | Meta-pattern operators, MMCA | `bb -m futon5.mmca.metaevolve` |
+
+## README Map
+
+Each futon has a main README plus specialized docs. Use this to find what you need:
+
+```mermaid
+flowchart LR
+    subgraph F0["futon0"]
+        F0M["README.md<br/>(this file)"]
+        F0B["README-boundary.md"]
+        F0S["README-setup.md"]
+    end
+
+    subgraph F1["futon1"]
+        F1M["README.md"]
+        F1A["README-archivist.md"]
+        F1C["README-charon.md"]
+        F1S["README-storage.md"]
+    end
+
+    subgraph F2["futon2"]
+        F2M["README.md"]
+        F2W["README-war.md"]
+    end
+
+    subgraph F3["futon3"]
+        F3M["README.md"]
+        F3AFF["README-affect.md"]
+        F3AG["README-agency.md"]
+        F3DB["README-drawbridge.md"]
+        F3ERC["README-erc.md"]
+        F3FOR["README-forum.md"]
+        F3IRC["README-irc.md"]
+        F3LAB["README-lab.md"]
+        F3MUSN["README-musn-transport.md"]
+        F3PAR["README-par.md"]
+        F3PAT["README-patterns.md"]
+        F3PER["README-peripherals.md"]
+        F3PROOF["README-proofwork.md"]
+        F3TAT["README-tatami.md"]
+    end
+
+    subgraph F4["futon4"]
+        F4M["README.md"]
+        F4V["README-validation.md"]
+    end
+
+    subgraph F5["futon5"]
+        F5M["README.md"]
+        F5C["README-cyber-mmca.md"]
+        F5E["README-exotic-mode.md"]
+        F5R["README-ratchet.md"]
+    end
+```
+
+| Repo | README | Purpose |
+|------|--------|---------|
+| **futon0** | `README.md` | Stack overview, utility scripts |
+| | `README-boundary.md` | Boundary gap tracking |
+| | `README-setup.md` | Prerequisites for full stack |
+| **futon1** | `README.md` | Storage layer overview |
+| | `README-archivist.md` | Client usage patterns |
+| | `README-charon.md` | Model invariant guardrails |
+| | `README-storage.md` | XTDB internals |
+| **futon2** | `README.md` | AIF ant simulation |
+| | `README-war.md` | Biology-inspired extensions |
+| **futon3** | `README.md` | Interface layer overview + quickstart |
+| | `README-affect.md` | Affect signal wiring |
+| | `README-agency.md` | Multi-agent coordination |
+| | `README-forum.md` | Real-time collaboration |
+| | `README-irc.md` | IRC bridge for agents |
+| | `README-lab.md` | Lab notebook system |
+| | `README-musn-transport.md` | IRC bridge, WebSocket, Drawbridge, HTTP ingest |
+| | `README-par.md` | Post-Action Review workflow |
+| | `README-patterns.md` | Sigil builder, embeddings CLI, pattern ingestion |
+| | `README-peripherals.md` | Peripheral agent contract |
+| | `README-proofwork.md` | Transport contract, check DSL, workday bridge |
+| | `README-tatami.md` | Tatami HUD, cue embeddings, intent lifecycle |
+| **futon4** | `README.md` | Arxana hypertext client |
+| | `README-validation.md` | Reazon-backed validators |
+| **futon5** | `README.md` | Meta-pattern operators |
+| | `README-cyber-mmca.md` | MMCA controller framework |
+| | `README-ratchet.md` | Windowed ratchet scoring |
 
 ## Devmap
 
 The prototype roadmap lives in `../futon3/holes/futon0.devmap`. This README
 tracks the concrete scripts and operational notes that back those entries.
+
+---
 
 ## Git activity manifest
 1. Run `scripts/git_vitality_sync.sh` to regenerate `git_activity.json` and the downstream `git_summary.edn` HUD feed in `../futon3/resources/vitality/`.
