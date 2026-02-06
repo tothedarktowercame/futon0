@@ -139,6 +139,7 @@ The value is passed to `display-buffer-in-side-window'."
     (:key hot-reload   :enabled t)
     (:key voice        :enabled t)
     (:key musn         :enabled t)
+    (:key affect       :enabled t)
     (:key pattern-sync :enabled t)
     (:key focus        :enabled t)
     (:key vitality     :enabled t)
@@ -156,6 +157,7 @@ Available blocks:
   hot-reload   - Emacs hot reload watcher status
   voice        - Voice typing status
   musn         - MUSN server status and activity
+  affect       - Recent affect transitions with terms
   pattern-sync - Pattern sync with Futon1
   focus        - Focus/Profile from graph memory
   vitality     - Filesystem and Tatami vitality
@@ -347,6 +349,11 @@ When set, the Stack HUD will show both local and remote service status."
 (defvar stack-hud--musn-vitality-cache-time 0)
 (defvar stack-hud--musn-vitality-cache-seconds 60)
 
+;; Affect transitions cache
+(defvar stack-hud--affect-cache nil)
+(defvar stack-hud--affect-cache-time 0)
+(defvar stack-hud--affect-cache-seconds 30)
+
 (defun stack-hud--musn-vitality ()
   "Fetch vitality scan data from MUSN server, using cache if fresh."
   (let* ((now (float-time))
@@ -362,6 +369,60 @@ When set, the Stack HUD will show both local and remote service status."
                 (setq stack-hud--musn-vitality-cache-time now))))
         (error nil)))
     stack-hud--musn-vitality-cache))
+
+;; Affect transitions
+
+(defun stack-hud--affect-transitions ()
+  "Fetch recent affect transitions from MUSN, using cache if fresh.
+Returns a list of affect/transition events."
+  (let* ((now (float-time))
+         (stale (or (null stack-hud--affect-cache)
+                    (>= (- now stack-hud--affect-cache-time)
+                        stack-hud--affect-cache-seconds))))
+    (when stale
+      (condition-case nil
+          (when-let ((url (stack-hud--musn-url "/musn/activity/entries?limit=50")))
+            (let* ((resp (stack-hud--fetch-json url))
+                   (entries (when (plist-get resp :ok)
+                              (plist-get resp :entries)))
+                   (affects (seq-filter
+                             (lambda (e)
+                               (equal (plist-get e :event/type) "affect/transition"))
+                             entries)))
+              (setq stack-hud--affect-cache affects)
+              (setq stack-hud--affect-cache-time now)))
+        (error nil)))
+    stack-hud--affect-cache))
+
+(defun stack-hud--format-affect-type (affect)
+  "Format affect type for display."
+  (let ((type (or (plist-get affect :type)
+                  (cdr (assq 'type affect)))))
+    (cond
+     ((stringp type) type)
+     ((keywordp type) (substring (symbol-name type) 1))
+     ((symbolp type) (symbol-name type))
+     (t "?"))))
+
+(defun stack-hud--format-affect-terms (terms)
+  "Format terms list for display, limiting to 5 terms."
+  (let ((term-list (cond
+                    ((listp terms) terms)
+                    ((vectorp terms) (append terms nil))
+                    (t nil))))
+    (when term-list
+      (let ((limited (seq-take term-list 5)))
+        (concat (string-join limited ", ")
+                (when (> (length term-list) 5)
+                  (format " (+%d)" (- (length term-list) 5))))))))
+
+(defun stack-hud--format-affect-time (at-str)
+  "Format affect timestamp for display."
+  (when at-str
+    (let ((parsed (stack-hud--parse-iso-time at-str)))
+      (if parsed
+          (format-time-string "%H:%M" parsed)
+        "?"))))
 
 ;; Local services status
 
@@ -1257,6 +1318,74 @@ Returns t if connection succeeds, nil otherwise."
         (insert (format "down (%s)" (or err "unknown"))))
       (insert "\n\n")))))
 
+(defun stack-hud--plist-values-sum (plist)
+  "Sum all numeric values in PLIST (every other element starting from second)."
+  (let ((sum 0)
+        (rest plist))
+    (while rest
+      (pop rest)  ; skip key
+      (when-let ((val (pop rest)))
+        (when (numberp val)
+          (setq sum (+ sum val)))))
+    sum))
+
+(defun stack-hud--affect-pending-status ()
+  "Fetch affect pending status from futon3a via MUSN.
+Returns plist with :pending-count and :term-count or nil."
+  (condition-case nil
+      (when-let ((url (stack-hud--musn-url "/musn/affect/state")))
+        (let ((resp (stack-hud--fetch-json url)))
+          (when (plist-get resp :ok)
+            (let* ((pending (plist-get resp :pending-counts))
+                   (terms (plist-get resp :term-history-counts))
+                   (pending-total (stack-hud--plist-values-sum pending))
+                   (terms-total (stack-hud--plist-values-sum terms)))
+              (list :pending-count pending-total
+                    :term-count terms-total)))))
+    (error nil)))
+
+(defun my-chatgpt-shell--insert-stack-affect ()
+  "Insert affect transitions section into the Stack HUD."
+  (insert "  Affect:\n")
+  (cond
+   ((or (null stack-hud-musn-url)
+        (string-empty-p stack-hud-musn-url))
+    (insert "    unconfigured\n\n"))
+   (t
+    (let ((transitions (stack-hud--affect-transitions))
+          (pending (stack-hud--affect-pending-status)))
+      (if (and (null transitions) (null pending))
+          (insert "    no activity\n\n")
+        (when transitions
+          (dolist (trans (seq-take transitions 5))
+            (let* ((actor (or (plist-get trans :actor)
+                              (cdr (assq 'actor trans))
+                              "?"))
+                   (affect (or (plist-get trans :affect)
+                               (cdr (assq 'affect trans))))
+                   (affect-type (stack-hud--format-affect-type affect))
+                   (terms (or (plist-get trans :terms)
+                              (cdr (assq 'terms trans))))
+                   (at (or (plist-get trans :at)
+                           (cdr (assq 'at trans))))
+                   (time-str (stack-hud--format-affect-time at))
+                   (terms-str (stack-hud--format-affect-terms terms)))
+              (insert (format "    %s %s → %s"
+                              (or time-str "?")
+                              actor
+                              affect-type))
+              (when terms-str
+                (insert (format " [%s]" terms-str)))
+              (insert "\n")))
+          (when (> (length transitions) 5)
+            (insert (format "    ... +%d more\n" (- (length transitions) 5)))))
+        (when (and (null transitions) pending)
+          (let ((pc (plist-get pending :pending-count))
+                (tc (plist-get pending :term-count)))
+            (insert (format "    %d pending, %d terms tracked (awaiting window expiry)\n"
+                            (or pc 0) (or tc 0)))))
+        (insert "\n"))))))
+
 (defun my-chatgpt-shell--insert-stack-services ()
   "Insert local and remote services status section into the Stack HUD."
   (insert "  Services:\n")
@@ -1478,6 +1607,7 @@ Returns t if connection succeeds, nil otherwise."
     ('hot-reload   #'my-chatgpt-shell--insert-stack-hot-reload)
     ('voice        #'my-chatgpt-shell--insert-stack-voice)
     ('musn         #'my-chatgpt-shell--insert-stack-musn)
+    ('affect       #'my-chatgpt-shell--insert-stack-affect)
     ('pattern-sync #'my-chatgpt-shell--insert-stack-pattern-sync)
     ('focus        #'my-chatgpt-shell--insert-stack-focus-profile)
     ('vitality     #'my-chatgpt-shell--insert-stack-vitality)
