@@ -19,16 +19,23 @@
                  directory)
   :group 'futon-hot)
 
+(defconst futon-hot--library-root
+  (let ((base (or load-file-name (buffer-file-name) default-directory)))
+    (expand-file-name ".." (file-name-directory base)))
+  "Best-effort root anchored at the location of futon-hot.el.")
+
 (defun futon-hot--base-root ()
   (or futon-hot-root
       (and (boundp 'my-futon3--repo-root) my-futon3--repo-root)
       (let ((base (or load-file-name (buffer-file-name))))
         (when base
           (expand-file-name ".." (file-name-directory base))))
+      futon-hot--library-root
       default-directory))
 
 (defconst my-chatgpt-shell--hot-reload-default-files
-  '("./futon-config.el")
+  '("./futon-config.el"
+    "../futon4/dev/arxana-browser-hypergraph.el")
   "Default file list for Stack hot reload.")
 
 (defcustom my-chatgpt-shell-hot-reload-files my-chatgpt-shell--hot-reload-default-files
@@ -60,6 +67,22 @@ Each function is called with the reloaded FILE."
 
 (defcustom my-chatgpt-shell-hot-reload-debug nil
   "When non-nil, capture a backtrace buffer on hot reload errors."
+  :type 'boolean
+  :group 'futon-hot)
+
+(defcustom futon-hot-arxana-dev-directory "../futon4/dev"
+  "Path to the Futon4 dev directory used for Arxana demo loading."
+  :type 'directory
+  :group 'futon-hot)
+
+(defcustom futon-hot-arxana-hypergraph-source
+  "../futon6/data/first-proof/thread-633512-hypergraph.json"
+  "Default hypergraph dataset used by `futon-hot-arxana-open-hypergraph'."
+  :type 'file
+  :group 'futon-hot)
+
+(defcustom futon-hot-arxana-hypergraph-auto-open t
+  "When non-nil, open the selected hypergraph dataset immediately."
   :type 'boolean
   :group 'futon-hot)
 
@@ -387,6 +410,64 @@ With prefix ARG enable when positive, disable otherwise."
 
 (defun my-chatgpt-shell--hot-reload-watching-count ()
   (length my-chatgpt-shell--hot-reload-watches))
+
+(declare-function arxana-browser-browse "arxana-browser")
+(declare-function arxana-browser--render "arxana-browser-core")
+(declare-function arxana-browser-hypergraph-open-arxana "arxana-browser-hypergraph" (item))
+(defvar arxana-browser--buffer)
+(defvar arxana-browser--context)
+(defvar arxana-browser--stack)
+(defvar arxana-browser-hypergraph-open-style)
+(defvar arxana-browser-hypergraph-sources)
+
+(defun futon-hot--resolve-arxana-path (path)
+  "Resolve PATH relative to `futon-hot--base-root'."
+  (if (file-name-absolute-p path)
+      (expand-file-name path)
+    (expand-file-name path (futon-hot--base-root))))
+
+(defun futon-hot--prepare-arxana-load-path ()
+  "Add Futon4 Arxana dev modules to `load-path'."
+  (let ((dev-dir (futon-hot--resolve-arxana-path futon-hot-arxana-dev-directory)))
+    (unless (file-directory-p dev-dir)
+      (user-error "Arxana dev directory not found: %s" dev-dir))
+    (add-to-list 'load-path dev-dir)
+    dev-dir))
+
+;;;###autoload
+(defun futon-hot-arxana-open-hypergraph (&optional source)
+  "Open Arxana on the hypergraph demo SOURCE.
+
+With nil SOURCE, use `futon-hot-arxana-hypergraph-source'."
+  (interactive)
+  (let* ((source-path (futon-hot--resolve-arxana-path
+                       (or source futon-hot-arxana-hypergraph-source)))
+         (menu-item (list :type 'menu
+                          :label "Hypergraphs"
+                          :description "Inspect local hypergraph JSON datasets."
+                          :view 'hypergraph)))
+    (unless (file-readable-p source-path)
+      (user-error "Hypergraph source not readable: %s" source-path))
+    (futon-hot--prepare-arxana-load-path)
+    (require 'arxana-browser)
+    (require 'arxana-browser-hypergraph)
+    (setq arxana-browser-hypergraph-sources (list source-path))
+    (setq arxana-browser-hypergraph-open-style 'arxana)
+    (arxana-browser-browse)
+    (setq arxana-browser--stack (list menu-item))
+    (setq arxana-browser--context nil)
+    (arxana-browser--render)
+    (when futon-hot-arxana-hypergraph-auto-open
+      (let* ((items (arxana-browser-hypergraph-items))
+             (item (or (seq-find (lambda (entry)
+                                   (string= (expand-file-name source-path)
+                                            (expand-file-name
+                                             (or (plist-get entry :path) ""))))
+                                 items)
+                       (car items))))
+        (when item
+          (arxana-browser-hypergraph-open-arxana item))))
+    (message "Arxana hypergraph demo loaded: %s" source-path)))
 
 (provide 'futon-hot)
 
