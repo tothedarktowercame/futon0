@@ -95,6 +95,13 @@
 (setq tatami-actor "Joe Corneli")
 (require 'flexiarg)
 
+;;; Futon 3c:
+
+(require 'futon3c-ui)
+(require 'futon3c-chat)
+(require 'codex-repl)
+(require 'futon3c-code-blocks)
+
 ;;; Futon 4:
 
 ;; Stack/Arxana frame naming (used by sway rules).
