@@ -10,6 +10,7 @@
 (add-to-list 'load-path "/home/joe/code/futon0/contrib/")
 
 (add-to-list 'load-path "/home/joe/code/futon3/contrib/")
+(add-to-list 'load-path "/home/joe/code/futon3c/emacs/")
 
 ;; Stack HUD entry point.
 (require 'stack-entry)
@@ -34,6 +35,10 @@
 (setq my-chatgpt-shell-hot-reload-files
       '("../futon3/contrib/flexiarg.el"
 	"../futon3/contrib/aob-chatgpt.el"
+        "../futon3c/emacs/futon3c-ui.el"
+        "../futon3c/emacs/futon3c-chat.el"
+        "../futon3c/emacs/codex-repl.el"
+        "../futon3c/emacs/futon3c-code-blocks.el"
         "../futon4/dev/bootstrap.el"
         "../futon4/dev/arxana-article.el"
         "../futon4/dev/arxana-browser-docbook.el"
