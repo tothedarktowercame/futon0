@@ -2,13 +2,19 @@
   "repos": [
     {"label": "futon0", "path": "..", "sphere": "infra"},
     {"label": "futon1", "path": "../../futon1", "sphere": "storage"},
+    {"label": "futon1a", "path": "../../futon1a", "sphere": "storage"},
     {"label": "futon2", "path": "../../futon2", "sphere": "rhythm"},
     {"label": "futon3", "path": "../../futon3", "sphere": "devmaps"},
+    {"label": "futon3a", "path": "../../futon3a", "sphere": "devmaps"},
+    {"label": "futon3b", "path": "../../futon3b", "sphere": "devmaps"},
+    {"label": "futon3c", "path": "../../futon3c", "sphere": "devmaps"},
     {"label": "futon4", "path": "../../futon4", "sphere": "experiments"},
     {"label": "arxana", "path": "../../futon4/arxana", "sphere": "experiments"},
     {"label": "futon5", "path": "../../futon5", "sphere": "proto"},
+    {"label": "futon5a", "path": "../../futon5a", "sphere": "personal"},
     {"label": "futon6", "path": "../../futon6", "sphere": "proto"},
     {"label": "futon7", "path": "../../futon7", "sphere": "proto"},
+    {"label": "futon7a", "path": "../../futon7a", "sphere": "shopfront"},
     {"label": "graph-memory-seed", "path": "../../graph-memory-seed", "sphere": "research"}
   ]
 }
