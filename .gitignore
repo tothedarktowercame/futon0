@@ -4,3 +4,4 @@ data/vitality/latest_scan.json
 .lsp/
 **/__pycache__/
 *.pyc
+*.elc
