@@ -1,5 +1,7 @@
 data/vitality_scanner.json
 data/vitality/latest_scan.json
+data/
+contrib/data/
 .clj-kondo/
 .lsp/
 **/__pycache__/
