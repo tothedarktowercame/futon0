@@ -141,8 +141,19 @@
 
 ;;; Set up Futon4
 
-(setq futon4-base-url "http://localhost:8080/api/alpha")
+(let* ((raw-base (or (getenv "FUTON4_BASE_URL")
+                     "http://localhost:7071/api/alpha"))
+       (base (replace-regexp-in-string "/+$" "" raw-base)))
+  (setq futon4-base-url
+        (cond
+         ((string-match-p "/api/alpha\\'" base) base)
+         ((string-match-p "/api\\'" base) (concat base "/alpha"))
+         (t (concat base "/api/alpha")))))
 (setq futon4-enable-sync t)
+(setq arxana-store-default-penholder
+      (or (getenv "FUTON4_PENHOLDER")
+          (getenv "FUTON1A_COMPAT_PENHOLDER")
+          "api"))
 
 (load-file "~/code/futon4/dev/bootstrap.el")
 (arxana-load)
