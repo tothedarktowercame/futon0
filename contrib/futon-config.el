@@ -158,6 +158,12 @@
 (load-file "~/code/futon4/dev/bootstrap.el")
 (arxana-load)
 
+;; Enable Reazon-backed invariants as hard gates for Arxana workflows.
+(setq arxana-window-constraints-enable t
+      arxana-data-constraints-enable t
+      arxana-window-constraints-failure-action 'error
+      arxana-data-constraints-failure-action 'error)
+
 (provide 'futon-config)
 
 ;;; futon-config.el ends here
