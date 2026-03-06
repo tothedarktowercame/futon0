@@ -35,14 +35,15 @@
 (setq my-chatgpt-shell-hot-reload-files
       '("../futon3/contrib/flexiarg.el"
 	"../futon3/contrib/aob-chatgpt.el"
-        "../futon3c/emacs/futon3c-ui.el"
-        "../futon3c/emacs/futon3c-chat.el"
+        "../futon3c/emacs/agent-chat.el"
+        "../futon3c/emacs/claude-repl.el"
         "../futon3c/emacs/codex-repl.el"
         "../futon3c/emacs/futon3c-code-blocks.el"
         "../futon4/dev/bootstrap.el"
         "../futon4/dev/arxana-article.el"
         "../futon4/dev/arxana-browser-docbook.el"
         "../futon4/dev/arxana-patterns.el"
+        "../futon4/dev/arxana-browser-trace.el"
         "../futon4/dev/arxana-browser-core.el"
         "../futon4/dev/arxana-browser-code.el"
         "../futon4/dev/arxana-browser-patterns.el"
@@ -97,8 +98,8 @@
 
 ;;; Futon 3c:
 
-(require 'futon3c-ui)
-(require 'futon3c-chat)
+(require 'agent-chat)
+(require 'claude-repl)
 (require 'codex-repl)
 (require 'futon3c-code-blocks)
 
