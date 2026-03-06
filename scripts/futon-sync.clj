@@ -37,6 +37,9 @@
    {:match #"^\.shadow-cljs/" :suggest ".shadow-cljs/"}
    {:match #"^\.venv/"        :suggest ".venv/"}
    {:match #"^\.env"          :suggest ".env*"}
+   {:match #"\.tar\.gz$"      :suggest "*.tar.gz"}
+   {:match #"^mo-processed/"  :suggest "mo-processed/"}
+   {:match #"^test.*\.pdf$"   :suggest "test*.pdf"}
    {:match #"\.ppm$"          :suggest "*.ppm"}
    {:match #"^out/"           :suggest "out/"}
    {:match #"^lab/"           :suggest "lab/"}
