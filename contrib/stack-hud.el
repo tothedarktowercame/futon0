@@ -1900,13 +1900,13 @@ With prefix argument, prompt for block to toggle."
                        ""))
            (prompt "You are generating a Stack HUD briefing for the futon development stack.
 
-Given the holistic argument and the mission inventory below, write a concise briefing (max 20 lines). Structure:
+Given the holistic argument and the mission inventory below, write a concise briefing (max 25 lines). Structure:
 
 1. ACTIVE MISSIONS — one line per mission that is genuinely in-progress or at a derivation phase (IDENTIFY through INSTANTIATE). Name, phase, what it does. Do NOT include missions marked as 'not started', 'DEFERRED', 'NONSTARTER', or 'idea captured'.
-2. WHY THESE NOW — 2-3 sentences connecting active work to the holistic argument (S1-S5 support relations)
+2. WHY THESE NOW — For each active mission (or cluster of related missions), state which specific support relation (S1-S5) or attack relation (A1-A4) from the holistic argument it advances or mitigates. Use the relation IDs explicitly, e.g. 'M-cyder addresses A1 (complexity cost)' or 'M-futon3x-e2e is direct evidence for S1 (evidence discipline works)'. If a mission doesn't clearly map to any relation, say so — that's a signal worth surfacing. 3-5 lines.
 3. BLOCKERS/RISKS — any blocked missions or dependencies, 1-2 lines
 
-Be terse. This appears in a terminal HUD sidebar. No markdown headers, no bullets longer than one line. Use plain text.
+Be terse and specific. This appears in a terminal HUD sidebar. No markdown headers, no bullets longer than one line. Use plain text. Do NOT generate vague motivational language — every claim in WHY THESE NOW must reference a concrete relation ID from the holistic argument.
 
 --- HOLISTIC ARGUMENT ---
 %s
