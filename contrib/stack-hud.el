@@ -1900,9 +1900,9 @@ With prefix argument, prompt for block to toggle."
                        ""))
            (prompt "You are generating a Stack HUD briefing for the futon development stack.
 
-Given the holistic argument and the active (non-completed) missions below, write a concise briefing (max 20 lines). Structure:
+Given the holistic argument and the mission inventory below, write a concise briefing (max 20 lines). Structure:
 
-1. ACTIVE MISSIONS — one line per mission: name, phase, what it does
+1. ACTIVE MISSIONS — one line per mission that is genuinely in-progress or at a derivation phase (IDENTIFY through INSTANTIATE). Name, phase, what it does. Do NOT include missions marked as 'not started', 'DEFERRED', 'NONSTARTER', or 'idea captured'.
 2. WHY THESE NOW — 2-3 sentences connecting active work to the holistic argument (S1-S5 support relations)
 3. BLOCKERS/RISKS — any blocked missions or dependencies, 1-2 lines
 
@@ -1911,7 +1911,7 @@ Be terse. This appears in a terminal HUD sidebar. No markdown headers, no bullet
 --- HOLISTIC ARGUMENT ---
 %s
 
---- ACTIVE MISSIONS ---
+--- MISSION INVENTORY ---
 %s")
            (input (format prompt holistic non-completed))
            (outbuf (generate-new-buffer " *briefing-gen*"))
