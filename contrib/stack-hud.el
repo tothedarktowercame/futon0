@@ -1927,8 +1927,16 @@ Be terse and specific. This appears in a terminal HUD sidebar. No markdown heade
                (let* ((raw (with-current-buffer (process-buffer process)
                              (buffer-string)))
                       (text (replace-regexp-in-string "\r" "" raw))
-                      (text (replace-regexp-in-string "\\[[][0-9;?]*[a-zA-Z]" "" text))
-                      (text (replace-regexp-in-string "\\][^\a\e]*[\a\e\\\\]" "" text))
+                      ;; Strip ANSI CSI sequences (ESC[ ... letter)
+                      (text (replace-regexp-in-string "\e\\[[0-9;?]*[a-zA-Z]" "" text))
+                      ;; Strip OSC sequences (ESC] ... ST/BEL/ESC\)
+                      (text (replace-regexp-in-string "\e\\][^\a\e]*[\a\e\\\\]?" "" text))
+                      ;; Strip any remaining bare ESC sequences
+                      (text (replace-regexp-in-string "\e[^[\n]?" "" text))
+                      ;; Strip leftover control chars (except newline/tab)
+                      (text (replace-regexp-in-string "[\x00-\x08\x0b\x0c\x0e-\x1f]" "" text))
+                      ;; Strip partial sequences like [<u that survive
+                      (text (replace-regexp-in-string "\\[<[a-z]*$" "" text))
                       (text (replace-regexp-in-string "```\n?" "" text))
                       (text (string-trim text)))
                  (setq stack-hud--briefing-cache text)
