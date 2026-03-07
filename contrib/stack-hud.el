@@ -1924,8 +1924,13 @@ Be terse. This appears in a terminal HUD sidebar. No markdown headers, no bullet
          (when (memq (process-status process) '(exit signal))
            (setq stack-hud--briefing-generating nil)
            (if (zerop (process-exit-status process))
-               (let ((text (with-current-buffer (process-buffer process)
-                             (buffer-string))))
+               (let* ((raw (with-current-buffer (process-buffer process)
+                             (buffer-string)))
+                      (text (replace-regexp-in-string "\r" "" raw))
+                      (text (replace-regexp-in-string "\\[[][0-9;?]*[a-zA-Z]" "" text))
+                      (text (replace-regexp-in-string "\\][^\a\e]*[\a\e\\\\]" "" text))
+                      (text (replace-regexp-in-string "```\n?" "" text))
+                      (text (string-trim text)))
                  (setq stack-hud--briefing-cache text)
                  (with-temp-file (stack-hud--briefing-cache-path)
                    (insert text))
@@ -1941,21 +1946,23 @@ Be terse. This appears in a terminal HUD sidebar. No markdown headers, no bullet
   (setq stack-hud--briefing-cache nil)
   (stack-hud--briefing-generate))
 
+(defun stack-hud--briefing-insert-with-headings (text)
+  "Insert briefing TEXT, bolding known section headings."
+  (dolist (line (split-string text "\n"))
+    (if (string-match-p "\\`\\(ACTIVE MISSIONS\\|WHY THESE NOW\\|BLOCKERS/RISKS\\)\\'" line)
+        (insert (propertize (concat "  " line) 'face 'bold) "\n")
+      (insert "  " line "\n"))))
+
 (defun my-chatgpt-shell--insert-stack-briefing ()
   "Insert the active mission briefing block into the HUD."
   (insert (propertize "Active Mission Briefing" 'face 'bold) "\n")
   (cond
    (stack-hud--briefing-cache
-    (insert stack-hud--briefing-cache)
-    (unless (string-suffix-p "\n" stack-hud--briefing-cache)
-      (insert "\n")))
+    (stack-hud--briefing-insert-with-headings stack-hud--briefing-cache))
    ((stack-hud--briefing-fresh-p)
     (stack-hud--briefing-load-cache)
     (if stack-hud--briefing-cache
-        (progn
-          (insert stack-hud--briefing-cache)
-          (unless (string-suffix-p "\n" stack-hud--briefing-cache)
-            (insert "\n")))
+        (stack-hud--briefing-insert-with-headings stack-hud--briefing-cache)
       (insert "  (cache file unreadable)\n")))
    (stack-hud--briefing-generating
     (insert "  Generating briefing...\n"))

@@ -242,6 +242,33 @@
       (insert report))
     (princ report)))
 
+(defvar stack-hud--status-base-urls
+  '("http://localhost:6060")
+  "Base URLs to try when fetching tatami status, in order.
+The configured `my-futon3-ui-base-url' is tried first if set.")
+
+(defun stack-hud--fetch-status-curl ()
+  "Fetch Futon3 tatami status using curl, trying configured then local URLs."
+  (let ((urls (append
+               (when (and (boundp 'my-futon3-ui-base-url)
+                          (stringp my-futon3-ui-base-url))
+                 (list my-futon3-ui-base-url))
+               stack-hud--status-base-urls)))
+    (cl-loop for base in urls
+             for url = (format "%s/musn/tatami/status" base)
+             for result = (with-temp-buffer
+                            (when (zerop (call-process "curl" nil t nil
+                                                       "-s" "-m" "2" url))
+                              (goto-char (point-min))
+                              (condition-case nil
+                                  (my-futon3--json-keywordize
+                                   (json-parse-buffer :object-type 'alist
+                                                      :array-type 'list
+                                                      :null-object nil
+                                                      :false-object nil))
+                                (error nil))))
+             when result return result)))
+
 (defun stack-hud ()
   "Fetch Stack HUD state from Futon3 and render the Stack HUD."
   (interactive)
@@ -249,12 +276,11 @@
     (if (file-readable-p futon0--futon3-bridge-path)
         (load-file futon0--futon3-bridge-path)
       (user-error "Futon3 bridge not found at %s" futon0--futon3-bridge-path)))
-  (my-futon3-ensure-running)
-  (let* ((boundary-updated (stack-hud--maybe-refresh-boundary-scan))
-         (status (or (my-futon3-refresh-status) my-futon3-last-status))
-         (status (if boundary-updated
-                     (or (my-futon3-refresh-status) status)
-                   status))
+  (stack-hud--maybe-refresh-boundary-scan)
+  (stack-hud--maybe-refresh-vitality-scan)
+  (let* ((status (or (my-futon3-refresh-status)
+                     (stack-hud--fetch-status-curl)
+                     my-futon3-last-status))
          (stack (and status (plist-get status :stack))))
     (if stack
         (progn
