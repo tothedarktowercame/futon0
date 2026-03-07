@@ -145,7 +145,8 @@ The value is passed to `display-buffer-in-side-window'."
     (:key vitality     :enabled t)
     (:key git          :enabled t)
     (:key boundary     :enabled t)
-    (:key reminders    :enabled t))
+    (:key reminders    :enabled t)
+    (:key briefing     :enabled t))
   "Ordered list of HUD blocks to display.
 Each entry is a plist with :key and :enabled.
 Set :enabled to nil to hide a block.
@@ -163,7 +164,8 @@ Available blocks:
   vitality     - Filesystem and Tatami vitality
   git          - Git streak and activity
   boundary     - Devmap boundary gaps
-  reminders    - Upcoming reminders"
+  reminders    - Upcoming reminders
+  briefing     - Active mission briefing (generated via claude -p)"
   :type '(repeat (plist :key-type symbol :value-type sexp))
   :group 'tatami-integration)
 
@@ -1614,6 +1616,7 @@ Returns plist with :pending-count and :term-count or nil."
     ('git          #'my-chatgpt-shell--insert-stack-git)
     ('boundary     #'my-chatgpt-shell--insert-stack-boundary)
     ('reminders    #'my-chatgpt-shell--insert-stack-reminders)
+    ('briefing     #'my-chatgpt-shell--insert-stack-briefing)
     (_ nil)))
 
 (defun stack-hud--block-takes-arg-p (key)
@@ -1821,6 +1824,151 @@ With prefix argument, prompt for block to toggle."
         (princ (format "  %-14s %s\n"
                        key
                        (if enabled "enabled" "DISABLED")))))))
+
+;;; --- Briefing (active mission argument) ---
+
+(defcustom stack-hud-briefing-cache-dir
+  (expand-file-name "briefing" stack-hud-log-dir)
+  "Directory for cached briefing files."
+  :type 'directory
+  :group 'tatami-integration)
+
+(defcustom stack-hud-briefing-stale-hours 8
+  "Hours before a cached briefing is considered stale."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-briefing-missions-url
+  "http://localhost:5055/api/alpha/missions"
+  "URL to fetch mission inventory from futon3c."
+  :type 'string
+  :group 'tatami-integration)
+
+(defcustom stack-hud-briefing-holistic-argument-path
+  "/home/joe/code/futon3/holes/holistic-argument-sketch.md"
+  "Path to the holistic argument sketch for briefing context."
+  :type 'file
+  :group 'tatami-integration)
+
+(defcustom stack-hud-briefing-non-completed-path
+  "/home/joe/code/futon3/holes/non-completed-mission-summaries.md"
+  "Path to the non-completed mission summaries."
+  :type 'file
+  :group 'tatami-integration)
+
+(defcustom stack-hud-briefing-claude-command "claude"
+  "Command to invoke Claude CLI."
+  :type 'string
+  :group 'tatami-integration)
+
+(defvar stack-hud--briefing-cache nil
+  "In-memory cache of the current briefing text.")
+(defvar stack-hud--briefing-generating nil
+  "Non-nil when a briefing generation is in flight.")
+
+(defun stack-hud--briefing-cache-path ()
+  "Return the path to the current briefing cache file."
+  (expand-file-name "current-briefing.md" stack-hud-briefing-cache-dir))
+
+(defun stack-hud--briefing-fresh-p ()
+  "Return non-nil if the cached briefing is fresh."
+  (let ((path (stack-hud--briefing-cache-path)))
+    (and (file-exists-p path)
+         (let* ((mtime (float-time (file-attribute-modification-time
+                                    (file-attributes path))))
+                (age-hours (/ (- (float-time) mtime) 3600.0)))
+           (< age-hours stack-hud-briefing-stale-hours)))))
+
+(defun stack-hud--briefing-load-cache ()
+  "Load briefing from cache file if it exists."
+  (let ((path (stack-hud--briefing-cache-path)))
+    (when (file-exists-p path)
+      (with-temp-buffer
+        (insert-file-contents path)
+        (setq stack-hud--briefing-cache (buffer-string))))))
+
+(defun stack-hud--briefing-generate ()
+  "Generate a briefing asynchronously via claude -p."
+  (if stack-hud--briefing-generating
+      (message "Briefing generation already in progress.")
+    (setq stack-hud--briefing-generating t)
+    (make-directory stack-hud-briefing-cache-dir t)
+    (let* ((non-completed (if (file-readable-p stack-hud-briefing-non-completed-path)
+                              (with-temp-buffer
+                                (insert-file-contents stack-hud-briefing-non-completed-path)
+                                (buffer-string))
+                            ""))
+           (holistic (if (file-readable-p stack-hud-briefing-holistic-argument-path)
+                         (with-temp-buffer
+                           (insert-file-contents stack-hud-briefing-holistic-argument-path)
+                           (buffer-string))
+                       ""))
+           (prompt "You are generating a Stack HUD briefing for the futon development stack.
+
+Given the holistic argument and the active (non-completed) missions below, write a concise briefing (max 20 lines). Structure:
+
+1. ACTIVE MISSIONS — one line per mission: name, phase, what it does
+2. WHY THESE NOW — 2-3 sentences connecting active work to the holistic argument (S1-S5 support relations)
+3. BLOCKERS/RISKS — any blocked missions or dependencies, 1-2 lines
+
+Be terse. This appears in a terminal HUD sidebar. No markdown headers, no bullets longer than one line. Use plain text.
+
+--- HOLISTIC ARGUMENT ---
+%s
+
+--- ACTIVE MISSIONS ---
+%s")
+           (input (format prompt holistic non-completed))
+           (outbuf (generate-new-buffer " *briefing-gen*"))
+           (proc (start-process "briefing-gen" outbuf
+                                stack-hud-briefing-claude-command
+                                "-p" input)))
+      (set-process-sentinel
+       proc
+       (lambda (process _event)
+         (when (memq (process-status process) '(exit signal))
+           (setq stack-hud--briefing-generating nil)
+           (if (zerop (process-exit-status process))
+               (let ((text (with-current-buffer (process-buffer process)
+                             (buffer-string))))
+                 (setq stack-hud--briefing-cache text)
+                 (with-temp-file (stack-hud--briefing-cache-path)
+                   (insert text))
+                 (message "Briefing generated and cached.")
+                 (stack-hud--refresh-buffer))
+             (message "Briefing generation failed (exit %d)."
+                      (process-exit-status process)))
+           (kill-buffer (process-buffer process))))))))
+
+(defun stack-hud-briefing-refresh ()
+  "Force-refresh the active mission briefing."
+  (interactive)
+  (setq stack-hud--briefing-cache nil)
+  (stack-hud--briefing-generate))
+
+(defun my-chatgpt-shell--insert-stack-briefing ()
+  "Insert the active mission briefing block into the HUD."
+  (insert (propertize "Active Mission Briefing" 'face 'bold) "\n")
+  (cond
+   (stack-hud--briefing-cache
+    (insert stack-hud--briefing-cache)
+    (unless (string-suffix-p "\n" stack-hud--briefing-cache)
+      (insert "\n")))
+   ((stack-hud--briefing-fresh-p)
+    (stack-hud--briefing-load-cache)
+    (if stack-hud--briefing-cache
+        (progn
+          (insert stack-hud--briefing-cache)
+          (unless (string-suffix-p "\n" stack-hud--briefing-cache)
+            (insert "\n")))
+      (insert "  (cache file unreadable)\n")))
+   (stack-hud--briefing-generating
+    (insert "  Generating briefing...\n"))
+   (t
+    (insert "  (no briefing cached — run M-x stack-hud-briefing-refresh)\n")
+    ;; Auto-generate on first view
+    (stack-hud--briefing-generate)))
+  (insert "\n"))
 
 (provide 'stack-hud)
 

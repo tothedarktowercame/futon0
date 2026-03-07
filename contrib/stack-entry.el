@@ -159,7 +159,8 @@
                           ("Vitality" . my-chatgpt-shell--insert-stack-vitality)
                           ("Git" . my-chatgpt-shell--insert-stack-git)
                           ("Boundary" . my-chatgpt-shell--insert-stack-boundary)
-                          ("Reminders" . my-chatgpt-shell--insert-stack-reminders)))
+                          ("Reminders" . my-chatgpt-shell--insert-stack-reminders)
+                          ("Briefing" . my-chatgpt-shell--insert-stack-briefing)))
                  (specs (if stack-hud-diagnostics-fast
                             (seq-remove (lambda (spec)
                                           (string= (car spec) "Pattern sync"))
