@@ -138,9 +138,9 @@ The value is passed to `display-buffer-in-side-window'."
     (:key services     :enabled t)
     (:key hot-reload   :enabled t)
     (:key voice        :enabled t)
-    (:key musn         :enabled t)
-    (:key affect       :enabled t)
-    (:key pattern-sync :enabled t)
+    (:key musn         :enabled nil)
+    (:key affect       :enabled nil)
+    (:key pattern-sync :enabled nil)
     (:key focus        :enabled t)
     (:key vitality     :enabled t)
     (:key git          :enabled t)
@@ -187,9 +187,8 @@ Available blocks:
 (defcustom stack-hud-local-services
   '(("Transport" . 5050)
     ("Forum WS" . 5055)
-    ("MUSN HTTP" . 6065)
     ("IRC" . 6667)
-    ("Agency" . 7070)
+    ("Futon3c" . 7070)
     ("Futon1 API" . 8080))
   "List of local services to check. Each entry is (NAME . PORT)."
   :type '(alist :key-type string :value-type integer)
@@ -985,25 +984,21 @@ Returns t if connection succeeds, nil otherwise."
      (t nil))))
 
 (defun my-chatgpt-shell--stack-vitality-from-file ()
-  ;; Try MUSN first if configured
-  (or (when (and stack-hud-musn-url (not (string-empty-p stack-hud-musn-url)))
-        (stack-hud--musn-vitality))
-      ;; Fall back to local file
-      (progn
-        (stack-hud--maybe-refresh-vitality-scan)
-        (let ((path stack-hud-vitality-scan-path))
-          (when (file-readable-p path)
-            (with-temp-buffer
-              (insert-file-contents path)
-              (condition-case nil
-                  (let* ((json-object-type 'plist)
-                         (json-array-type 'list)
-                         (json-key-type 'symbol)
-                         (data (if (fboundp 'json-parse-buffer)
-                                   (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
-                                 (json-read))))
-                    data)
-                (error nil))))))))
+  ;; Local file only (MUSN fallback removed — futon3 MUSN service retired)
+  (stack-hud--maybe-refresh-vitality-scan)
+  (let ((path stack-hud-vitality-scan-path))
+    (when (file-readable-p path)
+      (with-temp-buffer
+        (insert-file-contents path)
+        (condition-case nil
+            (let* ((json-object-type 'plist)
+                   (json-array-type 'list)
+                   (json-key-type 'symbol)
+                   (data (if (fboundp 'json-parse-buffer)
+                             (json-parse-buffer :object-type 'plist :array-type 'list :null-object nil :false-object nil)
+                           (json-read))))
+              data)
+          (error nil))))))
 
 (defun my-chatgpt-shell--stack-zoomr4-status-counts ()
   (let ((path (and (boundp 'arxana-media-index-path) arxana-media-index-path)))
