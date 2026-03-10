@@ -3,7 +3,8 @@
 ;;; Commentary:
 ;; Small helpers to speed up Codex workflows in eat buffers.
 ;; Session ID discovery:
-;; - Uses `futon-codex-session-selector` (default: contrib/futon-lab-select-session.bb).
+;; - Uses `futon-codex-session-selector`
+;;   (default: contrib/recent-codex-session-selector.bb).
 ;; - The selector scans ~/.codex/sessions/**/rollout-*.jsonl, reads the first
 ;;   session_meta line, and matches on `cwd` + `--since` timestamp.
 ;; - If multiple sessions match, it prompts with a preview of recent message text.
@@ -38,7 +39,7 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
   :type '(choice (const buffer) (const session)))
 
 (defcustom futon-codex-session-selector
-  "/home/joe/code/futon0/contrib/futon-lab-select-session.bb"
+  "/home/joe/code/futon0/contrib/recent-codex-session-selector.bb"
   "Path to a session selector script for locating Codex session files."
   :type 'file)
 
@@ -47,7 +48,7 @@ Use `session` to read from Codex session JSONL, or `buffer` to scan eat output."
   :type 'integer)
 
 (defcustom futon-codex-bb-command "bb"
-  "Babashka command used to run lab-select-session."
+  "Babashka command used to run the recent Codex session selector."
   :type 'string)
 
 (defcustom futon-codex-session-preview-chars 25
