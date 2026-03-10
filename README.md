@@ -183,6 +183,7 @@ tracks the concrete scripts and operational notes that back those entries.
 - Add `--tts` plus `--piper-model`/`--piper-config` (or `PIPER_MODEL`/`PIPER_CONFIG`) to synthesize audio output.
 - The producer-notes prompt defaults to `resources/prompts/commentary_system.prompt`; the commentary prompt defaults to `resources/prompts/commentary_followup.prompt`.
 - For an end-to-end run (commentary + TTS + stitched mp3), use `python3 scripts/transcript_to_podcast.py /path/to/transcript.txt`. Defaults: `--commentary-segments 1`, `--pause-seconds 1.0`, `--model gpt-5.2-chat-latest`.
+- See `README-podcast.md` for the full transcription -> commentary -> TTS -> stitching workflow and the relationship between the prompt files and helper scripts.
 
 ## Vitality scanner stub
 - `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.vitality.scanner` (source: `scripts/futon0/vitality/scanner.clj`) inspects directories listed in `~/code/storage/futon0/vitality/vitality_scanner.json`, counts files touched during the current lookback window, optionally parses Tatami logs, and writes a summary JSON payload (default `~/code/storage/futon0/vitality/latest_scan.json`).
