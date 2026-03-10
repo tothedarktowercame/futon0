@@ -125,6 +125,7 @@ flowchart LR
 | Repo | README | Purpose |
 |------|--------|---------|
 | **futon0** | `README.md` | Stack overview, utility scripts |
+| | `CHANGELOG.md` | Reporting and reflection surface changes over time |
 | | `README-boundary.md` | Boundary gap tracking |
 | | `README-setup.md` | Prerequisites for full stack |
 | **futon1** | `README.md` | Storage layer overview |
@@ -155,6 +156,10 @@ flowchart LR
 
 The prototype roadmap lives in `../futon3/holes/futon0.devmap`. This README
 tracks the concrete scripts and operational notes that back those entries.
+
+`CHANGELOG.md` tracks improvements in the reporting surface itself so new
+derivative capabilities, evidence sources, and attestation sections can be
+reviewed over time rather than inferred from scattered commits.
 
 ---
 
@@ -216,10 +221,41 @@ tracks the concrete scripts and operational notes that back those entries.
 - `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.experiments --write` reads `envelopes.jsonl`, applies `data/backup_experiments.json`, and writes `experiments.json` plus a Markdown leaderboard into `~/code/backups/`.
 
 ## Quarterly rhythm analysis
-- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.quarterly --write` correlates envelope summaries with affect markers (see `data/affect_markers.json`) and writes `quarterly.json` into `~/code/backups/`. Provide `--affect <path>` to point at a local `affect.jsonl`.
+- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.quarterly --write` rolls up envelope summaries plus affect markers (see `data/affect_markers.json`) and writes both `quarterly.json` and a readable `quarterly.md` into `~/code/backups/`.
+- Provide `--affect <path>` to point at a local `affect.jsonl`. The report groups affect events by quarter, surfaces top markers and source breakdowns, and includes recent trigger examples instead of placeholder cross-quarter averages.
 
-## Affect transitions ingest (FUTON1)
-- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.affect --api-base http://localhost:8080 --actor-id :open-world-ingest.nlp/ego --write` fetches FUTON1 affect transitions and emits `~/code/storage/futon0/vitality/affect.jsonl` (or `--output`) for quarterly correlation. Use `--append` for incremental daily runs and pass `--lookback-hours`, `--since`, or `--until` to control the window.
+## Affect transitions ingest (Evidence Landscape)
+- `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.rhythm.affect --entries-file /path/to/evidence-export.json --write` scans Evidence Landscape turns, detects affect-laden language plus novel follow-on terms, and emits `~/code/storage/futon0/vitality/affect.jsonl` (or `--output`) for quarterly correlation.
+- For live querying, use `--evidence-url http://localhost:7070/api/alpha/evidence` when a local futon3c Agency is serving the Evidence Landscape.
+- For demo or retrospective use before the Evidence Landscape is fully wired, pass one or more `--git-repo /path/to/repo` arguments. Commit messages and bodies are treated as fallback evidence and emitted into the same `affect.jsonl` format.
+- Use `--lookback-hours`, `--since`, or `--until` to control the window, `--author` / `--session-id` to narrow the input set, and `--append` for incremental runs.
+- This scanner is deliberately local and Evidence-Landscape-first; it no longer depends on the old FUTON1 affect-transition endpoint.
+
+### Demo: quarterly report from Stack HUD summaries + Git logs
+```bash
+clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' \
+  -M -m futon0.rhythm.affect \
+  --git-repo ~/code/futon0 \
+  --git-repo ~/code/futon3c \
+  --git-repo ~/code/futon4 \
+  --since 2026-01-01T00:00:00Z \
+  --until 2026-03-10T23:59:59Z \
+  --output /tmp/futon0-q1-affect.jsonl \
+  --write
+
+clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' \
+  -M -m futon0.rhythm.envelope \
+  --input-dir ~/code/storage/futon0/vitality/stack-hud \
+  --output-dir /tmp/futon0-q1-envelope \
+  --write
+
+clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' \
+  -M -m futon0.rhythm.quarterly \
+  --envelopes /tmp/futon0-q1-envelope/envelopes.jsonl \
+  --affect /tmp/futon0-q1-affect.jsonl \
+  --output-root /tmp/futon0-q1-quarterly \
+  --write
+```
 
 ## Voice typing bridge
 

@@ -1,0 +1,349 @@
+#!/usr/bin/env bb
+
+(ns futon0.vitality.scanner
+  (:require [cheshire.core :as json]
+            [clojure.java.io :as io]
+            [clojure.java.shell :as shell]
+            [clojure.string :as str])
+  (:import (java.io File)
+           (java.nio.file Files)
+           (java.time Duration Instant LocalDateTime OffsetDateTime ZoneOffset)
+           (java.time.format DateTimeParseException)
+           (java.util ArrayDeque)))
+
+(def home-dir (System/getProperty "user.home"))
+(def default-config (File. (str home-dir "/code/storage/futon0/vitality/vitality_scanner.json")))
+(def default-output (File. (str home-dir "/code/storage/futon0/vitality/latest_scan.json")))
+(def futon-liveness-window-hours 168)
+(def futon-dirs (map #(format "futon%d" %) (range 8)))
+(def futon-ignore-dirs
+  #{".git" ".cache" ".clj-kondo" ".idea" ".lsp" ".pytest_cache" ".venv"
+    "node_modules" "target" "dist" "build"})
+
+(defn parse-args [args]
+  (loop [args args
+         out {:config default-config
+              :output nil
+              :quiet false}]
+    (if (empty? args)
+      out
+      (let [[flag value & rest] args]
+        (cond
+          (= flag "--") (recur (if value (cons value rest) rest) out)
+          (= flag "--config") (recur rest (assoc out :config (File. value)))
+          (= flag "--output") (recur rest (assoc out :output (File. value)))
+          (= flag "--quiet") (recur rest (assoc out :quiet true))
+          :else (recur rest out))))))
+
+(defn read-json-file [^File path]
+  (when (.exists path)
+    (try
+      (json/parse-string (slurp path) true)
+      (catch Exception _ nil))))
+
+(defn write-json-file [^File path data]
+  (let [parent (.getParentFile path)]
+    (when parent (.mkdirs parent)))
+  (spit path (json/generate-string data)))
+
+(defn expand-path [raw]
+  (let [expanded (-> raw
+                     (str/replace #"^\~" (System/getProperty "user.home"))
+                     (str/replace #"\$([A-Za-z_][A-Za-z0-9_]*)"
+                                  (fn [[_ name]]
+                                    (or (System/getenv name) ""))))]
+    (File. expanded)))
+
+(defn timestamp->iso [millis]
+  (when millis
+    (.toString (Instant/ofEpochMilli millis))))
+
+(defn safe-list-files [^File dir]
+  (try
+    (.listFiles dir)
+    (catch Exception _ nil)))
+
+(defn dir-name [^File dir]
+  (some-> dir .getName))
+
+(defn symlink? [^File file]
+  (try
+    (Files/isSymbolicLink (.toPath file))
+    (catch Exception _ false)))
+
+(defn bucket-hours [hours]
+  (cond
+    (nil? hours) nil
+    (< hours 24) "1"
+    (< hours 48) "2"
+    (< hours 72) "3"
+    (< hours 96) "4"
+    (< hours 120) "5"
+    (< hours 144) "6"
+    (< hours 168) "7"
+    :else "7+"))
+
+(defn parse-timestamp [raw]
+  (let [text (str/trim (or raw ""))]
+    (when (seq text)
+      (let [normalized (if (str/ends-with? text "Z")
+                         (str (subs text 0 (dec (count text))) "+00:00")
+                         text)]
+        (or (try
+              (Instant/parse normalized)
+              (catch DateTimeParseException _ nil))
+            (try
+              (.toInstant (OffsetDateTime/parse normalized))
+              (catch DateTimeParseException _ nil))
+            (try
+              (.toInstant (.atZone (LocalDateTime/parse normalized) ZoneOffset/UTC))
+              (catch DateTimeParseException _ nil)))))))
+
+(defn summarize-imports [entry now lookback-hours]
+  (when-let [index-path (:import_index entry)]
+    (let [path (expand-path index-path)
+          payload (read-json-file path)
+          entries (or (:entries payload) [])]
+      (when (seq entries)
+        (let [limit (int (or (:import_limit entry) 5))
+              sorted (sort-by #(or (:ingested_at %) (:recorded_date %) "")
+                              #(compare %2 %1)
+                              entries)
+              recent (->> (take limit sorted)
+                          (map (fn [item]
+                                 (let [display (or (:title item)
+                                                   (:base_name item)
+                                                   (some-> (:copied_to item) File. .getName)
+                                                   (some-> (:source item) File. .getName))
+                                       info {:title display
+                                             :recorded_date (:recorded_date item)
+                                             :ingested_at (:ingested_at item)
+                                             :mp3 (:mp3 item)
+                                             :copied_to (:copied_to item)}]
+                                   (into {}
+                                         (filter (comp some? val) info))))))
+              threshold (.minus now (Duration/ofHours (long lookback-hours)))
+              recent-imports (count
+                              (filter (fn [item]
+                                        (when-let [stamp (or (:ingested_at item)
+                                                            (:recorded_at item)
+                                                            (:recorded_date item))]
+                                          (when-let [parsed (parse-timestamp stamp)]
+                                            (not (.isBefore parsed threshold)))))
+                                      entries))
+              total (count entries)]
+          {"total" total
+           "recent" recent
+           "recent_imports" recent-imports})))))
+
+(defn scan-filesystem [entry now default-lookback]
+  (let [label (or (:label entry) (:path entry))
+        root (expand-path (:path entry))
+        lookback (int (or (:lookback_hours entry) default-lookback))
+        cutoff (- (.toEpochMilli now) (* lookback 3600000))
+        imports (summarize-imports entry now lookback)
+        max-depth (int (or (:max_depth entry) 2))
+        top-n (int (or (:top_n entry) 5))
+        base-summary {"label" label
+                      "path" (.getPath root)
+                      "exists" (.exists root)
+                      "lookback_hours" lookback}
+        summary (cond-> base-summary
+                  imports (assoc "imports" imports))]
+    (if-not (.exists root)
+      summary
+      (let [start (System/nanoTime)
+            queue (doto (ArrayDeque.) (.add [root 0]))
+            children (atom {})
+            recent-files (atom 0)
+            latest-ts (atom nil)
+            root-path (.toPath root)]
+        (while (not (.isEmpty queue))
+          (let [[^File current depth] (.remove queue)]
+            (when-let [items (safe-list-files current)]
+              (doseq [child items]
+                (when-not (symlink? child)
+                  (if (.isDirectory child)
+                    (when (< depth max-depth)
+                      (.add queue [child (inc depth)]))
+                    (let [mtime (.lastModified child)]
+                      (when (>= mtime cutoff)
+                        (swap! recent-files inc)
+                        (swap! latest-ts #(if % (max % mtime) mtime))
+                        (let [child-path (.toPath child)
+                              rel (try
+                                    (.relativize root-path child-path)
+                                    (catch Exception _ nil))
+                              head (if (and rel (> (.getNameCount rel) 0))
+                                     (str (.getName rel 0))
+                                     (.getName child))]
+                          (swap! children update head (fnil inc 0)))))))))))
+        (let [latest @latest-ts
+              top-children (->> @children
+                                (sort-by val >)
+                                (take top-n)
+                                (map (fn [[name count]]
+                                       {"name" name
+                                        "recent_files" count}))
+                                vec)
+              duration (/ (double (- (System/nanoTime) start)) 1000000000.0)
+              stats {"recent_files" @recent-files
+                     "latest_mtime" (timestamp->iso latest)
+                     "top_children" top-children
+                     "scan_duration_seconds"
+                     (Double/parseDouble (format "%.3f" duration))}]
+          (merge summary stats))))))
+
+(defn scan-tatami [entry now default-lookback]
+  (let [log-path (expand-path (or (:log_path entry) ""))
+        summary {"log_path" (.getPath log-path)
+                 "exists" (.exists log-path)
+                 "lookback_hours" (int (or (:lookback_hours entry) default-lookback))}]
+    (if-not (.exists log-path)
+      summary
+      (let [timestamp-field (or (:timestamp_field entry) "timestamp")
+            fmt (or (:format entry) "auto")
+            events (atom [])
+            error (atom nil)]
+        (try
+          (with-open [r (io/reader log-path)]
+            (doseq [line (line-seq r)]
+              (let [trimmed (str/trim line)]
+                (when (seq trimmed)
+                  (let [ts (cond
+                             (or (= fmt "jsonl")
+                                 (and (= fmt "auto") (str/starts-with? trimmed "{")))
+                             (try
+                               (let [payload (json/parse-string trimmed true)]
+                                 (get payload (keyword timestamp-field)))
+                               (catch Exception _ trimmed))
+                             :else trimmed)]
+                    (when-let [parsed (parse-timestamp ts)]
+                      (swap! events conj parsed)))))))
+          (catch Exception exc
+            (reset! error (.getMessage exc))))
+        (let [sorted (sort @events)
+              lookback (Duration/ofHours (long (get summary "lookback_hours")))
+              threshold (.minus now lookback)
+              events-in (count (filter (fn [event] (not (.isBefore event threshold))) sorted))
+              last-event (last sorted)
+              summary (cond-> summary
+                        @error (assoc "error" @error)
+                        true (assoc "event_count" (count sorted)
+                                    "events_in_lookback" events-in))]
+          (if last-event
+            (let [hours-since (/ (double (.toMinutes (Duration/between last-event now))) 60.0)
+                  gap-limit (:gap_warning_hours entry)
+                  gap-duration (Duration/between last-event now)
+                  gap-warning (when gap-limit
+                                (>= (.compareTo gap-duration
+                                                (Duration/ofHours (long gap-limit)))
+                                    0))]
+              (cond-> summary
+                true (assoc "last_event" (.toString last-event)
+                            "hours_since_last"
+                            (Double/parseDouble (format "%.2f" hours-since)))
+                gap-limit (assoc "gap_warning" gap-warning)))
+            summary))))))
+
+(defn summarize-storage [entry]
+  (when entry
+    (let [paths (->> (:paths entry)
+                     (map (fn [raw]
+                            (cond
+                              (string? raw) {:label raw :path raw}
+                              (map? raw) raw
+                              :else nil)))
+                     (remove nil?)
+                     (map (fn [{:keys [label path]}]
+                            (let [resolved (expand-path path)]
+                              {"label" (or label path)
+                               "path" (.getPath resolved)
+                               "exists" (.exists resolved)})))
+                     vec)]
+      (cond-> {"backed_up" (boolean (:backed_up entry))
+               "note" (:note entry)
+               "needs_backup" (not (boolean (:backed_up entry)))}
+        (seq paths) (assoc "paths" paths)))))
+
+(defn git-output [^File root args]
+  (try
+    (let [{:keys [exit out]} (apply shell/sh "git" "-C" (.getPath root) args)]
+      (when (zero? exit) out))
+    (catch Exception _ nil)))
+
+(defn git-latest-activity-ms [^File root]
+  (when (and root (.exists root) (.isDirectory root)
+             (.exists (File. root ".git")))
+    (let [commit-out (git-output root ["log" "-1" "--format=%ct"])
+          commit-ms (when (seq commit-out)
+                      (* 1000 (Long/parseLong (str/trim commit-out))))
+          paths-out (git-output root ["ls-files" "-m" "-o" "--exclude-standard" "-z"])
+          paths (when (seq paths-out)
+                  (remove str/blank? (str/split paths-out #"\u0000")))
+          dirty-ms (when (seq paths)
+                     (reduce (fn [acc path]
+                               (let [file (File. root path)
+                                     mtime (when (.exists file) (.lastModified file))]
+                                 (if (and mtime (> mtime (or acc 0))) mtime acc)))
+                             nil
+                             paths))]
+      (when (or commit-ms dirty-ms)
+        (max (or commit-ms 0) (or dirty-ms 0))))))
+
+(defn scan-futon-activity [now]
+  (let [base (File. (System/getProperty "user.home") "code")]
+    (->> futon-dirs
+         (map-indexed
+          (fn [idx name]
+            (let [root (File. base name)
+                  entry {"id" (format "f%d" idx)
+                         "path" (.getPath root)
+                         "exists" (.exists root)}]
+              (if-not (.exists root)
+                entry
+                (let [latest-ms (or (git-latest-activity-ms root)
+                                    (let [mtime (.lastModified root)]
+                                      (when (pos? mtime) mtime)))]
+                  (if latest-ms
+                    (let [last-event (Instant/ofEpochMilli latest-ms)
+                          hours-since (/ (double (.toMinutes (Duration/between last-event now))) 60.0)]
+                      (assoc entry
+                             "last_mtime" (.toString last-event)
+                             "hours_since"
+                             (Double/parseDouble (format "%.2f" hours-since))
+                             "bucket" (bucket-hours hours-since)))
+                    (assoc entry "last_mtime" nil
+                           "hours_since" nil
+                           "bucket" "7+")))))))
+         vec)))
+
+(defn -main [& args]
+  (let [{:keys [config output quiet]} (parse-args args)
+        cfg (or (read-json-file config) {"lookback_hours" 24
+                                         "filesystem" []
+                                         "tatami" nil
+                                         "output" (.getPath default-output)})
+        now (Instant/now)
+        lookback (int (or (:lookback_hours cfg) 24))
+        filesystem (mapv #(scan-filesystem % now lookback) (or (:filesystem cfg) []))
+        tatami (when-let [tatami-cfg (:tatami cfg)]
+                 (scan-tatami tatami-cfg now lookback))
+        storage (summarize-storage (:storage_status cfg))
+        futon-activity (scan-futon-activity now)
+        summary (cond-> {"generated_at" (.toString now)
+                         "lookback_hours" lookback
+                         "filesystem" filesystem
+                         "tatami" tatami
+                         "futon_activity" futon-activity
+                         "futon_activity_window_hours" futon-liveness-window-hours}
+                  storage (assoc "storage_status" storage))
+        output-path (or output
+                        (some-> (:output cfg) expand-path)
+                        default-output)]
+    (when output-path
+      (write-json-file output-path summary))
+    (when-not quiet
+      (println (json/generate-string summary)))))
+
+(apply -main *command-line-args*)

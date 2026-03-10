@@ -1,7 +1,8 @@
 # Futon0 Protocol (Decisions + Open Questions)
 
 This document captures decisions and configuration for the Futon0 rhythm/vitality
-pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
+pipeline. Updated 2026-03-10 after the end-to-end quarterly demo using Stack HUD
+summaries plus git-log fallback evidence.
 
 ## Decided
 
@@ -10,6 +11,7 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 | Backup output root | `~/code/backups/` |
 | FUTON1 handoff | yes — open-world capture enabled |
 | Affect source | infer from open-world ingest (no new lifelogging) |
+| Derivation discipline | derivative only — no new life logging added for these reports |
 | Sync cadence | fixed weekly time |
 | WIP cap | >3 active tracks triggers pause |
 | Tai Chi intention prompt | removed — no value without evidence |
@@ -29,12 +31,14 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 
 ## Affect markers from open-world ingest
 
-- Source: FUTON1 open-world capture (XTDB or equivalent)
-- Path/endpoint: `FUTON1_API_BASE` + `/api/alpha/affect-transitions` (requires `actor_id`)
-- Telemetry companion: `/api/alpha/affect-labels` for aggregate label counts
-- Heuristic: infer from typing activity / session patterns
-- Code update: may be required to emit affect-relevant signals
-- Acceptable lag: daily (batch with vitality scanner)
+- Long-term source of truth: Evidence Landscape material rooted in `futon1a`
+- Current demo/runtime path: `futon0.rhythm.affect`
+  - `--entries-file` for exported Evidence Landscape JSON/JSONL
+  - `--evidence-url` for live `futon3c` evidence queries
+  - `--git-repo` fallback for retrospective demos before the Evidence Landscape is fully mapped
+- Heuristic: infer affect-laden turns or commit episodes from existing text plus novelty-within-window follow-ons
+- Acceptable lag: daily batch is fine; real-time is optional
+- Constraint: this remains derivative telemetry, not a new self-reporting channel
 
 ## Progress signal
 
@@ -47,6 +51,12 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
 
 - Systemd timers: daily vitality, weekly salients, monthly audit
 - Manual trigger: `scripts/futon0/rhythm/*.clj` when not automated
+
+## Change tracking
+
+- Keep a repo-local `CHANGELOG.md` for the reporting surface itself
+- Record when new evidence sources come online, when report sections become operational, and when derivation logic changes materially
+- Treat changelog entries as part of the protocol evidence trail: the system should be able to show not just current outputs, but how its attestation capacity improved over time
 
 ## Work bounds (time envelope)
 
@@ -94,6 +104,43 @@ pipeline. Updated 2026-01-02 toward Prototype 1 readiness.
   - Now served via `futon0.rhythm.affect` (API-backed ingest to `affect.jsonl`)
 
 ## Future directions
+
+### Derivative attestation targets
+
+The report series should be able to attest to the following without any new life
+logging. Each item must be derived from already-existing signals, not from a new
+manual diary or dedicated tracking burden.
+
+- Activity
+  - Question: what do I actually do, day to day?
+  - Likely sources: git history, HUD envelopes, recording ingest, session/evidence timestamps, salients snapshots
+- Attention
+  - Question: what kind of attention is my life already requiring and rewarding?
+  - Likely sources: evidence turns, task/mission references, repo mix, file clusters, repeated topic terms
+- Time-shape
+  - Question: what rhythms am I actually living inside?
+  - Likely sources: daily envelopes, weekly/monthly rollups, gaps, burst patterns, clock-time distributions
+- Speech mode
+  - Question: what kinds of speech am I already using most naturally and most often?
+  - Likely sources: Evidence Landscape turns, commit language, Org headlines, prompt/response genre markers
+- Social role
+  - Question: what roles do I in fact keep enacting?
+  - Likely sources: coordination turns, agent routing, review/implementation/teaching language, mission ownership patterns
+- Energy effect
+  - Question: what leaves me clearer, scattered, depleted, sharpened, boxed in?
+  - Likely sources: affect transitions, pre/post envelope changes, follow-on artifact production, abandonment vs continuation
+- Compatibility
+  - Question: what in my present life already supports the continuation of the underlying practice?
+  - Likely sources: recurring conditions that correlate with sustained work, stable rhythms, low-friction task re-entry, artifact completion
+- Distortion
+  - Question: what in my present life already asks me to suppress, fake, or overdevelop something?
+  - Likely sources: repeated workaround language, fragmentation, defensive coordination, suppression/conflict markers, stalled or over-elaborated threads
+
+Operational rule:
+
+- These are attestation targets, not free-floating introspective themes.
+- Every claim in the report should be traceable back to inspectable derivative evidence.
+- If a target cannot be supported by existing traces, the right move is to state that the evidence is insufficient, not to add new logging pressure.
 
 ### Affect inference ↔ Active inference integration
 
