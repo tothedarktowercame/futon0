@@ -281,15 +281,13 @@ The configured `my-futon3-ui-base-url' is tried first if set.")
   (let* ((status (or (my-futon3-refresh-status)
                      (stack-hud--fetch-status-curl)
                      my-futon3-last-status))
-         (stack (and status (plist-get status :stack))))
-    (if stack
-        (progn
-          (stack-hud--render-context stack)
-          (stack-hud-log-snapshot stack)
-          (when-let ((win (get-buffer-window my-chatgpt-shell-stack-buffer-name t)))
-            (select-window win)
-            (raise-frame (window-frame win))))
-      (message "No Stack HUD data returned from Futon3."))))
+         (stack (or (and status (plist-get status :stack))
+                    '(:warnings nil))))
+    (stack-hud--render-context stack)
+    (stack-hud-log-snapshot stack)
+    (when-let ((win (get-buffer-window my-chatgpt-shell-stack-buffer-name t)))
+      (select-window win)
+      (raise-frame (window-frame win)))))
 
 (provide 'stack-entry)
 

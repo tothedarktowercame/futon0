@@ -185,12 +185,12 @@ Available blocks:
 
 ;; Local services configuration
 (defcustom stack-hud-local-services
-  '(("Transport" . 5050)
-    ("Forum WS" . 5055)
-    ("IRC" . 6667)
-    ("Futon3c" . 7070)
-    ("Futon1 API" . 8080))
-  "List of local services to check. Each entry is (NAME . PORT)."
+  '(("IRC" . 6667)
+    ("Drawbridge" . 6768)
+    ("Agency" . 7070))
+  "List of local services to check. Each entry is (NAME . PORT).
+Transport (5050), Forum WS (5055), MUSN HTTP (6065), and Futon1 API (8080)
+were removed 2026-03-08 — all folded into Agency (futon3c on 7070)."
   :type '(alist :key-type string :value-type integer)
   :group 'tatami-integration)
 
