@@ -1,15 +1,31 @@
 [Unit]
-Description=Copy Zoom R4 tracks and update titles
-After=zoom-mount.service
-Requires=zoom-mount.service
+Description=Copy Zoom R4 tracks and update titles (user scope)
 
 [Service]
 Type=oneshot
 WorkingDirectory=/home/joe/code/futon0
-User=joe
-Group=joe
-Environment=DISPLAY=:0
-Environment=XDG_RUNTIME_DIR=/run/user/1000
-Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-ExecStart=/usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source /media/joe/R4_SD --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2 --rename-hold --delete-from-recorder
-ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && umount -l /media/joe/R4_SD || true'
+ExecStart=/usr/bin/bash -c '\
+  find_source() { \
+    local found=""; \
+    for candidate in /media/%u/R4_SD*/R4_Project; do \
+      if [ -d "$candidate" ]; then \
+        found=$(/usr/bin/dirname "$candidate"); \
+        break; \
+      fi; \
+    done; \
+    echo "$found"; \
+  }; \
+  source="$(find_source)"; \
+  if [ -z "$source" ]; then \
+    echo "zoom-sync: mount point not found; attempting udisksctl mount"; \
+    /usr/bin/udisksctl mount --no-user-interaction --block-device /dev/disk/by-uuid/6970-2CEF >/dev/null 2>&1 || true; \
+    /usr/bin/sleep 1; \
+    source="$(find_source)"; \
+  fi; \
+  if [ -z "$source" ]; then \
+    echo "zoom-sync: mount point not found after retry; skipping"; \
+    exit 0; \
+  fi; \
+  exec /usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source "$source" --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2 --rename-hold --delete-from-recorder; \
+'
+ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF || true'

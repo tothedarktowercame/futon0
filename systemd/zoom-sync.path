@@ -1,8 +1,9 @@
 [Unit]
-Description=Watch for Zoom R4 mount and trigger ingest
+Description=Trigger Zoom R4 ingest when the SD card is detected (user scope)
 
 [Path]
-PathExists=/media/%u/ZOOMR4
+PathExistsGlob=/media/%u/R4_SD*/R4_Project
+Unit=zoom-sync.service
 
 [Install]
 WantedBy=default.target
