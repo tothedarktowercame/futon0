@@ -1,11 +1,32 @@
-# futon0 — Utilities & Stack HUD
+# futon0 — Stack Instrumentation, Reporting, and Capability Observation
 
-futon0 is the foundation layer of the futon stack. It collects operational
-data (git activity, audio recordings, vitality scans), exposes the Stack HUD
-that summarizes health across all layers, and provides utility scripts that
-other futons depend on. Think of it as the "instrumentation and data collection"
-layer—it doesn't store facts (that's futon1) or coordinate agents (that's futon3),
-but it feeds both with raw signals.
+`futon0` is the local instrumentation layer of the futon stack. It gathers
+derivative signals from work that is already happening, turns them into usable
+reports, and keeps the Stack HUD live. In practice that means git/activity
+rollups, recording ingest, vitality scans, quarterly reflection reports, and
+adjacent observer tools like FutonZero.
+
+`futon0` should stay read-mostly and derivative. It is not the main store of
+truth, and it should not create parallel life-logging. Its job is to read the
+stack's existing traces and make them inspectable.
+
+## What futon0 is for
+
+- Keep the Stack HUD supplied with local operational state.
+- Produce derivative reporting from existing traces rather than new manual logging.
+- Host local-first observer tooling that can read the stack and emit auditable artifacts.
+- Provide utility scripts that other futons depend on.
+
+## Next steps
+
+- Improve the reporting mechanism that now has a working end-to-end demo:
+  - backfill or regenerate missing HUD summary history
+  - make quarterly sections line up with the protocol attestation targets
+  - switch from git-log fallback to richer Evidence Landscape / `futon1a` sources as they become reliable
+- Advance [M-futonzero-capability](/home/joe/code/futon0/holes/missions/M-futonzero-capability.md):
+  - treat FutonZero as the adjacent read-only observer mission
+  - use `scripts/futonzero.clj` and `scripts/futon0/futonzero/*` as the implementation surface
+  - keep it aligned with the same derivative-only discipline as the reporting pipeline
 
 ## The Futon Stack
 
