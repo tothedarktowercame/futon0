@@ -8,9 +8,6 @@
 (require 'stack-render)
 (require 'stack-hud)
 
-(defconst futon0--futon3-bridge-path
-  "/home/joe/code/futon3/contrib/futon3-bridge.el"
-  "Path to the Futon3 bridge helpers used to fetch Stack HUD status.")
 (defconst stack-hud--diagnostic-buffer-name "*Stack HUD Diagnostics*")
 (defcustom stack-hud-diagnostics-log-path
   (expand-file-name "stack-hud-diagnostics.log" stack-hud-log-dir)
@@ -101,22 +98,8 @@
         (insert "Stack HUD diagnostics\n\n")
         (stack-hud--diagnostic-insert
          (stack-hud--diagnostic-time
-          "Load futon3 bridge"
-          (lambda ()
-            (unless (boundp 'my-tatami--clojure)
-              (defvar my-tatami--clojure (or (executable-find "clojure") "clojure")))
-            (unless (featurep 'futon3-bridge)
-              (if (file-readable-p futon0--futon3-bridge-path)
-                  (load-file futon0--futon3-bridge-path)
-                (user-error "Futon3 bridge not found at %s" futon0--futon3-bridge-path))))
-          stack-hud-diagnostic-timeout-seconds))
-        (stack-hud--diagnostic-insert
-         (stack-hud--diagnostic-time
-          "Ensure futon3 running"
-          (lambda ()
-            (if (fboundp 'my-futon3-ensure-running)
-                (my-futon3-ensure-running)
-              (user-error "my-futon3-ensure-running is unavailable")))
+          "Refresh services cache"
+          #'stack-hud--services-reset-cache
           stack-hud-diagnostic-timeout-seconds))
         (stack-hud--diagnostic-insert
          (stack-hud--diagnostic-time
@@ -129,28 +112,24 @@
           #'stack-hud--maybe-refresh-vitality-scan
           stack-hud-diagnostic-timeout-seconds))
         (let ((entry (stack-hud--diagnostic-time
-                      "Refresh futon3 status"
-                      (lambda ()
-                        (if (fboundp 'my-futon3-refresh-status)
-                            (my-futon3-refresh-status)
-                          (user-error "my-futon3-refresh-status is unavailable")))
+                      "Build local stack"
+                      #'stack-hud--build-state
                       stack-hud-diagnostic-timeout-seconds)))
           (stack-hud--diagnostic-insert entry)
           (setq status (plist-get entry :value)))
-        (let* ((stack (and status (plist-get status :stack)))
+        (let* ((stack status)
                (entry (stack-hud--diagnostic-time
                        "Render HUD string"
                        (lambda ()
-                         (when stack
-                           (let ((stack-hud-disable-pattern-sync stack-hud-diagnostics-fast))
-                             (my-chatgpt-shell--stack-hud-string stack))))
+                         (let ((stack-hud-disable-pattern-sync stack-hud-diagnostics-fast))
+                           (my-chatgpt-shell--stack-hud-string stack)))
                        stack-hud-diagnostic-timeout-seconds)))
           (stack-hud--diagnostic-insert entry)
           (unless stack
             (insert "Render HUD string         skipped (no stack data)\n")))
-        (when (and status (plist-get status :stack))
+        (when status
           (insert "\nRender components\n")
-          (let* ((stack (plist-get status :stack))
+          (let* ((stack status)
                  (specs '(("Futon liveness" . my-chatgpt-shell--insert-stack-futon-liveness)
                           ("Hot reload" . my-chatgpt-shell--insert-stack-hot-reload)
                           ("Voice typing" . my-chatgpt-shell--insert-stack-voice)
@@ -243,46 +222,17 @@
     (princ report)))
 
 (defvar stack-hud--status-base-urls
-  '("http://localhost:6060")
-  "Base URLs to try when fetching tatami status, in order.
-The configured `my-futon3-ui-base-url' is tried first if set.")
+  nil
+  "Deprecated legacy status URLs retained only for compatibility.")
 
 (defun stack-hud--fetch-status-curl ()
-  "Fetch Futon3 tatami status using curl, trying configured then local URLs."
-  (let ((urls (append
-               (when (and (boundp 'my-futon3-ui-base-url)
-                          (stringp my-futon3-ui-base-url))
-                 (list my-futon3-ui-base-url))
-               stack-hud--status-base-urls)))
-    (cl-loop for base in urls
-             for url = (format "%s/musn/tatami/status" base)
-             for result = (with-temp-buffer
-                            (when (zerop (call-process "curl" nil t nil
-                                                       "-s" "-m" "2" url))
-                              (goto-char (point-min))
-                              (condition-case nil
-                                  (my-futon3--json-keywordize
-                                   (json-parse-buffer :object-type 'alist
-                                                      :array-type 'list
-                                                      :null-object nil
-                                                      :false-object nil))
-                                (error nil))))
-             when result return result)))
+  "Legacy no-op. Stack HUD status is now built locally."
+  nil)
 
 (defun stack-hud ()
-  "Fetch Stack HUD state from Futon3 and render the Stack HUD."
+  "Build local Stack HUD state and render the Stack HUD."
   (interactive)
-  (unless (featurep 'futon3-bridge)
-    (if (file-readable-p futon0--futon3-bridge-path)
-        (load-file futon0--futon3-bridge-path)
-      (user-error "Futon3 bridge not found at %s" futon0--futon3-bridge-path)))
-  (stack-hud--maybe-refresh-boundary-scan)
-  (stack-hud--maybe-refresh-vitality-scan)
-  (let* ((status (or (my-futon3-refresh-status)
-                     (stack-hud--fetch-status-curl)
-                     my-futon3-last-status))
-         (stack (or (and status (plist-get status :stack))
-                    '(:warnings nil))))
+  (let ((stack (stack-hud--build-state)))
     (stack-hud--render-context stack)
     (stack-hud-log-snapshot stack)
     (when-let ((win (get-buffer-window my-chatgpt-shell-stack-buffer-name t)))

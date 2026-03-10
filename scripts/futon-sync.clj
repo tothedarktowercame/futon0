@@ -4,8 +4,13 @@
 ;; Reads the repo manifest from futon0/data/git_sources.json and provides:
 ;;   futon-sync          — status dashboard (default)
 ;;   futon-sync status   — same as above
+;;   futon-sync review   — show dirty/untracked file details for cleanup triage
 ;;   futon-sync pull     — bulk pull --rebase --autostash
 ;;   futon-sync push     — push all repos ahead of origin (with confirmation)
+;;   futon-sync park     — stash dirty/untracked changes across repos
+;;     --dry-run         — preview what would be stashed
+;;     --yes             — skip confirmation prompt
+;;     --message TEXT    — explicit stash message
 ;;   futon-sync hygiene  — detect noisy untracked files, suggest .gitignore
 ;;     --fix             — apply suggestions automatically
 
@@ -79,6 +84,11 @@
   (let [line (or porcelain-header "")]
     (second (re-find #"^## ([^\s.]+)" line))))
 
+(defn- parse-status-entry [line]
+  (let [code (subs line 0 2)
+        path (subs line 3)]
+    {:code code :path path :raw line}))
+
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
         st (git path "status" "--porcelain=v1" "-b")
@@ -93,13 +103,17 @@
                          [0 0])
         no-remote? (not (zero? (:exit ab)))
         ;; classify entries
-        dirty (filterv #(not (str/starts-with? % "??")) entries)
+        dirty (mapv parse-status-entry
+                    (filterv #(not (str/starts-with? % "??")) entries))
+        dirty-files (mapv :path dirty)
         untracked (mapv #(subs % 3) (filterv #(str/starts-with? % "??") entries))
         noisy-files (filterv noisy? untracked)]
     (assoc repo
            :branch (or branch "?")
            :ahead ahead :behind behind :no-remote no-remote?
            :dirty-count (count dirty)
+           :dirty-files dirty-files
+           :dirty-entries dirty
            :untracked untracked
            :untracked-count (count untracked)
            :noisy-files noisy-files
@@ -161,6 +175,104 @@
       (when (pos? n-dirty)  (printf "  |  %s dirty" (c ansi-yellow (str n-dirty))))
       (when (pos? n-noisy)  (printf "  |  %s noisy" (c ansi-red (str n-noisy))))
       (println))))
+
+;; ── Review command ───────────────────────────────────────────────────────────
+
+(defn- print-file-list [title files color]
+  (when (seq files)
+    (println (str "  " (c ansi-bold title)))
+    (doseq [f files]
+      (println (str "    " (c color f))))))
+
+(defn cmd-review [repos]
+  (let [statuses (->> repos
+                      (map repo-status)
+                      (filter #(or (pos? (:dirty-count %))
+                                   (pos? (:untracked-count %))
+                                   (seq (:noisy-files %))))
+                      vec)]
+    (if (empty? statuses)
+      (println (c ansi-green "All repos clean — nothing to review."))
+      (do
+        (println (str ansi-bold "futon-sync review" ansi-reset))
+        (println)
+        (doseq [s statuses]
+          (println (format "%s  %s  %s"
+                           (c ansi-bold (:label s))
+                           (c ansi-dim (str "[" (:branch s) "]"))
+                           (c ansi-dim (str (fs/file-name (:abs-path s))))))
+          (println (format "  dirty=%s untracked=%s noisy=%s sync=%s"
+                           (dirty-str s)
+                           (untracked-str s)
+                           (noisy-str s)
+                           (sync-str s)))
+          (print-file-list "Modified / staged" (:dirty-files s) ansi-yellow)
+          (print-file-list "Untracked" (:untracked s) ansi-cyan)
+          (when (seq (:noisy-files s))
+            (println (str "  " (c ansi-bold "Noisy suggestions")))
+            (doseq [f (:noisy-files s)]
+              (println (format "    %s → %s"
+                               (c ansi-red f)
+                               (c ansi-cyan (noisy? f))))))
+          (println))
+        (println (c ansi-dim "Use `park` to stash work in progress or `hygiene --fix` for ignoreable noise."))))))
+
+;; ── Park command ─────────────────────────────────────────────────────────────
+
+(defn- default-park-message []
+  (str "futon-sync park "
+       (.format (java.time.LocalDateTime/now)
+                (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm"))))
+
+(defn- parse-park-message [args]
+  (loop [remaining args]
+    (when-let [x (first remaining)]
+      (cond
+        (= x "--message") (second remaining)
+        :else (recur (rest remaining))))))
+
+(defn cmd-park [repos {:keys [dry-run? yes? message]}]
+  (let [statuses (mapv repo-status repos)
+        parkable (filterv #(or (pos? (:dirty-count %))
+                               (pos? (:untracked-count %)))
+                          statuses)
+        stash-message (or message (default-park-message))]
+    (if (empty? parkable)
+      (println (c ansi-green "All repos already clean — nothing to stash."))
+      (do
+        (println (str ansi-bold "futon-sync park" ansi-reset))
+        (println (str " message: " (c ansi-dim stash-message)))
+        (println)
+        (doseq [s parkable]
+          (printf " %-14s dirty=%-3d untracked=%-3d %s%n"
+                  (:label s)
+                  (:dirty-count s)
+                  (:untracked-count s)
+                  (c ansi-dim (:branch s))))
+        (println)
+        (if dry-run?
+          (println (c ansi-dim "Dry run only — no stashes created."))
+          (let [proceed? (if yes?
+                           true
+                           (do
+                             (printf "Stash %d repo%s? [y/N] "
+                                     (count parkable)
+                                     (if (= 1 (count parkable)) "" "s"))
+                             (flush)
+                             (= "y" (str/lower-case (str/trim (or (read-line) ""))))))]
+            (if-not proceed?
+              (println "Aborted.")
+              (doseq [s parkable]
+                (let [r (git (:abs-path s) "stash" "push" "--include-untracked" "-m" stash-message)]
+                  (if (zero? (:exit r))
+                    (printf " %-14s %s %s%n"
+                            (:label s)
+                            (c ansi-green "✓ Stashed")
+                            (c ansi-dim (or (first (str/split-lines (:out r))) "")))
+                    (printf " %-14s %s %s%n"
+                            (:label s)
+                            (c ansi-red "✗ Failed:")
+                            (c ansi-dim (first (str/split-lines (:err r)))))))))))))))
 
 ;; ── Pull command ─────────────────────────────────────────────────────────────
 
@@ -269,9 +381,13 @@
       repos (load-repos)]
   (case cmd
     ("status" "st") (cmd-status repos)
+    ("review" "rv") (cmd-review repos)
     "pull"          (cmd-pull repos)
     "push"          (cmd-push repos)
+    "park"          (cmd-park repos {:dry-run? (some #{"--dry-run"} args)
+                                     :yes? (some #{"--yes"} args)
+                                     :message (parse-park-message args)})
     "hygiene"       (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
     (do (println (str "Unknown command: " cmd))
-        (println "Usage: futon-sync [status|pull|push|hygiene [--fix]]")
+        (println "Usage: futon-sync [status|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix]]")
         (System/exit 1))))

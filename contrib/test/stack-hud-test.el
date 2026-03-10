@@ -27,3 +27,15 @@
 (ert-deftest stack-hud-join-names ()
   (should (equal (my-chatgpt-shell--stack-join-names '("a" :b 3 "d" "e"))
                  "a, :b, 3, d")))
+
+(ert-deftest stack-hud-read-edn-file ()
+  (let ((path (make-temp-file "stack-hud-" nil ".edn")))
+    (unwind-protect
+        (progn
+          (with-temp-file path
+            (insert "{:ok true, :nested {:items [1 2], :missing false}}"))
+          (let ((data (stack-hud--read-edn-file path)))
+            (should (eq (plist-get data :ok) t))
+            (should (equal (plist-get (plist-get data :nested) :items) '(1 2)))
+            (should-not (plist-get (plist-get data :nested) :missing))))
+      (delete-file path))))

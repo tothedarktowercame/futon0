@@ -11,6 +11,7 @@
 (require 'url-parse)
 (require 'seq)
 (require 'subr-x)
+(require 'calendar)
 (require 'voice-typing)
 
 (defconst my-chatgpt-shell-stack-buffer-name "*Stack Context*")
@@ -133,6 +134,24 @@ The value is passed to `display-buffer-in-side-window'."
   :type 'integer
   :group 'tatami-integration)
 
+(defcustom stack-hud-git-summary-path "/home/joe/code/futon3/data/vitality/git_summary.edn"
+  "Path to the git vitality summary consumed by the Stack HUD."
+  :type 'file
+  :group 'tatami-integration)
+
+(defcustom stack-hud-focus-profile-path "/home/joe/code/futon3/resources/vitality/focus_profile.edn"
+  "Optional path to a local focus/profile snapshot for the Stack HUD."
+  :type 'file
+  :group 'tatami-integration)
+
+(defconst stack-hud--reminder-specs
+  '((:id :weekly-review :label "Weekly review" :weekday sunday :hour 17)
+    (:id :midweek-aob :label "Midweek WIP audit" :weekday wednesday :hour 12)
+    (:id :monthly-audit :label "Monthly audit" :day-of-month 1 :hour 11)
+    (:id :tai-chi-wed :label "Tai Chi (Wed)" :weekday wednesday :hour 18 :minute 30)
+    (:id :tai-chi-thu :label "Tai Chi (Thu)" :weekday thursday :hour 18 :minute 30))
+  "Reminder specs rendered in the Stack HUD.")
+
 (defcustom stack-hud-blocks
   '((:key liveness     :enabled t)
     (:key services     :enabled t)
@@ -224,6 +243,15 @@ When set, the Stack HUD will show both local and remote service status."
 (defvar stack-hud--remote-stack-cache nil)
 (defvar stack-hud--remote-stack-cache-time 0)
 
+(defconst stack-hud--weekday-alist
+  '((sunday . 0)
+    (monday . 1)
+    (tuesday . 2)
+    (wednesday . 3)
+    (thursday . 4)
+    (friday . 5)
+    (saturday . 6)))
+
 (defun stack-hud--futon1-root-url ()
   (when (and stack-hud-futon1-api-base
              (not (string-empty-p stack-hud-futon1-api-base)))
@@ -259,6 +287,255 @@ When set, the Stack HUD will show both local and remote service status."
                 (kill-buffer buf)
                 data)))))
     (error nil)))
+
+(defun stack-hud--edn-like->elisp (text)
+  "Convert the EDN subset used by Stack HUD snapshots into Elisp-readable text."
+  (let ((chars (string-to-list (or text "")))
+        (in-string nil)
+        (escaped nil)
+        out)
+    (dolist (ch chars)
+      (cond
+       (escaped
+        (push ch out)
+        (setq escaped nil))
+       ((and in-string (= ch ?\\))
+        (push ch out)
+        (setq escaped t))
+       ((= ch ?\")
+        (push ch out)
+        (setq in-string (not in-string)))
+       (in-string
+        (push ch out))
+       ((= ch ?{)
+        (push ?\( out))
+       ((= ch ?})
+        (push ?\) out))
+       ((= ch ?,)
+        (push ?\s out))
+       (t
+        (push ch out))))
+    (apply #'string (nreverse out))))
+
+(defun stack-hud--normalize-edn-value (value)
+  "Normalize EDN reader output into plists, lists, and Elisp booleans."
+  (cond
+   ((eq value 'true) t)
+   ((eq value 'false) nil)
+   ((vectorp value) (mapcar #'stack-hud--normalize-edn-value (append value nil)))
+   ((consp value) (mapcar #'stack-hud--normalize-edn-value value))
+   (t value)))
+
+(defun stack-hud--read-edn-file (path)
+  "Read a simple EDN file from PATH into Elisp data."
+  (when (file-readable-p path)
+    (with-temp-buffer
+      (insert-file-contents path)
+      (condition-case nil
+          (stack-hud--normalize-edn-value
+           (car (read-from-string
+                 (stack-hud--edn-like->elisp (buffer-string)))))
+        (error nil)))))
+
+(defun stack-hud--boundary-status ()
+  "Load boundary status from the local boundary snapshot."
+  (stack-hud--maybe-refresh-boundary-scan)
+  (when-let ((raw (stack-hud--read-edn-file stack-hud-boundary-scan-path)))
+    (let* ((futons (or (plist-get raw :futons) '()))
+           (critical (seq-filter
+                      (lambda (entry)
+                        (> (or (plist-get entry :missing_evidence) 0) 0))
+                      futons)))
+      (setq critical
+            (sort critical
+                  (lambda (a b)
+                    (> (or (plist-get a :missing_evidence) 0)
+                       (or (plist-get b :missing_evidence) 0)))))
+      (setq critical (seq-take critical 4))
+      (list :generated-at (or (plist-get raw :generated-at)
+                              (plist-get raw :generated_at))
+            :milestone-prototype (or (plist-get raw :milestone-prototype)
+                                     (plist-get raw :milestone_prototype))
+            :critical critical
+            :futons futons))))
+
+(defun stack-hud--git-status ()
+  "Load the git vitality summary used by the Stack HUD."
+  (when-let ((raw (stack-hud--read-edn-file stack-hud-git-summary-path)))
+    (let ((last-active (plist-get raw :last-active))
+          (spheres (plist-get raw :spheres)))
+      (list :generated-at (or (plist-get raw :generated-at)
+                              (plist-get raw :generated_at))
+            :dominant-sphere (or (plist-get last-active :dominant-sphere)
+                                 (plist-get last-active :dominant_sphere)
+                                 (plist-get (car spheres) :sphere))
+            :quiet-days (or (plist-get last-active :quiet-days)
+                            (plist-get last-active :quiet_days))
+            :streak (plist-get raw :streak)
+            :last-active last-active))))
+
+(defun stack-hud--focus-profile-status ()
+  "Load the optional focus/profile snapshot used by the Stack HUD."
+  (stack-hud--read-edn-file stack-hud-focus-profile-path))
+
+(defun stack-hud--days-in-month (month year)
+  "Return the number of days in MONTH of YEAR."
+  (calendar-last-day-of-month month year))
+
+(defun stack-hud--next-weekly (weekday hour minute)
+  "Return the next due time for WEEKDAY at HOUR:MINUTE."
+  (let* ((now (current-time))
+         (decoded (decode-time now))
+         (day (nth 3 decoded))
+         (month (nth 4 decoded))
+         (year (nth 5 decoded))
+         (current-weekday (nth 6 decoded))
+         (zone (nth 8 decoded))
+         (target (alist-get weekday stack-hud--weekday-alist))
+         (delta (mod (- target current-weekday) 7))
+         (candidate (encode-time 0 minute hour (+ day delta) month year zone)))
+    (if (time-less-p candidate now)
+        (time-add candidate (days-to-time 7))
+      candidate)))
+
+(defun stack-hud--next-monthly (day-of-month hour minute)
+  "Return the next due time for DAY-OF-MONTH at HOUR:MINUTE."
+  (let* ((now (current-time))
+         (decoded (decode-time now))
+         (month (nth 4 decoded))
+         (year (nth 5 decoded))
+         (zone (nth 8 decoded))
+         (day (min day-of-month (stack-hud--days-in-month month year)))
+         (candidate (encode-time 0 minute hour day month year zone)))
+    (if (time-less-p candidate now)
+        (let* ((next-month (if (= month 12) 1 (1+ month)))
+               (next-year (if (= month 12) (1+ year) year))
+               (next-day (min day-of-month
+                              (stack-hud--days-in-month next-month next-year))))
+          (encode-time 0 minute hour next-day next-month next-year zone))
+      candidate)))
+
+(defun stack-hud--reminder-due-time (spec)
+  "Return the next due time for reminder SPEC."
+  (let ((hour (or (plist-get spec :hour) 9))
+        (minute (or (plist-get spec :minute) 0)))
+    (cond
+     ((plist-get spec :day-of-month)
+      (stack-hud--next-monthly (plist-get spec :day-of-month) hour minute))
+     ((plist-get spec :weekday)
+      (stack-hud--next-weekly (plist-get spec :weekday) hour minute))
+     (t nil))))
+
+(defun stack-hud--due-in-hours (due)
+  "Return the number of hours until DUE."
+  (/ (float-time (time-subtract due (current-time))) 3600.0))
+
+(defun stack-hud--reminder-status (hours)
+  "Return the reminder urgency bucket for HOURS."
+  (cond
+   ((< hours 0) 'overdue)
+   ((< hours 1) 'now)
+   ((< hours 6) 'imminent)
+   ((< hours 24) 'soon)
+   ((< hours 72) 'upcoming)
+   (t 'scheduled)))
+
+(defun stack-hud--reminder-statuses ()
+  "Return reminder statuses in the same shape as the legacy stack payload."
+  (sort
+   (delq nil
+         (mapcar
+          (lambda (spec)
+            (when-let ((due (stack-hud--reminder-due-time spec)))
+              (let ((hours (stack-hud--due-in-hours due)))
+                (list :id (plist-get spec :id)
+                      :label (plist-get spec :label)
+                      :due (format-time-string "%Y-%m-%dT%H:%M:%S%z" due)
+                      :display (format-time-string "%a %H:%M" due)
+                      :hours hours
+                      :status (stack-hud--reminder-status hours)))))
+          stack-hud--reminder-specs))
+   (lambda (a b)
+     (< (or (plist-get a :hours) most-positive-fixnum)
+        (or (plist-get b :hours) most-positive-fixnum)))))
+
+(defun stack-hud--vitality-warnings (vitality)
+  "Compute warnings from VITALITY."
+  (let* ((tatami (plist-get vitality :tatami))
+         (storage (plist-get vitality :storage))
+         (futon-activity (or (plist-get vitality :futon-activity)
+                             (plist-get vitality :futon_activity)))
+         (futon-window (or (plist-get vitality :futon-activity-window-hours)
+                           (plist-get vitality :futon_activity_window_hours)
+                           168))
+         (scanned-at (or (plist-get vitality :generated-at)
+                         (plist-get vitality :generated_at)))
+         (futon-active? (seq-some (lambda (entry)
+                                    (when-let ((hours (or (plist-get entry :hours-since)
+                                                          (plist-get entry :hours_since))))
+                                      (< hours futon-window)))
+                                  futon-activity))
+         warnings)
+    (when (and futon-activity (not futon-active?))
+      (push (format "No futon activity recorded in the last %sh. Last scan: %s."
+                    futon-window
+                    (or scanned-at "unknown"))
+            warnings))
+    (when (and tatami (eq (plist-get tatami :exists) nil))
+      (push "Tatami log path missing in vitality scanner." warnings))
+    (when (or (plist-get tatami :gap-warning)
+              (plist-get tatami :gap_warning))
+      (push "Tatami activity gap exceeds configured window." warnings))
+    (when (and storage (or (plist-get storage :needs-backup)
+                           (plist-get storage :needs_backup)))
+      (push (or (plist-get storage :note)
+                "Storage roots are not backed up yet.")
+            warnings))
+    (dolist (path (or (plist-get storage :paths) '()))
+      (when (eq (plist-get path :exists) nil)
+        (push (format "Storage path missing: %s"
+                      (or (plist-get path :label)
+                          (plist-get path :path)))
+              warnings)))
+    (nreverse warnings)))
+
+(defun stack-hud--git-warnings (git)
+  "Compute warnings from GIT."
+  (let ((quiet-days (plist-get git :quiet-days)))
+    (when (and (numberp quiet-days) (>= quiet-days 3))
+      (list (format "Git activity quiet for %d days." quiet-days)))))
+
+(defun stack-hud--reminder-warnings (reminders)
+  "Compute warnings from REMINDERS."
+  (mapcar (lambda (rem)
+            (format "%s due %s"
+                    (or (plist-get rem :label) "Reminder")
+                    (or (plist-get rem :display) "?")))
+          (seq-filter (lambda (rem)
+                        (memq (plist-get rem :status) '(now imminent)))
+                      reminders)))
+
+(defun stack-hud--merge-warnings (vitality git boundary reminders)
+  "Merge warnings from the local stack components."
+  (append (stack-hud--vitality-warnings vitality)
+          (stack-hud--git-warnings git)
+          nil
+          (stack-hud--reminder-warnings reminders)))
+
+(defun stack-hud--build-state ()
+  "Build the local Stack HUD state without Futon3 Tatami endpoints."
+  (let* ((vitality (my-chatgpt-shell--stack-vitality-from-file))
+         (git (stack-hud--git-status))
+         (boundary (stack-hud--boundary-status))
+         (reminders (stack-hud--reminder-statuses))
+         (focus-profile (stack-hud--focus-profile-status)))
+    (list :generated-at (format-time-string "%Y-%m-%dT%H:%M:%S%z")
+          :vitality vitality
+          :git git
+          :boundary boundary
+          :reminders reminders
+          :focus-profile focus-profile
+          :warnings (stack-hud--merge-warnings vitality git boundary reminders))))
 
 (defun stack-hud--futon1-reachable-p ()
   (condition-case nil
