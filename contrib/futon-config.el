@@ -90,6 +90,7 @@
           #'arxana-reload-after-hot-reload-batch)
 
 (require 'futon-helper)
+(require 'drawbridge-eval)
 
 ;;; Futon 3:
 
