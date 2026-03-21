@@ -5,15 +5,25 @@ After=paths.target
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/bash -c '\
-  target=/media/joe/R4_SD; \
-  mkdir -p /media/joe; \
-  if mountpoint -q "$target"; then exit 0; fi; \
-  if [ -e "$target" ] && ! mountpoint -q "$target"; then rm -rf "$target"; fi; \
-  output=$(/usr/bin/udisksctl mount --no-user-interaction --block-device /dev/disk/by-uuid/6970-2CEF); \
+  device=$(/usr/bin/readlink -f /dev/disk/by-uuid/6970-2CEF); \
+  if [ -z "$device" ] || [ ! -b "$device" ]; then \
+    echo "zoom-mount: device /dev/disk/by-uuid/6970-2CEF is unavailable"; \
+    exit 0; \
+  fi; \
+  mount_point=$(/usr/bin/lsblk -no MOUNTPOINT "$device" | head -n1); \
+  if [ -n "$mount_point" ] && /usr/bin/ls "$mount_point" >/dev/null 2>&1; then \
+    echo "zoom-mount: device already mounted at $mount_point"; \
+    exit 0; \
+  fi; \
+  output=$(/usr/bin/udisksctl mount --no-user-interaction --block-device "$device"); \
   status=$?; \
   echo "$output"; \
   if [ $status -ne 0 ]; then exit $status; fi; \
-  mount_point=$(/usr/bin/lsblk -no MOUNTPOINT /dev/disk/by-uuid/6970-2CEF | head -n1); \
-  if [ -n "$mount_point" ] && [ "$mount_point" != "$target" ]; then ln -sfn "$mount_point" "$target"; fi; \
+  mount_point=$(/usr/bin/lsblk -no MOUNTPOINT "$device" | head -n1); \
+  if [ -z "$mount_point" ]; then \
+    echo "zoom-mount: mount succeeded but mount point was not detected"; \
+    exit 1; \
+  fi; \
+  /usr/bin/ls "$mount_point" >/dev/null 2>&1; \
 '
 ExecStartPost=/home/joe/code/futon0/scripts/zoom_mount_trigger.sh

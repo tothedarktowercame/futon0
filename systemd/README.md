@@ -14,11 +14,12 @@ systemctl --user daemon-reload
 systemctl --user enable --now zoom-mount.path
 ```
 
-`zoom-mount.path` watches for the SD card's UUID and ensures the
+`zoom-mount.path` watches `/dev/disk/by-uuid` for device changes and ensures the
 `zoom-mount.service` oneshot mounts the card once per insertion. The user
-service creates `/media/joe/R4_SD` as a stable symlink even if `udisksctl`
-chooses a suffixed mount point (for example `/media/joe/R4_SD1`). Once mounted,
-the mount service kicks off `zoom-sync.service` for a single ingest run. After
+service keys off the recorder UUID and the mount point reported by `lsblk`, so
+it works whether `udisksctl` chooses `/media/joe/R4_SD`, `/media/joe/R4_SD1`,
+or another suffixed mount path. Once mounted, the mount service kicks off
+`zoom-sync.service` for a single ingest run. After
 the sync finishes it unmounts the card automatically; replugging mounts a new
 instance and triggers another run. Disable the automation via
 `systemctl --user disable --now zoom-mount.path` if you need to stop auto-ingest
@@ -29,9 +30,10 @@ temporarily.
 These contracts define the intended behavior so future debugging can validate
 each step independently.
 
-- Mount contract: plugging in the Zoom R4 triggers `zoom-mount.path`, and
-  `zoom-mount.service` mounts the card and exposes a stable mount path at
-  `/media/joe/R4_SD` (or a symlink to the udisks mount).
+- Mount contract: plugging in the Zoom R4 changes `/dev/disk/by-uuid`, which
+  triggers `zoom-mount.path`, and
+  `zoom-mount.service` mounts the card and resolves the active mount point
+  from the recorder UUID.
 - Trigger contract: a successful mount triggers exactly one sync run. The
   trigger is owned by `zoom-mount.service` (ExecStartPost).
 - Sync contract: `zoom-sync.service` runs `scripts/zoom_sync.py` against the

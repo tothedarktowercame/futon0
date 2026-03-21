@@ -6,13 +6,24 @@ Type=oneshot
 WorkingDirectory=/home/joe/code/futon0
 ExecStart=/usr/bin/bash -c '\
   find_source() { \
+    local device=""; \
+    local mount_point=""; \
     local found=""; \
-    for candidate in /media/%u/R4_SD*/R4_Project; do \
-      if [ -d "$candidate" ]; then \
-        found=$(/usr/bin/dirname "$candidate"); \
-        break; \
+    device=$(/usr/bin/readlink -f /dev/disk/by-uuid/6970-2CEF 2>/dev/null || true); \
+    if [ -n "$device" ]; then \
+      mount_point=$(/usr/bin/lsblk -no MOUNTPOINT "$device" | head -n1); \
+      if [ -n "$mount_point" ] && [ -d "$mount_point/R4_Project" ]; then \
+        found="$mount_point"; \
       fi; \
-    done; \
+    fi; \
+    if [ -z "$found" ]; then \
+      for candidate in /media/%u/R4_SD*/R4_Project; do \
+        if [ -d "$candidate" ]; then \
+          found=$(/usr/bin/dirname "$candidate"); \
+          break; \
+        fi; \
+      done; \
+    fi; \
     echo "$found"; \
   }; \
   source="$(find_source)"; \
@@ -28,4 +39,5 @@ ExecStart=/usr/bin/bash -c '\
   fi; \
   exec /usr/bin/env python3 /home/joe/code/futon0/scripts/zoom_sync.py --source "$source" --dest /home/joe/code/storage/zoomr4 --scan-attempts 20 --scan-delay 2 --rename-hold --delete-from-recorder; \
 '
-ExecStopPost=/usr/bin/bash -c 'mountpoint -q /media/joe/R4_SD && /usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF || true'
+ExecStopPost=/usr/bin/rm -f /run/user/%U/zoom-sync.present
+ExecStopPost=/usr/bin/bash -c '/usr/bin/udisksctl unmount --force --block-device /dev/disk/by-uuid/6970-2CEF || true'

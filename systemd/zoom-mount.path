@@ -2,7 +2,7 @@
 Description=Detect Zoom R4 SD card (user scope)
 
 [Path]
-PathExists=/dev/disk/by-uuid/6970-2CEF
+PathChanged=/dev/disk/by-uuid
 
 [Install]
 WantedBy=default.target
