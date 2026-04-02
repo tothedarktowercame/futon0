@@ -1,9 +1,14 @@
 # Joe's Active Context
 
-## Current Mission
+## Current Missions
 
 **M-structural-law** (futon3c) — Universal invariants as self-representing stack layer.
 Three phases, ten Codex handoffs. All coding via GitHub issues.
+
+**M-repl-wins-over-cli** (futon3c) — Make the Emacs REPL surfaces strictly
+better than the legacy CLI, closing every UX gap so CLI usage drops to zero.
+Phase 1 (basics) largely landed 2026-03-29; Phase 2 (cursor-sensor, scroll,
+multi-base, frame inspector) in progress. See `futon3c/holes/missions/M-repl-wins-over-cli.md`.
 
 ## Active Patterns (PSR 2026-03-10)
 
@@ -32,6 +37,100 @@ Sigil string: `代内示功令马`
 - All 14 repos clean and pushed (futon-sync status: 2026-03-10)
 - Server running refactored code (futon3c, port 6768 Drawbridge)
 - Tickle + FM conductor default OFF at boot (use --start-tickle / --start-fm)
+
+## UI Discipline Notes (2026-03-29)
+
+- Preferred live surface: Emacs-native attached lanes, not ad hoc CLI Codex/Claude.
+- For Codex, prefer attaching to `codex-1` from Emacs over starting standalone CLI sessions.
+- Mirror mode is for debugging or renderer work, not the canonical working surface.
+- `Frame 0` / session anchor should carry non-transcript context: working directory, transport, rollout file, session id, evidence base, and similar runtime facts.
+- Turn frames should carry any later cwd changes or other session-context deltas; `Frame 0` stays immutable once opened.
+
+### Practical Rule
+
+- Treat `cd futon3c && make codex-repl` as a legacy launch route.
+- Treat raw CLI Codex/Claude use as incurring **interaction evidence debt** unless the turn stream is mirrored into a surface that logs evidence canonically.
+- The target invariant is: **all substantive agent turns are logged as evidence**.
+
+### What To Do
+
+- Start from the Emacs surface when possible, especially when the work matters enough to keep.
+- If `codex-1` is already up, attach to it rather than opening a fresh CLI session.
+- Use mirror mode only to inspect or improve the Emacs UI around an already-running Codex session.
+- If CLI use is unavoidable, record at least:
+  - reason for bypassing the Emacs/evidence surface
+  - rollout path or session id
+  - working directory
+  - whether the debt is repayable by backfill or merely should be counted
+
+### Near-Term Goal
+
+- Add instrumentation that tracks evidence debt caused by off-surface CLI turns.
+- Keep that debt visible enough that CLI convenience feels like a measured trade, not free ambient leakage.
+
+## Claude REPL Improvements — Testing & Extension Plan (2026-03-29)
+
+The codex-repl structural improvements (defvar-local, open-instance pattern,
+attach-agent with completing-read) have been ported to claude-repl.el.
+The file went from 712 → 773 lines. Nothing was removed; everything is additive.
+
+### What To Test
+
+1. **Basic smoke test** — `M-x claude-repl` should still work exactly as before.
+   Verify: buffer appears, agent registers, send a message, get a streamed reply.
+
+2. **Multi-buffer isolation** — Open two Claude REPL instances (e.g. from two
+   workspace daemons, or use `claude-repl-attach-agent` to open a second buffer
+   on a different agent). Verify evidence state vars don't leak between buffers.
+   The `defvar` → `defvar-local` change is the fix; if evidence IDs or session
+   IDs from buffer A appear in buffer B's evidence posts, the change didn't take.
+
+3. **`M-x claude-repl-attach-agent`** — This is the new command (replaces the
+   old `claude-repl-connect` string prompt). It should:
+   - Hit the Agency API to fetch registered claude agents
+   - Present them via `completing-read` (tab-completion in the minibuffer)
+   - Open a `*claude-repl:<agent-id>*` buffer bound to that agent
+   - Rebind the socket so blackboard calls route here
+   - If the Agency API is down, fall back to a raw string prompt
+
+4. **`claude-repl-connect` backward compat** — Still works, now delegates to
+   `claude-repl-attach-agent`. If you have keybindings or scripts calling it,
+   they should keep working.
+
+5. **Session file directory creation** — If `claude-repl-session-file` points
+   to a path whose parent directory doesn't exist yet, the REPL should create
+   it automatically (via `make-directory ... t`). Previously this would error
+   silently and lose the session ID.
+
+### What To Extend (if needed)
+
+- **Multi-base API discovery**: codex-repl has `codex-repl--resolved-api-base`
+  that probes multiple candidate URLs with health-check fallback. Claude-repl
+  still uses a single `claude-repl-api-url`. If you hit situations where the
+  Agency is reachable on a non-default port (e.g. laptop with FUTON3C_PORT=47070),
+  this would be the next thing to port. The pattern is already in codex-repl —
+  see `codex-repl--resolved-api-base`, `codex-repl--base-reachable-p`.
+
+- **Drawbridge eval helper**: codex-repl extracted `codex-repl--drawbridge-eval`
+  as a general Clojure-eval-via-Drawbridge function. Claude-repl still has inline
+  Drawbridge code in `claude-repl--reset-via-drawbridge`. If you add more
+  Drawbridge interactions (registry queries, runtime inspection), factor this out
+  the way codex-repl did.
+
+- **Profile system**: codex-repl now has `codex-repl-open-profile` and
+  `codex-repl--reference-profile-defaults` for named test profiles with isolated
+  session files and working directories. If you want similar isolation for
+  Claude (e.g. a reference-trial Claude instance hitting a different API stack),
+  the pattern is ready to port.
+
+- **Runtime state tracking**: codex-repl tracks `runtime.process` events from
+  the CYDER lane system. Claude doesn't have this, but if futon3c ever exposes
+  process-level state for Claude agents, the dashboard/progress patterns are
+  already proven in codex-repl.
+
+### Files Changed
+
+- `emacs/claude-repl.el` — all changes here, no agent-chat.el modifications needed
 
 ## What Landed This Session (2026-03-10)
 
