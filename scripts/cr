@@ -1,0 +1,268 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# cr — Claude REPL in the terminal.
+#
+# Starts claude-repl inside terminal Emacs (emacsclient -t), with
+# evidence logging, frame persistence, and session continuity.
+# Same friction as: alacritty -e claude --permission-mode bypassPermissions
+#
+# Usage:
+#   cr                    # resume latest session (or start new)
+#   cr SESSION-ID         # resume specific session
+#   cr --new              # force new session
+#
+# Requires: Emacs daemon running, Agency (futon3c) on port 7070.
+#
+# This script exists because surface-earns-inhabitation.flexiarg:
+# if the infrastructure path is harder to enter than the primitive
+# path, the primitive path wins and the Baldwin loop starves.
+
+evidence_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:47070}"
+session_file="${CLAUDE_SESSION_FILE:-/tmp/futon-session-id}"
+emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
+script_real="$(readlink -f "${BASH_SOURCE[0]}")"
+emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
+claude_sessions_root="${CLAUDE_SESSIONS_ROOT:-${HOME}/.claude/sessions}"
+claude_projects_root="${CLAUDE_PROJECTS_ROOT:-${HOME}/.claude/projects}"
+
+# --- Socket discovery --------------------------------------------------------
+
+find_emacs_socket() {
+  # 1. Explicit env
+  if [[ -n "${FUTON3C_EMACS_SOCKET:-}" ]]; then
+    echo "${FUTON3C_EMACS_SOCKET}"
+    return 0
+  fi
+  if [[ -n "${EMACS_SOCKET_NAME:-}" ]]; then
+    echo "${EMACS_SOCKET_NAME}"
+    return 0
+  fi
+  # 2. Single socket in /run/user
+  local emacs_dir="/run/user/$(id -u)/emacs"
+  if [[ -d "$emacs_dir" ]]; then
+    local sockets=("$emacs_dir"/*)
+    if [[ ${#sockets[@]} -eq 1 && -S "${sockets[0]}" ]]; then
+      basename "${sockets[0]}"
+      return 0
+    elif [[ ${#sockets[@]} -gt 1 ]]; then
+      echo "Multiple Emacs daemons: $(ls "$emacs_dir" | tr '\n' ' ')" >&2
+      echo "Set FUTON3C_EMACS_SOCKET." >&2
+      return 1
+    fi
+  fi
+  # 3. No daemon — start one
+  echo "No Emacs daemon found. Starting one..." >&2
+  emacs --daemon=futon >/dev/null 2>&1
+  echo "futon"
+}
+
+# --- Session handling --------------------------------------------------------
+
+json_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "${1:-}"; }
+
+emit_evidence() {
+  local sid="$1"
+  [[ -n "${sid}" ]] || return 0
+  command -v curl >/dev/null 2>&1 || return 0
+  local payload
+  payload="$(cat <<EOF
+{"subject":{"ref/type":"session","ref/id":"$(json_escape "${sid}")"},"type":"coordination","claim-type":"goal","author":"$(json_escape "${USER:-joe}")","session-id":"$(json_escape "${sid}")","body":{"event":"session-start","source":"cr","mode":"terminal-repl","cwd":"$(json_escape "$(pwd)")"},"tags":["claude","session-start","cr"]}
+EOF
+)"
+  curl -sS --max-time 1 \
+    -H "Content-Type: application/json" \
+    -X POST -d "${payload}" \
+    "${evidence_base%/}/api/alpha/evidence" >/dev/null 2>&1 || true
+}
+
+latest_session_id() {
+  python3 - "$PWD" "${claude_sessions_root}" "${claude_projects_root}" <<'PY'
+import json
+import os
+import sys
+from pathlib import Path
+
+cwd = os.path.realpath(sys.argv[1])
+sessions_root = Path(os.path.expanduser(sys.argv[2]))
+projects_root = Path(os.path.expanduser(sys.argv[3]))
+
+def from_sessions():
+    if not sessions_root.exists():
+        return None
+    files = sorted(sessions_root.glob("*.json"),
+                   key=lambda p: p.stat().st_mtime,
+                   reverse=True)
+    for path in files:
+        try:
+            data = json.loads(path.read_text())
+        except Exception:
+            continue
+        sid = data.get("sessionId")
+        scwd = data.get("cwd")
+        if sid and scwd and os.path.realpath(scwd) == cwd:
+            return sid
+    return None
+
+def from_projects():
+    encoded = cwd.replace("/", "-")
+    target = projects_root / encoded
+    if not target.exists():
+        return None
+    index = target / "sessions-index.json"
+    if index.exists():
+        try:
+            entries = json.loads(index.read_text()).get("entries") or []
+        except Exception:
+            entries = []
+        entries = sorted(entries,
+                         key=lambda e: e.get("modified") or e.get("created") or "",
+                         reverse=True)
+        for entry in entries:
+            sid = entry.get("sessionId")
+            if sid:
+                return sid
+    jsonl_files = sorted(target.glob("*.jsonl"),
+                         key=lambda p: p.stat().st_mtime,
+                         reverse=True)
+    for path in jsonl_files:
+        stem = path.stem
+        if stem:
+            return stem
+    return None
+
+sid = from_sessions() or from_projects()
+if sid:
+    print(sid.strip())
+    raise SystemExit(0)
+raise SystemExit(1)
+PY
+}
+
+build_auto_register_payload() {
+  local socket_name="$1"
+  local session_id="$2"
+  local payload='{"type":"claude"'
+  if [[ -n "${socket_name}" ]]; then
+    payload+=',"emacs-socket":"'"$(json_escape "${socket_name}")"'"'
+  fi
+  if [[ -n "${session_id}" ]]; then
+    payload+=',"session-id":"'"$(json_escape "${session_id}")"'"'
+  fi
+  payload+='}'
+  printf '%s' "${payload}"
+}
+
+# --- Args --------------------------------------------------------------------
+
+sid=""
+start_new=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --new) start_new=true; shift ;;
+    --help|-h)
+      echo "Usage: cr [SESSION-ID] [--new]"
+      echo "  cr             resume latest session"
+      echo "  cr SESSION-ID  resume specific session"
+      echo "  cr --new       start fresh"
+      exit 0
+      ;;
+    *) sid="$1"; shift ;;
+  esac
+done
+
+# --- Resolve session ---------------------------------------------------------
+
+echo "--- cr debug ---"
+echo "Agency:       ${evidence_base}"
+echo "Emacs dir:    ${emacs_dir}"
+echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'; fi)"
+
+# Check Agency is reachable
+if curl -sS --max-time 2 "${evidence_base}/api/alpha/agents" >/dev/null 2>&1; then
+  echo "Agency:       reachable"
+else
+  echo "Agency:       NOT reachable (evidence logging will not work)"
+fi
+
+# Show existing session file state
+echo "Session files:"
+for f in "${session_file}" /tmp/futon-session-id-claude-*; do
+  if [[ -f "$f" ]]; then
+    echo "  $f = $(cat "$f")"
+  fi
+done
+
+if $start_new; then
+  sid=""
+  echo "Action:       forcing a fresh claude lane (session hints left intact)"
+elif [[ -n "${sid}" ]]; then
+  echo "Action:       will resume explicit session ${sid:0:8}..."
+  emit_evidence "${sid}"
+elif sid="$(latest_session_id 2>/dev/null || true)"; [[ -n "${sid}" ]]; then
+  echo "Action:       found latest session ${sid:0:8}... for $(pwd)"
+  emit_evidence "${sid}"
+else
+  echo "Action:       no prior session found; starting fresh"
+fi
+
+echo "--- launching ---"
+
+# --- Launch ------------------------------------------------------------------
+
+socket="$(find_emacs_socket)" || exit 1
+echo "Emacs socket: ${socket}"
+
+elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
+
+escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
+escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
+
+emacs_socket="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
+payload="$(build_auto_register_payload "${emacs_socket}" "${sid}")"
+reg_result=$(curl -sS --max-time 5 \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d "${payload}" \
+  "${evidence_base}/api/alpha/agents/auto" 2>&1)
+echo "Registration: ${reg_result}"
+
+aid="$(echo "${reg_result}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agent-id',''))" 2>/dev/null || echo "")"
+if [[ -z "${aid}" ]]; then
+  echo "Registration failed: could not parse agent-id from /agents/auto response" >&2
+  exit 1
+fi
+
+sf="/tmp/futon-session-id-${aid}"
+if [[ -n "${sid}" ]]; then
+  printf '%s' "${sid}" > "${sf}"
+fi
+
+echo "Agent:        ${aid}"
+echo "Session file: ${sf}"
+[[ -n "${sid}" ]] && echo "Session:      ${sid}"
+
+exec "${emacsclient_bin}" -s "${socket}" -t \
+  --eval "(progn
+    (load \"${escaped_chat}\" nil t)
+    (load \"${escaped_repl}\" nil t)
+    (let* ((aid \"${aid}\")
+           (cr-sid \"${sid}\")
+           (bufname (format \"*claude-repl:%s*\" aid))
+           (sf \"${sf}\")
+           (api-url (string-remove-suffix \"/\" agent-chat-agency-base-url))
+           (buf (get-buffer-create bufname)))
+      (with-current-buffer buf
+        (unless (eq major-mode 'claude-repl-mode) (claude-repl-mode))
+        (setq-local claude-repl--workspace-applied t)
+        (setq-local claude-repl-agent-id aid)
+        (setq-local claude-repl-api-url api-url)
+        (setq-local claude-repl-evidence-url (concat api-url \"/api/alpha/evidence\"))
+        (setq-local claude-repl-session-file sf))
+      (claude-repl--open-instance bufname agent-chat-agency-base-url aid sf)
+      (with-current-buffer buf
+        (claude-repl--init-display)
+        (unless (string-empty-p cr-sid)
+          (agent-chat-update-session-id cr-sid)))
+      buf))"
