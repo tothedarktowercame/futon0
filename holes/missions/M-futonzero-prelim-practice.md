@@ -185,18 +185,118 @@ After 4 weeks of practice (20 sessions, ~100 problems):
 5. At least one feedback loop to M-apm-solutions produces a
    measurable improvement in solution quality for subsequent batches.
 
-## 6. Relation to the serendipity thesis
+## 6. Teaching Tactics — Informal Proof Assistance (2026-04-09)
+
+In formal theorem proving, a tactic closes a goal. In MathDojo (the
+interactive study layer), a teaching tactic *teaches you how to close
+a goal yourself*. The output isn't a proof step — it's understanding.
+
+| Formal tactic | Teaching tactic | What it does for the learner |
+|---|---|---|
+| `exact?` | `what-theorem?` | "What known result closes this? Here are 3 candidates — which fits?" |
+| `apply` | `why-this-lemma?` | "This lemma applies because... Can you see which hypothesis matches?" |
+| `rw` | `rewrite-hint` | "These are equal. Can you see why? Hint: expand the definition of X." |
+| `cases` | `what-cases?` | "This splits into cases. What are they? What differs?" |
+| `contradiction` | `what-breaks?` | "Assume the opposite. Follow the logic until something contradicts." |
+| `calc` | `chain-hint` | "You need a chain of inequalities. What's the first bound?" |
+| `sorry` | `where-stuck?` | "What's the goal? What do you have? What's the gap?" |
+
+The `where-stuck?` tactic uses the same QP diagnostic questions from
+M-diagramprover's ArSE kick (QP-3 structural probe, QP-6 tension
+dissolution, QP-8 confidence inversion) — but directed at the human
+learner instead of the AI agent.
+
+**Token efficiency:** Each teaching tactic is one focused LLM call
+with the specific proof context. Not "explain this whole problem"
+but "I'm at step 3, I have ∫|f|^p, I need to show it's finite."
+~200 tokens in, ~500 out. One penny per hint.
+
+**Bayesian learner model signal:** Each interaction records *which*
+teaching tactic was needed at *which* step: "Joe needed `what-theorem?`
+at Cauchy-Schwarz, `chain-hint` at the integral bound." This profiles
+exactly which mathematical moves Joe has and hasn't internalised.
+The geometric-mean gate model from M-diagramprover applies: the
+weakest prerequisite technique determines whether Joe can solve the
+problem independently.
+
+## 7. MathDojo — Pre-Computed Navigation Layer (2026-04-09)
+
+The proof corpus (`futon3c/data/apm-informal-proofs/`) is the knowledge
+base. MathDojo adds a zero-token navigation layer:
+
+- **Topic index**: 107 problems across 16 technique clusters
+- **Technique graph**: 85 co-occurrence edges (e.g., measure-theory ↔
+  real-analysis: 25 shared problems)
+- **Difficulty ladder**: within each cluster, problems ordered by
+  technique complexity
+
+Pre-computed from existing files. Browsing costs zero tokens.
+Questions cost ~500 tokens each. See `futon3c/data/mathdojo/`.
+
+**Arxana integration**: questions asked during study get indexed into
+ArSE. A batch "answer my questions" run alongside apm-daily-batch
+processes them cheaply. Answers feed back into the learner model.
+
+**Gap identification**: when the Bayesian model says "Joe doesn't know
+Borel-Cantelli," the system points to undergraduate prerequisites.
+Open textbooks (Axler's *Measure, Integration & Real Analysis* CC-BY-NC,
+Tao's *Analysis* I/II) provide the prerequisite material. This extends
+the system to learners who aren't at Joe's level.
+
+## 8. Generalisation Beyond Mathematics (2026-04-09)
+
+Mathematics is the pilot domain because it has the tightest feedback
+loop: Lean verifies, Mathlib provides the API surface, the prelim
+corpus provides graded problems. But the architecture is domain-agnostic.
+
+### 8.1 Computer programming as mathematics
+
+Per the Library of Congress classification, computer programming IS
+part of mathematics (QA 76). The futon stack's self-representing
+capability (M-self-representing-stack) makes it a concrete instance:
+the stack describes itself as typed EDN hypergraphs. Learning to
+program the futon stack is learning to navigate a formal system —
+the same way learning to prove theorems is navigating Mathlib.
+
+If the self-representing stack's EDN structures can be modelled in
+Lean (or a comparable type system), then:
+- The "proofs" are programs that correctly transform the stack's state
+- The "theorems" are invariants the stack must uphold
+- The "sorry" are features not yet implemented or verified
+- The teaching tactics work identically: `what-theorem?` becomes
+  "what API call closes this?" and `where-stuck?` becomes "what's
+  the type error telling you?"
+
+### 8.2 The transferable architecture
+
+| Component | Math domain | Programming domain | Any domain |
+|---|---|---|---|
+| Corpus | 489 prelim proofs | Self-representing stack EDN | Any structured knowledge base |
+| Navigation | Technique graph (MathDojo) | Module dependency graph | Topic co-occurrence graph |
+| Teaching tactics | Proof hints | Code hints | Step-by-step guidance |
+| Verification | Lean type-checker | Compiler + tests | Domain-specific validator |
+| Learner model | P(insight | technique, exposure) | P(correct-impl | API-knowledge, exposure) | P(competence | prerequisite, exposure) |
+| Gap identification | "Review Borel-Cantelli" | "Review core.async" | "Review prerequisite X" |
+
+The capability growth IS the objective function. The prelims are the
+first gym equipment. The muscles are transferable.
+
+## 9. Relation to the serendipity thesis
 
 This mission is NOT about optimising Joe's prelim-passing ability.
 He's not going back to UT Austin. The prelim problems are a *substrate*
 for capability growth — a structured, graded, well-scoped domain
 where learning is measurable.
 
-The real value is in what the practice reveals about the FUTON stack's
-ability to support human learning. If the pipeline's tutoring output
-actually teaches — not just explains — then the same discipline
-transfers to any domain where structured exposition + formal
-verification + spaced practice is valuable.
+The real value is in what the FUTON stack's ability to support human
+learning reveals about learning itself. If the pipeline's tutoring
+output actually teaches — not just explains — then the same discipline
+transfers to any domain where structured exposition + verification +
+spaced practice + teaching tactics is valuable.
 
-The capability growth IS the objective function. The prelims are the
-gym equipment. The muscles are transferable.
+The serendipity is that Joe's "failure" (leaving Austin without passing
+prelims) produced the system (FUTON) that now produces the tutor
+(MathDojo) that teaches the material (489 prelim solutions) that he
+didn't learn the first time. The 20-year loop closes — not by going
+back to Austin, but by bringing Austin's problems into the system
+that grew from leaving.
