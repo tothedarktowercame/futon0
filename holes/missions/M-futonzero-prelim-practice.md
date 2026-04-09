@@ -128,6 +128,69 @@ The pipeline teaches; the practice measures; the measurement improves
 the teaching. This is the return loop that M-futonzero-capability was
 designed to observe.
 
+## Checkpoint 0 — Distilling the Excursions (2026-04-09)
+
+**Status:** Open for Joe to inhabit.
+
+The excursions in `futon0/analysis/excursions/` are the empirical ground
+for this mission. Before IDENTIFY can be honest, the excursion experience
+needs to be distilled — not by an agent reading files, but by Joe
+reflecting on what he actually learned.
+
+### Questions for Joe (the Hīnayāna peripheral)
+
+These can't be answered by grepping. They require sitting with the
+experience and noticing what changed.
+
+1. **What did you learn from the excursions that you didn't know before
+   starting them?** Not what the files say — what shifted in your
+   understanding of the stack, of mathematics, of your own learning?
+
+2. **Where did you get stuck during excursions?** The sorry-initialization
+   excursion identifies "spaces that would tell us what the topology is,
+   if we inhabited them." Where were YOUR sorrys — the places where you
+   committed to a shape you couldn't fill?
+
+3. **What teaching tactics would have helped?** Looking back at stuck
+   points: was it `what-theorem?` (you didn't know the right tool) or
+   `where-stuck?` (you couldn't articulate the gap) or `why-this-lemma?`
+   (you knew the tool but not why it applied)?
+
+4. **What transferred?** The sorry ontology says excursions make sorrys
+   legible. Did solving one problem make another problem more readable?
+   Did understanding a futon module help with a math concept, or vice
+   versa?
+
+5. **What's the sorry in your mathematical knowledge that this mission
+   should close?** Not "pass the prelims" — what specific gap, if
+   closed, would have the highest cross-problem impact on your
+   capability trajectory? (This is the Bayesian model question from
+   M-diagramprover, applied to Joe instead of Lean.)
+
+### What the checkpoint will contain (once Joe answers)
+
+- A distilled list of learnings from excursions E-sorry-initialization
+  through E-Vasilopita
+- Joe's self-assessed capability map (which techniques are solid, which
+  are sorry, which are dark)
+- The first data points for the Bayesian learner model
+- A revised scope for the practice sessions based on actual experience,
+  not projected experience
+
+### Why this must be interactive
+
+The excursion insight (E-sorry-initialization §"The Claim"): property 5
+(inhabitation rate) "can only be discovered by inhabiting the space."
+A sorry in an uninhabited peripheral is epistemically opaque. The same
+applies here: Joe's mathematical sorrys are opaque until he inhabits
+them through practice. An agent reading the excursion files sees the
+structure but not the experience. The checkpoint requires the experience.
+
+This is the Hīnayāna entry: small vehicle, one person, direct practice.
+The Mahāyāna generalisation (MathDojo for all students) comes after.
+
+---
+
 ## 3. Prerequisites
 
 ### 3.1 From M-apm-solutions (in progress)
