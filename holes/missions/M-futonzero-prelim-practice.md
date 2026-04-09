@@ -142,49 +142,196 @@ reflecting on what he actually learned.
 These can't be answered by grepping. They require sitting with the
 experience and noticing what changed.
 
-1. **What did you learn from the excursions that you didn't know before
-   starting them?** Not what the files say — what shifted in your
-   understanding of the stack, of mathematics, of your own learning?
+#### Question 1. **What did you learn from the excursions that you didn't know before starting them?**
+(Not what the files say — what shifted in your understanding of the stack, of mathematics, of your own learning?)
 
-2. **Where did you get stuck during excursions?** The sorry-initialization
-   excursion identifies "spaces that would tell us what the topology is,
-   if we inhabited them." Where were YOUR sorrys — the places where you
-   committed to a shape you couldn't fill?
+Joe: These excursions largely had to do with different aspects of the
+same thing.  It's described in pattern-theoretic form in
+surface-earns-inhabitation.flexiarg — in short, if we have a system
+that manifests (in some sense) the desired way of doing things *but it
+isn't being used* then there is a mismatch between the desire and the
+reality of the situation.  But there's another side to it, I realised.
+It's not just about getting myself to learn good new habits and
+abandon old bad ones.  It's not just "design thinking" as a way to
+resolve tensions.  It's about realising that the uninhabited
+peripherals and channels are containers for a sorry.  In other words,
+the structure is already useful, as a marker a 义.
 
-3. **What teaching tactics would have helped?** Looking back at stuck
-   points: was it `what-theorem?` (you didn't know the right tool) or
-   `where-stuck?` (you couldn't articulate the gap) or `why-this-lemma?`
-   (you knew the tool but not why it applied)?
 
-4. **What transferred?** The sorry ontology says excursions make sorrys
-   legible. Did solving one problem make another problem more readable?
-   Did understanding a futon module help with a math concept, or vice
-   versa?
+### Question 2. **Where did you get stuck during excursions?**
 
-5. **What's the sorry in your mathematical knowledge that this mission
-   should close?** Not "pass the prelims" — what specific gap, if
-   closed, would have the highest cross-problem impact on your
-   capability trajectory? (This is the Bayesian model question from
-   M-diagramprover, applied to Joe instead of Lean.)
+(The sorry-initialization excursion identifies "spaces that would tell
+us what the topology is, if we inhabited them." Where were YOUR sorrys
+— the places where you committed to a shape you couldn't fill?)
 
-### What the checkpoint will contain (once Joe answers)
+Joe: So, we did get stuck briefly in E-Vasilopita but that was on
+technical points, which Codex evened out quite nicely following the
+initial Claude pass.  With Excursions, the issue isn't LLM capability
+or problem specification (unlike Missions) but more to do with
+"getting started".  I suppose we could see this as the flip-side of
+Algorithms (I've added some algorithms from Rob locally in
+/home/joe/code/algorithms) — which presuppose that we know what we
+want to do.  An Excursion is more lighthearted than that.  We might
+notice a recurring issue or problem and not do anything about it.  The
+Excursion mindset requires noticing it and taking a step to put change
+into motion.  Of course, if we just developed a big backlog of 1/10th
+started Excursion notes, we'd be back where we were with Missions or
+Invariants, i.e., creating a surface that "diagrams" a sorry (日), not
+inherently a bad thing of course!
 
-- A distilled list of learnings from excursions E-sorry-initialization
-  through E-Vasilopita
-- Joe's self-assessed capability map (which techniques are solid, which
-  are sorry, which are dark)
-- The first data points for the Bayesian learner model
-- A revised scope for the practice sessions based on actual experience,
-  not projected experience
+### Question 3. **What teaching tactics would have helped?**
 
-### Why this must be interactive
+(Looking back at stuck points: was it `what-theorem?` (you didn't know the right tool) or `where-stuck?` (you couldn't articulate the gap) or `why-this-lemma?` (you knew the tool but not why it applied)?)
+
+Joe: So, the challenge here seems to be somewhat "pre-theoretical" —
+it's more like 聽勁 (tīng jìn) than 掤 et al., as great as they are.
+That doesn't mean it can't be taught.  For example, there's a
+professional practice of Quality Assurance in the software space.
+Even if that usually operates relative to a specification, it doesn't
+always stick to that script (e.g., "on reflection it's just hard to
+use in the current format" or "in the course of testing we noticed it
+should also have this other feature").  These are related to the kinds
+of sensitivities that are needed in futon5 to *find edge of chaos
+behaviours* — which so far have been harder to enunciate in
+programmatic terms than it is to build generators which might produce
+edge of chaos behaviours.  When I was working on mathematics stuff,
+the first challenge is that you can't do anything if you don't know
+what the words mean, and that's true, but you also need to know how
+they flow.  E.g. learning tai chi from an instruction manual *might*
+be possible in some sense, but the learning would be very different
+from what you'd get by going to a class.
+
+### Question 4. **What transferred?**
+
+(The sorry ontology says excursions make sorrys legible. Did solving
+one problem make another problem more readable? Did understanding a
+futon module help with a math concept, or vice versa?)
+
+Joe: I think we're getting there with regard to E-Vasilopita for
+example.  It is *easier* to use the repl peripherals now, but it's
+still not *quite as convenient* (if I'm honest) as using the old
+fashioned Claude or Codex CLI.  The remaining progress is somewhat
+incidental though, and really is at the "learn new habits" and "round
+off the edges" stage.  I think what was most useful was probably the
+motivating analogy: if I'm not using the REPL, and the agents aren't
+using the peripherals we set up, this is exactly the same phenomenon.
+The fact that progress has been made is another aspect of that
+phenomenon.  Indeed the Hīnayāna insperied strategy that I'm using in
+this Mission is an example of how the learning has transfered.  Rather
+than using an agent to specify a mission without much intervention,
+I'm doing a deeper dive based on "looking within".  This is no longer
+about problem solving but problem specification (Bergson style).
+Obviously, if we had a more cut-and-dried mission, we could use the
+standard approach.  At the same time, I guess one inference is that
+the standard approach leaves behind a "residue" of things that "pass
+QA" but that aren't actually ready at the level they need to be ready
+to be useful for the things we actually need to do with them.
+
+### Question 5. **What's the sorry in your mathematical knowledge that this mission should close?**
+
+(Not "pass the prelims" — what specific gap, if closed, would have the
+highest cross-problem impact on your capability trajectory? (This
+is the Bayesian model question from M-diagramprover, applied to Joe
+instead of Lean.))
+
+Joe: At this point, I think it might be most advantageous to prototype
+all of this at the Clojure and M-self-representing-stack level, so
+that we could see how a system works when it has this capability —
+then we could port the *capability* to mathematics.  Rob has been
+developing some Lean specifications of things like Devmaps, Missions,
+Patterns and so on and I think that could be the scaffolding that we
+need to push this forward.  At the same time the existing material
+from M-self-representing-stack could be used, possibly alongside an
+early prototype of DiagramProver.  I'm seeing, in short, a kind of
+commutative square — what we do with programming can be done with
+mathematics and vice versa.  The specifications (whether in Lean or
+EDN) are one part of the bridge between these domains.  They're
+complemented by an assay of gaps, thinking about this in a
+hypergraphical format.
+
+### Checkpoint 0 Distillation
+
+Five findings from Joe's answers, cross-referenced to the excursions:
+
+**F1: Uninhabited structures are sorrys, not failures.**
+(Q1, from E-sorry-initialization) The value of a peripheral or channel
+that nobody uses isn't zero — it's a typed hole (義). The structure
+diagrams the sorry. This reframes "we built it but nobody uses it" from
+a design failure to a legible gap. MathDojo implication: a prelim topic
+that Joe hasn't touched isn't a blank — it's a sorry with a type
+signature (the technique graph shows what would fill it).
+
+**F2: Getting started is harder than getting unstuck.**
+(Q2, from E-Vasilopita) Excursion friction is not LLM capability or
+problem specification but *initiation*. Algorithms presuppose knowing
+what to do; excursions require noticing something and taking a first
+step. Risk: accumulating 1/10th-started excursion notes recreates the
+sorry backlog. MathDojo implication: the `where-stuck?` teaching tactic
+is less important than a `start-here` tactic that lowers initiation
+friction. The practice session design (§2.1) must make starting
+easier than not starting — the surface-earns-inhabitation principle.
+
+**F3: The pre-theoretical sense — 聽勁 (tīng jìn) — precedes tactics.**
+(Q3) Listening-energy comes before techniques. You need to know how
+concepts flow, not just what the words mean. Learning from a manual
+vs learning in a class. The teaching tactics (§6) need a zeroth
+tactic: `feel-the-shape` — not "what theorem closes this?" but "what
+kind of thing is this problem asking you to do?" This is the edge-of-
+chaos sensitivity from futon5: harder to specify programmatically than
+to recognise when present. MathDojo implication: before teaching tactics
+fire, there's a phase where you just sit with the problem and develop
+a sense for its shape. The practice session needs protected time for
+this (step 1's "2 min read" may need to be longer and less structured).
+
+**F4: The commutative square — programming ↔ mathematics.**
+(Q4, Q5) Learning transfers bidirectionally between domains. The Hīnayāna
+strategy (looking within, not delegating to agents) is itself a transfer
+from excursion practice to mission design. The standard agent-driven
+approach leaves a "residue" of things that pass QA but aren't ready for
+actual use. MathDojo implication: prototype at the Clojure / self-
+representing-stack level first, where Joe has more tīng jìn, then port
+the capability to mathematics. Rob's Lean specs of Devmaps/Missions/
+Patterns are the bridge between the two sides of the square.
+
+**F5: The revised scope is a commutative square, not a linear curriculum.**
+(Q5) Instead of "learn analysis, then topology, then algebra":
+
+```
+     programming (futon stack)
+         ↕ specs (Lean/EDN)
+     mathematics (prelim problems)
+         ↕ teaching tactics
+     capability growth (both domains)
+```
+
+The specifications (Lean or EDN) bridge the domains. The gaps
+(hypergraphical format) are the sorry atlas — same architecture as
+M-diagramprover but applied to Joe's learning, not to Lean proofs.
+DiagramProver and MathDojo are two faces of the same thing: map the
+diagram of what's missing, use patterns to guide what to try next.
+
+### Updated mission status
+
+**Checkpoint 0 complete.** IDENTIFY can now proceed with honest data:
+- The subject matter is not "489 prelim problems" but "the commutative
+  square between programming and mathematics, mediated by typed specs"
+- The teaching tactics need a pre-theoretical `feel-the-shape` phase
+- The initiation problem (F2) is more important than the getting-stuck
+  problem
+- Prototype in the programming domain first (where tīng jìn exists),
+  then port to mathematics
+
+**Blocked by:** M-self-representing-stack making enough progress that
+the programming side of the commutative square has real material to
+practice on. Rob's Lean specs of stack structures would unblock this.
+
+### Why this was interactive
 
 The excursion insight (E-sorry-initialization §"The Claim"): property 5
 (inhabitation rate) "can only be discovered by inhabiting the space."
-A sorry in an uninhabited peripheral is epistemically opaque. The same
-applies here: Joe's mathematical sorrys are opaque until he inhabits
-them through practice. An agent reading the excursion files sees the
-structure but not the experience. The checkpoint requires the experience.
+Joe inhabited Checkpoint 0 through direct reflection, not agent extraction.
+The findings (especially F3, tīng jìn) could not have been produced by
+grepping the excursion files — they required sitting with the experience.
 
 This is the Hīnayāna entry: small vehicle, one person, direct practice.
 The Mahāyāna generalisation (MathDojo for all students) comes after.
