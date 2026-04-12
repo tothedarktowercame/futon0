@@ -346,6 +346,148 @@
                 (swap! type-anchors assoc repo best))))))
       @cells)))
 
+;; ---------------------------------------------------------------------------
+;; Invariant Layout
+;; ---------------------------------------------------------------------------
+
+(def ^:private family->domain
+  "Map invariant family IDs to invariant runner domain keywords."
+  {"F-graph-symmetry" :portfolio
+   "F-phase-ordering" :tickle
+   "F-status-discipline" :agency
+   "F-existence" :agency
+   "F-dependency-satisfaction" :proof
+   "F-required-outputs" :mission
+   "F-startup-contracts" :futon1a
+   "F-layered-error-hierarchy" :futon1a
+   "F-authorization-and-identity" :futon1a})
+
+(defn- hex-ring-coords
+  "Generate hex coordinates for ring N around origin.
+   Ring 0 = [[0 0]], Ring 1 = 6 hexes, Ring 2 = 12 hexes, etc."
+  [ring]
+  (if (zero? ring)
+    [[0 0]]
+    (let [dirs [[1 0] [0 1] [-1 1] [-1 0] [0 -1] [1 -1]]]
+      (vec (for [side (range 6)
+                 step (range ring)]
+             (let [[dq dr] (nth dirs side)
+                   [sq sr] (nth dirs (mod (+ side 2) 6))
+                   q (+ (* ring dq) (* step sq))
+                   r (+ (* ring dr) (* step sr))]
+               [q r]))))))
+
+(defn- assign-invariant-layout
+  "Arrange invariant families in concentric rings.
+   Ring 0-1: operational families (green core).
+   Ring 2: candidate families (amber ring).
+   Ring 3+: individual candidate invariants (dim outer ring)."
+  [judgement-data]
+  (let [inventory (:invariants judgement-data)
+        families (:families inventory [])
+        live-domains (:live-domains inventory)
+        individual-candidates (:individual-candidates inventory [])
+        operational (vec (filter #(= :operational (:status %)) families))
+        candidate-fams (vec (filter #(= :candidate (:status %)) families))
+        ;; Build ring coordinates
+        ring-0 (hex-ring-coords 0)      ;; 1 position
+        ring-1 (hex-ring-coords 1)      ;; 6 positions
+        ring-2 (hex-ring-coords 2)      ;; 12 positions
+        ring-3 (hex-ring-coords 3)      ;; 18 positions
+        ring-4 (hex-ring-coords 4)      ;; 24 positions
+        ;; Core: operational families in rings 0+1 (7 slots)
+        op-coords (vec (take (count operational) (concat ring-0 ring-1)))
+        ;; Inner ring: candidate families in ring 2 (12 slots)
+        cand-coords (vec (take (count candidate-fams) ring-2))
+        ;; Outer ring: individual candidates in ring 3+4 (42 slots)
+        indiv-coords (vec (take (min 30 (count individual-candidates))
+                                (concat ring-3 ring-4)))
+        cells (atom [])]
+    ;; Place operational families
+    (doseq [[fam [q r]] (map vector operational op-coords)]
+      (let [domain-id (get family->domain (name (:id fam)))
+            live-domain (when domain-id
+                          (first (filter #(= domain-id (:domain %)) (or live-domains []))))]
+        (swap! cells conj
+               {:node (merge fam
+                             {:sprite-type :invariant-family
+                              :label (or (:name fam) "?")
+                              :live-state (when live-domain
+                                            (if (:has-violations live-domain) :violating :clean))
+                              :violation-categories (:violation-categories live-domain)})
+                :q q :r r})))
+    ;; Place candidate families
+    (doseq [[fam [q r]] (map vector candidate-fams cand-coords)]
+      (swap! cells conj
+             {:node (merge fam {:sprite-type :invariant-family
+                                :label (or (:name fam) "?")})
+              :q q :r r}))
+    ;; Place individual candidates
+    (doseq [[inv [q r]] (map vector (take 30 individual-candidates) indiv-coords)]
+      (swap! cells conj
+             {:node {:sprite-type :invariant-candidate
+                     :id (:id inv)
+                     :label (:name inv)
+                     :family-id (:family-id inv)
+                     :layer (:layer inv)}
+              :q q :r r}))
+    @cells))
+
+;; ---------------------------------------------------------------------------
+;; Pattern Layout
+;; ---------------------------------------------------------------------------
+
+(defn- assign-pattern-layout
+  "Arrange pattern collections using embedding-derived coordinates.
+   Collections with embeddings are placed by their semantic position
+   (MiniLM centroid projected to top-2-variance dimensions).
+   Collections without embeddings are distributed in gaps among
+   the embedded ones using nearest-available hex positions."
+  [patterns-data]
+  (when patterns-data
+    (let [collections (:collections patterns-data [])
+          with-embed (vec (filter :has-embedding? collections))
+          without-embed (vec (remove :has-embedding? collections))
+          ;; Scale embedding coords to hex grid [-6, 6]
+          xs (map :x with-embed)
+          ys (map :y with-embed)
+          x-min (if (seq xs) (apply min xs) 0)
+          x-max (if (seq xs) (apply max xs) 1)
+          y-min (if (seq ys) (apply min ys) 0)
+          y-max (if (seq ys) (apply max ys) 1)
+          x-range (max 0.001 (- x-max x-min))
+          y-range (max 0.001 (- y-max y-min))
+          scale 12.0
+          half (/ scale 2.0)
+          occupied (atom #{})
+          cells (atom [])
+          place! (fn [node q r]
+                   ;; Resolve collision: search expanding ring around target
+                   (loop [radius 0]
+                     (if (> radius 4)
+                       nil ;; give up
+                       (let [candidates (if (zero? radius)
+                                          [[q r]]
+                                          (hex-ring-coords radius))
+                             candidates (if (zero? radius)
+                                          candidates
+                                          (map (fn [[dq dr]] [(+ q dq) (+ r dr)]) candidates))
+                             free (first (filter #(not (contains? @occupied %)) candidates))]
+                         (if free
+                           (do (swap! occupied conj free)
+                               (swap! cells conj {:node node :q (first free) :r (second free)}))
+                           (recur (inc radius)))))))
+          ;; Place embedded collections by semantic position
+          _ (doseq [coll with-embed]
+              (let [q (Math/round (double (- (* (/ (- (:x coll) x-min) x-range) scale) half)))
+                    r (Math/round (double (- (* (/ (- (:y coll) y-min) y-range) scale) half)))]
+                (place! (assoc coll :sprite-type :pattern-collection) q r)))
+          ;; Place non-embedded collections interspersed (near center, filling gaps)
+          _ (doseq [coll without-embed]
+              ;; Place near center, collision resolution will find gaps
+              (place! (assoc coll :sprite-type :pattern-collection) 0 0))]
+      @cells)))
+
 (defn- layout-bounds
   "Compute the bounding box of hex cells."
   [cells]
@@ -424,6 +566,38 @@
       :tick (str "TICK: " (name (or (:id node) :unknown)) "\n"
                  "Fired: " (:fired? node) "\n"
                  (when (:fires node) (str "Fires: " (:fires node))))
+      :pattern-collection (str "COLLECTION: " (or (:name node) "?") "\n"
+                              "Patterns: " (or (:count node) 0) "\n"
+                              "\n"
+                              (str/join "\n"
+                                        (map (fn [p]
+                                               (str "  " (:name p)
+                                                    (when-let [s (:sigil p)]
+                                                      (when-not (str/blank? s) (str " " s)))))
+                                             (take 15 (or (:patterns node) [])))))
+      :invariant-candidate (str "CANDIDATE: " (or (:label node) "?") "\n"
+                              "Family: " (or (some-> (:family-id node) name) "?") "\n"
+                              "Layer: " (or (some-> (:layer node) name) "?") "\n"
+                              "Status: candidate (not yet wired)")
+      :invariant-layer (str "LAYER: " (name (or (:id node) :unknown)) "\n"
+                            (:label node) "\n"
+                            "Families: " (:family-count node 0) "\n"
+                            "Operational: " (:operational node 0)
+                            " | Candidate: " (:candidate node 0))
+      :invariant-family (str "FAMILY: " (name (or (:id node) :unknown)) "\n"
+                             "Layer: " (or (some-> (:layer node) name) "?") "\n"
+                             "Status: " (or (some-> (:status node) name) "?") "\n"
+                             "Question: " (or (:question node) "") "\n"
+                             (when (:live-state node)
+                               (str "Live: " (name (:live-state node)) "\n"))
+                             (when (:violation-categories node)
+                               (str "Violations: "
+                                    (str/join ", " (map (fn [[k v]] (str (name k) "=" v))
+                                                        (:violation-categories node)))
+                                    "\n"))
+                             (when-let [ci (:candidate-invariants node)]
+                               (when (and (vector? ci) (seq ci))
+                                 (str "Candidates: " (str/join ", " (map name ci))))))
       (str "Node: " (pr-str node)))))
 
 ;; ---------------------------------------------------------------------------
@@ -549,6 +723,117 @@
               fm (.getFontMetrics g)
               tw (.stringWidth fm badge)]
           (.drawString g badge (int (- cx (/ tw 2))) (int (+ cy (* size 0.4))))))
+
+      ;; --- Pattern collection hex ---
+      :pattern-collection
+      (let [cnt (or (:count node) 0)
+            ;; Size/intensity based on pattern count
+            intensity (min 1.0 (/ (double cnt) 60.0))
+            hue (mod (* (hash (or (:id node) "")) 0.618033988) 1.0)
+            base-color (Color/getHSBColor (float hue) (float 0.4) (float (+ 0.5 (* 0.3 intensity))))
+            alpha (int (+ 100 (* 140 intensity)))
+            fill-color (Color. (.getRed base-color) (.getGreen base-color)
+                               (.getBlue base-color) alpha)]
+        (.setColor g fill-color)
+        (.fill g path)
+        (.setColor g (Color. (.getRed base-color) (.getGreen base-color) (.getBlue base-color)))
+        (.setStroke g (BasicStroke. (+ 1.0 (* 1.5 intensity))))
+        (.draw g path)
+        ;; Label
+        (.setColor g (Color. 20 20 20))
+        (.setFont g (Font. "SansSerif" Font/BOLD (max 8 (int (* size 0.25)))))
+        (let [label (or (:name node) "?")
+              label (if (> (count label) 12) (str (subs label 0 11) "..") label)
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm label)]
+          (.drawString g label (int (- cx (/ tw 2))) (int (+ cy 4))))
+        ;; Count badge
+        (.setFont g (Font. "SansSerif" Font/PLAIN (max 7 (int (* size 0.2)))))
+        (.setColor g (Color. 60 60 60))
+        (let [badge (str cnt " patterns")
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm badge)]
+          (.drawString g badge (int (- cx (/ tw 2))) (int (+ cy (* size 0.4))))))
+
+      ;; --- Invariant layer header ---
+      :invariant-layer
+      (let [op (:operational node 0)
+            cand (:candidate node 0)
+            total (+ op cand)
+            health (if (pos? total) (/ (double op) total) 0.0)
+            fill-color (Color. 70 90 120 (int (+ 80 (* 120 health))))]
+        (.setColor g fill-color)
+        (.fill g path)
+        (.setColor g (Color. 40 60 90))
+        (.setStroke g (BasicStroke. 2.0))
+        (.draw g path)
+        (.setColor g Color/WHITE)
+        (.setFont g (Font. "SansSerif" Font/BOLD (max 8 (int (* size 0.25)))))
+        (let [label (or (:label node) "?")
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm label)]
+          (.drawString g label (int (- cx (/ tw 2))) (int (- cy (* size 0.1)))))
+        (.setFont g (Font. "SansSerif" Font/PLAIN (max 7 (int (* size 0.2)))))
+        (let [badge (str op "/" total)
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm badge)]
+          (.drawString g badge (int (- cx (/ tw 2))) (int (+ cy (* size 0.3))))))
+
+      ;; --- Invariant family hex ---
+      :invariant-family
+      (let [operational? (= :operational (:status node))
+            live-state (:live-state node)
+            violating? (= :violating live-state)
+            base-color (cond
+                         violating?   (Color. 220 50 50)   ;; red: violations detected
+                         operational? (Color. 40 160 80)    ;; green: operational + clean
+                         :else        (Color. 180 160 60))  ;; amber: candidate
+            alpha (if operational? 200 120)
+            fill-color (Color. (.getRed base-color) (.getGreen base-color)
+                               (.getBlue base-color) alpha)]
+        (.setColor g fill-color)
+        (.fill g path)
+        (.setColor g (cond
+                       violating?   (Color. 180 0 0)
+                       operational? (Color. 20 100 40)
+                       :else        (Color. 140 120 40)))
+        (.setStroke g (BasicStroke. (if operational? 2.0 1.0)))
+        (.draw g path)
+        ;; Label
+        (.setColor g (if operational? Color/WHITE (Color. 40 40 40)))
+        (.setFont g (Font. "SansSerif" Font/PLAIN (max 7 (int (* size 0.22)))))
+        (let [raw-label (or (:name node) (name (or (:id node) :unknown)))
+              label (-> raw-label
+                        (str/replace "F-" "")
+                        (str/replace "-" " "))
+              label (if (> (count label) 14) (str (subs label 0 13) "..") label)
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm label)]
+          (.drawString g label (int (- cx (/ tw 2))) (int (+ cy 4))))
+        ;; Status badge
+        (.setFont g (Font. "SansSerif" Font/BOLD (max 6 (int (* size 0.18)))))
+        (.setColor g (if operational? (Color. 200 255 200) (Color. 100 80 20)))
+        (let [badge (cond violating? "VIO" operational? "OP" :else "CND")
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm badge)]
+          (.drawString g badge (int (- cx (/ tw 2))) (int (+ cy (* size 0.4))))))
+
+      ;; --- Individual candidate invariant (outer ring) ---
+      :invariant-candidate
+      (let [fill-color (Color. 160 150 120 80)]
+        (.setColor g fill-color)
+        (.fill g path)
+        (.setColor g (Color. 140 130 100))
+        (.setStroke g (BasicStroke. 0.5))
+        (.draw g path)
+        (.setColor g (Color. 100 90 60))
+        (.setFont g (Font. "SansSerif" Font/PLAIN (max 6 (int (* size 0.18)))))
+        (let [label (or (:label node) "?")
+              label (-> label (str/replace "-" " "))
+              label (if (> (count label) 14) (str (subs label 0 13) "..") label)
+              fm (.getFontMetrics g)
+              tw (.stringWidth fm label)]
+          (.drawString g label (int (- cx (/ tw 2))) (int (+ cy 3)))))
 
       ;; --- Default ---
       (do
@@ -845,11 +1130,15 @@
 
                     (when-let [data @data-atom]
                       (let [view-mode (or @view-mode-atom :stack)
-                            cells (if (= view-mode :missions)
-                                    (or (assign-mission-layout (:mission-detail data)) [])
+                            cells (case view-mode
+                                    :missions (or (assign-mission-layout (:mission-detail data)) [])
+                                    :invariants (or (assign-invariant-layout (:judgement data)) [])
+                                    :patterns (or (assign-pattern-layout (:patterns data)) [])
                                     (assign-layout (:graph data)))
-                            coupling (if (= view-mode :missions)
-                                       (get-in data [:mission-detail :dependency-edges] [])
+                            coupling (case view-mode
+                                       :missions (get-in data [:mission-detail :dependency-edges] [])
+                                       :invariants []
+                                       :patterns []
                                        (get-in data [:graph :edges :temporal-coupling] []))
                             hex-size (fit-hex-size cells pw ph)
                             [off-x off-y] (layout-offset cells hex-size pw ph)]
@@ -930,11 +1219,11 @@
      :or {days 14 blocking? true}}]
    (let [data-atom (atom nil)
          replay-atom (atom nil)
-         view-mode-atom (atom :stack) ;; :stack or :missions
+         view-mode-atom (atom :stack) ;; :stack, :missions, or :invariants
          scan! (fn []
                  (println "War Machine: scanning...")
-                 (let [{:keys [data]} (wm/generate-war-machine days)]
-                   (reset! data-atom data)
+                 (let [{:keys [data judgement]} (wm/generate-war-machine days)]
+                   (reset! data-atom (assoc data :judgement judgement))
                    (println "War Machine: scan complete.")))
          finished (promise)]
      ;; Initial scan
@@ -974,9 +1263,20 @@
                                     (reify ActionListener
                                       (actionPerformed [_ _]
                                         (let [current @view-mode-atom
-                                              next-mode (if (= current :stack) :missions :stack)]
+                                              next-mode (case current
+                                                          :stack :missions
+                                                          :missions :invariants
+                                                          :invariants :patterns
+                                                          :patterns :stack
+                                                          :stack)
+                                              btn-label (case next-mode
+                                                          :stack "Missions"
+                                                          :missions "Invariants"
+                                                          :invariants "Patterns"
+                                                          :patterns "Stack"
+                                                          "Missions")]
                                           (reset! view-mode-atom next-mode)
-                                          (.setText view-btn (if (= next-mode :stack) "Missions" "Stack"))
+                                          (.setText view-btn btn-label)
                                           (.repaint hex-panel)))))
               _ (.add toolbar view-btn)
               _ (.addSeparator toolbar)

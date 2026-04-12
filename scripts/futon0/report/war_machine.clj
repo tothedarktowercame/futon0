@@ -818,6 +818,124 @@
                :ticks-firing (count (filter :fired? tick-results))}}))
 
 ;; ---------------------------------------------------------------------------
+;; Scan 9: Pattern Library
+;;
+;; Loads the pattern library index (TSV) and groups by collection.
+;; This gives the war machine visibility into the pattern landscape:
+;; which collections exist, how many patterns each has, and which
+;; domains they cover.
+;;
+;; cf. futon3/resources/sigils/patterns-index.tsv
+;; cf. futon3a/notions — pattern search (MiniLM embeddings)
+;; ---------------------------------------------------------------------------
+
+(def ^:private patterns-index-path
+  (str home "/code/futon3/resources/sigils/patterns-index.tsv"))
+
+(def ^:private embeddings-path
+  (str home "/code/futon3a/resources/notions/minilm_pattern_embeddings.json"))
+
+(defn- load-embeddings
+  "Load MiniLM pattern embeddings and compute 2D collection centroids.
+   Uses the two dimensions with highest variance across collection centroids
+   (cheap PCA approximation). Returns a map of collection-id → [x y]."
+  []
+  (try
+    (when (.exists (java.io.File. embeddings-path))
+      (let [raw (json/parse-string (slurp embeddings-path) true)
+            ;; Group embeddings by collection
+            by-coll (group-by (fn [e]
+                                (let [id (:id e "")]
+                                  (if (str/includes? id "/")
+                                    (subs id 0 (.indexOf id "/"))
+                                    "_uncategorized")))
+                              raw)
+            ;; Compute centroid per collection (mean of 384-dim vectors)
+            centroids (into {}
+                            (for [[coll entries] by-coll
+                                  :let [vecs (mapv :vector entries)
+                                        n (count vecs)
+                                        dim (count (first vecs))]
+                                  :when (and (pos? n) (pos? dim))]
+                              [coll (mapv (fn [d]
+                                            (/ (reduce + (map #(nth % d 0.0) vecs))
+                                               (double n)))
+                                          (range dim))]))
+            all-vecs (vec (vals centroids))
+            n-colls (count all-vecs)]
+        (when (>= n-colls 2)
+          (let [dim (count (first all-vecs))
+                ;; Find 2 dimensions with highest variance
+                dim-vars (mapv (fn [d]
+                                 (let [vals (mapv #(nth % d 0.0) all-vecs)
+                                       mean (/ (reduce + vals) (double n-colls))
+                                       var (/ (reduce + (map #(let [v (- % mean)] (* v v)) vals))
+                                              (double n-colls))]
+                                   {:dim d :var var}))
+                               (range dim))
+                top-2 (->> dim-vars (sort-by :var >) (take 2) (mapv :dim))
+                d1 (first top-2)
+                d2 (second top-2)
+                ;; Project centroids onto these 2 dimensions
+                coords (into {}
+                             (for [[coll vec] centroids]
+                               [coll [(nth vec d1 0.0) (nth vec d2 0.0)]]))]
+            coords))))
+    (catch Exception _ nil)))
+
+(defn scan-patterns
+  "Load the pattern library index and group by collection.
+   Optionally loads MiniLM embeddings for 2D spatial coordinates.
+
+   Returns {:collections [{:id :name :count :patterns [...] :x :y}]
+            :total-patterns N
+            :total-collections N}."
+  []
+  (try
+    (when (.exists (java.io.File. patterns-index-path))
+      (let [lines (str/split-lines (slurp patterns-index-path))
+            entries (->> lines
+                         (remove #(str/starts-with? % "#"))
+                         (remove str/blank?)
+                         (mapv (fn [line]
+                                 (let [fields (str/split line #"\t" -1)
+                                       pattern-id (first fields)
+                                       slash-idx (.indexOf (str pattern-id) "/")
+                                       collection (if (pos? slash-idx)
+                                                    (subs pattern-id 0 slash-idx)
+                                                    "uncategorized")
+                                       pattern-name (if (pos? slash-idx)
+                                                      (subs pattern-id (inc slash-idx))
+                                                      pattern-id)]
+                                   {:pattern-id pattern-id
+                                    :collection collection
+                                    :name pattern-name
+                                    :tokipona (get fields 1 "")
+                                    :sigil (get fields 2 "")
+                                    :rationale (get fields 3 "")
+                                    :hotwords (get fields 4 "")}))))
+            by-collection (group-by :collection entries)
+            ;; Load embedding coordinates
+            embed-coords (or (load-embeddings) {})
+            collections (->> by-collection
+                             (mapv (fn [[coll-id patterns]]
+                                     (let [[x y] (get embed-coords coll-id [0.0 0.0])]
+                                       {:id coll-id
+                                        :name coll-id
+                                        :count (count patterns)
+                                        :x x :y y
+                                        :has-embedding? (contains? embed-coords coll-id)
+                                        :patterns (mapv #(select-keys % [:pattern-id :name :sigil :rationale])
+                                                        patterns)})))
+                             (sort-by :count >)
+                             vec)]
+        {:collections collections
+         :total-patterns (count entries)
+         :total-collections (count collections)
+         :embedding-coverage (count (filter :has-embedding? collections))}))
+    (catch Exception _ nil)))
+
+;; ---------------------------------------------------------------------------
 ;; Renderer: markdown fallback
 ;;
 ;; The primary renderer is the Swing visualiser (war_machine_visual.clj).
@@ -889,23 +1007,34 @@
                            arrows)))
         (.append sb "\n")))
 
-    ;; --- Support / Attack ---
+    ;; --- Support / Attack (enriched with invariant evidence) ---
     (.append sb "## Holistic Argument\n\n")
-    (when support-attack
-      (let [{:keys [claims support-coverage attack-coverage]} support-attack]
-        (.append sb (str "Support coverage: " (pct-str support-coverage)
-                         " | Attack coverage: " (pct-str attack-coverage) "\n\n"))
-        (.append sb (render-table
-                     ["Claim" "Type" "Evidence" "Last" "Status"]
-                     [:left :left :right :left :left]
-                     (mapv (fn [{:keys [claim-id type label evidence-count last-evidence status]}]
-                             [(str (name claim-id) ": " label)
-                              (name type)
-                              (str evidence-count)
-                              (or last-evidence "-")
-                              (name status)])
-                           claims)))
-        (.append sb "\n")))
+    (let [sa (or (get-in data [:judgement :support-attack-enriched]) support-attack)]
+      (when sa
+        (let [{:keys [claims support-coverage attack-coverage
+                       support-coverage-enriched attack-coverage-enriched]} sa]
+          ;; Show both raw and enriched coverage
+          (.append sb (str "Support coverage: " (pct-str (or support-coverage 0))
+                           (when support-coverage-enriched
+                             (str " → " (pct-str support-coverage-enriched) " (with invariants)"))
+                           " | Attack coverage: " (pct-str (or attack-coverage 0))
+                           (when attack-coverage-enriched
+                             (str " → " (pct-str attack-coverage-enriched) " (with invariants)"))
+                           "\n\n"))
+          (.append sb (render-table
+                       ["Claim" "Type" "Evidence" "Invariant signal" "Status"]
+                       [:left :left :right :left :left]
+                       (mapv (fn [{:keys [claim-id type label evidence-count
+                                          last-evidence status invariant-evidence]}]
+                               [(str (name claim-id) ": " label)
+                                (name type)
+                                (str evidence-count)
+                                (if invariant-evidence
+                                  (:detail invariant-evidence)
+                                  "-")
+                                (name status)])
+                             claims)))
+          (.append sb "\n"))))
 
     ;; --- Mission Triage ---
     (.append sb "## Mission Triage\n\n")
@@ -935,7 +1064,96 @@
             (.append sb (str "- " (:mission/id m) " (" (:mission/repo m) ")\n")))
           (.append sb "\n"))))
 
-    ;; --- Portfolio Inference ---
+    ;; --- Judgement (priorities, losses, free energy) ---
+    (when-let [j (:judgement data)]
+      (.append sb "## Strategic Judgement\n\n")
+      (.append sb (str "**Mode:** " (name (:mode j))
+                       " (prior: " (format "%.0f%%" (* 100.0 (double (:mode-prior j 0))))
+                       ")\n\n"))
+
+      ;; Free energy
+      (let [{:keys [G-total G-pragmatic G-epistemic]} (:free-energy j)]
+        (.append sb (render-table
+                     ["Free Energy" "Value"]
+                     [:left :right]
+                     [["G-total" (format "%.4f" (double G-total))]
+                      ["G-pragmatic (0.65)" (format "%.4f" (double G-pragmatic))]
+                      ["G-epistemic (0.35)" (format "%.4f" (double G-epistemic))]]))
+        (.append sb "\n"))
+
+      ;; Losses (avoided states currently active)
+      (when (seq (:losses j))
+        (.append sb "### Losses (avoided states active)\n\n")
+        (doseq [loss (:losses j)]
+          (.append sb (str "- **" (:summary loss) "**\n")))
+        (.append sb "\n"))
+
+      ;; Top priorities
+      (when (seq (:priorities j))
+        (.append sb "### Priorities\n\n")
+        (.append sb (render-table
+                     ["#" "Type" "Summary"]
+                     [:right :left :left]
+                     (mapv (fn [{:keys [rank type summary]}]
+                             [(str rank)
+                              (name type)
+                              (or summary "?")])
+                           (take 15 (:priorities j)))))
+        (.append sb "\n"))
+
+      ;; AIF Heads
+      (.append sb "### AIF Heads\n\n")
+      (let [{:keys [heads missing]} (:heads j)]
+        (doseq [h heads]
+          (.append sb (str "- **" (name (:head-id h)) "** — "
+                           (get-in h [:judgement :summary] "available") "\n")))
+        (when (seq missing)
+          (.append sb "\n**Missing heads:**\n\n")
+          (doseq [h missing]
+            (.append sb (str "- " (name (:head-id h)) " — " (:note h) "\n"))))
+        (.append sb "\n"))
+
+      ;; Invariant inventory summary
+      (when-let [inv (:invariants j)]
+        (.append sb "### Invariant Inventory\n\n")
+        (.append sb (str "Operational families: " (:operational-count inv)
+                         " | Candidate families: " (:candidate-count inv)
+                         " (" (:total-candidate-invariants inv) " candidate invariants)\n\n"))
+        ;; Live runner results
+        (if (:live-available? inv)
+          (let [{:keys [active dormant violating clean-active
+                        obligations-total auto-fixable needs-review]} (:live-summary inv)]
+            (.append sb "**Live invariant runner** (from `/api/alpha/invariants`):\n\n")
+            (.append sb (render-table
+                         ["Metric" "Value"]
+                         [:left :right]
+                         [["Active domains" (str active)]
+                          ["Clean" (str clean-active)]
+                          ["Violating" (str violating)]
+                          ["Dormant" (str dormant)]
+                          ["Obligations" (str obligations-total)]
+                          ["Auto-fixable" (str auto-fixable)]
+                          ["Needs review" (str needs-review)]]))
+            (.append sb "\n")
+            (when-let [domains (:live-domains inv)]
+              (let [violating-domains (filter :has-violations domains)]
+                (when (seq violating-domains)
+                  (.append sb "**Domains with violations:**\n\n")
+                  (doseq [d violating-domains]
+                    (.append sb (str "- **" (name (:domain d)) "**: "
+                                     (str/join ", " (map (fn [[k v]] (str (name k) "=" v))
+                                                         (:violation-categories d)))
+                                     "\n")))
+                  (.append sb "\n")))))
+          (.append sb "*Live invariant runner not available (endpoint `/api/alpha/invariants` not yet loaded)*\n\n"))
+        (when (seq (:candidate-families inv))
+          (.append sb "**Candidate families (unwired structural laws):**\n\n")
+          (doseq [fam (:candidate-families inv)]
+            (.append sb (str "- " (name (:id fam)) " (" (name (:layer fam)) "): "
+                             (:question fam) "\n")))
+          (.append sb "\n"))))
+
+    ;; --- Portfolio Inference (raw state for reference) ---
     (.append sb "## Portfolio Inference\n\n")
     (when-let [pf (:portfolio data)]
       (if (:available? pf)
@@ -949,12 +1167,7 @@
                           ["Temperature (τ)" (format "%.2f" (double (or (:tau s) 0)))]
                           ["Step count" (str (:step-count s))]
                           ["Focus" (str (or (:focus s) "(none)"))]]))
-            (.append sb "\n")
-            (when-let [channels (:channels s)]
-              (.append sb "**Sensory channels (μ predictions):**\n\n")
-              (doseq [[ch val] (sort-by key channels)]
-                (.append sb (str "- " (name ch) ": " (format "%.2f" (double val)) "\n")))
-              (.append sb "\n")))
+            (.append sb "\n"))
           (when-let [r (:recommendation pf)]
             (.append sb (str "**Recommendation:** " (:action r) "\n"))
             (.append sb (str "Free energy: " (when (:free-energy r)
@@ -1000,36 +1213,6 @@
           (.append sb "\n"))))
 
     (str sb)))
-
-;; ---------------------------------------------------------------------------
-;; Orchestrator
-;; ---------------------------------------------------------------------------
-
-(defn generate-war-machine
-  "Collect all strategic scans and render.
-   Returns {:data ... :markdown ...}."
-  [days]
-  (let [now (.toString (.toLocalDate (.atZone (Instant/now) tz)))
-        loop-health (scan-loop-health days)
-        support-attack (scan-support-attack days)
-        mission-triage (scan-mission-triage days)
-        graph (scan-graph days)
-        sessions (scan-sessions)
-        portfolio (scan-portfolio)
-        mission-detail (scan-mission-detail)]
-    {:data {:loop-health loop-health
-            :support-attack support-attack
-            :mission-triage mission-triage
-            :graph graph
-            :sessions sessions
-            :portfolio portfolio
-            :mission-detail mission-detail}
-     :markdown (render-war-machine {:loop-health loop-health
-                                    :support-attack support-attack
-                                    :mission-triage mission-triage
-                                    :graph graph
-                                    :portfolio portfolio
-                                    :now now :days days})}))
 
 ;; ---------------------------------------------------------------------------
 ;; Normalized observation vector (AIF terminal vocabulary)
@@ -1098,15 +1281,611 @@
   (mapv #(get obs % 0.0) observation-channels))
 
 ;; ---------------------------------------------------------------------------
+;; Judgement Layer: Preferences, Free Energy, AIF Heads, Invariants
+;;
+;; The war machine's inference step. Sits between observe (scan data →
+;; 12-channel vector) and render (display).
+;;
+;; Reads:
+;;   1. Observation vector (from observe)
+;;   2. Preferences (from war-machine-terminal-vocabulary.edn)
+;;   3. AIF head states (from live endpoints)
+;;   4. Invariant inventory (from futon-stack-invariant-model.edn)
+;;
+;; Produces: ranked priority list, free energy decomposition, losses.
+;;
+;; cf. cyberants policy.clj — EFE computation
+;; cf. portfolio/policy.clj — action ranking
+;; cf. M-aif-head: the war machine integrates all heads, not replaces them
+;;
+;; Invariant: WM-I1 (read-only — judge produces data, never writes)
+;; Invariant: WM-I4 (sovereignty — priorities are informational, not commands)
+;; ---------------------------------------------------------------------------
+
+;; --- Preferences (C) from terminal vocabulary ---
+
+(def ^:private preferences
+  "Expected observation ranges from war-machine-terminal-vocabulary.edn :C/preferred.
+   Each channel maps to [lo hi] — the range where things are healthy."
+  {:loop-health        [0.8 1.0]
+   :support-coverage   [0.8 1.0]
+   :attack-coverage    [0.8 1.0]
+   :mission-health     [0.5 1.0]
+   :stack-pct          [0.15 0.25]
+   :consulting-pct     [0.20 0.35]
+   :portfolio-pct      [0.20 0.35]
+   :mathematics-pct    [0.15 0.25]
+   :active-repo-ratio  [0.5 1.0]
+   :sorry-count-norm   [0.0 0.3]
+   :coupling-density   [0.1 0.3]
+   :ticks-firing-ratio [0.0 0.0]})
+
+(def ^:private avoided-states
+  "States the system should not be in. From :C/avoided."
+  {:strategic-mode     :hermit
+   :stack-pct          [0.7 1.0]
+   :consulting-pct     [0.0 0.0]
+   :ticks-firing-ratio [0.5 1.0]
+   :sorry-count-norm   [0.8 1.0]
+   :active-repo-ratio  [0.0 0.2]})
+
+(def ^:private mode-prior
+  "Prior probability over strategic modes. From :C/mode-prior."
+  {:multiplied       0.35
+   :depositing       0.25
+   :foraging-trapped 0.15
+   :hermit           0.10
+   :stagnant         0.10
+   :dark             0.05})
+
+;; --- Free energy computation ---
+
+(defn- channel-gap
+  "Distance of observation from preferred range.
+   Returns 0.0 if within [lo, hi], positive distance otherwise."
+  [obs-val [lo hi]]
+  (let [v (double (or obs-val 0.0))]
+    (cond (< v lo) (- lo v)
+          (> v hi) (- v hi)
+          :else 0.0)))
+
+(defn- in-avoided?
+  "True if observation value falls within an avoided range."
+  [obs-val [lo hi]]
+  (let [v (double (or obs-val 0.0))]
+    (and (>= v lo) (<= v hi))))
+
+(def ^:private pragmatic-weights
+  "Per-channel weights for pragmatic free energy.
+   From :G/pragmatic-fn in terminal vocabulary."
+  {:stack-pct          0.25
+   :consulting-pct     0.25
+   :portfolio-pct      0.15
+   :mission-health     0.15
+   :ticks-firing-ratio 0.10
+   :sorry-count-norm   0.10})
+
+(defn compute-free-energy
+  "Compute strategic free energy from observation vector.
+
+   Returns {:G-total :G-pragmatic :G-epistemic :per-channel-gaps :avoided-active}.
+
+   G-pragmatic: weighted distance from preferences (dominated by workstream balance).
+   G-epistemic: uncertainty from dark arrows and unaddressed claims.
+   G-total: 0.65 * pragmatic + 0.35 * epistemic.
+
+   cf. war-machine-terminal-vocabulary.edn :G/pragmatic-fn, :G/epistemic-fn"
+  [obs]
+  (let [;; Pragmatic: gap between observations and preferences
+        per-channel (into {}
+                          (for [[ch pref] preferences
+                                :let [v (get obs ch 0.0)
+                                      gap (channel-gap v pref)]]
+                            [ch {:value v
+                                 :preferred pref
+                                 :gap gap
+                                 :in-range? (zero? gap)}]))
+        g-pragmatic (reduce-kv (fn [acc ch weight]
+                                 (+ acc (* weight (get-in per-channel [ch :gap] 0.0))))
+                               0.0
+                               pragmatic-weights)
+        ;; Epistemic: uncertainty from dark areas
+        g-epistemic (+ (* 0.4 (- 1.0 (:loop-health obs 0.0)))
+                       (* 0.3 (- 1.0 (:attack-coverage obs 0.0)))
+                       (* 0.3 (- 1.0 (:support-coverage obs 0.0))))
+        ;; Total
+        g-total (+ (* 0.65 g-pragmatic) (* 0.35 g-epistemic))
+        ;; Avoided states currently active
+        avoided (vec (for [[k v] avoided-states
+                           :when (not= k :strategic-mode)
+                           :when (vector? v)
+                           :when (in-avoided? (get obs k 0.0) v)]
+                       k))]
+    {:G-total g-total
+     :G-pragmatic g-pragmatic
+     :G-epistemic g-epistemic
+     :per-channel per-channel
+     :avoided-active avoided}))
+
+(defn infer-mode
+  "Infer strategic mode from observation vector.
+   Returns keyword: :multiplied, :depositing, :foraging-trapped, :hermit, :stagnant, :dark."
+  [obs]
+  (let [stack (get obs :stack-pct 0.0)
+        consulting (get obs :consulting-pct 0.0)
+        portfolio (get obs :portfolio-pct 0.0)
+        loop-h (get obs :loop-health 0.0)
+        active (get obs :active-repo-ratio 0.0)
+        ticks (get obs :ticks-firing-ratio 0.0)]
+    (cond
+      ;; Dark: nothing happening
+      (and (< active 0.2) (< loop-h 0.3))
+      :dark
+
+      ;; Hermit: stack-dominated, no consulting
+      (and (> stack 0.7) (< consulting 0.05))
+      :hermit
+
+      ;; Foraging-trapped: stuck on stack under math/portfolio pressure
+      (and (> stack 0.5) (> ticks 0.5))
+      :foraging-trapped
+
+      ;; Depositing: consulting active
+      (> consulting 0.2)
+      :depositing
+
+      ;; Stagnant: surfaces used but not improving
+      (and (> active 0.3) (< loop-h 0.5))
+      :stagnant
+
+      ;; Multiplied: healthy balance
+      :else
+      :multiplied)))
+
+;; --- AIF Head integration ---
+
+(defn scan-aif-heads
+  "Query all available AIF heads for their current state.
+
+   Each head is an independent AIF loop running somewhere in the stack.
+   The war machine reads their states — it doesn't run them.
+
+   Currently available:
+   - Portfolio Inference (futon3c): mode, urgency, tau, 16 channels, recommendation
+   - Mission AIF Head (futon3c): per-mission phase, obligation, law compliance
+     (not yet exposed via HTTP — future endpoint)
+
+   Returns {:heads [...] :head-count N :missing [...]}."
+  []
+  (let [;; Portfolio Inference head
+        portfolio-state (http-get-json (str futon3c-url "/api/alpha/portfolio/state"))
+        portfolio-head (when (and portfolio-state (:ok portfolio-state))
+                         (let [s (:state portfolio-state)]
+                           {:head-id :portfolio-inference
+                            :source "futon3c /api/alpha/portfolio/state"
+                            :available? true
+                            :state {:mode (get-in s [:mu :mode])
+                                    :urgency (get-in s [:mu :urgency])
+                                    :tau (:tau s)
+                                    :step-count (:step-count s)
+                                    :focus (get-in s [:mu :focus])
+                                    :channels (get-in s [:mu :sens])}
+                            :judgement (let [mode (get-in s [:mu :mode])
+                                            urgency (get-in s [:mu :urgency] 0)]
+                                         {:mode mode
+                                          :urgency urgency
+                                          :summary (str mode
+                                                        ", urgency " (format "%.2f" (double urgency))
+                                                        ", tau " (format "%.2f" (double (:tau s 1.0))))})}))
+        ;; Mission AIF Head — not yet exposed via HTTP
+        ;; When M-aif-head wires an endpoint, add it here.
+        mission-head {:head-id :mission-aif-head
+                      :source "futon3c aif/mission_head.clj"
+                      :available? false
+                      :note "Exists in code but no HTTP endpoint yet. Needs wiring."}
+        ;; Session AIF Head — doesn't exist yet
+        ;; Per M-aif-head, each session should have one.
+        session-head {:head-id :session-aif-head
+                      :source "not yet built"
+                      :available? false
+                      :note "Per M-aif-head, every peripheral needs an AIF head. Chat sessions don't have one yet."}
+        heads (filterv :available? [portfolio-head mission-head session-head])
+        missing (filterv (complement :available?) [portfolio-head mission-head session-head])]
+    {:heads heads
+     :head-count (count heads)
+     :missing missing
+     :missing-count (count missing)}))
+
+;; --- Invariant inventory ---
+
+(def ^:private invariant-model-path
+  (str home "/code/futon4/futon-stack-invariant-model.edn"))
+
+(defn load-invariant-inventory
+  "Load the structural law inventory from futon-stack-invariant-model.edn.
+
+   Returns the invariant layers and families with their operational/candidate status.
+   The inventory is the war machine's structural judgement input — it tells us
+   what properties the system claims to maintain and whether they're enforced.
+
+   Also queries GET /api/alpha/invariants (when available) for live violation
+   data from the invariant runner.
+
+   cf. structural-law-inventory.sexp (source of truth)
+   cf. futon4/futon-stack-invariant-model.edn (machine-readable hypergraph)"
+  []
+  (when-let [model (read-edn-file invariant-model-path)]
+    (let [families (:families model [])
+          invariants (:invariants model [])
+          operational (filterv #(= :operational (:status %)) families)
+          candidate (filterv #(= :candidate (:status %)) families)
+          ;; Try to get live invariant runner results.
+          ;; First try the dedicated endpoint, then fall back to /eval (Drawbridge).
+          live-data (or (http-get-json (str futon3c-url "/api/alpha/invariants"))
+                        (try
+                          (let [token (try (str/trim (slurp (str home "/code/futon3c/.admintoken")))
+                                          (catch Exception _ nil))
+                                drawbridge-port (or (System/getenv "FUTON3C_DRAWBRIDGE_PORT") "6768")
+                                eval-url (str "http://localhost:" drawbridge-port "/eval")]
+                            (when token
+                              (let [clj-code (str "(let [domains (vec (keep (fn [[did ns-sym]]"
+                                                  " (try (require ns-sym)"
+                                                  " (let [bd (resolve (symbol (str ns-sym) \"build-db\"))"
+                                                  " qv (resolve (symbol (str ns-sym) \"query-violations\"))]"
+                                                  " (when (and bd qv) {:domain-id did :build-db @bd :query-violations @qv}))"
+                                                  " (catch Exception _ nil)))"
+                                                  " [[:agency 'futon3c.agency.logic]"
+                                                  " [:tickle 'futon3c.agents.tickle-logic]"
+                                                  " [:proof 'futon3c.peripheral.proof-logic]"
+                                                  " [:mission 'futon3c.peripheral.mission-logic]"
+                                                  " [:codex 'futon3c.agents.codex-code-logic]]))"
+                                                  " agg ((resolve 'futon3c.logic.invariant-runner/run-aggregate) {} domains)]"
+                                                  " {:ok true :summary (:summary agg)"
+                                                  " :domains (mapv (fn [r] {:domain (:domain-id r) :state (:state r)"
+                                                  " :has-violations (:has-violations? r)"
+                                                  " :violation-categories (when (:has-violations? r)"
+                                                  " (into {} (for [[k v] (:violations r) :when (seq v)] [k (count v)])))})"
+                                                  " (:reports agg))})")
+                                    resp (http/post eval-url
+                                                    {:headers {"Content-Type" "text/plain"
+                                                               "x-admin-token" token}
+                                                     :body clj-code
+                                                     :timeout 10000
+                                                     :throw false})]
+                                (when (= 200 (:status resp))
+                                  ;; eval returns application/edn, not JSON
+                                  (let [result (read-string (:body resp))]
+                                    (when (:ok result)
+                                      (:value result)))))))
+                          (catch Exception _ nil)))
+          live-summary (when (and live-data (:ok live-data))
+                         (:summary live-data))
+          live-domains (when (and live-data (:ok live-data))
+                         (:domains live-data))]
+      ;; Extract individual candidate invariants for the visualiser
+      (let [individual-candidates
+            (vec (mapcat (fn [fam]
+                           (map (fn [inv-kw]
+                                  {:id inv-kw
+                                   :name (name inv-kw)
+                                   :family-id (:id fam)
+                                   :layer (:layer fam)})
+                                (or (:candidate-invariants fam) [])))
+                         candidate))]
+      {:layers invariants
+       :families families
+       :operational-families operational
+       :candidate-families candidate
+       :individual-candidates individual-candidates
+       :operational-count (count operational)
+       :candidate-count (count candidate)
+       :total-candidate-invariants (count individual-candidates)
+       ;; Live runner data (nil if endpoint not available)
+       :live-available? (boolean live-data)
+       :live-summary live-summary
+       :live-domains live-domains}))))
+
+;; --- Invariant → Support/Attack enrichment ---
+
+(defn enrich-support-attack
+  "Overlay invariant and AIF head health onto the support/attack claims.
+
+   The structural claims (S1-S5, A1-A4) from the holistic argument are
+   normally matched by keyword in evidence text. But invariant health and
+   AIF head coverage are *direct* evidence for several claims:
+
+   S1 (Evidence discipline works):
+     - 9 operational invariant families = the system checks itself
+     - Evidence for S1 = operational-count / total-families
+
+   S5 (Reflexive architecture is rare):
+     - The system can describe itself via the invariant model
+     - Evidence for S5 = (operational + candidate with model) / total
+
+   A1 (Complexity cost):
+     - Candidate families in active domains = unwired structural debt
+     - Evidence for A1 = candidate-count in active repos
+
+   A2 (Solo-developer bottleneck):
+     - Missing AIF heads = coordination gaps requiring manual bridging
+     - Evidence for A2 = missing-head-count
+
+   Returns enriched support-attack data with :invariant-evidence per claim."
+  [support-attack inventory aif-heads]
+  (let [op-count (:operational-count inventory 0)
+        cand-count (:candidate-count inventory 0)
+        total (+ op-count cand-count)
+        missing-heads (:missing-count aif-heads 0)
+        head-count (:head-count aif-heads 0)
+        ;; Compute invariant-derived evidence per claim
+        inv-evidence
+        {:S1 {:source :invariant-model
+              :signal (if (pos? total) (/ (double op-count) total) 0.0)
+              :detail (str op-count "/" total " families operational")}
+         :S5 {:source :invariant-model
+              :signal (if (pos? total)
+                        (/ (double total) 18.0) ;; 18 = approximate max families
+                        0.0)
+              :detail (str total " families modelled (op:" op-count " cand:" cand-count ")")}
+         :A1 {:source :invariant-model
+              :signal (if (pos? total) (/ (double cand-count) total) 0.0)
+              :detail (str cand-count " candidate families unwired")}
+         :A2 {:source :aif-heads
+              :signal (if (pos? (+ head-count missing-heads))
+                        (/ (double missing-heads) (+ head-count missing-heads))
+                        0.0)
+              :detail (str missing-heads " AIF heads missing, " head-count " available")}}
+        ;; Enrich each claim
+        enriched-claims (mapv (fn [claim]
+                                (let [cid (:claim-id claim)
+                                      inv (get inv-evidence cid)]
+                                  (if inv
+                                    (assoc claim :invariant-evidence inv)
+                                    claim)))
+                              (:claims support-attack))
+        ;; Recompute coverage including invariant evidence
+        support-claims (filter #(= :support (:type %)) enriched-claims)
+        attack-claims (filter #(= :attack (:type %)) enriched-claims)
+        has-evidence? (fn [c]
+                        (or (pos? (:evidence-count c 0))
+                            (when-let [inv (:invariant-evidence c)]
+                              (> (:signal inv) 0.3))))]
+    (assoc support-attack
+           :claims enriched-claims
+           :support-coverage-enriched
+           (if (seq support-claims)
+             (/ (double (count (filter has-evidence? support-claims)))
+                (count support-claims))
+             0.0)
+           :attack-coverage-enriched
+           (if (seq attack-claims)
+             (/ (double (count (filter has-evidence? attack-claims)))
+                (count attack-claims))
+             0.0))))
+
+;; --- Priority computation (the judge) ---
+
+(defn- channel-priorities
+  "Rank observation channels by gap size. Largest gaps = highest priority."
+  [free-energy]
+  (->> (:per-channel free-energy)
+       (sort-by (comp :gap val) >)
+       (filterv (fn [[_ v]] (pos? (:gap v))))
+       (map-indexed (fn [i [ch v]]
+                      {:rank (inc i)
+                       :type :channel-gap
+                       :id ch
+                       :gap (:gap v)
+                       :value (:value v)
+                       :preferred (:preferred v)
+                       :summary (str (name ch) " at " (format "%.2f" (double (:value v)))
+                                     ", preferred " (pr-str (:preferred v)))}))))
+
+(defn- invariant-priorities
+  "Identify candidate invariant families relevant to current activity.
+   Candidate families in active domains = structural debt."
+  [inventory mission-triage]
+  (let [active-repos (set (for [[repo cnt] (or (:by-repo mission-triage) {})
+                                :when (pos? cnt)]
+                            (str "R-" repo)))
+        candidate-fams (:candidate-families inventory [])]
+    (->> candidate-fams
+         (filter (fn [fam]
+                   ;; Family is relevant if any of its repos are active
+                   (seq (clojure.set/intersection
+                         (set (map str (:repos fam [])))
+                         active-repos))))
+         (mapv (fn [fam]
+                 {:type :unwired-invariant-family
+                  :id (:id fam)
+                  :layer (:layer fam)
+                  :question (:question fam)
+                  :candidate-count (count (or (:candidate-invariants fam) []))
+                  :active-repos (vec (clojure.set/intersection
+                                      (set (map str (:repos fam [])))
+                                      active-repos))
+                  :summary (str (name (:id fam)) " (" (name (:layer fam))
+                                "): " (:question fam))})))))
+
+(defn- head-priorities
+  "Identify missing AIF heads and head-level signals."
+  [aif-heads]
+  (let [missing (:missing aif-heads [])
+        head-signals (for [h (:heads aif-heads [])
+                           :let [urgency (get-in h [:state :urgency] 0)]
+                           :when (> urgency 0.6)]
+                       {:type :head-signal
+                        :id (:head-id h)
+                        :urgency urgency
+                        :summary (get-in h [:judgement :summary] (str (:head-id h)))})]
+    (concat
+     ;; Missing heads are structural gaps
+     (map (fn [h]
+            {:type :missing-head
+             :id (:head-id h)
+             :note (:note h)
+             :summary (str "No AIF head: " (name (:head-id h))
+                           " — " (:note h))})
+          missing)
+     head-signals)))
+
+(defn- mission-priorities
+  "Identify mission-level concerns: stalls, abandoned work, blocked chains."
+  [mission-triage portfolio-step]
+  (let [abandoned (:abandoned-missions mission-triage [])
+        ;; Critical path from portfolio step
+        critical-path (get-in portfolio-step [:structure :critical-path] [])
+        blocked-pairs (get-in portfolio-step [:structure :blocked-pairs] [])]
+    (concat
+     ;; Abandoned missions
+     (when (> (count abandoned) 5)
+       [{:type :mission-debt
+         :id :abandoned-missions
+         :count (count abandoned)
+         :summary (str (count abandoned) " abandoned missions (in-progress, no recent commits)")}])
+     ;; Critical path missions
+     (map (fn [{:keys [mission depth]}]
+            {:type :critical-path
+             :id (keyword mission)
+             :depth depth
+             :summary (str mission " blocks " depth " other mission(s)")})
+          critical-path)
+     ;; Blocked pairs
+     (map (fn [[a b]]
+            {:type :blocked-pair
+             :id (keyword (str a "→" b))
+             :blocker a
+             :blocked b
+             :summary (str b " blocked by " a)})
+          blocked-pairs))))
+
+(defn judge
+  "The war machine's inference step.
+
+   Composes observations, AIF head states, and invariant inventory
+   into a ranked priority list with free energy decomposition.
+
+   This is the function the previous session identified as missing:
+   the bridge between 'BUILD 0.74' and 'build THIS because THAT'.
+
+   Returns {:mode :free-energy :priorities :losses :heads :invariants}."
+  [scan-data]
+  (let [obs (observe scan-data)
+        free-energy (compute-free-energy obs)
+        mode (infer-mode obs)
+        aif-heads (scan-aif-heads)
+        inventory (load-invariant-inventory)
+        ;; Get portfolio step data for structural info
+        portfolio-step (try
+                         (let [resp (http/post (str futon3c-url "/api/alpha/portfolio/step")
+                                              {:headers {"Content-Type" "application/json"
+                                                         "Accept" "application/json"}
+                                                :body "{\"emit-evidence\":false}"
+                                                :timeout 10000
+                                                :throw false})]
+                           (when (= 200 (:status resp))
+                             (json/parse-string (:body resp) true)))
+                         (catch Exception _ nil))
+        ;; Enrich support/attack with invariant + head evidence
+        enriched-sa (enrich-support-attack
+                     (:support-attack scan-data) inventory aif-heads)
+        ;; Compute priorities from all sources
+        ch-pris (channel-priorities free-energy)
+        inv-pris (invariant-priorities inventory (:mission-triage scan-data))
+        hd-pris (head-priorities aif-heads)
+        ms-pris (mission-priorities (:mission-triage scan-data) portfolio-step)
+        ;; Merge and rank all priorities
+        all-priorities (->> (concat ch-pris inv-pris hd-pris ms-pris)
+                            (sort-by (fn [p]
+                                       ;; Sort: missing heads first (structural),
+                                       ;; then channel gaps (by gap size),
+                                       ;; then invariant families, then missions
+                                       (case (:type p)
+                                         :missing-head        0
+                                         :channel-gap         (- 1.0 (min 1.0 (:gap p 0)))
+                                         :unwired-invariant-family 2
+                                         :head-signal         3
+                                         :critical-path       4
+                                         :blocked-pair        5
+                                         :mission-debt        6
+                                         10)))
+                            (map-indexed (fn [i p] (assoc p :rank (inc i))))
+                            vec)
+        ;; Losses: avoided states that are currently active
+        losses (vec (concat
+                     (when (= mode (:strategic-mode avoided-states))
+                       [{:type :avoided-mode
+                         :mode mode
+                         :summary (str "System in avoided mode: " (name mode))}])
+                     (map (fn [ch]
+                            {:type :avoided-channel
+                             :channel ch
+                             :value (get obs ch 0.0)
+                             :range (get avoided-states ch)
+                             :summary (str (name ch) " at "
+                                           (format "%.2f" (double (get obs ch 0.0)))
+                                           " — in avoided range "
+                                           (pr-str (get avoided-states ch)))})
+                          (:avoided-active free-energy))))]
+    {:mode mode
+     :mode-prior (get mode-prior mode 0.0)
+     :free-energy free-energy
+     :priorities all-priorities
+     :priority-count (count all-priorities)
+     :losses losses
+     :loss-count (count losses)
+     :heads aif-heads
+     :invariants inventory
+     :support-attack-enriched enriched-sa
+     :observation obs}))
+
+;; ---------------------------------------------------------------------------
+;; Orchestrator
+;; ---------------------------------------------------------------------------
+
+(defn generate-war-machine
+  "Collect all strategic scans, run judgement layer, and render.
+   Returns {:data ... :judgement ... :markdown ...}."
+  [days]
+  (let [now (.toString (.toLocalDate (.atZone (Instant/now) tz)))
+        loop-health (scan-loop-health days)
+        support-attack (scan-support-attack days)
+        mission-triage (scan-mission-triage days)
+        graph (scan-graph days)
+        sessions (scan-sessions)
+        portfolio (scan-portfolio)
+        mission-detail (scan-mission-detail)
+        patterns (scan-patterns)
+        scan-data {:loop-health loop-health
+                   :support-attack support-attack
+                   :mission-triage mission-triage
+                   :graph graph
+                   :sessions sessions
+                   :portfolio portfolio
+                   :mission-detail mission-detail
+                   :patterns patterns}
+        ;; Run the judgement layer
+        judgement (judge scan-data)]
+    {:data scan-data
+     :judgement judgement
+     :markdown (render-war-machine {:loop-health loop-health
+                                    :support-attack support-attack
+                                    :mission-triage mission-triage
+                                    :graph graph
+                                    :portfolio portfolio
+                                    :judgement judgement
+                                    :now now :days days})}))
+
+;; ---------------------------------------------------------------------------
 ;; Main
 ;; ---------------------------------------------------------------------------
 
 (defn -main [& args]
   (let [days (if (seq args) (Integer/parseInt (first args)) 14)
-        {:keys [markdown data]} (generate-war-machine days)]
+        {:keys [markdown judgement]} (generate-war-machine days)]
     (println markdown)
     ;; Print observation vector summary
     (println "\n## Observation Vector\n")
-    (let [obs (observe data)]
+    (let [obs (:observation judgement)]
       (doseq [[k v] (sort-by key obs)]
         (println (str "  " (name k) ": " (format "%.2f" (double v))))))))
