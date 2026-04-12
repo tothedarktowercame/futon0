@@ -1153,6 +1153,27 @@
                              (:question fam) "\n")))
           (.append sb "\n"))))
 
+    ;; --- Portfolio Recommendation (adjacent-possible + EFE-ranked actions) ---
+    (when-let [pr (get-in data [:judgement :portfolio-recommendation])]
+      (.append sb "## Portfolio Recommendation\n\n")
+      (.append sb (str "**Action:** " (or (:action pr) "none") "\n\n"))
+      (when-let [rec (:recommendation pr)]
+        (.append sb (str "```\n" rec "```\n\n")))
+      (when (seq (:adjacent pr))
+        (.append sb "**Adjacent-possible missions** (structurally enabled):\n\n")
+        (doseq [m (:adjacent pr)]
+          (.append sb (str "- " (if (map? m) (:mission m) m) "\n")))
+        (.append sb "\n"))
+      (when (seq (:critical-path pr))
+        (.append sb "**Critical path** (blocking other missions):\n\n")
+        (.append sb (render-table
+                     ["Mission" "Blocks"]
+                     [:left :right]
+                     (mapv (fn [{:keys [mission depth]}]
+                             [mission (str depth " mission(s)")])
+                           (:critical-path pr))))
+        (.append sb "\n")))
+
     ;; --- Portfolio Inference (raw state for reference) ---
     (.append sb "## Portfolio Inference\n\n")
     (when-let [pf (:portfolio data)]
@@ -1837,6 +1858,12 @@
      :heads aif-heads
      :invariants inventory
      :support-attack-enriched enriched-sa
+     :portfolio-recommendation
+     (when portfolio-step
+       {:action (:action portfolio-step)
+        :recommendation (:recommendation portfolio-step)
+        :adjacent (get-in portfolio-step [:structure :adjacent] [])
+        :critical-path (get-in portfolio-step [:structure :critical-path] [])})
      :observation obs}))
 
 ;; ---------------------------------------------------------------------------
