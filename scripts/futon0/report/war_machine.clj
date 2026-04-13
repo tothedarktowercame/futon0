@@ -41,7 +41,7 @@
 (def ^:private futon3c-url
   (or (System/getenv "FUTON3C_EVIDENCE_BASE")
       (System/getenv "FUTON3C_SERVER")
-      "http://localhost:47070"))
+      (str "http://localhost:" (or (System/getenv "FUTON3C_PORT") "7070"))))
 (def ^:private tz (ZoneId/of "Europe/London"))
 (def ^:private futon5a-root (str home "/code/futon5a"))
 
@@ -936,6 +936,76 @@
     (catch Exception _ nil)))
 
 ;; ---------------------------------------------------------------------------
+;; Scan 10: Daily Scan Frames
+;;
+;; Reads structured frames from futon5a/data/frames/.
+;; These are the outputs of the daily scan pipeline (M-daily-scan).
+;; The war machine consumes frames to assess depositing activity,
+;; pipeline status, and cardinal direction trends.
+;;
+;; cf. futon5a/data/frame-schema.edn
+;; cf. futon7 bb daily-scan
+;; ---------------------------------------------------------------------------
+
+(def ^:private frames-dir
+  (str futon5a-root "/data/frames"))
+
+(defn scan-frames
+  "Load all frames from futon5a/data/frames/ and extract strategic signals.
+
+   Returns {:frames [...] :daily-scan-count N :latest-frame {...}
+            :depositing-signal float :cardinal-trend {...}}."
+  []
+  (try
+    (let [dir (java.io.File. frames-dir)]
+      (when (.exists dir)
+        (let [frame-files (->> (.listFiles dir)
+                               (filter #(str/ends-with? (.getName %) ".edn"))
+                               (sort-by #(.getName %))
+                               vec)
+              frames (mapv #(try (read-string (slurp %))
+                                (catch Exception _ nil))
+                           frame-files)
+              frames (filterv some? frames)
+              ;; Find daily scan frames specifically
+              daily-frames (filterv #(= :daily-scan (:frame/type %)) frames)
+              latest (last frames)
+              ;; Extract depositing signal from cardinal directions
+              depositing-signal (if-let [cd (:frame/cardinal-direction latest)]
+                                  (get cd :depositing 0.0)
+                                  0.0)
+              ;; Compute trend: average cardinal direction across daily frames
+              cardinal-trend (when (seq daily-frames)
+                               (let [n (count daily-frames)]
+                                 (reduce (fn [acc frame]
+                                           (let [cd (or (:frame/cardinal-direction frame) {})]
+                                             (-> acc
+                                                 (update :hermit + (get cd :hermit 0.0))
+                                                 (update :foraging + (get cd :foraging 0.0))
+                                                 (update :cargo + (get cd :cargo 0.0))
+                                                 (update :depositing + (get cd :depositing 0.0)))))
+                                         {:hermit 0.0 :foraging 0.0 :cargo 0.0 :depositing 0.0}
+                                         daily-frames)))
+              cardinal-avg (when cardinal-trend
+                             (let [n (max 1 (count daily-frames))]
+                               {:hermit (/ (:hermit cardinal-trend) n)
+                                :foraging (/ (:foraging cardinal-trend) n)
+                                :cargo (/ (:cargo cardinal-trend) n)
+                                :depositing (/ (:depositing cardinal-trend) n)}))]
+          {:frames-count (count frames)
+           :daily-scan-count (count daily-frames)
+           :latest-frame (select-keys latest [:frame/id :frame/timestamp
+                                              :frame/mode :frame/cardinal-direction
+                                              :frame/constraints])
+           :depositing-signal depositing-signal
+           :cardinal-trend cardinal-avg
+           ;; Pipeline status from latest frame
+           :pipeline-status (get-in latest [:frame/constraints :income-deadline :status])
+           ;; Daily scan streak
+           :scan-streak (get-in latest [:frame/constraints :daily-scan-streak :completed] 0)})))
+    (catch Exception _ nil)))
+
+;; ---------------------------------------------------------------------------
 ;; Renderer: markdown fallback
 ;;
 ;; The primary renderer is the Swing visualiser (war_machine_visual.clj).
@@ -1259,6 +1329,7 @@
    :sorry-count-norm      ;; open sorrys / 10 (capped at 1) — from sorry topology
    :coupling-density      ;; coupling edges / max edges [0,1] — from temporal analysis
    :ticks-firing-ratio    ;; firing ticks / total ticks [0,1] — from logic model
+   :depositing-signal     ;; depositing cardinal direction [0,1] — from daily scan frames
    ])
 
 (defn observe
@@ -1268,9 +1339,10 @@
    This is the war machine's g-observe: the bridge between
    raw scan data and the AIF loop."
   [data]
-  (let [{:keys [loop-health support-attack mission-triage graph]} data
+  (let [{:keys [loop-health support-attack mission-triage graph frames]} data
         {:keys [commit-percentages ticks]} (:dynamics graph {})
-        {:keys [summary]} graph]
+        {:keys [summary]} graph
+        depositing-signal (or (:depositing-signal frames) 0.0)]
     {:loop-health (:overall loop-health 0.0)
      :support-coverage (:support-coverage support-attack 0.0)
      :attack-coverage (:attack-coverage support-attack 0.0)
@@ -1293,7 +1365,8 @@
                                 firing (:ticks-firing summary 0)]
                             (if (pos? total)
                               (/ (double firing) total)
-                              0.0))}))
+                              0.0))
+     :depositing-signal depositing-signal}))
 
 (defn sense->vector
   "Convert observation map to ordered vector (for ML/AIF consumption).
@@ -1437,23 +1510,28 @@
         portfolio (get obs :portfolio-pct 0.0)
         loop-h (get obs :loop-health 0.0)
         active (get obs :active-repo-ratio 0.0)
-        ticks (get obs :ticks-firing-ratio 0.0)]
+        ticks (get obs :ticks-firing-ratio 0.0)
+        depositing (get obs :depositing-signal 0.0)]
     (cond
       ;; Dark: nothing happening
       (and (< active 0.2) (< loop-h 0.3))
       :dark
 
-      ;; Hermit: stack-dominated, no consulting
-      (and (> stack 0.7) (< consulting 0.05))
+      ;; Depositing: consulting active (commit-based or frame-based)
+      (or (> consulting 0.2) (> depositing 0.15))
+      :depositing
+
+      ;; Hermit: stack-dominated, no consulting AND no depositing signal
+      (and (> stack 0.7) (< consulting 0.05) (< depositing 0.05))
       :hermit
+
+      ;; Scanning: stack-dominated but daily scans active (transitional)
+      (and (> stack 0.7) (> depositing 0.0))
+      :scanning
 
       ;; Foraging-trapped: stuck on stack under math/portfolio pressure
       (and (> stack 0.5) (> ticks 0.5))
       :foraging-trapped
-
-      ;; Depositing: consulting active
-      (> consulting 0.2)
-      :depositing
 
       ;; Stagnant: surfaces used but not improving
       (and (> active 0.3) (< loop-h 0.5))
@@ -1883,6 +1961,7 @@
         portfolio (scan-portfolio)
         mission-detail (scan-mission-detail)
         patterns (scan-patterns)
+        frames (scan-frames)
         scan-data {:loop-health loop-health
                    :support-attack support-attack
                    :mission-triage mission-triage
@@ -1890,7 +1969,8 @@
                    :sessions sessions
                    :portfolio portfolio
                    :mission-detail mission-detail
-                   :patterns patterns}
+                   :patterns patterns
+                   :frames frames}
         ;; Run the judgement layer
         judgement (judge scan-data)]
     {:data scan-data
