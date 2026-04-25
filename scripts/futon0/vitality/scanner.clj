@@ -1,6 +1,6 @@
 (ns futon0.vitality.scanner
   "Emit a lightweight vitality snapshot for cron/systemd ingestion."
-  (:require [clojure.data.json :as json]
+  (:require [cheshire.core :as json]
             [clojure.java.shell :as shell]
             [clojure.string :as str])
   (:import (java.io File)
@@ -39,13 +39,13 @@
   (when (.exists path)
     (try
       (with-open [r (clojure.java.io/reader path)]
-        (json/read r :key-fn keyword))
+        (json/parse-stream r true))
       (catch Exception _ nil))))
 
 (defn- write-json-file [^File path data]
   (let [parent (.getParentFile path)]
     (when parent (.mkdirs parent)))
-  (spit path (json/write-str data)))
+  (spit path (json/generate-string data)))
 
 (defn- expand-path [raw]
   (let [expanded (-> raw
@@ -77,6 +77,112 @@
     (let [{:keys [exit out]} (apply shell/sh "git" "-C" (.getPath root) args)]
       (when (zero? exit) out))
     (catch Exception _ nil)))
+
+;; ---------------------------------------------------------------------------
+;; Evidence probe (I-evidence-per-turn surface check)
+;;
+;; Probes futon1a's /api/alpha/evidence endpoint to record the count of
+;; entries since the previous scan. Lets a stack-hud-side check assert
+;; that evidence accumulated when REPL turns happened — catching silent
+;; persistence failures (atom store, swallowed catch, dead JVM) at the
+;; surface, not the source. See E-stack-hud-cleanup in
+;; futon3c/holes/missions/M-repl-wins-over-cli.md.
+;; ---------------------------------------------------------------------------
+
+(def ^:private default-evidence-url
+  (or (System/getenv "FUTON1A_URL") "http://localhost:7071"))
+
+(def ^:private evidence-probe-timeout-ms 3000)
+(def ^:private evidence-probe-limit 1000)
+
+(defn- url-encode [s]
+  (java.net.URLEncoder/encode (str s) "UTF-8"))
+
+(defn- http-get-json
+  "GET URL-STR with a short timeout. Returns {:status :body :elapsed-ms}
+   or {:error <msg> :elapsed-ms}. Designed to work in plain Clojure and
+   under Babashka without external deps."
+  [url-str timeout-ms]
+  (let [start (System/nanoTime)]
+    (try
+      (let [^java.net.HttpURLConnection conn
+            (doto ^java.net.HttpURLConnection (.openConnection (java.net.URL. url-str))
+              (.setRequestMethod "GET")
+              (.setRequestProperty "Accept" "application/json")
+              (.setConnectTimeout (int timeout-ms))
+              (.setReadTimeout (int timeout-ms)))]
+        (try
+          (let [code (.getResponseCode conn)
+                stream (if (>= code 400)
+                         (.getErrorStream conn)
+                         (.getInputStream conn))
+                body (when stream (slurp stream))
+                elapsed-ms (/ (double (- (System/nanoTime) start)) 1.0e6)]
+            {:status code :body body :elapsed-ms elapsed-ms})
+          (finally (.disconnect conn))))
+      (catch Exception e
+        (let [elapsed-ms (/ (double (- (System/nanoTime) start)) 1.0e6)]
+          {:error (.getMessage e)
+           :exception-class (.getName (class e))
+           :elapsed-ms elapsed-ms})))))
+
+(defn- evidence-snapshot
+  "Probe futon1a for evidence accumulation since the previous scan.
+
+   PREVIOUS is the prior latest_scan.json contents (or nil on first run).
+   Returns a map with one of:
+     - happy path keys: probe_at, since_ts, delta, latest_at, probe_ms, url, truncated?
+     - first-run keys:  probe_at, bootstrap (true), latest_at?, probe_ms, url
+     - error keys:      probe_at, error {:kind :reason}, probe_ms, url"
+  [now-str previous]
+  (let [base default-evidence-url
+        prev-evidence (some-> previous :evidence)
+        since-ts (or (:probe_at prev-evidence)
+                     (get prev-evidence "probe_at"))
+        url (str base "/api/alpha/evidence?limit=" evidence-probe-limit
+                 (when since-ts
+                   (str "&since=" (url-encode since-ts))))
+        result (http-get-json url evidence-probe-timeout-ms)
+        probe-at now-str]
+    (cond
+      (:error result)
+      {"probe_at" probe-at
+       "url" base
+       "probe_ms" (Double/parseDouble (format "%.1f" (:elapsed-ms result)))
+       "error" {"kind" "http"
+                "reason" (:error result)
+                "exception_class" (:exception-class result)}}
+
+      (not= 200 (:status result))
+      {"probe_at" probe-at
+       "url" base
+       "probe_ms" (Double/parseDouble (format "%.1f" (:elapsed-ms result)))
+       "error" {"kind" "http-status"
+                "status" (:status result)
+                "reason" (str "HTTP " (:status result))}}
+
+      :else
+      (let [parsed (try
+                     (json/parse-string (:body result) true)
+                     (catch Exception e {:parse-error (.getMessage e)}))
+            entries (or (:entries parsed) [])
+            count* (count entries)
+            latest-at (some-> entries first :evidence/at)]
+        (if (:parse-error parsed)
+          {"probe_at" probe-at
+           "url" base
+           "probe_ms" (Double/parseDouble (format "%.1f" (:elapsed-ms result)))
+           "error" {"kind" "parse"
+                    "reason" (:parse-error parsed)}}
+          (cond-> {"probe_at" probe-at
+                   "url" base
+                   "probe_ms" (Double/parseDouble (format "%.1f" (:elapsed-ms result)))
+                   "latest_at" latest-at}
+            since-ts            (assoc "since_ts" since-ts
+                                       "delta" count*)
+            (nil? since-ts)     (assoc "bootstrap" true)
+            (= count* evidence-probe-limit)
+                                (assoc "truncated" true)))))))
 
 (defn- git-latest-activity-ms [^File root]
   (when (and root (.exists root) (.isDirectory root)
@@ -238,7 +344,7 @@
                              (or (= fmt "jsonl")
                                  (and (= fmt "auto") (str/starts-with? trimmed "{")))
                              (try
-                               (let [payload (json/read-str trimmed :key-fn keyword)]
+                               (let [payload (json/parse-string trimmed true)]
                                  (get payload (keyword timestamp-field)))
                                (catch Exception _ trimmed))
                              :else trimmed)]
@@ -324,23 +430,26 @@
                                          "tatami" nil
                                          "output" (.getPath default-output)})
         now (Instant/now)
+        output-path (or output
+                        (some-> (:output cfg) expand-path)
+                        default-output)
+        previous (read-json-file output-path)
         lookback (int (or (:lookback_hours cfg) 24))
         filesystem (mapv #(scan-filesystem % now lookback) (or (:filesystem cfg) []))
         tatami (when-let [tatami-cfg (:tatami cfg)]
                  (scan-tatami tatami-cfg now lookback))
         storage (summarize-storage (:storage_status cfg))
         futon-activity (scan-futon-activity now)
+        evidence (evidence-snapshot (.toString now) previous)
         summary (cond-> {"generated_at" (.toString now)
                          "lookback_hours" lookback
                          "filesystem" filesystem
                          "tatami" tatami
                          "futon_activity" futon-activity
-                         "futon_activity_window_hours" futon-liveness-window-hours}
-                  storage (assoc "storage_status" storage))
-        output-path (or output
-                        (some-> (:output cfg) expand-path)
-                        default-output)]
+                         "futon_activity_window_hours" futon-liveness-window-hours
+                         "evidence" evidence}
+                  storage (assoc "storage_status" storage))]
     (when output-path
       (write-json-file output-path summary))
     (when-not quiet
-      (println (json/write-str summary)))))
+      (println (json/generate-string summary)))))
