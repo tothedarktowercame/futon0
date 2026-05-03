@@ -49,6 +49,16 @@ Plus the predecessor four:
 
 Nine shapes ≈ minimum cognitive faculties of a self-maintaining agent. Each shape recurs across artifact-classes when shape-first IDENTIFY is applied — strong signal that these are the geodesics of "what an agent needs to be one," not arbitrary designer choices.
 
+**Plus one tenth shape added 2026-05-03 via M-bounded-in-flight-state**, where the existing nine were all *static-binding* (ok/violation) and the apparatus needed a *graduated-drive* faculty for fast-cadence artifact-classes:
+
+| Shape | Cognitive faculty | First operational sibling |
+|---|---|---|
+| `metabolic-balance` | **allostatic homeostasis** — knowing the system's current mana balance and its trajectory; rising felt-pressure when block-closure is overdue | `metabolic-balance/working-tree` |
+
+Under the unified read (per `library/invariant-coherence/drain-channel-shape.flexiarg`), the existing `bounded-disposition` siblings (branch, mission-doc, stash) are *single-tier instances* of `metabolic-balance`'s faculty: their default-disposition counts are drains; their non-default classifications are partial recoveries; their full retirements are awards. No structural change to the existing operational siblings is implied — this is a strict generalisation. `metabolic-balance/working-tree` is the first *graduated-tier* sibling (continuous drive across <silent | advisory | high | stop-the-line>); future siblings (mission-proliferation, session-sprawl, branch/PR ahead-of-origin, untriaged-evidence) enter as their hinges open.
+
+Ten shapes — nine static-binding faculties plus one graduated-drive faculty — captures both the discrete invariants (is X bounded? is Y reachable? is Z singular?) and the continuous metabolic state (how much unfinished work is the system currently carrying, and is it earning awards faster than load accumulates?).
+
 ### What this mission must verify (the open questions)
 
 This is the slow, methodical work Joe named. Each is a verification predicate that must hold at completion, and each is itself a research surface.
@@ -223,6 +233,9 @@ flowchart LR
         CR[coverage-ratchet<br/>monotonic vigilance]
         FC[family-canary<br/>per-cycle pulse]
     end
+    subgraph S3[Tenth shape — graduated-drive<br/>added 2026-05-03]
+        MB[metabolic-balance<br/>allostatic homeostasis]
+    end
 
     Sub --> Sub_a["obsolescence-recognition/autostash<br/>:operational"]
     Sub --> Sub_b["obsolescence-recognition/deferred-stub<br/>:operational (recursion-guarded 2026-05-02)"]
@@ -241,15 +254,22 @@ flowchart LR
     SSW --> SSW_b["state-snapshot-witness/registry<br/>:operational-when-enabled"]
     SSW --> SSW_c["state-snapshot-witness/repo-refs<br/>:operational-when-enabled"]
     SSW --> SSW_d["state-snapshot-witness/hud-render<br/>:operational-when-enabled"]
+    MB --> MB_a["metabolic-balance/working-tree<br/>:operational-when-enabled<br/>(graduated tier; M-bounded-in-flight-state 2026-05-03)"]
+    BD -.harmolodic reread.-> MB
+    BD_a -.single-tier instance of.-> MB
+    BD_b -.single-tier instance of.-> MB
+    BD_c -.single-tier instance of.-> MB
 
     classDef shapeNew fill:#1e3a8a,stroke:#93c5fd,color:#fff
     classDef shapeOld fill:#5b21b6,stroke:#c4b5fd,color:#fff
+    classDef shapeTenth fill:#831843,stroke:#fbcfe8,color:#fff
     classDef opStrict fill:#14532d,stroke:#86efac,color:#fff
     classDef opEnabled fill:#713f12,stroke:#fde047,color:#fff
     class Sub,BD,SL,RB,SSW shapeNew
     class SBoun,EPT,CR,FC shapeOld
+    class MB shapeTenth
     class Sub_a,Sub_b,Sub_c,RB_a,RB_b,RB_c,RB_d opStrict
-    class BD_a,BD_b,BD_c,SL_a,SL_b,SL_c,SSW_a,SSW_b,SSW_c,SSW_d opEnabled
+    class BD_a,BD_b,BD_c,SL_a,SL_b,SL_c,SSW_a,SSW_b,SSW_c,SSW_d,MB_a opEnabled
 ```
 
 **Read this as:** today the skeleton is **fully wired in form** (every cognitive-faculty shape has at least one operational-or-better sibling) but **not yet uniformly binding** (most siblings are `:operational-when-enabled`). The Q1 verification — "are these really invariants?" — is the work of moving each yellow node into green; that requires both the apparatus and the operator's habits to make violation structurally impossible.
