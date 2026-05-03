@@ -29,7 +29,7 @@
 (def ^:private futon3c-url
   (or (System/getenv "FUTON3C_EVIDENCE_BASE")
       (System/getenv "FUTON3C_SERVER")
-      "http://localhost:47070"))
+      (str "http://localhost:" (or (System/getenv "FUTON3C_PORT") "7070"))))
 (def ^:private tz (ZoneId/of "Europe/London"))
 
 (def ^:private git-repos

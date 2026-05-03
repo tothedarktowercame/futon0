@@ -39,3 +39,41 @@
             (should (equal (plist-get (plist-get data :nested) :items) '(1 2)))
             (should-not (plist-get (plist-get data :nested) :missing))))
       (delete-file path))))
+
+(ert-deftest stack-hud-briefing-finds-claude-in-extra-exec-path ()
+  (let* ((dir (make-temp-file "stack-hud-bin-" t))
+         (program (expand-file-name "claude" dir)))
+    (unwind-protect
+        (progn
+          (with-temp-file program
+            (insert "#!/bin/sh\nexit 0\n"))
+          (set-file-modes program #o755)
+          (let ((stack-hud-briefing-claude-command "claude")
+                (stack-hud-briefing-extra-exec-path (list dir))
+                (exec-path nil)
+                (process-environment '("PATH=/stack-hud/no-such-dir")))
+            (should (equal (stack-hud--briefing-claude-program) program))))
+      (delete-directory dir t))))
+
+(ert-deftest stack-hud-briefing-generate-missing-command-does-not-signal ()
+  (let ((stack-hud-briefing-claude-command "stack-hud-missing-claude")
+        (stack-hud-briefing-extra-exec-path nil)
+        (stack-hud--briefing-cache nil)
+        (stack-hud--briefing-generating nil)
+        (stack-hud--briefing-last-error nil)
+        (exec-path nil)
+        (process-environment '("PATH=/stack-hud/no-such-dir")))
+    (should-not (stack-hud--briefing-generate))
+    (should-not stack-hud--briefing-generating)
+    (should (string-match-p "Cannot find Claude CLI"
+                            stack-hud--briefing-last-error))))
+
+(ert-deftest stack-hud-briefing-insert-renders-command-error ()
+  (let ((stack-hud--briefing-cache nil)
+        (stack-hud--briefing-generating nil)
+        (stack-hud--briefing-last-error "Cannot find Claude CLI"))
+    (with-temp-buffer
+      (my-chatgpt-shell--insert-stack-briefing)
+      (let ((text (buffer-string)))
+        (should (string-match-p "Briefing unavailable" text))
+        (should (string-match-p "Cannot find Claude CLI" text))))))

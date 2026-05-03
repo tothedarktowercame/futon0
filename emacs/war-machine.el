@@ -16,7 +16,7 @@
   :group 'tools)
 
 (defcustom war-machine-script-dir
-  (expand-file-name "~/code/futon0/scripts")
+  (expand-file-name "~/code/futon2/scripts")
   "Directory containing the war machine babashka scripts."
   :type 'directory
   :group 'war-machine)
@@ -78,7 +78,7 @@ With prefix arg DAYS, override the lookback window."
     (message "War Machine: scanning (%d-day window)..." d)
     (setq war-machine--process
           (start-process "war-machine" proc-buf
-                         "bb" "-cp" "." "-m" "futon0.report.war-machine"
+                         "bb" "-cp" "." "-m" "futon2.report.war-machine"
                          (number-to-string d)))
     (set-process-sentinel war-machine--process #'war-machine--sentinel)))
 

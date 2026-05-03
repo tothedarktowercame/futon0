@@ -1,10 +1,12 @@
 {:paths ["scripts"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
         org.babashka/http-client {:mvn/version "0.4.22"}
-        cheshire/cheshire {:mvn/version "5.13.0"}}
+        cheshire/cheshire {:mvn/version "5.13.0"}
+        futon2/futon2 {:local/root "../futon2"}}
  :aliases
- {:war-machine {:main-opts ["-m" "futon0.report.war-machine-visual"]}
-  :war-machine-text {:main-opts ["-m" "futon0.report.war-machine"]}
+ {:war-machine {:main-opts ["-m" "futon2.report.war-machine-visual"]}
+  :war-machine-text {:main-opts ["-m" "futon2.report.war-machine"]}
+  :pattern-activation {:main-opts ["-m" "futon0.report.pattern-activation-visual"]}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}

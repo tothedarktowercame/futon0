@@ -12,7 +12,7 @@
 ;;; Configuration
 
 (defgroup joe-hud nil
-  "Joe's behavioral HUD."
+  "Joe's behavioral HUD. Good for health, bad for education."
   :group 'tools)
 
 (defcustom joe-hud-script-dir
@@ -36,6 +36,8 @@
 (defvar joe-hud--process nil
   "Running HUD process, if any.")
 
+;; Table alignment is done in Clojure to avoid markdown-mode bugs.
+
 (defun joe-hud--render-buffer (output)
   "Display OUTPUT in the HUD buffer with markdown fontification."
   (let ((buf (get-buffer-create joe-hud-buffer-name)))
@@ -44,13 +46,13 @@
         (erase-buffer)
         (insert output)
         (goto-char (point-min))
-        ;; Use markdown-mode if available, otherwise fundamental
+        ;; Activate markdown-mode first so table alignment works
+        (when (fboundp 'markdown-mode)
+          (markdown-mode))
+        ;; Now switch to view mode or lock read-only
         (if (fboundp 'markdown-view-mode)
             (markdown-view-mode)
-          (when (fboundp 'markdown-mode)
-            (markdown-mode))
-          (setq buffer-read-only t))
-        (setq buffer-read-only t)))
+          (setq buffer-read-only t))))
     (display-buffer buf '(display-buffer-reuse-window))))
 
 (defun joe-hud--sentinel (proc event)
@@ -88,6 +90,8 @@ With prefix arg DAYS, override the lookback window."
   "Regenerate the HUD with the same window."
   (interactive)
   (joe-hud joe-hud-days))
+
+(defun joe-hud-testing () (interactive) "well")
 
 (provide 'joe-hud)
 ;;; joe-hud.el ends here

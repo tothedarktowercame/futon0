@@ -19,6 +19,22 @@
 
 (setq stack-hud-services-detail 'names)
 
+;; Per-session Claude + Codex token burndown (Stack HUD `usage' block + Arxana
+;; Browser Sessions headline). See ~/code/algorithms/current-usage-report.md.
+(require 'usage-report)
+
+;; `stack-hud-blocks' is a defcustom whose default already includes `usage'.
+;; If a previously-saved value pre-dates that addition, splice the block in
+;; after `services' so the HUD picks it up without a customize roundtrip.
+(unless (cl-find 'usage stack-hud-blocks
+                 :key (lambda (b) (plist-get b :key)))
+  (let* ((tail (cdr (cl-member 'services stack-hud-blocks
+                               :key (lambda (b) (plist-get b :key)))))
+         (head (cl-subseq stack-hud-blocks 0
+                          (- (length stack-hud-blocks) (length tail)))))
+    (setq stack-hud-blocks
+          (append head '((:key usage :enabled t)) tail))))
+
 ;; Zoom R4 ingest metadata lives in storage (override here for local tools).
 (setenv "ZOOM_SYNC_DEST" "/home/joe/code/storage/zoomr4")
 (setenv "ZOOM_SYNC_META_DIR" "/home/joe/code/storage/zoomr4/meta")
@@ -39,6 +55,7 @@
         "../futon3c/emacs/claude-repl.el"
         "../futon3c/emacs/codex-repl.el"
         "../futon3c/emacs/futon3c-code-blocks.el"
+        "../futon3c/emacs/agent-mission-control.el"
         "../futon4/dev/bootstrap.el"
         "../futon4/dev/arxana-article.el"
         "../futon4/dev/arxana-browser-docbook.el"
@@ -48,6 +65,7 @@
         "../futon4/dev/arxana-browser-code.el"
         "../futon4/dev/arxana-browser-patterns.el"
         "../futon4/dev/arxana-browser-patterns-hud.el"
+        "../futon4/dev/arxana-browser-pattern-activation.el"
         "../futon4/dev/arxana-browser-forum.el"
         "../futon4/dev/arxana-browser.el"
         "../futon4/dev/arxana-docbook-core.el"
@@ -77,7 +95,11 @@
         "../futon0/contrib/hud-service.el"
         "../futon0/contrib/stack-entry.el"
         "../futon0/contrib/stack-hud.el"
-        "../futon0/contrib/stack-render.el"))
+        "../futon0/contrib/stack-render.el"
+        "../futon0/contrib/usage-report.el"
+        "../futon0/emacs/joe-hud.el"
+	"../futon4/dev/arxana-browser-songs.el"
+	"../futon4/dev/arxana-browser-chorus.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
@@ -103,6 +125,7 @@
 (require 'claude-repl)
 (require 'codex-repl)
 (require 'futon3c-code-blocks)
+(require 'agent-mission-control)
 
 ;;; Futon 4:
 
@@ -165,6 +188,9 @@
       arxana-data-constraints-enable t
       arxana-window-constraints-failure-action 'error
       arxana-data-constraints-failure-action 'error)
+
+(setq arxana-lab-futon1-server "http://localhost:7071/api/alpha")
+(setq arxana-evidence-server   "http://localhost:7071/api/alpha")
 
 (provide 'futon-config)
 

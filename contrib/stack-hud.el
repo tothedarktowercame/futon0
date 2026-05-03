@@ -155,6 +155,7 @@ The value is passed to `display-buffer-in-side-window'."
 (defcustom stack-hud-blocks
   '((:key liveness     :enabled t)
     (:key services     :enabled t)
+    (:key usage        :enabled t)
     (:key hot-reload   :enabled t)
     (:key voice        :enabled t)
     (:key musn         :enabled nil)
@@ -162,6 +163,7 @@ The value is passed to `display-buffer-in-side-window'."
     (:key pattern-sync :enabled nil)
     (:key focus        :enabled t)
     (:key vitality     :enabled t)
+    (:key evidence     :enabled t)
     (:key git          :enabled t)
     (:key boundary     :enabled t)
     (:key reminders    :enabled t)
@@ -174,6 +176,7 @@ Reorder the list to change display order.
 Available blocks:
   liveness     - Futon liveness status (f0, f1, etc.)
   services     - Local and remote service status
+  usage        - Per-session Claude + Codex token burndown (usage-report.el)
   hot-reload   - Emacs hot reload watcher status
   voice        - Voice typing status
   musn         - MUSN server status and activity
@@ -181,6 +184,7 @@ Available blocks:
   pattern-sync - Pattern sync with Futon1
   focus        - Focus/Profile from graph memory
   vitality     - Filesystem and Tatami vitality
+  evidence     - Evidence-store accumulation probe (futon1a XTDB delta)
   git          - Git streak and activity
   boundary     - Devmap boundary gaps
   reminders    - Upcoming reminders
@@ -1873,11 +1877,69 @@ Returns plist with :pending-count and :term-count or nil."
                          stack-hud-blocks)))
     (and block (plist-get block :enabled))))
 
+;; ============================================================================
+;; Evidence probe block (E-stack-hud-cleanup, Layer 1)
+;;
+;; Reads the :evidence key written into the vitality snapshot by
+;; futon0/scripts/futon0/vitality/scanner.bb's evidence-snapshot probe.
+;; Surfaces delta-since-last-scan, latest entry timestamp, probe latency,
+;; and HTTP / parse errors. Layer 2 (the reazon-based "delta=0 during
+;; active turn window" alarm) lives in the E-stack-hud-cleanup excursion.
+;; ============================================================================
+
+(defun stack-hud--evidence-format-iso (iso)
+  "Trim ISO timestamp ISO to HH:MM:SS for compact display."
+  (when (and iso (stringp iso) (>= (length iso) 19))
+    (substring iso 11 19)))
+
+(defun my-chatgpt-shell--insert-stack-evidence (vitality)
+  "Insert the evidence-probe section using VITALITY plist's :evidence key."
+  (when-let ((evidence (plist-get vitality :evidence)))
+    (insert "  Evidence probe:\n")
+    (let* ((url (plist-get evidence :url))
+           (probe-ms (plist-get evidence :probe_ms))
+           (err (plist-get evidence :error))
+           (latest (plist-get evidence :latest_at))
+           (since (plist-get evidence :since_ts))
+           (delta (plist-get evidence :delta))
+           (bootstrap (plist-get evidence :bootstrap))
+           (truncated (plist-get evidence :truncated))
+           (probe-suffix (if probe-ms (format " (probe %.0fms)" probe-ms) "")))
+      (cond
+       (err
+        (let ((kind (or (plist-get err :kind) "error"))
+              (reason (or (plist-get err :reason) "unknown")))
+          (insert (format "    ⚠ %s: %s | %s%s\n" kind reason (or url "?")
+                          probe-suffix))))
+
+       (bootstrap
+        (insert (format "    first scan, latest %s | %s%s\n"
+                        (or (stack-hud--evidence-format-iso latest) "n/a")
+                        (or url "?")
+                        probe-suffix)))
+
+       ((numberp delta)
+        (insert (format "    %s%d since %s%s | latest %s%s\n"
+                        (if (zerop delta) "" "+")
+                        delta
+                        (or (stack-hud--evidence-format-iso since) "?")
+                        (if truncated " (truncated)" "")
+                        (or (stack-hud--evidence-format-iso latest) "—")
+                        probe-suffix)))
+
+       (t
+        (insert (format "    no evidence data | %s%s\n"
+                        (or url "?")
+                        probe-suffix)))))
+    (insert "\n")))
+
 (defun stack-hud--block-render-fn (key)
   "Return the render function for block KEY."
   (pcase key
     ('liveness     #'my-chatgpt-shell--insert-stack-futon-liveness)
     ('services     #'my-chatgpt-shell--insert-stack-services)
+    ('usage        (when (require 'usage-report nil t)
+                     #'my-chatgpt-shell--insert-stack-usage))
     ('hot-reload   #'my-chatgpt-shell--insert-stack-hot-reload)
     ('voice        #'my-chatgpt-shell--insert-stack-voice)
     ('musn         #'my-chatgpt-shell--insert-stack-musn)
@@ -1885,6 +1947,7 @@ Returns plist with :pending-count and :term-count or nil."
     ('pattern-sync #'my-chatgpt-shell--insert-stack-pattern-sync)
     ('focus        #'my-chatgpt-shell--insert-stack-focus-profile)
     ('vitality     #'my-chatgpt-shell--insert-stack-vitality)
+    ('evidence     #'my-chatgpt-shell--insert-stack-evidence)
     ('git          #'my-chatgpt-shell--insert-stack-git)
     ('boundary     #'my-chatgpt-shell--insert-stack-boundary)
     ('reminders    #'my-chatgpt-shell--insert-stack-reminders)
@@ -1893,7 +1956,7 @@ Returns plist with :pending-count and :term-count or nil."
 
 (defun stack-hud--block-takes-arg-p (key)
   "Return non-nil if block KEY's render function takes an argument."
-  (memq key '(liveness focus vitality git boundary reminders)))
+  (memq key '(liveness focus vitality evidence git boundary reminders)))
 
 (defun stack-hud--block-arg (key stack)
   "Return the argument to pass to block KEY's render function."
@@ -1901,6 +1964,7 @@ Returns plist with :pending-count and :term-count or nil."
     ('liveness  (plist-get stack :vitality))
     ('focus     (plist-get stack :focus-profile))
     ('vitality  (plist-get stack :vitality))
+    ('evidence  (plist-get stack :vitality))
     ('git       (plist-get stack :git))
     ('boundary  (plist-get stack :boundary))
     ('reminders (plist-get stack :reminders))
@@ -2128,15 +2192,75 @@ With prefix argument, prompt for block to toggle."
   :type 'file
   :group 'tatami-integration)
 
-(defcustom stack-hud-briefing-claude-command "claude"
+(defcustom stack-hud-briefing-claude-command
+  (or (executable-find "claude")
+      (let ((candidate (expand-file-name "~/.local/bin/claude")))
+        (and (file-executable-p candidate) candidate))
+      "claude")
   "Command to invoke Claude CLI."
   :type 'string
+  :group 'tatami-integration)
+
+(defcustom stack-hud-briefing-extra-exec-path
+  (list (expand-file-name "~/.local/bin"))
+  "Extra directories to search for the Claude CLI.
+This is used when Emacs was launched with a smaller `exec-path' than the
+interactive shell."
+  :type '(repeat directory)
   :group 'tatami-integration)
 
 (defvar stack-hud--briefing-cache nil
   "In-memory cache of the current briefing text.")
 (defvar stack-hud--briefing-generating nil
   "Non-nil when a briefing generation is in flight.")
+(defvar stack-hud--briefing-last-error nil
+  "Most recent briefing generation error, or nil.")
+
+(defun stack-hud--briefing-path-env-dirs ()
+  "Return PATH directories from `process-environment'."
+  (when-let ((path (getenv "PATH")))
+    (seq-filter (lambda (dir) (not (string-empty-p dir)))
+                (parse-colon-path path))))
+
+(defun stack-hud--briefing-search-dirs ()
+  "Return executable search directories used by briefing generation."
+  (delete-dups
+    (seq-filter
+     (lambda (dir) (and (stringp dir) (not (string-empty-p dir))))
+     (append exec-path
+             (stack-hud--briefing-path-env-dirs)
+             (copy-sequence stack-hud-briefing-extra-exec-path)))))
+
+(defun stack-hud--briefing-find-executable (program)
+  "Find PROGRAM in the briefing executable search path."
+  (when (and (stringp program) (not (string-empty-p program)))
+    (cond
+     ((file-name-absolute-p program)
+      (and (file-executable-p program) program))
+     ((file-name-directory program)
+      (let ((path (expand-file-name program)))
+        (and (file-executable-p path) path)))
+     (t
+      (or (executable-find program)
+          (seq-some
+           (lambda (dir)
+             (let ((candidate (expand-file-name program dir)))
+               (and (file-executable-p candidate) candidate)))
+           (stack-hud--briefing-search-dirs)))))))
+
+(defun stack-hud--briefing-claude-program ()
+  "Return an executable Claude CLI path, or signal a clear error."
+  (let* ((program stack-hud-briefing-claude-command)
+         (resolved (stack-hud--briefing-find-executable program)))
+    (cond
+     (resolved resolved)
+     ((or (null program)
+          (and (stringp program) (string-empty-p program)))
+      (error "Claude CLI command is not configured"))
+     (t
+      (error
+       "Cannot find Claude CLI %S; set stack-hud-briefing-claude-command or add its directory to stack-hud-briefing-extra-exec-path"
+       program)))))
 
 (defun stack-hud--briefing-cache-path ()
   "Return the path to the current briefing cache file."
@@ -2164,18 +2288,20 @@ With prefix argument, prompt for block to toggle."
   (if stack-hud--briefing-generating
       (message "Briefing generation already in progress.")
     (setq stack-hud--briefing-generating t)
-    (make-directory stack-hud-briefing-cache-dir t)
-    (let* ((non-completed (if (file-readable-p stack-hud-briefing-non-completed-path)
-                              (with-temp-buffer
-                                (insert-file-contents stack-hud-briefing-non-completed-path)
-                                (buffer-string))
-                            ""))
-           (holistic (if (file-readable-p stack-hud-briefing-holistic-argument-path)
-                         (with-temp-buffer
-                           (insert-file-contents stack-hud-briefing-holistic-argument-path)
-                           (buffer-string))
-                       ""))
-           (prompt "You are generating a Stack HUD briefing for the futon development stack.
+    (condition-case err
+        (let* ((claude-program (stack-hud--briefing-claude-program))
+               (_cache-dir (make-directory stack-hud-briefing-cache-dir t))
+               (non-completed (if (file-readable-p stack-hud-briefing-non-completed-path)
+                                  (with-temp-buffer
+                                    (insert-file-contents stack-hud-briefing-non-completed-path)
+                                    (buffer-string))
+                                ""))
+               (holistic (if (file-readable-p stack-hud-briefing-holistic-argument-path)
+                             (with-temp-buffer
+                               (insert-file-contents stack-hud-briefing-holistic-argument-path)
+                               (buffer-string))
+                           ""))
+               (prompt "You are generating a Stack HUD briefing for the futon development stack.
 
 Given the holistic argument and the mission inventory below, write a concise briefing (max 25 lines). Structure:
 
@@ -2190,45 +2316,58 @@ Be terse and specific. This appears in a terminal HUD sidebar. No markdown heade
 
 --- MISSION INVENTORY ---
 %s")
-           (input (format prompt holistic non-completed))
-           (outbuf (generate-new-buffer " *briefing-gen*"))
-           (proc (start-process "briefing-gen" outbuf
-                                stack-hud-briefing-claude-command
-                                "-p" input)))
-      (set-process-sentinel
-       proc
-       (lambda (process _event)
-         (when (memq (process-status process) '(exit signal))
-           (setq stack-hud--briefing-generating nil)
-           (if (zerop (process-exit-status process))
-               (let* ((raw (with-current-buffer (process-buffer process)
-                             (buffer-string)))
-                      (text (replace-regexp-in-string "\r" "" raw))
-                      ;; Strip ANSI CSI sequences (ESC[ ... letter)
-                      (text (replace-regexp-in-string "\e\\[[0-9;?]*[a-zA-Z]" "" text))
-                      ;; Strip OSC sequences (ESC] ... ST/BEL/ESC\)
-                      (text (replace-regexp-in-string "\e\\][^\a\e]*[\a\e\\\\]?" "" text))
-                      ;; Strip any remaining bare ESC sequences
-                      (text (replace-regexp-in-string "\e[^[\n]?" "" text))
-                      ;; Strip leftover control chars (except newline/tab)
-                      (text (replace-regexp-in-string "[\x00-\x08\x0b\x0c\x0e-\x1f]" "" text))
-                      ;; Strip partial sequences like [<u that survive
-                      (text (replace-regexp-in-string "\\[<[a-z]*$" "" text))
-                      (text (replace-regexp-in-string "```\n?" "" text))
-                      (text (string-trim text)))
-                 (setq stack-hud--briefing-cache text)
-                 (with-temp-file (stack-hud--briefing-cache-path)
-                   (insert text))
-                 (message "Briefing generated and cached.")
-                 (stack-hud--refresh-buffer))
-             (message "Briefing generation failed (exit %d)."
-                      (process-exit-status process)))
-           (kill-buffer (process-buffer process))))))))
+               (input (format prompt holistic non-completed))
+               (outbuf (generate-new-buffer " *briefing-gen*"))
+               (proc (start-process "briefing-gen" outbuf
+                                    claude-program
+                                    "-p" input)))
+          (setq stack-hud--briefing-last-error nil)
+          (set-process-sentinel
+           proc
+           (lambda (process _event)
+             (when (memq (process-status process) '(exit signal))
+               (setq stack-hud--briefing-generating nil)
+               (if (zerop (process-exit-status process))
+                   (let* ((raw (with-current-buffer (process-buffer process)
+                                 (buffer-string)))
+                          (text (replace-regexp-in-string "\r" "" raw))
+                          ;; Strip ANSI CSI sequences (ESC[ ... letter)
+                          (text (replace-regexp-in-string "\e\\[[0-9;?]*[a-zA-Z]" "" text))
+                          ;; Strip OSC sequences (ESC] ... ST/BEL/ESC\)
+                          (text (replace-regexp-in-string "\e\\][^\a\e]*[\a\e\\\\]?" "" text))
+                          ;; Strip any remaining bare ESC sequences
+                          (text (replace-regexp-in-string "\e[^[\n]?" "" text))
+                          ;; Strip leftover control chars (except newline/tab)
+                          (text (replace-regexp-in-string "[\x00-\x08\x0b\x0c\x0e-\x1f]" "" text))
+                          ;; Strip partial sequences like [<u that survive
+                          (text (replace-regexp-in-string "\\[<[a-z]*$" "" text))
+                          (text (replace-regexp-in-string "```\n?" "" text))
+                          (text (string-trim text)))
+                     (setq stack-hud--briefing-cache text
+                           stack-hud--briefing-last-error nil)
+                     (with-temp-file (stack-hud--briefing-cache-path)
+                       (insert text))
+                     (message "Briefing generated and cached.")
+                     (stack-hud--refresh-buffer))
+                 (setq stack-hud--briefing-last-error
+                       (format "Claude exited with status %d"
+                               (process-exit-status process)))
+                 (message "Briefing generation failed (exit %d)."
+                          (process-exit-status process)))
+               (kill-buffer (process-buffer process)))))
+          proc)
+      (error
+       (setq stack-hud--briefing-generating nil
+             stack-hud--briefing-last-error (error-message-string err))
+       (message "Briefing generation unavailable: %s"
+                stack-hud--briefing-last-error)
+       nil))))
 
 (defun stack-hud-briefing-refresh ()
   "Force-refresh the active mission briefing."
   (interactive)
-  (setq stack-hud--briefing-cache nil)
+  (setq stack-hud--briefing-cache nil
+        stack-hud--briefing-last-error nil)
   (stack-hud--briefing-generate))
 
 (defun stack-hud--briefing-insert-with-headings (text)
@@ -2251,10 +2390,16 @@ Be terse and specific. This appears in a terminal HUD sidebar. No markdown heade
       (insert "  (cache file unreadable)\n")))
    (stack-hud--briefing-generating
     (insert "  Generating briefing...\n"))
+   (stack-hud--briefing-last-error
+    (insert (format "  Briefing unavailable: %s\n"
+                    stack-hud--briefing-last-error))
+    (insert "  Fix the Claude command and run M-x stack-hud-briefing-refresh.\n"))
    (t
-    (insert "  (no briefing cached — run M-x stack-hud-briefing-refresh)\n")
-    ;; Auto-generate on first view
-    (stack-hud--briefing-generate)))
+    (if (stack-hud--briefing-generate)
+        (insert "  Generating briefing...\n")
+      (insert (format "  Briefing unavailable: %s\n"
+                      stack-hud--briefing-last-error))
+      (insert "  Fix the Claude command and run M-x stack-hud-briefing-refresh.\n"))))
   (insert "\n"))
 
 (provide 'stack-hud)
