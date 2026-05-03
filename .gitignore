@@ -7,3 +7,13 @@ contrib/data/
 **/__pycache__/
 *.pyc
 *.elc
+
+# Clojure CLI cache
+.cpcache/
+
+# Web subproject build artifacts (war-machine, future webarxana)
+web/*/node_modules/
+web/*/.cpcache/
+web/*/.shadow-cljs/
+web/*/dist/
+web/*/target/
