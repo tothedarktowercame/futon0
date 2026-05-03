@@ -1,0 +1,201 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# cx — Codex REPL in the terminal.
+#
+# Starts codex-repl inside terminal Emacs, allocating a fresh codex-N
+# agent for each terminal session. Resume works by seeding that fresh
+# agent with an existing Codex session id.
+#
+# Usage:
+#   cx                    # resume latest Codex session for this cwd
+#   cx SESSION-ID         # resume specific session in a fresh codex-N lane
+#   cx --new              # force a fresh codex-N lane with no prior session
+#
+
+agency_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
+emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
+script_real="$(readlink -f "${BASH_SOURCE[0]}")"
+emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
+codex_sessions_root="${CODEX_SESSIONS_ROOT:-${HOME}/.codex/sessions}"
+
+find_emacs_socket() {
+  if [[ -n "${FUTON3C_EMACS_SOCKET:-}" ]]; then
+    echo "${FUTON3C_EMACS_SOCKET}"
+    return 0
+  fi
+  if [[ -n "${EMACS_SOCKET_NAME:-}" ]]; then
+    echo "${EMACS_SOCKET_NAME}"
+    return 0
+  fi
+  # Prefer 'server' (Joe's interactive Emacs, where Agency's *server*
+  # buffer lives) then 'futon' (headless daemon cr/cx may have spawned).
+  # Only spawn a fresh 'futon' if no socket exists at all.
+  local runtime_dir="/run/user/$(id -u)/emacs"
+  if [[ -d "${runtime_dir}" ]]; then
+    if [[ -S "${runtime_dir}/server" ]]; then
+      echo "server"
+      return 0
+    fi
+    if [[ -S "${runtime_dir}/futon" ]]; then
+      echo "futon"
+      return 0
+    fi
+    local sockets=("${runtime_dir}"/*)
+    if [[ ${#sockets[@]} -ge 1 && -S "${sockets[0]}" ]]; then
+      basename "${sockets[0]}"
+      return 0
+    fi
+  fi
+  echo "No Emacs daemon found. Starting one..." >&2
+  emacs --daemon=futon >/dev/null 2>&1
+  echo "futon"
+}
+
+json_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "${1:-}"; }
+
+latest_session_id() {
+  python3 - "$PWD" "${codex_sessions_root}" <<'PY'
+import json
+import os
+import sys
+from pathlib import Path
+
+cwd = os.path.realpath(sys.argv[1])
+root = Path(sys.argv[2]).expanduser()
+
+if not root.exists():
+    raise SystemExit(1)
+
+files = sorted(
+    (p for p in root.rglob("rollout-*.jsonl") if p.is_file()),
+    key=lambda p: p.stat().st_mtime,
+    reverse=True,
+)
+
+for path in files:
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            first = fh.readline()
+        if not first:
+            continue
+        entry = json.loads(first)
+        payload = entry.get("payload") or {}
+        sid = payload.get("id")
+        meta_cwd = payload.get("cwd")
+        if sid and meta_cwd and os.path.realpath(meta_cwd) == cwd:
+            print(sid)
+            raise SystemExit(0)
+    except Exception:
+        continue
+
+raise SystemExit(1)
+PY
+}
+
+build_auto_register_payload() {
+  local working_directory="$1"
+  local session_id="$2"
+  local payload='{"type":"codex","cwd":"'"$(json_escape "${working_directory}")"'"'
+  if [[ -n "${session_id}" ]]; then
+    payload+=',"session-id":"'"$(json_escape "${session_id}")"'"'
+  fi
+  payload+='}'
+  printf '%s' "${payload}"
+}
+
+sid=""
+start_new=false
+fresh_lane=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --new|new) start_new=true; shift ;;
+    --help|-h)
+      echo "Usage: cx [SESSION-ID] [--new]"
+      echo "  cx             resume latest Codex session for this cwd"
+      echo "  cx SESSION-ID  resume specific session in a fresh codex lane"
+      echo "  cx --new       start a fresh codex lane"
+      exit 0
+      ;;
+    *) sid="$1"; shift ;;
+  esac
+done
+
+echo "--- cx debug ---"
+echo "Agency:       ${agency_base}"
+echo "Emacs dir:    ${emacs_dir}"
+echo "Working dir:  $(pwd)"
+echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'; fi)"
+
+if curl -sS --max-time 2 "${agency_base}/api/alpha/agents" >/dev/null 2>&1; then
+  echo "Agency:       reachable"
+else
+  echo "Agency:       NOT reachable" >&2
+  exit 1
+fi
+
+if $start_new; then
+  echo "Action:       allocating fresh codex lane"
+  fresh_lane=true
+elif [[ -n "${sid}" ]]; then
+  echo "Action:       resuming explicit session ${sid:0:8}..."
+elif sid="$(latest_session_id 2>/dev/null || true)"; [[ -n "${sid}" ]]; then
+  echo "Action:       found latest Codex session ${sid:0:8}... for $(pwd)"
+else
+  echo "Action:       no prior Codex session found; allocating fresh lane"
+  fresh_lane=true
+fi
+
+echo "--- launching ---"
+
+socket="$(find_emacs_socket)" || exit 1
+echo "Emacs socket: ${socket}"
+
+elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
+
+escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
+escaped_repl="$(elisp_escape "${emacs_dir}/codex-repl.el")"
+escaped_api="$(elisp_escape "${agency_base%/}")"
+escaped_cwd="$(elisp_escape "$(pwd)")"
+payload="$(build_auto_register_payload "$(pwd)" "${sid}")"
+fresh_session_elisp="nil"
+if $fresh_lane; then
+  fresh_session_elisp="t"
+fi
+
+reg_result="$(curl -sS --max-time 5 \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d "${payload}" \
+  "${agency_base%/}/api/alpha/agents/auto" 2>&1)"
+echo "Registration: ${reg_result}"
+
+aid="$(echo "${reg_result}" | python3 -c "import json,sys; print((json.load(sys.stdin).get('agent-id') or ''))" 2>/dev/null || echo "")"
+sf="$(echo "${reg_result}" | python3 -c "import json,sys; print((json.load(sys.stdin).get('session-file') or ''))" 2>/dev/null || echo "")"
+
+if [[ -z "${aid}" ]]; then
+  echo "Registration failed: could not parse agent-id from /agents/auto response" >&2
+  exit 1
+fi
+if [[ -z "${sf}" ]]; then
+  sf="/tmp/futon-codex-session-id-${aid}"
+fi
+
+echo "Agent:        ${aid}"
+echo "Session file: ${sf}"
+[[ -n "${sid}" ]] && echo "Session:      ${sid}"
+
+exec "${emacsclient_bin}" -s "${socket}" -t \
+  --eval "(progn
+    (load \"${escaped_chat}\" nil t)
+    (load \"${escaped_repl}\" nil t)
+    (codex-repl--open-instance
+     (format \"*codex-repl:%s*\" \"${aid}\")
+     (format \"*invoke: codex-repl:%s*\" \"${aid}\")
+     \"${escaped_api}\"
+     \"${aid}\"
+     \"$(elisp_escape "${sf}")\"
+     \"${escaped_cwd}\"
+     'attached
+     ${fresh_session_elisp}))"

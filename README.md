@@ -211,6 +211,13 @@ reviewed over time rather than inferred from scattered commits.
 - For an end-to-end run (commentary + TTS + stitched mp3), use `python3 scripts/transcript_to_podcast.py /path/to/transcript.txt`. Defaults: `--commentary-segments 1`, `--pause-seconds 1.0`, `--model gpt-5.2-chat-latest`.
 - See `README-podcast.md` for the full transcription -> commentary -> TTS -> stitching workflow and the relationship between the prompt files and helper scripts.
 
+## Paper read-aloud (LLM + TTS)
+- `python3 scripts/paper_to_readaloud.py /path/to/paper.txt` chunks plain-text or markdown paper input and renders it into spoken prose under `<paper_dir>/readaloud`.
+- Add `--tts` plus `--piper-model`/`--piper-config` (or `PIPER_MODEL`/`PIPER_CONFIG`) to synthesize `paper_readaloud_segment_*.mp3` and stitch a final MP3.
+- Defaults: `--chunk-words 1600`, `--overlap-words 120`, `--pause-seconds 0.6`, `--model gpt-5.2-chat-latest`.
+- The narration prompt defaults to `resources/prompts/paper_readaloud_system.prompt`.
+- See `README-paper-readaloud.md` for the full workflow.
+
 ## Vitality scanner stub
 - `clojure -Sdeps '{:paths ["scripts"] :deps {org.clojure/data.json {:mvn/version "2.5.0"}}}' -M -m futon0.vitality.scanner` (source: `scripts/futon0/vitality/scanner.clj`) inspects directories listed in `~/code/storage/futon0/vitality/vitality_scanner.json`, counts files touched during the current lookback window, optionally parses Tatami logs, and writes a summary JSON payload (default `~/code/storage/futon0/vitality/latest_scan.json`).
 - Adjust `~/code/storage/futon0/vitality/vitality_scanner.json` to point at the directories/Tatami export you want to monitor, then call the scanner from cron/systemd alongside `git_vitality_sync.sh` to start the 30–45 day baseline run mentioned in the devmap.
