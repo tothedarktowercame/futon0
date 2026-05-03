@@ -14,6 +14,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+from audio_pipeline_lib import collect_segment_files, run_checked, stitch_segments, update_latest_symlink
+
 
 DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.2-chat-latest")
 DEFAULT_WORDS_RATIO = float(os.environ.get("WORDS_RATIO", "1.0"))
@@ -26,11 +28,6 @@ DEFAULT_PIPER_MODEL = os.environ.get("PIPER_MODEL", "")
 DEFAULT_PIPER_CONFIG = os.environ.get("PIPER_CONFIG", "")
 DEFAULT_PIPER_BIN = os.environ.get("PIPER_BIN", "")
 
-
-def run(cmd: list[str], cwd: Path | None = None) -> None:
-    subprocess.run(cmd, cwd=str(cwd) if cwd else None, check=True)
-
-
 def resolve_output_dir(transcript_path: Path, out_dir: str | None) -> Path:
     return Path(out_dir).expanduser().resolve() if out_dir else transcript_path.parent / "commentary"
 
@@ -38,55 +35,6 @@ def resolve_output_dir(transcript_path: Path, out_dir: str | None) -> Path:
 def default_output_mp3(audio_dir: Path) -> Path:
     stamp = datetime.now().strftime("%Y-%m-%d")
     return audio_dir / f"commentary_{stamp}_full.mp3"
-
-
-def update_latest_symlink(audio_dir: Path, output_path: Path) -> None:
-    link_path = audio_dir / "commentary_full.mp3"
-    try:
-        if link_path.exists() or link_path.is_symlink():
-            link_path.unlink()
-    except OSError:
-        return
-    if output_path.is_absolute():
-        target = output_path
-    else:
-        target = (audio_dir / output_path).resolve()
-    try:
-        link_path.symlink_to(target)
-    except OSError:
-        return
-
-
-def collect_segments(audio_dir: Path) -> list[Path]:
-    segments = sorted(audio_dir.glob("commentary_segment_*.mp3"))
-    if not segments:
-        raise SystemExit(f"No commentary_segment_*.mp3 found in {audio_dir}")
-    return segments
-
-
-def stitch_segments(segments: list[Path], pause_seconds: float, output_path: Path) -> None:
-    inputs: list[str] = []
-    for idx, segment in enumerate(segments):
-        if idx > 0:
-            inputs.extend(["-f", "lavfi", "-t", f"{pause_seconds}", "-i", "anullsrc=r=48000:cl=mono"])
-        inputs.extend(["-i", str(segment)])
-
-    total_inputs = len(segments) + max(len(segments) - 1, 0)
-    labels = "".join([f"[{i}:a]" for i in range(total_inputs)])
-    filter_complex = f"{labels}concat=n={total_inputs}:v=0:a=1[out]"
-
-    cmd = [
-        "ffmpeg",
-        "-y",
-        *inputs,
-        "-filter_complex",
-        filter_complex,
-        "-map",
-        "[out]",
-        str(output_path),
-    ]
-    run(cmd)
-
 
 def parse_cmd(cmd: str) -> list[str]:
     return shlex.split(cmd)
@@ -106,19 +54,19 @@ def sweeten_with_easyeffects(
     tmp_wav_path: Path | None = None
     try:
         time.sleep(0.5)
-        run([*parse_cmd(easyeffects_cmd), "-l", preset_name])
+        run_checked([*parse_cmd(easyeffects_cmd), "-l", preset_name])
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_wav:
             tmp_wav_path = Path(tmp_wav.name)
         record_proc = subprocess.Popen([*parse_cmd(pw_record_cmd), "--target", monitor_name, str(tmp_wav_path)])
         try:
-            run([*parse_cmd(pw_play_cmd), "--target", sink_name, str(input_mp3)])
+            run_checked([*parse_cmd(pw_play_cmd), "--target", sink_name, str(input_mp3)])
         finally:
             record_proc.terminate()
             try:
                 record_proc.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 record_proc.kill()
-        run(
+        run_checked(
             [
                 "ffmpeg",
                 "-y",
@@ -224,9 +172,9 @@ def main() -> None:
     if args.piper_bin:
         commentary_cmd.extend(["--piper-bin", args.piper_bin])
 
-    run(commentary_cmd)
+    run_checked(commentary_cmd)
 
-    segments = collect_segments(audio_dir)
+    segments = collect_segment_files(audio_dir, "commentary", "wav")
     stitch_segments(segments, args.pause_seconds, output_mp3)
     if args.easyeffects_preset:
         if args.easyeffects_mode == "replace":
@@ -248,7 +196,7 @@ def main() -> None:
         else:
             print(f"Wrote sweetened podcast: {sweetened_mp3}")
     if output_mp3.parent == audio_dir:
-        update_latest_symlink(audio_dir, output_mp3)
+        update_latest_symlink(audio_dir, output_mp3, "commentary_full.mp3")
     print(f"Wrote stitched podcast: {output_mp3}")
 
 

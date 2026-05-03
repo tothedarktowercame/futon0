@@ -12,8 +12,16 @@ import math
 import os
 import re
 import shutil
-import subprocess
 from pathlib import Path
+
+from audio_pipeline_lib import (
+    chunk_words,
+    extract_response_text,
+    resolve_piper_bin,
+    run_capture,
+    strip_markdown_for_tts,
+    synthesize_text_with_piper,
+)
 
 
 DEFAULT_CHUNK_WORDS = 1200
@@ -35,83 +43,6 @@ COMMENTARY_START_TEMPLATE = """You have already received the full transcript in 
 Begin the commentary now. Target length: {words_target} words total.
 If it does not fit in one response, continue when I say "continue" without restarting.
 """
-
-
-def run(cmd: list[str], cwd: Path | None = None, input_text: str | None = None) -> str:
-    try:
-        result = subprocess.run(
-            cmd,
-            cwd=str(cwd) if cwd else None,
-            input=input_text.encode("utf-8") if input_text is not None else None,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-    except subprocess.CalledProcessError as exc:
-        stdout = (exc.stdout or b"").decode("utf-8", errors="replace").strip()
-        stderr = (exc.stderr or b"").decode("utf-8", errors="replace").strip()
-        details = []
-        if stdout:
-            details.append(f"stdout:\n{stdout}")
-        if stderr:
-            details.append(f"stderr:\n{stderr}")
-        if details:
-            raise SystemExit("Command failed:\n" + "\n\n".join(details)) from exc
-        raise
-    return result.stdout.decode("utf-8")
-
-
-def extract_response_text(raw: str) -> str:
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError:
-        return raw
-
-    if isinstance(payload, dict):
-        if "choices" in payload:
-            texts: list[str] = []
-            for choice in payload.get("choices", []):
-                message = choice.get("message") if isinstance(choice, dict) else None
-                if isinstance(message, dict):
-                    content = message.get("content")
-                    if content:
-                        texts.append(content)
-            return "\n".join(texts).strip() or raw
-        if "output_text" in payload:
-            return str(payload.get("output_text", "")).strip() or raw
-    return raw
-
-
-def strip_markdown_for_tts(md: str) -> str:
-    md = re.sub(r"```.*?```", "", md, flags=re.S)
-    md = re.sub(r"^\s*#{1,6}\s*", "", md, flags=re.M)
-    md = re.sub(r"^\s*[-*+]\s+", "", md, flags=re.M)
-    md = re.sub(r"\n{3,}", "\n\n", md)
-    return md.strip() + "\n"
-
-
-def chunk_words(text: str, chunk_words: int, overlap_words: int) -> list[str]:
-    if chunk_words <= 0:
-        raise ValueError("chunk_words must be > 0")
-    if overlap_words < 0:
-        raise ValueError("overlap_words must be >= 0")
-    if overlap_words >= chunk_words:
-        raise ValueError("overlap_words must be < chunk_words")
-
-    words = re.findall(r"\S+", text)
-    if not words:
-        return []
-
-    step = chunk_words - overlap_words
-    chunks: list[str] = []
-    for start in range(0, len(words), step):
-        chunk = words[start : start + chunk_words]
-        if not chunk:
-            break
-        chunks.append(" ".join(chunk))
-        if start + chunk_words >= len(words):
-            break
-    return chunks
 
 
 def words_target_for_transcript(
@@ -145,18 +76,6 @@ def resolve_notes_prompt() -> Path:
 
 def resolve_commentary_prompt() -> Path:
     return Path(__file__).resolve().parents[1] / "resources" / "prompts" / "commentary_followup.prompt"
-
-
-def resolve_piper_bin(piper_bin: str) -> str:
-    if piper_bin:
-        return piper_bin
-    if Path("bin/piper").is_file() and os.access("bin/piper", os.X_OK):
-        return str(Path("bin/piper"))
-    workspace_root = Path(__file__).resolve().parents[2]
-    tts_candidate = workspace_root / "tts" / "bin" / "piper"
-    if tts_candidate.is_file() and os.access(tts_candidate, os.X_OK):
-        return str(tts_candidate)
-    return shutil.which("piper") or ""
 
 
 def main() -> None:
@@ -263,7 +182,7 @@ def main() -> None:
         if args.dry_run:
             notes_cmd.append("--dry-run")
 
-        notes_output = run(notes_cmd, cwd=futon5_dir)
+        notes_output = run_capture(notes_cmd, cwd=futon5_dir)
         if args.dry_run:
             payload_path = responses_dir / f"payload_notes_{idx:03d}.json"
             payload_path.write_text(notes_output, encoding="utf-8")
@@ -302,7 +221,7 @@ def main() -> None:
             "--model",
             args.model,
         ]
-        output = extract_response_text(run(cmd, cwd=futon5_dir)).strip()
+        output = extract_response_text(run_capture(cmd, cwd=futon5_dir)).strip()
         messages.append({"role": "assistant", "content": output})
         write_messages()
         return output
@@ -322,23 +241,17 @@ def main() -> None:
 
         if args.tts:
             wav_path = audio_dir / f"commentary_segment_{segment_idx:03d}.wav"
-            run(
-                [
-                    piper_bin,
-                    "--model",
-                    args.piper_model,
-                    "--config",
-                    args.piper_config,
-                    "--sentence_silence",
-                    "0.35",
-                    "--output_file",
-                    str(wav_path),
-                ],
-                input_text=tts_text,
+            synthesize_text_with_piper(
+                text=tts_text,
+                output_wav=wav_path,
+                piper_bin=piper_bin,
+                piper_model=args.piper_model,
+                piper_config=args.piper_config,
+                sentence_silence=0.35,
             )
             if shutil.which("ffmpeg"):
                 mp3_path = audio_dir / f"commentary_segment_{segment_idx:03d}.mp3"
-                run(["ffmpeg", "-y", "-i", str(wav_path), "-af", "loudnorm", str(mp3_path)])
+                run_capture(["ffmpeg", "-y", "-i", str(wav_path), "-af", "loudnorm", str(mp3_path)])
 
         if segment_idx < segment_total:
             messages.append({"role": "user", "content": "continue"})

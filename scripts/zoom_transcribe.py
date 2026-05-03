@@ -80,6 +80,7 @@ def transcribe_chunks(
     vad_filter: bool,
     min_silence_ms: int,
     speech_pad_ms: int,
+    initial_prompt: str | None = None,
 ) -> None:
     text_dir.mkdir(parents=True, exist_ok=True)
     all_lines: list[str] = []
@@ -98,6 +99,7 @@ def transcribe_chunks(
                 min_silence_duration_ms=min_silence_ms,
                 speech_pad_ms=speech_pad_ms,
             ),
+            initial_prompt=initial_prompt,
         )
         lines: list[str] = []
         for segment in segments:
@@ -174,6 +176,12 @@ def main() -> None:
         default=400,
         help="VAD speech padding in ms (default: 400)",
     )
+    parser.add_argument(
+        "--initial-prompt",
+        default=None,
+        help="Optional initial_prompt passed to faster-whisper (helps "
+             "proper-noun and domain-vocabulary recognition).",
+    )
 
     args = parser.parse_args()
     input_path = Path(args.input).expanduser().resolve()
@@ -218,6 +226,7 @@ def main() -> None:
         vad_filter=not args.no_vad,
         min_silence_ms=args.min_silence_ms,
         speech_pad_ms=args.speech_pad_ms,
+        initial_prompt=args.initial_prompt,
     )
 
 
