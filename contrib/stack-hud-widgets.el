@@ -1423,21 +1423,74 @@ PULSING means canary is firing without tracer-flow."
 
 Shows the apparatus from M-invariant-queue-unstuck +
 M-invariant-queue-extend doing its self-test: are the open pipeline-tracers
-moving to closed? Are the family-canary fires firing? Three sections:
+moving to closed? Are the family-canary fires firing?
 
-  · Header line — flow indicator (STUCK/MOVING/FLOWING) + counts.
-  · Open tracers — one row per open `:pipeline-tracer-item`, sorted by
-    track-id, with days-until-target color-coded (red past, yellow ≤1d).
+What \"open\" and \"closed\" mean here
+─────────────────────────────────────
+This widget is NOT showing the candidate-invariant queue (the pink
+priority-ranked list in arxana://view/candidate-invariants). It is
+showing pipeline-tracer EVIDENCE EVENTS, a narrower thing.
+
+A *pipeline-tracer* is a non-invariant work-track that the apparatus
+agreed to watch as a flow signal — \"if this moves over the next ≈ week,
+the apparatus is alive\". Each tracer is identified by a `:track-id`
+keyword (e.g. `:track-4-2-snapshot-as-evidence`). Tracers are declared
+in `futon3c.logic.tracer/default-tracers` and re-emitted at every JVM
+boot via `ensure-default-tracers!`.
+
+Two evidence shapes drive this widget:
+
+  ▸ open    `:event :pipeline-tracer-item`, tags include :open
+            Emitted when a tracer is registered. \"This track is being
+            watched and is not yet declared finished.\"
+
+  ▸ closed  `:event :pipeline-tracer-closed`, tags include :closed
+            Emitted via `tracer/emit-tracer-closed!` when the track's
+            expected-outcome has been met. \"This track is declared
+            finished; its work is recognised as done.\"
+
+The header counts:
+  open    = number of distinct track-ids with an :open event but
+            no matching :closed event in the window
+  closed  = number of :closed events in the window
+  canary  = number of :family-fired events (any outcome) in the window
+
+So \"closed: 0\" means \"nobody has declared a track finished in the
+last N days,\" not \"there is nothing to do.\" Many open tracks may be
+quietly pending because their substantive work isn't yet finished.
+
+Flow flag (header):
+  STUCK    closed=0 AND canary=0  (no tracked motion at all)
+  PULSING  closed=0 AND canary>0  (probe loop alive, queue not turning)
+  FLOWING  closed >= open         (closing as fast as opening)
+  MOVING   closed <  open         (opens outpacing closes)
+
+Three sections rendered:
+
+  · Header line — flow flag + counts.
+  · Open tracers — one row per still-open track-id, sorted by track-id,
+    with days-until-target colour-coded (red past, yellow ≤1d).
   · Recent canary fires — last N `:family-fired` entries with outcome
-    color-coded (ok=green, violation=red, inactive=gray).
+    colour-coded (ok=green, violation=red, inactive=gray).
 
 Data source: GET /api/alpha/evidence?type=coordination on futon1a, with
 client-side filtering by tag (:pipeline-tracer + :open/:closed) and event
 (:family-fired). Window:
   stack-hud-widget-invariant-queue-window-days   (default 7)
+  stack-hud-widget-invariant-queue-fetch-limit   (default 10000)
   stack-hud-widget-invariant-queue-canary-tail   (default 5)
 
 Refresh: `g'. Cost: one HTTP probe; no LLM call.
+
+To close a tracer (declare its work done):
+
+  (require 'futon3c.logic.tracer :as tracer)
+  (require 'futon3c.dev :as dev)
+  (tracer/emit-tracer-closed!
+    @dev/!evidence-store
+    {:track-id  :track-4-2-snapshot-as-evidence
+     :resolution \"why this is recognised as finished\"
+     :closed-by  \"your-name\"})
 
 Mission: M-invariant-queue-extend (futon3c/holes/missions/).")
 
