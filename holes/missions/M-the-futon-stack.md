@@ -314,6 +314,41 @@ flowchart LR
 
 The shape of this loop **is** the futon stack at this stage. The mission's deeper questions (Q2 cognitive function, Q3 efficiency, Q5 homeostat-evidence, Q6 kill-switch) are progress questions about this same loop — not about anything else.
 
+## Cross-cutting threads
+
+Concerns that span multiple missions and need a single locus rather than scattered local guards. Each thread accumulates evidence until it either (a) settles as a faculty-shape under §"Evidence so far," (b) gets retired as not-actually-cross-cutting, or (c) crystallises as its own sibling mission.
+
+### CCT-1 — Canonical parser per data-object class
+
+**Concern (opened 2026-05-04).** The stack reads several data-object classes (mission docs, `.flexiarg` patterns, `.futon-disposition.edn` files, commit-message footers, the structural-law inventory) through ad-hoc parsers introduced wherever a mission needed to read the artifact. The risk is **silent semantic drift** — two parsers for the same shape disagree about a clause, a status line, or a footer, and the system's self-read fragments invisibly. A homeostatic agent that perceives its own data through divergent parsers cannot keep its precision substrate honest; Q4 ("is the stack set up so the invariants can work?") applies directly.
+
+**Working rule.**
+- One canonical parser per data-object class.
+- Other call sites delegate to it, or consume its typed projection.
+- A second parser may land only via an explicit substrate-version bump (e.g. `flexiarg-projection-v0` → `v1`); never as a silent fork.
+- The owning mission for the artifact-class is responsible for promoting the canonical parser and migrating callers.
+
+**Inventory.**
+
+| Data-object class | Parser(s) today | State | Owning mission / next move |
+|---|---|---|---|
+| Mission-doc structure (`# title`, sections, body) | `futon3c/src/futon3c/cyder.clj` `parse-mission-doc`; `futon3c/src/futon3c/peripheral/mission_control_backend.clj` `parse-mission-md` / `parse-mission-path`; plus listing helpers in `archaeology.clj` (`list-mission-docs-with-time`), `locus.clj` (`list-mission-files`), `disposition_derive.clj` (`list-mission-files`) | **Doubled, unrationalised** | Owning mission TBD. Next move: promote one of `cyder/parse-mission-doc` or `mission_control_backend/parse-mission-md` to canonical; migrate the other to delegate. Listing helpers consolidate to one. |
+| Mission-doc `Status:` line | `futon3c/src/futon3c/logic/archaeology.clj` `parse-mission-doc-status` (already reused by `disposition_derive.clj`) | **Single by construction** | M-bounded-in-flight-state |
+| `.flexiarg` patterns | Canonical parser at `futon3a/src/futon/flexiarg/projection.clj`; delegating callers in `futon3/scripts/build_pattern_index.clj`, `futon3/scripts/build_pattern_index_incremental.clj`, `futon3/scripts/flexiarg_projection.clj`, `futon3/scripts/pattern_sync.clj`, `futon3/src/futon3/pattern_hints.clj`, and `futon3a/src/futon/notions.clj`. | **Single by construction** | M-pattern-retrieval-calibration §D-9..D-11 — P-1 landed the shared parser and migrated the read/ingest callers to delegate. **Creation-side gate**: `futon3/holes/excursions/E-pattern-peripheral.md` — Codex-handoff excursion that wraps the canonical parser as a transactional pattern-creation peripheral (G5..G0), so new patterns honour CCT-1 at write time rather than relying on retrospective drift detection. |
+| `.futon-disposition.edn` files | New util namespace per M-bounded-in-flight-state ARGUE (`futon3c.logic.disposition-edn` or similar) | **Single by construction** | M-bounded-in-flight-state |
+| Commit-message `Block:` footer (`^Block: <kind>-<YYYY-MM-DD>-<slug>$`, last occurrence wins) | Helper introduced in M-bounded-in-flight-state INSTANTIATE; Q-01 disambiguation resolved | **Single by construction** | M-bounded-in-flight-state Q-01 |
+| `structural-law-inventory.sexp` family entries | `futon3c/src/futon3c/logic/inventory.clj` | **Single by construction** | Consumer surfaces: M-pattern-retrieval-calibration §M-6 (pattern → family join), M-bounded-in-flight-state |
+
+**Three states a row can be in:**
+
+- *Single by construction* — one parser; no work beyond keeping the row here so future drift is detectable.
+- *Doubled, unrationalised* — multiple parsers exist by accident. The owning mission must promote one as canonical and migrate callers; until that lands, the row is a live tension.
+- *Doubled, rationalised* — two parsers exist intentionally because the artifact-class admits two semantics, version-stamped (`*-v0` vs `*-v1`). Both versions and the boundary between them are named here.
+
+**Faculty-shape question (open).** Whether *single-meaning* — "the agent reads each artifact in exactly one canonical way" — deserves promotion to an 11th cognitive-faculty shape alongside the ten in §View 2 is open. Revisit triggers: ≥3 entries in *Doubled, rationalised* state, or ≥1 evidenced incident of cross-parser semantic drift in production.
+
+**Process for future missions.** When a mission introduces a new parser or finds an existing duplicate, append to or update the inventory above. The owning mission's DERIVE / ARGUE references the row so the remediation has a named home. Missions that ship new parsers without claiming the canonical row are themselves a candidate signal for a future probe-tap.
+
 ## Checkpoints
 
 Checkpoints in this mission are large-grain — quarterly rather than per-PR. Each checkpoint records: what's now operationally true that wasn't before, what evidence supports it, what's been retired, what's been added to the risk register.
