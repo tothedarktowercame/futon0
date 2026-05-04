@@ -1295,11 +1295,22 @@ Negative values = past target. Returns nil if TARGET-ISO unparseable."
               :canary-recent canary-recent
               :canary-total (length canary-entries))))))
 
-(defun stack-hud-widget--motion-flag (open-count closed-count)
-  "Return a propertized motion indicator for the leaderboard header."
+(defun stack-hud-widget--motion-flag (open-count closed-count &optional canary-total)
+  "Return a propertized motion indicator for the leaderboard header.
+OPEN-COUNT and CLOSED-COUNT are pipeline-tracer counts; optional
+CANARY-TOTAL is the family-canary fire count in the same window.
+STUCK is reserved for genuine no-motion (closed=0 AND canary=0);
+PULSING means canary is firing without tracer-flow."
   (cond
-   ((zerop closed-count)
+   ((and (zerop closed-count) (zerop (or canary-total 0)))
     (propertize "STUCK" 'face '(:foreground "red" :weight bold)))
+   ((zerop closed-count)
+    ;; Canary firing but no pipeline-tracer flow — system is alive but
+    ;; the queue isn't churning. Caught 2026-05-04 by arxana-dramaturge
+    ;; test invariant-queue-flag-honesty: STUCK was firing alongside
+    ;; non-zero canary-total, which lied about whether the system was
+    ;; moving.
+    (propertize "PULSING" 'face '(:foreground "yellow" :weight bold)))
    ((>= closed-count open-count)
     (propertize "FLOWING" 'face '(:foreground "green" :weight bold)))
    (t
@@ -1334,7 +1345,7 @@ Negative values = past target. Returns nil if TARGET-ISO unparseable."
       (insert (propertize (format "  ⚠ %s\n" err) 'face 'error)))
      (t
       (insert (format "  %s   open: %d   closed: %d   canary fires: %d\n\n"
-                      (stack-hud-widget--motion-flag open-count closed-count)
+                      (stack-hud-widget--motion-flag open-count closed-count canary-total)
                       open-count closed-count canary-total))
       (cond
        ((null open)
