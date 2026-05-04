@@ -77,29 +77,32 @@
     (condition-case _err
         (with-temp-buffer
           (insert-file-contents mana-hud-snapshot-path)
+          (goto-char (point-min))
           (let ((json-object-type 'alist)
                 (json-array-type 'list)
-                (json-key-type 'symbol)))
-          (goto-char (point-min))
-          (json-read))
+                (json-key-type 'symbol))
+            (json-read)))
       (error nil))))
 
+(require 'iso8601)
+
 (defun mana-hud--snapshot-stale-p (snap)
-  "Return non-nil if SNAP's :generated-at is older than `mana-hud-stale-after-seconds'."
+  "Return non-nil if SNAP is older than `mana-hud-stale-after-seconds'."
   (let* ((ts (cdr (assq 'generated-at snap)))
-         (gen (and ts (parse-iso8601-time-string ts))))
+         (gen (and ts (ignore-errors
+                        (encode-time (iso8601-parse ts))))))
     (when gen
       (> (- (float-time) (float-time gen))
          mana-hud-stale-after-seconds))))
 
 (defun mana-hud--violators (per-repo)
   "Return a string listing repos in :high or :stop-the-line tier from PER-REPO."
-  (when-let ((violating
-              (seq-filter
-               (lambda (r)
-                 (let ((tier (cdr (assq 'tier r))))
-                   (member tier '("high" "stop-the-line"))))
-               per-repo)))
+  (when-let* ((violating
+               (seq-filter
+                (lambda (r)
+                  (let ((tier (cdr (assq 'tier r))))
+                    (member tier '("high" "stop-the-line"))))
+                per-repo)))
     (mapconcat
      (lambda (r)
        (let* ((repo (cdr (assq 'repo r)))
