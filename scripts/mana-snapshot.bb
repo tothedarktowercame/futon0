@@ -21,6 +21,7 @@
 
 (require '[babashka.fs :as fs]
          '[babashka.process :as proc]
+         '[babashka.http-client :as http]
          '[cheshire.core :as json]
          '[clojure.string :as str])
 
@@ -99,6 +100,87 @@
        :total-bytes total-bytes
        :tier (pressure->tier P)})))
 
+(def futon3c-base (or (System/getenv "FUTON3C_BASE_URL") "http://localhost:7070"))
+(def nonstarter-base (or (System/getenv "NONSTARTER_BASE_URL") "http://localhost:7072"))
+(def http-timeout-ms 1500)
+
+(defn fetch-json
+  "GET URL with the standard short timeout. Returns parsed JSON or nil
+   on any failure — never throws. Both futon3c and nonstarter must be
+   optional dependencies."
+  [url]
+  (try
+    (let [resp (http/get url {:throw false :timeout http-timeout-ms})]
+      (when (= 200 (:status resp))
+        (try (json/parse-string (:body resp) true) (catch Throwable _ nil))))
+    (catch Throwable _ nil)))
+
+(defn fetch-agents
+  "GET /api/alpha/agents → list of agent maps. Returns [] when futon3c
+   is unreachable or the endpoint fails (per amendment-III ergonomic:
+   the snapshot must work even when nonstarter / agency aren't up)."
+  []
+  (let [resp (fetch-json (str futon3c-base "/api/alpha/agents"))]
+    (cond
+      (nil? resp) []
+      ;; Two known shapes: {:agents {...}} (current) or {:agents [...]}.
+      (map? (:agents resp))
+      (mapv (fn [[id m]] (assoc m :agent-id (or (get m :id-key) (str id))))
+            (:agents resp))
+      (sequential? (:agents resp)) (vec (:agents resp))
+      :else [])))
+
+(defn fetch-session-mana
+  "GET /api/mana?session-id=... on nonstarter. Returns nil on failure."
+  [session-id]
+  (when (and session-id (not (str/blank? (str session-id))))
+    (fetch-json (str nonstarter-base "/api/mana?session-id=" session-id))))
+
+(defn fetch-pool
+  "GET /api/pool on nonstarter. Returns nil on failure."
+  []
+  (fetch-json (str nonstarter-base "/api/pool")))
+
+(defn ^:private session-record
+  "Build the per-session snapshot record for one agent.
+
+  Per V-6 amendment (II): drain measures per-repo; balance aggregates
+  per-session. Per Joe's D-01 reframe: each session is its own AIF
+  head; the War Machine integrates these heads.
+
+  Schema (first-pass; richer AIF-head fields land when M-aif-head's
+  apparatus extends to sessions):
+    {:agent-id <string>
+     :session-id <uuid>
+     :status <string>          ; agent's current status (idle / busy / ...)
+     :last-active <iso>         ; agent.last-active
+     :balance <number-or-nil>   ; from /api/mana?session-id=...
+     :earned <number-or-nil>
+     :spent  <number-or-nil>
+     :aif-head/phase <kw>       ; for now, derived from status
+                                ; (idle → :rest; busy → :active)
+     :aif-head/source :session  ; tag so War Machine knows the
+                                ; head is session-shaped (vs
+                                ; mission-shaped, peripheral-shaped, etc.)}"
+  [agent]
+  (let [session-id (or (:session-id agent)
+                       (get-in agent [:id :id/value])
+                       (:agent-id agent))
+        mana (fetch-session-mana session-id)
+        status (:status agent)]
+    {:agent-id (or (:agent-id agent) (get-in agent [:id :id/value]))
+     :session-id session-id
+     :status status
+     :last-active (:last-active agent)
+     :balance (:balance mana)
+     :earned (:earned mana)
+     :spent (:spent mana)
+     :aif-head/phase (case status
+                       "busy" :active
+                       "idle" :rest
+                       :unknown)
+     :aif-head/source :session}))
+
 (defn snapshot []
   (let [repos (load-repos)
         per-repo (vec
@@ -112,12 +194,18 @@
                                             "high" 2 "stop-the-line" 3}]
                                   (if (> (get rank t 0) (get rank acc 0)) t acc)))
                               "silent"))
-        max-pressure (apply max 0.0 (map :P per-repo))]
+        max-pressure (apply max 0.0 (map :P per-repo))
+        agents (fetch-agents)
+        sessions (mapv session-record agents)
+        pool (fetch-pool)]
     {:generated-at (str (java.time.Instant/now))
      :nominals nominals
      :max-tier max-tier
      :max-pressure max-pressure
-     :per-repo per-repo}))
+     :per-repo per-repo
+     ;; Per D-01: each session is its own AIF head; War Machine consumes.
+     :sessions sessions
+     :pool pool}))
 
 (defn parse-args [args]
   (loop [opts {:out default-out} remaining args]
