@@ -169,6 +169,78 @@ Per Joe's framing 2026-05-04: each insight in this mission gets captured as a fl
 
 These are the first round; more land as the mission progresses.
 
+## Generalisation: peripheral as genus, per-artifact-class peripherals as species
+
+The Sokoban architecture isn't pattern-specific. The structural genus is:
+
+> **A pre-write capability envelope for a typed-artifact class, with a
+> single bound `submit-draft!` action, a parser+rulebook engine that
+> either canonicalises the draft or refuses with structured violations,
+> and no other write-path exposed inside the surface.**
+
+Per-artifact-class peripherals are species of this genus. The pattern
+peripheral (this mission's Level 1) is the first.
+
+### Callback to M-bounded-in-flight-state — FS→Git peripheral as a sibling species
+
+`futon3c/holes/missions/M-bounded-in-flight-state.md` ships a *Block*
+discipline: every commit lives inside one revolution of the futonic
+loop (Identification / Specification / Elaboration / Passion /
+Closure), with a `Block: <kind>-<YYYY-MM-DD>-<slug>$` footer in the
+commit message naming the block. The block-id parser, the
+`.futon-disposition.edn` shape, and the per-block phase predicates
+are all already in place in futon3c.
+
+That mission has been handled *classically* — pre-commit hooks,
+commit-message parsers, evidence emission on commit. The architecture
+is structurally the same Sokoban shape as the pattern peripheral:
+
+| Pattern peripheral | FS→Git peripheral (Block discipline) |
+|---|---|
+| Input: `{author, target-path, draft-body}` | Input: `{author, intended-block-id, staged-paths, message-draft}` |
+| Engine: canonical parser + rulebook + admitted-set | Engine: `Block:` footer parser + phase predicates + staged-change checks |
+| Refusal: `:missing-conclusion`, `:non-canonical-clause`, ... | Refusal: `:missing-block-id`, `:phase-mismatch`, `:closure-without-passion`, ... |
+| Output: canonical `.flexiarg` written via classical `spit` | Output: canonical `git commit` lands with `Block:` footer |
+| Witness (Level 4): pattern→code receipts | Witness: block-as-mana-award per the Block-as-futonic-revolution pattern |
+
+The interesting overlap with classical: the peripheral's *predicate*
+is mostly classical (regex, file-presence, FS-state checks);
+LLM-involvement only enters for cases like "did this commit's diff
+actually embody the named pattern?" where geometric-witness reasoning
+kicks in. That's the same Level-4 territory this mission names. **A
+FS→Git peripheral and the pattern peripheral could share the same
+Level-1/Level-4 architecture**, with different parsers and different
+witness shapes — the "pre-write capability envelope with structured
+refusal" is the genus, and per-artifact-class peripherals are species.
+
+### Possible follow-on excursion
+
+When this mission's Level 1 wiring lands in futon3c session-mode
+dispatch (the peripheral becomes a real session surface, not just a
+function call), the same dispatch substrate could host an FS→Git
+peripheral for Block discipline. Excursion shape:
+`E-fs-git-peripheral.md` (futon3c), companion to
+`E-pattern-peripheral.md` (futon3) — both species under one
+peripheral-as-genus framing.
+
+Other candidate species worth listing here so future authors notice:
+
+- **Mission-doc peripheral** — author a `holes/missions/M-*.md` only
+  via `submit-mission-draft!`; engine validates required sections,
+  cross-refs, and status-line shape.
+- **Disposition peripheral** — author `.futon-disposition.edn` only
+  via the disposition util namespace's `submit-disposition!`; engine
+  validates against the `bounded-disposition` faculty's vocabulary.
+- **Evidence peripheral** — append to the futon1a evidence stream
+  only via `submit-evidence!`; engine validates `event` field against
+  the registered event taxonomy.
+
+Each species shares the genus's no-leakage / structured-refusal /
+single-bound-action discipline; the parsers and predicates differ.
+The genus may eventually crystallise as its own pattern under
+`library/system-coherence/peripheral-as-pre-write-envelope.flexiarg`
+or similar.
+
 ## Checkpoints
 
 ### 2026-05-04 — mission drafted; Level-1 substrate working
