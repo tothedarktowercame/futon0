@@ -62,6 +62,15 @@
   :type 'integer
   :group 'stack-hud-widgets)
 
+(defcustom stack-hud-widget-invariant-queue-fetch-limit 10000
+  "Max entries fetched for the invariant-queue widget.
+Larger than `stack-hud-widget-fetch-limit' because pipeline-tracer
+opens are emitted at boot and may be days old; without tag-filtering on
+the futon1a HTTP endpoint, the recent-N-entries window must reach back
+far enough to include them. Drop once the endpoint accepts `tags='."
+  :type 'integer
+  :group 'stack-hud-widgets)
+
 (defcustom stack-hud-widget-fetch-timeout 5
   "HTTP timeout (seconds) for a probe call."
   :type 'integer
@@ -1197,11 +1206,12 @@ Negative values = past target. Returns nil if TARGET-ISO unparseable."
           (truncate (/ delta-secs (* 60 60 24))))
       (error nil))))
 
-(defun stack-hud-widget--fetch-coordination (since-iso)
-  "Fetch up to fetch-limit coordination entries since SINCE-ISO."
+(defun stack-hud-widget--fetch-coordination (since-iso &optional limit)
+  "Fetch up to LIMIT coordination entries since SINCE-ISO.
+LIMIT defaults to `stack-hud-widget-fetch-limit'."
   (let* ((base (string-remove-suffix "/" stack-hud-widget-evidence-base-url))
          (qs (format "?type=coordination&limit=%d&since=%s"
-                     stack-hud-widget-fetch-limit
+                     (or limit stack-hud-widget-fetch-limit)
                      (url-hexify-string since-iso)))
          (url (concat base "/api/alpha/evidence" qs))
          (url-request-method "GET")
@@ -1236,7 +1246,9 @@ Negative values = past target. Returns nil if TARGET-ISO unparseable."
   "Aggregate invariant-queue motion data for the widget."
   (let* ((days stack-hud-widget-invariant-queue-window-days)
          (since (stack-hud-widget--days-iso-since days))
-         (entries (stack-hud-widget--fetch-coordination since))
+         (entries (stack-hud-widget--fetch-coordination
+                   since
+                   stack-hud-widget-invariant-queue-fetch-limit))
          (err (stack-hud-widget--err? entries)))
     (if err
         (list :since since :error err)
