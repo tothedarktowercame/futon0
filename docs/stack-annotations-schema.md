@@ -96,6 +96,15 @@ known compositional defects.
 
 ## 2. The schema
 
+> *v0.5 note (2026-05-17).* The §2 examples below predate the Q-SA1..Q-SA5
+> resolutions in §4. They are accurate on structure but show composite
+> sections (`:kind :leaf` / `:kind :arm`) carrying `:aif-region` fields.
+> Per **Q-SA5**, composites do *not* carry `:aif-region`; only atomic
+> annotations do, and composites instead carry `:decomposes-into
+> [<section-id> ...]`. The prototype ingest pass produced by Phase 2.d.2
+> will reflect the resolution; this section will be revised when the
+> prototype lands.
+
 ### 2.1 Top-level shape
 
 ```edn
@@ -330,21 +339,55 @@ entities, and the resolution path (or its absence).
 - `~/code/futon7/holes/M-interim-director-proxy-metric-inventory.md` — §2 arms (this schema's `:active-surface` source); §4.5 session plan tracking
 - `~/code/futon5a/data/alignment.edn` — strategic sorry topology (this schema's `:stack/sorry-attaches-to-section` source once that vocabulary is exercised)
 
-## 4. Open questions
+## 4. Open questions — RESOLVED 2026-05-17
 
-- **Q-SA1.** Where does `stack-annotations.edn` physically live? Candidates: `futon0/data/`, `futon5a/holes/`, `futon3/holes/`. Recommend `futon5a/holes/stack-annotations.edn` — sibling to the stories/ corpus it lifts from, futon5a's substrate-2 mission home.
-- **Q-SA2.** Does the ingest pass also lift mission docs (`holes/missions/M-*.md`) as sections, or are they out of scope at first cut? Probably out of scope for v1; missions are *acted on*, not *annotated about*.
-- **Q-SA3.** When two arms touch the same leaf (e.g. Arm A and Arm F both touch the arxiv-related leaves), how are the `:stack/arm-feeds-section` hyperedges typed? Recommend allowing multi-endpoint hyperedges (a single annotation with N `:role :arm` endpoints rather than N pairwise annotations).
-- **Q-SA4.** Strategic SORRY topology: should it live as first-class sections (`:kind :sorry`) or as annotations (`:hx-type :stack/sorry-attaches-to-section`)? Sorrys are entities with lifecycle, not relations — recommend first-class sections.
-- **Q-SA5.** The npt schema has `:section/aif-region` deterministic per section. At stack scope, some sections (arms, leaves) might *span* multiple regions. Allow `:aif-region` to be a vector?
+The five Q-SA questions were settled in conversation 2026-05-17. Resolutions:
+
+### Q-SA1 — Physical location: `~/code/futon5a/holes/stack-annotations.edn`
+
+Sibling to the `stories/` corpus it lifts from. Operator-note: *"futon5a is private so we don't risk anything by working there at first; we can always change the location later."*
+
+### Q-SA2 — Mission docs and code/evidence layers: OUT OF SCOPE for v1
+
+Missions are acted-on, not annotated-about. The stack already has two or three different mission parsing toolkits (notably **Portfolio Inference**, per war-bulletin-9); the essay should not duplicate that work. By the same reasoning, mission-level + further evidentiary layers (code, Evidence Landscape) wait until the v1 framework is in place. They become candidates for later integration once their projection into the stack-annotations shape is understood.
+
+### Q-SA3 — Multi-arm endpoints: multi-endpoint hyperedges
+
+A single `:stack/arm-feeds-section` annotation can have N `:role :arm` endpoints rather than producing N pairwise annotations. **This is taking our own ideas about compositionality seriously** (operator framing); the rationale should be expanded in `~/code/futon4/README-rewriting.md` as a follow-up. The pattern unlocks value-creation and morphogenetic moves downstream (composite arms emerge from multi-endpoint structure rather than being reductively predeclared).
+
+### Q-SA4 — Strategic SORRYs: first-class sections (`:kind :sorry`)
+
+Sorrys have lifecycle (opened → progressing → closed → re-opened) and their own annotations (which arm raised them, which fitness criterion they witness). They are entities, not relations. *In line with the Q-SA3 compositionality discipline, this can become a* **way of working**, *not just an ingest-phase one-off* — i.e. when new sorrys are raised in future, they enter as sections, not annotations, by default.
+
+### Q-SA5 — Hierarchical decomposition: each annotation gets one region; composites recompose
+
+**The deepest of the five.** Reject both "single value, force a pick" and "vector". Instead: **decompose composite entities until each leaf annotation can take a single, honest `:aif-region`; recompose on the way back up.**
+
+Operator framing: *"For example 'VSAT consulting' does multiple things — helping understand story structure, yielding revenue, giving a chance to practice computational modelling of strategic options, etc. — any one of those things might get a single tag, rather than being reductive about 'VSAT consulting' itself. The idea here is that we're applying AIF in its hierarchical aspect. Check out Figure 3 of rsif.2017.0792.pdf."*
+
+The reference is to **Friston et al. 2018, "The Markov blankets of life," J. R. Soc. Interface 15:20170792, Figure 3**, which depicts nested Markov blankets of Markov blankets at different levels of organisation: *blanket (I model the world)* → *blanket of blankets (we model the world)* → *blankets within blankets (we model ourselves modelling the world)*. Each level has its own Markov-blanket structure; the higher level's active states comprise the lower level's sensory states.
+
+**Operationalisation for this schema.**
+
+| Entity scale | Region typing | Example |
+|---|---|---|
+| Atomic annotation (leaf of the decomposition tree) | **single `:aif-region`**, deterministic | "VSAT — yield-revenue-event": `:active-surface`; "VSAT — practice-strategic-modelling": `:internal`; "VSAT — understand-VSAT-story-structure": `:internal`; "VSAT — build-buyer-relationship": `:boundary` |
+| Composite section (a node in the decomposition tree) | **no `:aif-region` field** — composites are typed by *the distribution* of their children's tags, computed on read | "Arm D — VSAT consulting" has a region-distribution `{:active-surface 0.4 :internal 0.4 :boundary 0.2}` derived from its constituent annotations |
+| Top of the hierarchy (stack-level) | distribution over the whole stack, computed across all leaves | Used by reading surfaces to render region-coloured overviews |
+
+This treats the Markov-blanket-of-Markov-blankets structure as the *schema's typing system*, not as a metaphor over a flat one. The cost: ingest must walk decomposition trees, not just sections. The gain: the schema cannot lie about composite typing, because composites are never authored with a region; their region is *necessarily* an honest function of their parts.
+
+A new field on composite sections: `:decomposes-into [<section-id> ...]`. The decomposition tree is itself first-class data; it does not collapse to a flat list. The ingest pass must explicitly type each leaf and explicitly name decompositions; nothing happens by default.
 
 ## 5. Versioning + next steps
 
-This is **v0** of the schema. v1 will land once:
+This is **v0.5** of the schema (was v0; v0.5 lands the Q-SA1..Q-SA5 resolutions). v1 will land once:
 
-1. Q-SA1 through Q-SA5 are settled (operator decisions).
+1. ~~Q-SA1 through Q-SA5 are settled (operator decisions).~~ ✓ done 2026-05-17.
 2. A prototype ingest pass (β) lifts ≥1 leaf cleanly under this schema.
 3. The lifted artefact is consumed by at least one surface (War Machine `scan-*` or VSATARCS overlay).
+
+**Follow-up task (added 2026-05-17).** Expand `~/code/futon4/README-rewriting.md` with the Q-SA3 / Q-SA5 compositionality rationale, naming hierarchical-AIF (Figure 3 of rsif.2017.0792) as the structural reference. Per operator framing, this is *taking our own ideas about compositionality seriously* — the same discipline that governs typed-rewrite f:(A,B)→C composition should govern multi-endpoint hyperedges and decomposition-then-recomposition of regions.
 
 Per the inventory's revised phase numbering:
 
