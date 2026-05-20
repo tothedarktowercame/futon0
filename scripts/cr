@@ -165,6 +165,110 @@ build_auto_register_payload() {
   printf '%s' "${payload}"
 }
 
+build_restore_payload() {
+  local agent_id="$1"
+  local socket_name="$2"
+  local session_id="$3"
+  local session_file="$4"
+  local payload='{"agent-id":"'"$(json_escape "${agent_id}")"'","type":"claude","cwd":"'"$(json_escape "$(pwd)")"'"'
+  if [[ -n "${socket_name}" ]]; then
+    payload+=',"emacs-socket":"'"$(json_escape "${socket_name}")"'"'
+  fi
+  if [[ -n "${session_id}" ]]; then
+    payload+=',"session-id":"'"$(json_escape "${session_id}")"'"'
+  fi
+  if [[ -n "${session_file}" ]]; then
+    payload+=',"session-file":"'"$(json_escape "${session_file}")"'"'
+  fi
+  payload+='}'
+  printf '%s' "${payload}"
+}
+
+find_live_claude_agents_for_session() {
+  local sid="$1"
+  [[ -n "${sid}" ]] || return 0
+  curl -sS --max-time 5 "${evidence_base%/}/api/alpha/agents" 2>/dev/null | \
+    python3 - "$sid" <<'PY'
+import json
+import re
+import sys
+
+sid = sys.argv[1]
+try:
+    payload = json.load(sys.stdin)
+except Exception:
+    raise SystemExit(0)
+
+agents = payload.get("agents") or {}
+matches = []
+for agent_id, info in agents.items():
+    if not isinstance(info, dict):
+        continue
+    if info.get("type") != "claude":
+        continue
+    if info.get("session-id") != sid:
+        continue
+    metadata = info.get("metadata") or {}
+    if metadata.get("proxy?") or metadata.get("remote?"):
+        continue
+    matches.append(agent_id)
+
+def sort_key(agent_id: str):
+    m = re.match(r"^claude-(\d+)$", agent_id)
+    return (0, int(m.group(1))) if m else (1, agent_id)
+
+for agent_id in sorted(matches, key=sort_key):
+    print(agent_id)
+PY
+}
+
+find_attached_buffer_for_session() {
+  local socket_name="$1"
+  local sid="$2"
+  [[ -n "${sid}" ]] || return 0
+  find_attached_buffer_common "${socket_name}" "claude-repl-find-buffer-by-session-id" "${sid}"
+}
+
+find_attached_buffer_for_agent() {
+  local socket_name="$1"
+  local agent_id="$2"
+  [[ -n "${agent_id}" ]] || return 0
+  find_attached_buffer_common "${socket_name}" "claude-repl-find-buffer-by-agent-id" "${agent_id}"
+}
+
+find_attached_buffer_common() {
+  local socket_name="$1"
+  local finder_fn="$2"
+  local needle="$3"
+  [[ -n "${needle}" ]] || return 0
+  local escaped_chat escaped_repl escaped_sid
+  escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
+  escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
+  escaped_sid="$(elisp_escape "${needle}")"
+  "${emacsclient_bin}" -s "${socket_name}" --eval \
+    "(progn
+       (setq load-prefer-newer t)
+       (add-to-list 'load-path \"${emacs_dir}\")
+       (load \"${escaped_chat}\" nil t)
+       (load \"${escaped_repl}\" nil t)
+       (when-let ((buf (${finder_fn} \"${escaped_sid}\")))
+         (buffer-name buf)))" 2>/dev/null | tr -d '"'
+}
+
+switch_to_buffer() {
+  local socket_name="$1"
+  local buffer_name="$2"
+  local escaped_buffer
+  escaped_buffer="$(elisp_escape "${buffer_name}")"
+  if running_inside_emacs; then
+    "${emacsclient_bin}" -s "${socket_name}" -n --eval \
+      "(pop-to-buffer \"${escaped_buffer}\")" >/dev/null 2>&1 || true
+    exit 0
+  fi
+  exec "${emacsclient_bin}" -s "${socket_name}" -t --eval \
+    "(pop-to-buffer \"${escaped_buffer}\")"
+}
+
 # --- Args --------------------------------------------------------------------
 
 sid=""
@@ -272,17 +376,60 @@ escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
 escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
 
 emacs_socket="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
-payload="$(build_auto_register_payload "${emacs_socket}" "${sid}")"
-reg_result=$(curl -sS --max-time 5 \
-  -H "Content-Type: application/json" \
-  -X POST \
-  -d "${payload}" \
-  "${evidence_base}/api/alpha/agents/auto" 2>&1)
-echo "Registration: ${reg_result}"
+
+aid=""
+restore_mode=false
+if [[ -n "${sid}" ]]; then
+  mapfile -t live_agents < <(find_live_claude_agents_for_session "${sid}")
+  if (( ${#live_agents[@]} > 0 )); then
+    aid="${live_agents[0]}"
+    restore_mode=true
+    if (( ${#live_agents[@]} > 1 )); then
+      echo "Warning:      multiple live Claude lanes claim ${sid:0:8}... -> ${live_agents[*]}"
+    fi
+    echo "Action:       reusing live Claude lane ${aid} for session ${sid:0:8}..."
+    attached_buf="$(find_attached_buffer_for_agent "${socket}" "${aid}")"
+    if [[ -n "${attached_buf}" && "${attached_buf}" != "nil" ]]; then
+      echo "Action:       lane ${aid} already attached in ${attached_buf}"
+      switch_to_buffer "${socket}" "${attached_buf}"
+    fi
+  fi
+fi
+
+if [[ -n "${sid}" && -z "${aid}" ]]; then
+  attached_buf="$(find_attached_buffer_for_session "${socket}" "${sid}")"
+  if [[ -n "${attached_buf}" && "${attached_buf}" != "nil" ]]; then
+    echo "Action:       session already attached in ${attached_buf}"
+    switch_to_buffer "${socket}" "${attached_buf}"
+  fi
+fi
+
+if $restore_mode; then
+  sf="/tmp/futon-session-id-${aid}"
+  payload="$(build_restore_payload "${aid}" "${emacs_socket}" "${sid}" "${sf}")"
+  reg_result=$(curl -sS --max-time 5 \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d "${payload}" \
+    "${evidence_base%/}/api/alpha/agents/restore" 2>&1)
+  echo "Restore:      ${reg_result}"
+else
+  payload="$(build_auto_register_payload "${emacs_socket}" "${sid}")"
+  reg_result=$(curl -sS --max-time 5 \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d "${payload}" \
+    "${evidence_base%/}/api/alpha/agents/auto" 2>&1)
+  echo "Registration: ${reg_result}"
+fi
 
 aid="$(echo "${reg_result}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agent-id',''))" 2>/dev/null || echo "")"
 if [[ -z "${aid}" ]]; then
-  echo "Registration failed: could not parse agent-id from /agents/auto response" >&2
+  if $restore_mode; then
+    echo "Restore failed: could not parse agent-id from /agents/restore response" >&2
+  else
+    echo "Registration failed: could not parse agent-id from /agents/auto response" >&2
+  fi
   exit 1
 fi
 
@@ -323,6 +470,7 @@ switch_form="(switch-to-buffer buf)"
 
 claude_repl_eval="$(cat <<EOF
 (progn
+    (setq load-prefer-newer t)
     (add-to-list 'load-path "${emacs_dir}")
     (load "${escaped_chat}" nil t)
     (load "${escaped_repl}" nil t)
