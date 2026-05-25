@@ -24,7 +24,9 @@
 ;;
 ;; ENTRY POINT
 ;;
-;;   M-x stack-hud-2-toggle   (default global keybinding: ⁂  U+2042)
+;;   M-x stack-hud            (primary entry point)
+;;   M-x stack-hud-2-toggle   (same toggle, direct command)
+;;   M-x stack-hud-1          (legacy side-window HUD)
 ;;
 ;;     - If no HUD frame exists, create it.
 ;;     - If a HUD frame exists but is not focused, raise/focus it.
