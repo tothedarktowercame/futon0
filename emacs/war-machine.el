@@ -16,8 +16,15 @@
   :group 'tools)
 
 (defcustom war-machine-script-dir
-  (expand-file-name "~/code/futon2/scripts")
-  "Directory containing the war machine babashka scripts."
+  (expand-file-name "~/code/futon2")
+  "Directory the war machine babashka scripts run from.
+
+Must be the futon2 project root (NOT futon2/scripts) so the relative
+classpath in `war-machine' (`-cp src:scripts:resources:.') resolves to
+the right paths. The futon2.report.war-machine namespace requires
+futon2.aif.* namespaces which live under src/; if cwd is futon2/scripts/
+those won't be on bb's classpath and the load fails with `Could not
+locate futon2/aif/action_proposer.clj' (operator-surfaced 2026-05-24)."
   :type 'directory
   :group 'war-machine)
 
@@ -78,7 +85,7 @@ With prefix arg DAYS, override the lookback window."
     (message "War Machine: scanning (%d-day window)..." d)
     (setq war-machine--process
           (start-process "war-machine" proc-buf
-                         "bb" "-cp" "." "-m" "futon2.report.war-machine"
+                         "bb" "-cp" "src:scripts:resources:." "-m" "futon2.report.war-machine"
                          (number-to-string d)))
     (set-process-sentinel war-machine--process #'war-machine--sentinel)))
 
