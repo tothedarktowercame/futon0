@@ -22,9 +22,16 @@ evidence_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
 session_file="${CLAUDE_SESSION_FILE:-/tmp/futon-session-id}"
 emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
 script_real="$(readlink -f "${BASH_SOURCE[0]}")"
+futon3c_root="${FUTON3C_ROOT:-${HOME}/code/futon3c}"
 emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
 claude_sessions_root="${CLAUDE_SESSIONS_ROOT:-${HOME}/.claude/sessions}"
 claude_projects_root="${CLAUDE_PROJECTS_ROOT:-${HOME}/.claude/projects}"
+socket_lib="${futon3c_root}/scripts/emacs-socket-lib.sh"
+
+if [[ -f "${socket_lib}" ]]; then
+  # shellcheck source=/home/joe/code/futon3c/scripts/emacs-socket-lib.sh
+  source "${socket_lib}"
+fi
 
 running_inside_emacs() {
   [[ -n "${INSIDE_EMACS:-}" || -n "${EMACS:-}" ]]
@@ -33,39 +40,14 @@ running_inside_emacs() {
 # --- Socket discovery --------------------------------------------------------
 
 find_emacs_socket() {
-  # 1. Explicit env
-  if [[ -n "${FUTON3C_EMACS_SOCKET:-}" ]]; then
-    echo "${FUTON3C_EMACS_SOCKET}"
-    return 0
+  if declare -F futon_preferred_emacs_socket >/dev/null 2>&1; then
+    futon_preferred_emacs_socket && return 0
   fi
-  if [[ -n "${EMACS_SOCKET_NAME:-}" ]]; then
-    echo "${EMACS_SOCKET_NAME}"
-    return 0
+  echo "No preferred Emacs daemon found. Starting one..." >&2
+  if declare -F futon_start_preferred_emacs_daemon >/dev/null 2>&1; then
+    futon_start_preferred_emacs_daemon && return 0
   fi
-  # 2. Pick from /run/user/<uid>/emacs/, preferring 'server' (Joe's
-  #    interactive Emacs, where Agency's *server* buffer lives) then
-  #    'futon' (the headless daemon cr spawns). Only spawn a new
-  #    'futon' daemon if no socket exists at all.
-  local emacs_dir="/run/user/$(id -u)/emacs"
-  if [[ -d "$emacs_dir" ]]; then
-    if [[ -S "$emacs_dir/server" ]]; then
-      echo "server"
-      return 0
-    fi
-    if [[ -S "$emacs_dir/futon" ]]; then
-      echo "futon"
-      return 0
-    fi
-    local sockets=("$emacs_dir"/*)
-    if [[ ${#sockets[@]} -ge 1 && -S "${sockets[0]}" ]]; then
-      basename "${sockets[0]}"
-      return 0
-    fi
-  fi
-  # 3. No daemon — start one
-  echo "No Emacs daemon found. Starting one..." >&2
-  emacs --daemon=futon >/dev/null 2>&1
-  echo "futon"
+  return 1
 }
 
 # --- Session handling --------------------------------------------------------

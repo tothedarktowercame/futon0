@@ -1,0 +1,360 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# eoi-new — Start an eoi-engine interview in an Emacs Claude REPL.
+#
+# Spawns a fresh Claude agent in the claude-repl peripheral and inhabits
+# it as the eoi-engine described in ~/code/algorithms/eoi-engine.md. The
+# agent reads the spec + schema + (optional) context handle and runs the
+# branching state-accumulating interview per the chosen flash profile.
+#
+# Usage:
+#   eoi-new                              # interactive flash-type selector
+#   eoi-new <flash-type>                 # named flash
+#   eoi-new <flash-type> --context <p>   # pass a context handle (job posting, Side A spec, etc.)
+#   eoi-new <flash-type> --out <dir>     # override the artefact destination
+#
+# Flash types are auto-discovered from EDN profile files at
+#   ~/code/futon3/library/peripherals/head-flash/*.edn
+# Each file is the canonical source of its own :flash/id, :flash/applies-to
+# (description), and :flash/predicts :round-collapse? flag. To add a flash,
+# drop a new EDN file in that directory; this script will pick it up.
+# See ~/code/algorithms/eoi-engine.md §"Flash profile schema" for the shape.
+#
+# Requires: Emacs daemon running, Agency (futon3c) on port 7070.
+# Companion to: cr (long-running REPL). eoi-new is closure-detected one-shot.
+
+evidence_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
+emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
+script_real="$(readlink -f "${BASH_SOURCE[0]}")"
+emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
+eoi_engine_spec="${EOI_ENGINE_SPEC:-/home/joe/code/algorithms/eoi-engine.md}"
+eoi_schema="${EOI_SCHEMA:-/home/joe/code/atthangika-buckets.json}"
+
+running_inside_emacs() { [[ -n "${INSIDE_EMACS:-}" || -n "${EMACS:-}" ]]; }
+
+json_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "${1:-}"; }
+elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
+
+# --- Flash profile registry (auto-discovered from EDN profile files) --------
+#
+# Scans ~/code/futon3/library/peripherals/head-flash/*.edn at startup and
+# extracts :flash/id, :flash/applies-to, and :flash/predicts :round-collapse?
+# from each. To add a flash: drop a new EDN profile in that directory; this
+# script picks it up next run. No script edits required.
+
+flash_profile_dir="${EOI_FLASH_PROFILE_DIR:-$(cd "$(dirname "${script_real}")/../../futon3/library/peripherals/head-flash" && pwd 2>/dev/null || echo "${HOME}/code/futon3/library/peripherals/head-flash")}"
+
+flash_ids=()
+flash_descs=()
+flash_round_collapses=()
+
+discover_flashes() {
+  if [[ ! -d "${flash_profile_dir}" ]]; then
+    echo "eoi-new: flash profile dir not found: ${flash_profile_dir}" >&2
+    return 1
+  fi
+  shopt -s nullglob
+  local f
+  for f in "${flash_profile_dir}"/*.edn; do
+    local fid desc rc
+    fid="$(sed -nE 's/.*:flash\/id[[:space:]]+"([^"]+)".*/\1/p' "${f}" | head -1)"
+    [[ -z "${fid}" ]] && continue
+    desc="$(sed -nE 's/.*:flash\/applies-to[[:space:]]+"([^"]+)".*/\1/p' "${f}" | head -1)"
+    rc="$(sed -nE 's/.*:round-collapse\?[[:space:]]+(true|false).*/\1/p' "${f}" | head -1)"
+    [[ -z "${rc}" ]] && rc="false"
+    flash_ids+=("${fid}")
+    flash_descs+=("${desc:-<no :flash/applies-to description in profile>}")
+    flash_round_collapses+=("${rc}")
+  done
+  shopt -u nullglob
+  if [[ ${#flash_ids[@]} -eq 0 ]]; then
+    echo "eoi-new: no flash profiles discovered under ${flash_profile_dir}" >&2
+    return 1
+  fi
+}
+
+discover_flashes || exit 1
+
+flash_round_collapse() {
+  local q="$1" i
+  for ((i=0; i<${#flash_ids[@]}; i++)); do
+    if [[ "${flash_ids[i]}" == "${q}" ]]; then
+      echo "${flash_round_collapses[i]}"
+      return 0
+    fi
+  done
+  echo "false"
+}
+
+flash_known() {
+  local q="$1"
+  for f in "${flash_ids[@]}"; do
+    [[ "${f}" == "${q}" ]] && return 0
+  done
+  return 1
+}
+
+select_flash_interactive() {
+  # Outputs the chosen flash id on stdout.  Prompts on stderr so stdout
+  # remains the single piece of data the caller consumes.
+  {
+    echo
+    echo "Choose a flash profile:"
+    echo
+    local i
+    for ((i=0; i<${#flash_ids[@]}; i++)); do
+      printf "  %d) %-44s — %s\n" "$((i+1))" "${flash_ids[i]}" "${flash_descs[i]}"
+    done
+    echo
+  } >&2
+
+  local choice=""
+  while :; do
+    printf "Selection [1-%d]: " "${#flash_ids[@]}" >&2
+    if ! read -r choice; then
+      echo "eoi-new: no selection (stdin closed); aborting." >&2
+      exit 1
+    fi
+    if [[ "${choice}" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#flash_ids[@]} )); then
+      printf '%s\n' "${flash_ids[$((choice-1))]}"
+      return 0
+    fi
+    echo "Please enter a number between 1 and ${#flash_ids[@]}." >&2
+  done
+}
+
+# --- Socket discovery (replica of cr's logic) --------------------------------
+
+find_emacs_socket() {
+  if [[ -n "${FUTON3C_EMACS_SOCKET:-}" ]]; then echo "${FUTON3C_EMACS_SOCKET}"; return 0; fi
+  if [[ -n "${EMACS_SOCKET_NAME:-}" ]]; then echo "${EMACS_SOCKET_NAME}"; return 0; fi
+  local dir="/run/user/$(id -u)/emacs"
+  if [[ -d "$dir" ]]; then
+    if [[ -S "$dir/server" ]]; then echo "server"; return 0; fi
+    if [[ -S "$dir/futon"  ]]; then echo "futon";  return 0; fi
+    local socks=("$dir"/*)
+    if [[ ${#socks[@]} -ge 1 && -S "${socks[0]}" ]]; then basename "${socks[0]}"; return 0; fi
+  fi
+  echo "No Emacs daemon found. Starting one..." >&2
+  emacs --daemon=futon >/dev/null 2>&1
+  echo "futon"
+}
+
+# --- Argv --------------------------------------------------------------------
+
+flash_type=""
+context_path=""
+out_dir=""
+
+usage() {
+  cat <<'USAGE'
+Usage: eoi-new [<flash-type>] [--context <path>] [--out <dir>]
+
+If no flash-type is given an interactive selector lists available flashes.
+
+  eoi-new
+  eoi-new eoi-outward-into-self-authored-institution \
+    --context ~/npt/applications/hyperreal-director-side-a/hyperreal-director-side-a-v1.md \
+    --out ~/npt/applications/hyperreal-director-side-b/
+
+See ~/code/algorithms/eoi-engine.md for the engine specification.
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --help|-h) usage; exit 0 ;;
+    --context) context_path="${2:-}"; shift 2 ;;
+    --out)     out_dir="${2:-}";      shift 2 ;;
+    --*) echo "eoi-new: unknown option: $1" >&2; usage >&2; exit 2 ;;
+    *)
+      if [[ -z "${flash_type}" ]]; then
+        flash_type="$1"; shift
+      else
+        echo "eoi-new: unexpected positional argument: $1" >&2; usage >&2; exit 2
+      fi
+      ;;
+  esac
+done
+
+if [[ -z "${flash_type}" ]]; then
+  flash_type="$(select_flash_interactive)"
+fi
+
+if ! flash_known "${flash_type}"; then
+  echo "eoi-new: unknown flash type: ${flash_type}" >&2
+  echo "Known flashes: ${flash_ids[*]}" >&2
+  exit 2
+fi
+
+if [[ -n "${context_path}" ]]; then
+  context_path="$(readlink -f "${context_path}" 2>/dev/null || echo "${context_path}")"
+  if [[ ! -e "${context_path}" ]]; then
+    echo "eoi-new: --context path does not exist: ${context_path}" >&2
+    exit 2
+  fi
+fi
+
+if [[ -n "${out_dir}" ]]; then
+  out_dir="$(readlink -f "${out_dir}" 2>/dev/null || echo "${out_dir}")"
+fi
+
+round_collapse="$(flash_round_collapse "${flash_type}")"
+
+echo "--- eoi-new ---"
+echo "Flash:        ${flash_type}"
+echo "Round-collapse: ${round_collapse}"
+echo "Context:      ${context_path:-<none — engine sniffs from cwd>}"
+echo "Out:          ${out_dir:-<engine default per flash>}"
+echo "Spec:         ${eoi_engine_spec}"
+echo "Schema:       ${eoi_schema}"
+
+# --- Agency reachability -----------------------------------------------------
+
+agency_reachable() {
+  curl -sS --max-time 2 "${evidence_base}/api/alpha/agents" >/dev/null 2>&1
+}
+
+if ! agency_reachable; then
+  echo "Agency:       NOT reachable at ${evidence_base}" >&2
+  echo "              start it via cr or the dev-laptop-env script and retry." >&2
+  exit 1
+fi
+echo "Agency:       reachable"
+
+# --- Agent registration ------------------------------------------------------
+
+socket="$(find_emacs_socket)" || exit 1
+echo "Emacs socket: ${socket}"
+
+emacs_socket_name="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
+
+reg_payload="$(cat <<JSON
+{"type":"claude","cwd":"$(json_escape "$(pwd)")","emacs-socket":"$(json_escape "${emacs_socket_name}")"}
+JSON
+)"
+reg_result="$(curl -sS --max-time 5 -H "Content-Type: application/json" -X POST -d "${reg_payload}" "${evidence_base%/}/api/alpha/agents/auto" 2>&1)"
+echo "Registration: ${reg_result}"
+
+aid="$(echo "${reg_result}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agent-id',''))" 2>/dev/null || echo "")"
+if [[ -z "${aid}" ]]; then
+  echo "eoi-new: registration failed; could not parse agent-id." >&2
+  exit 1
+fi
+sf="/tmp/futon-session-id-${aid}"
+echo "Agent:        ${aid}"
+echo "Session file: ${sf}"
+
+# --- Inhabitation prompt -----------------------------------------------------
+
+# Lookup description for the chosen flash.
+flash_desc=""
+for ((i=0; i<${#flash_ids[@]}; i++)); do
+  if [[ "${flash_ids[i]}" == "${flash_type}" ]]; then
+    flash_desc="${flash_descs[i]}"
+    break
+  fi
+done
+
+context_line="(none — engine sniffs from cwd per spec)"
+[[ -n "${context_path}" ]] && context_line="${context_path}"
+out_line="(engine default per flash and cwd)"
+[[ -n "${out_dir}" ]] && out_line="${out_dir}"
+
+inhabit_prompt="Runtime surface contract:
+- Surface: emacs-claude-repl (agent ${aid}).
+- Your output appears in this REPL buffer; Joe reads and responds here.
+- Working directory: $(pwd)
+
+Your role this session: the eoi-engine peripheral. You are NOT a general assistant for this session — you operationalise the spec below. The dialogue is one-shot and closure-detected; when the flash's closure rule is met you assemble the artefact and stop.
+
+READ FIRST, in order:
+1. ${eoi_engine_spec}    (engine spec — load-bearing)
+2. ${eoi_schema}        (schema: path_arrows, factor_objects, institution_objects, eoi_instances)
+3. ${context_line}      (context handle for this run, if a path)
+
+Flash profile for this run: ${flash_type}
+  ${flash_desc}
+  Round-collapse mode: ${round_collapse}
+
+Output destination: ${out_line}
+
+LOAD-BEARING INVARIANTS (the engine MUST honour these):
+- I1: No AI writing of the artefact body. Joe's words verbatim only. You order and provide minimal connective tissue (section labels, single italic orienting line per section). Paraphrase, summarisation, and substantive rewording are forbidden. Voice-preserving copy-edits (article correction, typos, punctuation) ARE allowed.
+- I3: One question per engine turn. NEVER batch questions, NEVER batch tensions. This applies to round-collapse mode too.
+- I7: Inhabited mode. No AI placeholder blocks inside the artefact body. If a tension is tagged 'address-now' but Joe declines to supply content, the engine offers retag-not-applicable OR block-closure (never silent insertion).
+- Referential integrity: any eoi_instances[].institution_object_ref must resolve to an existing institution_objects[].id; if missing, the engine creates it as part of write-back.
+- Inward emergent-tension capture: when Joe names open tensions at closure-offer time, tag them into tech_debt_carried_forward[] BEFORE assembling.
+- Essays landing rule: when you finish assembly, also emit Arxana Essays companion files so Joe can inspect the artefact immediately in `arxana://view/essays-home`.
+  - If the artefact lives in its own directory, write `annotations.el` and `load-into-emacs.el` there.
+  - If the artefact lives in a shared directory with multiple markdown artefacts, use named companions `<slug>-annotations.el` and `<slug>-load-into-emacs.el` to avoid collisions.
+  - The manifest may start with an empty `:annotations` list, but it MUST declare the essay entity and H2-level sections for the assembled artefact.
+  - The loader must register the manifest, add a catalog entry, and import only that manifest (same pattern as existing Anthropic / Glasgow / Hyperreal essay loaders).
+
+OPENING TURN (do this now):
+1. Read the three files above.
+2. Confirm back to Joe: flash type, round-collapse mode, context handle (with a 1-sentence summary if a file was read), output destination.
+3. Issue Q1 (Right View) per the spec's question-set generation step, in Joe's register-friendly behavioural-proxy phrasing.
+4. Wait. One question per turn.
+
+Joe is ready. Begin with the file reads and then Q1."
+
+# --- Launch the REPL buffer and stream the agent's first turn ---------------
+#
+# The inhabitation is dispatched via claude-repl--call-claude-streaming
+# directly, NOT via claude-repl-send-input. This is the same transport the
+# REPL's RET-send uses for the agent half — POST /api/alpha/invoke-stream,
+# NDJSON filter renders text events as a streaming "claude:" turn — but it
+# skips the user-side "joe:" message insertion that send-input does.
+#
+# Why: the inhabitation text is harness-authored (driven by Joe's choices but
+# not typed by Joe word-for-word). Rendering it as a "joe" turn would be a
+# false attribution. Instead, the buffer's first visible turn is the agent's
+# actual streamed response — labelled "claude" by the transport filter, not by
+# the harness. This preserves futon3c invariants I-1 (agent identity singular)
+# and I-2 (transport routes, does not synthesise): every byte rendered as
+# agent output came from the agent's own emission via the existing transport.
+
+escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
+escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
+escaped_inhabit="$(elisp_escape "${inhabit_prompt}")"
+
+claude_repl_eval="$(cat <<EOF
+(progn
+    (add-to-list 'load-path "${emacs_dir}")
+    (load "${escaped_chat}" nil t)
+    (load "${escaped_repl}" nil t)
+    (let* ((aid "${aid}")
+           (bufname (format "*claude-repl:%s*" aid))
+           (sf "${sf}")
+           (api-url (string-remove-suffix "/" agent-chat-agency-base-url))
+           (buf (get-buffer-create bufname))
+           (inhabit-text "${escaped_inhabit}"))
+      (with-current-buffer buf
+        (unless (eq major-mode 'claude-repl-mode) (claude-repl-mode))
+        (setq-local claude-repl--workspace-applied t)
+        (setq-local claude-repl-agent-id aid)
+        (setq-local claude-repl-api-url api-url)
+        (setq-local claude-repl-evidence-url (concat api-url "/api/alpha/evidence"))
+        (setq-local claude-repl-session-file sf))
+      (claude-repl--open-instance bufname agent-chat-agency-base-url aid sf)
+      (with-current-buffer buf
+        (claude-repl--init-display)
+        ;; Stream the agent's first turn directly via the transport filter,
+        ;; bypassing send-input's "joe:" message insertion. The NDJSON filter
+        ;; in claude-repl--call-claude-streaming labels the streamed text as a
+        ;; "claude" turn — the harness never authors agent output, and no
+        ;; user turn is faked.
+        (claude-repl--call-claude-streaming inhabit-text (lambda (_response) nil)))
+      (switch-to-buffer buf)
+      buf))
+EOF
+)"
+
+if running_inside_emacs; then
+  "${emacsclient_bin}" -s "${socket}" -n --eval "${claude_repl_eval}" 2>&1 || true
+  exit 0
+fi
+
+exec "${emacsclient_bin}" -s "${socket}" -t --eval "${claude_repl_eval}"

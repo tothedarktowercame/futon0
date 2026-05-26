@@ -422,4 +422,106 @@ Checkpoints in this mission are large-grain — quarterly rather than per-PR. Ea
 - Operator-burnout: managed.
 - **New (latent, not yet escalated)**: silent-failure-in-counters — `FAILED=N` and `:ok? false` counters surface counts but not causes; useful as a smoke alarm, weak as a diagnostic. Relevant to Q6 (debug surface).
 
+### 2026-05-21 — Q6 R12 narrow-take-up apparatus landed (bilateral R12 closure)
+
+This checkpoint sits inside Q6 — not at Q6's full scope (kill-switch + full
+debug surface + full reversal protocol), but at the **narrow R12-unblocking
+subset** named by claude-4's handoff
+`~/code/futon0/holes/handoffs/r12-to-stack-Q6-2026-05-21.md`. R12 (dual-loop
+hyperparameter inference) was the only outstanding R-criterion on both AIF
+apparatuses (WM writer + VSATARCS reader); both deferred it to here.
+
+Design choices: `M-the-futon-stack-Q6-r12-design-choices.md` (sibling file).
+
+**What's now true that wasn't before:**
+
+- An outer-loop scheduler (`futon2.scripts.wm-outer-loop`) reads the
+  trace window, derives operator follow-through evidence from git
+  (`:address-sorry` ← sorrys.edn `:open → :addressed/:foreclosed`
+  transitions; `:open-mission` ← `--diff-filter=A` on `holes/missions/M-*.md`),
+  and updates per-class Beta(α, β) posteriors.
+- A new ns `futon2.aif.intrinsic-values` holds the atom + bootstrap-replay
+  apparatus. Atom rehydrates from `code/v05/wm-hyperparameter-update`
+  hyperedges in futon1a XTDB on JVM startup (no external EDN dep, per
+  Joe 2026-05-21).
+- The WM inner loop's `:learn-action-class` `:intrinsic-value` is now
+  sourced from the atom via `iv/credit-for`, replacing the historical
+  static `0.1` literal in `futon2/src/futon2/aif/action_proposer.clj:39`.
+- A `:wm-outer-loop` alias in `futon2/deps.edn` mirrors the `:wm-scheduled`
+  pattern; daily cron cadence recommended (operator-action like the
+  existing R10 install).
+- Bilateral R12 row flips on both contracts with cross-pointers to here.
+
+**What's not yet true:**
+
+- R10 still not installed as cron — Beta posterior remains at Beta(1,1)
+  prior for `:address-sorry` and `:fire-pattern` until R10 has accumulated
+  emissions. `:open-mission` currently shows non-prior values (Beta(2.0, 16.0)
+  → 0.063) from the existing 2-day trace window, but the *apparatus* is the
+  R12 claim; the *learned values* are correctly minimal-evidence today.
+- The rest of Q6 is unchanged: no kill-switch, no full debug surface, no
+  full reversal protocol. Phase-B/C/D autonomy still requires those.
+- `:fire-pattern` substrate is `:unavailable` — no honest operator-fire-pattern
+  event substrate exists yet. The outer loop emits a no-update record per run
+  to make the gap legible rather than silent.
+- VSATARCS-side port deferred. The WM implementation is the reference;
+  later session ports per the design-choices doc.
+- Inner-loop change to `action_proposer.clj` lands at next natural restart
+  of the futon3c JVM (action_proposer defines a `defprotocol`, which is
+  unsafe to Drawbridge-reload per `feedback_drawbridge_protocol_reload`).
+  Until restart, the live WM still emits static `0.1`; fresh JVMs (tests,
+  outer-loop script) already use the new path.
+
+**Test state:** 255 tests, 722 assertions, 0 failures on `futon2` full
+suite. The narrow R12 apparatus is covered by 8 tests (37 assertions)
+in `futon2.aif.intrinsic-values-test` plus 1 wiring test in
+`futon2.aif.action-proposer-test`
+(`learn-actions-intrinsic-value-tracks-atom-test`) that proves
+`:intrinsic-value` is atom-driven rather than the historical static value.
+
+**Live smoke (2026-05-21):** outer loop ran end-to-end twice; outputs
+identical (idempotent — sliding-window semantics from-scratch each run).
+Three `code/v05/wm-hyperparameter-update` hyperedges persisted to futon1a
+XTDB, queryable at
+`GET /api/alpha/hyperedges?type=code/v05/wm-hyperparameter-update`.
+Penholder used: `"api"` (only registered penholder on this machine), with
+true authorship in `:props :provenance/author "wm-outer-loop"`.
+
+**Risk register state:**
+
+- Thesis-might-be-wrong: live.
+- Stack-might-not-host-a-homeostat: live.
+- Cost-might-exceed-environmental-energy: live.
+- Drift-over-long-horizons: live.
+- Goodhart: live.
+- Operator-burnout: managed.
+- Silent-failure-in-counters: live; not closed by this checkpoint.
+- **New**: substrate-availability-asymmetry — the three WM action-classes
+  have very different follow-through substrate quality (`:open-mission`
+  best, `:address-sorry` git-derived and fuzzy, `:fire-pattern` absent).
+  R12 inference will therefore be uneven across classes. Documented in
+  the design-choices doc; not yet a tension blocking the apparatus.
+
+**Next-move:** install `:wm-outer-loop` and `:wm-scheduled` under cron so
+R10 + R12 accumulate evidence over weeks. Once posterior values move
+meaningfully from prior for ≥1 class, snapshot for the Phase-A
+verification predicate. The full Q6 apparatus (kill-switch, debug
+surface, reversal protocol) remains the path to Phase-C.
+
+**Update later same session (2026-05-21):** cron jobs installed (Joe
+directive). `:wm-scheduled` hourly (`0 * * * *`); `:wm-outer-loop` daily at
+04:00 UTC (`0 4 * * *`). Both logged to `/home/joe/code/futon2/logs/`.
+Canonical registry at `/home/joe/code/futon0/data/cron-jobs.edn`; mirrored
+as a typed hyperedge `arxana/index/cron-jobs` in futon1a XTDB
+(`bb scripts/upsert-cron-jobs-index.bb` re-runs the mirror after edits).
+First wm-scheduled cron-shell smoke ran successfully; R10 transitions from
+`:scheduled-execution-ready` to `:scheduled-execution-running`. The R12
+Beta posterior for `:address-sorry` will move once the operator addresses
+a sorry whose `:learn-action-class` recommendation was emitted while the
+inner loop was running on cron — that requires the inner loop to actually
+hit a gap-state for `:address-sorry`, which today doesn't happen because
+the substrate is fully addressable (every WM call decides `:address-sorry`
+directly, no `:learn-action-class` wrapper). `:open-mission` posterior
+already moves under inference from existing emissions.
+
 **Next-move:** unchanged — step PI against the current precision substrate.

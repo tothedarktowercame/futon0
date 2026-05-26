@@ -8,20 +8,23 @@
 ;;; Futon 0:
 
 (add-to-list 'load-path "/home/joe/code/futon0/contrib/")
+(add-to-list 'load-path "/home/joe/code/futon0/emacs/")
 
 (add-to-list 'load-path "/home/joe/code/futon3/contrib/")
 (add-to-list 'load-path "/home/joe/code/futon3c/emacs/")
 
 ;; Stack HUD entry point.
 (require 'stack-entry)
-
 (require 'stack-hud)
+(setq stack-hud-2-toggle-key "⁂")
+(require 'stack-hud-2)
 
 (setq stack-hud-services-detail 'names)
 
 ;; Per-session Claude + Codex token burndown (Stack HUD `usage' block + Arxana
 ;; Browser Sessions headline). See ~/code/algorithms/current-usage-report.md.
 (require 'usage-report)
+(require 'war-machine)
 
 ;; `stack-hud-blocks' is a defcustom whose default already includes `usage'.
 ;; If a previously-saved value pre-dates that addition, splice the block in
@@ -52,10 +55,11 @@
       '("../futon3/contrib/flexiarg.el"
 	"../futon3/contrib/aob-chatgpt.el"
         "../futon3c/emacs/agent-chat.el"
+        "../futon3c/emacs/agent-mission-control.el"
         "../futon3c/emacs/claude-repl.el"
         "../futon3c/emacs/codex-repl.el"
         "../futon3c/emacs/futon3c-code-blocks.el"
-        "../futon3c/emacs/agent-mission-control.el"
+        "../futon3c/emacs/smart-cursor.el"
         "../futon4/dev/bootstrap.el"
         "../futon4/dev/arxana-article.el"
         "../futon4/dev/arxana-browser-docbook.el"
@@ -65,7 +69,6 @@
         "../futon4/dev/arxana-browser-code.el"
         "../futon4/dev/arxana-browser-patterns.el"
         "../futon4/dev/arxana-browser-patterns-hud.el"
-        "../futon4/dev/arxana-browser-pattern-activation.el"
         "../futon4/dev/arxana-browser-forum.el"
         "../futon4/dev/arxana-browser.el"
         "../futon4/dev/arxana-docbook-core.el"
@@ -95,11 +98,16 @@
         "../futon0/contrib/hud-service.el"
         "../futon0/contrib/stack-entry.el"
         "../futon0/contrib/stack-hud.el"
+        "../futon0/contrib/stack-hud-2.el"
         "../futon0/contrib/stack-render.el"
         "../futon0/contrib/usage-report.el"
         "../futon0/emacs/joe-hud.el"
+        "../futon0/emacs/war-machine.el"
 	"../futon4/dev/arxana-browser-songs.el"
-	"../futon4/dev/arxana-browser-chorus.el"))
+	"../futon4/dev/arxana-browser-chorus.el"
+	"../futon4/dev/arxana-browser-essays.el"
+	"../futon4/dev/arxana-browser-essays-compiled.el"
+	"../futon4/dev/arxana-browser-essays-wikibooks.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
@@ -122,10 +130,11 @@
 ;;; Futon 3c:
 
 (require 'agent-chat)
+(require 'agent-mission-control)
 (require 'claude-repl)
 (require 'codex-repl)
 (require 'futon3c-code-blocks)
-(require 'agent-mission-control)
+(require 'smart-cursor)
 
 ;;; Futon 4:
 
@@ -191,6 +200,8 @@
 
 (setq arxana-lab-futon1-server "http://localhost:7071/api/alpha")
 (setq arxana-evidence-server   "http://localhost:7071/api/alpha")
+
+(global-set-key (kbd "※") #'arxana-browser-home)
 
 (provide 'futon-config)
 

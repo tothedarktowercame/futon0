@@ -7,6 +7,7 @@
 
 (require 'stack-render)
 (require 'stack-hud)
+(require 'stack-hud-2)
 
 (defconst stack-hud--diagnostic-buffer-name "*Stack HUD Diagnostics*")
 (defcustom stack-hud-diagnostics-log-path
@@ -229,8 +230,8 @@
   "Legacy no-op. Stack HUD status is now built locally."
   nil)
 
-(defun stack-hud ()
-  "Build local Stack HUD state and render the Stack HUD."
+(defun stack-hud-1 ()
+  "Build local Stack HUD state and render the legacy Stack HUD."
   (interactive)
   (let ((stack (stack-hud--build-state)))
     (stack-hud--render-context stack)
@@ -238,6 +239,13 @@
     (when-let ((win (get-buffer-window my-chatgpt-shell-stack-buffer-name t)))
       (select-window win)
       (raise-frame (window-frame win)))))
+
+(defun stack-hud ()
+  "Build local Stack HUD state, log it, and toggle Stack HUD 2."
+  (interactive)
+  (let ((stack (stack-hud--build-state)))
+    (stack-hud-log-snapshot stack)
+    (stack-hud-2-toggle)))
 
 (provide 'stack-entry)
 

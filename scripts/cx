@@ -11,6 +11,7 @@ set -euo pipefail
 #   cx                    # resume latest Codex session for this cwd
 #   cx SESSION-ID         # resume specific session in a fresh codex-N lane
 #   cx --new              # force a fresh codex-N lane with no prior session
+#   cx headless --new     # open on the futon-ops/headless Emacs instead
 #
 
 agency_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
@@ -106,27 +107,35 @@ build_auto_register_payload() {
 
 sid=""
 start_new=false
+headless=false
 fresh_lane=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --new|new) start_new=true; shift ;;
+    --headless|headless) headless=true; shift ;;
     --help|-h)
-      echo "Usage: cx [SESSION-ID] [--new]"
+      echo "Usage: cx [SESSION-ID] [--new] [headless]"
       echo "  cx             resume latest Codex session for this cwd"
       echo "  cx SESSION-ID  resume specific session in a fresh codex lane"
       echo "  cx --new       start a fresh codex lane"
+      echo "  cx headless    prefer futon-ops instead of the interactive server"
       exit 0
       ;;
     *) sid="$1"; shift ;;
   esac
 done
 
+if $headless; then
+  export FUTON3C_EMACS_SOCKET=futon-ops
+fi
+
 echo "--- cx debug ---"
 echo "Agency:       ${agency_base}"
 echo "Emacs dir:    ${emacs_dir}"
 echo "Working dir:  $(pwd)"
 echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'; fi)"
+echo "Emacs pref:   $(if $headless; then echo 'headless'; else echo 'interactive'; fi)"
 
 if curl -sS --max-time 2 "${agency_base}/api/alpha/agents" >/dev/null 2>&1; then
   echo "Agency:       reachable"
@@ -186,7 +195,10 @@ echo "Agent:        ${aid}"
 echo "Session file: ${sf}"
 [[ -n "${sid}" ]] && echo "Session:      ${sid}"
 
-exec "${emacsclient_bin}" -s "${socket}" -t \
+# Do not use `-t` here. `emacsclient -t --eval` evaluates inside a
+# transient terminal client frame, prints the returned buffer object,
+# then exits, leaving the REPL buffer undisplayed in the user's live Emacs.
+exec "${emacsclient_bin}" -s "${socket}" -n \
   --eval "(progn
     (load \"${escaped_chat}\" nil t)
     (load \"${escaped_repl}\" nil t)
@@ -198,4 +210,5 @@ exec "${emacsclient_bin}" -s "${socket}" -t \
      \"$(elisp_escape "${sf}")\"
      \"${escaped_cwd}\"
      'attached
-     ${fresh_session_elisp}))"
+     ${fresh_session_elisp})
+    nil)" >/dev/null
