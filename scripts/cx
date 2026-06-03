@@ -12,49 +12,40 @@ set -euo pipefail
 #   cx SESSION-ID         # resume specific session in a fresh codex-N lane
 #   cx --new              # force a fresh codex-N lane with no prior session
 #   cx new M-foo          # force a fresh lane clocked into M-foo
+#   cx new E-foo          # force a fresh lane clocked into E-foo
 #   cx headless --new     # open on the futon-ops/headless Emacs instead
 #
 
 agency_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
 emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
 script_real="$(readlink -f "${BASH_SOURCE[0]}")"
-emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
+futon3c_root="${FUTON3C_ROOT:-$(cd "$(dirname "${script_real}")/../../futon3c" && pwd)}"
+emacs_dir="${FUTON3C_EMACS_DIR:-${futon3c_root}/emacs}"
 codex_sessions_root="${CODEX_SESSIONS_ROOT:-${HOME}/.codex/sessions}"
+socket_lib="${futon3c_root}/scripts/emacs-socket-lib.sh"
+
+if [[ -f "${socket_lib}" ]]; then
+  # shellcheck source=/home/joe/code/futon3c/scripts/emacs-socket-lib.sh
+  source "${socket_lib}"
+fi
+
+running_inside_emacs() {
+  [[ -n "${INSIDE_EMACS:-}" || -n "${EMACS:-}" ]]
+}
 
 find_emacs_socket() {
-  if [[ -n "${FUTON3C_EMACS_SOCKET:-}" ]]; then
-    echo "${FUTON3C_EMACS_SOCKET}"
-    return 0
+  if declare -F futon_preferred_emacs_socket >/dev/null 2>&1; then
+    futon_preferred_emacs_socket && return 0
   fi
-  if [[ -n "${EMACS_SOCKET_NAME:-}" ]]; then
-    echo "${EMACS_SOCKET_NAME}"
-    return 0
+  echo "No preferred Emacs daemon found. Starting one..." >&2
+  if declare -F futon_start_preferred_emacs_daemon >/dev/null 2>&1; then
+    futon_start_preferred_emacs_daemon && return 0
   fi
-  # Prefer 'server' (Joe's interactive Emacs, where Agency's *server*
-  # buffer lives) then 'futon' (headless daemon cr/cx may have spawned).
-  # Only spawn a fresh 'futon' if no socket exists at all.
-  local runtime_dir="/run/user/$(id -u)/emacs"
-  if [[ -d "${runtime_dir}" ]]; then
-    if [[ -S "${runtime_dir}/server" ]]; then
-      echo "server"
-      return 0
-    fi
-    if [[ -S "${runtime_dir}/futon" ]]; then
-      echo "futon"
-      return 0
-    fi
-    local sockets=("${runtime_dir}"/*)
-    if [[ ${#sockets[@]} -ge 1 && -S "${sockets[0]}" ]]; then
-      basename "${sockets[0]}"
-      return 0
-    fi
-  fi
-  echo "No Emacs daemon found. Starting one..." >&2
-  emacs --daemon=futon >/dev/null 2>&1
-  echo "futon"
+  return 1
 }
 
 json_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "${1:-}"; }
+elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
 
 latest_session_id() {
   python3 - "$PWD" "${codex_sessions_root}" <<'PY'
@@ -105,6 +96,7 @@ build_auto_register_payload() {
   case "${clock_target:-}" in
     C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
     M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
+    E-*) payload+=',"excursion-id":"'"$(json_escape "${clock_target}")"'"' ;;
   esac
   payload+='}'
   printf '%s' "${payload}"
@@ -113,7 +105,6 @@ build_auto_register_payload() {
 sid=""
 start_new=false
 headless=false
-fresh_lane=false
 clock_target=""
 
 while [[ $# -gt 0 ]]; do
@@ -133,6 +124,7 @@ while [[ $# -gt 0 ]]; do
       echo "  cx SESSION-ID  resume specific session in a fresh codex lane"
       echo "  cx --new       start a fresh codex lane"
       echo "  cx new M-foo   start fresh clocked into M-foo"
+      echo "  cx new E-foo   start fresh clocked into E-foo"
       echo "  cx headless    prefer futon-ops instead of the interactive server"
       exit 0
       ;;
@@ -141,7 +133,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 if $headless; then
-  export FUTON3C_EMACS_SOCKET=futon-ops
+  export FUTON3C_EMACS_PREFERENCE=headless
+else
+  export FUTON3C_EMACS_PREFERENCE=interactive
 fi
 
 echo "--- cx debug ---"
@@ -152,31 +146,70 @@ echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'
 echo "Emacs pref:   $(if $headless; then echo 'headless'; else echo 'interactive'; fi)"
 [[ -n "${clock_target}" ]] && echo "Clock target: ${clock_target}"
 
-if curl -sS --max-time 2 "${agency_base}/api/alpha/agents" >/dev/null 2>&1; then
+# --- Agency auto-start -------------------------------------------------------
+
+agency_reachable() {
+  curl -sS --max-time 2 "${agency_base}/api/alpha/agents" >/dev/null 2>&1
+}
+
+start_agency_via_emacs() {
+  local sock="$1"
+  local futon_root
+  futon_root="$(cd "${futon3c_root}" && pwd)"
+  local escaped_root
+  escaped_root="$(elisp_escape "${futon_root}")"
+  echo "Agency:       starting via Emacs *server* buffer..."
+  "${emacsclient_bin}" -s "${sock}" -n --eval \
+    "(let ((buf (get-buffer \"*server*\"))) (if (and buf (get-buffer-process buf) (process-live-p (get-buffer-process buf))) (message \"*server* already running\") (let ((buf (get-buffer-create \"*server*\"))) (with-current-buffer buf (let ((default-directory \"${escaped_root}/\")) (unless (derived-mode-p 'shell-mode) (make-comint-in-buffer \"server\" buf shell-file-name) (shell-mode)) (goto-char (point-max)) (insert \"./scripts/dev-laptop-env\") (comint-send-input))) \"started\")))" >/dev/null 2>&1
+}
+
+wait_for_agency() {
+  local max_wait="${FUTON3C_AGENCY_TIMEOUT:-30}"
+  local waited=0
+  while (( waited < max_wait )); do
+    if agency_reachable; then
+      echo "Agency:       up after ${waited}s"
+      return 0
+    fi
+    sleep 1
+    (( waited++ ))
+  done
+  echo "Agency:       timed out after ${max_wait}s" >&2
+  return 1
+}
+
+# Check Agency — auto-start if needed
+if agency_reachable; then
   echo "Agency:       reachable"
 else
-  echo "Agency:       NOT reachable" >&2
-  exit 1
+  echo "Agency:       NOT reachable"
+  _sock="$(find_emacs_socket 2>/dev/null)" || true
+  if [[ -n "${_sock}" ]]; then
+    start_agency_via_emacs "${_sock}"
+    if ! wait_for_agency; then
+      echo "Agency:       could not start — aborting" >&2
+      exit 1
+    fi
+  else
+    echo "Agency:       no Emacs socket found, cannot auto-start" >&2
+    exit 1
+  fi
 fi
 
 if $start_new; then
   echo "Action:       allocating fresh codex lane"
-  fresh_lane=true
 elif [[ -n "${sid}" ]]; then
   echo "Action:       resuming explicit session ${sid:0:8}..."
 elif sid="$(latest_session_id 2>/dev/null || true)"; [[ -n "${sid}" ]]; then
   echo "Action:       found latest Codex session ${sid:0:8}... for $(pwd)"
 else
   echo "Action:       no prior Codex session found; allocating fresh lane"
-  fresh_lane=true
 fi
 
 echo "--- launching ---"
 
 socket="$(find_emacs_socket)" || exit 1
 echo "Emacs socket: ${socket}"
-
-elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
 
 escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
 escaped_repl="$(elisp_escape "${emacs_dir}/codex-repl.el")"
@@ -185,7 +218,7 @@ escaped_cwd="$(elisp_escape "$(pwd)")"
 escaped_clock_target="$(elisp_escape "${clock_target}")"
 payload="$(build_auto_register_payload "$(pwd)" "${sid}")"
 fresh_session_elisp="nil"
-if $fresh_lane; then
+if $start_new; then
   fresh_session_elisp="t"
 fi
 
@@ -211,22 +244,59 @@ echo "Agent:        ${aid}"
 echo "Session file: ${sf}"
 [[ -n "${sid}" ]] && echo "Session:      ${sid}"
 
-# Do not use `-t` here. `emacsclient -t --eval` evaluates inside a
-# transient terminal client frame, prints the returned buffer object,
-# then exits, leaving the REPL buffer undisplayed in the user's live Emacs.
-exec "${emacsclient_bin}" -s "${socket}" -n \
-  --eval "(progn
-    (load \"${escaped_chat}\" nil t)
-    (load \"${escaped_repl}\" nil t)
+# --- Inhabitation turn -------------------------------------------------------
+# Send an initial turn so Codex establishes a real session immediately.
+# Only when starting fresh (no existing session to resume).
+
+if [[ -z "${sid}" ]]; then
+  inhabit_prompt="Runtime surface contract:
+- Current surface: emacs-codex-repl (agent ${aid}).
+- Your response is shown in an Emacs REPL buffer.
+- Joe is ready to work. Greet briefly and await instructions.
+- Working directory: $(pwd)"
+
+  bell_payload="$(cat <<BELL
+{"agent-id":"$(json_escape "${aid}")","prompt":"$(json_escape "${inhabit_prompt}")","caller":"cx","surface":"emacs-codex-repl"}
+BELL
+)"
+  bell_result="$(curl -sS --max-time 5 \
+    -H "Content-Type: application/json" \
+    -X POST -d "${bell_payload}" \
+    "${agency_base%/}/api/alpha/bell" 2>&1)"
+  echo "Inhabitation: ${bell_result}"
+fi
+
+# Always switch to the REPL buffer after init — needed both for
+# inside-Emacs and external shell launches.
+switch_form="(switch-to-buffer (format \"*codex-repl:%s*\" \"${aid}\"))"
+
+codex_repl_eval="$(cat <<EOF
+(progn
+    (add-to-list 'load-path "${emacs_dir}")
+    (load "${escaped_chat}" nil t)
+    (load "${escaped_repl}" nil t)
     (codex-repl--open-instance
-     (format \"*codex-repl:%s*\" \"${aid}\")
-     (format \"*invoke: codex-repl:%s*\" \"${aid}\")
-     \"${escaped_api}\"
-     \"${aid}\"
-     \"$(elisp_escape "${sf}")\"
-     \"${escaped_cwd}\"
+     (format "*codex-repl:%s*" "${aid}")
+     (format "*invoke: codex-repl:%s*" "${aid}")
+     "${escaped_api}"
+     "${aid}"
+     "$(elisp_escape "${sf}")"
+     "${escaped_cwd}"
      'attached
      ${fresh_session_elisp}
-     (unless (string-empty-p \"${escaped_clock_target}\")
-       \"${escaped_clock_target}\"))
-    nil)" >/dev/null
+     (unless (string-empty-p "${escaped_clock_target}")
+       "${escaped_clock_target}"))
+    ${switch_form})
+EOF
+)"
+
+if running_inside_emacs; then
+  "${emacsclient_bin}" -s "${socket}" -n --eval "${codex_repl_eval}" 2>&1 || true
+  exit 0
+fi
+
+# Do not use `-t` here. `emacsclient -t --eval` evaluates inside a transient
+# terminal client frame, prints the returned buffer object, then exits, leaving
+# the REPL buffer undisplayed in the user's live Emacs frame.
+exec "${emacsclient_bin}" -s "${socket}" -n \
+  --eval "${codex_repl_eval}" >/dev/null

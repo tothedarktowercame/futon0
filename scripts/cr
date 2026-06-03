@@ -12,6 +12,7 @@ set -euo pipefail
 #   cr SESSION-ID         # resume specific session
 #   cr --new              # force new session
 #   cr new M-foo          # force new session clocked into M-foo
+#   cr new E-foo          # force new session clocked into E-foo
 #
 # Requires: Emacs daemon running, Agency (futon3c) on port 7070.
 #
@@ -147,6 +148,7 @@ build_auto_register_payload() {
   case "${clock_target:-}" in
     C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
     M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
+    E-*) payload+=',"excursion-id":"'"$(json_escape "${clock_target}")"'"' ;;
   esac
   payload+='}'
   printf '%s' "${payload}"
@@ -170,6 +172,7 @@ build_restore_payload() {
   case "${clock_target:-}" in
     C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
     M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
+    E-*) payload+=',"excursion-id":"'"$(json_escape "${clock_target}")"'"' ;;
   esac
   payload+='}'
   printf '%s' "${payload}"
