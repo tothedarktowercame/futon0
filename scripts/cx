@@ -11,6 +11,7 @@ set -euo pipefail
 #   cx                    # resume latest Codex session for this cwd
 #   cx SESSION-ID         # resume specific session in a fresh codex-N lane
 #   cx --new              # force a fresh codex-N lane with no prior session
+#   cx new M-foo          # force a fresh lane clocked into M-foo
 #   cx headless --new     # open on the futon-ops/headless Emacs instead
 #
 
@@ -101,6 +102,10 @@ build_auto_register_payload() {
   if [[ -n "${session_id}" ]]; then
     payload+=',"session-id":"'"$(json_escape "${session_id}")"'"'
   fi
+  case "${clock_target:-}" in
+    C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
+    M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
+  esac
   payload+='}'
   printf '%s' "${payload}"
 }
@@ -109,16 +114,25 @@ sid=""
 start_new=false
 headless=false
 fresh_lane=false
+clock_target=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --new|new) start_new=true; shift ;;
+    --new|new)
+      start_new=true
+      shift
+      if [[ $# -gt 0 && "$1" != -* ]]; then
+        clock_target="$1"
+        shift
+      fi
+      ;;
     --headless|headless) headless=true; shift ;;
     --help|-h)
       echo "Usage: cx [SESSION-ID] [--new] [headless]"
       echo "  cx             resume latest Codex session for this cwd"
       echo "  cx SESSION-ID  resume specific session in a fresh codex lane"
       echo "  cx --new       start a fresh codex lane"
+      echo "  cx new M-foo   start fresh clocked into M-foo"
       echo "  cx headless    prefer futon-ops instead of the interactive server"
       exit 0
       ;;
@@ -136,6 +150,7 @@ echo "Emacs dir:    ${emacs_dir}"
 echo "Working dir:  $(pwd)"
 echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'; fi)"
 echo "Emacs pref:   $(if $headless; then echo 'headless'; else echo 'interactive'; fi)"
+[[ -n "${clock_target}" ]] && echo "Clock target: ${clock_target}"
 
 if curl -sS --max-time 2 "${agency_base}/api/alpha/agents" >/dev/null 2>&1; then
   echo "Agency:       reachable"
@@ -167,6 +182,7 @@ escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
 escaped_repl="$(elisp_escape "${emacs_dir}/codex-repl.el")"
 escaped_api="$(elisp_escape "${agency_base%/}")"
 escaped_cwd="$(elisp_escape "$(pwd)")"
+escaped_clock_target="$(elisp_escape "${clock_target}")"
 payload="$(build_auto_register_payload "$(pwd)" "${sid}")"
 fresh_session_elisp="nil"
 if $fresh_lane; then
@@ -210,5 +226,7 @@ exec "${emacsclient_bin}" -s "${socket}" -n \
      \"$(elisp_escape "${sf}")\"
      \"${escaped_cwd}\"
      'attached
-     ${fresh_session_elisp})
+     ${fresh_session_elisp}
+     (unless (string-empty-p \"${escaped_clock_target}\")
+       \"${escaped_clock_target}\"))
     nil)" >/dev/null

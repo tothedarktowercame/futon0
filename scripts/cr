@@ -11,6 +11,7 @@ set -euo pipefail
 #   cr                    # resume latest session (or start new)
 #   cr SESSION-ID         # resume specific session
 #   cr --new              # force new session
+#   cr new M-foo          # force new session clocked into M-foo
 #
 # Requires: Emacs daemon running, Agency (futon3c) on port 7070.
 #
@@ -143,6 +144,10 @@ build_auto_register_payload() {
   if [[ -n "${session_id}" ]]; then
     payload+=',"session-id":"'"$(json_escape "${session_id}")"'"'
   fi
+  case "${clock_target:-}" in
+    C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
+    M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
+  esac
   payload+='}'
   printf '%s' "${payload}"
 }
@@ -162,6 +167,10 @@ build_restore_payload() {
   if [[ -n "${session_file}" ]]; then
     payload+=',"session-file":"'"$(json_escape "${session_file}")"'"'
   fi
+  case "${clock_target:-}" in
+    C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
+    M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
+  esac
   payload+='}'
   printf '%s' "${payload}"
 }
@@ -255,15 +264,24 @@ switch_to_buffer() {
 
 sid=""
 start_new=false
+clock_target=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --new|new) start_new=true; shift ;;
+    --new|new)
+      start_new=true
+      shift
+      if [[ $# -gt 0 && "$1" != -* ]]; then
+        clock_target="$1"
+        shift
+      fi
+      ;;
     --help|-h)
-      echo "Usage: cr [SESSION-ID] [--new]"
+      echo "Usage: cr [SESSION-ID] [--new [C-foo|M-foo]]"
       echo "  cr             resume latest session"
       echo "  cr SESSION-ID  resume specific session"
       echo "  cr --new       start fresh"
+      echo "  cr new M-foo   start fresh clocked into M-foo"
       exit 0
       ;;
     *) sid="$1"; shift ;;
@@ -276,6 +294,7 @@ echo "--- cr debug ---"
 echo "Agency:       ${evidence_base}"
 echo "Emacs dir:    ${emacs_dir}"
 echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'; fi)"
+[[ -n "${clock_target}" ]] && echo "Clock target: ${clock_target}"
 
 # --- Agency auto-start -------------------------------------------------------
 
@@ -356,6 +375,11 @@ echo "Emacs socket: ${socket}"
 
 escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
 escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
+escaped_clock_target="$(elisp_escape "${clock_target}")"
+cr_start_new_elisp="nil"
+if $start_new; then
+  cr_start_new_elisp="t"
+fi
 
 emacs_socket="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
 
@@ -458,6 +482,8 @@ claude_repl_eval="$(cat <<EOF
     (load "${escaped_repl}" nil t)
     (let* ((aid "${aid}")
            (cr-sid "${sid}")
+           (cr-start-new ${cr_start_new_elisp})
+           (clock-target "${escaped_clock_target}")
            (bufname (format "*claude-repl:%s*" aid))
            (sf "${sf}")
            (api-url (string-remove-suffix "/" agent-chat-agency-base-url))
@@ -468,8 +494,15 @@ claude_repl_eval="$(cat <<EOF
         (setq-local claude-repl-agent-id aid)
         (setq-local claude-repl-api-url api-url)
         (setq-local claude-repl-evidence-url (concat api-url "/api/alpha/evidence"))
-        (setq-local claude-repl-session-file sf))
-      (claude-repl--open-instance bufname agent-chat-agency-base-url aid sf)
+        (setq-local claude-repl-session-file sf)
+        (when cr-start-new
+          (setq agent-chat--session-id nil)
+          (setq agent-chat--session-turn-count 0)
+          (when (file-exists-p sf)
+            (delete-file sf))))
+      (claude-repl--open-instance
+       bufname agent-chat-agency-base-url aid sf
+       (unless (string-empty-p clock-target) clock-target))
       (with-current-buffer buf
         (claude-repl--init-display)
         (unless (string-empty-p cr-sid)
