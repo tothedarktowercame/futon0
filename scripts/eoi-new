@@ -48,6 +48,7 @@ flash_profile_dir="${EOI_FLASH_PROFILE_DIR:-$(cd "$(dirname "${script_real}")/..
 flash_ids=()
 flash_descs=()
 flash_round_collapses=()
+flash_aliases=()
 
 discover_flashes() {
   if [[ ! -d "${flash_profile_dir}" ]]; then
@@ -63,9 +64,12 @@ discover_flashes() {
     desc="$(sed -nE 's/.*:flash\/applies-to[[:space:]]+"([^"]+)".*/\1/p' "${f}" | head -1)"
     rc="$(sed -nE 's/.*:round-collapse\?[[:space:]]+(true|false).*/\1/p' "${f}" | head -1)"
     [[ -z "${rc}" ]] && rc="false"
+    local aliases
+    aliases="$(sed -nE 's/.*:flash\/aliases[[:space:]]+\[([^]]*)\].*/\1/p' "${f}" | head -1 | tr -d '"')"
     flash_ids+=("${fid}")
     flash_descs+=("${desc:-<no :flash/applies-to description in profile>}")
     flash_round_collapses+=("${rc}")
+    flash_aliases+=("${aliases}")
   done
   shopt -u nullglob
   if [[ ${#flash_ids[@]} -eq 0 ]]; then
@@ -91,6 +95,21 @@ flash_known() {
   local q="$1"
   for f in "${flash_ids[@]}"; do
     [[ "${f}" == "${q}" ]] && return 0
+  done
+  return 1
+}
+
+resolve_flash() {
+  # Resolve an id OR a :flash/aliases entry to the canonical flash id.
+  # Echoes the canonical id, or returns 1 if no match.
+  local q="$1" i a
+  for ((i=0; i<${#flash_ids[@]}; i++)); do
+    [[ "${flash_ids[i]}" == "${q}" ]] && { printf '%s\n' "${flash_ids[i]}"; return 0; }
+  done
+  for ((i=0; i<${#flash_ids[@]}; i++)); do
+    for a in ${flash_aliases[i]}; do
+      [[ "${a}" == "${q}" ]] && { printf '%s\n' "${flash_ids[i]}"; return 0; }
+    done
   done
   return 1
 }
@@ -144,16 +163,20 @@ find_emacs_socket() {
 # --- Argv --------------------------------------------------------------------
 
 flash_type=""
+mission_slug=""
 context_path=""
 out_dir=""
 
 usage() {
   cat <<'USAGE'
-Usage: eoi-new [<flash-type>] [--context <path>] [--out <dir>]
+Usage: eoi-new [<flash-type>] [<mission-slug>] [--context <path>] [--out <dir>]
 
 If no flash-type is given an interactive selector lists available flashes.
+Flash-type accepts :flash/aliases (e.g. `head` -> eoi-mission-head).
+A 2nd positional is a mission slug, used by the `head` flash.
 
   eoi-new
+  eoi-new head M-web-arxana-ui-improvements   # scaffold a new mission HEAD (Right View)
   eoi-new eoi-outward-into-self-authored-institution \
     --context ~/npt/applications/hyperreal-director-side-a/hyperreal-director-side-a-v1.md \
     --out ~/npt/applications/hyperreal-director-side-b/
@@ -171,6 +194,8 @@ while [[ $# -gt 0 ]]; do
     *)
       if [[ -z "${flash_type}" ]]; then
         flash_type="$1"; shift
+      elif [[ -z "${mission_slug}" ]]; then
+        mission_slug="$1"; shift   # optional 2nd positional: mission slug (e.g. M-foo) for eoi-mission-head
       else
         echo "eoi-new: unexpected positional argument: $1" >&2; usage >&2; exit 2
       fi
@@ -182,11 +207,12 @@ if [[ -z "${flash_type}" ]]; then
   flash_type="$(select_flash_interactive)"
 fi
 
-if ! flash_known "${flash_type}"; then
-  echo "eoi-new: unknown flash type: ${flash_type}" >&2
+resolved_flash="$(resolve_flash "${flash_type}")" || {
+  echo "eoi-new: unknown flash type or alias: ${flash_type}" >&2
   echo "Known flashes: ${flash_ids[*]}" >&2
   exit 2
-fi
+}
+flash_type="${resolved_flash}"
 
 if [[ -n "${context_path}" ]]; then
   context_path="$(readlink -f "${context_path}" 2>/dev/null || echo "${context_path}")"
@@ -201,12 +227,22 @@ if [[ -n "${out_dir}" ]]; then
 fi
 
 round_collapse="$(flash_round_collapse "${flash_type}")"
+creation_clock_target=""
+if [[ "${flash_type}" == "eoi-mission-head" && -n "${mission_slug}" ]]; then
+  if [[ "${mission_slug}" == M-* ]]; then
+    creation_clock_target="${mission_slug}"
+  else
+    creation_clock_target="M-${mission_slug}"
+  fi
+fi
 
 echo "--- eoi-new ---"
 echo "Flash:        ${flash_type}"
 echo "Round-collapse: ${round_collapse}"
 echo "Context:      ${context_path:-<none — engine sniffs from cwd>}"
 echo "Out:          ${out_dir:-<engine default per flash>}"
+echo "Mission slug: ${mission_slug:-<none — engine asks if the flash needs one>}"
+echo "Creation clock: ${creation_clock_target:-<none>}"
 echo "Spec:         ${eoi_engine_spec}"
 echo "Schema:       ${eoi_schema}"
 
@@ -279,6 +315,7 @@ Flash profile for this run: ${flash_type}
   Round-collapse mode: ${round_collapse}
 
 Output destination: ${out_line}
+Mission slug (if provided): ${mission_slug:-<none — ask Joe if this flash needs one (e.g. eoi-mission-head)>}
 
 LOAD-BEARING INVARIANTS (the engine MUST honour these):
 - I1: No AI writing of the artefact body. Joe's words verbatim only. You order and provide minimal connective tissue (section labels, single italic orienting line per section). Paraphrase, summarisation, and substantive rewording are forbidden. Voice-preserving copy-edits (article correction, typos, punctuation) ARE allowed.
@@ -286,11 +323,17 @@ LOAD-BEARING INVARIANTS (the engine MUST honour these):
 - I7: Inhabited mode. No AI placeholder blocks inside the artefact body. If a tension is tagged 'address-now' but Joe declines to supply content, the engine offers retag-not-applicable OR block-closure (never silent insertion).
 - Referential integrity: any eoi_instances[].institution_object_ref must resolve to an existing institution_objects[].id; if missing, the engine creates it as part of write-back.
 - Inward emergent-tension capture: when Joe names open tensions at closure-offer time, tag them into tech_debt_carried_forward[] BEFORE assembling.
-- Essays landing rule: when you finish assembly, also emit Arxana Essays companion files so Joe can inspect the artefact immediately in `arxana://view/essays-home`.
-  - If the artefact lives in its own directory, write `annotations.el` and `load-into-emacs.el` there.
-  - If the artefact lives in a shared directory with multiple markdown artefacts, use named companions `<slug>-annotations.el` and `<slug>-load-into-emacs.el` to avoid collisions.
-  - The manifest may start with an empty `:annotations` list, but it MUST declare the essay entity and H2-level sections for the assembled artefact.
+- Essays landing rule: when you finish assembly, also emit Arxana Essays companion files so Joe can inspect the artefact immediately in \`arxana://view/essays-home\`.
+  - If the artefact lives in its own directory, write \`annotations.el\` and \`load-into-emacs.el\` there.
+  - If the artefact lives in a shared directory with multiple markdown artefacts, use named companions \`<slug>-annotations.el\` and \`<slug>-load-into-emacs.el\` to avoid collisions.
+  - The manifest may start with an empty \`:annotations\` list, but it MUST declare the essay entity and H2-level sections for the assembled artefact.
   - The loader must register the manifest, add a catalog entry, and import only that manifest (same pattern as existing Anthropic / Glasgow / Hyperreal essay loaders).
+- Structured-finalisation landing rule: ALSO emit a sibling \`annotations.edn\` (Arxana v2 schema) per ~/code/algorithms/eoi-finalisation.md. This is the EDN structured-data sidecar (not the .el Arxana manifest) that powers map-reduce over EOI essays. The two files coexist — annotations.el is the Arxana editorial surface; annotations.edn is the typed interest-territory + path-arrow + cross-essay-link + operator-doubt + institution-object-ref + synthetic-question layer.
+  - Same directory as annotations.el. If the directory already has a non-EOI \`annotations.edn\` (e.g. the Operator's Foreword has one), prefix with \`eoi-\` (\`eoi-annotations.edn\`) to avoid collision.
+  - Schema: \`{:version 1 :paper \"<abs path>\" :essay-id \"arxana/essay/<slug>-v1\" :eoi-instance-ref \"<buckets eoi_instances[].id>\" :institution-object-ref \"<:node/...>\" :generated \"<ISO date>\" :pass-status :v1-finalisation-engine-emitted :pass-purpose \"<short>\" :sections [...] :annotations [...]}\`. Six :hx-type values for annotations: :eoi/interest-territory, :eoi/cross-essay-link, :eoi/operator-doubt, :eoi/path-arrow-witness, :eoi/institution-object-ref, :eoi/synthetic-question.
+  - Minimum coverage at engine-emit time: one :eoi/path-arrow-witness per arrow named in eoi_instances[].arrow_components (passage = the answer_anchor_quote, target = arxana/path-arrow/<arrow-slug>); one :eoi/institution-object-ref per institution_object_ref; one :eoi/operator-doubt per address-now tension whose content surfaces a Joe-side uncertainty (or per tech_debt_carried_forward[] item that's a doubt); one :eoi/interest-territory per recognisable recurring interest in the body (aim for 3-8 per essay; cluster passages, don't exhaust); :eoi/cross-essay-link for every explicit named-mission or named-essay reference; 1-3 :eoi/synthetic-question entries per essay.
+  - For :eoi/path-arrow-witness and :eoi/institution-object-ref and :eoi/cross-essay-link: include \`:polarity :fit\` (default), \`:friction\`, or \`:foreclosed-load-bearing\` if the polarity is non-default. Polarity-signed weights are used at REDUCE.
+  - The annotations.edn file is engine-emitted as v1; operator may extend it after the run. See ~/code/algorithms/eoi-finalisation.md for the full schema and the REDUCE step.
 
 OPENING TURN (do this now):
 1. Read the three files above.
@@ -319,6 +362,7 @@ Joe is ready. Begin with the file reads and then Q1."
 escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
 escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
 escaped_inhabit="$(elisp_escape "${inhabit_prompt}")"
+escaped_creation_clock_target="$(elisp_escape "${creation_clock_target}")"
 
 claude_repl_eval="$(cat <<EOF
 (progn
@@ -330,7 +374,8 @@ claude_repl_eval="$(cat <<EOF
            (sf "${sf}")
            (api-url (string-remove-suffix "/" agent-chat-agency-base-url))
            (buf (get-buffer-create bufname))
-           (inhabit-text "${escaped_inhabit}"))
+           (inhabit-text "${escaped_inhabit}")
+           (creation-clock-target "${escaped_creation_clock_target}"))
       (with-current-buffer buf
         (unless (eq major-mode 'claude-repl-mode) (claude-repl-mode))
         (setq-local claude-repl--workspace-applied t)
@@ -341,6 +386,9 @@ claude_repl_eval="$(cat <<EOF
       (claude-repl--open-instance bufname agent-chat-agency-base-url aid sf)
       (with-current-buffer buf
         (claude-repl--init-display)
+        (unless (string-empty-p creation-clock-target)
+          (agent-chat-watch-creation-clock-mission!
+           creation-clock-target "eoi-new-head"))
         ;; Stream the agent's first turn directly via the transport filter,
         ;; bypassing send-input's "joe:" message insertion. The NDJSON filter
         ;; in claude-repl--call-claude-streaming labels the streamed text as a
