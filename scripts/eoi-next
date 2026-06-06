@@ -256,7 +256,18 @@ SCORECARD DRIVER (NEW — an explicit part of the driver, per Joe; file: ${score
 - Score EVERY captured :thesis two ways: (a) PILLAR-FIT — which pillar/sub-question does it hit, how strongly; (b) HEAD-ADVANCE — does it assert our head, or merely fit their box?
 - THE NO-SATISFICING CONFLICT (a new typed objection, the load-bearing addition): if an answer only fits a box without advancing the head (the 'I'm a great guy, please choose me' shape), raise it as a real :conflict (:bite :logical — 'this satisfices: it fits the form but does not assert what you actually bring') and DO NOT close the slot until Joe asserts the head. The scorecard is the satisficing-detector.
 - HONEST COVERAGE: surface UNHIT pillars. Where the scorecard marks a pillar WEAK (e.g. :threats-and-resilience), do NOT let Joe pad it — an honest 'not my pillar' is stronger than a faked fit. Conversely, ensure each STRONG pillar + each :head-extra is asserted somewhere across the slots.
-- The scorecard composes with the AUDIENCE MODEL: both feed the objection generator (audience-tension figures AND satisficing-tension figures are :conflict nodes)."
+- The scorecard composes with the AUDIENCE MODEL: both feed the objection generator (audience-tension figures AND satisficing-tension figures are :conflict nodes).
+- LEAD WITH THE SCORECARD (this supersedes the default opening). The very FIRST thing Joe should see is the scorecard at work, not stale editorial mechanics:
+  * Score the current draft(s) against EVERY pillar and emit a compact PILLAR MAP — one line per pillar: HIT (head-advancing) | UNHIT | SATISFICING (fits-the-box only). Mark each :head-extra HIT/UNHIT too.
+  * Name the SINGLE highest-value GAP — a STRONG pillar or a :head-extra the draft fails to ASSERT (not merely mention). For this recipient that is almost certainly :economic-diffusion (the '3-people-doing-300', embodied as Joe's solo AI-augmented business — DATA, not leverage) and/or the SECURITY-not-compute delta over the income-worlds.
+  * Pose Q1 AT THAT GAP, framed by the no-satisficing conflict.
+  * RETIRE the legacy resume. Do NOT reopen 'why-interested' against the old obj1 'reads as wanting compute' — Joe's reframe supersedes it: the scarce thing is SECURITY (he's salaried to Sept, superpod in hand), and the value is the DELTA over worlds A/B/C/4. If the resource angle surfaces at all, it is the economic-diffusion DATA point, never a personal ask."
+fi
+# When a scorecard drives the run, the opening Q1 is gap-led, not a stale-slot resume.
+if [[ -n "${scorecard_path}" ]]; then
+  opening_q1_directive="Q1 is SCORECARD-LED: after the pillar map (above), pose the question at the single highest-value GAP — the strong pillar / :head-extra the current draft fails to ASSERT. Seed it from the relevant eoi-new answer (name the seed; do not recite it). Do NOT resume the legacy 'why-interested / wanting-compute' slot — that framing is retired."
+else
+  opening_q1_directive="(For the Anthropic Fellows run, the spec names the in-progress slot — 'why interested', §5 resource angle, against the standing obj1 'reads as wanting compute' attacker — resume there.)"
 fi
 
 inhabit_prompt="Runtime surface contract:
@@ -296,9 +307,10 @@ ${scorecard_driver}
 
 OPENING TURN (do this now):
 1. Read the files above.
-2. Confirm back to Joe: a 1-sentence summary of the draft; the proforma type (explicit form | virtual-derived); the recipient + your audience call (deploy/flatten/... of the distinctive figures); the output destination.
-3. Build the typed slot-set from the proforma, then pose Q1 — the first slot's question, SEEDED by the relevant eoi-new answer (name the seed; do NOT recite it as the answer). (For the Anthropic Fellows run, the spec names the in-progress slot — 'why interested', §5 resource angle, against the standing obj1 'reads as wanting compute' attacker — resume there.)
-4. Wait. One question per turn.
+2. Confirm back to Joe in ONE tight block: a 1-sentence summary of the draft; the proforma type (explicit form | virtual-derived); the recipient + your audience call; the output destination. Keep it short — the scorecard, not the confirmation, is the point.
+3. If a SCORECARD is in play, emit the PILLAR MAP now (one line per pillar + per :head-extra: HIT / UNHIT / SATISFICING, scored from the current draft) and name the single highest-value GAP. This is the first thing Joe should engage with.
+4. Build the typed slot-set from the proforma, then pose Q1 — SEEDED by the relevant eoi-new answer (name the seed; do NOT recite it as the answer). ${opening_q1_directive}
+5. Wait. One question per turn.
 
 Joe is ready. Begin with the file reads, then the confirmation, then Q1."
 
