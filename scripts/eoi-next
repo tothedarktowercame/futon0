@@ -1,0 +1,349 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# eoi-next — Run the eoi-next SECOND INTERVIEW in an Emacs Claude REPL.
+#
+# Companion to eoi-new. Where eoi-new conducts the *authorial* first-draft
+# interview (eoi-engine.md), eoi-next conducts the *editorial* second interview
+# that fits an assembled draft to a proforma — IN THE OPERATOR'S OWN VOICE.
+#
+# It spawns a fresh Claude agent in the claude-repl peripheral and inhabits it
+# as the eoi-next engine described in ~/code/algorithm/eoi-next.md. The agent is
+# NOT a text generator: it conducts a seeded, adversarial interview where Joe
+# answers the proforma questions himself, sourcing both the new text AND the
+# rewrite-rule, while the agent holds a live AIF² argument-graph (README-aif+.md)
+# and challenges — gating each slot on Dung grounded-extension acceptability.
+#
+# Usage:
+#   eoi-next <draft>                                  # auto-discover proforma; ask for recipient
+#   eoi-next <draft> --to <recipient>                 # name the audience (drives the audience model)
+#   eoi-next <draft> --proforma <path|none> --to <r>  # explicit proforma (or `none`/`virtual` → derive)
+#   eoi-next <draft> --out <dir>                      # override artefact destination
+#
+#   <draft>  the eoi-new output to iterate. Accepts:
+#              - a path to the assembled draft .md, OR
+#              - an Arxana essay-id (arxana/essay/<slug>), OR
+#              - a bare <slug> (resolved against $EOI_ESSAYS_ROOT, default
+#                ~/code/futon5a/essays — futon7 is NOT searched by default).
+#   --proforma  the target form/criteria: a file path, or `none`/`virtual` to
+#               derive a VIRTUAL proforma from --to (Aleks-style, no form).
+#               Default `auto`: use a `*-proforma.*` sibling of the draft if one
+#               exists, else the explicit form embedded in the draft's siblings,
+#               else virtual. (The agent resolves per eoi-next.md step 1.)
+#   --to        recipient/audience handle — drives the audience model
+#               (deploy / flatten / substitute / redact of distinctive figures).
+#   --out       artefact destination (default: alongside the draft).
+#
+#   eoi-next anthropic-fellows-2026-v1 --to anthropic-fellows
+#
+# Requires: Emacs daemon running, Agency (futon3c) on port 7070.
+# Companion to: eoi-new (first interview), cr (long-running REPL).
+# See ~/code/algorithm/eoi-next.md (spec) + ~/code/futon5/README-aif+.md (the
+# argument-theoretic grounding: §2 file shape, §11 contest, §12 the AIF² reading).
+
+evidence_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
+emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
+script_real="$(readlink -f "${BASH_SOURCE[0]}")"
+emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
+eoi_next_spec="${EOI_NEXT_SPEC:-/home/joe/code/algorithm/eoi-next.md}"
+aif_grounding="${EOI_NEXT_AIF_GROUNDING:-/home/joe/code/futon5/README-aif+.md}"
+essays_root="${EOI_ESSAYS_ROOT:-${HOME}/code/futon5a/essays}"
+
+running_inside_emacs() { [[ -n "${INSIDE_EMACS:-}" || -n "${EMACS:-}" ]]; }
+
+json_escape()  { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "${1:-}"; }
+elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
+
+# --- Argv --------------------------------------------------------------------
+
+draft_handle=""
+proforma_arg="auto"
+recipient=""
+out_dir=""
+scorecard_arg=""
+
+usage() {
+  cat <<'USAGE'
+Usage: eoi-next <draft> [--proforma <path|none|virtual>] [--scorecard <path>] [--to <recipient>] [--out <dir>]
+
+<draft>  the eoi-new output to iterate — a path to the .md, an Arxana essay-id
+         (arxana/essay/<slug>), or a bare <slug> resolved under $EOI_ESSAYS_ROOT.
+
+--scorecard <path>  a criteria/portfolio scorecard (the recipient's pillars +
+         OUR head). When given, it drives a NO-SATISFICING check: each answer is
+         scored for pillar-fit AND head-advance; a box-fitting-only answer is
+         raised as a :conflict and the slot stays open until the head is asserted.
+
+  eoi-next anthropic-fellows-2026-v1 --to anthropic-fellows
+  eoi-next anthropic-fellows-2026-v1 \
+    --proforma anthropic-fellows-2026-form-fill-v3.md --to anthropic-fellows
+  eoi-next anthropic-fellows-2026-v2 --to anthropic-fellows \
+    --proforma anthropic-fellows-2026-form-fill-final.md \
+    --scorecard ~/code/futon7/holes/anthropic-fellows-scorecard.edn
+  eoi-next ~/code/futon5a/essays/aleks-outreach/aleks-outreach-v1.md \
+    --proforma none --to aleks-kissinger        # no form → virtual proforma
+
+See ~/code/algorithm/eoi-next.md for the engine specification.
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --help|-h)  usage; exit 0 ;;
+    --proforma) proforma_arg="${2:-}"; shift 2 ;;
+    --scorecard) scorecard_arg="${2:-}"; shift 2 ;;
+    --to)       recipient="${2:-}";    shift 2 ;;
+    --out)      out_dir="${2:-}";      shift 2 ;;
+    --context)  proforma_arg="${2:-}"; shift 2 ;;   # alias, for symmetry with eoi-new
+    --*) echo "eoi-next: unknown option: $1" >&2; usage >&2; exit 2 ;;
+    *)
+      if [[ -z "${draft_handle}" ]]; then
+        draft_handle="$1"; shift
+      else
+        echo "eoi-next: unexpected positional argument: $1" >&2; usage >&2; exit 2
+      fi
+      ;;
+  esac
+done
+
+if [[ -z "${draft_handle}" ]]; then
+  echo "eoi-next: a <draft> is required (the eoi-new output to iterate)." >&2
+  usage >&2
+  exit 2
+fi
+
+# --- Resolve the draft handle ------------------------------------------------
+# Best-effort: hand the agent a concrete path + dir when we can, but always
+# pass the raw handle too — the agent (reading the spec) is the final resolver.
+
+draft_path=""
+draft_essay_id=""
+draft_dir=""
+
+if [[ -e "${draft_handle}" ]]; then
+  draft_path="$(readlink -f "${draft_handle}")"
+  draft_dir="$(dirname "${draft_path}")"
+elif [[ "${draft_handle}" == */* ]]; then
+  draft_essay_id="${draft_handle}"          # looks like arxana/essay/<slug>
+else
+  # bare slug — search the essays root for <slug>.md
+  found="$(find "${essays_root}" -maxdepth 3 -type f -name "${draft_handle}.md" 2>/dev/null | head -1)"
+  if [[ -n "${found}" ]]; then
+    draft_path="$(readlink -f "${found}")"
+    draft_dir="$(dirname "${draft_path}")"
+    draft_essay_id="arxana/essay/${draft_handle}"
+  else
+    draft_essay_id="arxana/essay/${draft_handle}"   # let the agent resolve via Arxana
+  fi
+fi
+
+# --- Resolve the proforma handle ---------------------------------------------
+
+proforma_path=""
+proforma_mode=""        # explicit | virtual | auto
+case "${proforma_arg}" in
+  none|virtual|"")
+    proforma_mode="virtual" ;;
+  auto)
+    proforma_mode="auto"
+    # auto-discover a *-proforma.* sibling of the draft
+    if [[ -n "${draft_dir}" ]]; then
+      pf="$(find "${draft_dir}" -maxdepth 1 -type f -name '*-proforma.*' 2>/dev/null | head -1)"
+      [[ -n "${pf}" ]] && { proforma_path="$(readlink -f "${pf}")"; proforma_mode="explicit"; }
+    fi ;;
+  *)
+    if [[ -e "${proforma_arg}" ]]; then
+      proforma_path="$(readlink -f "${proforma_arg}")"; proforma_mode="explicit"
+    elif [[ -n "${draft_dir}" && -e "${draft_dir}/${proforma_arg}" ]]; then
+      proforma_path="$(readlink -f "${draft_dir}/${proforma_arg}")"; proforma_mode="explicit"
+    else
+      echo "eoi-next: --proforma path does not exist: ${proforma_arg}" >&2
+      exit 2
+    fi ;;
+esac
+
+[[ -n "${out_dir}" ]] && out_dir="$(readlink -f "${out_dir}" 2>/dev/null || echo "${out_dir}")"
+
+# --- Resolve the scorecard (the criteria/portfolio + our head — the no-satisficing driver) ---
+scorecard_path=""
+if [[ -n "${scorecard_arg}" ]]; then
+  if [[ -e "${scorecard_arg}" ]]; then
+    scorecard_path="$(readlink -f "${scorecard_arg}")"
+  else
+    echo "eoi-next: --scorecard path does not exist: ${scorecard_arg}" >&2
+    exit 2
+  fi
+fi
+
+echo "--- eoi-next ---"
+echo "Draft:      ${draft_path:-${draft_essay_id:-${draft_handle}}}"
+echo "Draft dir:  ${draft_dir:-<unresolved — agent resolves via Arxana>}"
+echo "Essay-id:   ${draft_essay_id:-<from path>}"
+echo "Proforma:   ${proforma_path:-<${proforma_mode}>}"
+echo "Scorecard:  ${scorecard_path:-<none>}"
+echo "Recipient:  ${recipient:-<none — engine asks>}"
+echo "Out:        ${out_dir:-<alongside the draft>}"
+echo "Spec:       ${eoi_next_spec}"
+echo "Grounding:  ${aif_grounding}"
+
+# --- Socket discovery (replica of eoi-new/cr's logic) ------------------------
+
+find_emacs_socket() {
+  if [[ -n "${FUTON3C_EMACS_SOCKET:-}" ]]; then echo "${FUTON3C_EMACS_SOCKET}"; return 0; fi
+  if [[ -n "${EMACS_SOCKET_NAME:-}" ]]; then echo "${EMACS_SOCKET_NAME}"; return 0; fi
+  local dir="/run/user/$(id -u)/emacs"
+  if [[ -d "$dir" ]]; then
+    if [[ -S "$dir/server" ]]; then echo "server"; return 0; fi
+    if [[ -S "$dir/futon"  ]]; then echo "futon";  return 0; fi
+    local socks=("$dir"/*)
+    if [[ ${#socks[@]} -ge 1 && -S "${socks[0]}" ]]; then basename "${socks[0]}"; return 0; fi
+  fi
+  echo "No Emacs daemon found. Starting one..." >&2
+  emacs --daemon=futon >/dev/null 2>&1
+  echo "futon"
+}
+
+# --- Agency reachability -----------------------------------------------------
+
+agency_reachable() { curl -sS --max-time 2 "${evidence_base}/api/alpha/agents" >/dev/null 2>&1; }
+
+if ! agency_reachable; then
+  echo "Agency:     NOT reachable at ${evidence_base}" >&2
+  echo "            start it via cr or the dev-laptop-env script and retry." >&2
+  exit 1
+fi
+echo "Agency:     reachable"
+
+# --- Agent registration ------------------------------------------------------
+
+socket="$(find_emacs_socket)" || exit 1
+echo "Emacs socket: ${socket}"
+
+emacs_socket_name="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
+
+reg_payload="$(cat <<JSON
+{"type":"claude","cwd":"$(json_escape "$(pwd)")","emacs-socket":"$(json_escape "${emacs_socket_name}")"}
+JSON
+)"
+reg_result="$(curl -sS --max-time 5 -H "Content-Type: application/json" -X POST -d "${reg_payload}" "${evidence_base%/}/api/alpha/agents/auto" 2>&1)"
+echo "Registration: ${reg_result}"
+
+aid="$(echo "${reg_result}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('agent-id',''))" 2>/dev/null || echo "")"
+if [[ -z "${aid}" ]]; then
+  echo "eoi-next: registration failed; could not parse agent-id." >&2
+  exit 1
+fi
+sf="/tmp/futon-session-id-${aid}"
+echo "Agent:        ${aid}"
+echo "Session file: ${sf}"
+
+# --- Inhabitation prompt -----------------------------------------------------
+
+draft_line="${draft_path:-${draft_essay_id:-${draft_handle}}}"
+proforma_line="(none — derive a VIRTUAL proforma from the recipient, per spec step 1)"
+case "${proforma_mode}" in
+  explicit) proforma_line="${proforma_path}" ;;
+  auto)     proforma_line="(auto — no *-proforma.* sibling found; use the explicit form embedded in the draft's siblings, else virtual)" ;;
+esac
+recipient_line="${recipient:-(none — ask Joe who the recipient is; it drives the audience model)}"
+out_line="${out_dir:-(alongside the draft)}"
+scorecard_line="${scorecard_path:-(none — score against the proforma + recipient only)}"
+scorecard_driver=""
+if [[ -n "${scorecard_path}" ]]; then
+  scorecard_driver="
+SCORECARD DRIVER (NEW — an explicit part of the driver, per Joe; file: ${scorecard_path}):
+- READ the scorecard. It holds the recipient's PORTFOLIO (their pillars + sub-questions = the scoring axes) AND OUR HEAD (our theses/contributions, including :head-extras that go BEYOND their stated questions).
+- Score EVERY captured :thesis two ways: (a) PILLAR-FIT — which pillar/sub-question does it hit, how strongly; (b) HEAD-ADVANCE — does it assert our head, or merely fit their box?
+- THE NO-SATISFICING CONFLICT (a new typed objection, the load-bearing addition): if an answer only fits a box without advancing the head (the 'I'm a great guy, please choose me' shape), raise it as a real :conflict (:bite :logical — 'this satisfices: it fits the form but does not assert what you actually bring') and DO NOT close the slot until Joe asserts the head. The scorecard is the satisficing-detector.
+- HONEST COVERAGE: surface UNHIT pillars. Where the scorecard marks a pillar WEAK (e.g. :threats-and-resilience), do NOT let Joe pad it — an honest 'not my pillar' is stronger than a faked fit. Conversely, ensure each STRONG pillar + each :head-extra is asserted somewhere across the slots.
+- The scorecard composes with the AUDIENCE MODEL: both feed the objection generator (audience-tension figures AND satisficing-tension figures are :conflict nodes)."
+fi
+
+inhabit_prompt="Runtime surface contract:
+- Surface: emacs-claude-repl (agent ${aid}).
+- Your output appears in this REPL buffer; Joe reads and responds here.
+- Working directory: $(pwd)
+
+Your role this session: the eoi-next engine — the EDITORIAL SECOND INTERVIEW. You are NOT a general assistant and you are NOT a text generator. You operationalise the spec below. The proforma's questions become a new set of interview questions; Joe's eoi-new answers are the seed/hidden layer; JOE answers the questions himself; you guide and hold a live AIF² argument-graph in the background and challenge.
+
+READ FIRST, in order:
+1. ${eoi_next_spec}     (the eoi-next engine spec — load-bearing)
+2. ${aif_grounding}     (AIF+/AIF² grounding — §2 .aif.edn shape, §11 contest, §12 the Walton/Reed reading)
+3. ${draft_line}        (the eoi-new draft to iterate — read it / resolve the essay-id via Arxana)
+4. ${proforma_line}     (the proforma, if a path)
+5. ${scorecard_line}    (the SCORECARD — the no-satisficing driver; read it if a path)
+
+Handles for this run:
+- Draft (eoi-new output): ${draft_line}
+- Draft directory:        ${draft_dir:-<resolve via Arxana>}
+- Proforma:               ${proforma_line}
+- Scorecard:              ${scorecard_line}
+- Recipient / audience:   ${recipient_line}
+- Output destination:     ${out_line}
+
+LOAD-BEARING INVARIANTS (the engine MUST honour these — see the spec's 'anti-generation invariants'):
+- NEVER author Joe's prose. A slot :thesis is valid ONLY with :origin :operator. If you catch yourself writing the answer, STOP and ask the question instead. (The v0.x text-generation framing was the load-bearing mistake.)
+- NEVER invent the rewrite-rule. The :frame warrant is :origin :operator — you elicit it from Joe ('what's the transform from your seed to this answer?'), you do not label it yourself.
+- ONE question per turn. Never batch questions, never batch objections.
+- CHALLENGE only from a real, typed :conflict node (:bite :logical | :empirical) — substantive ('Sorry Dave, a reviewer reads this and says X'), never glib ('you are so wise, Socrates'), never 'throw him some edges.'
+- GATE each slot on acceptability: a slot closes ONLY when its :thesis is in the Dung grounded-extension — every :conflict biting it is itself defeated. You may not leave a slot while an undefeated reviewer-objection stands.
+- ANCHOR each captured answer as the AIF² :supports edge: donor-span (exact substring in the eoi-new draft) -> recipient-span (exact substring in Joe's answer) :via the warrant. This IS the hypergraph anchor + the side-by-side overlay.
+- A :thesis with no warrant-frame is an orphan claim — flag it (the donor probably doesn't actually ground the answer), do not paper over it.
+- AUDIENCE MODEL feeds the objection generator: an audience-tension figure is a :conflict ('won't land with this recipient -> DEPLOY / FLATTEN / SUBSTITUTE / REDACT-and-relocate'). A figure may be redacted but never orphaned — keep its tension-edge in the (private) fabric.
+- N_auto PROPOSES; never fabricate operator-only facts (emails, referee consent, probabilities) — mark them confirm.
+- EXIT CRITERION (the run is NOT complete until all four): (1) register vN as an Arxana essay via a loader .el (the fellows-v3-eoi-next.el pattern: manifest with ABSOLUTE :source-file + H2 :sections; run it); (2) wire one arxana/eoi-projection-bind hyperedge per :supports warrant edge (endpoints: annotated=vN slot with the recipient span as :passage, source=eoi-new section with the donor span as :passage; the rule in :note); (3) call (arxana-essay-side-by-side <draft-id> <vN-id>) (arxana-essay-pair.el) to bring up the LIVE pair view; (4) return your AGENT-ID. A markdown side-by-side file is NOT sufficient — the operator wants the live Arxana pair view, draft <-> vN, linked by the projection-bind annotations.
+${scorecard_driver}
+
+OPENING TURN (do this now):
+1. Read the files above.
+2. Confirm back to Joe: a 1-sentence summary of the draft; the proforma type (explicit form | virtual-derived); the recipient + your audience call (deploy/flatten/... of the distinctive figures); the output destination.
+3. Build the typed slot-set from the proforma, then pose Q1 — the first slot's question, SEEDED by the relevant eoi-new answer (name the seed; do NOT recite it as the answer). (For the Anthropic Fellows run, the spec names the in-progress slot — 'why interested', §5 resource angle, against the standing obj1 'reads as wanting compute' attacker — resume there.)
+4. Wait. One question per turn.
+
+Joe is ready. Begin with the file reads, then the confirmation, then Q1."
+
+# --- Launch the REPL buffer and stream the agent's first turn ---------------
+#
+# Same transport as eoi-new: dispatch via claude-repl--call-claude-streaming
+# (POST /api/alpha/invoke-stream, NDJSON filter renders text as a "claude" turn)
+# rather than send-input, so the harness-authored inhabitation is NOT rendered
+# as a false "joe:" turn. Preserves futon3c I-1 (agent identity singular) and
+# I-2 (transport routes, does not synthesise).
+
+escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
+escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
+escaped_inhabit="$(elisp_escape "${inhabit_prompt}")"
+
+claude_repl_eval="$(cat <<EOF
+(progn
+    (add-to-list 'load-path "${emacs_dir}")
+    (load "${escaped_chat}" nil t)
+    (load "${escaped_repl}" nil t)
+    (let* ((aid "${aid}")
+           (bufname (format "*claude-repl:%s*" aid))
+           (sf "${sf}")
+           (api-url (string-remove-suffix "/" agent-chat-agency-base-url))
+           (buf (get-buffer-create bufname))
+           (inhabit-text "${escaped_inhabit}"))
+      (with-current-buffer buf
+        (unless (eq major-mode 'claude-repl-mode) (claude-repl-mode))
+        (setq-local claude-repl--workspace-applied t)
+        (setq-local claude-repl-agent-id aid)
+        (setq-local claude-repl-api-url api-url)
+        (setq-local claude-repl-evidence-url (concat api-url "/api/alpha/evidence"))
+        (setq-local claude-repl-session-file sf))
+      (claude-repl--open-instance bufname agent-chat-agency-base-url aid sf)
+      (with-current-buffer buf
+        (claude-repl--init-display)
+        (claude-repl--call-claude-streaming inhabit-text (lambda (_response) nil)))
+      (switch-to-buffer buf)
+      buf))
+EOF
+)"
+
+if running_inside_emacs; then
+  "${emacsclient_bin}" -s "${socket}" -n --eval "${claude_repl_eval}" 2>&1 || true
+  exit 0
+fi
+
+exec "${emacsclient_bin}" -s "${socket}" -t --eval "${claude_repl_eval}"
