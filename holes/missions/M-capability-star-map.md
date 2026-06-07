@@ -811,6 +811,31 @@ mission→code grounding bonus · the navigation render (M-stack-stereolithograp
 single-cycle-leaf empirical spike** (does EFE pick a leaf in *practice* — the C3 confirmation, run after
 Unit B) · living hole-source (M-a-sorry-enterprise) · futon1a graph-store (EDN suffices for slice 1).
 
+### Unit A review (claude-1, 2026-06-07) — pipeline ✓, extraction HOLLOW (we-do-discipline catch)
+
+codex-1 `b2cf27e`/`c300403`. Gates re-confirmed (kondo 0/0; 3 tests; `run-verify-equivalent :verified?
+true`; keystone = single held node `:efe-trustworthy-over-starmap`). **The PIPELINE is real + valuable**
+— the schema, `requires-toposort` (8 caps, correct order), `graph->trace` adapter, the on-real-graph
+invariant run, and `keystone-path-report` all work; this is the substrate Unit B runs EFE over.
+
+**But the EXTRACTION is hollow, and the C4 claim is circular** (honest re-characterisation):
+- `capability-nodes` reads the capabilities + their `:scope` (= the `:requires` edges) + `:minted-by`
+  **straight from `ensemble.edn`** — the hand-authored target. So "the extracted graph reproduces
+  ensemble-1" is true **because it copied it** (C4 is vacuous, not an independent validation).
+- The `:minted-by` mission ids are **invented aliases** (`M-wm-guardrails-core`, `M-war-machine-hole-
+  counter`, … — no such mission docs); **12 of 14 missions have `:open-hole-count 0`** (not found in the
+  registry). The "enriches from the live mission registry" claim is mostly empty — only ~2 real
+  hole-counts + 2 pudding `:specialises/:couples` edges are genuinely extracted.
+
+**Disposition:** the capability-inventory genuinely *can't* be independently extracted yet (the A2 gap —
+no inventory exists beyond the prover theses + this hand-authored ensemble), so seeding the capabilities
+from the ensemble is **forced**, not a shortcut — accept it as a `:prototyping-forward` PIPELINE-first
+slice. BUT two things are honest defects, not forced: the **fictional mission aliases** (should map to
+real mission docs or be labelled placeholders) and the **over-stated "extraction/real-graph" framing**.
+C2 is met only weakly (a graph exists for the region, hand-authored); **C4 is not genuinely met**.
+Genuine landscape extraction = future (capability inventory A2-blocked; mission-mapping a targeted
+follow-on). *Operator disposition pending (see review report).*
+
 ---
 
 ## Provenance
