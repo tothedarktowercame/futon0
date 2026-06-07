@@ -853,8 +853,11 @@ capability landscape exists.
 - **Mission state: OPEN** at *mechanism-proven, real-content-pending.* **NOT WM-overnight-ready** — that
   gate needs EFE picking leaves on the REAL landscape with no cherry-pick.
 - **To close:** assemble the real capability landscape —
-  - (1) real **mission-mapping** (`:minted-by` → actual mission docs + real `:open-hole-count`) —
-    **dispatched to codex-1, 2026-06-07** (mission half only; capabilities untouched).
+  - (1) real **mission-mapping** — ✅ **DONE + reviewed** (codex-1 `9bf7f02`/`e6d4eda`, claude-1
+    verified 2026-06-07): the mission half is now real — **10 registry-verified mission nodes + 4 honest
+    `builder/wm-*` placeholders** (`:real-mission? false :built-under WM-GUARDRAILS-SPEC`), **0 fictional
+    aliases**; capabilities + `:requires` untouched; `run-verify-equivalent :verified? true`,
+    keystone single-held. The mission half of the hollow-extraction finding is closed.
   - (2) the **capability inventory** (A2 — the harder, gating piece). **Disposition (Joe, 2026-06-07):
     NOT a new mission — it is a CROSS-MISSION concern, kept inside THIS mission, grounded in
     `C-pudding-prover §8.2`**: the prover registry = the capability set's STATUS view, this mission = the
