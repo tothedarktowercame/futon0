@@ -203,7 +203,8 @@ map lies.
   build-graph + the scheduler-EFE wiring; a navigation surface.
 - **Out / consumed:** node-granularity *resolution* (keystone, M-substrate-metric); the render
   (M-stack-stereolithography owns it); the mission→code grounding (deferred end-bonus); the predictive
-  arm.
+  arm; **living hole-DISCOVERY** (auto-surfacing *new/undiscovered* holes from turns — M-a-sorry-
+  enterprise, the likely *next* mission; the map is a **fixed curriculum** until then — see MAP §Limitation).
 - **One mission, complex.** The facets are interdependent (can't type edges without the form; can't
   schedule without the edges) so they don't cleanly fork — *and that interdependence is exactly why this
   is not a cheap win*, and why the IDENTIFY must guard against the inverse over-collapse (cram five gaps,
@@ -319,6 +320,28 @@ ready-vs-missing table closes the phase.
 4. **The EFE is genuinely flat and there is NO DAG anywhere** — so "EFE over the structure" has **no
    existing scaffolding**; it is the substantive new build (B1), and it can't borrow a toposort because
    none exists.
+
+### Limitation — fixed curriculum vs living map (the M-a-sorry-enterprise boundary, Joe 2026-06-07)
+
+A 5th finding, and a real scope-boundary. **Turn→pattern tagging is LIVE** — the stack produces a
+per-turn context-retrieval certificate over 853+ patterns, and `loop_learning.clj`'s `:patterns-applied`
+codes each frame's structural patterns (the M-pattern-application-diagnostic capability). **Turn→sorry
+tagging is NOT** — discovering a *sorry* (a hole) from a turn is **M-a-sorry-enterprise**
+(`futon5a/holes/missions/`, IDENTIFY/Design, **blocked on ≥5 sessions of retrieval data**); its own
+insight is that the per-turn retrieved-patterns *overlap-signal* an emergent sorry.
+
+**Consequence:** the star-map we can build *now* draws its holes from **known** sorries (the
+`:open-hole-count` hole-counter over mission docs) + hand-curation — so it is a **fixed curriculum**
+(known capabilities, known holes). It becomes a **living map** — auto-surfacing *new, previously
+undiscovered* holes/capabilities from the work itself — only once M-a-sorry-enterprise lands the
+turn→sorry mining. Identifying holes is what we are doing **live and hands-on right now** (this very
+session); automating the discovery of *new* holes is next-level.
+
+**This is not a defect:** Khan's star-map *is* a fixed curriculum and a build-system's Makefile *is*
+static — the fixed version is the faithful v1. The discipline is to **build so the living layer plugs
+in** (the hole-counter is the fixed hole-source; the turn→sorry miner becomes a *second* source later),
+not to pretend the v1 is living. M-a-sorry-enterprise is the likely **next mission after this one**, and
+is anyway downstream (data-blocked).
 
 **MAP exit:** every Q1–Q7 has a concrete answer; the ready-vs-missing table is complete. Headline — the
 *form* + *capability-seed* + *typed-edge precedent* are **more ready** than IDENTIFY assumed (generalize
