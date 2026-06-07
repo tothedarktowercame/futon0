@@ -1,0 +1,245 @@
+{:star-map/region :wm,
+ :star-map/source
+ {:ensemble
+  "/home/joe/code/futon0/holes/missions/M-capability-star-map.ensemble.edn",
+  :pudding-registry
+  "/home/joe/code/futon7/holes/pudding-prover-registry.edn",
+  :mission-source :futon2.aif.mission-registry/load-missions,
+  :exclusion [:worktrees :futon3-origin :.state]},
+ :capabilities
+ {:agency
+  {:title
+   "Multi-agent dispatch — N:1 registry/routing; many Claude/Codex self-register, route in one JVM",
+   :status :satisfied,
+   :scope [],
+   :minted-by
+   ["M-agency-unified-routing"
+    "M-drawbridge-multi-agent"
+    "M-agency-rebuild"],
+   :pre-registered? true,
+   :attested true,
+   :grounding
+   "futon3c/src/futon3c/agency/{registry,federation,hop_events}.clj"},
+  :efe-trustworthy-over-starmap
+  {:title
+   "EFE does real AIF over the star-map — the WM's pick is an applicable single-cycle leaf (no pilot cherry-pick)",
+   :status :held,
+   :scope [:wm-steps-forward-guardrailed],
+   :minted-by ["M-capability-star-map"],
+   :pre-registered? true,
+   :keystone true},
+  :evidence-persistence
+  {:title
+   "Session/lab persistence — turns persist to XTDB (the substrate precursor)",
+   :status :satisfied,
+   :scope [],
+   :minted-by ["M-labs-integration"],
+   :pre-registered? true,
+   :attested true},
+  :live-geometric-stack
+  {:title
+   "Substrate-2 — the live geometric stack / commit-factored hypergraph the WM reads",
+   :status :satisfied,
+   :scope [:self-representing-stack],
+   :minted-by ["M-live-geometric-stack"],
+   :pre-registered? true,
+   :attested true},
+  :self-representing-stack
+  {:title
+   "The stack reflects itself — 6-gate trace chain devmap→evidence→source code",
+   :status :satisfied,
+   :scope [:agency :evidence-persistence],
+   :minted-by ["M-self-representing-stack" "M-three-column-stack"],
+   :pre-registered? true,
+   :attested true,
+   :grounding
+   "VSATARCS (futon7a/vsatarcs.html); ~1529 hyperedges across math/code/project"},
+  :war-machine
+  {:title
+   "The War Machine — strategic dashboard + pilot REPL (the differential operator v·∇ over the AIF field)",
+   :status :satisfied,
+   :scope [:live-geometric-stack],
+   :minted-by ["M-war-machine-pilot" "M-war-machine-first-outing"],
+   :pre-registered? true,
+   :attested true},
+  :wm-overnight-unsupervised
+  {:title
+   "The WM runs overnight without supervision — 'I trust the stack to code while I sleep'",
+   :status :held,
+   :scope
+   [:wm-steps-forward-guardrailed :efe-trustworthy-over-starmap],
+   :minted-by [],
+   :pre-registered? true,
+   :frontier true,
+   :pudding-thesis :T4.2,
+   :cap/altitude 80},
+  :wm-steps-forward-guardrailed
+  {:title
+   "WM steps forward (not wedges) under guardrails — engages the top autonomous action, NAGs the operator-forks",
+   :status :satisfied,
+   :scope [:war-machine],
+   :minted-by
+   ["M-wm-guardrails-core"
+    "M-war-machine-input-sources"
+    "M-war-machine-hole-counter"
+    "M-war-machine-gate-runner"],
+   :pre-registered? true,
+   :attested true,
+   :grounding
+   "futon3c/src/futon3c/wm/{guardrails,needs_you,outing}.clj; futon2 mission-registry :open-hole-count"}},
+ :missions
+ {"M-agency-rebuild"
+  {:scope [],
+   :produces [:agency],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-agency-unified-routing"
+  {:scope [],
+   :produces [:agency],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-capability-star-map"
+  {:scope [:wm-steps-forward-guardrailed],
+   :produces [:efe-trustworthy-over-starmap],
+   :open-hole-count 9,
+   :phase :unknown,
+   :status :unknown,
+   :next-exit-operator-verify? true},
+  "M-drawbridge-multi-agent"
+  {:scope [],
+   :produces [:agency],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-labs-integration"
+  {:scope [],
+   :produces [:evidence-persistence],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-live-geometric-stack"
+  {:scope [:self-representing-stack],
+   :produces [:live-geometric-stack],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-self-representing-stack"
+  {:scope [:agency :evidence-persistence],
+   :produces [:self-representing-stack],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-three-column-stack"
+  {:scope [:agency :evidence-persistence],
+   :produces [:self-representing-stack],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-war-machine-first-outing"
+  {:scope [:live-geometric-stack],
+   :produces [:war-machine],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-war-machine-gate-runner"
+  {:scope [:war-machine],
+   :produces [:wm-steps-forward-guardrailed],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-war-machine-hole-counter"
+  {:scope [:war-machine],
+   :produces [:wm-steps-forward-guardrailed],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-war-machine-input-sources"
+  {:scope [:war-machine],
+   :produces [:wm-steps-forward-guardrailed],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false},
+  "M-war-machine-pilot"
+  {:scope [:live-geometric-stack],
+   :produces [:war-machine],
+   :open-hole-count 9,
+   :phase :open,
+   :status :open,
+   :next-exit-operator-verify? false},
+  "M-wm-guardrails-core"
+  {:scope [:war-machine],
+   :produces [:wm-steps-forward-guardrailed],
+   :open-hole-count 0,
+   :phase :complete,
+   :status :complete,
+   :next-exit-operator-verify? false}},
+ :edges
+ [{:from :efe-trustworthy-over-starmap,
+   :to :wm-steps-forward-guardrailed,
+   :type :requires}
+  {:from :live-geometric-stack,
+   :to :self-representing-stack,
+   :type :requires}
+  {:from :self-representing-stack, :to :agency, :type :requires}
+  {:from :self-representing-stack,
+   :to :evidence-persistence,
+   :type :requires}
+  {:from :war-machine, :to :live-geometric-stack, :type :requires}
+  {:from :wm-overnight-unsupervised,
+   :to :wm-steps-forward-guardrailed,
+   :type :requires}
+  {:from :wm-overnight-unsupervised,
+   :to :efe-trustworthy-over-starmap,
+   :type :requires}
+  {:from :wm-steps-forward-guardrailed,
+   :to :war-machine,
+   :type :requires}
+  {:from "M-agency-unified-routing", :to :agency, :type :produces}
+  {:from "M-drawbridge-multi-agent", :to :agency, :type :produces}
+  {:from "M-agency-rebuild", :to :agency, :type :produces}
+  {:from "M-capability-star-map",
+   :to :efe-trustworthy-over-starmap,
+   :type :produces}
+  {:from "M-labs-integration",
+   :to :evidence-persistence,
+   :type :produces}
+  {:from "M-live-geometric-stack",
+   :to :live-geometric-stack,
+   :type :produces}
+  {:from "M-self-representing-stack",
+   :to :self-representing-stack,
+   :type :produces}
+  {:from "M-three-column-stack",
+   :to :self-representing-stack,
+   :type :produces}
+  {:from "M-war-machine-pilot", :to :war-machine, :type :produces}
+  {:from "M-war-machine-first-outing",
+   :to :war-machine,
+   :type :produces}
+  {:from "M-wm-guardrails-core",
+   :to :wm-steps-forward-guardrailed,
+   :type :produces}
+  {:from "M-war-machine-input-sources",
+   :to :wm-steps-forward-guardrailed,
+   :type :produces}
+  {:from "M-war-machine-hole-counter",
+   :to :wm-steps-forward-guardrailed,
+   :type :produces}
+  {:from "M-war-machine-gate-runner",
+   :to :wm-steps-forward-guardrailed,
+   :type :produces}
+  {:from :T4.2, :to :T4, :type :specialises}
+  {:from :T4, :to :T5, :type :couples}]}
