@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** MAP complete (Q1–Q7 answered + ready-vs-missing table, 2026-06-07). IDENTIFY approved (operator, 2026-06-07). HEAD done. Next: re-anchor the DERIVE-draft (the lambda/scope model + ensemble-1 VERIFY-spike) onto the MAP findings.
+**Lifecycle:** DERIVE (re-anchored on MAP, 2026-06-07): entity/relation/invariant design + INV-G “buck stops here” governance + EFE-over-graph + pluggable hole-source; lambda rationale + ensemble-1 VERIFY-spike retained below. HEAD/IDENTIFY/MAP done. Next: ARGUE → VERIFY (invariants as a logic-model before code).
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -350,12 +350,97 @@ the exotype + the prover); the *scheduler-over-structure*, the *navigation graph
 
 ---
 
-## DERIVE — DRAFT (authored ahead of MAP; HELD for re-anchoring)
+## DERIVE (re-anchored on MAP, 2026-06-07)
 
-> Discipline note (2026-06-07 step-back): the model below was authored *before* a verified IDENTIFY and
-> a real MAP — design leaked ahead of phase. It is kept (not discarded) but marked DRAFT: it must be
-> re-anchored once MAP surveys what actually exists (the `:mission/*` props, the exotype `.edn`s). The
-> "Ensemble 1" section within is in truth a **VERIFY-spike run early** (it validated this draft).
+The MAP found the *form*, *capability-seed*, and *typed-edge precedent* half-built (generalise the
+exotype + the prover); the *scheduler-over-structure*, *toposort*, and *navigation* greenfield. This
+section is the design proper; the conceptual subsections that follow (the lambda/scope rationale, the
+duality, the ensemble VERIFY-spike) are its elaboration. Exit target: implementable from here alone.
+
+### Entity types
+- **Capability** (the minted node): `{:cap/id :cap/title :cap/status(:held|:satisfied — prover
+  lifecycle) :cap/altitude(ascent ordering, prover) :cap/minted-by[mission-ids]
+  :cap/grounding(substrate-2 commit-vertices — DEFERRED, the mission→code bonus)}`. **Seeded from
+  `pudding-prover-registry.edn` (44 proof-states + 7 kit)**, extended as missions mint.
+- **Mission** (the lambda / dual node): the **generalised exotype** — `{:mission/id
+  :mission/scope(input capabilities = exotype `:ports/:input`) :mission/body(open holes)
+  :mission/produces(output capabilities = `:ports/:output`) :mission/phase :mission/status}`. Fed by the
+  watcher's parsed `:mission/*` props + the exotype `.edn` when one exists.
+- **Hole** (body-element, PLUGGABLE): `{:hole/id :hole/source(:hole-counter|:sorry-miner)
+  :hole/single-cycle?}`. **Fixed source = the live `:open-hole-count`; the turn→sorry miner is a *second*
+  source (M-a-sorry-enterprise, future) behind the same interface.**
+- Real object = the **bipartite incidence** Mission ⊔ Capability; missions-as-nodes /
+  capabilities-as-nodes are its two projections.
+
+### Relation types (typed edges — seeded, not invented)
+| Edge | From → To | Meaning | Seed (MAP) |
+|---|---|---|---|
+| `:requires` | mission/cap → cap | hard prerequisite (scope binding); **logical** | mission `:blocked-by`, typed up |
+| `:produces` | mission → cap | the mint (output wire) | closure `:enables [{:action :capability}]`; criteria |
+| `:enables` | cap → mission/cap | positive lookahead | closure `:enables` (live) |
+| `:specialises` | cap → cap | refinement | prover `:specialises` |
+| `:couples` | cap ↔ cap | mutual | prover `:couples` |
+| `:built-before` | mission → mission | **temporal** order (≠ `:requires`) | piano_roll / `:mission/date` |
+
+### Invariant rules (the VERIFY targets)
+- **INV-1 (acyclic):** the `:requires`/`:produces` graph is a DAG ⇒ a **toposort exists** (the
+  build-order). *(None exists today — MAP Q5; the new build.)*
+- **INV-2 (mint-provenance / no perfect-crime):** every `:satisfied` capability has a `:minted-by`
+  mission that is `:complete` — no capability "satisfied" without a shipped producing mission (the
+  M-the-perfect-crime check at the capability level; the mission→code grounding strengthens it).
+- **INV-3 (applicability):** a mission is *applicable* iff every `:requires` capability is `:satisfied`.
+- **INV-4 (single-cycle leaf):** a mission is a *leaf* iff applicable ∧ its body is one-cycle
+  (`:hole/single-cycle?`). The granularity tag (fixed hole-counter; keystone refinement later).
+- **INV-G — THE BUCK STOPS HERE (load-bearing safety invariant):** the map is *generative* — it can
+  inductively surface a **missing** capability ("have X,Y; Z is reachable and serves the ascent; Z is
+  unminted"). Generativity is gated **at the PURSUIT boundary, not the DISCOVERY boundary:**
+  - **Discovery** (propose a missing capability) is autonomous — graph inference + a NAG.
+  - **Pursuit/minting** of a capability **not in the operator's pre-registered brief** is
+    operator-gated (consent) — the system never *decides* to pursue a new capability overnight.
+  - **The EFE goal is the operator's pre-registered ascent** (prover altitude toward the pre-registered
+    targets), **NOT capability-maximisation.** ⇒ the scheduler cannot *want* an un-registered capability.
+  - *(WM-I4 / the consent-gate at the capability level. The 3AM-pentagon case: surfacing "we lack Z" is a
+    harmless inference; pursuing Z is impossible without pre-registration + consent, and the EFE never
+    seeks it.)*
+
+### Data flow
+watcher `:mission/*` + exotype `.edn` → **Mission nodes**; `pudding-prover-registry.edn` → **Capability
+nodes**; `:blocked-by` + closures + criteria → **typed edges**; hole-counter → **body/leaf tag** → the
+**bipartite graph** (futon1a hypergraph or an EDN sibling of `.semilattice.edn`) → **toposort** →
+**EFE-over-graph** (extend `futon2.aif.forward-model`) → the **WM scheduler's pick**. The operator's
+**pre-registered brief** (M-futon-forward-model §13) feeds the **EFE goal + the INV-G consent-gate**.
+
+### The wiring diagram = the mission's OWN exotype (dogfood the generalised form)
+Author `futon5/data/missions/M-capability-star-map-exotype.edn` — ports (in: mission-docs/prover/
+closures/hole-counts/pre-registered-brief; out: the graph + the scheduler-pick + the NAG proposals),
+components (extractor / graph-store / toposort / EFE-scheduler / **consent-gate**), edges (the data flow),
+invariants (INV-1..G). Building the mission *as* an exotype validates the generalised node-form.
+
+### EFE-over-the-graph (the substantive new build)
+Extend `efe.clj`/`forward-model` so a mission-action's G-total is a functional of the graph:
+**pragmatic** = ascent-progress toward the pre-registered goal − body-size; **epistemic** = structure
+info-gain; **applicability gate** = unbound `:requires` ⇒ high G. The toposort bounds candidates to the
+*applicable frontier*; EFE picks the leaf within it ⇒ the EFE-min pick **is** an applicable single-cycle
+leaf on the ascent (the cycle-1 gate, bounded by INV-G).
+
+### Key decisions (IF / HOWEVER / THEN / BECAUSE)
+- **IF** capabilities are the nodes (Khan-faithful), **HOWEVER** missions-as-nodes extracts more easily
+  (the watcher already emits mission attributes), **THEN** store the **bipartite incidence** and project
+  both, starting mission-side, **BECAUSE** node/edge duality makes it one structure, not a choice.
+- **IF** the scheduler is EFE, **HOWEVER** a free EFE could "seek capability," **THEN** bind the goal to
+  the pre-registered ascent + gate pursuit (INV-G), **BECAUSE** the buck stops here — autonomy advances
+  *pre-registered* targets, never *chooses new ones*.
+- **IF** holes come from the counter now, **HOWEVER** new-hole discovery is M-a-sorry-enterprise (future,
+  data-blocked), **THEN** make `hole-source` pluggable, **BECAUSE** the map must upgrade
+  curriculum→living without a rebuild (MAP §Limitation) — *and* the map gives the future miner both a
+  socket to plug into and a structure to do inductive capability-discovery on.
+
+---
+
+### Conceptual foundations (the lambda/scope rationale — elaborates the design above)
+
+> These subsections were authored during the 2026-06-07 concept session (ahead of phase) and are the
+> *rationale* for the formal DERIVE above; the "Ensemble 1" section is the VERIFY-spike that validated it.
 
 ### The missions-as-lambdas / scopes model (firmed up)
 
