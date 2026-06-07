@@ -135,9 +135,75 @@ targets *visible*, not to make the future *look settled*.
 
 ---
 
-## IDENTIFY (pending)
+## IDENTIFY (in progress — operator directed the build 2026-06-07; residual HEAD questions noted)
 
-Pending operator HEAD-verify.
+Operator direction (2026-06-07): **build this end-to-end *before* the next WM cycle.** Success
+criterion (verbatim sense): *the next WM cycle should not need the pilot to cherry-pick a discrete
+task — we should trust EFE much more, because EFE will be doing real Active Inference over the
+star-map.* This answers two HEAD questions: **no crude proxy** (build the real EFE-AIF), and the **node
+model is the missions-as-lambdas / scopes metaphor**. (Residual HEAD questions — the M-futon-forward-
+model relationship and owner/pairing — still open; see HEAD exit criteria.)
+
+### The missions-as-lambdas / scopes model (firmed up)
+
+A mission is a **lambda**: `M = λ(scope).body ⇒ capability`.
+
+- **scope** (the free variables) = the capabilities M depends on — its prerequisite missions /
+  capabilities (the INPUT edges). Source: the existing `:depends-on` / `:enables` prose annotations,
+  extracted + typed.
+- **body** = the work M does — its open holes. Body *size* = `:open-hole-count` (live, futon2
+  mission-registry).
+- **capability** (the result) = what M produces once fully applied — what other missions then bind to
+  (the OUTPUT edges).
+- **application (β-reduction)** = advancing M = discharging one hole = *partial application*. A
+  **fully-applied** lambda (all holes discharged) is no longer a lambda but a **value** — a built
+  capability, a node in the stereolithographic posterior.
+
+This makes "small vs big target" **structural**, not a heuristic:
+- a **single-cycle leaf** = an **applicable** lambda (scope variables all bound — prerequisites built)
+  with a **small body** (one/few holes);
+- a **mega-mission** = a lambda with a **large body** and/or **unbound scope** (prerequisites missing).
+  Both legitimate; both *visible* in the graph.
+
+### Granularity layering (the keystone boundary — explicit, no fork)
+
+- Lambda **body-size is measured at the MISSION level** by `:open-hole-count` (live). This is **NOT**
+  the code-level `:scope` grain held on `M-substrate-metric`; the star-map *consumes* the live
+  hole-count and does **not** fork the keystone.
+- The richer body measure — the code-`:scope`s a mission would produce (M-differentiable-code's
+  `:scope` grain, probe-supported 0.974) — is the **keystone refinement** that plugs in when
+  M-substrate-metric lands. **mission-scopes ⟷ code-scopes** is the eventual unification; build the
+  star-map to *slot it in*, not to pre-empt it.
+
+### EFE as Active Inference over the star-map (the success criterion, made precise)
+
+Today's EFE (`futon2.aif.forward-model`) ranks **action-classes** and treats `:open-mission` targets as
+a **flat set** — which is why cycle 1 surfaced a mega-mission. The build makes EFE a **functional of the
+lambda structure**:
+- **pragmatic value** ← progress toward the goal (valuable-path / the capability the operator wants),
+  discounted by **body-size** (a large body = many cycles = high expected free energy *now*);
+- **epistemic value** ← information gained about the structure (advancing an applicable leaf reduces
+  uncertainty cleanly; poking an unbound-scope mega-mission does not);
+- **applicability gate** ← an un-applicable lambda (unbound scope) carries high EFE — the **dependency
+  structure does the gating**.
+
+When EFE is computed over the lambda graph this way, the EFE-minimising pick **is** an applicable
+single-cycle leaf on the valuable-path — *cherry-picking becomes a graph query.* (This is
+M-differentiable-code's "free-energy / EIG over the structure" objective + M-bayesian-structure-learning,
+at the mission level.)
+
+### End-to-end build plan (the cars; bounds the first slice per the scope tension)
+
+1. **Model** — the lambda/scope node+edge schema (above), + the edge extractor (`:depends-on` /
+   `:enables` → typed edges). *(claude-1 design; codex impl.)*
+2. **Graph** — extract the mission landscape into the star-map (futon1a hypergraph or an EDN sibling of
+   `.semilattice.edn`); exclude worktrees/origin/`.state`. Bound the **first slice to ONE region**
+   end-to-end before the whole ~125.
+3. **EFE-AIF** — extend `forward-model` so EFE is the structural functional above; the WM ranks lambdas,
+   not a flat open-mission set.
+4. **End-to-end test (the gate):** a dry WM selection over the star-map returns an **applicable
+   single-cycle leaf** as EFE-top — *no pilot fork-resolution needed.* Only then do we run the next WM
+   cycle.
 
 ---
 
