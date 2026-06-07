@@ -220,6 +220,44 @@ Feasibility note (honest, not "easy" on faith): the association is mission-commi
 vertices, and it holds **iff** the substrate-2 commit-vertex layer (M-live-geometric-stack phase 3,
 what M-stack-stereolithography consumes) is live.
 
+### Node/edge duality — the bipartite incidence is the real object (Joe, 2026-06-07)
+
+Don't choose. The real object is the **bipartite incidence** `missions ⊔ capabilities`, edge = "mission
+M produces / consumes capability C". The two readings are its one-mode **projections** (graph-theoretic
+node/edge duality, almost-for-free):
+- **missions-as-nodes** (M1~M2 share a capability) — *start here*; it matches the lambda model exactly
+  (a mission's scope = the capabilities it consumes, its output = the capability it produces — the
+  **lambda IS a mission's bipartite-local structure**).
+- **capabilities-as-nodes** (C1~C2 share a mission) — the **dual view**, a re-projection away.
+
+Keep the capability incidence even while working the mission-view, so the dual is a reformatting, not a
+rebuild.
+
+### Capabilities are MINTED — the pudding-prover IS the capability registry
+
+Answers the open "named vs discovered" question: **neither — capabilities are *minted*** (the
+C-pudding-prover lifecycle held → contract-released → satisfied = hole → proof-with-holes → built). So
+the star-map's **capability-nodes ARE the pudding-prover's theses / kit-capabilities**
+(`futon7/holes/pudding-prover-registry.edn`). M-capability-star-map (capability *structure* — which
+missions mint which, the deps) and C-pudding-prover (capability *minting-status* — held / satisfied /
+cadence) are the **structure-view and status-view of one capability set.** We *read* the vocabulary
+from the prover and extend it as missions mint new capabilities — we do not invent it.
+
+### The duality is functional for EFE (not just representational)
+
+The capability-view is where **goals** live (a target capability to mint); the mission-view is where
+**actions** live (which mission/lambda to apply). EFE bridges them: **select the mission-action that
+minimises expected free energy toward the target capability.** Generative model = the bipartite graph;
+goal = a capability node; policy = a mission edge.
+
+### Worked anchor — "WM overnight unsupervised" as a capability node (Joe's example)
+
+A first-class capability (≈ pudding-prover **T4.2** / M-the-futon-stack's *"I trust the stack to code
+while I sleep"*). Its **producing subgraph** (in-edges, capability-view) is *this session's work*: the
+guardrails core + hole-counter + gate-runner (steps-forward-not-wedges + safe), and — the last edge —
+**this mission** (EFE-over-star-map = the pick the pilot can trust). The star-map is again
+self-referential: **building it mints the very capability that motivated it.**
+
 ### End-to-end build plan (the cars; bounds the first slice per the scope tension)
 
 1. **Model** — the lambda/scope node+edge schema (above), + the edge extractor (`:depends-on` /
