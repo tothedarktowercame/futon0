@@ -79,10 +79,10 @@
    :status :satisfied,
    :scope [:war-machine],
    :minted-by
-   ["M-wm-guardrails-core"
-    "M-war-machine-input-sources"
-    "M-war-machine-hole-counter"
-    "M-war-machine-gate-runner"],
+   ["builder/wm-guardrails-core"
+    "builder/wm-input-sources-hygiene"
+    "builder/wm-hole-counter"
+    "builder/wm-gate-runner"],
    :pre-registered? true,
    :attested true,
    :grounding
@@ -91,101 +91,141 @@
  {"M-agency-rebuild"
   {:scope [],
    :produces [:agency],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path "/home/joe/code/futon3/holes/missions/M-agency-rebuild.md"},
   "M-agency-unified-routing"
   {:scope [],
    :produces [:agency],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path
+   "/home/joe/code/futon3/holes/missions/M-agency-unified-routing.md"},
   "M-capability-star-map"
   {:scope [:wm-steps-forward-guardrailed],
    :produces [:efe-trustworthy-over-starmap],
-   :open-hole-count 9,
+   :real-mission? true,
+   :next-exit-operator-verify? true,
+   :open-hole-count 10,
    :phase :unknown,
    :status :unknown,
-   :next-exit-operator-verify? true},
+   :path
+   "/home/joe/code/futon0/holes/missions/M-capability-star-map.md"},
   "M-drawbridge-multi-agent"
   {:scope [],
    :produces [:agency],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path
+   "/home/joe/code/futon3/holes/missions/M-drawbridge-multi-agent.md"},
   "M-labs-integration"
   {:scope [],
    :produces [:evidence-persistence],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path "/home/joe/code/futon3/holes/missions/M-labs-integration.md"},
   "M-live-geometric-stack"
   {:scope [:self-representing-stack],
    :produces [:live-geometric-stack],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path
+   "/home/joe/code/futon3/holes/missions/M-live-geometric-stack.md"},
   "M-self-representing-stack"
   {:scope [:agency :evidence-persistence],
    :produces [:self-representing-stack],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path
+   "/home/joe/code/futon4/holes/missions/M-self-representing-stack.md"},
   "M-three-column-stack"
   {:scope [:agency :evidence-persistence],
    :produces [:self-representing-stack],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
+   :path
+   "/home/joe/code/futon4/holes/missions/M-three-column-stack.md"},
   "M-war-machine-first-outing"
   {:scope [:live-geometric-stack],
    :produces [:war-machine],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 0,
    :phase :complete,
    :status :complete,
-   :next-exit-operator-verify? false},
-  "M-war-machine-gate-runner"
-  {:scope [:war-machine],
-   :produces [:wm-steps-forward-guardrailed],
-   :open-hole-count 0,
-   :phase :complete,
-   :status :complete,
-   :next-exit-operator-verify? false},
-  "M-war-machine-hole-counter"
-  {:scope [:war-machine],
-   :produces [:wm-steps-forward-guardrailed],
-   :open-hole-count 0,
-   :phase :complete,
-   :status :complete,
-   :next-exit-operator-verify? false},
-  "M-war-machine-input-sources"
-  {:scope [:war-machine],
-   :produces [:wm-steps-forward-guardrailed],
-   :open-hole-count 0,
-   :phase :complete,
-   :status :complete,
-   :next-exit-operator-verify? false},
+   :path
+   "/home/joe/code/futon3c/holes/missions/M-war-machine-first-outing.md"},
   "M-war-machine-pilot"
   {:scope [:live-geometric-stack],
    :produces [:war-machine],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
    :open-hole-count 9,
    :phase :open,
    :status :open,
-   :next-exit-operator-verify? false},
-  "M-wm-guardrails-core"
-  {:scope [:war-machine],
+   :path
+   "/home/joe/code/futon3c/holes/missions/M-war-machine-pilot.md"},
+  "builder/wm-gate-runner"
+  {:open-hole-count 0,
    :produces [:wm-steps-forward-guardrailed],
-   :open-hole-count 0,
-   :phase :complete,
+   :builder "gate-runner",
+   :phase :builder,
+   :scope [:war-machine],
    :status :complete,
-   :next-exit-operator-verify? false}},
+   :next-exit-operator-verify? false,
+   :real-mission? false,
+   :built-under "WM-GUARDRAILS-SPEC"},
+  "builder/wm-guardrails-core"
+  {:open-hole-count 0,
+   :produces [:wm-steps-forward-guardrailed],
+   :builder "guardrails core",
+   :phase :builder,
+   :scope [:war-machine],
+   :status :complete,
+   :next-exit-operator-verify? false,
+   :real-mission? false,
+   :built-under "WM-GUARDRAILS-SPEC"},
+  "builder/wm-hole-counter"
+  {:open-hole-count 0,
+   :produces [:wm-steps-forward-guardrailed],
+   :builder "hole-counter",
+   :phase :builder,
+   :scope [:war-machine],
+   :status :complete,
+   :next-exit-operator-verify? false,
+   :real-mission? false,
+   :built-under "WM-GUARDRAILS-SPEC"},
+  "builder/wm-input-sources-hygiene"
+  {:open-hole-count 0,
+   :produces [:wm-steps-forward-guardrailed],
+   :builder "input-sources hygiene",
+   :phase :builder,
+   :scope [:war-machine],
+   :status :complete,
+   :next-exit-operator-verify? false,
+   :real-mission? false,
+   :built-under "WM-GUARDRAILS-SPEC"}},
  :edges
  [{:from :efe-trustworthy-over-starmap,
    :to :wm-steps-forward-guardrailed,
@@ -229,16 +269,16 @@
   {:from "M-war-machine-first-outing",
    :to :war-machine,
    :type :produces}
-  {:from "M-wm-guardrails-core",
+  {:from "builder/wm-guardrails-core",
    :to :wm-steps-forward-guardrailed,
    :type :produces}
-  {:from "M-war-machine-input-sources",
+  {:from "builder/wm-input-sources-hygiene",
    :to :wm-steps-forward-guardrailed,
    :type :produces}
-  {:from "M-war-machine-hole-counter",
+  {:from "builder/wm-hole-counter",
    :to :wm-steps-forward-guardrailed,
    :type :produces}
-  {:from "M-war-machine-gate-runner",
+  {:from "builder/wm-gate-runner",
    :to :wm-steps-forward-guardrailed,
    :type :produces}
   {:from :T4.2, :to :T4, :type :specialises}
