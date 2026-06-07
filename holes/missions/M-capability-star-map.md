@@ -899,6 +899,34 @@ capability landscape exists.
 **Next:** review codex-1's C3 result (re-run gates, confirm C3 actually holds) + converge claude-3's
 doc-axis → WM-region is one coherent claimed-with-backing set → mission's first region closes.
 
+### Checkpoint — 2026-06-07 (C3 acceptance: honest FAIL — no-cherry-pick PROVEN, decompose gap localized)
+**A+B integration ran** (codex-1, futon3c branch `wm-outing/2026-06-07` `ad2da10`, new test ns
+`capability_star_map_integration_test.clj`). **Reviewed by claude-1:** read the test (honest — even named
+`...currently-fails-on-mega-mission-test`), re-ran the targeted ns (3 tests/11 assertions, 0 failures),
+verified hole-counts from `graph.edn`. Gates: kondo 0/0, check-parens OK, logic-model `:verified? true`.
+- **C3 verdict: FAIL — and the FAIL is the finding.** Live candidate universe over the real WM-region graph
+  = the 2 non-complete real missions: `M-war-machine-pilot` (`:open`, **9 holes**) + `M-capability-star-map`
+  (`:unknown`, **10 holes**). Both multi-hole → **no single-cycle leaf exists in the region.** EFE top pick
+  = `M-war-machine-pilot`: applicable? **true** (G-applicability 0.0) but single-cycle-leaf? **false** (9
+  holes). G-total 15.18. No graph tuning, no candidate cherry-pick.
+- **What's PROVEN — the disease is cured:** EFE does **not** cherry-pick / fake-pick the mega-mission. It
+  scores it applicable-but-not-a-leaf and does not pretend otherwise. INV-G holds: pentagon `:pursue` +
+  goal-extending decompose both refused, ranked empty. Keystone path: single held substantive node;
+  `run-verify-equivalent :verified? true`. The watched-cycle-1 disease (silent cherry-pick of a mega-mission)
+  is gone.
+- **The localized gap — why C3 can't pass as-is:** when no single-cycle leaf exists, EFE must propose a
+  **path-refining decompose** (the legal `:extends-goal? false` kind from ARGUE) of the top applicable
+  multi-hole mission INTO a single-cycle leaf, and rank THAT top. The integration only supplied
+  `:open-mission` actions + a goal-EXTENDING decompose (correctly refused); a path-REFINING decompose was
+  never generated/ranked. This is the **"decompose-should-move-the-field"** refinement — now shown
+  **REQUIRED, not optional**, for the WM-region to yield a leaf.
+- **Data soundness:** the FAIL is on SOUND status data — the live futon2 mission-registry `classify-status`
+  reads each doc's `Status:` line (leading-token), insulated from the VSATARCS render drift (DI-2
+  cross-check, claude-1). So this is a real STRUCTURAL finding, not a stale-status artifact.
+- **Disposition: OPEN — the first region does NOT close on C3.** Next decision (Joe): (i) wire the
+  path-refining decompose to close C3; (ii) accept-with-known-gap; or (iii) spin a decompose sub-mission.
+  codex-1's test is a characterization test on a branch (locks in no-cherry-pick); merge is part of the call.
+
 ---
 
 ## Provenance
