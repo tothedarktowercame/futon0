@@ -876,6 +876,29 @@ capability landscape exists.
       + living discovery (M-a-sorry-enterprise) is the longer horizon.
   - Then integrate (A+B) and run the C3 acceptance **on real data** (deferred until then, per operator).
 
+### Checkpoint — 2026-06-07 (Task 2: WM-region capability axis GROUNDED; A+B/C3 dispatched)
+**What was done:**
+- **Definitive Task-2 checklist** stood up in `C-pudding-prover §8.2.1` (single source of truth; this doc
+  points there). WM-region capability grounding ledger: capability → minting mission(s) → grounding
+  artifact → shipping commit(s) → status, two backing axes (capability = claude-1, VSATARCS doc-ref =
+  claude-3, paired).
+- **Capability axis: 6/6 ☑ grounded** — row 1 `:agency` (claude-1: `cc7ac36`/`0b5f262`); rows 2–4
+  `:evidence-persistence`/`:self-representing-stack`/`:live-geometric-stack` (codex-1 audit, all real
+  missions + artifacts + shipping commits); row 5 `:war-machine` (claude-1 adj — ≥1 shipped producer:
+  first-outing CLOSED `24df6fc`; pilot open = refinement); row 6 `:wm-steps-forward-guardrailed`
+  (verified-via-spec). codex-1's audit was honest — it flagged rows 5/6 rather than forcing green checks.
+- **Producer rule (claude-1, Joe-delegated):** a producer is a real `:complete` mission OR a spec-governed
+  builder with verified + live-verified commits; **≥1 suffices** (a second open producer is refinement,
+  not a gap). Resolves rows 5 (war-machine) + 6 (WM-GUARDRAILS-SPEC builders).
+- **Pairing with claude-3** (VSATARCS doc-axis): one ledger, two columns; doc-integrity findings in
+  sibling lane `futon7/holes/vsatarcs-doc-integrity.md` (DI-1 BROKEN-CITATION, DI-2 DRIFTED — both from
+  the cross-check loop working). Doc-ref cells rows 2–6 filling in parallel.
+- **A+B integration + C3 acceptance dispatched to codex-1** — run Unit B EFE over the now-grounded
+  WM-region graph; assert C3 (EFE-top = applicable single-cycle leaf, no cherry-pick) + INV-G gate
+  refusals + keystone single-held. Honest-fail required (don't tune the graph to pass).
+**Next:** review codex-1's C3 result (re-run gates, confirm C3 actually holds) + converge claude-3's
+doc-axis → WM-region is one coherent claimed-with-backing set → mission's first region closes.
+
 ---
 
 ## Provenance
