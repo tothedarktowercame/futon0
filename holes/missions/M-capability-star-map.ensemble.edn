@@ -1,0 +1,84 @@
+;; M-capability-star-map — ensemble 1 (hand-authored first slice, 2026-06-07)
+;;
+;; A SMALL ensemble of capability-nodes: real ATTESTED capabilities (backfilled
+;; T1-to-T2-level from the piano_roll earliest missions + VSATARCS + Agency) plus
+;; the FRONTIER case (WM overnight unsupervised). No extractor yet — this is the
+;; concept stress-tested by hand, and the seed of the real star-map.
+;;
+;; Capabilities are MINTED (the C-pudding-prover lifecycle held→satisfied); this is
+;; the STRUCTURE view (which missions mint which, + the dependency scope) of the same
+;; capability set the prover tracks by STATUS. The real object is the bipartite
+;; incidence (missions ⊔ capabilities); :capabilities below is the capabilities-as-
+;; nodes projection, with each node carrying :scope (prereq capabilities = in-edges)
+;; and :minted-by (the producing missions = the lambda/morphisms).
+{:star-map/of      :M-capability-star-map
+ :star-map/slice   "ensemble-1"
+ :star-map/date    "2026-06-07"
+ :star-map/real-object :bipartite-incidence
+ :star-map/views   {:primary :missions-as-nodes :dual :capabilities-as-nodes}
+
+ :capabilities
+ ;; --- attested backfill (real, shipped; the T1-to-T2 tech layer) ---
+ {:agency
+  {:title    "Multi-agent dispatch — N:1 registry/routing; many Claude/Codex self-register, route in one JVM"
+   :status   :satisfied :attested true :era "2026-02-07 (earliest cohort)"
+   :scope    []                                   ; foundational — born with the mission format
+   :minted-by ["M-agency-unified-routing (2026-02-07)" "M-drawbridge-multi-agent (2026-02-08)" "M-agency-rebuild"]
+   :grounding "futon3c/src/futon3c/agency/{registry,federation,hop_events}.clj"
+   :note     "did NOT predate the Futonic-Mission format (format began 2026-02-06, agency 2026-02-07); Joe's daily driver"}
+
+  :evidence-persistence
+  {:title    "Session/lab persistence — turns persist to XTDB (the substrate precursor)"
+   :status   :satisfied :attested true :era "2026-02-06"
+   :scope    []
+   :minted-by ["M-labs-integration (2026-02-06)"]}
+
+  :self-representing-stack
+  {:title    "The stack reflects itself — 6-gate trace chain devmap→evidence→source code"
+   :status   :satisfied :attested true :era "2026-03-04"
+   :scope    [:agency :evidence-persistence]
+   :minted-by ["M-self-representing-stack (2026-03-04)" "M-three-column-stack (2026-03-04)"]
+   :grounding "VSATARCS (futon7a/vsatarcs.html); ~1529 hyperedges across math/code/project"}
+
+  :live-geometric-stack
+  {:title    "Substrate-2 — the live geometric stack / commit-factored hypergraph the WM reads"
+   :status   :satisfied :attested true :era "2026-04-28"
+   :scope    [:self-representing-stack]
+   :minted-by ["M-live-geometric-stack (COMPLETE 2026-04-28)"]}
+
+  :war-machine
+  {:title    "The War Machine — strategic dashboard + pilot REPL (the differential operator v·∇ over the AIF field)"
+   :status   :satisfied :attested true :era "2026-05-30 (first outing CLOSED)"
+   :scope    [:live-geometric-stack]
+   :minted-by ["M-war-machine-pilot" "M-war-machine-first-outing (CLOSED 2026-05-30)"]
+   :note     "pudding-prover T4.2 is :cadence :base-case — the WM ran ONCE; cadence is the frontier"}
+
+  :wm-steps-forward-guardrailed
+  {:title    "WM steps forward (not wedges) under guardrails — engages the top autonomous action, NAGs the operator-forks"
+   :status   :satisfied :attested true :era "2026-06-06/07 (this session, live-verified)"
+   :scope    [:war-machine]
+   :minted-by ["guardrails core (Unit 1)" "input-sources hygiene (Unit 2)" "hole-counter (Unit 3)" "gate-runner (Unit 4)"]
+   :grounding "futon3c/src/futon3c/wm/{guardrails,needs_you,outing}.clj; futon2 mission-registry :open-hole-count"
+   :note     "live preview engaged :open-mission + 7 NAGs — BUT needed pilot fork-resolution (cycle 1); 'good pick' is the gap below"}
+
+  ;; --- THE KEYSTONE (held; this mission mints it) ---
+  :efe-trustworthy-over-starmap
+  {:title    "EFE does real AIF over the star-map — the WM's pick is an applicable single-cycle leaf (no pilot cherry-pick)"
+   :status   :held :attested false :keystone true
+   :scope    [:wm-steps-forward-guardrailed]
+   :minted-by ["M-capability-star-map (THIS mission — in progress)"]
+   :note     "the single SUBSTANTIVE held prerequisite of the frontier; this is the gap cycle 1 exposed"}
+
+  ;; --- THE FRONTIER (held; minted when its scope is satisfied) ---
+  :wm-overnight-unsupervised
+  {:title    "The WM runs overnight without supervision — 'I trust the stack to code while I sleep'"
+   :status   :held :frontier true :pudding-thesis :T4.2
+   :scope    [:wm-steps-forward-guardrailed :efe-trustworthy-over-starmap]
+   :minted-by []                                  ; minted when scope is satisfied
+   :note     "≈ pudding-prover T4.2 (cadence) / M-the-futon-stack completion criterion"}}
+
+ ;; --- the compositional finding ---
+ :keystone
+ {:claim   "M-capability-star-map is the keystone unlocking :wm-overnight-unsupervised"
+  :why     "Trace the frontier's scope transitively: agency + evidence-persistence → self-representing-stack → live-geometric-stack → war-machine → wm-steps-forward-guardrailed are ALL :satisfied/attested. The ONLY held node in the closure is :efe-trustworthy-over-starmap, minted by THIS mission. So advancing M-capability-star-map is necessary-and (per this slice) sufficient to unlock the frontier."
+  :honesty "Demonstrated compositionally over THIS slice, not asserted. Minor mechanical prerequisites remain outside the slice (worktree-isolated staging, full-frame gate on the WM's own pick); they are operational, not the substantive gate. No chained-claim: every :satisfied node is attested with grounding; every :held node is flagged."}}

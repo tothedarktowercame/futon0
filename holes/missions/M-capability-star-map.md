@@ -258,6 +258,27 @@ guardrails core + hole-counter + gate-runner (steps-forward-not-wedges + safe), 
 **this mission** (EFE-over-star-map = the pick the pilot can trust). The star-map is again
 self-referential: **building it mints the very capability that motivated it.**
 
+### Ensemble 1 — the keystone, demonstrated (2026-06-07)
+
+First hand-authored slice (no extractor yet): `M-capability-star-map.ensemble.edn` — **8 capability
+nodes, 6 attested/satisfied** (the T1-to-T2 tech layer, backfilled from the piano_roll earliest
+missions + VSATARCS + Agency) and **2 held**. The chain:
+
+`agency` + `evidence-persistence` → `self-representing-stack` → `live-geometric-stack` → `war-machine`
+→ `wm-steps-forward-guardrailed` → **[`efe-trustworthy-over-starmap` — HELD, this mission]** →
+`wm-overnight-unsupervised` (frontier ≈ T4.2).
+
+**Keystone finding (compositional, not asserted):** every node in the frontier's transitive scope is
+`:satisfied`/attested *except* `:efe-trustworthy-over-starmap`, which **this mission mints**. So
+M-capability-star-map is the single *substantive* held node gating "WM overnight unsupervised" — the
+keystone. (Honesty: minor mechanical prereqs remain outside the slice — worktree-staging, the
+full-frame gate on the WM's own pick — operational, not the substantive gate.)
+
+**Model stress-test: PASSED.** The lambda / bipartite-incidence / minted-capability frame expressed a
+real attested ensemble + the keystone cleanly — the concept is ripe to *extract*, not only grapple.
+(Agency is the attestation Joe flagged: earliest cohort 2026-02-07, born *with* the mission format —
+not before it — daily-driver, `futon3c/src/futon3c/agency/`.)
+
 ### End-to-end build plan (the cars; bounds the first slice per the scope tension)
 
 1. **Model** — the lambda/scope node+edge schema (above), + the edge extractor (`:depends-on` /
