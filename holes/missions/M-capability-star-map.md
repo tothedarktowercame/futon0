@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** ARGUE complete (futon3/library/ pattern cross-reference + theoretical coherence — safety = inherited I4 exogeneity, not a bolt-on; plain-language argument, 2026-06-07). HEAD/IDENTIFY/MAP/DERIVE done. Next: VERIFY — INV-1..G as a core.logic logic-model before code.
+**Lifecycle:** VERIFY complete (logic-model `run-verify` => `:verified? true`: witness clean + all 6 invariants' adversarials caught, incl. INV-G machine-refuting the pentagon-pursuit; `logic-model-before-code`, 2026-06-07). HEAD/IDENTIFY/MAP/DERIVE/ARGUE done. Next: INSTANTIATE (extractor + graph + EFE-over-graph, first-slice region).
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -696,6 +696,67 @@ uphill; it just finds its way down a step at a time.
 **ARGUE exit:** the design feels inevitable given the constraints (it inherits the stack's I4 exogeneity +
 BHK composition); the plain-language argument stands alone. Next: VERIFY — INV-1..G as a `core.logic`
 logic-model before code (`mission-coherence/logic-model-before-code`), with INV-G machine-checked.
+
+---
+
+## VERIFY (2026-06-07)
+
+### Structural verification — invariants as a logic-model BEFORE code (`mission-coherence/logic-model-before-code`)
+
+`futon3c/src/futon3c/logic/capability_star_map_invariants.clj` — a `core.logic` + pldb model over an
+abstract WM-action trace. `(run-verify)` against the live JVM returns **`:verified? true`**:
+
+- **Witness clean** (0 violations across all 6 categories): every move in its legal form — acyclic
+  `:requires` edges; an applicable advance; an exit-crossing advance *with the gap agreed*; a
+  pre-registered pursuit; an un-registered pursuit *with consent*; a small (path-refining) decompose; a
+  big decompose *with consent*; a satisfied cap with a complete producer.
+- **Each adversarial trace caught by its own category** (one per invariant):
+
+| Invariant | Adversarial planted | Caught? |
+|---|---|---|
+| `:acyclic` (INV-1) | a 2-cycle `a→b→a` | ✓ (no toposort) |
+| `:provenance` (INV-2) | `:satisfied` cap, producer not `:complete` | ✓ |
+| `:applicability` (INV-3) | advance an inapplicable mission | ✓ |
+| `:buck` (INV-G) | **pursue `:cap/pentagon` — un-registered, no consent** | ✓ |
+| `:decompose` | a goal-extending decompose without consent | ✓ |
+| `:gate` | advance past an un-agreed operator-verify exit | ✓ |
+
+The safety guarantee Joe named is now **machine-refuted, not merely argued**: a `:pursue` of a
+non-pre-registered capability with no consent is *caught* — the 3AM-pentagon case cannot pass.
+
+### Completion-criteria pre-check (against IDENTIFY)
+- **C1** (structured form) — DERIVE node = generalised exotype; modelled. Impl = INSTANTIATE.
+- **C2** (capability inventory + typed-edge graph, one region) — design covers it; ensemble-1 spike
+  pre-witnessed it. Impl = INSTANTIATE.
+- **C3** (EFE returns an applicable single-cycle leaf, no cherry-pick) — INV-3 + INV-1 + the
+  EFE-over-graph design; the *gate* is structurally checked. The live EFE-over-graph is the INSTANTIATE
+  build; **INV-4 (single-cycle-leaf) is the spike that confirms it empirically** (deferred — granularity
+  predicate over the live hole-counter, not a pure trace relation; consistent with the keystone boundary).
+- **C4** (keystone path reproduced by the *extracted* graph) — INSTANTIATE (the extractor).
+
+### Decision log
+- Model is OFFLINE-ONLY for VERIFY; may later register as a live probe family (like
+  `:sorry-closures-stick`) during INSTANTIATE.
+- clj-kondo reports ~17 "unresolved symbol" errors — all `pldb/db-rel` relations + `l/run*`/`l/fresh`
+  binding symbols (core.logic macros kondo can't expand); the proven template `aif2_invariants.clj` has
+  the identical profile (19). The model loads + runs + verifies — dispositive. Not a real defect.
+- DERIVE revisions required by VERIFY: **none**.
+
+### PUR — `mission-coherence/logic-model-before-code`
+- **Pattern:** logic-model-before-code (verify a design as `core.logic`+pldb over an abstract trace).
+- **Actions:** encoded INV-1/2/3/G + decompose-line + operator-verify-gate as 6 violation-queries;
+  conforming witness + 6 adversarial traces; `run-verify`.
+- **Outcome:** success — `:verified? true` (witness clean; all 6 adversarial caught by category).
+- **Prediction error:** low — the template transferred cleanly; one adaptation (acyclicity as a plain
+  fixpoint transitive-closure rather than a recursive core.logic `reachableo`, to guarantee termination
+  on a cyclic adversarial) was a clean call.
+- **Notes:** INV-G's adversarial (the pentagon pursuit) is the headline — the safety claim is now
+  checkable, not only argued-inevitable.
+
+**VERIFY exit:** the design is checked against its structural constraints; all six invariants verified;
+the one risk that can't be settled statically (does EFE-over-graph actually surface single-cycle leaves
+in practice — INV-4 / C3) is named for the INSTANTIATE spike. Next: INSTANTIATE (the extractor + the
+graph + the EFE-over-graph), bounded to the first-slice region.
 
 ---
 
