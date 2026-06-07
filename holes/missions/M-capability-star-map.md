@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** IDENTIFY (multi-faceted gap authored 2026-06-07; pending operator IDENTIFY-verify, then MAP). HEAD done. A DERIVE-draft (the lambda/scope model) + a VERIFY-spike (ensemble 1) were authored *ahead of phase* during the 2026-06-07 conceptual session and are HELD for re-anchoring after a real MAP.
+**Lifecycle:** MAP complete (Q1–Q7 answered + ready-vs-missing table, 2026-06-07). IDENTIFY approved (operator, 2026-06-07). HEAD done. Next: re-anchor the DERIVE-draft (the lambda/scope model + ensemble-1 VERIFY-spike) onto the MAP findings.
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -235,6 +235,95 @@ WM), futon2 (mission-registry), futon5 (exotypes), futon7 (prover, FFM).
 **Exit criterion (IDENTIFY):** Joe agrees this multi-faceted gap is the real one and the scope (one
 complex mission) is right. THEN a real **MAP** (the survey), THEN the DERIVE-draft below gets
 re-anchored.
+
+---
+
+## MAP
+
+MAP is research — facts, not decisions (survey what exists toward each IDENTIFY gap *before* the
+DERIVE-draft is re-anchored). Q1–Q7 each tie to a gap; answered with concrete findings + counts; the
+ready-vs-missing table closes the phase.
+
+- **Q1 (A1 — structural form):** What does the substrate-2 mission **watcher** already extract toward a
+  structural mission form? Full `:mission/*` prop set + how each is derived + the `/api/alpha/missions`
+  shape + the watcher code.
+- **Q2 (A1 — lifecycle / DEFN form):** Any *structured* form of the lifecycle or a mission-as-DEFN /
+  map-reduce? `mission-lifecycle.flexiarg`; `futon5/data/missions/*-exotype.edn` (what they structure;
+  bespoke or schema?); `futon3c/docs/futonic-missions.md` §GF.
+- **Q3 (A2/A4 — capability inventory + split):** Capability-node sources + counts (pudding-prover
+  theses; `:mission/criteria` as proxy; semilattice regions; VSATARCS evidence-kinds). Does any data
+  distinguish a *capability* (ability) from a *mission* (work)?
+- **Q4 (A3 — typed edges):** How complete + typed is the dependency-edge data? `:mission/blocked-by`
+  coverage; scattered `:depends-on`/`:enables` (count/format/where); any *typed* edge or all untyped?
+- **Q5 (build-system — order + staleness):** Temporal + staleness data for a topological order +
+  incrementality (`:mission/{days-stale,mtime,date,cycles,…}`; piano_roll; any existing DAG/topsort).
+- **Q6 (B1 — scheduler):** What does the WM `forward-model` compute EFE *over*, and how (flat vs
+  structured)? (`futon2.aif.forward-model`.)
+- **Q7 (B2 — navigation):** Existing mission graph / navigation surfaces (Mission Control; the
+  arxana-browser missions view; the semilattice; VSATARCS; the operator portal).
+
+### Findings (2026-06-07; three parallel read-only research passes)
+
+- **Q1 (watcher):** `futon3c/.../watcher/file_ingest.clj:683` + `mission_control_backend.clj:571` extract
+  ~24 `:mission/*` props — by **parsing the markdown** (status/title/date/blocked-by/owner/summary/
+  cross-refs/code-paths/phase/gates/psrs/purs) + filesystem (mtime/days-stale) + evidence (turn-counts)
+  + devmap overlay. Served flat via `GET /api/alpha/missions`; source-of-truth = substrate-2 hyperedges
+  (`code/v05/mission-doc`). It is a **markdown→attributes *projector*, not a mission-as-computation
+  mapper** — it captures what a mission *says*, not what it *does*. `mission-shapes.clj` has Malli
+  `Obligation/Cycle/MissionState` shapes **designed but not cross-repo-populated**.
+- **Q2 (lifecycle / DEFN form):** `mission-lifecycle.flexiarg` is a **state-machine** (governance prose,
+  not computable EDN). BUT the **exotype `.edn`s** (`futon5/data/missions/*-exotype.edn`) ARE a real
+  **mission-as-wiring schema** — `{:ports{:input :output} :components :edges :invariants}` with typed
+  I/O + timescales, validated by `futon5.ct.mission/validate`. **Sparse (3 missions), hand-authored,
+  NOT wired to the watcher.** So a structural form *exists as a schema* — just not generic or live.
+- **Q3 (capabilities + split):** pudding-prover = **44 proof-states + 7 kit** (the capability seed).
+  Mission criteria are **artifact-shaped, not capability-shaped** (58/211 have criteria; ~22% name an
+  ability). **Capabilities ≠ missions are conceptually distinct (proof-state vs kit) but operationally
+  conflated** — no `:capability` entity, no mission→capability edge.
+- **Q4 (typed edges):** pudding-prover has systematic typed edges (`:parent`×29, `:specialises`×1,
+  `:couples`×2); closure annotations carry **typed** `:enables [{:action :capability}]` (15+, v0.2.2+).
+  Missions: `:blocked-by` 35/211, **untyped** ("Blocked by: None" is modal). No generic
+  `:requires/:uses/:produces/:built-before`.
+- **Q5 (order/staleness):** mtime→`:days-stale` (>7d ⇒ stale) + turn-counts READY; **no topological
+  sort / DAG exists anywhere** (grep topo/toposort/dag = 0). piano_roll reads Status-line dates, not git.
+- **Q6 (scheduler):** `forward_model.clj:25` = 5 flat action-classes; `:open-mission` targets =
+  `mission-registry/open-missions` (**flat vec, one action/mission**); `efe.clj` scores **independent
+  (state,action) pairs**, sorts by G-total. **The EFE is FLAT — zero structure/dependency-awareness.**
+  (B1, confirmed at the source.)
+- **Q7 (navigation):** five surfaces (Mission-Control list · arxana-browser repo/status groups ·
+  semilattice centrality ranking · VSATARCS narrative · Programme card by salience) — **all
+  lists/rankings; none a navigable dependency graph.**
+
+### Ready vs missing
+| Gap | READY (reusable) | MISSING (the work) |
+|---|---|---|
+| **A1 form** | watcher props (parsed); **exotype schema** (ports/components/edges/invariants); Malli mission-shapes | exotype sparse(3)+hand-authored+not-wired; no *generic* DEFN/map-reduce form; lifecycle has no `.edn` |
+| **A2 capabilities** | pudding-prover 44+7; closure `:enables` | missions don't *declare* capabilities; no `:capability` entity; no mission→capability edge |
+| **A3 typed edges** | prover `:parent/:specialises/:couples`; closure typed `:enables` | mission `:blocked-by` untyped (35/211); no `:requires/:uses/:produces/:built-before` |
+| **A5 granularity** | `:altitude` (prover ordering); `:open-hole-count` (live) | keystone (M-substrate-metric); single-cycle-leaf tag |
+| **order/staleness** | mtime/`:days-stale`; turn-counts; piano_roll dates | **no toposort/DAG anywhere** |
+| **B1 scheduler** | `efe.clj` compute-efe/rank-actions; 5 action-classes | **EFE flat — no structure/dependency awareness** |
+| **B2 navigation** | 5 list/ranking surfaces | **none is a dependency graph** |
+
+### Surprises (these change the DERIVE)
+1. **The structural form is half-built, not greenfield.** The **exotype schema** (`:ports/:components/
+   :edges/:invariants`, validated by `futon5.ct.mission/validate`) is *already* a mission-as-wiring-
+   diagram form — the DERIVE should **generalize the exotype**, not invent a form. (Plus the Malli
+   `mission-shapes.clj`.)
+2. **Typed capability-edges already exist in a corner.** Closure annotations' `:enables
+   [{:action :capability}]` is the typed mission→capability edge, in 15+ closures — a precedent +
+   extraction source, not clean-slate.
+3. **The pudding-prover is the only systematic capability + typed-edge structure** — the natural seed
+   for both the inventory (44+7) and the edge vocabulary, confirming IDENTIFY's "capabilities are minted
+   = read from the prover."
+4. **The EFE is genuinely flat and there is NO DAG anywhere** — so "EFE over the structure" has **no
+   existing scaffolding**; it is the substantive new build (B1), and it can't borrow a toposort because
+   none exists.
+
+**MAP exit:** every Q1–Q7 has a concrete answer; the ready-vs-missing table is complete. Headline — the
+*form* + *capability-seed* + *typed-edge precedent* are **more ready** than IDENTIFY assumed (generalize
+the exotype + the prover); the *scheduler-over-structure*, the *navigation graph*, and a *toposort* are
+**genuinely greenfield**. The DERIVE-draft below re-anchors here.
 
 ---
 
