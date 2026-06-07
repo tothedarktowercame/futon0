@@ -864,6 +864,16 @@ capability landscape exists.
     STRUCTURE view, and the campaign's Daumal ascent (§10) = the pre-registered EFE goal. New capabilities
     are *minted* via the prover lifecycle and coordinated as registry entries there — not invented
     per-mission. Cross-mission notes go in C-pudding-prover as needed.
+    - **Approach — region-by-region grounding plan (Joe + claude-1, 2026-06-07; recorded in
+      `C-pudding-prover §8.2`):** the inventory is **authored, not extracted** (criteria are
+      artifact-shaped; "what M mints / requires" is judgment) — so the danger is a high-res capability
+      map that *substitutes* for reality (Baudrillard / the perfect-crime at the capability level). The
+      discipline IS the task: **ground, don't invent** (INV-2 — every capability node → a real shipped
+      producing mission, + the mission→code commits where pulled; *no capability without a shipped
+      producer*); **valuable-path first, region-by-region** (the ascent §10 + the semilattice ~25, not all
+      ~125 — tail stays lazy); **WM-region first** (its missions are now real) → ground + register here →
+      integrate + run C3 on that region → expand outward, growing the registry. Whole-landscape inventory
+      + living discovery (M-a-sorry-enterprise) is the longer horizon.
   - Then integrate (A+B) and run the C3 acceptance **on real data** (deferred until then, per operator).
 
 ---
