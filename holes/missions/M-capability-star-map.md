@@ -610,6 +610,7 @@ library. Strongest support, by design element:
 | **Bipartite / node-edge duality** | `f6/negative-space-duality` + `gauntlet/world-is-hypergraph` | Node + edge are complementary masks of one structure; the typed hypergraph IS the world. |
 | **Navigation** | `system-coherence/present-graph-topology-not-adjacency-lists` | When topology is load-bearing, exhibit the **edges**, not per-node adjacency — the star-map's point. |
 | **DAG / INV-1** | `futon-theory/mission-dependency` | Missions form a DAG (blocks/enables, no cycles, blocked cites blocker) — the toposort precedent. |
+| **The decompose move** | `math-informal/split-into-cases` (Rob's proof-decomposition) + `eight-gates/split-isolate` | Break a mega-mission into sub-steps as a *leaf-sized* action; the first outing already counts decompose as **progress, not stuck** (M-war-machine-first-outing §8.8). |
 | **VERIFY discipline** | `mission-coherence/logic-model-before-code` | Invariants as `core.logic`+pldb over an abstract trace **before** code — how INV-1..G should be checked next. |
 | **Pluggable hole-source** | `hdm/deep-storage-to-active-graph` + `aif/candidate-pattern-action-space` | Ingestion is a pluggable pipeline; action-space candidates come from a swappable retrieval fn. |
 
@@ -623,6 +624,25 @@ cannot flow "uphill" to an un-registered capability because the structure has no
 capabilities are BHK arrows that don't compose into the ascent (`task-as-arrow`). The consent-gate is the
 belt; **gradient-intrinsic exogeneity is the trousers** — and it was already a structural law. The design
 does not *add* safety; it *inherits* it.
+
+### The decompose move — how big things progress, safely (Joe 2026-06-07)
+
+A mega-mission has no single-cycle leaf — so the legal move is neither "do the big thing" nor "wedge"
+(cycle 1's failure). It is to take the **small step of breaking it down**: reveal one layer of sub-steps.
+**Decompose is itself a leaf-sized action** — the recursion-is-granularity made operational (author one
+layer of sub-lambdas) — and the first outing already counts it as *progress*, not stuck
+(M-war-machine-first-outing §8.8: "deep-but-decomposable work never counts as stuck"). Patterns:
+`math-informal/split-into-cases` (Rob's proof-decomposition — the analogy that seeded this mission) and
+`eight-gates/split-isolate`.
+
+**The safety line — "assuming the breakdown is itself a small incremental step" (Joe):** a decompose
+**refines the PATH to a pre-registered goal** (changes *how*, not *what*) — it does **not** extend the
+goal-set, so it stays downhill and within INV-G. This *sharpens* the first outing's blunt escalation of
+∇-deform (§8.13): a **small** decompose (the next layer of sub-steps of an already-registered goal) is a
+legal autonomous leaf; a **big** ∇-deform (a new typed-edge *family* / niche-construction / wholesale
+re-architecting) *changes what is pursued* → glacial / consent (INV-G). The line is exactly Joe's caveat —
+**is the breakdown itself a small incremental step?** Decompose is how water finds its way down a cliff:
+by many small steps, never flowing up.
 
 ### Trade-offs
 - **Fixed curriculum first** (MAP §Limitation): give up living hole-discovery now for a tractable, faithful
@@ -643,7 +663,9 @@ Khan-Academy skill map. It shows both the big unbuilt things and the small next 
 builder can pick a *small, ready* next step on its own. It is safe for a simple reason: the builder only
 ever rolls **downhill** toward goals you wrote down in advance. It can *notice* it lacks some ability, but
 it can't *decide on its own* to go chase one — especially a dangerous one — because there is no downhill
-path to anything you didn't pre-register. Water doesn't flow uphill.
+path to anything you didn't pre-register. And when a pre-registered goal is too big for one step, it's
+allowed to take the small step of *breaking it into pieces* — that's still downhill. Water doesn't flow
+uphill; it just finds its way down a step at a time.
 
 **ARGUE exit:** the design feels inevitable given the constraints (it inherits the stack's I4 exogeneity +
 BHK composition); the plain-language argument stands alone. Next: VERIFY — INV-1..G as a `core.logic`
