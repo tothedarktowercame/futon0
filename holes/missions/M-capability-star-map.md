@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** DERIVE (re-anchored on MAP, 2026-06-07): entity/relation/invariant design + INV-G “buck stops here” governance + EFE-over-graph + pluggable hole-source; lambda rationale + ensemble-1 VERIFY-spike retained below. HEAD/IDENTIFY/MAP done. Next: ARGUE → VERIFY (invariants as a logic-model before code).
+**Lifecycle:** ARGUE complete (futon3/library/ pattern cross-reference + theoretical coherence — safety = inherited I4 exogeneity, not a bolt-on; plain-language argument, 2026-06-07). HEAD/IDENTIFY/MAP/DERIVE done. Next: VERIFY — INV-1..G as a core.logic logic-model before code.
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -589,6 +589,65 @@ not before it — daily-driver, `futon3c/src/futon3c/agency/`.)
 4. **End-to-end test (the gate):** a dry WM selection over the star-map returns an **applicable
    single-cycle leaf** as EFE-top — *no pilot fork-resolution needed.* Only then do we run the next WM
    cycle.
+
+---
+
+## ARGUE (2026-06-07)
+
+### Pattern cross-reference (`futon3/library/` — all citations verified to exist)
+
+The design is **not a novel mechanism** — it is a structural consequence of patterns already in the
+library. Strongest support, by design element:
+
+| Design element | Pattern | How it supports |
+|---|---|---|
+| **Gradient-intrinsic safety** (the buck stops here) | **`futon-theory/structural-tension-as-observation`** | Two-loop AIF (fast task / glacial library) with **I4 EXOGENEITY**: fast tensions CANNOT force a library rewrite without the deliberate NAMING→SELECTION→CANALISATION threshold. *This is "water doesn't flow uphill / ants don't rewrite NATO" made structural* — the Markov-blanket closure is the gate pipeline, not a rule. |
+| **Off-goal = not pursuable** | **`futon-theory/task-as-arrow`** (BHK) | Tasks are constructive arrows A→B that **compose**; an off-goal capability is an arrow that **doesn't compose into the ascent** — *not forbidden, not wireable*. EFE slopes toward composable proof-chains. |
+| **Node = exotype; toposort is structural** | **`futon-theory/theory-as-exotype`** + `four-types` | Theory(exotype)→patterns(genotype)→code(phenotype); a capability ships only if it type-checks against the exotype ⇒ build-order is a **structural type constraint**, not metadata. Confirms node = generalised exotype. |
+| **INV-2 mint-provenance** | **`futon-theory/retroactive-canonicalization`** + `agent/evidence-over-assertion` + `coordination/mandatory-{psr,pur}` | Every capability claim has an auditable **genealogy** (incident→pattern→canonisation→spec); no `:satisfied` without a shipped producing mission — the perfect-crime check, already a library discipline. |
+| **EFE-over-graph (scheduler)** | `aif/expected-free-energy-scorecard` + `aif/candidate-pattern-action-space` | G = named weighted terms (risk/ambiguity/info/cost), selected from a **bounded candidate set** via retrieval + gating — the EFE-over-applicable-frontier. |
+| **INV-G discovery vs pursuit** | `aif/niche-construction` + `musn/expensive-move-consent` + `agent/scope-before-action` + `budgeted-action-selection/mana-gated-work` | False-floor ⇒ missing-edge *discovery* (autonomous); niche-construction + expensive/human-contact moves require **consent** before *pursuit*. |
+| **Bipartite / node-edge duality** | `f6/negative-space-duality` + `gauntlet/world-is-hypergraph` | Node + edge are complementary masks of one structure; the typed hypergraph IS the world. |
+| **Navigation** | `system-coherence/present-graph-topology-not-adjacency-lists` | When topology is load-bearing, exhibit the **edges**, not per-node adjacency — the star-map's point. |
+| **DAG / INV-1** | `futon-theory/mission-dependency` | Missions form a DAG (blocks/enables, no cycles, blocked cites blocker) — the toposort precedent. |
+| **VERIFY discipline** | `mission-coherence/logic-model-before-code` | Invariants as `core.logic`+pldb over an abstract trace **before** code — how INV-1..G should be checked next. |
+| **Pluggable hole-source** | `hdm/deep-storage-to-active-graph` + `aif/candidate-pattern-action-space` | Ingestion is a pluggable pipeline; action-space candidates come from a swappable retrieval fn. |
+
+### Theoretical coherence — inevitable, not merely workable
+
+IDENTIFY framed safety as a *gate* (INV-G). The cross-reference shows the **stronger** truth Joe named:
+it is the **I4 exogeneity** of the two-loop AIF (`structural-tension-as-observation`). The fast loop (EFE
+selecting *which capability to advance*) and the glacial loop (re-authoring the *inventory*) share a
+Markov blanket — the gate pipeline — and I4 forbids the fast loop from forcing the glacial. So **the EFE
+cannot flow "uphill" to an un-registered capability because the structure has no edge there**; off-goal
+capabilities are BHK arrows that don't compose into the ascent (`task-as-arrow`). The consent-gate is the
+belt; **gradient-intrinsic exogeneity is the trousers** — and it was already a structural law. The design
+does not *add* safety; it *inherits* it.
+
+### Trade-offs
+- **Fixed curriculum first** (MAP §Limitation): give up living hole-discovery now for a tractable, faithful
+  v1 — the hole-source plugs in later.
+- **Consume the granularity keystone** (M-substrate-metric): a hole-counter proxy for the single-cycle-leaf
+  tag until the keystone lands.
+- **Generalise the exotype** rather than design a fresh node-form: less novelty, but it dogfoods + reuses
+  `futon5.ct.mission/validate`.
+
+### Generalisation
+The construction (bipartite incidence + EFE-over-graph + I4-exogenous goal-binding) is the **mission-level
+instance** of M-differentiable-code's code-level graph — the same shape at any granularity, which is why
+the node is a *generalised* exotype (`theory-as-exotype` is recursive).
+
+### Plain-language argument (no jargon)
+We are drawing a map of what the system can do and what it would take to do more — like a tech-tree or a
+Khan-Academy skill map. It shows both the big unbuilt things and the small next steps, so the overnight
+builder can pick a *small, ready* next step on its own. It is safe for a simple reason: the builder only
+ever rolls **downhill** toward goals you wrote down in advance. It can *notice* it lacks some ability, but
+it can't *decide on its own* to go chase one — especially a dangerous one — because there is no downhill
+path to anything you didn't pre-register. Water doesn't flow uphill.
+
+**ARGUE exit:** the design feels inevitable given the constraints (it inherits the stack's I4 exogeneity +
+BHK composition); the plain-language argument stands alone. Next: VERIFY — INV-1..G as a `core.logic`
+logic-model before code (`mission-coherence/logic-model-before-code`), with INV-G machine-checked.
 
 ---
 
