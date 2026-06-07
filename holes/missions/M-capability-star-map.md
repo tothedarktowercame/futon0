@@ -927,6 +927,26 @@ verified hole-counts from `graph.edn`. Gates: kondo 0/0, check-parens OK, logic-
   path-refining decompose to close C3; (ii) accept-with-known-gap; or (iii) spin a decompose sub-mission.
   codex-1's test is a characterization test on a branch (locks in no-cherry-pick); merge is part of the call.
 
+### Checkpoint — 2026-06-07 (region sweep COMPLETE — all 7 regions grounded; terminal C3 dispatched)
+**Joe /loop'd "do the other regions the same way."** All registry thesis-clusters grounded in
+`C-pudding-prover §8.2.1–8.2.7`, region by region (capability→producer→commit; codex-1 commit-audits;
+claude-3 doc-axis + the business region; claude-1 authors/reviews/converges):
+- **T4/WM** (§8.2.1): two-axis complete 6/6. · **T5/semantic** (§8.2.3): interest-network clean + arxana/stereo
+  ☑-substrate + CT-vision frontier. · **KIT** (§8.2.4): 4 verified + 3 frontier (= the T2 business frontier).
+- **T0/T-inf** (§8.2.5): light (witnessed history / xeno-eval frontier). · **T3/math** (§8.2.6): substrate
+  grounded + Rob ⊗ external-witness + theses held. · **T2/T1.5 business** (§8.2.7, claude-3 authored): Eric
+  ⊗ external-witness (invoices verified on disk) + scan ☑-substrate + cold-cycle ◇ frontier.
+- **Grounding taxonomy** (held across every region): `☑ verified` / `☑ substrate` / `⊗ external-witness` /
+  `◇ frontier`.
+- **Uniform healthy asymmetry: ZERO Baudrillard** across all documented regions — real-but-undocumented or
+  honestly-held, never documented-but-unshipped. The stack under-documents, never over-claims.
+- **Concrete actionable: regenerate VSATARCS** — 4 undocumented-but-real caps + the status-drift (DI-1/2/3)
+  all close with one regen.
+**Terminal C3 dispatched** (codex-1): does EFE pick an applicable single-cycle leaf over the EXPANDED
+candidate set? — the test of whether landscape-expansion resolves the cherry-pick (vs wiring decompose).
+claude-3's standing prediction: may still FAIL if the relevant single-cycle candidates (cold-conversion) are
+frontier/unwired → then the decompose / ACT-DELIVER build is the real next step. **Next:** the C3 verdict.
+
 ---
 
 ## Provenance
