@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** INSTANTIATE — mechanism proven 2026-06-07 (Unit B EFE-over-graph + INV-G verified + accepted; Unit A pipeline accepted, extraction hollow = `:prototyping-forward`). Integration DEFERRED until REAL data assembled (operator A). **Mission OPEN: real-content-pending — NOT WM-overnight-ready.** To close: capability inventory (A2) + real mission-mapping → integrate → C3 on real data.
+**Lifecycle:** INSTANTIATE — mechanism proven 2026-06-07 (Unit B EFE-over-graph + INV-G verified + accepted; Unit A pipeline accepted, extraction hollow = `:prototyping-forward`). Integration DEFERRED until REAL data assembled (operator A). **Region sweep COMPLETE + C3 PASS (production-faithful) 2026-06-07** — capability inventory grounded across all 7 thesis-regions (C-pudding-prover §8.2.1–8.2.7); EFE top-ranks an applicable single-cycle leaf with no cherry-pick (keystone `efe-trustworthy-over-starmap` **demonstrated**). **Mission OPEN pending operator close** — caveats: branch `wm-outing/2026-06-07` unmerged · curated candidate set (not full registry scan) · EFE body-term + decompose hardening · VSATARCS regen (doc-gap).
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -946,6 +946,29 @@ claude-3 doc-axis + the business region; claude-1 authors/reviews/converges):
 candidate set? — the test of whether landscape-expansion resolves the cherry-pick (vs wiring decompose).
 claude-3's standing prediction: may still FAIL if the relevant single-cycle candidates (cold-conversion) are
 frontier/unwired → then the decompose / ACT-DELIVER build is the real next step. **Next:** the C3 verdict.
+
+### Checkpoint — 2026-06-07 (TERMINAL C3: PASS on the production-faithful pipeline — core acceptance MET)
+**Verdict: C3 PASS** (codex-1 `4bff38c`, branch `wm-outing/2026-06-07`; **independently re-run + reviewed by
+claude-1** — read the deftest, re-ran 5 tests/22 assertions, 0 failures).
+- The first terminal run FAILed — but as a **raw-candidate artifact**: it ranked ALL live missions incl. 0-hole
+  ones, top-picking M-arxana-roundtrip (0 holes, `:identify`) — which production NEVER admits.
+- Corrected run applies the PRODUCTION guardrails filter (`futon3c.wm.guardrails/autonomous-admissible?` →
+  `open-mission-with-holes?`, requires ≥1 open hole). Filtered set = the 7 ≥1-hole missions. **EFE top-ranks
+  the applicable single-cycle leaf `M-essay-corpus-substrate`** (1 hole, `single-cycle-leaf? true`, G-total
+  −2.158) above M-webarxana (3.842) / M-stack-stereolithography (6.842). No cherry-pick; INV-G holds.
+- **Meaning: the expand-the-landscape choice (Joe, over wiring the decompose) RESOLVED the watched-cycle-1
+  cherry-pick disease.** A real single-cycle leaf now exists, the production guardrails surface it, EFE picks
+  it. The keystone `efe-trustworthy-over-starmap` is **demonstrated.**
+**Honest caveats (not yet closed-clean):**
+- Curated expanded candidate set, NOT a full production mission-registry scan (test note flags this).
+- On branch `wm-outing/2026-06-07` — not merged.
+- **Latent EFE scoring inversion:** the `body = 3×holes` term would prefer a 0-hole mission over a 1-hole leaf
+  *if one reached EFE* — masked by the guardrails ≥1-hole filter (defense-in-depth), but a body term that
+  prefers *exactly* 1 hole would be a robustness hardening.
+- The path-refining **decompose** move is still the fix for any region that is ALL multi-hole (no leaf) —
+  not blocking now, but the named follow-on.
+**Next (Joe's call):** merge the branch · advance/close the mission (keystone demonstrated) · the hardening
+(EFE body-term + decompose move) · regenerate VSATARCS (the doc-gap actionable).
 
 ---
 
