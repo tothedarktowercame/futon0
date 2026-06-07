@@ -192,6 +192,34 @@ single-cycle leaf on the valuable-path — *cherry-picking becomes a graph query
 M-differentiable-code's "free-energy / EIG over the structure" objective + M-bayesian-structure-learning,
 at the mission level.)
 
+### The recursion is the granularity (sharpening, 2026-06-07)
+
+A mission's body = its holes; **each hole is itself a (sub-)mission-as-lambda.** So the lambda is
+recursive — `M = λ(scope).{hole₁ … holeₙ}` where each `holeᵢ` is a λ. Granularity is then **recursion
+structure**, not a bolted-on axis: a **leaf** = a lambda whose body is one irreducible reduction step
+(no sub-lambdas); a **mega-mission** = a lambda whose body is a deep tree of sub-lambdas. This unifies
+the Khan star-map (small skills compose up), Rob's proof-decomposition (lemmas within lemmas), and the
+raw hole-count (the body's breadth) — and it sets the extraction strategy: **recursively decompose
+mega-mission bodies into sub-lambdas until you hit leaves** (uniformity *by extraction*, per
+M-differentiable-code). The star-map is thus a **nested / operadic wiring diagram** — boxes within
+boxes (a mission as a wiring-diagram box: input wires = scope, output wire = capability, interior =
+the un-reduced body).
+
+### Deferred bonus — mission→code (substrate-2) grounding (Joe, 2026-06-07)
+
+Added at the **end**, not now (it must not block the conceptual build). A fully-applied mission's
+**output wire** (the capability it produces) gets **grounded in the substrate-2 posterior** — the real
+commits/code that realize it (the M-stack-stereolithography commit-DAG; `:authored`/`:edits` edges).
+Two payoffs:
+1. **Attribution** — *which real mission shipped which feature* (Joe's "very useful going forward").
+2. **Falsification** — a mission whose output wire claims capability X but has **no code grounding** is
+   a chained-claim crime (M-the-perfect-crime, lifted to the capability level). The grounding turns the
+   prior wiring diagram into a **checkable** prior — the same prior/posterior discipline, now at the wire.
+
+Feasibility note (honest, not "easy" on faith): the association is mission-commits/files → substrate-2
+vertices, and it holds **iff** the substrate-2 commit-vertex layer (M-live-geometric-stack phase 3,
+what M-stack-stereolithography consumes) is live.
+
 ### End-to-end build plan (the cars; bounds the first slice per the scope tension)
 
 1. **Model** — the lambda/scope node+edge schema (above), + the edge extractor (`:depends-on` /
