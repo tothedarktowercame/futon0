@@ -644,6 +644,32 @@ re-architecting) *changes what is pursued* → glacial / consent (INV-G). The li
 **is the breakdown itself a small incremental step?** Decompose is how water finds its way down a cliff:
 by many small steps, never flowing up.
 
+### "Each mission step is small" — and the lifecycle's operator-verify exits ARE the gates (Joe 2026-06-07)
+
+A further claim, *to be borne out as we go*: **each mission-lifecycle step is small** — a phase advance
+or a hole-discharge is bounded, a leaf. This is *why* the single-cycle-leaf model fits — the futonic
+lifecycle already chunks a mission into small steps (and the big ones decompose, above).
+
+But not every identified step should be *pushed*. Joe's sharp example: an **IDENTIFY-only mission whose
+gap hasn't been agreed** — advancing it is still "incremental work of some kind," yet we may not want
+the WM to push it, because the work is misdirected until the gap is real. The resolution is **already in
+the lifecycle**: its exit criteria *include operator-AGREEMENT steps* — HEAD-verify, IDENTIFY's "*a
+human agrees the gap is real and the scope is right*", the consent calls. **Those exits ARE the INV-G
+gates** — INV-G is not bolted on, it is the lifecycle's own operator-verify exits, respected. The WM
+advances the **automatable within-phase work** and **NAGs the operator-agreement exits** (surfaces "this
+needs your IDENTIFY-verify"; never pushes past an un-agreed gap).
+
+And the gradient already wants this: an un-agreed-gap mission carries **high ambiguity** (is the work
+even right?) → high `G-ambiguity` → the EFE *de-prioritises* it (not downhill), and the
+operator-agreement NAG is what resolves the ambiguity. So "don't push un-agreed gaps" is **not a special
+rule** — it falls out of EFE + the lifecycle's existing exits.
+
+**The optimism (Joe, to be borne out):** *almost everything other than the operator-agreement exits is
+not only incremental but automatable.* If so, the WM advances the large majority of the landscape
+autonomously, with the operator-agreement exits as the narrow earned NAGs — exactly the "trust EFE, no
+cherry-pick" criterion, now with a clean account of *what stays the operator's* (and a direct line to
+M-the-futon-stack's "code while I sleep").
+
 ### Trade-offs
 - **Fixed curriculum first** (MAP §Limitation): give up living hole-discovery now for a tractable, faithful
   v1 — the hole-source plugs in later.
