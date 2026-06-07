@@ -970,6 +970,30 @@ claude-1** — read the deftest, re-ran 5 tests/22 assertions, 0 failures).
 **Next (Joe's call):** merge the branch · advance/close the mission (keystone demonstrated) · the hardening
 (EFE body-term + decompose move) · regenerate VSATARCS (the doc-gap actionable).
 
+### Design — star-map ⟷ live-WM EFE BLEND (Joe-confirmed 2026-06-07; the next INSTANTIATE slice)
+**Finding:** the merge is ALREADY the architecture — `futon2.aif.efe/compute-efe` (the live scorer) computes
+`graph-efe-terms` and adds `:G-graph-pragmatic` into `g-total` **additively** (efe.clj:348), alongside
+risk/ambiguity/info/survival/structural-pressure. It does NOT replace anything. It's **inert in the live WM**
+because the judgement never passes `:capability-graph` + `:pre-registered-goal` (so the graph term is 0; only
+the unused `rank-star-map-actions` feeds a graph). Joe: *"the EFE is the nervous system — treat with delicacy;
+⭐ is a marker, not necessarily preferred."*
+**The slice (wire it conservatively):**
+1. Thread `:capability-graph` (= `M-capability-star-map.graph.edn`) + `:pre-registered-goal`
+   (= `:wm-overnight-unsupervised`, the Daumal ascent) into the **live judgement's** EFE opts (the server-side
+   assembly that builds `judgement.ranked-actions` for `/api/alpha/war-machine`). Missions not in the graph
+   get `G-graph-pragmatic` 0 — existing behaviour preserved; only graph-known missions get the blend (bounded rollout).
+2. **Conservative weights (the delicacy = where "⭐ ≠ preferred" lives):** applicability-penalty **1000 → a
+   nudge (~5)** (Joe: nudge, not veto — guardrails hard-gate admissibility separately); ascent-weight **20 → ~6**;
+   body-weight **3 kept** (drives the single-cycle-leaf shape). Tunable up later.
+3. **⭐ provenance → UI:** tag actions with a non-zero star-map contribution (`:star-map? true`) + pass a ⭐
+   through the snapshot's `ranked-actions` so the UI marks star-map-originating recommendations (marker, not preference).
+4. **Calibration readout:** live top ranked-actions BEFORE vs AFTER — confirm star-map NUDGES (doesn't flip the
+   ranking / dominate) + ⭐ appears on graph-known missions.
+**Deferred (Joe, later round):** a **peradam / mana reward system** keyed off ascent-credit; extending
+`graph.edn` to all grounded regions. **Discipline:** additive-only · staging branch (Joe merges) · NO
+live-reload of the EFE into the running JVM (nervous system + the day's crash) · never restart the JVM.
+Implementation → codex-1; claude-1 reviews.
+
 ---
 
 ## Provenance
