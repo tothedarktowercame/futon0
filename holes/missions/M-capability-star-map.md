@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** VERIFY complete (logic-model `run-verify` => `:verified? true`: witness clean + all 6 invariants' adversarials caught, incl. INV-G machine-refuting the pentagon-pursuit; `logic-model-before-code`, 2026-06-07). HEAD/IDENTIFY/MAP/DERIVE/ARGUE done. Next: INSTANTIATE (extractor + graph + EFE-over-graph, first-slice region).
+**Lifecycle:** INSTANTIATE (first slice = WM-region, 2026-06-07): Unit A (extractor + graph + toposort) → codex-1, Unit B (EFE-over-graph + INV-G) → codex-2; claude-1 reviews each. HEAD→VERIFY done (logic-model `:verified? true`).
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -757,6 +757,59 @@ non-pre-registered capability with no consent is *caught* — the 3AM-pentagon c
 the one risk that can't be settled statically (does EFE-over-graph actually surface single-cycle leaves
 in practice — INV-4 / C3) is named for the INSTANTIATE spike. Next: INSTANTIATE (the extractor + the
 graph + the EFE-over-graph), bounded to the first-slice region.
+
+---
+
+## INSTANTIATE (2026-06-07 — first slice: the WM-region; coding via codex handoffs)
+
+Bounded to ONE first-slice region — the **WM-region** (the ensemble-1 chain `agency → self-rep →
+live-geometric-stack → war-machine → wm-steps-forward-guardrailed → efe-trustworthy → wm-overnight`), so
+the *extracted* graph must reproduce the hand-authored ensemble (completion-criterion C4). Two codex
+handoffs (Unit A / Unit B); claude-1 reviews each (read diff · re-run gates · `run-verify` on the real graph).
+
+### The bipartite-graph schema (the seam between the two units)
+A single EDN sibling of `.semilattice.edn` — `M-capability-star-map.graph.edn`:
+```clojure
+{:star-map/region :wm
+ :capabilities {<cap-id> {:title _ :status (:held|:satisfied) :scope [<cap-id>…]   ; :scope = :requires
+                          :minted-by [<mission-id>…] :pre-registered? bool}}
+ :missions     {<mission-id> {:scope [<cap-id>…] :produces [<cap-id>…]
+                              :open-hole-count n :phase _ :status _ :next-exit-operator-verify? bool}}
+ :edges        [{:from _ :to _ :type (:requires|:produces|:enables|:specialises|:couples|:built-before)}…]}
+```
+Extends `M-capability-star-map.ensemble.edn` (the hand-authored target + test fixture).
+
+### Unit A (codex-1) — extractor + toposort + real-graph invariant check
+- Extract the WM-region missions (watcher `:mission/*` via `/api/alpha/missions` or `futon2.aif.mission-registry`)
+  + capabilities (`pudding-prover-registry.edn`) + edges (`:blocked-by` typed-up to `:requires`; closure
+  `:enables`; prover `:parent/:specialises/:couples`). **Exclude worktrees / origin / `.state`** (the
+  contaminated-prior hazard — see Exclusion discipline + `2cd7445`).
+- A `toposort` over `:requires` (INV-1 — error on cycle).
+- Run the `futon3c.logic.capability-star-map-invariants` queries on the REAL extracted graph (write a
+  graph→trace adapter): **acceptance = 0 violations** on the conforming real graph + the keystone path
+  reproduces ensemble-1 (C2, C4).
+- Out: the extractor ns + `M-capability-star-map.graph.edn` + the graph→invariant adapter.
+
+### Unit B (codex-2) — EFE-over-graph + INV-G goal-binding
+- Extend `futon2.aif.forward-model` / `efe.clj` so a mission-action's G-total is a **functional of the
+  graph**: applicability-gate (unbound `:requires` ⇒ high G), body-size penalty (`:open-hole-count`),
+  ascent-progress toward the **pre-registered goal** (the goal is an INPUT, never chosen).
+- **INV-G:** the EFE goal is bound to the pre-registered ascent — the selector **cannot** return a
+  `:pursue` of an un-registered capability; a goal-extending decompose needs consent.
+- Acceptance: over the WM-region graph the EFE-top pick is an **applicable single-cycle leaf** (C3 — no
+  cherry-pick); `q-buck`/`q-gate` on the real selection trace = 0 violations. Test against
+  `ensemble-1.edn` as the fixture until Unit A's real graph lands.
+- Out: the EFE-over-graph extension + tests.
+
+### Gates (both)
+clj-kondo clean; check-parens clean; tests pass; **`run-verify` on the real extracted graph ⇒ 0
+violations** (the design invariants hold on the data, not just the abstract trace). Reload via Drawbridge;
+NEVER restart the JVM; no blocking `tick!`. Bell `claude-1` back with summary + commit sha(s) + gate results.
+
+### Deferred (named, not this slice)
+mission→code grounding bonus · the navigation render (M-stack-stereolithography owns it) · the **INV-4
+single-cycle-leaf empirical spike** (does EFE pick a leaf in *practice* — the C3 confirmation, run after
+Unit B) · living hole-source (M-a-sorry-enterprise) · futon1a graph-store (EDN suffices for slice 1).
 
 ---
 
