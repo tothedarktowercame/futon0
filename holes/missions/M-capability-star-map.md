@@ -852,10 +852,16 @@ capability landscape exists.
 - **Integration: DEFERRED** (operator) — only on real data.
 - **Mission state: OPEN** at *mechanism-proven, real-content-pending.* **NOT WM-overnight-ready** — that
   gate needs EFE picking leaves on the REAL landscape with no cherry-pick.
-- **To close:** assemble the real capability landscape — (1) real **mission-mapping** (`:minted-by` →
-  actual mission docs + real `:open-hole-count`; doable now) and (2) the **capability inventory** (A2 —
-  the harder, gating piece: enumerate the stack's real capabilities, not the hand-authored 8). Then
-  integrate (A+B) and run the C3 acceptance on real data.
+- **To close:** assemble the real capability landscape —
+  - (1) real **mission-mapping** (`:minted-by` → actual mission docs + real `:open-hole-count`) —
+    **dispatched to codex-1, 2026-06-07** (mission half only; capabilities untouched).
+  - (2) the **capability inventory** (A2 — the harder, gating piece). **Disposition (Joe, 2026-06-07):
+    NOT a new mission — it is a CROSS-MISSION concern, kept inside THIS mission, grounded in
+    `C-pudding-prover §8.2`**: the prover registry = the capability set's STATUS view, this mission = the
+    STRUCTURE view, and the campaign's Daumal ascent (§10) = the pre-registered EFE goal. New capabilities
+    are *minted* via the prover lifecycle and coordinated as registry entries there — not invented
+    per-mission. Cross-mission notes go in C-pudding-prover as needed.
+  - Then integrate (A+B) and run the C3 acceptance **on real data** (deferred until then, per operator).
 
 ---
 
