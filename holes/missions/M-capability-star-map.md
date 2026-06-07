@@ -1,7 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** INSTANTIATE (first slice = WM-region, 2026-06-07): Unit A (extractor + graph + toposort) → codex-1, Unit B (EFE-over-graph + INV-G) → codex-2; claude-1 reviews each. HEAD→VERIFY done (logic-model `:verified? true`).
+**Lifecycle:** INSTANTIATE — mechanism proven 2026-06-07 (Unit B EFE-over-graph + INV-G verified + accepted; Unit A pipeline accepted, extraction hollow = `:prototyping-forward`). Integration DEFERRED until REAL data assembled (operator A). **Mission OPEN: real-content-pending — NOT WM-overnight-ready.** To close: capability inventory (A2) + real mission-mapping → integrate → C3 on real data.
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -834,7 +834,28 @@ slice. BUT two things are honest defects, not forced: the **fictional mission al
 real mission docs or be labelled placeholders) and the **over-stated "extraction/real-graph" framing**.
 C2 is met only weakly (a graph exists for the region, hand-authored); **C4 is not genuinely met**.
 Genuine landscape extraction = future (capability inventory A2-blocked; mission-mapping a targeted
-follow-on). *Operator disposition pending (see review report).*
+follow-on).
+
+**Operator disposition (Joe, 2026-06-07): accept A.** The *mechanism* evidence is good (Unit B); **real
+content is required to close**, and we **integrate only when the real data is assembled** — NOT on the
+hand-authored ensemble. The A+B integration (the C3 live acceptance) is **deferred** until a real
+capability landscape exists.
+
+### INSTANTIATE checkpoint (2026-06-07) — mechanism proven, real content pending
+- **Unit B (EFE-over-graph + INV-G), `futon2 35ce7f6`:** ✅ verified + accepted. The mechanism + the
+  safety gate are real — applicability-gate / body-size / ascent-credit; un-registered `:pursue` +
+  goal-extending decompose + unagreed-exit advance all **refused before ranking** (`action-admissible?`
+  → `rank-star-map-actions`); 23 tests; `selection-trace-step` wires a real selection back to the
+  logic-model. "Water doesn't flow uphill" is enforced in code, not just argued.
+- **Unit A (pipeline), `futon3c b2cf27e` / `futon0 c300403`:** ✅ accepted as the substrate; ⚠️
+  extraction hollow (hand-authored ensemble + thin enrichment; C4 circular). Kept `:prototyping-forward`.
+- **Integration: DEFERRED** (operator) — only on real data.
+- **Mission state: OPEN** at *mechanism-proven, real-content-pending.* **NOT WM-overnight-ready** — that
+  gate needs EFE picking leaves on the REAL landscape with no cherry-pick.
+- **To close:** assemble the real capability landscape — (1) real **mission-mapping** (`:minted-by` →
+  actual mission docs + real `:open-hole-count`; doable now) and (2) the **capability inventory** (A2 —
+  the harder, gating piece: enumerate the stack's real capabilities, not the hand-authored 8). Then
+  integrate (A+B) and run the C3 acceptance on real data.
 
 ---
 
