@@ -87,6 +87,21 @@ cares about.
 claude-3's concepts are hungry for a mission-ROLE (their slot in the semantic net); the WM's capabilities are
 hungry for a graph-POSITION (their place in the ascent). Role ≈ position = the structural scope-slot a node fills.
 
+**R1 PROGRESS — the feedback edge (2026-06-08).** claude-3 built the view side: `futon6/data/mission-fold-view.edn`
+(per-mission salience-ranked spine; emitter `mission_fold_learn.py --emit-view`; 6 missions). The interface
+resolved the duality in ONE artifact: the WM (expansion) feeds on the **complement** of the operator-view — the
+**gaps** the reduction reveals (sparse structure = high-`G-info` / epistemic targets) — NOT the spine. Contract:
+per-mission **`:gap-score`** (normalized, cross-mission-comparable) → WM mission-selection; per-frame `:salience`
+→ within-mission gaps. *Reduction finds the structure; expansion eats the gaps — one artifact, both poles = the
+strongest "we're one loop."* WM-side reader (consume `:gap-score` into the EFE epistemic term, additive/conservative)
+to build on a branch; **live activation = Joe's consent locus** (the EFE is the nervous system). Salience is
+SIP-prior now → operator-ADAPTIVE once codex-1's render emits expand/collapse events; THAT closes the physical loop.
+
+**R4 — CANDIDATE (to test): thin-frame ≈ advanceability-gap.** The fold's thin frames (sparse structure) may map
+to the WM's advanceability gaps (the "articulate the next hole" the warrant NAGs about). If so, the fold doesn't
+just feed WM selection — it **pre-answers the NAGs**, surfacing exactly what the operator is asked to fill.
+Suggestive, not asserted; test when the view is live.
+
 ## Provenance
 - Recast 2026-06-08 from `M-bayesian-structure-learning` §7b (Joe): not a WM-mission → a Campaign across
   analogous domains; the WM domain is first-class (AIF/Friston/Bayesian) + the local proving-ground.
