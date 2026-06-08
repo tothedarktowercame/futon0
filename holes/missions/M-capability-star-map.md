@@ -1020,6 +1020,22 @@ the blend + re-run → the engaged action / top NAGs should move toward the loca
 capture what Joe means by "local." A goal-definition refinement to weigh when the blend goes live — and the
 operator's expectation is the ground-truth to calibrate the ascent-weight against.
 
+### Realignment verdict — blend live + extended graph (claude-1, 2026-06-08)
+Brought the blend online (reloaded efe + report wiring) + extended the graph to the full grounded landscape
+(`dcec611`; **reviewed: ascent spine clean — every spine cap keeps its original scope, no domain cap injected
+into the `wm-overnight` transitive scope, so domain (t3/t2) caps get ZERO ascent-credit — correct**).
+**Verdict: the blend ALONE does NOT realign.** A fresh cycle engages `M-canon-fingerprint-store` (futon6) —
+because resolving its NAG made it advanceable + it's low-body, while the local-capability missions are
+HIGH-hole (war-machine-pilot 9, capability-star-map 11) → big `G-body-size` penalty the conservative
+`graph-ascent-weight 6.0` can't overcome. **Ascent-credit fights the body-term and loses.**
+**The realignment mechanism is the GAP-READER** (`E-efe-education` R1; branch `wm-outing/2026-06-08-gap-reader`
+`393a92e`, reviewed/accepted, awaiting operator live-activation): claude-3's `:gap-score` directly rewards the
+LOW-hole local-capability stubs (war-machine-tuning 0.49 …), where gap-credit AND body-credit ALIGN — so it
+lifts exactly the missions ascent-credit-alone couldn't. **R1 (the chord) IS the realignment** — same lever.
+**Open design tension:** `G-body-size` (prefer-low-hole) vs ascent (prefer local-capability even if high-hole)
+— the body-term hardening (prefer-exactly-1-hole) + the gap/ascent terms need joint tuning. Test on R1
+live-activation: does the engaged action shift to the high-gap local-capability stubs?
+
 ---
 
 ## Provenance
