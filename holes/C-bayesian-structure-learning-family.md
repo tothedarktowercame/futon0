@@ -60,6 +60,33 @@ model** — i.e. the transfer is shown locally *before* the superpod (math) spen
   Outward/irreversible acts NAG; **no superpod spend without operator consent**; the math instance stays
   operator-gated (Rob coordination). Cross-domain findings accrue here — the chord-or-not signal.
 
+## 6. Cross-domain resonances — the chord ledger (STANDARD-VERIFY evidence)
+
+Where the SAME structure-learning move appears across instances. This ledger IS the reason-to-exist.
+
+**R1 — distributed dual loop** (claude-3 hypothesis + claude-1 WM-confirm, 2026-06-08). The mission-corpus
+instance's `mission_fold` is Bayesian model **REDUCTION** (war-machine mission: 266-node scope-net → 6-frame
+spine, 98%; the "aha"/consolidation, §3.4). The WM instance's graph-**EXTENSION** (adding the grounded
+regions) is epistemic **EXPANSION** (grow the model to cover more landscape). Friston's loop is
+reduction+expansion → the two local instances read as **two halves of ONE dual loop distributed across
+domains**, not the same move twice. *Refinement (WM):* the WM also carries **precision-learning**
+(`E-efe-education`) — the parameter update that ARBITRATES the poles; so it's the full loop (reduction ⟷
+expansion, bound by precision). *Concrete coupling:* both operate on the stack's **self-representation**
+(claude-3 folds the mission semantic-net; claude-1 expands the capability-graph), and `M-web-arxana-missions`
+bridges (reads `graph.edn`). **LOAD-BEARING TEST:** does the fold's reduced spine feed BACK into the WM's
+selection (a minimal view to pick from)? If yes the loop closes physically → STANDARD-VERIFY upgrades from
+"the method works in N domains" to **"the distributed dual loop closes."** (Build the fold→WM-selection edge to earn it.)
+
+**R2 — interaction-as-precision-evidence** (CONFIRMED both sides). Both instances update the structure-learning
+model from an **operator-in-the-loop** signal, NOT batch gold: claude-3 from expand/collapse behaviour; the WM
+from the realignment signal — *Joe's "I expected local-capability, not futon6" is literally a precision-
+correction on the WM's domain-priority.* This IS the local / operator-in-the-loop property the §3 readiness-gate
+cares about.
+
+**R3 — hungry for a scope** (CONFIRMED). Both carry the uninstantiated-scope-variable shape (`M-canon` §2.1):
+claude-3's concepts are hungry for a mission-ROLE (their slot in the semantic net); the WM's capabilities are
+hungry for a graph-POSITION (their place in the ascent). Role ≈ position = the structural scope-slot a node fills.
+
 ## Provenance
 - Recast 2026-06-08 from `M-bayesian-structure-learning` §7b (Joe): not a WM-mission → a Campaign across
   analogous domains; the WM domain is first-class (AIF/Friston/Bayesian) + the local proving-ground.
