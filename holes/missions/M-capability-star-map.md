@@ -994,6 +994,32 @@ the unused `rank-star-map-actions` feeds a graph). Joe: *"the EFE is the nervous
 live-reload of the EFE into the running JVM (nervous system + the day's crash) · never restart the JVM.
 Implementation → codex-1; claude-1 reviews.
 
+### Live finding — WM priorities vs operator expectation (5-cycle run, Joe 2026-06-08)
+The first live guardrails-mode run (NAG namespaces reloaded; **blend NOT yet active in the JVM**)
+selected from the OLD free-energy/tension scorer: the 7 NAGs + the engaged action were dominated by
+**futon6 / math domain-work** (canon-fingerprint-store, bayesian-structure-learning, coupling-as-constraint,
+fulab-wiring-survey, tpg/xor-coupling-probe) — high-tension / strain-edge missions.
+
+**Operator signal (Joe — a signal, not a decree; [[feedback_operator_not_sovereign]]):** he'd have expected
+**local-capability-expanding** missions at the top — the **self-representing-stack follow-on backlog** (the
+stack improving its OWN capability = the wm-overnight ascent) — not domain-work. *"I love futon6 and
+working-in with Rob … but from a WM perspective I'd have expected questions/missions that expand our local
+capability."* Mild, explicitly not a complaint — a priority-alignment datum.
+
+**Diagnosis = exactly the blend's purpose.** The old selector ranks by tension/free-energy with **no
+ascent-credit**, so it favours the strongest *local strain* (active math research) over the **pre-registered
+ascent** (local self-improvement). The star-map **blend** adds `G-ascent-progress` toward the goal — it is
+the mechanism that would re-weight local-capability (ascent) missions *above* off-ascent domain-work. So this
+observation is **live evidence FOR the blend** and a **calibration target**: with the blend active, the top
+picks should shift from futon6/math toward self-representing-stack follow-ons. **Testable prediction:** reload
+the blend + re-run → the engaged action / top NAGs should move toward the local-capability ascent.
+
+**Open — the pre-registered goal's CONTENT.** The blend wired `:pre-registered-goal :wm-overnight-unsupervised`
+(a single frontier node). But "expand our *local* capability" suggests the goal may need to encode
+**local-capability-first** more richly (the self-representing-stack ascent path), or the ascent-credit won't
+capture what Joe means by "local." A goal-definition refinement to weigh when the blend goes live — and the
+operator's expectation is the ground-truth to calibrate the ascent-weight against.
+
 ---
 
 ## Provenance
