@@ -95,5 +95,81 @@ With prefix arg DAYS, override the lookback window."
   (interactive)
   (war-machine war-machine-days))
 
+;;; NAGs view — the operator's actionable queue (web UI stays "for info")
+
+(defcustom war-machine-nags-script
+  (expand-file-name "~/code/futon3c/scripts/wm-nags.bb")
+  "Babashka helper that lists/dismisses WM needs-you NAGs."
+  :type 'file
+  :group 'war-machine)
+
+(defcustom war-machine-nags-buffer-name "*WM NAGs*"
+  "Name of the NAGs display buffer."
+  :type 'string
+  :group 'war-machine)
+
+(defvar war-machine-nags-mode-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m (kbd "d") #'war-machine-nags-dismiss)
+    (define-key m (kbd "g") #'war-machine-nags)
+    (define-key m (kbd "q") #'quit-window)
+    m)
+  "Keymap for `war-machine-nags-mode'.")
+
+(define-derived-mode war-machine-nags-mode special-mode "WM-NAGs"
+  "Major mode for viewing and clearing War Machine pattern-warranted NAGs.
+\\{war-machine-nags-mode-map}")
+
+(defun war-machine--nags-fetch ()
+  "Run the bb list helper and return the parsed list of NAG plists."
+  (with-temp-buffer
+    (ignore-errors
+      (call-process "bb" nil t nil war-machine-nags-script "list"))
+    (goto-char (point-min))
+    (condition-case nil (read (current-buffer)) (error nil))))
+
+;;;###autoload
+(defun war-machine-nags ()
+  "View the War Machine's pattern-warranted NAGs — the operator's queue.
+Each NAG cites the design pattern (your own rule) that makes it
+operator-required, plus the one gap to fill.  Press \\<war-machine-nags-mode-map>\\[war-machine-nags-dismiss] to
+clear the NAG at point, \\[war-machine-nags] to refresh."
+  (interactive)
+  (let ((nags (war-machine--nags-fetch))
+        (buf (get-buffer-create war-machine-nags-buffer-name)))
+    (with-current-buffer buf
+      (war-machine-nags-mode)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert (propertize (format "War Machine — NAGs (%d)\n" (length nags))
+                            'face 'bold))
+        (insert "d: dismiss at point   g: refresh   q: quit\n\n")
+        (if (null nags)
+            (insert "  ✓ queue clear — no NAGs.\n")
+          (let ((i 0))
+            (dolist (n nags)
+              (setq i (1+ i))
+              (let ((start (point)))
+                (insert (format "[%d] %s\n" i (plist-get n :title)))
+                (insert (format "     ⊢ %s — %s\n"
+                                (plist-get n :pattern) (plist-get n :warrant)))
+                (insert (format "     → %s\n\n" (plist-get n :gap)))
+                (put-text-property start (point) 'wm-nag-id (plist-get n :id))))))
+        (goto-char (point-min))))
+    (display-buffer buf '(display-buffer-reuse-window))))
+
+(defun war-machine-nags-dismiss ()
+  "Dismiss (clear) the NAG at point from the needs-you queue.
+Transient: a later WM run re-emits any NAG whose underlying gap is
+still unresolved (e.g. a 0-hole mission still has no articulated hole)."
+  (interactive)
+  (let ((id (get-text-property (point) 'wm-nag-id)))
+    (if (not id)
+        (message "No NAG at point.")
+      (ignore-errors
+        (call-process "bb" nil nil nil war-machine-nags-script "dismiss" id))
+      (message "Dismissed NAG: %s" id)
+      (war-machine-nags))))
+
 (provide 'war-machine)
 ;;; war-machine.el ends here
