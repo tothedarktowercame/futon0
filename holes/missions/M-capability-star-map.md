@@ -1036,6 +1036,19 @@ lifts exactly the missions ascent-credit-alone couldn't. **R1 (the chord) IS the
 — the body-term hardening (prefer-exactly-1-hole) + the gap/ascent terms need joint tuning. Test on R1
 live-activation: does the engaged action shift to the high-gap local-capability stubs?
 
+**CORRECTION (claude-3 STANDARD-VERIFY, 2026-06-08) — "gap IS the realignment" is REFUTED.** Scaled to the
+full 194-mission corpus, gap-score is **size-dominated + domain-blind**: M-canon-fingerprint-store (math,
+0.458) ≈ M-war-machine-tuning (local, 0.491) — effectively TIED, so gap does NOT discriminate math-from-local.
+The realignment is the **body-term's** doing; gap merely rode along (the 6-mission story was an artifact).
+**Live risk caught BEFORE activation:** top-gap missions are tiny abandoned stubs (M-coupling-as-constraint
+0.94 / M-tpg-coupling-evolution 0.88 — BOTH open) → gap-as-is would actively mis-steer the WM toward them.
+**Gap-reader activation GATED** until: (a) claude-3 de-biases gap → growth-surface (count of stub-frames above
+a size floor, not mean stub-fraction); (b) claude-1 gates gap on ASCENT-credit>0 (gap refines WITHIN the local
+domain the ascent selects, not globally); (c) live experiment runs WITH A CONTROL (body-only vs body+gap) to
+attribute the realignment honestly. **Architecture:** ascent = local-vs-domain selector; gap = within-local
+expansion-refiner; body = boundedness. The chord-as-STRUCTURE (reduction↔expansion coupling) stands; the
+gap-as-realignment-SIGNAL did not survive the cross-check.
+
 ---
 
 ## Provenance

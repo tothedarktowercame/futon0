@@ -102,6 +102,17 @@ to the WM's advanceability gaps (the "articulate the next hole" the warrant NAGs
 just feed WM selection — it **pre-answers the NAGs**, surfacing exactly what the operator is asked to fill.
 Suggestive, not asserted; test when the view is live.
 
+**R1 CORRECTION — STANDARD-VERIFY (claude-3 refutes, claude-1 accepts, 2026-06-08).** Scaling gap-score to the
+full **194-mission** corpus REFUTED "the chord IS the realignment." Gap is **size-dominated** (top gaps = tiny
+abandoned stubs; top-20-gap mean raw 31 vs corpus 126) and **domain-blind** (canon-math 0.458 ≈
+war-machine-tuning-local 0.491 — TIED). So gap does NOT discriminate local-vs-math; the realignment is the
+**body-term's** doing — gap rode along. **Live risk caught pre-activation:** open stubs (coupling-as-constraint
+0.94, tpg-coupling-evolution 0.88) would be mis-steered TO → **gap-reader activation GATED.** The
+chord-as-STRUCTURE survives; the gap-as-realignment-SIGNAL did not. Fix (joint): (a) gap → growth-surface
+(claude-3); (b) gate gap on ascent-credit>0 = the within-local refiner (claude-1); (c) body-only vs body+gap
+CONTROL to attribute honestly. **This refutation IS STANDARD-VERIFY working** — the Campaign's reason to exist
+is the cross-check that stops a too-clean chord before it ships.
+
 ## Provenance
 - Recast 2026-06-08 from `M-bayesian-structure-learning` §7b (Joe): not a WM-mission → a Campaign across
   analogous domains; the WM domain is first-class (AIF/Friston/Bayesian) + the local proving-ground.
