@@ -1193,6 +1193,32 @@ contact. The overnight-run shape, run now. Highest-leverage next (UPDATED 2026-0
 was *checked and refuted* live; the real keystone-wiring bug (off-map escape + body granularity) and its fix now
 live in [[M-wm-policies]] — Track 1 is the ready cleanup, Track 2 the policy layer.
 
+### Pilot-cycle finding — ideal-actual gap on capability grounding (claude-1, 2026-06-09)
+
+First end-to-end WM REPL cycle on the new tooling. The live WM recommended **advance M-capability-star-map**
+(G=−5.69); the **cascade-policy lane** gave the method — `war-machine/ideal-actual-gap` ·
+`t3/capability-not-functioning` · `futon-theory/mission-dependency` · `ukrns/scale-register` ·
+`campaign-coherence/shared-standard-has-no-single-owner` · `vsatlas/value-flow-constellation` (C=9.88).
+Taking the recommendation *guided by the cascade*, I audited the graph for an ideal-actual gap (caps
+claiming `:satisfied` whose grounding doesn't exist).
+
+**Finding:** of 20 `:satisfied` caps, 17 name grounding — but `:grounding` is **prose**, not a
+machine-checkable path (e.g. `:kit-mint → "pudding-prover.bb mint"`; `:interest-network-apparatus →
+"…WebArxana interest_network.clj/cljs; annotations.edn"`). Only **3/17 resolve to a verifiable file**. So
+**capability-functioning cannot be machine-verified from the graph** — the ideal-actual gap is structurally
+*undetectable* under the current schema. That is the gap one level up: the graph asserts grounding it cannot
+check.
+
+**Concrete advance (feeds closure criterion 1 below):** the capability schema needs a machine-checkable
+grounding field (a file/glob/test the watcher can verify) beside the prose, for auto-detection of
+claimed-but-not-functioning caps; until then, gap-detection should use substrate-2 `:capability/status` vs.
+attestation, *not* the prose grounding.
+
+**Honesty note (earned closure):** my first audit cut reported "12 gaps" — a path-resolution **artifact**
+(it flagged `pudding-prover.bb`, which exists at `futon7/holes/`). Corrected: 0 file-missing gaps; the real
+finding is the un-checkable schema. The cascade pointed the *direction* well (ideal-actual-gap was the right
+lens); catching the artifact was on me.
+
 ### Closure proposal — what would close M-capability-star-map itself
 
 M-capability-star-map should close as the **capability build-map + scheduler-wiring mission**, not as the whole
