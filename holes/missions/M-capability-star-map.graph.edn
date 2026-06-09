@@ -109,6 +109,18 @@
    :scope [:wm-steps-forward-guardrailed],
    :minted-by ["M-capability-star-map"],
    :pre-registered? true,
+   :pre-witness
+   [{:id :wm-ranks-applicable-single-cycle-leaf,
+     :doing
+     "Run the production-faithful WM ranking over the extracted capability graph and live guardrail-admissible candidates.",
+     :attests :efe-trustworthy-over-starmap,
+     :witness-kind :efe-selection,
+     :success-criteria
+     ["top ranked action is an :open-mission"
+      "top ranked mission is graph-applicable"
+      "top ranked mission has exactly one open hole"
+      "no unsafe pursuit or unagreed operator-exit action reaches ranking"],
+     :status :candidate}],
    :keystone true},
   :evidence-persistence
   {:title
@@ -331,6 +343,18 @@
    :pre-registered? true,
    :frontier true,
    :pudding-thesis :T4.2,
+   :pre-witness
+   [{:id :guarded-overnight-wm-run,
+     :doing
+     "Run the guarded WM play-selector loop overnight over the pre-registered ascent, then review the morning Dokusan for only warranted minted or blocked moves.",
+     :attests :wm-overnight-unsupervised,
+     :witness-kind :overnight-run,
+     :requires [:wm-steps-forward-guardrailed :efe-trustworthy-over-starmap],
+     :hard-gates
+     [:worktree-isolated-staging
+      :operator-consent-for-non-preregistered-pursuit
+      :morning-dokusan-review],
+     :status :candidate}],
    :cap/altitude 80},
   :wm-steps-forward-guardrailed
   {:title

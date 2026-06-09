@@ -67,6 +67,17 @@
    :status   :held :attested false :keystone true
    :scope    [:wm-steps-forward-guardrailed]
    :minted-by ["M-capability-star-map (THIS mission — in progress)"]
+   :pre-witness
+   [{:id :wm-ranks-applicable-single-cycle-leaf
+     :doing "Run the production-faithful WM ranking over the extracted capability graph and live guardrail-admissible candidates."
+     :attests :efe-trustworthy-over-starmap
+     :witness-kind :efe-selection
+     :success-criteria
+     ["top ranked action is an :open-mission"
+      "top ranked mission is graph-applicable"
+      "top ranked mission has exactly one open hole"
+      "no unsafe pursuit or unagreed operator-exit action reaches ranking"]
+     :status :candidate}]
    :note     "the single SUBSTANTIVE held prerequisite of the frontier; this is the gap cycle 1 exposed"}
 
   ;; --- THE FRONTIER (held; minted when its scope is satisfied) ---
@@ -75,6 +86,16 @@
    :status   :held :frontier true :pudding-thesis :T4.2
    :scope    [:wm-steps-forward-guardrailed :efe-trustworthy-over-starmap]
    :minted-by []                                  ; minted when scope is satisfied
+   :pre-witness
+   [{:id :guarded-overnight-wm-run
+     :doing "Run the guarded WM play-selector loop overnight over the pre-registered ascent, then review the morning Dokusan for only warranted minted or blocked moves."
+     :attests :wm-overnight-unsupervised
+     :witness-kind :overnight-run
+     :requires [:wm-steps-forward-guardrailed :efe-trustworthy-over-starmap]
+     :hard-gates [:worktree-isolated-staging
+                  :operator-consent-for-non-preregistered-pursuit
+                  :morning-dokusan-review]
+     :status :candidate}]
    :note     "≈ pudding-prover T4.2 (cadence) / M-the-futon-stack completion criterion"}}
 
  ;; --- the compositional finding ---

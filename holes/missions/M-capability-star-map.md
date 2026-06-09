@@ -772,7 +772,11 @@ A single EDN sibling of `.semilattice.edn` — `M-capability-star-map.graph.edn`
 ```clojure
 {:star-map/region :wm
  :capabilities {<cap-id> {:title _ :status (:held|:satisfied) :scope [<cap-id>…]   ; :scope = :requires
-                          :minted-by [<mission-id>…] :pre-registered? bool}}
+                          :minted-by [<mission-id>…] :pre-registered? bool
+                          :pre-witness [{:id _ :doing _ :attests <cap-id>
+                                         :witness-kind _ :status :candidate
+                                         ;; optional, witness-kind dependent:
+                                         :success-criteria [_] :requires [_] :hard-gates [_]}]}}
  :missions     {<mission-id> {:scope [<cap-id>…] :produces [<cap-id>…]
                               :open-hole-count n :phase _ :status _ :next-exit-operator-verify? bool}}
  :edges        [{:from _ :to _ :type (:requires|:produces|:enables|:specialises|:couples|:built-before)}…]}
@@ -1179,6 +1183,25 @@ operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf
 3 gated-with-real-blockers, incl. a genuine diagnostic on §1) in one ~100s parallel sweep, propose-only, zero live
 contact. The overnight-run shape, run now. Highest-leverage next: **confirm §1's call-site hypothesis** — it may
 collapse the keystone-wiring to a one-line opts fix.
+
+### Closure proposal — what would close M-capability-star-map itself
+
+M-capability-star-map should close as the **capability build-map + scheduler-wiring mission**, not as the whole
+overnight learner. Successful closure means:
+
+1. **Machine-readable graph exists and is consumed.** The graph has the mission/capability split, typed edges,
+   ascent goal, held/satisfied status, and `:pre-witness` candidate specs for the on-ascent held caps; the live WM
+   ranking path consumes the graph + pre-registered goal rather than a flat mission list.
+2. **Production-faithful C3 remains green.** With production guardrails filtering before EFE, the top ranked action
+   is an applicable single-cycle leaf, and unsafe pursuit / unagreed operator-exit actions do not reach ranking.
+3. **Keystone honesty is explicit.** `:efe-trustworthy-over-starmap` has its witness shape, remains distinct from
+   `:wm-overnight-unsupervised`, and is not marked satisfied until the named witness run actually attests it.
+4. **Known residuals are routed, not smuggled into closure.** Full-C / field simulator, G1 reward rigor,
+   path-refining decompose, body/gap precision tuning, VSATARCS regen, FutonZero-generative, and the
+   M-hypergraph-operator fold-or-keep ruling are named follow-ons unless Joe explicitly makes one a close gate.
+
+Non-closure: the overnight unsupervised run itself, living hole-discovery from turns, and the generative FutonZero
+learner are downstream consumers of the map; requiring them here would turn this mission into the whole stack.
 
 ---
 
