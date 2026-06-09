@@ -346,7 +346,10 @@
         remaining (filterv (fn [{:keys [expires-at]}]
                              (and expires-at (.isAfter expires-at ts)))
                            pending)
-        transitions (mapv (fn [{:keys [affect terms event-id session-id author text ts]}]
+        transitions (mapv (fn [{:keys [affect terms event-id session-id author text ts
+                                        campaign-id mission-id excursion-id
+                                        clocked-campaign clocked-mission
+                                        clocked-excursion clocked-target]}]
                             {:timestamp (str ts)
                              :marker (name (:type affect))
                              :event-type (name (:event-type affect))
@@ -354,6 +357,10 @@
                              :source "futon3c/evidence-affect-scan"
                              :transition_id event-id
                              :session_id session-id
+                             :campaign_id (or campaign-id clocked-campaign)
+                             :mission_id (or mission-id clocked-mission)
+                             :excursion_id (or excursion-id clocked-excursion)
+                             :clocked_target clocked-target
                              :author author
                              :capacity_terms (vec (distinct terms))
                              :trigger_text text})
@@ -367,7 +374,10 @@
           [state []]
           (keys (:pending state))))
 
-(defn- process-turn [state {:keys [actor ts text event-id session-id author]}
+(defn- process-turn [state {:keys [actor ts text event-id session-id author
+                                   campaign-id mission-id excursion-id
+                                   clocked-campaign clocked-mission
+                                   clocked-excursion clocked-target]}
                      {:keys [lookahead-minutes novelty-days max-pending]}]
   (let [[state expired] (emit-expired state actor ts)
         affect (detect-affect text)
@@ -387,6 +397,13 @@
                             :expires-at expires-at
                             :event-id event-id
                             :session-id session-id
+                            :campaign-id campaign-id
+                            :mission-id mission-id
+                            :excursion-id excursion-id
+                            :clocked-campaign clocked-campaign
+                            :clocked-mission clocked-mission
+                            :clocked-excursion clocked-excursion
+                            :clocked-target clocked-target
                             :author author
                             :text text
                             :terms []}
@@ -503,6 +520,10 @@
       (:body entry)
       {}))
 
+(defn- body-field [body k]
+  (or (get body k)
+      (get body (name k))))
+
 (defn- entry-text [entry]
   (let [body (extract-body entry)]
     (or (:text body)
@@ -538,6 +559,13 @@
        :text text
        :event-id event-id
        :session-id session-id
+       :campaign-id (body-field body :campaign-id)
+       :mission-id (body-field body :mission-id)
+       :excursion-id (body-field body :excursion-id)
+       :clocked-campaign (body-field body :clocked-campaign)
+       :clocked-mission (body-field body :clocked-mission)
+       :clocked-excursion (body-field body :clocked-excursion)
+       :clocked-target (body-field body :clocked-target)
        :body-event (:event body)})))
 
 (defn- sort-activities [entries]
@@ -618,6 +646,10 @@
    :source (:source row)
    :author (:author row)
    :timestamp (:timestamp row)
+   :campaign_id (:campaign_id row)
+   :mission_id (:mission_id row)
+   :excursion_id (:excursion_id row)
+   :clocked_target (:clocked_target row)
    :marker (:marker row)
    :value (:value row)
    :event_type (:event-type row)

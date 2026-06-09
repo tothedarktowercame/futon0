@@ -52,6 +52,9 @@
                   :evidence/claim-type :observation
                   :evidence/body {:event "chat-turn"
                                   :role "user"
+                                  :campaign-id "C-pudding-prover"
+                                  :mission-id "M-pudding-peradams"
+                                  :clocked-target "C-pudding-prover / M-pudding-peradams"
                                   :text "I am happy and delighted with this"}}
                  {:evidence/id "turn-2"
                   :evidence/at "2026-06-09T00:01:00Z"
@@ -61,6 +64,9 @@
                   :evidence/claim-type :observation
                   :evidence/body {:event "chat-turn"
                                   :role "user"
+                                  :campaign-id "C-pudding-prover"
+                                  :mission-id "M-pudding-peradams"
+                                  :clocked-target "C-pudding-prover / M-pudding-peradams"
                                   :text "yes exactly, that result is correct"}}]]
     (write-json! entries-file {:entries entries})
     (affect/-main "--entries-file" (str entries-file)
@@ -71,6 +77,10 @@
     (is (= 2 (count (jsonl-rows output-file))))
     (is (= 2 (:events_loaded (read-json summary-file))))
     (is (= 2 (:candidate_events (read-json summary-file))))
+    (is (= #{"M-pudding-peradams"}
+           (set (map :mission_id (jsonl-rows output-file)))))
+    (is (= #{"C-pudding-prover / M-pudding-peradams"}
+           (set (map :clocked_target (:recent (read-json summary-file))))))
     (affect/-main "--entries-file" (str entries-file)
                   "--output" (str output-file)
                   "--wm-summary-output" (str summary-file)
