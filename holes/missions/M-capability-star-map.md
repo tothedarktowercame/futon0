@@ -1074,6 +1074,67 @@ precision-error the live system handed us — the chaos-tuning loop's first datu
 
 ---
 
+## Checkpoint: Basecamp — rounded-up directions for future work (Joe + claude-1, 2026-06-08/09)
+
+A long session resolved the WM into an **AlphaZero-shaped active-inference loop** (the destination named in
+[[M-futonzero-capability]] §22). This basecamp rounds up the directions it opened, organised by the loop's layers.
+**★ ready to do · ⛓ gated on a named dependency · ✅ landed this session.**
+
+### 1. PREFERENCE — the marking-rule (exploit pole)
+- **★ INSTANTIATE the goal-directed marking-rule into the live EFE** — make the live WM de-select off-map work the
+  way the Petri-net POC does (`futon7 M-pudding-peradams.petri-poc.bb`, ✅ validated *in-model*). Earns witness (c)
+  for `:efe-trustworthy-over-starmap` **live** → flips the goal's last `:held` precondition → unblocks
+  `:wm-overnight-unsupervised`. Honest precondition: the *harder* POC (real off-ascent-but-mints discrimination + the
+  gap-vs-marking contest). Home: `futon3c E-efe-trustworthy-over-starmap`. (Live EFE = Joe's consent locus.)
+- **★ Pre-witness graph wiring** — add a `:pre-witness` field to capability nodes; author the on-ascent `:held`
+  capabilities' pre-witnesses (operator's high-leverage authoring; the play-selector kit ranks them). Home: this
+  mission + C-pudding-prover §11.
+
+### 2. EXPLORE — E-warranted-play (the policy / play-out pole)
+- **✅ The strategic play-selector kit** (`futon3c E-warranted-play.selector.bb`) — ranks `:held` caps by
+  on-ascent × tractable × generativity.
+- **EFE-over-play-outs (the AlphaGo move)** — extend the WM from one-priority to policy-level `G(π)`; **patterns
+  ARE the policy layer** (✅ thesis validated: the pattern-backed futon5 wiring, all 6 validate). Shallow (1–2 ply)
+  now, ⛓ deepen as the field-simulator earns trust (§3).
+- **Run the warranted-try loop live** (the overnight run) → the morning **Dokusan** over the minted 🟡s. ⛓ on the
+  reward (§4) for full certification.
+
+### 3. SIMULATOR / FIELD — substrate-2 + full-C (the value's ground)
+- **⛓ M-mission-scopes-into-substrate-2 §D2 (co-owned, claude-3)** — full-C `T·(10−H)` as the macro *where-prior*
+  that **RETIRES** the additive gap-term (today's F1 gap-reader is the *stepping-stone*, not the destination).
+  End-state = retire; transition = both-live-gated + operator consent. This is the field the play-out rolls over.
+  Home: `futon3c M-mission-scopes-into-substrate-2 §D2`.
+- **The field-transition model** ("apply pattern → next state") — the regulator's *no-fabricated-dynamics* gap; the
+  honest hard part of deepening the play-out.
+
+### 4. REWARD — the peradam economy (G1 is the last mile)
+- **✅ The three-witness certifier** — built, de-laundered (the review caught it laundering its own routes), merged
+  (`futon7`).
+- **⛓ G1 — bind `:arrow-witness` to a live affect-event.** codex-2 hardened the affect detector (✅ the arrow
+  *feed*); remaining: the reliable binding **into** `certify-peradam` + **G2** (performed-affect resistance). **G1 is
+  THE last mile for the multiball** (the build's own peradam: labor ✓ + fruit ✓, arrow pending). Home:
+  M-pudding-peradams §7-G1, §14–15.
+- **Keep the kit↔peradam distinction**: a *kit* certifies by working (a build); a *peradam* witnesses a
+  **transformation** (the hybrid shifts — the affect-arrow). Don't cross-wire them (the experiment did, once).
+
+### 5. THE LEARNER — FutonZero (the destination to charter)
+- **Charter the generative FutonZero** = the self-bootstrapping WM-learner (AlphaZero, no training data, *any*
+  domain). The Sen distinction *is* the objective: turn **functionings** (a kit) into **capabilities** (a learned
+  policy). ⛓ on §3 (simulator) + §4 (reward-rigor). Home: M-futonzero-capability §22.
+
+### 6. THE INSTRUMENT — E-possible-world-regulator (follow-ups)
+- **F3** (mission→feature bridge → the sustainability axis); the **ascent-term residual** (graph-only → registry);
+  and — now meaningful, not saturation-blocked — the **gap-weight delicacy-tune** via `E-efe-education`.
+
+### 7. LOOSE THREADS
+- **M-hypergraph-operator** — the staleness/supersession finding (E-warranted-play cycle 1); both-live verify → the
+  fold/keep ruling (operator's call).
+- **futon5 `warranted-play/2026-06-08-wiring`** — the pattern-backed wiring (committed, **unmerged**).
+- **Campaign-BSL math/superpod instance** (Rob) — awaiting the local proving-ground.
+- **VSATARCS regen** (standing DI-3 doc actionable).
+
+---
+
 ## Provenance
 
 - Operator seed: emacs-repl, 2026-06-07, Joe — "convert the entire mission landscape into a big graph …
