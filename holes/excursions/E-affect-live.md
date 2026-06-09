@@ -64,6 +64,16 @@ arrives, not only by a manual batch scan. The live path should:
 first run writes exactly the new affect rows while the second run writes zero duplicates. Then show WM's Affect
 Events pane changes after the new turn without hand-editing the pane data.
 
+**Built 2026-06-09 (codex-4):** `futon0.rhythm.affect --live` is the per-turn runner entrypoint. It expands to
+`--write --append --incremental --refresh-wm-summary`, fetches with overlap from the latest materialised transition,
+filters already-written `transition_id`s, appends only unseen rows, and regenerates the WM `affect-events.json`
+summary from the JSONL stream. The existing batch mode remains available; `--live` is the hook-friendly path for
+`M-autoclock-in`-style invocation after new turns.
+
+**Validation:** the regression fixture creates adjacent turns and runs `--live` twice: first run `new: 2`, second
+run `new: 0`. The same check on the real Evidence Landscape appended 19 newly observed rows, refreshed WM to
+104 events / 74 candidates, and an immediate second run returned `new: 0`.
+
 ## Boundary
 
 This excursion clears the stale "feed absent" blocker and advances G1 from discovery to live read-only binding.

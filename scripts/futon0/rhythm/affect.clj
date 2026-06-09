@@ -18,14 +18,19 @@
 (def ^:private default-output
   (path (home) "code/storage/futon0/vitality/affect.jsonl"))
 
+(def ^:private default-wm-summary-output
+  (path (home) "code/futon2/web/war-machine/resources/public/data/affect-events.json"))
+
 (def ^:private default-evidence-url
   (or (System/getenv "FUTON3C_EVIDENCE_URL")
       "http://localhost:7070/api/alpha/evidence"))
 
 (def ^:private default-lookback-hours 24)
 (def ^:private default-lookahead-minutes 10)
+(def ^:private default-overlap-minutes 15)
 (def ^:private default-novelty-days 30)
 (def ^:private default-max-pending 100)
+(def ^:private default-summary-limit 8)
 (def ^:private default-emotion-lexicon
   (path (home) "code/futon0/data/sentiment_emotion_lexicon.edn"))
 
@@ -74,6 +79,9 @@
 
 (def ^:private false-positive-tokens
   #{"please" "pleas" "interesting" "interest"})
+
+(def ^:private arrow-witness-markers
+  #{"activation" "inspiration" "joy" "recognition" "regulation" "social"})
 
 (def ^:private negation-tokens
   #{"not" "no" "never" "without" "hardly" "barely" "isn't" "isnt" "aren't"
@@ -167,6 +175,13 @@
     "  --max-transitions <n>     Trim emitted transitions"
     "  --max-terms <n>           Trim terms per transition"
     "  --output <path>           Output JSONL (default affect.jsonl)"
+    "  --incremental             Append only unseen transition ids"
+    "  --overlap-minutes <n>     Incremental fetch overlap (default 15)"
+    "  --refresh-wm-summary      Refresh WM affect-events.json from output"
+    "  --wm-summary-output <p>   WM summary JSON path"
+    "  --summary-limit <n>       Recent rows in WM summary (default 8)"
+    "  --live                    Per-turn runner: --write --append"
+    "                            --incremental --refresh-wm-summary"
     "  --append                  Append to output instead of overwrite"
     "  --write                   Write JSONL to output path"
     "  --help                    Show this help"
@@ -177,10 +192,13 @@
          opts {:evidence-url default-evidence-url
                :lookback-hours default-lookback-hours
                :lookahead-minutes default-lookahead-minutes
+               :overlap-minutes default-overlap-minutes
                :novelty-days default-novelty-days
                :limit 1000
                :max-pending default-max-pending
-               :output default-output}]
+               :output default-output
+               :wm-summary-output default-wm-summary-output
+               :summary-limit default-summary-limit}]
     (if (empty? args)
       opts
       (let [arg (first args)]
@@ -199,6 +217,16 @@
           (= "--max-transitions" arg) (recur (nnext args) (assoc opts :max-transitions (parse-long-safe (second args))))
           (= "--max-terms" arg) (recur (nnext args) (assoc opts :max-terms (parse-long-safe (second args))))
           (= "--output" arg) (recur (nnext args) (assoc opts :output (second args)))
+          (= "--incremental" arg) (recur (rest args) (assoc opts :incremental? true))
+          (= "--overlap-minutes" arg) (recur (nnext args) (assoc opts :overlap-minutes (parse-long-safe (second args))))
+          (= "--refresh-wm-summary" arg) (recur (rest args) (assoc opts :refresh-wm-summary? true))
+          (= "--wm-summary-output" arg) (recur (nnext args) (assoc opts :wm-summary-output (second args)))
+          (= "--summary-limit" arg) (recur (nnext args) (assoc opts :summary-limit (parse-long-safe (second args))))
+          (= "--live" arg) (recur (rest args) (assoc opts
+                                                     :write? true
+                                                     :append? true
+                                                     :incremental? true
+                                                     :refresh-wm-summary? true))
           (= "--append" arg) (recur (rest args) (assoc opts :append? true))
           (= "--write" arg) (recur (rest args) (assoc opts :write? true))
           (= "--help" arg) (recur (rest args) (assoc opts :help? true))
@@ -536,6 +564,100 @@
       (json/write row w)
       (.write w "\n"))))
 
+(defn- load-affect-rows [file]
+  (let [f (io/file file)]
+    (if (.exists f)
+      (load-jsonl-file file)
+      [])))
+
+(defn- transition-key [row]
+  (or (:transition_id row)
+      (:transition-id row)))
+
+(defn- existing-transition-ids [file]
+  (->> (load-affect-rows file)
+       (keep transition-key)
+       set))
+
+(defn- latest-transition-ts [file]
+  (->> (load-affect-rows file)
+       (keep (comp parse-ts :timestamp))
+       sort
+       last))
+
+(defn- incremental-since [output overlap-minutes]
+  (when-let [latest (latest-transition-ts output)]
+    (str (.minusSeconds latest (* 60 (long (or overlap-minutes default-overlap-minutes)))))))
+
+(defn- prepare-incremental-opts [{:keys [incremental? since output overlap-minutes] :as opts}]
+  (if (and incremental? (nil? since))
+    (if-let [since* (incremental-since output overlap-minutes)]
+      (assoc opts :since since*)
+      opts)
+    opts))
+
+(defn- filter-new-transitions [existing-ids rows]
+  (->> rows
+       (remove #(contains? existing-ids (transition-key %)))
+       vec))
+
+(defn- arrow-candidate? [row]
+  (and (contains? arrow-witness-markers (:marker row))
+       (>= (double (or (:value row) 0.0)) 0.6)))
+
+(defn- excerpt [text limit]
+  (let [text (str/trim (str/replace (or text "") #"\s+" " "))
+        limit (long (or limit 260))]
+    (if (> (count text) limit)
+      (subs text 0 limit)
+      text)))
+
+(defn- slim-summary-row [row]
+  {:transition_id (transition-key row)
+   :session_id (:session_id row)
+   :source (:source row)
+   :author (:author row)
+   :timestamp (:timestamp row)
+   :marker (:marker row)
+   :value (:value row)
+   :event_type (:event-type row)
+   :candidate (arrow-candidate? row)
+   :trigger_excerpt (excerpt (:trigger_text row) 260)})
+
+(defn- marker-counts [rows]
+  (->> rows
+       (group-by :marker)
+       (map (fn [[marker xs]]
+              {:marker marker :count (count xs)}))
+       (sort-by :marker)
+       vec))
+
+(defn affect-summary
+  "Return the compact JSON shape consumed by the WM Affect Events pane."
+  [rows {:keys [output summary-limit generated-at]}]
+  (let [rows (vec rows)
+        candidates (filter arrow-candidate? rows)
+        latest-candidate (last (sort-by :timestamp candidates))
+        recent (->> rows
+                    (sort-by :timestamp)
+                    reverse
+                    (take (long (or summary-limit default-summary-limit)))
+                    (mapv slim-summary-row))]
+    {:generated_at (or generated-at (str (Instant/now)))
+     :affect_path output
+     :events_loaded (count rows)
+     :candidate_events (count candidates)
+     :marker_counts (marker-counts rows)
+     :latest_candidate (some-> latest-candidate slim-summary-row)
+     :recent recent}))
+
+(defn refresh-wm-summary! [summary-output rows opts]
+  (let [out (io/file summary-output)]
+    (when-let [parent (.getParentFile out)]
+      (.mkdirs parent))
+    (spit out (str (json/write-str (affect-summary rows opts)) "\n"))
+    (.getAbsolutePath out)))
+
 (defn- load-evidence-entries [opts]
   (let [{:keys [entries-file evidence-url]} opts]
     (cond
@@ -546,7 +668,10 @@
                             {:hint "--entries-file or --evidence-url"})))))
 
 (defn -main [& args]
-  (let [{:keys [output write? append? help?] :as opts} (parse-args args)]
+  (let [{:keys [help?] :as parsed-opts} (parse-args args)
+        {:keys [output write? append? incremental? refresh-wm-summary?
+                wm-summary-output]
+         :as opts} (prepare-incremental-opts parsed-opts)]
     (when help?
       (println (usage))
       (System/exit 0))
@@ -562,12 +687,25 @@
           flush-ts (.plusSeconds (Instant/now) (* 60 (long (:lookahead-minutes opts))))
           [_ flushed] (flush-all-expired state flush-ts)
           transitions (-> (into transitions flushed)
-                          (trim-transitions opts))]
+                          (trim-transitions opts))
+          existing-ids (when incremental?
+                         (existing-transition-ids output))
+          write-transitions (if incremental?
+                              (filter-new-transitions existing-ids transitions)
+                              transitions)]
       (if write?
         (let [out (io/file output)]
           (.mkdirs (.getParentFile out))
-          (write-jsonl out transitions append?)
+          (write-jsonl out write-transitions (or append? incremental?))
           (println "wrote:" (.getAbsolutePath out))
-          (println "entries:" (count entries) "turns:" (count activities) "transitions:" (count transitions)))
+          (println "entries:" (count entries)
+                   "turns:" (count activities)
+                   "transitions:" (count transitions)
+                   "new:" (count write-transitions))
+          (when refresh-wm-summary?
+            (let [summary-path (refresh-wm-summary! wm-summary-output
+                                                    (load-affect-rows output)
+                                                    opts)]
+              (println "wm-summary:" summary-path))))
         (doseq [entry transitions]
           (println (json/write-str entry)))))))
