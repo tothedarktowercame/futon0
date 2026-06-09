@@ -1192,16 +1192,33 @@ overnight learner. Successful closure means:
 1. **Machine-readable graph exists and is consumed.** The graph has the mission/capability split, typed edges,
    ascent goal, held/satisfied status, and `:pre-witness` candidate specs for the on-ascent held caps; the live WM
    ranking path consumes the graph + pre-registered goal rather than a flat mission list.
-2. **Production-faithful C3 remains green.** With production guardrails filtering before EFE, the top ranked action
+2. **The star-map is visible in the WM/WebArxana surface.** Joe can inspect a Khan-Academy-style capability map
+   showing satisfied/held/frontier progress, prerequisite edges, on-ascent held nodes, and witness affordances.
+   A pure data artifact is not enough; the map must be operator-visible.
+3. **Production-faithful C3 remains green.** With production guardrails filtering before EFE, the top ranked action
    is an applicable single-cycle leaf, and unsafe pursuit / unagreed operator-exit actions do not reach ranking.
-3. **Keystone honesty is explicit.** `:efe-trustworthy-over-starmap` has its witness shape, remains distinct from
+4. **Keystone honesty is explicit.** `:efe-trustworthy-over-starmap` has its witness shape, remains distinct from
    `:wm-overnight-unsupervised`, and is not marked satisfied until the named witness run actually attests it.
-4. **Known residuals are routed, not smuggled into closure.** Full-C / field simulator, G1 reward rigor,
+5. **Known residuals are routed, not smuggled into closure.** Full-C / field simulator, G1 reward rigor,
    path-refining decompose, body/gap precision tuning, VSATARCS regen, FutonZero-generative, and the
    M-hypergraph-operator fold-or-keep ruling are named follow-ons unless Joe explicitly makes one a close gate.
 
 Non-closure: the overnight unsupervised run itself, living hole-discovery from turns, and the generative FutonZero
 learner are downstream consumers of the map; requiring them here would turn this mission into the whole stack.
+
+### Salted follow-ons — not closure gates unless promoted
+
+- **M-futonzero-generative:** likely a new mission. Charter HEAD/IDENTIFY from M-futonzero-capability §22; realization
+  remains gated on field-simulator adequacy and reward anti-laundering.
+- **M-hypergraph-operator fold-or-keep:** update the existing mission with the partial-fold ruling: fold the
+  operational-loop half into the already-realized WM; keep the JSDQ person-facing capability model distinct.
+- **D2 / full-C:** stays in M-mission-scopes-into-substrate-2 and claude-3's lane; eventual transition retires the
+  additive gap-term only after both-live gating.
+- **G1 arrow-binding:** stays in M-pudding-peradams / peradam work; specify the read-only resolver over the affect
+  feed, but do not make reward-rigor a star-map close condition.
+- **EFE precision hardening:** body-term exact-one-hole preference, gap/ascent tuning, and path-refining decompose
+  stay as E-efe-education / E-efe-trustworthy-over-starmap follow-ons unless a regression breaks C3.
+- **VSATARCS regen:** documentation debt; important for discoverability, not the build-map mechanism itself.
 
 ---
 
