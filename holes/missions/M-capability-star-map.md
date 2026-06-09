@@ -1163,18 +1163,19 @@ operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf
   operator".
 
 **⛓ Gated (blocker named)**
-- **§1.1 marking-rule into the live EFE — THE STANDOUT FINDING.** Reading `futon2/src/futon2/aif/efe.clj`: **both
-  terms are already live** — `:G-ascent-progress` (weight **20.0**, the marking-rule, a credit inside
-  `:G-graph-pragmatic`) and `:G-gap` (weight **6.0**, the cursor-pressure) — **both already summed into
-  `:G-total`**. So **no new EFE term is needed.** *Hypothesis* for the live "cursor #1" symptom: the live WM caller
-  passes `:mission-gap-view` but **OMITS `:capability-graph`/`:pre-registered-goal`** from the opts → graph-terms
-  are 0 → only `:G-gap` ranks. If true, the keystone-wiring is a **one-line opts fix** (thread the graph + goal in),
-  not a new mechanism. Gated on (a) confirming the live call-site (unverified — the clean first move next cycle),
-  (b) Joe's consent (live EFE). Ready prep: **harder POC v2** — call the REAL `compute-efe` (not a boolean
-  re-impl) over three candidates (on-ascent foil · the gap-ranked cursor · a NEW *off-ascent-but-mints-something*
-  foil, defeating v1's near-trivial nil case) and **characterize the win-margin** (the gap-weight at which the
-  cursor would win — that margin IS the trustworthiness claim's content). *warrant: logic-model-before-code +
-  subsumption-claim.*
+- **§1.1 marking-rule into the live EFE — ⚠ HYPOTHESIS CORRECTED 2026-06-09 (live check refuted it).** Two parts
+  of the original finding stand: **both** `:G-ascent-progress` and `:G-gap` are already live and summed into
+  `:G-total`, and **no new EFE term is needed.** But pilot #1's *hypothesis* — that the live caller **OMITS**
+  `:capability-graph`/`:pre-registered-goal` from opts (so only `:G-gap` ranks) — was **REFUTED on the live
+  judgement**: `:opts-have-graph? true`, and the marking-rule *is* firing (`ascent-progress 0.5`). The real bug
+  is **not a missing graph** and **not a one-line opts fix**. It is two coupled defects in `graph-efe-terms`:
+  **(a) off-map escape hatch** (off-graph actions score a flat `0`, so off-map work is free while on-map work is
+  taxed — top-12 ranked actions all off-map, first on-map mission at rank 83/88), and **(b) body-penalty
+  granularity** (`body = weight × total-open-hole-count` penalizes a whole mission as if done in one step, burying
+  the two `ascent>0` missions at +20/+21 — the single-step-vs-policy confusion in miniature). **→ Full diagnosis,
+  the demonstrated fix (off-map penalty ~4 + leaf-aware body → on-ascent mission #1, cursor → rank 9), and the
+  policy-layer charter now live in [[M-wm-policies]] (`futon2/holes/M-wm-policies.md`) §2–3.** Lesson:
+  verify-before-claim earned its keep — the unverified call-site hypothesis was the wrong tree.
 - **§3 D2 / full-C** — gated (full-C not yet computed over substrate-2; claude-3's lane). Move: post claude-3 the
   both-live-gate readiness checklist. *warrant: the transition-guard / subsumption-claim.*
 - **§4 G1 arrow-binding** — updated by **E-affect-live** (codex-4, 2026-06-09). The stale blocker was too strong:
@@ -1188,8 +1189,9 @@ operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf
 
 **Meta:** the fan-out demonstrated E-warranted-play's explore pole **at scale** — 6 honest warranted moves (3 ready,
 3 gated-with-real-blockers, incl. a genuine diagnostic on §1) in one ~100s parallel sweep, propose-only, zero live
-contact. The overnight-run shape, run now. Highest-leverage next: **confirm §1's call-site hypothesis** — it may
-collapse the keystone-wiring to a one-line opts fix.
+contact. The overnight-run shape, run now. Highest-leverage next (UPDATED 2026-06-09): §1's call-site hypothesis
+was *checked and refuted* live; the real keystone-wiring bug (off-map escape + body granularity) and its fix now
+live in [[M-wm-policies]] — Track 1 is the ready cleanup, Track 2 the policy layer.
 
 ### Closure proposal — what would close M-capability-star-map itself
 
