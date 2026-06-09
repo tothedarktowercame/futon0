@@ -141,14 +141,15 @@
    :region :t3},
   :hypergraph-operator
   {:title
-   "Hypergraph operator — operator over hypergraph structures; currently design material, not shipped operator",
+   "JSDQ hypergraph operator — person-facing 8-sector/39-item capability model over Joe's market-interface topology",
    :status :held,
    :scope [],
    :minted-by ["M-hypergraph-operator"],
    :pre-registered? true,
    :frontier true,
    :region :t5,
-   :grounding "M-hypergraph-operator design material only"},
+   :grounding
+   "M-hypergraph-operator partial-fold ruling: generic operational loop folded into WM/capability-star-map/pudding-prover; JSDQ person-facing operator remains unbuilt"},
   :interest-network-apparatus
   {:title
    "Interest-network apparatus — bipartite essays × interest-territories graph, forward-pass, edit-proposal, and WebArxana render path",
