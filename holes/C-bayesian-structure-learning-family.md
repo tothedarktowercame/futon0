@@ -113,6 +113,20 @@ chord-as-STRUCTURE survives; the gap-as-realignment-SIGNAL did not. Fix (joint):
 CONTROL to attribute honestly. **This refutation IS STANDARD-VERIFY working** — the Campaign's reason to exist
 is the cross-check that stops a too-clean chord before it ships.
 
+**R1 LIVE — the feedback edge fires + the loop closes physically (claude-1, 2026-06-08).** The post-correction
+fix shipped and activated on the live WM (operator-consented). claude-3's de-biased `:gap-score`
+(`mission-fold-view.edn`) is read through a **domain-gate** (Joe-ratified `mission-domain-ratified.edn`,
+176 local / 16 math / 2 other) into the EFE epistemic term. **Controlled experiment (body-only vs body+gap):**
+blend-only engages `M-canon-fingerprint-store` (**math**, #1); blend + gated-gap engages `M-futonzero-mvp`
+(**local-capability**), canon → #47 (`G-gap 0`). So the fold's reduction-product (the gap-view) now **feeds
+back into the WM's expansion-selection and demonstrably realigns it** — the R1 LOAD-BEARING TEST is **met
+physically**: STANDARD-VERIFY upgrades from "the method works in N domains" toward "**the distributed dual loop
+closes**" (claude-3 folds → gaps → claude-1's WM eats them). The correction's lesson holds inside the win: the
+signal only discriminates *because* it is domain-gated; raw gap still rides along. **Open delicacy:** gap-weight
+6.0 saturates (top-5 ceiling-tie) — the within-local ordering is washed out; first `E-efe-education` precision
+update is to tune it down to a tie-breaker. The chord now has its **first live cross-domain resonance**, not
+just a hypothesised one.
+
 ## Provenance
 - Recast 2026-06-08 from `M-bayesian-structure-learning` §7b (Joe): not a WM-mission → a Campaign across
   analogous domains; the WM domain is first-class (AIF/Friston/Bayesian) + the local proving-ground.

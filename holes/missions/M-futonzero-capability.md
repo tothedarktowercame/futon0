@@ -1375,3 +1375,43 @@ Each namespace has a docstring referencing its invariant, pattern, and theory:
 - Docbook entries browsable via `M-x arxana-browse`
 
 **Mission status: COMPLETE**
+
+## 22. Checkpoint 8 — the GENERATIVE counterpart: AlphaZero "one more time," any domain (Joe + claude-1, 2026-06-08)
+
+**The connection (Joe):** the WM-EFE-as-policy thread (this session) is *FutonZero all over again* — the same
+from-zero, domain-agnostic capability thesis, now **generative** (bootstrapping capability) rather than only
+**monitoring** it. This mission (the monitor) *measures* capability trajectories; its generative sibling *builds*
+them by applying the **AlphaZero move — no training data, self-play bootstrapping — one more time, to *any* domain.**
+
+**The mapping (AlphaZero → the WM; components mostly sketched/built this session):**
+- **self-play** = the WM's warranted-try **play-outs** ([[E-warranted-play]]) over the capability landscape.
+- **reward** = the **Dokusan / peradam** ([[M-pudding-peradams]] §13–15) — did the play-out land a *fruit* / clear a
+  level? The fruit-witness is the win-signal.
+- **policy network** = the **pattern library** — a flexiarg *is* a policy ("in situations of type X, do Y"); the
+  policy-layer proposes which patterns apply (patterns are policies, not one-shot hammers — the `staleness-scan`
+  misuse was a policy swung once).
+- **value network / forward model** = **EFE over play-outs** toward the goal-marking (the marking-rule = the
+  preference). Canonical active inference computes `G(π)` over *policies* (sequences); the WM's current one-priority
+  is the **degenerate one-step case**.
+- **"start 1–2 ply, learn more" (Joe)** = AlphaZero value-bootstrapping: a *shallow* play-out now, the **field-
+  simulator learned from accumulated play-out→outcome data** (the evidence log). Depth is *earned*, not assumed.
+
+**Why it's *FutonZero*:** from-zero (no pre-labeled corpus — it learns from its OWN attested play), domain-agnostic
+(any domain, not boardgames). And the Sen distinction at this mission's core **is** the learning signal: a one-off
+play-out that clears a level = a **functioning**; a *learned* policy that clears that class repeatably = a
+**capability** (the persistent freedom to achieve, §2.1). So the learner's objective — turn functionings into
+capabilities — is exactly §2.1, optimized. The monitor reads the trajectory; the learner generates it; one thesis,
+two halves.
+
+**Honest framing (the shape is right; the realization is gated):** AlphaZero has a *perfect* simulator (game rules)
+and a *clean* win/loss reward. The WM has neither yet — the **field-simulator is the open hard part** (the
+regulator's "no fabricated dynamics"; substrate-2 / `M-mission-scopes-into-substrate-2` is building the field it
+would roll over), and the **reward must stay rigorous** (the peradam three-witness + anti-laundering *is* that rigor
+— a launderable reward makes self-play diverge, the same way the certifier laundering its own routes would have).
+So the AlphaZero *shape* is the destination; its *depth* is bounded by (i) how well the field-simulator can be
+learned and (ii) how anti-laundered the reward stays — both in progress. Strikingly, **most of this session's work
+turns out to be the components of that domain-general self-bootstrapping learner.**
+
+**Disposition:** a forward-pointing connection on the COMPLETE monitor — likely spawns its own mission (the
+generative FutonZero / the self-bootstrapping WM-learner). The monitor stays complete; this names the generative
+sibling and the components already in hand. Operator's call whether/when to charter it.

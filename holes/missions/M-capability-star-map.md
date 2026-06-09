@@ -1049,6 +1049,29 @@ attribute the realignment honestly. **Architecture:** ascent = local-vs-domain s
 expansion-refiner; body = boundedness. The chord-as-STRUCTURE (reduction↔expansion coupling) stands; the
 gap-as-realignment-SIGNAL did not survive the cross-check.
 
+### ACTIVATION verdict — gap-reader live on the WM, controlled experiment (claude-1, 2026-06-08)
+Operator consent given ("let's activate and test it out on the WM"). Merged the gap-reader + domain-gate to
+`futon2` main (`ad46dd8`), reloaded efe + report via Drawbridge, reset the three caches so the now-ratified
+domain file (`mission-domain-ratified.edn`, **176 local / 16 math / 2 other**, Joe's Reading-B rulings) is read.
+**Controlled experiment (body-only vs body+gap, same everything else):**
+- **Baseline (blend-only):** engages `M-canon-fingerprint-store` (**math**), which sits at **#1**. The mis-steer.
+- **Blend + domain-gated gap:** engages **`M-futonzero-mvp`** (**local-capability**); the whole top-8 is local;
+  canon-math falls to **#47** (`G-gap 0.0`), distributed-frontiermath to **#68**. Gate is clean — every
+  gap-bearing mission is `:local-capability`; every `:math` mission gets `G-gap 0` and sinks.
+**Verdict: the realignment IS the gap-reader — but only once domain-GATED.** This resolves the STANDARD-VERIFY
+correction above: raw gap "rode along" (size-dominated, domain-blind), but gap *gated to the ratified local
+partition* is exactly the lever that lifts local-capability over math — the body-term alone left canon at #1.
+Architecture confirmed: **ascent = local-vs-domain selector · gap (gated) = within-local expansion-refiner ·
+body = boundedness** — with the ratified domain-gate as the discriminator the raw gap-score lacked.
+**Honest caveat — the delicacy is too hot.** `gap-weight 6.0` **saturates**: the top **5** missions tie at the
+ceiling (`G-gap 6.0`, gap-score maxed at 1.0), so the engaged `M-futonzero-mvp` is merely *first of a 5-way
+tie* (a designed false-floor tie, [[reference_wm_g_ties_false_floor]], but here the gap has washed out the
+ascent/body ordering at the very top). The gap currently **over-discriminates at the domain boundary** (good —
+math sinks) and **under-discriminates within local** (ascent/body swamped). **Next precision update
+(`E-efe-education`):** drop gap-weight to ~2–3 so gap is a *domain tie-breaker* (canon stays sunk) not a
+*within-local flattener* (ascent/body should order the top, gap nudges). This is the first concrete
+precision-error the live system handed us — the chaos-tuning loop's first datum.
+
 ---
 
 ## Provenance
