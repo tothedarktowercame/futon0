@@ -1,11 +1,13 @@
 (ns futon0.rhythm.affect
   (:require [clojure.data.json :as json]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.java.shell :as shell]
             [clojure.string :as str])
   (:import (java.net URI URLEncoder)
            (java.net.http HttpClient HttpRequest HttpResponse$BodyHandlers)
-           (java.time Instant)))
+           (java.time Instant)
+           (java.util.regex Pattern)))
 
 (defn- home []
   (System/getProperty "user.home"))
@@ -24,6 +26,8 @@
 (def ^:private default-lookahead-minutes 10)
 (def ^:private default-novelty-days 30)
 (def ^:private default-max-pending 100)
+(def ^:private default-emotion-lexicon
+  (path (home) "code/futon0/data/sentiment_emotion_lexicon.edn"))
 
 (def ^:private affect-intents
   {:activation {:keywords #{"agitat" "amp" "anger" "angry" "annoy" "driv"
@@ -67,6 +71,60 @@
                         "seen" "secure" "support" "unseen" "valued"}}
    :regulation {:keywords #{"agitat" "balance" "calm" "equanim" "ground"
                             "overstimul" "restless" "settled" "unbalance"}}})
+
+(def ^:private false-positive-tokens
+  #{"please" "pleas" "interesting" "interest"})
+
+(def ^:private negation-tokens
+  #{"not" "no" "never" "without" "hardly" "barely" "isn't" "isnt" "aren't"
+    "arent" "wasn't" "wasnt" "weren't" "werent" "don't" "dont" "doesn't"
+    "doesnt" "didn't" "didnt" "can't" "cant" "cannot" "won't" "wont"})
+
+(def ^:private morphology-suffixes
+  #{"s" "es" "ed" "er" "ers" "ing" "ion" "ions" "ive" "ively" "ment"
+    "ments" "ness" "ful" "fully" "ous" "ously" "ity" "ities"})
+
+(def ^:private default-event-intents
+  {:inspiration
+   {:event-type :inspiration
+    :keywords #{"inspire" "inspired" "inspiring" "spark" "sparks" "sparked"
+                "generative" "proposal" "propose" "idea" "extension"
+                "extends" "opens"}
+    :phrases #{"new proposal" "new idea" "generative spark" "this inspires"
+               "that inspires" "opens a new" "suggests a new"
+               "inspired a new" "inspired me to"}}
+   :recognition
+   {:event-type :recognition
+    :keywords #{"accept" "accepted" "affirm" "affirmed" "confirm" "confirmed"
+                "recognise" "recognize" "recognized" "yes" "right"
+                "correct" "exactly" "solid"}
+    :phrases #{"that's right" "that is right" "yes exactly" "looks right"
+               "this works" "i accept" "i agree" "good catch"
+               "solid work" "that lands"}}})
+
+(defn- coerce-lexicon-set [xs]
+  (->> xs (map (comp str/lower-case str)) (remove str/blank?) set))
+
+(defn- normalize-event-intent [[k {:keys [event-type keywords phrases]}]]
+  [k {:event-type (or event-type k)
+      :keywords (coerce-lexicon-set (or keywords []))
+      :phrases (coerce-lexicon-set (or phrases []))}])
+
+(defn load-event-intents
+  "Load the curated classical affect-event lexicon.
+   G2 bound: this detector reads turn text. Resistance to authored/performed
+   affect is out of scope for this classical layer."
+  ([] (load-event-intents default-emotion-lexicon))
+  ([file]
+   (let [f (io/file file)]
+     (if (.exists f)
+       (->> (edn/read-string (slurp f))
+            (map normalize-event-intent)
+            (into {}))
+       default-event-intents))))
+
+(def ^:private event-intents
+  (delay (merge default-event-intents (load-event-intents))))
 
 (defn- trim-base [s]
   (some-> s str/trim (str/replace #"/+$" "")))
@@ -162,36 +220,71 @@
        (map #(str/lower-case (apply str %)))
        vec))
 
-(defn- matches-stem? [stem token]
-  (cond
-    (= stem token) true
-    (<= (count stem) 3) false
-    :else (str/starts-with? token stem)))
+(defn- token-negated? [tokens idx]
+  (let [start (max 0 (- idx 3))]
+    (boolean
+     (some negation-tokens (subvec (vec tokens) start idx)))))
 
-(defn- phrase-matches [phrases lower-text]
-  (reduce (fn [acc phrase]
-            (if (str/includes? lower-text (str/lower-case phrase))
-              (inc acc)
-              acc))
-          0
-          phrases))
+(defn- keyword-matches-token? [keyword token]
+  (let [keyword (str/lower-case keyword)
+        token (str/lower-case token)]
+    (and (not (false-positive-tokens token))
+         (or (= keyword token)
+             (and (> (count keyword) 3)
+                  (str/starts-with? token keyword)
+                  (contains? morphology-suffixes (subs token (count keyword))))))))
 
-(defn- detect-affect [text]
+(defn- token-keyword-match [keywords tokens idx]
+  (let [token (nth tokens idx)]
+    (when (and (not (token-negated? tokens idx))
+               (some #(keyword-matches-token? % token) keywords))
+      token)))
+
+(defn- phrase-negated? [tokens phrase]
+  (let [words (tokenize phrase)
+        n (count words)]
+    (boolean
+     (some (fn [i]
+             (and (= words (subvec (vec tokens) i (+ i n)))
+                  (token-negated? tokens i)))
+           (range 0 (inc (- (count tokens) n)))))))
+
+(defn- phrase-match? [phrase lower-text tokens]
+  (let [pattern (re-pattern (str "(?iu)(?<![\\p{L}\\p{Nd}_])"
+                                 (Pattern/quote (str/lower-case phrase))
+                                 "(?![\\p{L}\\p{Nd}_])"))]
+    (and (re-find pattern lower-text)
+         (not (phrase-negated? tokens phrase)))))
+
+(defn- phrase-matches [phrases lower-text tokens]
+  (->> phrases
+       (filter #(phrase-match? % lower-text tokens))
+       count))
+
+(defn detect-affect
+  "Detect one classical affect/event marker in TEXT, or nil.
+   This is deliberately lexical and text-bound; authored/performed-affect
+   resistance is out of scope for the classical layer."
+  [text]
   (let [tokens (tokenize text)
-        lower (str/lower-case (or text ""))]
-    (->> affect-intents
+        lower (str/lower-case (or text ""))
+        intents (merge (into {} (map (fn [[k v]]
+                                        [k (assoc v :event-type :affect-intent)])
+                                      affect-intents))
+                       @event-intents)]
+    (->> intents
          (keep (fn [[intent {:keys [keywords phrases]}]]
-                 (let [kw-matches (reduce (fn [acc token]
-                                            (if (some #(matches-stem? % token) keywords)
-                                              (inc acc)
-                                              acc))
-                                          0
-                                          tokens)
-                       phrase-count (phrase-matches (or phrases #{}) lower)
+                 (let [kw-triggers (keep-indexed (fn [idx _]
+                                                   (token-keyword-match keywords tokens idx))
+                                                 tokens)
+                       phrase-count (phrase-matches (or phrases #{}) lower tokens)
+                       kw-matches (count kw-triggers)
                        total (+ kw-matches phrase-count)]
                    (when (pos? total)
                      {:type intent
+                      :event-type (get-in intents [intent :event-type] :affect-intent)
                       :matches total
+                      :triggers (vec kw-triggers)
                       :conf (double (min 0.95 (+ 0.55 (* 0.07 total))))}))))
          (sort-by (juxt :matches :conf :type))
          last)))
@@ -228,6 +321,7 @@
         transitions (mapv (fn [{:keys [affect terms event-id session-id author text ts]}]
                             {:timestamp (str ts)
                              :marker (name (:type affect))
+                             :event-type (name (:event-type affect))
                              :value (double (:conf affect))
                              :source "futon3c/evidence-affect-scan"
                              :transition_id event-id
@@ -323,7 +417,7 @@
       since (conj (str "--since=" since))
       until (conj (str "--until=" until))
       author (conj (str "--author=" author))
-      limit (conj (str (format "-n%d" (long limit)))))))
+      limit (conj (format "-n%d" (long limit))))))
 
 (defn- git-commit->entry [repo-root line]
   (let [[hash ts author subject body] (str/split line #"\t" 5)

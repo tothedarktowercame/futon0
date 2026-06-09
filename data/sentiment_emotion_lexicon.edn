@@ -1,0 +1,21 @@
+;; Classical affect-event lexicon.
+;;
+;; This is intentionally small and auditable. It detects text-bound events in
+;; Joe/operator turns; resistance to authored/performed affect is out of scope
+;; for this classical layer.
+{:inspiration
+ {:event-type :inspiration
+  :keywords ["inspire" "inspired" "inspiring" "spark" "sparked" "generative"
+             "proposal" "propose" "idea" "extension" "extends" "opens"]
+  :phrases ["new proposal" "new idea" "generative spark" "this inspires"
+            "that inspires" "opens a new" "suggests a new" "inspired a new"
+            "inspired me to"]}
+
+ :recognition
+ {:event-type :recognition
+  :keywords ["accept" "accepted" "affirm" "affirmed" "confirm" "confirmed"
+             "recognise" "recognize" "recognized" "yes" "right" "correct"
+             "exactly" "solid"]
+  :phrases ["that's right" "that is right" "yes exactly" "looks right"
+            "this works" "i accept" "i agree" "good catch" "solid work"
+            "that lands"]}}
