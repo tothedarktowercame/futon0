@@ -1132,8 +1132,9 @@ A long session resolved the WM into an **AlphaZero-shaped active-inference loop*
 
 ### 7. LOOSE THREADS
 - **M-hypergraph-operator** — **partial-fold ruling landed** (codex-4, 2026-06-09): fold the generic
-  operational-loop half into WM/capability-star-map/pudding-prover; keep the JSDQ 8-sector/39-item person-facing
-  capability operator as a distinct unbuilt mission target.
+  operational-loop half as superseded by WM/capability-star-map/pudding-prover (not built as the futon5a
+  pocketwatch); keep the JSDQ 8-sector/39-item person-facing capability operator as a distinct unbuilt mission
+  target.
 - **futon5 `warranted-play/2026-06-08-wiring`** — the pattern-backed wiring (committed, **unmerged**).
 - **Campaign-BSL math/superpod instance** (Rob) — awaiting the local proving-ground.
 - **VSATARCS regen** (standing DI-3 doc actionable).
@@ -1155,9 +1156,10 @@ operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf
   [[M-futonzero-capability]] §22; two hard gates = field-simulator adequacy + reward anti-laundering). Charter
   dispatchable now; realization gated.
 - **§7 M-hypergraph-operator fold-or-keep** — *warrant: subsumption-claim discipline.* Both-live verification → a
-  **partial-fold** ruling: fold the operational-loop half into the WM (already-realized) · **KEEP** the JSDQ
-  person-facing capability model as a distinct unbuilt mission. **Dispatched 2026-06-09 (codex-4):** ruling added
-  to `futon5a/holes/missions/M-hypergraph-operator.md`; star-map node narrowed to "JSDQ hypergraph operator".
+  **partial-fold** ruling: mark the operational-loop half as superseded by the WM/Pudding surfaces · **KEEP** the
+  JSDQ person-facing capability model as a distinct unbuilt mission. **Dispatched 2026-06-09 (codex-4):** ruling
+  added to `futon5a/holes/missions/M-hypergraph-operator.md`; star-map node narrowed to "JSDQ hypergraph
+  operator".
 
 **⛓ Gated (blocker named)**
 - **§1.1 marking-rule into the live EFE — THE STANDOUT FINDING.** Reading `futon2/src/futon2/aif/efe.clj`: **both
@@ -1213,7 +1215,8 @@ learner are downstream consumers of the map; requiring them here would turn this
 - **M-futonzero-generative:** likely a new mission. Charter HEAD/IDENTIFY from M-futonzero-capability §22; realization
   remains gated on field-simulator adequacy and reward anti-laundering.
 - **M-hypergraph-operator fold-or-keep:** **done 2026-06-09.** Existing mission now records the partial-fold ruling:
-  operational-loop half folded into the already-realized WM; JSDQ person-facing capability model remains distinct.
+  operational-loop half superseded by WM/Pudding surfaces, not built as the original futon5a pocketwatch; JSDQ
+  person-facing capability model remains distinct.
 - **D2 / full-C:** stays in M-mission-scopes-into-substrate-2 and claude-3's lane; eventual transition retires the
   additive gap-term only after both-live gating.
 - **G1 arrow-binding:** stays in M-pudding-peradams / peradam work; specify the read-only resolver over the affect
