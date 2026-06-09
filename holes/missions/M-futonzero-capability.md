@@ -1412,6 +1412,7 @@ So the AlphaZero *shape* is the destination; its *depth* is bounded by (i) how w
 learned and (ii) how anti-laundered the reward stays — both in progress. Strikingly, **most of this session's work
 turns out to be the components of that domain-general self-bootstrapping learner.**
 
-**Disposition:** a forward-pointing connection on the COMPLETE monitor — likely spawns its own mission (the
-generative FutonZero / the self-bootstrapping WM-learner). The monitor stays complete; this names the generative
-sibling and the components already in hand. Operator's call whether/when to charter it.
+**Disposition:** a forward-pointing connection on the COMPLETE monitor. **Chartered 2026-06-09** as
+[[M-futonzero-generative]] (codex-4): the generative FutonZero / self-bootstrapping WM-learner. The monitor stays
+complete; the generative sibling is a separate HEAD/IDENTIFY mission, explicitly gated on field-simulator adequacy
+and anti-laundered reward rigor.

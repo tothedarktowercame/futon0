@@ -1122,9 +1122,10 @@ A long session resolved the WM into an **AlphaZero-shaped active-inference loop*
   **transformation** (the hybrid shifts — the affect-arrow). Don't cross-wire them (the experiment did, once).
 
 ### 5. THE LEARNER — FutonZero (the destination to charter)
-- **Charter the generative FutonZero** = the self-bootstrapping WM-learner (AlphaZero, no training data, *any*
-  domain). The Sen distinction *is* the objective: turn **functionings** (a kit) into **capabilities** (a learned
-  policy). ⛓ on §3 (simulator) + §4 (reward-rigor). Home: M-futonzero-capability §22.
+- **Charter the generative FutonZero** = **done 2026-06-09** as [[M-futonzero-generative]]: the self-bootstrapping
+  WM-learner (AlphaZero, no training data, *any* domain). The Sen distinction *is* the objective: turn
+  **functionings** into **capabilities**. Realization remains gated on field-simulator adequacy + reward
+  anti-laundering.
 
 ### 6. THE INSTRUMENT — E-possible-world-regulator (follow-ups)
 - **F3** (mission→feature bridge → the sustainability axis); the **ascent-term residual** (graph-only → registry);
@@ -1154,7 +1155,7 @@ operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf
 - **§5 charter the generative FutonZero** — *warrant: futon-theory/baldwin-cycle.* Write the HEAD/IDENTIFY charter
   for a new `M-futonzero-generative` (self-bootstrapping WM-learner; AlphaZero→WM mapping from
   [[M-futonzero-capability]] §22; two hard gates = field-simulator adequacy + reward anti-laundering). Charter
-  dispatchable now; realization gated.
+  **dispatched 2026-06-09 (codex-4)**; realization gated.
 - **§7 M-hypergraph-operator fold-or-keep** — *warrant: subsumption-claim discipline.* Both-live verification → a
   **partial-fold** ruling: mark the operational-loop half as superseded by the WM/Pudding surfaces · **KEEP** the
   JSDQ person-facing capability model as a distinct unbuilt mission. **Dispatched 2026-06-09 (codex-4):** ruling
@@ -1212,8 +1213,8 @@ learner are downstream consumers of the map; requiring them here would turn this
 
 ### Salted follow-ons — not closure gates unless promoted
 
-- **M-futonzero-generative:** likely a new mission. Charter HEAD/IDENTIFY from M-futonzero-capability §22; realization
-  remains gated on field-simulator adequacy and reward anti-laundering.
+- **M-futonzero-generative:** **done 2026-06-09.** New HEAD/IDENTIFY charter exists; realization remains gated on
+  field-simulator adequacy and reward anti-laundering.
 - **M-hypergraph-operator fold-or-keep:** **done 2026-06-09.** Existing mission now records the partial-fold ruling:
   operational-loop half superseded by WM/Pudding surfaces, not built as the original futon5a pocketwatch; JSDQ
   person-facing capability model remains distinct.
