@@ -1135,6 +1135,53 @@ A long session resolved the WM into an **AlphaZero-shaped active-inference loop*
 
 ---
 
+## Checkpoint: Basecamp fan-out — 7 pattern-warranted mini-pilots (Joe + claude-1, 2026-06-09)
+
+Joe's move: run E-warranted-play's explore pole at **fan-out scale** — one pattern-warranted mini-pilot per
+Basecamp thread, in parallel (propose-only envelope: read-only, no live-EFE/JVM, no outward acts, no commits;
+operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf_6ee2f2a9-dc2`). Triaged:
+
+**★ Ready to dispatch now**
+- **§1.2 pre-witness graph wiring** — *warrant: logic-model-before-code.* Add a `:pre-witness` field to the
+  capability-node schema + draft candidate `:pre-witness` specs ("doing X attests C") for the two on-ascent
+  `:held` caps (`:efe-trustworthy-over-starmap`, `:wm-overnight-unsupervised`). Propose-only (graph.edn untouched).
+- **§5 charter the generative FutonZero** — *warrant: futon-theory/baldwin-cycle.* Write the HEAD/IDENTIFY charter
+  for a new `M-futonzero-generative` (self-bootstrapping WM-learner; AlphaZero→WM mapping from
+  [[M-futonzero-capability]] §22; two hard gates = field-simulator adequacy + reward anti-laundering). Charter
+  dispatchable now; realization gated.
+- **§7 M-hypergraph-operator fold-or-keep** — *warrant: subsumption-claim discipline.* Both-live verification → a
+  **partial-fold** ruling: fold the operational-loop half into the WM (already-realized) · **KEEP** the JSDQ
+  person-facing capability model as a distinct unbuilt mission. Operator's ruling.
+
+**⛓ Gated (blocker named)**
+- **§1.1 marking-rule into the live EFE — THE STANDOUT FINDING.** Reading `futon2/src/futon2/aif/efe.clj`: **both
+  terms are already live** — `:G-ascent-progress` (weight **20.0**, the marking-rule, a credit inside
+  `:G-graph-pragmatic`) and `:G-gap` (weight **6.0**, the cursor-pressure) — **both already summed into
+  `:G-total`**. So **no new EFE term is needed.** *Hypothesis* for the live "cursor #1" symptom: the live WM caller
+  passes `:mission-gap-view` but **OMITS `:capability-graph`/`:pre-registered-goal`** from the opts → graph-terms
+  are 0 → only `:G-gap` ranks. If true, the keystone-wiring is a **one-line opts fix** (thread the graph + goal in),
+  not a new mechanism. Gated on (a) confirming the live call-site (unverified — the clean first move next cycle),
+  (b) Joe's consent (live EFE). Ready prep: **harder POC v2** — call the REAL `compute-efe` (not a boolean
+  re-impl) over three candidates (on-ascent foil · the gap-ranked cursor · a NEW *off-ascent-but-mints-something*
+  foil, defeating v1's near-trivial nil case) and **characterize the win-margin** (the gap-weight at which the
+  cursor would win — that margin IS the trustworthiness claim's content). *warrant: logic-model-before-code +
+  subsumption-claim.*
+- **§3 D2 / full-C** — gated (full-C not yet computed over substrate-2; claude-3's lane). Move: post claude-3 the
+  both-live-gate readiness checklist. *warrant: the transition-guard / subsumption-claim.*
+- **§4 G1 arrow-binding** — gated (`affect.jsonl` absent — the affect feed isn't running live). Move: spec a
+  read-only `arrow-witness-for-event` resolver (certify work-event → `:arrow-witness?` by querying the hardened
+  affect feed over the event's turn-window) at the documented `FAST-FOLLOW G1` site. *warrant:
+  guardrails-vs-tooling (the affect feed is fallible tooling, not an invariant).*
+
+**✗ Did not return:** §6 regulator follow-up (the agent didn't emit its structured result; re-run if wanted).
+
+**Meta:** the fan-out demonstrated E-warranted-play's explore pole **at scale** — 6 honest warranted moves (3 ready,
+3 gated-with-real-blockers, incl. a genuine diagnostic on §1) in one ~100s parallel sweep, propose-only, zero live
+contact. The overnight-run shape, run now. Highest-leverage next: **confirm §1's call-site hypothesis** — it may
+collapse the keystone-wiring to a one-line opts fix.
+
+---
+
 ## Provenance
 
 - Operator seed: emacs-repl, 2026-06-07, Joe — "convert the entire mission landscape into a big graph …
