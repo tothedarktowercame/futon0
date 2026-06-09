@@ -44,6 +44,26 @@ It reads `storage/futon0/vitality/affect.jsonl`, fails closed for missing feed /
 event, and returns only an `:arrow-witness?` candidate. It does not call `certify-peradam` and cannot award a
 peradam by itself.
 
+## Per-turn live target
+
+Joe's correction after the first WM pane: this does not need a second `E-affect-autoclock` excursion. The per-turn
+runner is part of **E-affect-live** itself.
+
+The target shape is analogous to `M-autoclock-in`: affect should be observed when a new Evidence Landscape turn
+arrives, not only by a manual batch scan. The live path should:
+
+- detect a newly logged turn or turn-window at the same boundary `M-autoclock-in` uses for reclocking;
+- run the existing futon0/futon3c affect detector over only the new material;
+- append or upsert one normalized JSONL transition per detected affect event;
+- preserve stable `transition_id` / `session_id` / `timestamp` keys so repeated observer runs are idempotent;
+- regenerate the WM `affect-events.json` summary, or replace it with a small live endpoint, so the Affect Events
+  pane tracks the latest turn stream;
+- leave `arrow-witness-for-event` read-only and leave peradam certification gated by labor + fruit + G2.
+
+**Acceptance bar for the live runner:** create two adjacent test turns, run the observer twice, and show that the
+first run writes exactly the new affect rows while the second run writes zero duplicates. Then show WM's Affect
+Events pane changes after the new turn without hand-editing the pane data.
+
 ## Boundary
 
 This excursion clears the stale "feed absent" blocker and advances G1 from discovery to live read-only binding.
