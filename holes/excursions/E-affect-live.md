@@ -70,6 +70,10 @@ filters already-written `transition_id`s, appends only unseen rows, and regenera
 summary from the JSONL stream. The existing batch mode remains available; `--live` is the hook-friendly path for
 `M-autoclock-in`-style invocation after new turns.
 
+**Hook installed:** `futon3c/emacs/agent-chat.el` now calls the runner non-blockingly after a chat-turn evidence
+POST succeeds. The hook is single-flight (`agent-chat--affect-live-process`) so repeated turns do not pile up
+parallel refreshes; it appends the current `--evidence-url` and runs from `/home/joe/code/futon0`.
+
 **Validation:** the regression fixture creates adjacent turns and runs `--live` twice: first run `new: 2`, second
 run `new: 0`. The same check on the real Evidence Landscape appended 19 newly observed rows, refreshed WM to
 104 events / 74 candidates, and an immediate second run returned `new: 0`.
