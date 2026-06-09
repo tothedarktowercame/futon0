@@ -1177,10 +1177,12 @@ operator Dokusans). **6/7 returned warranted next-moves in ~100s** (workflow `wf
   subsumption-claim.*
 - **§3 D2 / full-C** — gated (full-C not yet computed over substrate-2; claude-3's lane). Move: post claude-3 the
   both-live-gate readiness checklist. *warrant: the transition-guard / subsumption-claim.*
-- **§4 G1 arrow-binding** — gated (`affect.jsonl` absent — the affect feed isn't running live). Move: spec a
-  read-only `arrow-witness-for-event` resolver (certify work-event → `:arrow-witness?` by querying the hardened
-  affect feed over the event's turn-window) at the documented `FAST-FOLLOW G1` site. *warrant:
-  guardrails-vs-tooling (the affect feed is fallible tooling, not an invariant).*
+- **§4 G1 arrow-binding** — updated by **E-affect-live** (codex-4, 2026-06-09). The stale blocker was too strong:
+  the affect producer exists and `storage/futon0/vitality/affect.jsonl` has now been materialised from the live
+  Evidence Landscape. `futon7/holes/pudding-prover.bb` also has the read-only `arrow-witness-for-event` resolver
+  at the documented `FAST-FOLLOW G1` site. Remaining work is no longer "find the feed"; it is calibrating/applying
+  the resolver to a specific work-event while preserving G2 (performed-affect) and the out-of-blanket fruit gate.
+  *warrant: guardrails-vs-tooling (the affect feed is fallible tooling, not an invariant).*
 
 **✗ Did not return:** §6 regulator follow-up (the agent didn't emit its structured result; re-run if wanted).
 
