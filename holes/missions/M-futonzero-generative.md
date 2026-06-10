@@ -137,6 +137,36 @@ These can proceed before G-SIM and G-REWARD clear:
 5. **Reward red-team fixture:** cases where a fake win would be tempting, and
    the certifier must reject or route it.
 
+### 4.1 Static rollout ledger
+
+The §4.1 ledger artifact lives at
+`futon0/data/futonzero-rollout-ledger.edn`. It is reconstructed from the
+canonical calibration evidence EDN, not by re-reading the raw calibration
+sources.
+
+Regeneration command-pair:
+
+1. `cd /home/joe/code/futon3c && clojure -M -m futon3c.aif.calibration --emit /home/joe/code/futon0/data/futonzero-calibration-evidence.edn`
+   — canonical reader writes the evidence EDN.
+2. `cd /home/joe/code/futon0 && clojure -M -m futon0.futonzero.rollout-ledger`
+   — futon0 post-process turns that EDN into the §4.1 ledger and §4.4 report
+   artifacts.
+
+The `futon0/data/futonzero-*.edn` artifacts are SNAPSHOTS regenerated at
+charter checkpoints, NOT live; the live calibration view is the canonical
+reader (`futon3c.aif.calibration`).
+
+charter-home governs where the ARTIFACTS live (futon0), not where the AUDIT
+CODE runs (futon3c).
+
+### 4.4 Calibration audit
+
+The §4.4 report artifact lives at
+`futon0/data/futonzero-calibration-report.edn`. It embeds the canonical
+`futon3c.aif.calibration` report and records cross-checks that the futon0 ledger
+entry count, source counts, degeneracy flag, verdict, and witness counts match
+the emitted evidence seam.
+
 ## 5. Exit Criteria for IDENTIFY
 
 - The rollout ledger schema is specified.
