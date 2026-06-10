@@ -1,51 +1,37 @@
 (ns futon0.futonzero.rollout-ledger
   "Read-only static rollout ledger for M-futonzero-generative §4.1/§4.4.
 
-   This is a G-SIM pre-gate artifact: it records prior play-out -> outcome
-   evidence and audits calibration without changing WM behavior, updating any
-   policy, or treating operator approval as proof of fruit. G-REWARD discipline:
-   build discharges, witness discharges, operator gates, and none are distinct."
+   This is a G-SIM pre-gate artifact: futon0 consumes the canonical
+   futon3c.aif.calibration evidence seam and reshapes it into the charter
+   ledger/report artifacts. It does not re-parse the source channels, update
+   WM behavior, update policy, or treat operator approval as proof of fruit."
   (:gen-class)
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [clojure.string :as str]))
 
-(def default-inputs
-  {:traces-dir "/home/joe/code/futon3c/data/repl-traces"
-   :pilots-log "/home/joe/code/futon3c/holes/PILOTS-LOG.md"
-   :closure-folds "/home/joe/code/futon6/holes/closure-folds.edn"
-   :ch2-events "/home/joe/code/futon3a/data/ch2-discharge-events.edn"
-   :discipline-events "/home/joe/code/futon3c/data/discipline-events.edn"})
-
+(def default-evidence-path "data/futonzero-calibration-evidence.edn")
 (def default-ledger-path "data/futonzero-rollout-ledger.edn")
 (def default-report-path "data/futonzero-calibration-report.edn")
 
-(defn- parse-number [x]
-  (cond
-    (number? x) (double x)
-    (string? x) (try (Double/parseDouble (-> x
-                                             (str/replace "−" "-")
-                                             (str/replace #"[,)]$" "")
-                                             str/trim))
-                    (catch Throwable _ nil))
-    :else nil))
-
-(defn- maps-in [x]
-  (filter map? (tree-seq coll? seq x)))
+(def regeneration-doc
+  {:command-pair
+   [{:step :canonical-reader
+     :command
+     "cd /home/joe/code/futon3c && clojure -M -m futon3c.aif.calibration --emit /home/joe/code/futon0/data/futonzero-calibration-evidence.edn"
+     :writes "canonical evidence EDN"}
+    {:step :futon0-post-process
+     :command
+     "cd /home/joe/code/futon0 && clojure -M -m futon0.futonzero.rollout-ledger"
+     :writes "§4.1 ledger and §4.4 report artifacts"}]
+   :staleness
+   "The futon0/data/futonzero-*.edn artifacts are SNAPSHOTS regenerated at charter checkpoints, NOT live; the live calibration view is the canonical reader (futon3c.aif.calibration)."
+   :principle
+   "charter-home governs where the ARTIFACTS live (futon0), not where the AUDIT CODE runs (futon3c)."})
 
 (defn- read-edn [path]
   (edn/read-string (slurp path)))
-
-(defn- safe-read-edn [path]
-  (try (read-edn path)
-       (catch Throwable _ nil)))
-
-(defn- action-from-gamma [m]
-  (or (:v m)
-      (get-in m [:artefact :proposed-action])
-      (get-in m [:dT-snapshot 0 :action])
-      {:type :unknown :target nil}))
 
 (defn- ledger-id [& parts]
   (->> parts
@@ -53,221 +39,101 @@
        (map str)
        (str/join "/")))
 
-(defn- gamma-entry [source data m]
-  (let [run-id (or (:run-id m) (:run-id data) (.replace (.getName (io/file source)) ".edn" ""))
-        pred (parse-number (:predicted-discharge m))
-        real (parse-number (:realised-discharge m))
-        top-shift? (boolean (:delta-∇? m))]
-    {:ledger/id (ledger-id "repl-trace" run-id (:cg-id m) (:step m))
-     :playout/proposed {:action (action-from-gamma m)
-                        :run-id run-id
-                        :at (or (:at m) (:date data))}
+(defn read-evidence-artifact
+  ([] (read-evidence-artifact default-evidence-path))
+  ([path]
+   (let [{:keys [evidence report] :as artifact} (read-edn path)]
+     (when-not (vector? evidence)
+       (throw (ex-info "canonical evidence artifact must contain vector :evidence"
+                       {:path path :keys (keys artifact)})))
+     (when-not (map? report)
+       (throw (ex-info "canonical evidence artifact must contain map :report"
+                       {:path path :keys (keys artifact)})))
+     artifact)))
+
+(defn- canonical-action [record]
+  {:type (:kind record)
+   :target (:ref record)})
+
+(defn- evidence-entry [idx record]
+  (let [pred (:predicted record)
+        realised (:realised record)]
+    {:ledger/id (ledger-id "canonical" idx (:kind record) (:ref record))
+     :playout/proposed {:action (canonical-action record)
+                        :run-id (:ref record)
+                        :at (:at record)}
      :predicted {:discharge-G pred
-                 :effect-class :supervised-proposal
-                 :top-shift? top-shift?}
-     :actual {:discharge-G real
-              :addressed? false
-              :top-shift? top-shift?
-              :evidence-ref (str source)}
-     :witness/class :none
-     :calibration {:G-error (when (and pred real) (- pred real))
-                   :top-shift-correct? true}
-     :source :repl-trace}))
-
-(defn repl-trace-ledger [traces-dir]
-  (let [dir (io/file traces-dir)]
-    (if-not (.isDirectory dir)
-      []
-      (->> (file-seq dir)
-           (filter #(.isFile %))
-           (filter #(str/ends-with? (.getName %) ".edn"))
-           (sort-by #(.getName %))
-           (mapcat (fn [file]
-                     (let [data (safe-read-edn (.getPath file))]
-                       (->> (maps-in data)
-                            (filter #(and (contains? % :predicted-discharge)
-                                          (contains? % :realised-discharge)))
-                            (map #(gamma-entry (.getPath file) data %))))))
-           vec))))
-
-(def ^:private pilot-g-re
-  #"(?i)(?:predicted\s+G\s*=\s*([-+−]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)).*?(?:realised\s+G\s*=\s*([-+−]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?))")
-
-(def ^:private pilot-turn-re
-  #"^##\s+Turn\s+(\d+)\s+[—-]\s+(.+)$")
-
-(def ^:private pilot-read-re
-  #"Live WM recommended \*\*`([^`]+)`\*\*\s*\(G=([-+−]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)\)")
-
-(defn- parse-action-string [s]
-  (let [[kind target] (str/split (str/trim (or s "")) #"\s+" 2)]
-    {:type (keyword (or kind "unknown"))
-     :target target}))
-
-(defn- pilot-pair-entry [path idx line]
-  (when-let [[_ p r] (re-find pilot-g-re line)]
-    (let [pred (parse-number p)
-          real (parse-number r)]
-      {:ledger/id (ledger-id "pilots-log" "pair" (inc idx))
-       :playout/proposed {:action {:type :unknown :target nil}
-                          :run-id nil
-                          :at nil}
-       :predicted {:discharge-G pred
-                   :effect-class :pilot-log
-                   :top-shift? nil}
-       :actual {:discharge-G real
-                :addressed? nil
-                :top-shift? nil
-                :evidence-ref (str path ":" (inc idx))}
-       :witness/class :operator-gate
-       :calibration {:G-error (when (and pred real) (- pred real))
-                     :top-shift-correct? nil}
-       :source :pilots-log})))
-
-(defn- pilot-read-entry [path idx turn line]
-  (when-let [[_ action g] (re-find pilot-read-re line)]
-    {:ledger/id (ledger-id "pilots-log" "turn" (:turn turn) (inc idx))
-     :playout/proposed {:action (parse-action-string action)
-                        :run-id (:turn turn)
-                        :at (:at turn)}
-     :predicted {:discharge-G (parse-number g)
-                 :effect-class :wm-recommendation
+                 :effect-class (:kind record)
                  :top-shift? nil}
-     :actual {:discharge-G nil
-              :addressed? nil
+     :actual {:discharge-G realised
+              :addressed? (:success record)
               :top-shift? nil
-              :evidence-ref (str path ":" (inc idx))}
-     :witness/class :operator-gate
-     :calibration {:G-error nil :top-shift-correct? nil}
-     :source :pilots-log}))
-
-(defn pilots-log-ledger [path]
-  (let [file (io/file path)]
-    (if-not (.exists file)
-      []
-      (loop [rows (map-indexed vector (str/split-lines (slurp file)))
-             turn nil
-             out []]
-        (if-let [[idx line] (first rows)]
-          (if-let [[_ n at] (re-find pilot-turn-re line)]
-            (recur (rest rows) {:turn (str "turn-" n) :at at} out)
-            (recur (rest rows)
-                   turn
-                   (cond-> out
-                     true (into (keep identity [(pilot-pair-entry path idx line)
-                                                (pilot-read-entry path idx turn line)])))))
-          out)))))
-
-(defn closure-fold-ledger [path]
-  (let [data (safe-read-edn path)]
-    (->> data
-         (filter map?)
-         (map-indexed
-          (fn [idx m]
-            (let [success? (boolean (:success m))]
-              {:ledger/id (ledger-id "closure-fold" (or (:scope m) idx))
-               :playout/proposed {:action {:type :closure-fold :target (:scope m)}
-                                  :run-id nil
-                                  :at nil}
-               :predicted {:discharge-G nil
-                           :effect-class :pattern-fold
-                           :top-shift? nil}
-               :actual {:discharge-G nil
-                        :addressed? success?
-                        :top-shift? nil
-                        :evidence-ref (str path)}
-               :witness/class (if success? :build-discharge :none)
-               :calibration {:G-error nil :top-shift-correct? nil}
-               :source :closure-fold})))
-         vec)))
-
-(defn- edn-lines [path]
-  (let [file (io/file path)]
-    (if-not (.exists file)
-      []
-      (with-open [r (io/reader file)]
-        (->> (line-seq r)
-             (remove str/blank?)
-             (map edn/read-string)
-             vec)))))
-
-(def allowed-discipline-events
-  #{:teleport-refused :guardrail-trip :operator-decline :operator-merge})
-
-(defn ch2-ledger [path]
-  (->> (edn-lines path)
-       (filter map?)
-       (mapv (fn [m]
-               (let [discharged? (boolean (:discharged? m))]
-                 {:ledger/id (ledger-id "ch2" (:move/id m))
-                  :playout/proposed {:action {:type :ch2-discharge
-                                              :target (:move/id m)}
-                                     :run-id nil
-                                     :at (:at m)}
-                  :predicted {:discharge-G nil
-                              :effect-class :static-discharge
-                              :top-shift? nil}
-                  :actual {:discharge-G nil
-                           :addressed? discharged?
-                           :top-shift? nil
-                           :evidence-ref (:sorry-ref m)}
-                  :witness/class (if discharged? :build-discharge :none)
-                  :calibration {:G-error nil :top-shift-correct? nil}
-                  :source :ch2-discharge})))))
-
-(defn discipline-ledger [path]
-  (->> (edn-lines path)
-       (filter map?)
-       (filter #(contains? allowed-discipline-events (:discipline/event %)))
-       (mapv (fn [m]
-               {:ledger/id (ledger-id "discipline" (:run-id m) (:discipline/event m))
-                :playout/proposed {:action (:action m)
-                                   :run-id (:run-id m)
-                                   :at (:at m)}
-                :predicted {:discharge-G (parse-number (:predicted m))
-                            :effect-class (:discipline/event m)
-                            :top-shift? nil}
-                :actual {:discharge-G nil
-                         :addressed? false
-                         :top-shift? nil
-                         :evidence-ref (str path)}
-                :witness/class :discipline-event
-                :calibration {:G-error nil :top-shift-correct? nil}
-                :source :discipline-event}))))
+              :evidence-ref (:source record)}
+     :witness/class (:witness-class record)
+     :calibration {:G-error (when (and (number? pred) (number? realised))
+                              (- pred realised))
+                   :abs-G-error (:error record)
+                   :top-shift-correct? nil}
+     :canonical {:kind (:kind record)
+                 :ref (:ref record)
+                 :independent? (boolean (:independent? record))}
+     :source (:kind record)}))
 
 (defn build-ledger
-  ([] (build-ledger default-inputs))
-  ([{:keys [traces-dir pilots-log closure-folds ch2-events discipline-events]}]
-   (vec (concat (repl-trace-ledger traces-dir)
-                (pilots-log-ledger pilots-log)
-                (closure-fold-ledger closure-folds)
-                (ch2-ledger ch2-events)
-                (discipline-ledger discipline-events)))))
+  ([] (build-ledger {:evidence-path default-evidence-path}))
+  ([{:keys [evidence-path evidence report]
+     :or {evidence-path default-evidence-path}}]
+   (let [{artifact-evidence :evidence artifact-report :report}
+         (if evidence
+           {:evidence evidence :report report}
+           (read-evidence-artifact evidence-path))
+         ledger (mapv evidence-entry (range) artifact-evidence)]
+     (cond-> ledger
+       artifact-report (with-meta {:canonical-report artifact-report})))))
 
 (defn- mean [xs]
   (when (seq xs)
     (/ (reduce + 0.0 xs) (double (count xs)))))
 
-(defn calibration-audit [ledger]
-  (let [g-errors (keep #(get-in % [:calibration :G-error]) ledger)
-        top-pairs (filter #(and (some? (get-in % [:predicted :top-shift?]))
-                                (some? (get-in % [:actual :top-shift?])))
-                          ledger)
-        top-correct (filter #(= (get-in % [:predicted :top-shift?])
-                                (get-in % [:actual :top-shift?]))
-                            top-pairs)]
-    {:entry-count (count ledger)
-     :count-by-source (frequencies (map :source ledger))
-     :count-by-witness (frequencies (map :witness/class ledger))
-     :paired-G-count (count g-errors)
-     :mean-G-error (or (mean g-errors) 0.0)
-     :mean-abs-G-error (or (mean (map #(Math/abs (double %)) g-errors)) 0.0)
-     :max-abs-G-error (if (seq g-errors) (apply max (map #(Math/abs (double %)) g-errors)) 0.0)
-     :top-shift-paired-count (count top-pairs)
-     :top-shift-accuracy (when (seq top-pairs)
-                           (/ (count top-correct) (double (count top-pairs))))
-     :read-only? true
-     :gate :G-SIM}))
+(defn- witness-counts [ledger]
+  (frequencies (map :witness/class ledger)))
+
+(defn- canonical-report [ledger]
+  (:canonical-report (meta ledger)))
+
+(defn calibration-audit
+  ([ledger] (calibration-audit ledger (canonical-report ledger)))
+  ([ledger canonical]
+   (let [g-errors (keep #(get-in % [:calibration :G-error]) ledger)
+         abs-errors (keep #(get-in % [:calibration :abs-G-error]) ledger)
+         counts-by-kind (frequencies (map :source ledger))
+         counts-by-witness (witness-counts ledger)
+         canonical-entry-count (reduce + 0 (vals (:n-by-kind canonical)))
+         cross-check {:entry-count-matches? (= (count ledger) canonical-entry-count)
+                      :source-counts-match? (= counts-by-kind (:n-by-kind canonical))
+                      :degenerate? (:degenerate? canonical)
+                      :verdict (:verdict canonical)
+                      :witness-counts counts-by-witness}]
+     {:entry-count (count ledger)
+      :count-by-source counts-by-kind
+      :count-by-witness counts-by-witness
+      :paired-G-count (or (:paired-count canonical) (count g-errors))
+      :mean-G-error (or (mean g-errors) 0.0)
+      :mean-abs-G-error (or (mean abs-errors)
+                            (mean (map #(Math/abs (double %)) g-errors))
+                            0.0)
+      :max-abs-G-error (or (get-in canonical [:error-stats :max])
+                           (when (seq abs-errors) (apply max abs-errors))
+                           0.0)
+      :top-shift-paired-count 0
+      :top-shift-accuracy nil
+      :read-only? true
+      :gate :G-SIM
+      :degenerate? (:degenerate? canonical)
+      :verdict (:verdict canonical)
+      :regeneration regeneration-doc
+      :canonical-report canonical
+      :cross-check cross-check})))
 
 (defn write-edn! [path value]
   (let [file (io/file path)]
@@ -278,18 +144,20 @@
 
 (defn write-ledger-and-report!
   ([] (write-ledger-and-report! {}))
-  ([{:keys [inputs ledger-path report-path]
-     :or {inputs default-inputs
+  ([{:keys [evidence-path ledger-path report-path]
+     :or {evidence-path default-evidence-path
           ledger-path default-ledger-path
           report-path default-report-path}}]
-   (let [ledger (build-ledger inputs)
-         report (calibration-audit ledger)]
+   (let [{:keys [evidence report]} (read-evidence-artifact evidence-path)
+         ledger (build-ledger {:evidence evidence :report report})
+         audit (calibration-audit ledger report)]
      (write-edn! ledger-path ledger)
-     (write-edn! report-path report)
-     {:ledger-path ledger-path
+     (write-edn! report-path audit)
+     {:evidence-path evidence-path
+      :ledger-path ledger-path
       :report-path report-path
       :ledger-count (count ledger)
-      :report report})))
+      :report audit})))
 
 (defn -main [& _]
   (prn (write-ledger-and-report!)))

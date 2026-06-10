@@ -1,12 +1,63 @@
 {:count-by-source
- {:repl-trace 15, :pilots-log 2, :closure-fold 13, :ch2-discharge 3},
+ {:gamma-frame 15,
+  :pilots-log-turn 2,
+  :closure-fold 13,
+  :ch2-discharge 3,
+  :discipline-event 2},
+ :cross-check
+ {:entry-count-matches? true,
+  :source-counts-match? true,
+  :degenerate? true,
+  :verdict :insufficient-evidence,
+  :witness-counts
+  {:none 18,
+   :operator-gate 2,
+   :build-discharge 13,
+   :discipline-event 2}},
  :max-abs-G-error 5.23239667751696E-4,
  :mean-abs-G-error 4.670327886705886E-5,
- :entry-count 33,
+ :canonical-report
+ {:n-by-kind
+  {:gamma-frame 15,
+   :pilots-log-turn 2,
+   :closure-fold 13,
+   :ch2-discharge 3,
+   :discipline-event 2},
+  :paired-count 15,
+  :independent-paired-count 0,
+  :error-stats
+  {:zero-count 13,
+   :nonzero-count 2,
+   :max 5.23239667751696E-4,
+   :mean 4.670327886705886E-5},
+  :degenerate? true,
+  :verdict :insufficient-evidence,
+  :warnings []},
+ :degenerate? true,
+ :entry-count 35,
  :paired-G-count 15,
- :count-by-witness {:none 18, :operator-gate 2, :build-discharge 13},
- :top-shift-accuracy 1.0,
+ :count-by-witness
+ {:none 18,
+  :operator-gate 2,
+  :build-discharge 13,
+  :discipline-event 2},
+ :top-shift-accuracy nil,
  :gate :G-SIM,
  :read-only? true,
- :top-shift-paired-count 15,
+ :verdict :insufficient-evidence,
+ :regeneration
+ {:command-pair
+  [{:step :canonical-reader,
+    :command
+    "cd /home/joe/code/futon3c && clojure -M -m futon3c.aif.calibration --emit /home/joe/code/futon0/data/futonzero-calibration-evidence.edn",
+    :writes "canonical evidence EDN"}
+   {:step :futon0-post-process,
+    :command
+    "cd /home/joe/code/futon0 && clojure -M -m futon0.futonzero.rollout-ledger",
+    :writes "§4.1 ledger and §4.4 report artifacts"}],
+  :staleness
+  "The futon0/data/futonzero-*.edn artifacts are SNAPSHOTS regenerated at charter checkpoints, NOT live; the live calibration view is the canonical reader (futon3c.aif.calibration).",
+  :principle
+  "charter-home governs where the ARTIFACTS live (futon0), not where the AUDIT CODE runs (futon3c)."},
+ :top-shift-paired-count 0,
  :mean-G-error -4.670327886705886E-5}
