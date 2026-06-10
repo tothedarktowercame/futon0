@@ -1,7 +1,12 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
-**Lifecycle:** INSTANTIATE — mechanism proven 2026-06-07 (Unit B EFE-over-graph + INV-G verified + accepted; Unit A pipeline accepted, extraction hollow = `:prototyping-forward`). Integration DEFERRED until REAL data assembled (operator A). **Region sweep COMPLETE + C3 PASS (production-faithful) 2026-06-07** — capability inventory grounded across all 7 thesis-regions (C-pudding-prover §8.2.1–8.2.7); EFE top-ranks an applicable single-cycle leaf with no cherry-pick (keystone `efe-trustworthy-over-starmap` **demonstrated**). **Mission OPEN pending operator close** — caveats: branch `wm-outing/2026-06-07` unmerged · curated candidate set (not full registry scan) · EFE body-term + decompose hardening · VSATARCS regen (doc-gap).
+**Lifecycle:** INSTANTIATE — mechanism proven 2026-06-07 (Unit B EFE-over-graph + INV-G verified + accepted; Unit A pipeline accepted, extraction hollow = `:prototyping-forward`). Integration DEFERRED until REAL data assembled (operator A). **Region sweep COMPLETE + C3 PASS (production-faithful) 2026-06-07** — capability inventory grounded across all 7 thesis-regions (C-pudding-prover §8.2.1–8.2.7); EFE top-ranks an applicable single-cycle leaf with no cherry-pick (keystone `efe-trustworthy-over-starmap` **demonstrated**). **Mission CLOSED 2026-06-10** — operator close decided by Joe via **WM pilot cycle #1** (pilot
+claude-3); the keystone `efe-trustworthy-over-starmap` was demonstrated and the mechanism is proven.
+The four pending caveats were **not dropped** — they were spun out to adjacent excursions so the
+mission could close cleanly: [[E-starmap-branch-merge]] (branch `wm-outing/2026-06-07` unmerged) ·
+[[E-starmap-full-registry-scan]] (curated → full registry scan) · [[E-starmap-efe-hardening]] (EFE
+body-term + decompose) · [[E-starmap-vsatarcs-regen]] (VSATARCS doc-gap).
 **Owner:** claude-1 (pending operator-direction)
 **Home-repo:** futon0 (workspace-hygiene + cross-repo coordination home, adjacent to the other
 capability missions; per `single-locus/mission-home`)
@@ -1266,3 +1271,15 @@ learner are downstream consumers of the map; requiring them here would turn this
   real capabilities. Rob has done the same with a big proof."
 - Spawned from: M-futon-forward-model WM watched-cycle 1 (2026-06-07), whose re-route datum (§13.2)
   surfaced node-granularity / advanceability as the operative gap.
+
+### Checkpoint — CLOSE 2026-06-10 (WM pilot cycle #1)
+**What was done:** Operator (Joe) closed the mission via the War Machine pilot's first supervised
+cycle (pilot claude-3). The keystone `efe-trustworthy-over-starmap` was demonstrated and the
+mechanism proven; the four remaining caveats were spun out to adjacent excursions
+([[E-starmap-branch-merge]], [[E-starmap-full-registry-scan]], [[E-starmap-efe-hardening]],
+[[E-starmap-vsatarcs-regen]]) rather than dropped.
+**Provenance:** the WM ranked `open-mission M-capability-star-map` #1 (G −5.698); the pilot caught
+that the mission was *already* open (V2 no-teleport) and surfaced it to the operator, who chose
+close + caveat-spinout. The underlying WM stale-judgement (ranking `open` on already-open missions)
+was routed to fable-1 as a live-fix.
+**Next:** the four excursions (owners TBD).
