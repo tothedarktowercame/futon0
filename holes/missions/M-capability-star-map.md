@@ -1,6 +1,7 @@
 # M-capability-star-map: the mission landscape as a navigable capability graph
 
 **Type:** Mission
+**Status:** CLOSED 2026-06-10 — operator close via WM pilot cycle #1 (pilot claude-3); caveats spun out to [[E-starmap-branch-merge]], [[E-starmap-full-registry-scan]], [[E-starmap-efe-hardening]], [[E-starmap-vsatarcs-regen]].
 **Lifecycle:** INSTANTIATE — mechanism proven 2026-06-07 (Unit B EFE-over-graph + INV-G verified + accepted; Unit A pipeline accepted, extraction hollow = `:prototyping-forward`). Integration DEFERRED until REAL data assembled (operator A). **Region sweep COMPLETE + C3 PASS (production-faithful) 2026-06-07** — capability inventory grounded across all 7 thesis-regions (C-pudding-prover §8.2.1–8.2.7); EFE top-ranks an applicable single-cycle leaf with no cherry-pick (keystone `efe-trustworthy-over-starmap` **demonstrated**). **Mission CLOSED 2026-06-10** — operator close decided by Joe via **WM pilot cycle #1** (pilot
 claude-3); the keystone `efe-trustworthy-over-starmap` was demonstrated and the mechanism is proven.
 The four pending caveats were **not dropped** — they were spun out to adjacent excursions so the
