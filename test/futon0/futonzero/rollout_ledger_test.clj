@@ -28,7 +28,9 @@
                          :predicted-discharge -5.0
                          :realised-discharge -4.5
                          :delta-∇? true}]})
-    (spit pilots "**PRINT / FOUND.** predicted G=-3.0; realised G=-2.75\n")
+    (spit pilots (str "## Turn 1 — fixture\n"
+                       "**READ.** Live WM recommended **`open-mission M-y`** (G=−5.69).\n"
+                       "**PRINT / FOUND.** predicted G=-3.0; realised G=-2.75\n"))
     (write-edn folds [{:scope "fold-ok" :success true :used ["p"]}
                        {:scope "fold-no" :success false :used []}])
     (spit ch2 (str (pr-str {:move/id "move-1"
@@ -52,7 +54,7 @@
   (let [{:keys [root inputs]} (fixture)]
     (try
       (let [entries (ledger/build-ledger inputs)]
-        (is (= 6 (count entries)))
+        (is (= 7 (count entries)))
         (is (every? :ledger/id entries))
         (is (every? :playout/proposed entries))
         (is (every? :predicted entries))
@@ -71,7 +73,7 @@
     (try
       (let [entries (ledger/build-ledger inputs)
             report (ledger/calibration-audit entries)]
-        (is (= 6 (:entry-count report)))
+        (is (= 7 (:entry-count report)))
         (is (= 2 (:paired-G-count report)))
         (is (= -0.375 (:mean-G-error report)))
         (is (= 0.375 (:mean-abs-G-error report)))
@@ -89,8 +91,8 @@
       (let [result (ledger/write-ledger-and-report! {:inputs inputs
                                                      :ledger-path ledger-path
                                                      :report-path report-path})]
-        (is (= 6 (:ledger-count result)))
-        (is (= 6 (count (edn/read-string (slurp ledger-path)))))
+        (is (= 7 (:ledger-count result)))
+        (is (= 7 (count (edn/read-string (slurp ledger-path)))))
         (is (= (:report result) (edn/read-string (slurp report-path)))))
       (finally
         (doseq [f (reverse (file-seq root))] (.delete f))))))
@@ -99,4 +101,6 @@
   (let [entries (ledger/build-ledger)]
     (is (pos? (count entries)))
     (is (pos? (get (frequencies (map :source entries)) :repl-trace 0)))
+    (is (<= 2 (get (frequencies (map :source entries)) :pilots-log 0))
+        "PILOTS-LOG Turn 1/2 READ recommendations should be present as operator-gate records")
     (is (pos? (:paired-G-count (ledger/calibration-audit entries))))))

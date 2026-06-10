@@ -93,32 +93,70 @@
 (def ^:private pilot-g-re
   #"(?i)(?:predicted\s+G\s*=\s*([-+−]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)).*?(?:realised\s+G\s*=\s*([-+−]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?))")
 
+(def ^:private pilot-turn-re
+  #"^##\s+Turn\s+(\d+)\s+[—-]\s+(.+)$")
+
+(def ^:private pilot-read-re
+  #"Live WM recommended \*\*`([^`]+)`\*\*\s*\(G=([-+−]?[0-9]+(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)\)")
+
+(defn- parse-action-string [s]
+  (let [[kind target] (str/split (str/trim (or s "")) #"\s+" 2)]
+    {:type (keyword (or kind "unknown"))
+     :target target}))
+
+(defn- pilot-pair-entry [path idx line]
+  (when-let [[_ p r] (re-find pilot-g-re line)]
+    (let [pred (parse-number p)
+          real (parse-number r)]
+      {:ledger/id (ledger-id "pilots-log" "pair" (inc idx))
+       :playout/proposed {:action {:type :unknown :target nil}
+                          :run-id nil
+                          :at nil}
+       :predicted {:discharge-G pred
+                   :effect-class :pilot-log
+                   :top-shift? nil}
+       :actual {:discharge-G real
+                :addressed? nil
+                :top-shift? nil
+                :evidence-ref (str path ":" (inc idx))}
+       :witness/class :operator-gate
+       :calibration {:G-error (when (and pred real) (- pred real))
+                     :top-shift-correct? nil}
+       :source :pilots-log})))
+
+(defn- pilot-read-entry [path idx turn line]
+  (when-let [[_ action g] (re-find pilot-read-re line)]
+    {:ledger/id (ledger-id "pilots-log" "turn" (:turn turn) (inc idx))
+     :playout/proposed {:action (parse-action-string action)
+                        :run-id (:turn turn)
+                        :at (:at turn)}
+     :predicted {:discharge-G (parse-number g)
+                 :effect-class :wm-recommendation
+                 :top-shift? nil}
+     :actual {:discharge-G nil
+              :addressed? nil
+              :top-shift? nil
+              :evidence-ref (str path ":" (inc idx))}
+     :witness/class :operator-gate
+     :calibration {:G-error nil :top-shift-correct? nil}
+     :source :pilots-log}))
+
 (defn pilots-log-ledger [path]
   (let [file (io/file path)]
     (if-not (.exists file)
       []
-      (->> (str/split-lines (slurp file))
-           (keep-indexed
-            (fn [idx line]
-              (when-let [[_ p r] (re-find pilot-g-re line)]
-                (let [pred (parse-number p)
-                      real (parse-number r)]
-                  {:ledger/id (ledger-id "pilots-log" (inc idx))
-                   :playout/proposed {:action {:type :unknown :target nil}
-                                      :run-id nil
-                                      :at nil}
-                   :predicted {:discharge-G pred
-                               :effect-class :pilot-log
-                               :top-shift? nil}
-                   :actual {:discharge-G real
-                            :addressed? nil
-                            :top-shift? nil
-                            :evidence-ref (str path ":" (inc idx))}
-                   :witness/class :operator-gate
-                   :calibration {:G-error (when (and pred real) (- pred real))
-                                 :top-shift-correct? nil}
-                   :source :pilots-log}))))
-           vec))))
+      (loop [rows (map-indexed vector (str/split-lines (slurp file)))
+             turn nil
+             out []]
+        (if-let [[idx line] (first rows)]
+          (if-let [[_ n at] (re-find pilot-turn-re line)]
+            (recur (rest rows) {:turn (str "turn-" n) :at at} out)
+            (recur (rest rows)
+                   turn
+                   (cond-> out
+                     true (into (keep identity [(pilot-pair-entry path idx line)
+                                                (pilot-read-entry path idx turn line)])))))
+          out)))))
 
 (defn closure-fold-ledger [path]
   (let [data (safe-read-edn path)]

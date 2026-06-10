@@ -1,9 +1,10 @@
-{:count-by-source {:repl-trace 15, :closure-fold 13, :ch2-discharge 3},
+{:count-by-source
+ {:repl-trace 15, :pilots-log 2, :closure-fold 13, :ch2-discharge 3},
  :max-abs-G-error 5.23239667751696E-4,
  :mean-abs-G-error 4.670327886705886E-5,
- :entry-count 31,
+ :entry-count 33,
  :paired-G-count 15,
- :count-by-witness {:none 18, :build-discharge 13},
+ :count-by-witness {:none 18, :operator-gate 2, :build-discharge 13},
  :top-shift-accuracy 1.0,
  :gate :G-SIM,
  :read-only? true,

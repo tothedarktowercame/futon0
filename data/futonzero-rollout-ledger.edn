@@ -307,6 +307,42 @@
   :witness/class :none,
   :calibration {:G-error 0.0, :top-shift-correct? true},
   :source :repl-trace}
+ {:ledger/id "pilots-log/turn/turn-2/25",
+  :playout/proposed
+  {:action {:type :open-mission, :target "M-capability-star-map"},
+   :run-id "turn-2",
+   :at
+   "2026-06-10 (claude-3, emacs-repl) — first supervised observer cycle; teleport caught, V2 save → keystone close"},
+  :predicted
+  {:discharge-G -5.698,
+   :effect-class :wm-recommendation,
+   :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? nil,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon3c/holes/PILOTS-LOG.md:25"},
+  :witness/class :operator-gate,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :pilots-log}
+ {:ledger/id "pilots-log/turn/turn-1/54",
+  :playout/proposed
+  {:action {:type :open-mission, :target "M-capability-star-map"},
+   :run-id "turn-1",
+   :at
+   "2026-06-09 (claude-1, emacs-repl) — first cycle on the new tooling (cascade lane + v2 rollout)"},
+  :predicted
+  {:discharge-G -5.69,
+   :effect-class :wm-recommendation,
+   :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? nil,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon3c/holes/PILOTS-LOG.md:54"},
+  :witness/class :operator-gate,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :pilots-log}
  {:ledger/id "closure-fold/recommendation-bindings/q5",
   :playout/proposed
   {:action {:type :closure-fold, :target "recommendation-bindings/q5"},
