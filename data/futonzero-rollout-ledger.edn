@@ -1,0 +1,564 @@
+[{:ledger/id
+  "repl-trace/demo-cg-5b03db29/cg-5b03db29-b636-4368-88ee-a7c8df23ef55/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/wm-aif-substrate-addressability"},
+   :run-id "demo-cg-5b03db29",
+   :at "2026-05-25"},
+  :predicted
+  {:discharge-G -4.99,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.99,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/demo-cg-5b03db29.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-00c07332-9996-4c4c-9c72-4eca389061aa/cg-6965e5e6-ba14-4a6b-8690-bbf29bbd2a38/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/handler-closure-route-rebinding"},
+   :run-id "live-00c07332-9996-4c4c-9c72-4eca389061aa",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.917601436124044,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.917601436124044,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-00c07332-9996-4c4c-9c72-4eca389061aa.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-021b9a85-a2b3-497f-b97c-7f3c455079f7/cg-37164ba1-c79d-4dc7-965c-81678602f5bc/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/mission-aif-head-not-served"},
+   :run-id "live-021b9a85-a2b3-497f-b97c-7f3c455079f7",
+   :at "2026-05-29"},
+  :predicted
+  {:discharge-G -5.345991295315313,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -5.345991295315313,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-021b9a85-a2b3-497f-b97c-7f3c455079f7.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-08b19d47-f148-4d59-827b-ec34222a6de9/cg-f32696ac-7f42-41a4-83c7-883483a38e68/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/r3d-per-entity-attribution"},
+   :run-id "live-08b19d47-f148-4d59-827b-ec34222a6de9",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.923223284415049,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.923223284415049,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-08b19d47-f148-4d59-827b-ec34222a6de9.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-1facc49b-2835-4243-bb13-75c041265983/cg-d80f8a6d-61a2-4b91-983d-4d75173863e9/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/handler-closure-route-rebinding"},
+   :run-id "live-1facc49b-2835-4243-bb13-75c041265983",
+   :at "2026-05-29"},
+  :predicted
+  {:discharge-G -4.925026060344809,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.925026060344809,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-1facc49b-2835-4243-bb13-75c041265983.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-2d50834b-a131-4d7c-99e5-b36668e92b57/cg-a4eaabf8-c0a1-4b07-b295-c73e5d683365/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/mission-aif-head-not-served"},
+   :run-id "live-2d50834b-a131-4d7c-99e5-b36668e92b57",
+   :at "2026-05-29"},
+  :predicted
+  {:discharge-G -5.345991295315313,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -5.345991295315313,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-2d50834b-a131-4d7c-99e5-b36668e92b57.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-68fb5475-00af-4092-badc-97e921e1e928/cg-7fa6aec3-7a1b-4ada-b087-879bd850f80f/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/r3a-likelihood-coupling-density"},
+   :run-id "live-68fb5475-00af-4092-badc-97e921e1e928",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.6062232931879015,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.6062232931879015,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-68fb5475-00af-4092-badc-97e921e1e928.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-9536b3ce-ae8c-43ec-998c-8c2b1d341c4e/cg-ae3de1a1-d24e-4f72-b9b2-32cb727bc179/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/sorry-first-outing-probe"},
+   :run-id "live-9536b3ce-ae8c-43ec-998c-8c2b1d341c4e",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.944930325817838,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.944930325817838,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-9536b3ce-ae8c-43ec-998c-8c2b1d341c4e.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-95f10371-77bd-41c7-9f4d-adf4a711970e/cg-1abf150b-93a6-487b-a439-fbadb4c3c7a4/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/stub-lifts-pending-aif-edn"},
+   :run-id "live-95f10371-77bd-41c7-9f4d-adf4a711970e",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.604653455284554,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.604653455284554,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-95f10371-77bd-41c7-9f4d-adf4a711970e.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-a138864a-c398-427f-9ebd-6b0eab1b253d/cg-bf2f9b00-f3a3-47cc-9859-e3c7c0e68671/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/r3a-likelihood-ticks-firing-ratio"},
+   :run-id "live-a138864a-c398-427f-9ebd-6b0eab1b253d",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.6062232931879015,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.606045983672647,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-a138864a-c398-427f-9ebd-6b0eab1b253d.edn"},
+  :witness/class :none,
+  :calibration
+  {:G-error -1.7730951525418703E-4, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-cc07d412-694c-41df-9967-570fff00dec2/cg-258e00b2-6855-47da-be88-11b830762e34/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/stub-lifts-pending-aif-edn"},
+   :run-id "live-cc07d412-694c-41df-9967-570fff00dec2",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.6056935536485,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.605170313980748,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-cc07d412-694c-41df-9967-570fff00dec2.edn"},
+  :witness/class :none,
+  :calibration
+  {:G-error -5.23239667751696E-4, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-d2068cc1-c048-43c2-8713-1463fe103adf/cg-d9630a32-3b28-45ac-a733-bc84afc31204/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/r3d-per-entity-attribution"},
+   :run-id "live-d2068cc1-c048-43c2-8713-1463fe103adf",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.922485319737652,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.922485319737652,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-d2068cc1-c048-43c2-8713-1463fe103adf.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-dcf3b409-69a5-460d-a82b-3030b4ec53c0/cg-77efb863-dff7-40d5-8c87-45025d32628d/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/r3a-likelihood-ticks-firing-ratio"},
+   :run-id "live-dcf3b409-69a5-460d-a82b-3030b4ec53c0",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.6056935536485,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.6056935536485,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-dcf3b409-69a5-460d-a82b-3030b4ec53c0.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-f3b9870b-8a9c-4919-855d-7d144e58c565/cg-f1203497-547c-4818-839c-408b70f509c3/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry,
+    :target "sorry/wm-ui-hud-mode-rationale-hardcode"},
+   :run-id "live-f3b9870b-8a9c-4919-855d-7d144e58c565",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.676580123979515,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.676580123979515,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-f3b9870b-8a9c-4919-855d-7d144e58c565.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id
+  "repl-trace/live-f904d736-d851-4c55-80b1-54a56ed8127a/cg-a800dee8-7ce8-40e8-bf5d-6732156fd578/0",
+  :playout/proposed
+  {:action
+   {:type :address-sorry, :target "sorry/r3d-per-entity-attribution"},
+   :run-id "live-f904d736-d851-4c55-80b1-54a56ed8127a",
+   :at "2026-05-30"},
+  :predicted
+  {:discharge-G -4.923409734089381,
+   :effect-class :supervised-proposal,
+   :top-shift? false},
+  :actual
+  {:discharge-G -4.923409734089381,
+   :addressed? false,
+   :top-shift? false,
+   :evidence-ref
+   "/home/joe/code/futon3c/data/repl-traces/live-f904d736-d851-4c55-80b1-54a56ed8127a.edn"},
+  :witness/class :none,
+  :calibration {:G-error 0.0, :top-shift-correct? true},
+  :source :repl-trace}
+ {:ledger/id "closure-fold/recommendation-bindings/q5",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "recommendation-bindings/q5"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/kit-outbox",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "kit-outbox"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/aif2/inv-tripwire-mapping",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "aif2/inv-tripwire-mapping"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/kit-intake",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "kit-intake"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/kit-cadence",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "kit-cadence"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/E-mission-head/head-sigil",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "E-mission-head/head-sigil"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? false,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :none,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/E-mission-head/head-sigil",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "E-mission-head/head-sigil"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/hypergraph-operator/argue",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "hypergraph-operator/argue"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? false,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :none,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/hypergraph-operator/derive",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "hypergraph-operator/derive"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? false,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :none,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/E-mission-head/verify-v0",
+  :playout/proposed
+  {:action {:type :closure-fold, :target "E-mission-head/verify-v0"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/E-mission-head/health-readout",
+  :playout/proposed
+  {:action
+   {:type :closure-fold, :target "E-mission-head/health-readout"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/E-mission-head/seeded-beliefs",
+  :playout/proposed
+  {:action
+   {:type :closure-fold, :target "E-mission-head/seeded-beliefs"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id "closure-fold/E-mission-head/lifeform-lane",
+  :playout/proposed
+  {:action
+   {:type :closure-fold, :target "E-mission-head/lifeform-lane"},
+   :run-id nil,
+   :at nil},
+  :predicted
+  {:discharge-G nil, :effect-class :pattern-fold, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "/home/joe/code/futon6/holes/closure-folds.edn"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :closure-fold}
+ {:ledger/id
+  "ch2/xenotype-evaluation-score->mission-health-at-birth-readout",
+  :playout/proposed
+  {:action
+   {:type :ch2-discharge,
+    :target
+    "xenotype-evaluation-score->mission-health-at-birth-readout"},
+   :run-id nil,
+   :at "2026-06-10T19:41:21.018738269Z"},
+  :predicted
+  {:discharge-G nil, :effect-class :static-discharge, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "futon3a/sorry/meme-arrow-ac6c5bd4a9de0570"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :ch2-discharge}
+ {:ledger/id
+  "ch2/mission-health-at-birth-readout->mission-aif-head-seeded-beliefs",
+  :playout/proposed
+  {:action
+   {:type :ch2-discharge,
+    :target
+    "mission-health-at-birth-readout->mission-aif-head-seeded-beliefs"},
+   :run-id nil,
+   :at "2026-06-10T19:41:21.064918853Z"},
+  :predicted
+  {:discharge-G nil, :effect-class :static-discharge, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "futon3a/sorry/meme-arrow-10780c8806d907a3"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :ch2-discharge}
+ {:ledger/id
+  "ch2/mission-health-at-birth-readout->mission-mode-lifeform-lane",
+  :playout/proposed
+  {:action
+   {:type :ch2-discharge,
+    :target
+    "mission-health-at-birth-readout->mission-mode-lifeform-lane"},
+   :run-id nil,
+   :at "2026-06-10T19:41:21.093545226Z"},
+  :predicted
+  {:discharge-G nil, :effect-class :static-discharge, :top-shift? nil},
+  :actual
+  {:discharge-G nil,
+   :addressed? true,
+   :top-shift? nil,
+   :evidence-ref "futon3a/sorry/meme-arrow-7265133b2ee6ca48"},
+  :witness/class :build-discharge,
+  :calibration {:G-error nil, :top-shift-correct? nil},
+  :source :ch2-discharge}]
