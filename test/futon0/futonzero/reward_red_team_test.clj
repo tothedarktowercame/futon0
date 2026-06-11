@@ -21,3 +21,15 @@
   (let [summary (rt/certify-red-team)]
     (is (= (count rt/red-team-cases) (count summary)))
     (is (every? :passes? summary))))
+
+(deftest known-leniency-launder-by-omission-currently-passes
+  ;; Characterization of the ninth shape: documents the deliberate shared leniency
+  ;; (omitting :realised-read passes the settled check). When legacy pairs age out
+  ;; and the verdict strictens to explicit-:settled-required, flip this to :rejected.
+  (let [{:keys [outcome stricten-to]} (first rt/known-leniencies)
+        cert (rt/certify outcome)]
+    (is (true? (rt/reward-admissible? outcome))
+        "currently lenient: omitting :realised-read passes (mirrors live verdict)")
+    (is (= :accepted (:status cert)))
+    (is (= [:not-settled] stricten-to)
+        "documents what this should reject with once strictened")))

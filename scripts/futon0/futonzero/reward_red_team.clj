@@ -92,6 +92,21 @@
     :outcome (assoc legit-outcome :return nil)
     :expected-reasons [:missing-return]}])
 
+(def known-leniencies
+  "Ninth shape — 'launder by omission' (flagged by the ground-control code-gate on
+  this fixture, 2026-06-11). Shapes that currently PASS but SHOULD reject once
+  legacy/grandfathered pairs age out — documented here so the leniency is VISIBLE,
+  not silent. Mirrors the LIVE verdict's missing-tag grandfathering: red-team-reasons
+  gates :realised-read only when the key is present (contains? guard), so an outcome
+  that OMITS the tag passes the settled check. Per the arc-1 principle (untagged never
+  counts), BOTH this fixture and the live verdict should stricten to
+  explicit-:settled-required once no legacy pairs remain."
+  [{:id :launder-by-omission
+    :why "Omitting :realised-read entirely passes the settled check (contains? guard)."
+    :outcome (dissoc legit-outcome :realised-read)
+    :currently-accepted? true
+    :stricten-to [:not-settled]}])
+
 (defn certify-red-team []
   (mapv (fn [{:keys [outcome expected-reasons] :as case}]
           (assoc case
