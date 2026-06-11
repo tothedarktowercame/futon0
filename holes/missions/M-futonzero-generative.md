@@ -198,7 +198,7 @@ residual holes.
 - [x] §4.4 Calibration audit — `futon0/data/futonzero-calibration-report.edn` + canonical reader `futon3c.aif.calibration` (futon3c `976fb2c` + consolidation)
 - [x] §4.2 Toy field fixture — `scripts/futon0/futonzero/toy_field.clj` + test (codex-1, futon0 b32b421; synthetic 4-state chain, demonstrates successful update + refusal to learn from laundered reward incl. operator-gate-is-not-fruit; 18 tests/88 assertions pass)
 - [x] §4.3 Policy/value vocabulary — `holes/missions/M-futonzero-generative.policy-value-vocabulary.edn` (v0, prototyping-forward; pattern-as-policy + value-estimate shapes, no actuator)
-- [ ] §4.5 Reward red-team fixture — cases where a fake win is tempting and the certifier must reject/route
+- [x] §4.5 Reward red-team fixture — `scripts/futon0/futonzero/reward_red_team.clj` + test (codex-1, futon0 `71b22d2`; charter-fit reviewed + code-gated). 8 laundering shapes from the WM-pilot arc-1 (censored-fallback, transient-spike, prior-value-tautology, operator-gate-as-fruit, non-independent/measured/witness, missing-return), each rejected with explicit routed reasons; legit case still accepted. 21 tests/127 assertions pass. **§4 safe work products now complete.** (2026-06-11, WM-pilot arc-2 cycle 11)
 - [ ] G-SIM clearance — field-simulator adequacy; first MEASURED calibration pairs now accruing via the WM pilot loop
 - [ ] G-REWARD clearance — anti-laundered reward; Pudding Prover G1 arrow-witness binding
 
