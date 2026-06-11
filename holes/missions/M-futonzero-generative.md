@@ -185,3 +185,33 @@ would make such a learner honest.
 
 When G-SIM and G-REWARD both clear, the mission can advance from charter to a
 small, local, read-only rollout-learning prototype.
+
+## Remaining Work
+
+Machine-visible tracking of this charter's true open state. The genuinely-open
+work below was previously prose-only, so the hole-counter saw it as
+`:open-mission-no-holes` and the mission under-reported at hole-count 0. Checked
+items genuinely landed and are dated by commit; unchecked items are the real
+residual holes.
+
+- [x] §4.1 Static rollout ledger — `futon0/data/futonzero-rollout-ledger.edn` (futon0 `2c820cd`, audit `ac4f7ad`, consolidation `fae1979`)
+- [x] §4.4 Calibration audit — `futon0/data/futonzero-calibration-report.edn` + canonical reader `futon3c.aif.calibration` (futon3c `976fb2c` + consolidation)
+- [ ] §4.2 Toy field fixture — small graph with known transitions, to test update math + failure modes
+- [ ] §4.3 Policy/value vocabulary — data shape for pattern-as-policy proposals + value estimates, no live actuator
+- [ ] §4.5 Reward red-team fixture — cases where a fake win is tempting and the certifier must reject/route
+- [ ] G-SIM clearance — field-simulator adequacy; first MEASURED calibration pairs now accruing via the WM pilot loop
+- [ ] G-REWARD clearance — anti-laundered reward; Pudding Prover G1 arrow-witness binding
+
+### Checkpoint — 2026-06-11
+**What was done:** Made the charter's true open state machine-visible (this
+section), so the mission carries real, counted holes instead of prose-only work.
+§4.1 rollout ledger and §4.4 calibration audit confirmed landed (commits above).
+Recorded under the WM pilot loop (cycle 5, run `live-510dd9c2`,
+`:operator-directed`): advancing this mission while it retains residual holes
+yields a *measured* calibration pair — the target keeps a post-field reading, so
+this is the first non-fallback (`:realised-source :measured`) pair for G-SIM.
+**Test state:** canonical calibration reader emits `:verdict
+:insufficient-evidence` (measured pairs accruing; ~11+ independent measured pairs
+needed for `:calibratable`).
+**Next:** §4.2 toy field fixture (the next safe work product) + continue
+accruing measured pairs toward G-SIM clearance.
