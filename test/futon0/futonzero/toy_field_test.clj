@@ -47,4 +47,9 @@
                  (assoc toy/legit-playout :independent? false)))))
   (testing "target-absent fallback refuses"
     (is (false? (toy/reward-admissible?
-                 (assoc toy/legit-playout :realised-source :target-absent-fallback))))))
+                 (assoc toy/legit-playout :realised-source :target-absent-fallback)))))
+  (testing "non-numeric return refuses (the 4th laundering mode)"
+    (is (false? (toy/reward-admissible?
+                 (assoc toy/legit-playout :return nil))))
+    (is (= [:missing-return]
+           (toy/rejection-reasons (assoc toy/legit-playout :return "1.0"))))))
