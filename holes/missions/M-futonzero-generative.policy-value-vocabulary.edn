@@ -1,0 +1,72 @@
+;; FutonZero §4.3 — Policy/Value Vocabulary (v0, prototyping-forward)
+;;
+;; Mission: M-futonzero-generative §4.3 — "data shape for pattern-as-policy
+;; proposals and value estimates, with no live actuator."
+;;
+;; Data shapes ONLY. NO live actuator: these shapes are DECLARATIVE. Consuming
+;; them to drive the field is gated by WM guardrails AND the two hard gates
+;; (G-SIM field-simulator adequacy, G-REWARD anti-laundered reward). Per §2
+;; G-SIM, value estimates record confidence AND uncertainty, not just a rank.
+;; Per §2 G-REWARD, policy weights are PRIORS (cited provenance), never
+;; reward-trained, until G-REWARD clears.
+;;
+;; Status: :prototyping-forward (a knowingly-incomplete v0, not technical debt;
+;; the deferred pieces are named in :notes, not hidden).
+
+{:futonzero/vocabulary-version "v0"
+ :futonzero/status :prototyping-forward
+ :futonzero/no-actuator? true
+
+ ;; ---- pattern-as-policy proposal -------------------------------------------
+ :policy-proposal
+ {:doc "A proposal to apply a library pattern AS a policy: 'in contexts like C,
+        propose action A.' A PRIOR proposal, not a trained policy — the weight
+        is cited provenance, never reward-trained (G-REWARD). The pattern-ref
+        ties the proposal back to the library so the policy is auditable."
+  :shape
+  {:policy/id            :keyword   ; stable id for this policy proposal
+   :policy/pattern-ref   :string    ; library path, e.g. "war-machine/ideal-actual-gap"
+   :policy/applicability :string    ; context predicate (prose in v0; structured later)
+   :policy/proposed-action
+   {:action/type   :keyword         ; :advance-mission | :address-sorry | ...
+    :action/target :string}
+   :policy/prior-weight  :double    ; [0,1] PRIOR confidence — NOT a trained weight
+   :policy/provenance    :string}   ; where the prior came from (cited, not learned)
+  :example
+  {:policy/id            :policy/ideal-actual-gap-audit
+   :policy/pattern-ref   "war-machine/ideal-actual-gap"
+   :policy/applicability "a capability claims :satisfied but its grounding is unverifiable"
+   :policy/proposed-action {:action/type :advance-mission :action/target "M-capability-star-map"}
+   :policy/prior-weight   0.6
+   :policy/provenance     "Pilot Log Turn 1 (claude-1): cascade-supplied lens that found a real gap"}}
+
+ ;; ---- value estimate -------------------------------------------------------
+ :value-estimate
+ {:doc "An estimate of the EFE/G value of an action or state, carrying explicit
+        confidence AND uncertainty (G-SIM minimum). :source records provenance:
+        :forward-model (today's constant predict-effects), :calibrated (backed
+        by >= the calibratable threshold of measured calibration pairs), or
+        :prior (uncalibrated). :calibration-ref points at the measured-pair
+        evidence so a :calibrated estimate is auditable."
+  :shape
+  {:value/subject         :string   ; action-ref or state-ref being valued
+   :value/G-estimate      :double   ; EFE G estimate
+   :value/confidence      :keyword  ; :low | :med | :high
+   :value/uncertainty     :double   ; explicit uncertainty (e.g. measured |error| band)
+   :value/source          :keyword  ; :forward-model | :calibrated | :prior
+   :value/calibration-ref :string}  ; pointer to calibration evidence when :calibrated
+  :example
+  {:value/subject         "advance-mission M-futonzero-generative"
+   :value/G-estimate      -4.085
+   :value/confidence      :low
+   :value/uncertainty     2.4e-4     ; observed measured-pair error so far (Pilot Turn 5)
+   :value/source          :forward-model ; constant predict-effects; not yet calibrated
+   :value/calibration-ref "futon0/data/futonzero-calibration-evidence.edn"}}
+
+ ;; ---- deferred pieces (named, not hidden) ----------------------------------
+ :notes
+ ["v0 :policy/applicability is PROSE; a structured context/predicate language is deferred."
+  ":policy/prior-weight is a PRIOR, never reward-trained, until G-REWARD clears (anti-laundering)."
+  ":value/source :calibrated requires >= the calibratable threshold of measured pairs (currently accruing; 1 so far)."
+  ":value/uncertainty under today's CONSTANT predict-effects is near-zero by construction; it becomes informative once predictions are target-sensitive (the constant-vs-scaled model test the calibration dataset is being built for)."
+  "no-actuator: nothing here drives the field; execution stays WM-guardrail + hard-gate gated."]}

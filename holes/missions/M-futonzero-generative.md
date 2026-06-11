@@ -197,7 +197,7 @@ residual holes.
 - [x] §4.1 Static rollout ledger — `futon0/data/futonzero-rollout-ledger.edn` (futon0 `2c820cd`, audit `ac4f7ad`, consolidation `fae1979`)
 - [x] §4.4 Calibration audit — `futon0/data/futonzero-calibration-report.edn` + canonical reader `futon3c.aif.calibration` (futon3c `976fb2c` + consolidation)
 - [ ] §4.2 Toy field fixture — small graph with known transitions, to test update math + failure modes
-- [ ] §4.3 Policy/value vocabulary — data shape for pattern-as-policy proposals + value estimates, no live actuator
+- [x] §4.3 Policy/value vocabulary — `holes/missions/M-futonzero-generative.policy-value-vocabulary.edn` (v0, prototyping-forward; pattern-as-policy + value-estimate shapes, no actuator)
 - [ ] §4.5 Reward red-team fixture — cases where a fake win is tempting and the certifier must reject/route
 - [ ] G-SIM clearance — field-simulator adequacy; first MEASURED calibration pairs now accruing via the WM pilot loop
 - [ ] G-REWARD clearance — anti-laundered reward; Pudding Prover G1 arrow-witness binding
