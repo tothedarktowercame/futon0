@@ -20,11 +20,10 @@
   "Directory the war machine babashka scripts run from.
 
 Must be the futon2 project root (NOT futon2/scripts) so the relative
-classpath in `war-machine' (`-cp src:scripts:resources:.') resolves to
-the right paths. The futon2.report.war-machine namespace requires
-futon2.aif.* namespaces which live under src/; if cwd is futon2/scripts/
-those won't be on bb's classpath and the load fails with `Could not
-locate futon2/aif/action_proposer.clj' (operator-surfaced 2026-05-24)."
+Babashka paths in `war-machine' resolve to the right files. The
+futon2.report.war-machine namespace requires futon2.aif.* namespaces
+from futon2/src and reads futon3c.aif.mission-head from futon3c/src;
+the latter also needs malli on the Babashka deps classpath."
   :type 'directory
   :group 'war-machine)
 
@@ -42,6 +41,10 @@ locate futon2/aif/action_proposer.clj' (operator-surfaced 2026-05-24)."
 
 (defvar war-machine--process nil
   "Current war-machine background process.")
+
+(defconst war-machine--bb-deps
+  "{:paths [\"src\" \"scripts\" \"resources\" \".\" \"/home/joe/code/futon3c/src\"] :deps {metosin/malli {:mvn/version \"0.16.3\"}}}"
+  "Babashka deps map for the markdown War Machine runner.")
 
 (defun war-machine--render-buffer (output)
   "Display OUTPUT in the war machine buffer with markdown fontification."
@@ -85,7 +88,8 @@ With prefix arg DAYS, override the lookback window."
     (message "War Machine: scanning (%d-day window)..." d)
     (setq war-machine--process
           (start-process "war-machine" proc-buf
-                         "bb" "-cp" "src:scripts:resources:." "-m" "futon2.report.war-machine"
+                         "bb" "-Sdeps" war-machine--bb-deps
+                         "-m" "futon2.report.war-machine"
                          (number-to-string d)))
     (set-process-sentinel war-machine--process #'war-machine--sentinel)))
 
