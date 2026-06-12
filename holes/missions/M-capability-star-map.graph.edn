@@ -224,6 +224,16 @@
    :attested true,
    :region :kit,
    :grounding "pudding-prover.bb mint"},
+  :kit-observables
+  {:title
+   "Pudding-prover observable tracking — render + observe! verb over the :observables vector (decision-points the prover watches)",
+   :status :satisfied,
+   :scope [],
+   :minted-by ["builder/pudding-prover"],
+   :pre-registered? true,
+   :attested true,
+   :region :kit,
+   :grounding "pudding-prover.bb observe!/render (futon7 69f690a + fb68d83; render shows observables 1/8 observed)"},
   :kit-outbox
   {:title
    "Pudding-prover outbox — daily-scan → interest-network → EOI → staged outbox; pieces exist, integration held",
@@ -824,4 +834,5 @@
   {:from "M-hypergraph-operator",
    :to :hypergraph-operator,
    :type :produces}
-  {:from "builder/pudding-prover", :to :kit-certify, :type :produces}]}
+  {:from "builder/pudding-prover", :to :kit-certify, :type :produces}
+  {:from "builder/pudding-prover", :to :kit-observables, :type :produces}]}
