@@ -93,6 +93,7 @@
         "../futon4/dev/arxana-xtdb-browse.el"
         "../futon4/dev/arxana-lab.el"
         "../futon0/contrib/futon-config.el"
+        "../futon0/contrib/futon-buffer-cleaner.el"
         "../futon0/contrib/futon-helper.el"
         "../futon0/contrib/futon-hot.el"
         "../futon0/contrib/hud-service.el"
@@ -118,6 +119,9 @@
 
 (add-hook 'my-chatgpt-shell-hot-reload-after-batch-hook
           #'arxana-reload-after-hot-reload-batch)
+
+(require 'futon-buffer-cleaner)
+(futon-buffer-cleaner-enable)
 
 (require 'futon-helper)
 (require 'drawbridge-eval)
