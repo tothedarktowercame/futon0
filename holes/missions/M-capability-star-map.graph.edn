@@ -74,6 +74,12 @@
    :minted-by [],
    :pre-registered? true,
    :frontier true,
+   :operator-disposition
+   {:state :operator-witnessed,
+    :reason "Send-side of M-eoi-outbox-management — witnessed by operator review+send (the consent gate / Rembrandt-Hancock), not a FUTON deliverable (author≠send).",
+    :since "2026-06-09",
+    :gated-by :consent-gate,
+    :mission "M-eoi-outbox-management"},
    :region :t2},
   :cold-response-conversion
   {:title
@@ -83,6 +89,12 @@
    :minted-by [],
    :pre-registered? true,
    :frontier true,
+   :operator-disposition
+   {:state :operator-witnessed,
+    :reason "Send-side of M-eoi-outbox-management — witnessed by operator review+send + the world's reply (the consent gate), not a FUTON deliverable (author≠send).",
+    :since "2026-06-09",
+    :gated-by :consent-gate,
+    :mission "M-eoi-outbox-management"},
    :region :t2},
   :cold-send-response
   {:title "Cold send draws a response — n_outreach remains zero",
@@ -91,6 +103,12 @@
    :minted-by [],
    :pre-registered? true,
    :frontier true,
+   :operator-disposition
+   {:state :operator-witnessed,
+    :reason "Send-side of M-eoi-outbox-management — witnessed by operator review+send (the consent gate / Rembrandt-Hancock), not a FUTON deliverable (author≠send).",
+    :since "2026-06-09",
+    :gated-by :consent-gate,
+    :mission "M-eoi-outbox-management"},
    :region :t2},
   :daily-scan-lead-foraging
   {:attested true,
@@ -138,6 +156,13 @@
    :minted-by [],
    :pre-registered? true,
    :frontier true,
+   :operator-disposition
+   {:state :parked,
+    :reason
+    "Multi-party capability — needs Joe + Rob + MFUTON + a superpod + sysadmins; not solo-FUTON. Capability wanted (and the things leading to it), but parked rather than mission-chartered for now.",
+    :since "2026-06-09",
+    :revisit "2026-06-16 (pending superpod results)",
+    :requires-coordination [:joe :rob :mfuton :superpod :sysadmins]},
    :region :t3},
   :hypergraph-operator
   {:title
@@ -372,7 +397,16 @@
    :grounding
    "futon3c/src/futon3c/wm/{guardrails,needs_you,outing}.clj; futon2 mission-registry :open-hole-count"}},
  :missions
- {"M-agency-rebuild"
+ {"M-eoi-outbox-management"
+  {:scope [],
+   :produces [:kit-intake :kit-cadence :kit-outbox :cold-eoi-authored-outbox],
+   :real-mission? true,
+   :next-exit-operator-verify? true,
+   :open-hole-count 1,
+   :phase :identify,
+   :status :open,
+   :path "/home/joe/code/futon5a/holes/missions/M-eoi-outbox-management.md"},
+  "M-agency-rebuild"
   {:scope [],
    :produces [:agency],
    :real-mission? true,
