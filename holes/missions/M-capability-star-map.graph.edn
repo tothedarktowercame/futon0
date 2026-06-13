@@ -164,6 +164,22 @@
     :revisit "2026-06-16 (pending superpod results)",
     :requires-coordination [:joe :rob :mfuton :superpod :sysadmins]},
    :region :t3},
+  :distributed-proofreaders
+  {:title
+   "Distributed-Proofreaders: structure-first recognition + QA over the math corpus — the solo-FUTON, CPU-local core of arxiv mining",
+   :status :active,
+   :scope [:math-ct-prior-substrate],
+   :minted-by ["M-distributed-proofreaders"],
+   :pre-registered? true,
+   :attested true,
+   :grounding
+   "scripts/anatomy_v0_sweep.py (per-paper extraction + role resolution + loss census); recognizer-registry PoC (4487 shared-notation macros over 9795 papers); DP loop turn-1 (A/B/C2 false-unknown fixes; 0809.2517 unknowns 130->15, symbol-table-overlap 73->0).",
+   :operator-disposition
+   {:state :active,
+    :reason
+    "CPU-local, solo-doable core of full-arxiv-mining; runs on Joe's laptop with NNexus + latexml + the superpod CT output. Chartered M-distributed-proofreaders 2026-06-13.",
+    :since "2026-06-13"},
+   :region :t3},
   :hypergraph-operator
   {:title
    "JSDQ hypergraph operator — person-facing 8-sector/39-item capability model over Joe's market-interface topology",
@@ -532,6 +548,16 @@
    :status :complete,
    :path
    "/home/joe/code/futon3/holes/missions/M-live-geometric-stack.md"},
+  "M-distributed-proofreaders"
+  {:scope [:math-ct-prior-substrate],
+   :produces [:distributed-proofreaders],
+   :real-mission? true,
+   :next-exit-operator-verify? false,
+   :open-hole-count 1,
+   :phase :derive,
+   :status :active,
+   :path
+   "/home/joe/code/futon6/holes/missions/M-distributed-proofreaders.md"},
   "M-prior-mathematics"
   {:scope [],
    :produces [:math-ct-prior-substrate],
@@ -779,6 +805,15 @@
   {:from :full-arxiv-mining,
    :to :math-ct-prior-substrate,
    :type :requires}
+  {:from :distributed-proofreaders,
+   :to :math-ct-prior-substrate,
+   :type :requires}
+  {:from :full-arxiv-mining,
+   :to :distributed-proofreaders,
+   :type :requires}
+  {:from "M-distributed-proofreaders",
+   :to :distributed-proofreaders,
+   :type :produces}
   {:from :cold-eoi-sent, :to :kit-intake, :type :requires}
   {:from :cold-send-response, :to :kit-cadence, :type :requires}
   {:from :cold-eoi-authored-outbox, :to :kit-outbox, :type :requires}
