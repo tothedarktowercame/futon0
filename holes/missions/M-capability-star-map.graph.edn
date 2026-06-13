@@ -180,6 +180,26 @@
     "CPU-local, solo-doable core of full-arxiv-mining; runs on Joe's laptop with NNexus + latexml + the superpod CT output. Chartered M-distributed-proofreaders 2026-06-13.",
     :since "2026-06-13"},
    :region :t3},
+  :concept-authority
+  {:title
+   "Concept authority — NNexus + nLab + CT-term-prior, brought online for role-gap resolution",
+   :status :satisfied,
+   :scope [],
+   :minted-by ["M-distributed-proofreaders"],
+   :attested true,
+   :grounding
+   "data/background-corpus-index.json (80586 NNexus rows + 20653 nLab names + 1678 CT-prior; 130960 term keys); scripts/concept_authority.py (legacy reuse — resolves \\Hom/\\colim/\\End etc. to nnexus/nlab targets).",
+   :region :t3},
+  :latexml-fragment-parse
+  {:title
+   "LaTeXML fragment parse — per-snippet deep parse with the paper's macros prepended",
+   :status :satisfied,
+   :scope [],
+   :minted-by ["M-distributed-proofreaders"],
+   :attested true,
+   :grounding
+   "latexmlmath 0.8.8 (verified: \\Hom(A,B) -> MathML); golden-graphs/latexml-math-roles.tsv (967-cseq role lexicon mined from the bindings). Legacy reuse — fragment-scale dodges the whole-document fragility.",
+   :region :t3},
   :hypergraph-operator
   {:title
    "JSDQ hypergraph operator — person-facing 8-sector/39-item capability model over Joe's market-interface topology",
@@ -810,6 +830,12 @@
    :type :requires}
   {:from :full-arxiv-mining,
    :to :distributed-proofreaders,
+   :type :requires}
+  {:from :distributed-proofreaders,
+   :to :concept-authority,
+   :type :requires}
+  {:from :distributed-proofreaders,
+   :to :latexml-fragment-parse,
    :type :requires}
   {:from "M-distributed-proofreaders",
    :to :distributed-proofreaders,
