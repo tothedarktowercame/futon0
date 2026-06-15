@@ -139,6 +139,7 @@
 (require 'codex-repl)
 (require 'futon3c-code-blocks)
 (require 'smart-cursor)
+(require 'futon-branches)
 
 ;;; Futon 4:
 
