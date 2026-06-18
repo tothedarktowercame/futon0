@@ -94,3 +94,18 @@ creates it if missing.
   unconditionally (native PyTorch sampling, proven faithful), instead of only when
   `nvcc` is absent — `nvcc` present does not imply the flashinfer sampler compiles.
   If vLLM ever fails engine init with a `ninja`/flashinfer error, this is the knob.
+- **Model download — use `hf`, and pre-pull (2026-06-18):** vLLM's *inline*
+  downloader stalled mid-fetch on the box (unauthenticated HF Hub throttling —
+  frozen `.incomplete` blobs, no progress, no `HF_TOKEN`). The fix is to pre-pull
+  the model with the HF CLI **before** serving, in a resume+retry loop:
+  ```bash
+  source ~/mark4-venv/bin/activate
+  until hf download hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4; do sleep 8; done
+  ```
+  Then launch the server — it loads from the complete cache in ~70s with no
+  download. NOTE: it is **`hf download`**, NOT `huggingface-cli download` —
+  `huggingface-cli` is deprecated and now exits immediately with a "use `hf`"
+  hint (which looks like a silent failure in a retry loop). `hf` opens many
+  parallel connections and pulls the ~40 GB in ~1–2 min once it's the one
+  fetching. (Setting an `HF_TOKEN` would also lift the throttle.) TODO: fold this
+  pre-pull into `linode-4gpu-setup.sh` so the inline-fetch stall can't recur.
