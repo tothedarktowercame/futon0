@@ -53,14 +53,18 @@ Then clone or rsync `futon6`, and run:
 
 ```bash
 cd ~/futon6
-scripts/linode-4gpu-setup.sh
+scripts/linode-postsetup-deps.sh    # CPU-side gate deps (babashka); idempotent
+scripts/linode-4gpu-setup.sh        # vLLM 70B serve
 scripts/linode-4gpu-run.sh
 ```
 
-`linode-4gpu-setup.sh` creates `$HOME/mark4-venv` and serves vLLM with the
-preregistered mark4 flags. `linode-4gpu-run.sh` uses the same venv by default,
-rebuilds or validates enriched IATC candidates, and refuses to call the model on
-pre-enrichment candidates.
+`linode-postsetup-deps.sh` installs the dependencies the IATC pipeline shells out
+to (currently babashka `bb`, for the per-paper repair/argcheck/semcheck gates) so
+the staged runner doesn't die mid-run on a missing binary. It's idempotent — run
+it on every fresh box. `linode-4gpu-setup.sh` creates `$HOME/mark4-venv` and serves
+vLLM with the preregistered mark4 flags. `linode-4gpu-run.sh` uses the same venv by
+default, rebuilds or validates enriched IATC candidates, and refuses to call the
+model on pre-enrichment candidates.
 
 ## Updating the StackScript
 
@@ -82,3 +86,11 @@ creates it if missing.
   not need to do manual driver repair before the mark4 run.
 - If `nvidia-smi` fails after reboot, inspect `/var/log/mark4-gpu-bootstrap.log`
   on the Linode.
+- **flashinfer sampler (fixed in `linode-4gpu-setup.sh` 2026-06-18):** on the
+  first real run, vLLM's engine core died at startup because the flashinfer
+  *sampler* JIT-compiles CUDA kernels that don't build against the StackScript's
+  CUDA 12.0 toolchain (flashinfer 0.6.12 cub: `BlockAdjacentDifference ... has no
+  member "FlagHeads"`). The setup script now exports `VLLM_USE_FLASHINFER_SAMPLER=0`
+  unconditionally (native PyTorch sampling, proven faithful), instead of only when
+  `nvcc` is absent — `nvcc` present does not imply the flashinfer sampler compiles.
+  If vLLM ever fails engine init with a `ninja`/flashinfer error, this is the knob.
