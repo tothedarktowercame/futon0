@@ -100,6 +100,7 @@
         "../futon4/dev/arxana-xtdb-browse.el"
         "../futon4/dev/arxana-lab.el"
         "../futon0/contrib/futon-config.el"
+        "../futon0/contrib/loop-lag.el"
         "../futon0/contrib/futon-buffer-cleaner.el"
         "../futon0/contrib/futon-helper.el"
         "../futon0/contrib/futon-hot.el"
@@ -135,6 +136,12 @@
 
 (require 'futon-helper)
 (require 'drawbridge-eval)
+
+;; Event-loop lag indicator: mode-line light + `loop-lag-report'.  Retrospective
+;; heartbeat that measures how long the Emacs main thread was blocked (e.g. by
+;; synchronous Drawbridge/emacsclient calls during turn finalisation).
+(require 'loop-lag)
+(loop-lag-mode 1)
 
 ;;; Futon 3:
 
