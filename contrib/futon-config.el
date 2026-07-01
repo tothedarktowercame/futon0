@@ -26,6 +26,12 @@
 (require 'usage-report)
 (require 'war-machine)
 
+;; As-needed Agency cleanup: M-x repl-reaper-list / repl-reaper-reap.
+(require 'repl-reaper)
+
+;; Human nicknames for agent REPL buffers: M-x agent-nick-set, jump with C-c b.
+(require 'agent-nick)
+
 ;; `stack-hud-blocks' is a defcustom whose default already includes `usage'.
 ;; If a previously-saved value pre-dates that addition, splice the block in
 ;; after `services' so the HUD picks it up without a customize roundtrip.
@@ -60,6 +66,7 @@
         "../futon3c/emacs/codex-repl.el"
         "../futon3c/emacs/futon3c-code-blocks.el"
         "../futon3c/emacs/smart-cursor.el"
+        "../futon3c/emacs/futon-agency-ws.el"
         "../futon4/dev/bootstrap.el"
         "../futon4/dev/arxana-article.el"
         "../futon4/dev/arxana-browser-docbook.el"
@@ -108,7 +115,10 @@
 	"../futon4/dev/arxana-browser-chorus.el"
 	"../futon4/dev/arxana-browser-essays.el"
 	"../futon4/dev/arxana-browser-essays-compiled.el"
-	"../futon4/dev/arxana-browser-essays-wikibooks.el"))
+	"../futon4/dev/arxana-browser-essays-wikibooks.el"
+	"../futon3c/emacs/mission-mode.el"
+	"../futon3c/emacs/session-overview.el"
+	"../futon3c/emacs/session-mode.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
@@ -140,6 +150,19 @@
 (require 'futon3c-code-blocks)
 (require 'smart-cursor)
 (require 'futon-branches)
+(require 'mission-mode)   ; live mission scope view (M-x mission-mode) — donor for session-mode
+(require 'session-overview)   ; live session weak-scope view (M-x session-overview)
+(require 'session-mode)       ; deterministic NNexus markup of the live buffer (M-x session-mode)
+
+;; Shared Agency WS observer (single socket, one ordered reader): HUD +
+;; completion bubbles + park-ready fast-path.  Connects as the `emacs-hud'
+;; observer (broadcast-only, not an invocable agent — see
+;; futon3c/holes/excursions/E-agency-ws-cutover.md).  Guarded so a missing
+;; server or websocket package at init never aborts the rest of this config;
+;; the connector's own reconnect timer handles a not-yet-up :7070.
+(require 'futon-agency-ws)
+(with-demoted-errors "futon-agency-ws enable: %S"
+  (futon-agency-hud-enable))
 
 ;;; Futon 4:
 
