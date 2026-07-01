@@ -72,6 +72,8 @@ least this many ms (keeps fast calls out of the attribution slot)."
   "Plist describing the most recent instrumented synchronous call that ran long:
 \(:what LABEL :detail STRING :ended TIME :dur-ms N).")
 (defvar loop-lag--instrumented nil "List of (SYMBOL . ADVICE-NAME) currently advised.")
+(defvar loop-lag--last-gc-elapsed 0.0 "`gc-elapsed' at the previous tick.")
+(defvar loop-lag--last-gcs-done 0 "`gcs-done' at the previous tick.")
 
 (defvar loop-lag--indicator '(:eval (loop-lag--mode-line))
   "The `global-mode-string' construct this mode installs.")
@@ -86,7 +88,9 @@ least this many ms (keeps fast calls out of the attribution slot)."
   (setq loop-lag--cmd-start (current-time)))
 
 (defun loop-lag--post-command ()
-  (when loop-lag--cmd-start
+  ;; Only record real commands; a nil `this-command' bracket spans idle/read
+  ;; periods and yields bogus multi-minute "command nil" durations.
+  (when (and loop-lag--cmd-start this-command)
     (let ((dur (* 1000 (float-time (time-subtract (current-time)
                                                   loop-lag--cmd-start)))))
       (setq loop-lag--last-command
@@ -104,25 +108,30 @@ least this many ms (keeps fast calls out of the attribution slot)."
 That means the recorded call was still running during the stall."
   (and plist (time-less-p stall-start (plist-get plist :ended))))
 
-(defun loop-lag--attribution (stall-start)
+(defun loop-lag--attribution (stall-start gc-ms gc-n)
   "Best-effort attribution for a stall that began around STALL-START.
-Prefers an instrumented synchronous blocker; else a long command; else falls
-back to the generic non-command bucket (timer / process-filter / sentinel /
-sync I/O we did not instrument)."
+GC-MS/GC-N are the GC time and collection count observed during the stall.
+Attributes to the largest known contributor: instrumented blocker, GC, or a
+real command; else the generic non-command bucket (uninstrumented timer /
+process-filter / sentinel / sync I/O)."
   (let* ((lb (and (loop-lag--in-window-p loop-lag--last-blocker stall-start)
                   loop-lag--last-blocker))
          (lc (and (loop-lag--in-window-p loop-lag--last-command stall-start)
+                  (plist-get loop-lag--last-command :command)
                   (>= (plist-get loop-lag--last-command :dur-ms) loop-lag-threshold-ms)
-                  loop-lag--last-command)))
+                  loop-lag--last-command))
+         (lb-ms (if lb (plist-get lb :dur-ms) 0))
+         (lc-ms (if lc (plist-get lc :dur-ms) 0))
+         (best (max lb-ms gc-ms lc-ms)))
     (cond
-     ;; Both in-window: attribute to the larger of the two.
-     ((and lb lc)
-      (if (>= (plist-get lb :dur-ms) (plist-get lc :dur-ms))
-          (loop-lag--fmt-blocker lb)
-        (format "command %s (%.0fms)" (plist-get lc :command) (plist-get lc :dur-ms))))
-     (lb (loop-lag--fmt-blocker lb))
-     (lc (format "command %s (%.0fms)" (plist-get lc :command) (plist-get lc :dur-ms)))
-     (t "non-command (timer / process-filter / sentinel / sync I/O)"))))
+     ((< best loop-lag-threshold-ms)
+      (if (> gc-ms 0)
+          (format "non-command (+%.0fms GC in %d)" gc-ms gc-n)
+        "non-command (timer / process-filter / sentinel / sync I/O)"))
+     ((and (= best gc-ms) (> gc-ms 0))
+      (format "GC (%.0fms in %d collection%s)" gc-ms gc-n (if (= gc-n 1) "" "s")))
+     ((= best lb-ms) (loop-lag--fmt-blocker lb))
+     (t (format "command %s (%.0fms)" (plist-get lc :command) lc-ms)))))
 
 ;;; Instrumentation of synchronous entry points -------------------------------
 
@@ -184,14 +193,18 @@ is applied to the call's arg list to produce a short detail string (guarded)."
 (defun loop-lag--tick ()
   (let* ((now (current-time))
          (gap (float-time (time-subtract now (or loop-lag--last now))))
-         (lag-ms (max 0.0 (* 1000 (- gap loop-lag-interval)))))
-    (setq loop-lag--last now)
+         (lag-ms (max 0.0 (* 1000 (- gap loop-lag-interval))))
+         (gc-ms (max 0.0 (* 1000 (- gc-elapsed loop-lag--last-gc-elapsed))))
+         (gc-n (max 0 (- gcs-done loop-lag--last-gcs-done))))
+    (setq loop-lag--last now
+          loop-lag--last-gc-elapsed gc-elapsed
+          loop-lag--last-gcs-done gcs-done)
     (push (cons now lag-ms) loop-lag--history)
     (loop-lag--trim loop-lag--history loop-lag-history-max)
     (when (>= lag-ms loop-lag-threshold-ms)
       (let ((stall-start (time-subtract now (seconds-to-time (/ lag-ms 1000.0)))))
-        (push (list :at now :lag-ms lag-ms
-                    :attribution (loop-lag--attribution stall-start))
+        (push (list :at now :lag-ms lag-ms :gc-ms gc-ms :gc-count gc-n
+                    :attribution (loop-lag--attribution stall-start gc-ms gc-n))
               loop-lag--stalls)
         (loop-lag--trim loop-lag--stalls loop-lag-stalls-max)))
     (force-mode-line-update t)))
@@ -227,7 +240,9 @@ history and attributed stalls."
   :global t :lighter nil
   (if loop-lag-mode
       (progn
-        (setq loop-lag--last (current-time))
+        (setq loop-lag--last (current-time)
+              loop-lag--last-gc-elapsed gc-elapsed
+              loop-lag--last-gcs-done gcs-done)
         (add-hook 'pre-command-hook #'loop-lag--pre-command)
         (add-hook 'post-command-hook #'loop-lag--post-command)
         (unless (member loop-lag--indicator global-mode-string)
@@ -269,10 +284,14 @@ history and attributed stalls."
         (erase-buffer)
         (insert (format "loop-lag report   interval=%ss  threshold=%sms  window=%ss\n"
                         loop-lag-interval loop-lag-threshold-ms loop-lag-window))
-        (insert (format "samples=%d   stalls(>=%sms)=%d   peak=%.0fms   monitor=%s\n\n"
+        (insert (format "samples=%d   stalls(>=%sms)=%d   peak=%.0fms   monitor=%s\n"
                         (length lags) loop-lag-threshold-ms (length stalls)
                         (if lags (apply #'max lags) 0)
                         (if (timerp loop-lag--timer) "on" "off")))
+        (insert (format "GC: %d collections, %.0fs total, avg %.0fms, threshold %.0fMB\n\n"
+                        gcs-done gc-elapsed
+                        (if (> gcs-done 0) (/ (* 1000.0 gc-elapsed) gcs-done) 0)
+                        (/ gc-cons-threshold 1048576.0)))
         (insert "lag distribution:\n")
         (dolist (b (loop-lag--bucket-counts lags))
           (insert (format "  %-14s : %d\n" (car b) (cdr b))))
