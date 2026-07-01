@@ -44,6 +44,17 @@
   "Maximum number of stall records retained."
   :type 'integer)
 
+(defcustom loop-lag-instrument-syncio t
+  "When non-nil, `loop-lag-mode' instruments known synchronous entry points
+so a stall can be attributed to the exact blocking call rather than the generic
+\"non-command\" bucket.  See `loop-lag--install-instrumentation'."
+  :type 'boolean)
+
+(defcustom loop-lag-blocker-min-ms 150
+  "An instrumented call is recorded as a candidate blocker only if it ran at
+least this many ms (keeps fast calls out of the attribution slot)."
+  :type 'number)
+
 (defface loop-lag-ok-face '((t :foreground "green3"))
   "Face for the calm (no recent stall) indicator.")
 (defface loop-lag-warn-face '((t :foreground "orange"))
@@ -57,6 +68,10 @@
 (defvar loop-lag--stalls nil "List of stall plists, newest first.")
 (defvar loop-lag--last-command nil "Plist describing the most recent command.")
 (defvar loop-lag--cmd-start nil "Start time of the in-flight command.")
+(defvar loop-lag--last-blocker nil
+  "Plist describing the most recent instrumented synchronous call that ran long:
+\(:what LABEL :detail STRING :ended TIME :dur-ms N).")
+(defvar loop-lag--instrumented nil "List of (SYMBOL . ADVICE-NAME) currently advised.")
 
 (defvar loop-lag--indicator '(:eval (loop-lag--mode-line))
   "The `global-mode-string' construct this mode installs.")
@@ -77,18 +92,94 @@
       (setq loop-lag--last-command
             (list :command this-command :ended (current-time) :dur-ms dur)))))
 
+(defun loop-lag--fmt-blocker (b)
+  (let ((detail (plist-get b :detail)))
+    (format "%s%s (%.0fms)"
+            (plist-get b :what)
+            (if (and detail (not (string-empty-p detail))) (concat " " detail) "")
+            (plist-get b :dur-ms))))
+
+(defun loop-lag--in-window-p (plist stall-start)
+  "Non-nil if PLIST's :ended falls at/after STALL-START.
+That means the recorded call was still running during the stall."
+  (and plist (time-less-p stall-start (plist-get plist :ended))))
+
 (defun loop-lag--attribution (stall-start)
   "Best-effort attribution for a stall that began around STALL-START.
-If a command ran long and ended within the stall window, name it; otherwise
-the block came from a timer / process-filter / sentinel / synchronous I/O,
-none of which run through the command loop."
-  (let ((lc loop-lag--last-command))
-    (if (and lc
-             (>= (plist-get lc :dur-ms) loop-lag-threshold-ms)
-             (time-less-p stall-start (plist-get lc :ended)))
-        (format "command %s (%.0fms)"
-                (plist-get lc :command) (plist-get lc :dur-ms))
-      "non-command (timer / process-filter / sentinel / sync I/O)")))
+Prefers an instrumented synchronous blocker; else a long command; else falls
+back to the generic non-command bucket (timer / process-filter / sentinel /
+sync I/O we did not instrument)."
+  (let* ((lb (and (loop-lag--in-window-p loop-lag--last-blocker stall-start)
+                  loop-lag--last-blocker))
+         (lc (and (loop-lag--in-window-p loop-lag--last-command stall-start)
+                  (>= (plist-get loop-lag--last-command :dur-ms) loop-lag-threshold-ms)
+                  loop-lag--last-command)))
+    (cond
+     ;; Both in-window: attribute to the larger of the two.
+     ((and lb lc)
+      (if (>= (plist-get lb :dur-ms) (plist-get lc :dur-ms))
+          (loop-lag--fmt-blocker lb)
+        (format "command %s (%.0fms)" (plist-get lc :command) (plist-get lc :dur-ms))))
+     (lb (loop-lag--fmt-blocker lb))
+     (lc (format "command %s (%.0fms)" (plist-get lc :command) (plist-get lc :dur-ms)))
+     (t "non-command (timer / process-filter / sentinel / sync I/O)"))))
+
+;;; Instrumentation of synchronous entry points -------------------------------
+
+(defun loop-lag-instrument (fn &optional label detail-fn)
+  "Advise FN (a symbol) to record itself as the last blocker when a call runs
+>= `loop-lag-blocker-min-ms'.  LABEL defaults to FN's name; DETAIL-FN, if given,
+is applied to the call's arg list to produce a short detail string (guarded)."
+  (when (and (fboundp fn) (not (assq fn loop-lag--instrumented)))
+    (let* ((label (or label (symbol-name fn)))
+           (advice-name (intern (concat "loop-lag-instr:" label)))
+           (advice
+            (lambda (orig &rest args)
+              (let ((start (current-time)))
+                (unwind-protect (apply orig args)
+                  (let ((dur (* 1000 (float-time (time-subtract (current-time) start)))))
+                    (when (>= dur loop-lag-blocker-min-ms)
+                      (setq loop-lag--last-blocker
+                            (list :what label
+                                  :detail (and detail-fn
+                                               (ignore-errors (funcall detail-fn args)))
+                                  :ended (current-time) :dur-ms dur)))))))))
+      (advice-add fn :around advice (list (cons 'name advice-name)))
+      (push (cons fn advice-name) loop-lag--instrumented))))
+
+(defun loop-lag--remove-instrumentation ()
+  (dolist (pair loop-lag--instrumented)
+    (when (fboundp (car pair))
+      (advice-remove (car pair) (cdr pair))))
+  (setq loop-lag--instrumented nil))
+
+(defun loop-lag--truncate (s &optional n)
+  (let ((s (format "%s" s)) (n (or n 90)))
+    (if (> (length s) n) (concat (substring s 0 n) "…") s)))
+
+(defun loop-lag--url-detail (args)
+  "Detail for `url-retrieve-synchronously': the target URL (first arg)."
+  (let ((u (car args)))
+    (loop-lag--truncate (if (stringp u) u (ignore-errors (url-recreate-url u))))))
+
+(defun loop-lag--call-process-detail (args)
+  "Detail for `call-process': PROGRAM plus its argv (URLs surface for curl)."
+  ;; (PROGRAM &optional INFILE DESTINATION DISPLAY &rest PROGRAM-ARGS)
+  (let ((program (car args))
+        (pargs (nthcdr 4 args)))
+    (loop-lag--truncate (string-join (cons (format "%s" program)
+                                           (mapcar (lambda (a) (format "%s" a)) pargs))
+                                     " "))))
+
+(defun loop-lag--install-instrumentation ()
+  "Instrument the known synchronous entry points (hard blockers first)."
+  ;; call-process is a HARD block (no timer yielding) — the likeliest source of
+  ;; multi-second stalls via synchronous curl.  url-retrieve-synchronously runs
+  ;; a nested loop that DOES yield to timers, so it stalls less, but instrument
+  ;; it too for completeness.
+  (loop-lag-instrument 'call-process "call-process" #'loop-lag--call-process-detail)
+  (loop-lag-instrument 'url-retrieve-synchronously
+                       "url-retrieve-synchronously" #'loop-lag--url-detail))
 
 (defun loop-lag--tick ()
   (let* ((now (current-time))
@@ -142,6 +233,7 @@ history and attributed stalls."
         (unless (member loop-lag--indicator global-mode-string)
           (setq global-mode-string
                 (append (or global-mode-string '("")) (list loop-lag--indicator))))
+        (when loop-lag-instrument-syncio (loop-lag--install-instrumentation))
         (when (timerp loop-lag--timer) (cancel-timer loop-lag--timer))
         (setq loop-lag--timer
               (run-with-timer loop-lag-interval loop-lag-interval #'loop-lag--tick)))
@@ -149,6 +241,7 @@ history and attributed stalls."
     (setq loop-lag--timer nil)
     (remove-hook 'pre-command-hook #'loop-lag--pre-command)
     (remove-hook 'post-command-hook #'loop-lag--post-command)
+    (loop-lag--remove-instrumentation)
     (setq global-mode-string (delete loop-lag--indicator global-mode-string))
     (force-mode-line-update t)))
 
