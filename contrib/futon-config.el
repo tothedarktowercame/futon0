@@ -143,6 +143,17 @@
 (require 'loop-lag)
 (loop-lag-mode 1)
 
+;; Memory pressure: gcmh raises gc-cons-threshold to its *high* value during
+;; activity, so on a shared 30GB box (Firefox ~15GB + JVM ~5GB) the Emacs heap
+;; balloons toward ~2GB precisely during long agent turns and gets swapped —
+;; then faulting those pages back in (GC, process filters) is the multi-second
+;; stall loop-lag reports.  Cap the active-burst threshold so bursts stay
+;; bounded while GC still mostly stays out of the typing path.
+(with-eval-after-load 'gcmh
+  (setq gcmh-high-cons-threshold (* 256 1024 1024)))
+(when (boundp 'gcmh-high-cons-threshold)
+  (setq gcmh-high-cons-threshold (* 256 1024 1024)))
+
 ;;; Futon 3:
 
 (setq tatami-actor "Joe Corneli")
