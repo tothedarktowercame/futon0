@@ -238,10 +238,13 @@
 (load-file "~/code/futon4/dev/bootstrap.el")
 (arxana-load)
 
-;; Enable Reazon-backed invariants as hard gates for Arxana workflows.
-(setq arxana-window-constraints-enable t
-      arxana-data-constraints-enable t
-      arxana-window-constraints-failure-action 'error
+;; Reazon-backed window/data invariants are OPT-IN (M-x arxana-window-constraints-mode),
+;; like loop-lag-mode.  Left OFF by default (2026-07-02): forcing them on ran
+;; arxana-ui-refresh's Reazon validation on every *global*
+;; window-configuration-change — a logic query per window change — causing
+;; multi-second redisplay freezes even when Arxana wasn't in use.  Keep the
+;; strict failure-action preference for when the mode IS turned on.
+(setq arxana-window-constraints-failure-action 'error
       arxana-data-constraints-failure-action 'error)
 
 (setq arxana-lab-futon1-server "http://localhost:7071/api/alpha")
