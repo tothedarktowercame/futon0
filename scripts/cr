@@ -421,7 +421,7 @@ if $start_new; then
   cr_start_new_elisp="t"
 fi
 
-emacs_socket="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" --timeout "${emacsclient_timeout}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
+emacs_socket="${FUTON3C_EMACS_SOCKET:-${socket}}"
 
 aid=""
 restore_mode=false
