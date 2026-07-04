@@ -181,17 +181,35 @@ build_restore_payload() {
 find_live_claude_agents_for_session() {
   local sid="$1"
   [[ -n "${sid}" ]] || return 0
-  curl -sS --max-time 5 "${evidence_base%/}/api/alpha/agents" 2>/dev/null | \
-    python3 - "$sid" <<'PY'
+  # NOTE: do NOT pipe curl into the heredoc python — `python3 - <<'PY'` takes
+  # its program from stdin, so a pipe feeding it is silently clobbered and
+  # json.load(sys.stdin) sees EOF. That bug made this lookup return zero
+  # matches unconditionally, so `cr SESSION-ID` minted a fresh nick every
+  # time instead of attaching (2026-07-04, claude-14 incident).
+  local roster
+  roster="$(curl -sS --max-time 5 "${evidence_base%/}/api/alpha/agents" 2>/dev/null)" || true
+  [[ -n "${roster}" ]] || return 0
+  CR_ROSTER_JSON="${roster}" python3 - "$sid" <<'PY'
 import json
+import os
 import re
 import sys
+from pathlib import Path
 
 sid = sys.argv[1]
 try:
-    payload = json.load(sys.stdin)
+    payload = json.loads(os.environ.get("CR_ROSTER_JSON") or "")
 except Exception:
     raise SystemExit(0)
+
+def session_file_sid(agent_id):
+    # Durable per-nick session hint; survives transient roster states
+    # (e.g. mid-invoke) where the roster's session-id may lag or be nil.
+    try:
+        text = Path(f"/tmp/futon-session-id-{agent_id}").read_text()
+    except OSError:
+        return None
+    return text.strip().splitlines()[-1] if text.strip() else None
 
 agents = payload.get("agents") or {}
 matches = []
@@ -200,12 +218,11 @@ for agent_id, info in agents.items():
         continue
     if info.get("type") != "claude":
         continue
-    if info.get("session-id") != sid:
-        continue
     metadata = info.get("metadata") or {}
     if metadata.get("proxy?") or metadata.get("remote?"):
         continue
-    matches.append(agent_id)
+    if info.get("session-id") == sid or session_file_sid(agent_id) == sid:
+        matches.append(agent_id)
 
 def sort_key(agent_id: str):
     m = re.match(r"^claude-(\d+)$", agent_id)
