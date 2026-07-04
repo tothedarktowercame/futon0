@@ -23,6 +23,7 @@ set -euo pipefail
 evidence_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
 session_file="${CLAUDE_SESSION_FILE:-/tmp/futon-session-id}"
 emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
+emacsclient_timeout="${EMACSCLIENT_TIMEOUT:-8}"
 script_real="$(readlink -f "${BASH_SOURCE[0]}")"
 futon3c_root="${FUTON3C_ROOT:-${HOME}/code/futon3c}"
 emacs_dir="${FUTON3C_EMACS_DIR:-$(cd "$(dirname "${script_real}")/../../futon3c/emacs" && pwd)}"
@@ -37,6 +38,25 @@ fi
 
 running_inside_emacs() {
   [[ -n "${INSIDE_EMACS:-}" || -n "${EMACS:-}" ]]
+}
+
+running_under_emacs_process() {
+  local pid="${PPID:-}"
+  local comm
+  while [[ -n "${pid}" && "${pid}" != "0" ]]; do
+    comm="$(ps -o comm= -p "${pid}" 2>/dev/null | tr -d '[:space:]')" || return 1
+    case "${comm}" in
+      emacs|emacs-*|temacs)
+        return 0
+        ;;
+    esac
+    pid="$(ps -o ppid= -p "${pid}" 2>/dev/null | tr -d '[:space:]')" || return 1
+  done
+  return 1
+}
+
+emacs_shell_context() {
+  running_inside_emacs || running_under_emacs_process
 }
 
 # --- Socket discovery --------------------------------------------------------
@@ -256,7 +276,7 @@ find_attached_buffer_common() {
   escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
   escaped_repl="$(elisp_escape "${emacs_dir}/claude-repl.el")"
   escaped_sid="$(elisp_escape "${needle}")"
-  "${emacsclient_bin}" -s "${socket_name}" --eval \
+  "${emacsclient_bin}" -s "${socket_name}" --timeout "${emacsclient_timeout}" --eval \
     "(progn
        (setq load-prefer-newer t)
        (add-to-list 'load-path \"${emacs_dir}\")
@@ -271,7 +291,7 @@ switch_to_buffer() {
   local buffer_name="$2"
   local escaped_buffer
   escaped_buffer="$(elisp_escape "${buffer_name}")"
-  if running_inside_emacs; then
+  if emacs_shell_context; then
     "${emacsclient_bin}" -s "${socket_name}" -n --eval \
       "(pop-to-buffer \"${escaped_buffer}\")" >/dev/null 2>&1 || true
     exit 0
@@ -401,7 +421,7 @@ if $start_new; then
   cr_start_new_elisp="t"
 fi
 
-emacs_socket="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
+emacs_socket="${FUTON3C_EMACS_SOCKET:-$(${emacsclient_bin} -s "${socket}" --timeout "${emacsclient_timeout}" -e '(or (and (boundp (quote server-name)) server-name) "server")' 2>/dev/null | tr -d '"')}"
 
 aid=""
 restore_mode=false
@@ -532,7 +552,7 @@ claude_repl_eval="$(cat <<EOF
 EOF
 )"
 
-if running_inside_emacs; then
+if emacs_shell_context; then
   "${emacsclient_bin}" -s "${socket}" -n --eval "${claude_repl_eval}" 2>&1 || true
   exit 0
 fi
