@@ -12,6 +12,7 @@
 
 (add-to-list 'load-path "/home/joe/code/futon3/contrib/")
 (add-to-list 'load-path "/home/joe/code/futon3c/emacs/")
+(add-to-list 'load-path "/home/joe/code/futon7/holes/")
 
 ;; Stack HUD entry point.
 (require 'stack-entry)
@@ -25,6 +26,7 @@
 ;; Browser Sessions headline). See ~/code/algorithms/current-usage-report.md.
 (require 'usage-report)
 (require 'war-machine)
+(require 'pudding-prover)
 
 ;; As-needed Agency cleanup: M-x repl-reaper-list / repl-reaper-reap.
 (require 'repl-reaper)
@@ -55,12 +57,17 @@
 
 (require 'futon-hot)
 (require 'subr-x)
+(require 'futon-buffer-cleaner)
+(unless (boundp 'futon-buffer-cleaner-stream-buffer-regexp)
+  (load "futon-buffer-cleaner" nil nil))
 
 ;; Hot reload defaults (override as needed).
 (setq my-chatgpt-shell-hot-reload-files
-      '("../futon3/contrib/flexiarg.el"
+      '("../futon0/contrib/futon-buffer-cleaner.el"
+        "../futon3/contrib/flexiarg.el"
 	"../futon3/contrib/aob-chatgpt.el"
         "../futon3c/emacs/agent-chat.el"
+        "../futon3c/emacs/agent-follow-mode.el"
         "../futon3c/emacs/agent-mission-control.el"
         "../futon3c/emacs/claude-repl.el"
         "../futon3c/emacs/codex-repl.el"
@@ -101,7 +108,6 @@
         "../futon4/dev/arxana-lab.el"
         "../futon0/contrib/futon-config.el"
         "../futon0/contrib/loop-lag.el"
-        "../futon0/contrib/futon-buffer-cleaner.el"
         "../futon0/contrib/futon-helper.el"
         "../futon0/contrib/futon-hot.el"
         "../futon0/contrib/hud-service.el"
@@ -112,6 +118,7 @@
         "../futon0/contrib/usage-report.el"
         "../futon0/emacs/joe-hud.el"
         "../futon0/emacs/war-machine.el"
+        "../futon7/holes/pudding-prover.el"
 	"../futon4/dev/arxana-browser-songs.el"
 	"../futon4/dev/arxana-browser-chorus.el"
 	"../futon4/dev/arxana-browser-essays.el"
@@ -131,7 +138,6 @@
 (add-hook 'my-chatgpt-shell-hot-reload-after-batch-hook
           #'arxana-reload-after-hot-reload-batch)
 
-(require 'futon-buffer-cleaner)
 (futon-buffer-cleaner-enable)
 
 (require 'futon-helper)
@@ -156,12 +162,12 @@
 
 ;;; Futon 3:
 
-(setq tatami-actor "Joe Corneli")
 (require 'flexiarg)
 
 ;;; Futon 3c:
 
 (require 'agent-chat)
+(require 'agent-follow-mode)
 (require 'agent-mission-control)
 (require 'claude-repl)
 (require 'codex-repl)
@@ -193,27 +199,6 @@
 
 ;; Lab browser root (keeps lab views working across frames).
 (setq arxana-lab-root "/home/joe/code/storage/lab")
-
-;;; Set up tatami — my custom integration layer between local futon stack and ChatGPT
-
-(require 'url)
-(load-file "~/code/futon1/contrib/tatami.el")
-(require 'tatami)
-
-
-(setq tatami-profile "default")
-(setq tatami-data-directory "/home/joe/code/futon1/data/")
-
-(setq tatami-start-directory "/home/joe/code/futon1")
-(setq tatami-start-command '("./scripts/run_api.sh"))
-
-(setq tatami-base-url "http://localhost:8080")
-(defvar my-tatami--clojure (or (executable-find "clojure") "clojure"))
-(unless (and my-tatami--clojure (file-executable-p my-tatami--clojure))
-  (message "Warning: could not locate a runnable clojure executable; tatami auto-start may fail."))
-
-(setq tatami-verbose nil)
-(setq tatami-startup-wait 20)
 
 ;; Piper TTS defaults for transcript_commentary.py.
 (setenv "PIPER_MODEL" "/home/joe/code/tts/voices/en_GB-semaine-medium.onnx")

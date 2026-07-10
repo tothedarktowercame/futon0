@@ -74,6 +74,9 @@ least this many ms (keeps fast calls out of the attribution slot)."
 (defvar loop-lag--instrumented nil "List of (SYMBOL . ADVICE-NAME) currently advised.")
 (defvar loop-lag--last-gc-elapsed 0.0 "`gc-elapsed' at the previous tick.")
 (defvar loop-lag--last-gcs-done 0 "`gcs-done' at the previous tick.")
+(defvar loop-lag--blocker-sum 0.0 "Summed instrumented-blocker ms since last tick.")
+(defvar loop-lag--blocker-count 0 "Count of instrumented-blocker calls since last tick.")
+(defvar loop-lag--blocker-labels nil "Alist label -> summed ms since last tick.")
 
 (defvar loop-lag--indicator '(:eval (loop-lag--mode-line))
   "The `global-mode-string' construct this mode installs.")
@@ -108,29 +111,32 @@ least this many ms (keeps fast calls out of the attribution slot)."
 That means the recorded call was still running during the stall."
   (and plist (time-less-p stall-start (plist-get plist :ended))))
 
-(defun loop-lag--attribution (stall-start gc-ms gc-n)
+(defun loop-lag--attribution (stall-start gc-ms gc-n bsum bcount blabels)
   "Best-effort attribution for a stall that began around STALL-START.
-GC-MS/GC-N are the GC time and collection count observed during the stall.
-Attributes to the largest known contributor: instrumented blocker, GC, or a
-real command; else the generic non-command bucket (uninstrumented timer /
-process-filter / sentinel / sync I/O)."
-  (let* ((lb (and (loop-lag--in-window-p loop-lag--last-blocker stall-start)
-                  loop-lag--last-blocker))
-         (lc (and (loop-lag--in-window-p loop-lag--last-command stall-start)
+GC-MS/GC-N are GC time+count in the stall; BSUM/BCOUNT/BLABELS are the summed
+ms, count, and per-label breakdown of instrumented sync calls in the stall.
+Attributes to the largest known contributor: stacked sync calls (BSUM), GC, or a
+real command; else the generic non-command bucket (uninstrumented tight Lisp
+loop / process-filter / non-yielding op)."
+  (let* ((lc (and (loop-lag--in-window-p loop-lag--last-command stall-start)
                   (plist-get loop-lag--last-command :command)
                   (>= (plist-get loop-lag--last-command :dur-ms) loop-lag-threshold-ms)
                   loop-lag--last-command))
-         (lb-ms (if lb (plist-get lb :dur-ms) 0))
          (lc-ms (if lc (plist-get lc :dur-ms) 0))
-         (best (max lb-ms gc-ms lc-ms)))
+         (best (max bsum gc-ms lc-ms)))
     (cond
      ((< best loop-lag-threshold-ms)
       (if (> gc-ms 0)
-          (format "non-command (+%.0fms GC in %d)" gc-ms gc-n)
-        "non-command (timer / process-filter / sentinel / sync I/O)"))
+          (format "non-command (+%.0fms GC in %d) — uninstrumented" gc-ms gc-n)
+        "non-command — uninstrumented (tight Lisp loop / process-filter / non-yielding op)"))
      ((and (= best gc-ms) (> gc-ms 0))
       (format "GC (%.0fms in %d collection%s)" gc-ms gc-n (if (= gc-n 1) "" "s")))
-     ((= best lb-ms) (loop-lag--fmt-blocker lb))
+     ((= best bsum)
+      (let ((brk (mapconcat (lambda (c) (format "%s×%.0fms" (car c) (cdr c)))
+                            (seq-take (cl-sort (copy-sequence blabels) #'> :key #'cdr) 3)
+                            "  ")))
+        (format "%d sync call%s (sum %.0fms): %s"
+                bcount (if (= bcount 1) "" "s") bsum brk)))
      (t (format "command %s (%.0fms)" (plist-get lc :command) lc-ms)))))
 
 ;;; Instrumentation of synchronous entry points -------------------------------
@@ -152,7 +158,14 @@ is applied to the call's arg list to produce a short detail string (guarded)."
                             (list :what label
                                   :detail (and detail-fn
                                                (ignore-errors (funcall detail-fn args)))
-                                  :ended (current-time) :dur-ms dur)))))))))
+                                  :ended (current-time) :dur-ms dur))
+                      ;; Accumulate for per-stall blocker-sum: distinguishes one big
+                      ;; sync call from many stacked ones summing to the stall.
+                      (setq loop-lag--blocker-sum (+ loop-lag--blocker-sum dur)
+                            loop-lag--blocker-count (1+ loop-lag--blocker-count))
+                      (let ((cell (assoc label loop-lag--blocker-labels)))
+                        (if cell (setcdr cell (+ (cdr cell) dur))
+                          (push (cons label dur) loop-lag--blocker-labels))))))))))
       (advice-add fn :around advice (list (cons 'name advice-name)))
       (push (cons fn advice-name) loop-lag--instrumented))))
 
@@ -196,17 +209,26 @@ is applied to the call's arg list to produce a short detail string (guarded)."
          (lag-ms (max 0.0 (* 1000 (- gap loop-lag-interval))))
          (gc-ms (max 0.0 (* 1000 (- gc-elapsed loop-lag--last-gc-elapsed))))
          (gc-n (max 0 (- gcs-done loop-lag--last-gcs-done))))
-    (setq loop-lag--last now
-          loop-lag--last-gc-elapsed gc-elapsed
-          loop-lag--last-gcs-done gcs-done)
-    (push (cons now lag-ms) loop-lag--history)
-    (loop-lag--trim loop-lag--history loop-lag-history-max)
-    (when (>= lag-ms loop-lag-threshold-ms)
-      (let ((stall-start (time-subtract now (seconds-to-time (/ lag-ms 1000.0)))))
-        (push (list :at now :lag-ms lag-ms :gc-ms gc-ms :gc-count gc-n
-                    :attribution (loop-lag--attribution stall-start gc-ms gc-n))
-              loop-lag--stalls)
-        (loop-lag--trim loop-lag--stalls loop-lag-stalls-max)))
+    (let ((bsum loop-lag--blocker-sum)
+          (bcount loop-lag--blocker-count)
+          (blabels loop-lag--blocker-labels))
+      (setq loop-lag--last now
+            loop-lag--last-gc-elapsed gc-elapsed
+            loop-lag--last-gcs-done gcs-done
+            loop-lag--blocker-sum 0.0
+            loop-lag--blocker-count 0
+            loop-lag--blocker-labels nil)
+      (push (cons now lag-ms) loop-lag--history)
+      (loop-lag--trim loop-lag--history loop-lag-history-max)
+      (when (>= lag-ms loop-lag-threshold-ms)
+        (let ((stall-start (time-subtract now (seconds-to-time (/ lag-ms 1000.0)))))
+          (push (list :at now :lag-ms lag-ms :gc-ms gc-ms :gc-count gc-n
+                      :blocker-ms bsum :blocker-count bcount
+                      :blocker-labels blabels
+                      :attribution (loop-lag--attribution stall-start gc-ms gc-n
+                                                          bsum bcount blabels))
+                loop-lag--stalls)
+          (loop-lag--trim loop-lag--stalls loop-lag-stalls-max))))
     (force-mode-line-update t)))
 
 (defun loop-lag--recent-peak ()

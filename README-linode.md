@@ -109,3 +109,37 @@ creates it if missing.
   parallel connections and pulls the ~40 GB in ~1–2 min once it's the one
   fetching. (Setting an `HF_TOKEN` would also lift the throttle.) TODO: fold this
   pre-pull into `linode-4gpu-setup.sh` so the inline-fetch stall can't recur.
+
+## Runner durability — don't waste GPU hours (incident 2026-06-25)
+
+These boxes bill by the hour and a full run is long (the meme-mine joint runner
+is ~1448 sequential 70B calls, ~3 h). A runner that can throw away the whole run
+on one bad record is a **design defect**, not just a bug. On 2026-06-25
+`scripts/meme_mine_joint.py` did exactly that: it accumulated every result in an
+in-memory list and wrote the output file **once, after the loop**; the model
+returned `"new_patterns": null` on one ask, `len(None)` raised *outside* the
+per-ask `try`, `main()` aborted, and **~400 asks of completed GPU work (~27% of a
+3 h run) were lost** — nothing on disk but the prior smoke run's stale file.
+
+**DON'T:**
+- DON'T hold all results in memory until a single end-of-run write. Any crash,
+  `kill`, OOM, spot-loss, or tunnel drop before that line = total loss.
+- DON'T wrap only the model *call* in the per-item `try` while the aggregation /
+  record-build sits outside it. A malformed response then kills the whole run
+  instead of skipping one item.
+- DON'T call `len()` / iterate on a field straight from model JSON — an LLM emits
+  `null` for "empty" list fields. `len(r.get("k", []))` does **not** help when the
+  value is present-but-`null`; use `r.get("k") or []`.
+
+**DO:**
+- DO **checkpoint to disk periodically** (e.g. every N items) so a late failure
+  leaves a usable partial, and so a re-run can resume instead of restarting.
+- DO build the per-item record **inside** the per-item `try`, so one bad item
+  hits the existing "skip and continue" path, never `main()`.
+- DO normalize nullable model-JSON fields (`x = r.get("k") or []`) before use.
+- DO sanity-check progress against the box: requests-per-minute from
+  `~/vllm-serve.log` (POSTs tagged with the nearest engine-throughput timestamp)
+  tells you where a run actually stopped — don't assume "it finished."
+
+Audit any long runner for these before kicking off a multi-hour box run; the GPU
+time you save is the whole point.
