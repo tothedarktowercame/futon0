@@ -50,6 +50,8 @@
        (funcall fn (plist-get stack :focus-profile)))
       ('my-chatgpt-shell--insert-stack-vitality
        (funcall fn (plist-get stack :vitality)))
+      ('my-chatgpt-shell--insert-stack-apm
+       (funcall fn (plist-get stack :apm)))
       ('my-chatgpt-shell--insert-stack-git
        (funcall fn (plist-get stack :git)))
       ('my-chatgpt-shell--insert-stack-boundary
@@ -137,6 +139,7 @@
                           ("Pattern sync" . my-chatgpt-shell--insert-stack-pattern-sync)
                           ("Focus/profile" . my-chatgpt-shell--insert-stack-focus-profile)
                           ("Vitality" . my-chatgpt-shell--insert-stack-vitality)
+                          ("APM recovery" . my-chatgpt-shell--insert-stack-apm)
                           ("Git" . my-chatgpt-shell--insert-stack-git)
                           ("Boundary" . my-chatgpt-shell--insert-stack-boundary)
                           ("Reminders" . my-chatgpt-shell--insert-stack-reminders)

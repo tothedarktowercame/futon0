@@ -77,3 +77,98 @@
       (let ((text (buffer-string)))
         (should (string-match-p "Briefing unavailable" text))
         (should (string-match-p "Cannot find Claude CLI" text))))))
+
+(ert-deftest stack-hud-apm-scan-uses-canonical-problem-bundles ()
+  (let* ((root (make-temp-file "stack-hud-apm-" t))
+         (source-dir (expand-file-name "apm" root))
+         (problems-dir (expand-file-name "problems" root)))
+    (unwind-protect
+        (progn
+          (make-directory source-dir t)
+          (make-directory problems-dir t)
+          (dolist (id '("a01" "a02" "a03"))
+            (with-temp-file (expand-file-name (concat id ".tex") source-dir)
+              (insert "problem")))
+          (make-directory (expand-file-name "a01/lean" problems-dir) t)
+          (with-temp-file (expand-file-name "a01/informal-solution.md" problems-dir)
+            (insert (make-string 120 ?i)))
+          (with-temp-file (expand-file-name "a01/lean/Main.lean" problems-dir)
+            (insert "by\n  sorry\n"))
+          (make-directory (expand-file-name "a02/candidates/frame/lean" problems-dir) t)
+          (with-temp-file (expand-file-name "a02/candidates/frame/lean/Main.lean" problems-dir)
+            (insert "by\n  trivial\n"))
+          (make-directory (expand-file-name "a03" problems-dir) t)
+          (with-temp-file (expand-file-name "a03/informal-solution.md" problems-dir)
+            (insert "too short"))
+          (let ((stack-hud-apm-source-dir source-dir)
+                (stack-hud-apm-problems-dir problems-dir))
+            (should (equal (stack-hud--apm-scan)
+                           '(:total 3 :informal 1
+                             :lean-total 2 :lean-with-sorry 1
+                             :lean-clean 1 :sorries 1)))))
+      (delete-directory root t))))
+
+(ert-deftest stack-hud-apm-burndown-uses-daily-snapshots-and-live-status ()
+  (let ((log-dir (make-temp-file "stack-hud-apm-log-" t)))
+    (unwind-protect
+        (let ((stack-hud-log-dir log-dir)
+              (stack-hud-apm-progress-path (expand-file-name "missing.jsonl" log-dir))
+              (stack-hud-apm-burndown-days 14)
+              (stack-hud-apm-cron-interval-minutes 15))
+          (with-temp-file (expand-file-name "2026-07-12.jsonl" log-dir)
+            (insert "{\"timestamp\":\"2026-07-12T23:00:00+0000\",\"stack\":{\"apm\":{\"total\":10,\"lean-clean\":2}}}\n"))
+          (cl-letf (((symbol-function 'stack-hud--today-string)
+                     (lambda () "2026-07-13"))
+                    ((symbol-function 'current-time)
+                     (lambda () (date-to-time "2026-07-13T12:00:00Z"))))
+            (let* ((status '(:total 10 :informal 8 :lean-total 6
+                                      :lean-with-sorry 1 :lean-clean 5 :sorries 2))
+                   (history (stack-hud--apm-history status)))
+              (should (equal (mapcar (lambda (sample)
+                                       (plist-get sample :remaining))
+                                     history)
+                             '(8 5)))
+              (should (equal (stack-hud--apm-sparkline '(8 5)) "█▁"))
+              (with-temp-buffer
+                (my-chatgpt-shell--insert-stack-apm status)
+                (let ((text (buffer-string)))
+                  (should (string-match-p "burn down  █▁  5 remaining" text))
+                  (should (string-match-p "+3 clean in 1d (3.00/day)" text))
+                  (should (string-match-p "gated start ceiling 4/hour" text)))))))
+      (delete-directory log-dir t))))
+
+(ert-deftest stack-hud-apm-burndown-does-not-invent-prehistory ()
+  (let* ((stack-hud-log-dir (make-temp-file "stack-hud-apm-empty-" t))
+         (stack-hud-apm-progress-path
+          (expand-file-name "missing.jsonl" stack-hud-log-dir)))
+    (unwind-protect
+        (cl-letf (((symbol-function 'stack-hud--today-string)
+                   (lambda () "2026-07-13"))
+                  ((symbol-function 'current-time)
+                   (lambda () (date-to-time "2026-07-13T12:00:00Z"))))
+          (with-temp-buffer
+            (stack-hud--apm-insert-burndown '(:total 10 :lean-clean 4))
+            (should (string-match-p "6 remaining | tracking starts today"
+                                    (buffer-string)))))
+      (delete-directory stack-hud-log-dir t))))
+
+(ert-deftest stack-hud-apm-burndown-prefers-cron-observations ()
+  (let* ((root (make-temp-file "stack-hud-apm-cron-" t))
+         (stack-hud-log-dir root)
+         (stack-hud-apm-progress-path (expand-file-name "progress.jsonl" root)))
+    (unwind-protect
+        (progn
+          (with-temp-file stack-hud-apm-progress-path
+            (insert "{\"schema\":\"apm-formal-progress.v1\",\"timestamp\":\"2026-07-12T22:00:00Z\",\"total\":10,\"lean_clean\":3}\n")
+            (insert "{\"schema\":\"apm-formal-progress.v1\",\"timestamp\":\"2026-07-12T23:00:00Z\",\"total\":10,\"lean_clean\":4}\n"))
+          (cl-letf (((symbol-function 'stack-hud--today-string)
+                     (lambda () "2026-07-13"))
+                    ((symbol-function 'current-time)
+                     (lambda () (date-to-time "2026-07-13T12:00:00Z"))))
+            (let ((history (stack-hud--apm-history
+                            '(:total 10 :lean-clean 5))))
+              (should (equal (mapcar (lambda (sample)
+                                       (plist-get sample :lean-clean))
+                                     history)
+                             '(4 5))))))
+      (delete-directory root t))))

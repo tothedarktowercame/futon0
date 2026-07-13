@@ -152,6 +152,38 @@ The value is passed to `display-buffer-in-side-window'."
     (:id :tai-chi-thu :label "Tai Chi (Thu)" :weekday thursday :hour 18 :minute 30))
   "Reminder specs rendered in the Stack HUD.")
 
+(defcustom stack-hud-apm-source-dir "/home/joe/code/apm-lean/apm"
+  "Directory of APM source problems (*.tex). Stems define the problem universe."
+  :type 'directory
+  :group 'tatami-integration)
+
+(defcustom stack-hud-apm-problems-dir "/home/joe/code/apm-lean/problems"
+  "Directory of canonical APM problem bundles."
+  :type 'directory
+  :group 'tatami-integration)
+
+(defcustom stack-hud-apm-cache-seconds 120
+  "Seconds to cache the APM proof-recovery scan."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-apm-burndown-days 14
+  "Number of days of formal-proof progress to show in the APM burndown."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-apm-cron-interval-minutes 15
+  "Nominal interval between gated APM formal-proof starts.
+This is a scheduling ceiling, not a promised completion rate."
+  :type 'integer
+  :group 'tatami-integration)
+
+(defcustom stack-hud-apm-progress-path
+  "/home/joe/code/futon3c/.state/apm-formal-zai/formal-progress.jsonl"
+  "Append-only formal-proof observations written by the gated Zai cron job."
+  :type 'file
+  :group 'tatami-integration)
+
 (defcustom stack-hud-blocks
   '((:key liveness     :enabled t)
     (:key services     :enabled t)
@@ -164,6 +196,7 @@ The value is passed to `display-buffer-in-side-window'."
     (:key focus        :enabled t)
     (:key vitality     :enabled t)
     (:key evidence     :enabled t)
+    (:key apm          :enabled t)
     (:key git          :enabled t)
     (:key boundary     :enabled t)
     (:key reminders    :enabled t)
@@ -185,6 +218,7 @@ Available blocks:
   focus        - Focus/Profile from graph memory
   vitality     - Filesystem and Tatami vitality
   evidence     - Evidence-store accumulation probe (futon1a XTDB delta)
+  apm          - APM proof-recovery progress (informal / Lean+sorry / no-sorry)
   git          - Git streak and activity
   boundary     - Devmap boundary gaps
   reminders    - Upcoming reminders
@@ -532,13 +566,15 @@ When set, the Stack HUD will show both local and remote service status."
          (git (stack-hud--git-status))
          (boundary (stack-hud--boundary-status))
          (reminders (stack-hud--reminder-statuses))
-         (focus-profile (stack-hud--focus-profile-status)))
+         (focus-profile (stack-hud--focus-profile-status))
+         (apm (stack-hud--apm-status)))
     (list :generated-at (format-time-string "%Y-%m-%dT%H:%M:%S%z")
           :vitality vitality
           :git git
           :boundary boundary
           :reminders reminders
           :focus-profile focus-profile
+          :apm apm
           :warnings (stack-hud--merge-warnings vitality git boundary reminders))))
 
 (defun stack-hud--futon1-reachable-p ()
@@ -1933,6 +1969,267 @@ Returns plist with :pending-count and :term-count or nil."
                         probe-suffix)))))
     (insert "\n")))
 
+;; APM proof recovery ---------------------------------------------------
+
+(defvar stack-hud--apm-cache nil)
+(defvar stack-hud--apm-cache-time 0)
+
+(defun stack-hud--apm-count-sorries (dir)
+  "Count `sorry` occurrences across .lean files under DIR."
+  (let ((n 0))
+    (dolist (f (directory-files-recursively dir "\\.lean\\'"))
+      (with-temp-buffer
+        (insert-file-contents f)
+        (goto-char (point-min))
+        (while (re-search-forward "\\_<sorry\\_>" nil t)
+          (setq n (1+ n)))))
+    n))
+
+(defun stack-hud--apm-lean-files (dir)
+  "Return Lean files under DIR."
+  (when (file-directory-p dir)
+    (directory-files-recursively dir "\\.lean\\'")))
+
+(defun stack-hud--apm-file-size (path)
+  "Return PATH size, or nil when PATH does not exist."
+  (when-let ((attrs (file-attributes path)))
+    (file-attribute-size attrs)))
+
+(defun stack-hud--apm-scan ()
+  "Scan APM proof-recovery progress.
+Returns a plist with :total, :informal (canonical informal proofs),
+:lean-total (problems with any Lean material), :lean-with-sorry
+(problems whose Lean material contains sorries), :lean-clean (Lean
+material with zero sorries), and :sorries (total sorry count across
+problem Lean files)."
+  (let ((ids (mapcar #'file-name-sans-extension
+                     (directory-files stack-hud-apm-source-dir nil "\\.tex\\'")))
+        (informal 0) (lean-total 0) (lean-with-sorry 0) (lean-clean 0)
+        (sorries 0))
+    (dolist (id ids)
+      (let* ((problem-dir (expand-file-name id stack-hud-apm-problems-dir))
+             (md (expand-file-name "informal-solution.md" problem-dir))
+             (size (stack-hud--apm-file-size md)))
+        (when (and size (>= size 100))
+          (setq informal (1+ informal)))
+        (when-let ((lean-files (stack-hud--apm-lean-files problem-dir)))
+          (setq lean-total (1+ lean-total))
+          (let ((n (stack-hud--apm-count-sorries problem-dir)))
+            (setq sorries (+ sorries n))
+            (if (> n 0)
+                (setq lean-with-sorry (1+ lean-with-sorry))
+              (setq lean-clean (1+ lean-clean)))))))
+    (list :total (length ids) :informal informal
+          :lean-total lean-total :lean-with-sorry lean-with-sorry
+          :lean-clean lean-clean
+          :sorries sorries)))
+
+(defun stack-hud--apm-status ()
+  "Return the cached APM scan, refreshing per `stack-hud-apm-cache-seconds'."
+  (let ((now (float-time)))
+    (when (or (null stack-hud--apm-cache)
+              (> (- now stack-hud--apm-cache-time) stack-hud-apm-cache-seconds))
+      (setq stack-hud--apm-cache
+            (condition-case err
+                (stack-hud--apm-scan)
+              (error (list :error (error-message-string err))))
+            stack-hud--apm-cache-time now))
+    stack-hud--apm-cache))
+
+(defun stack-hud--apm-bar (n total &optional width)
+  "Render an N/TOTAL progress bar of WIDTH cells (default 20)."
+  (let* ((width (or width 20))
+         (filled (if (> total 0)
+                     (min width (round (* width (/ (float n) total))))
+                   0)))
+    (concat (propertize (make-string filled ?█) 'face 'success)
+            (propertize (make-string (- width filled) ?░) 'face 'shadow))))
+
+(defun stack-hud--json-field (object field)
+  "Return FIELD from decoded JSON alist OBJECT."
+  (when (listp object)
+    (when-let ((entry
+                (seq-find
+                 (lambda (item)
+                   (and (consp item)
+                        (string= field
+                                 (if (symbolp (car item))
+                                     (symbol-name (car item))
+                                   (car item)))))
+                 object)))
+      (cdr entry))))
+
+(defun stack-hud--apm-sample-from-payload (day payload)
+  "Extract an APM burndown sample for DAY from log PAYLOAD."
+  (let* ((stack (stack-hud--json-field payload "stack"))
+         (apm (stack-hud--json-field stack "apm"))
+         (total (stack-hud--json-field apm "total"))
+         (clean (stack-hud--json-field apm "lean-clean")))
+    (when (and (numberp total) (numberp clean))
+      (list :date day :total total :lean-clean clean
+            :remaining (max 0 (- total clean))))))
+
+(defun stack-hud--apm-last-json-line (path)
+  "Decode the last non-empty JSON line in PATH."
+  (when (file-readable-p path)
+    (with-temp-buffer
+      (insert-file-contents path)
+      (when-let ((line (car (last (seq-filter
+                                   (lambda (item) (not (string-empty-p item)))
+                                   (split-string (buffer-string) "\n"))))))
+        (stack-hud--decode-json line)))))
+
+(defun stack-hud--apm-sample-for-day (day)
+  "Read the last logged APM sample for DAY."
+  (let* ((summary-path (stack-hud--summary-path day))
+         (log-path (stack-hud--log-path day))
+         (payload
+          (cond
+           ((file-readable-p summary-path)
+            (with-temp-buffer
+              (insert-file-contents summary-path)
+              (stack-hud--json-field
+               (stack-hud--decode-json (buffer-string)) "last")))
+           ((file-readable-p log-path)
+            (stack-hud--apm-last-json-line log-path)))))
+    (stack-hud--apm-sample-from-payload day payload)))
+
+(defun stack-hud--apm-current-sample (status)
+  "Make today's APM burndown sample from STATUS."
+  (let ((total (plist-get status :total))
+        (clean (plist-get status :lean-clean)))
+    (when (and (numberp total) (numberp clean))
+      (list :date (stack-hud--today-string)
+            :total total :lean-clean clean
+            :remaining (max 0 (- total clean))))))
+
+(defun stack-hud--apm-cron-history (cutoff today)
+  "Read daily last samples between CUTOFF and TODAY from the cron ledger."
+  (let (by-day)
+    (when (file-readable-p stack-hud-apm-progress-path)
+      (with-temp-buffer
+        (insert-file-contents stack-hud-apm-progress-path)
+        (dolist (line (split-string (buffer-string) "\n" t))
+          (condition-case nil
+              (let* ((payload (stack-hud--decode-json line))
+                     (schema (stack-hud--json-field payload "schema"))
+                     (timestamp (stack-hud--json-field payload "timestamp"))
+                     (day (and (stringp timestamp) (substring timestamp 0 10)))
+                     (total (stack-hud--json-field payload "total"))
+                     (clean (stack-hud--json-field payload "lean_clean")))
+                (when (and (string= schema "apm-formal-progress.v1")
+                           day (not (string< day cutoff))
+                           (not (string< today day))
+                           (numberp total) (numberp clean))
+                  (setf (alist-get day by-day nil nil #'string=)
+                        (list :date day :total total :lean-clean clean
+                              :remaining (max 0 (- total clean))))))
+            (error nil)))))
+    (mapcar #'cdr by-day)))
+
+(defun stack-hud--apm-history (status)
+  "Return recent daily APM samples, ending with current STATUS."
+  (let* ((today (stack-hud--today-string))
+         (days (max 1 stack-hud-apm-burndown-days))
+         (cutoff (format-time-string
+                  "%Y-%m-%d"
+                  (time-subtract (current-time) (days-to-time (1- days)))))
+         (pattern "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\(?:\\.jsonl\\|\\.summary\\.json\\)\\'")
+         dates
+         (samples (stack-hud--apm-cron-history cutoff today)))
+    (when (file-directory-p stack-hud-log-dir)
+      (dolist (file (directory-files stack-hud-log-dir nil pattern))
+        (let ((day (substring file 0 10)))
+          (when (and (not (string< day cutoff))
+                     (not (string< today day)))
+            (push day dates)))))
+    (dolist (day (delete-dups dates))
+      (unless (seq-find (lambda (sample)
+                          (string= (plist-get sample :date) day))
+                        samples)
+        (when-let ((sample (stack-hud--apm-sample-for-day day)))
+          (push sample samples))))
+    ;; The HUD is rendered before its snapshot is appended, so the live scan is
+    ;; the authoritative last sample for today.
+    (setq samples (seq-remove
+                   (lambda (sample)
+                     (string= (plist-get sample :date) today))
+                   samples))
+    (when-let ((current (stack-hud--apm-current-sample status)))
+      (push current samples))
+    (sort samples (lambda (a b)
+                    (string< (plist-get a :date) (plist-get b :date))))))
+
+(defun stack-hud--apm-sparkline (values)
+  "Render VALUES as a compact Unicode sparkline."
+  (let* ((blocks ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"])
+         (low (apply #'min values))
+         (high (apply #'max values))
+         (span (- high low)))
+    (mapconcat
+     (lambda (value)
+       (aref blocks
+             (if (zerop span)
+                 3
+               (round (* 7.0 (/ (- value low) (float span)))))))
+     values "")))
+
+(defun stack-hud--apm-day-span (first last)
+  "Return the number of calendar days between FIRST and LAST samples."
+  (round (/ (float-time
+             (time-subtract
+              (date-to-time (concat (plist-get last :date) "T00:00:00Z"))
+              (date-to-time (concat (plist-get first :date) "T00:00:00Z"))))
+            86400.0)))
+
+(defun stack-hud--apm-insert-burndown (status)
+  "Insert formal-proof burndown derived from logged STATUS snapshots."
+  (let ((history (stack-hud--apm-history status)))
+    (when history
+      (let* ((first (car history))
+             (last (car (last history)))
+             (span (stack-hud--apm-day-span first last))
+             (completed (- (plist-get last :lean-clean)
+                           (plist-get first :lean-clean)))
+             (remaining (mapcar (lambda (sample)
+                                  (plist-get sample :remaining))
+                                history))
+             (ceiling (/ 60.0 (max 1 stack-hud-apm-cron-interval-minutes))))
+        (insert (format "    burn down  %s  %d remaining"
+                        (stack-hud--apm-sparkline remaining)
+                        (car (last remaining))))
+        (if (> span 0)
+            (insert (format " | %+.0f clean in %dd (%.2f/day)\n"
+                            (float completed) span (/ completed (float span))))
+          (insert " | tracking starts today\n"))
+        (insert (format "    gated start ceiling %.0f/hour; actual rate above reflects usage and outcomes\n"
+                        ceiling))))))
+
+(defun my-chatgpt-shell--insert-stack-apm (s)
+  "Insert APM proof-recovery progress into the Stack HUD."
+  (let ((err (plist-get s :error)))
+    (insert "  APM recovery: ")
+    (cond
+     (err
+      (insert (propertize (format "⚠ %s" err) 'face 'error) "\n\n"))
+     (t
+      (let ((total (plist-get s :total)))
+        (insert (format "%d problems | %d with sorries | %d sorries open\n"
+                        total
+                        (plist-get s :lean-with-sorry)
+                        (plist-get s :sorries)))
+        (dolist (row `(("informal  " ,(plist-get s :informal))
+                       ("lean+sorry" ,(plist-get s :lean-total))
+                       ("lean clean" ,(plist-get s :lean-clean))))
+          (let ((n (cadr row)))
+            (insert (format "    %s %s %3d/%d %3d%%\n"
+                            (car row)
+                            (stack-hud--apm-bar n total)
+                            n total
+                            (if (> total 0) (floor (* 100.0 n) total) 0)))))
+        (stack-hud--apm-insert-burndown s)
+        (insert "\n"))))))
+
 (defun stack-hud--block-render-fn (key)
   "Return the render function for block KEY."
   (pcase key
@@ -1948,6 +2245,7 @@ Returns plist with :pending-count and :term-count or nil."
     ('focus        #'my-chatgpt-shell--insert-stack-focus-profile)
     ('vitality     #'my-chatgpt-shell--insert-stack-vitality)
     ('evidence     #'my-chatgpt-shell--insert-stack-evidence)
+    ('apm          #'my-chatgpt-shell--insert-stack-apm)
     ('git          #'my-chatgpt-shell--insert-stack-git)
     ('boundary     #'my-chatgpt-shell--insert-stack-boundary)
     ('reminders    #'my-chatgpt-shell--insert-stack-reminders)
@@ -1956,7 +2254,7 @@ Returns plist with :pending-count and :term-count or nil."
 
 (defun stack-hud--block-takes-arg-p (key)
   "Return non-nil if block KEY's render function takes an argument."
-  (memq key '(liveness focus vitality evidence git boundary reminders)))
+  (memq key '(liveness focus vitality evidence apm git boundary reminders)))
 
 (defun stack-hud--block-arg (key stack)
   "Return the argument to pass to block KEY's render function."
@@ -1965,6 +2263,7 @@ Returns plist with :pending-count and :term-count or nil."
     ('focus     (plist-get stack :focus-profile))
     ('vitality  (plist-get stack :vitality))
     ('evidence  (plist-get stack :vitality))
+    ('apm       (plist-get stack :apm))
     ('git       (plist-get stack :git))
     ('boundary  (plist-get stack :boundary))
     ('reminders (plist-get stack :reminders))
