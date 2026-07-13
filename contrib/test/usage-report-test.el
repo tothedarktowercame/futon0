@@ -59,9 +59,10 @@
                                                       :resets-at "2026-05-01T15:56:03Z")))
          (week-snap (usage-report-test--snap week-totals nil))
          (usage-report-claude-estimate-metric :weighted-input-equiv))
-    (should (equal (usage-report--claude-headline-fragment
-                    current-snap week-snap (list anchor))
-                   "Claude est 24% 5h / 20% wk"))))
+    (cl-letf (((symbol-function 'usage-report-claude-live) (lambda (&rest _) nil)))
+      (should (equal (usage-report--claude-headline-fragment
+                      current-snap week-snap (list anchor))
+                     "Claude est 24% 5h / 20% wk")))))
 
 (ert-deftest usage-report-read-write-anchors-roundtrip ()
   (let* ((path (make-temp-file "usage-report-anchors-" nil ".eld"))
@@ -81,3 +82,51 @@
     (unwind-protect
         (should-not (usage-report-claude-anchors))
       (delete-file path))))
+
+(ert-deftest usage-report-zai-live-parse-token-windows ()
+  (let* ((response
+          '(:success t
+            :data (:level "max"
+                   :limits ((:type "TOKENS_LIMIT" :unit 3 :number 5
+                             :percentage 10 :nextResetTime 1783976431687)
+                            (:type "TOKENS_LIMIT" :unit 6 :number 1
+                             :percentage 34 :nextResetTime 1784364508997)
+                            (:type "TIME_LIMIT" :unit 1 :number 100
+                             :percentage 7 :nextResetTime 1784000000000)))))
+         (live (usage-report--zai-live-parse response)))
+    (should (equal (plist-get live :level) "max"))
+    (should (= (plist-get live :five-hour-used-pct) 10))
+    (should (= (plist-get live :five-hour-free-pct) 90.0))
+    (should (= (plist-get live :weekly-used-pct) 34))
+    (should (= (plist-get live :weekly-free-pct) 66.0))
+    (should (= (plist-get live :weekly-resets-ms) 1784364508997))))
+
+(ert-deftest usage-report-zai-live-parse-rejects-unsuccessful-response ()
+  (should-not
+   (usage-report--zai-live-parse
+    '(:success nil :data (:limits ((:type "TOKENS_LIMIT" :unit 3 :number 5
+                                    :percentage 10)))))))
+
+(ert-deftest usage-report-zai-headline-reports-free-quota ()
+  (should
+   (equal (usage-report--zai-headline-fragment
+           '(:five-hour-free-pct 90.0 :weekly-free-pct 66.0))
+          "ZAI 90% 5h / 66% wk free")))
+
+(ert-deftest usage-report-stack-hud-renders-zai-without-local-snapshot ()
+  (cl-letf (((symbol-function 'usage-report-snapshot) (lambda (&rest _) nil))
+            ((symbol-function 'usage-report-claude-anchors) (lambda () nil))
+            ((symbol-function 'usage-report-zai-live)
+             (lambda (&rest _)
+               '(:level "max"
+                 :five-hour-used-pct 10 :five-hour-free-pct 90.0
+                 :five-hour-resets-ms 1783976431687
+                 :weekly-used-pct 34 :weekly-free-pct 66.0
+                 :weekly-resets-ms 1784364508997))))
+    (with-temp-buffer
+      (usage-report-insert-stack-hud-block)
+      (let ((rendered (buffer-string)))
+        (should (string-match-p "(script unavailable)" rendered))
+        (should (string-match-p "ZAI: 10\\.0% 5h / 34\\.0% wk used" rendered))
+        (should (string-match-p "90\\.0% / 66\\.0% free; Max plan" rendered))
+        (should (string-match-p "source: ZAI quota api (live)" rendered))))))

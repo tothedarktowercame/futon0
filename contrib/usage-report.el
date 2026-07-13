@@ -1,4 +1,4 @@
-;;; usage-report.el --- Token burndown for Claude + Codex  -*- lexical-binding: t; -*-
+;;; usage-report.el --- Usage quotas for Claude, Codex, and ZAI  -*- lexical-binding: t; -*-
 
 ;; Wraps ~/code/futon0/contrib/current-usage-report.bb and exposes its
 ;; snapshot to two surfaces:
@@ -11,10 +11,12 @@
 ;; execution, but the read is ~1 second so we cache snapshots per window.
 
 (require 'json)
+(require 'seq)
 (require 'subr-x)
+(require 'url)
 
 (defgroup usage-report nil
-  "Per-session Claude + Codex token burndown report."
+  "Claude, Codex, and ZAI usage report."
   :group 'tools)
 
 (defcustom usage-report-bb-script
@@ -128,10 +130,14 @@ With FORCE non-nil, bypass the cache. WINDOW-MINUTES defaults to
                                     force))
 
 (defun usage-report-clear-cache ()
-  "Drop cached snapshots so the next call re-runs the bb script."
+  "Drop local and live snapshots so the next call refreshes all usage."
   (interactive)
   (usage-report--ensure-cache)
   (clrhash usage-report--cache)
+  (setq usage-report--claude-live-cache nil
+        usage-report--claude-live-cache-time 0
+        usage-report--zai-live-cache nil
+        usage-report--zai-live-cache-time 0)
   (message "[usage-report] cache cleared"))
 
 (defun usage-report--totals (snap source)
@@ -299,6 +305,269 @@ or non-positive (a 0%-used anchor carries no calibration signal)."
        week-used-pct
        (if week-cap (format "%.0f" week-cap) "?")))))
 
+;; --- Live usage (Claude OAuth endpoint) ------------------------------------
+;;
+;; The same endpoint the interactive /usage command hits. Exact utilization
+;; percentages — no anchor calibration needed. Undocumented, so every failure
+;; degrades to nil and the anchor-based estimate path takes over.
+
+(defcustom usage-report-claude-credentials-file "~/.claude/.credentials.json"
+  "Claude Code OAuth credentials file (provides the usage-API bearer token)."
+  :type 'file
+  :group 'usage-report)
+
+(defcustom usage-report-claude-live-url "https://api.anthropic.com/api/oauth/usage"
+  "Claude usage endpoint; what the interactive /usage command queries."
+  :type 'string
+  :group 'usage-report)
+
+(defcustom usage-report-claude-live-timeout 4
+  "Seconds to wait for the Claude usage endpoint."
+  :type 'integer
+  :group 'usage-report)
+
+(defcustom usage-report-claude-live-cache-seconds 60
+  "Seconds to reuse a fetched live usage snapshot."
+  :type 'integer
+  :group 'usage-report)
+
+(defvar usage-report--claude-live-cache nil)
+(defvar usage-report--claude-live-cache-time 0)
+
+(defun usage-report--claude-oauth-token ()
+  "Return a non-expired Claude OAuth access token, or nil."
+  (condition-case nil
+      (let* ((file (expand-file-name usage-report-claude-credentials-file))
+             (creds (with-temp-buffer
+                      (insert-file-contents file)
+                      (goto-char (point-min))
+                      (let ((json-object-type 'plist)
+                            (json-key-type 'keyword)
+                            (json-false nil))
+                        (json-read))))
+             (oauth (plist-get creds :claudeAiOauth))
+             (expires-ms (plist-get oauth :expiresAt)))
+        (when (and oauth
+                   (numberp expires-ms)
+                   (> (/ expires-ms 1000.0) (float-time)))
+          (plist-get oauth :accessToken)))
+    (error nil)))
+
+(defun usage-report--claude-live-parse (obj)
+  "Reduce the usage-endpoint response OBJ to the fields we render."
+  (let* ((five (plist-get obj :five_hour))
+         (limits (plist-get obj :limits))
+         (weekly (seq-find (lambda (l) (equal (plist-get l :kind) "weekly_all"))
+                           limits))
+         (scoped (seq-filter (lambda (l)
+                               (equal (plist-get l :kind) "weekly_scoped"))
+                             limits)))
+    (list :five-hour-pct (plist-get five :utilization)
+          :five-hour-resets (plist-get five :resets_at)
+          :weekly-pct (and weekly (plist-get weekly :percent))
+          :weekly-resets (and weekly (plist-get weekly :resets_at))
+          :scoped (mapcar (lambda (l)
+                            (list :model (plist-get
+                                          (plist-get (plist-get l :scope) :model)
+                                          :display_name)
+                                  :pct (plist-get l :percent)
+                                  :severity (plist-get l :severity)
+                                  :active (plist-get l :is_active)))
+                          scoped))))
+
+(defun usage-report--claude-live-fetch ()
+  "Fetch live Claude usage; nil on any failure (expired token, timeout, 4xx)."
+  (when-let ((token (usage-report--claude-oauth-token)))
+    (condition-case nil
+        (let ((url-request-extra-headers
+               `(("Authorization" . ,(concat "Bearer " token))
+                 ("anthropic-beta" . "oauth-2025-04-20"))))
+          (when-let ((buf (url-retrieve-synchronously
+                           usage-report-claude-live-url
+                           t t usage-report-claude-live-timeout)))
+            (unwind-protect
+                (with-current-buffer buf
+                  (goto-char (point-min))
+                  (when (re-search-forward "HTTP/[^ ]+ 200" nil t)
+                    (re-search-forward "^\r?\n" nil t)
+                    (let ((json-object-type 'plist)
+                          (json-array-type 'list)
+                          (json-key-type 'keyword)
+                          (json-false nil))
+                      (usage-report--claude-live-parse (json-read)))))
+              (kill-buffer buf))))
+      (error nil))))
+
+(defun usage-report-claude-live (&optional force)
+  "Return the cached live Claude usage plist, or nil when unavailable.
+With FORCE non-nil, bypass the cache."
+  (let ((now (float-time)))
+    (when (or force
+              (> (- now usage-report--claude-live-cache-time)
+                 usage-report-claude-live-cache-seconds))
+      (setq usage-report--claude-live-cache (usage-report--claude-live-fetch)
+            usage-report--claude-live-cache-time now))
+    usage-report--claude-live-cache))
+
+;; --- Live usage (ZAI coding plan) ----------------------------------------
+
+(defcustom usage-report-zai-key-files '("~/.zaikey" "~/.zai-key")
+  "Files checked for a ZAI API key after `ZAI_API_KEY'."
+  :type '(repeat file)
+  :group 'usage-report)
+
+(defcustom usage-report-zai-live-url
+  "https://api.z.ai/api/monitor/usage/quota/limit"
+  "ZAI coding-plan quota endpoint."
+  :type 'string
+  :group 'usage-report)
+
+(defcustom usage-report-zai-live-timeout 4
+  "Seconds to wait for the ZAI quota endpoint."
+  :type 'integer
+  :group 'usage-report)
+
+(defcustom usage-report-zai-live-cache-seconds 60
+  "Seconds to reuse a fetched ZAI quota snapshot."
+  :type 'integer
+  :group 'usage-report)
+
+(defvar usage-report--zai-live-cache nil)
+(defvar usage-report--zai-live-cache-time 0)
+
+(defun usage-report--zai-api-key ()
+  "Return the configured ZAI API key, or nil."
+  (or (let ((key (getenv "ZAI_API_KEY")))
+        (and key (not (string-empty-p (string-trim key)))
+             (string-trim key)))
+      (seq-some
+       (lambda (path)
+         (condition-case nil
+             (let ((file (expand-file-name path)))
+               (when (file-readable-p file)
+                 (with-temp-buffer
+                   (insert-file-contents file)
+                   (let ((key (string-trim (buffer-string))))
+                     (and (not (string-empty-p key)) key)))))
+           (error nil)))
+       usage-report-zai-key-files)))
+
+(defun usage-report--zai-token-limit (limits unit number)
+  "Find the token limit in LIMITS identified by UNIT and NUMBER."
+  (seq-find (lambda (limit)
+              (and (equal (plist-get limit :type) "TOKENS_LIMIT")
+                   (equal (plist-get limit :unit) unit)
+                   (equal (plist-get limit :number) number)))
+            limits))
+
+(defun usage-report--zai-limit-fields (limit prefix)
+  "Return normalized fields from LIMIT, using PREFIX in their keys."
+  (when limit
+    (let* ((used (plist-get limit :percentage))
+           (free (and (numberp used) (max 0.0 (- 100.0 used)))))
+      (list (intern (format ":%s-used-pct" prefix)) used
+            (intern (format ":%s-free-pct" prefix)) free
+            (intern (format ":%s-resets-ms" prefix))
+            (plist-get limit :nextResetTime)))))
+
+(defun usage-report--zai-live-parse (obj)
+  "Reduce ZAI quota response OBJ to the coding-plan fields we render."
+  (when (plist-get obj :success)
+    (let* ((data (plist-get obj :data))
+           (limits (plist-get data :limits))
+           ;; The API identifies the two token windows as 5 × unit 3 and
+           ;; 1 × unit 6. TIME_LIMIT is a separate MCP/search allowance.
+           (five (usage-report--zai-token-limit limits 3 5))
+           (week (usage-report--zai-token-limit limits 6 1)))
+      (when (or five week)
+        (append (list :level (plist-get data :level))
+                (usage-report--zai-limit-fields five "five-hour")
+                (usage-report--zai-limit-fields week "weekly"))))))
+
+(defun usage-report--zai-live-fetch ()
+  "Fetch live ZAI coding-plan quota; return nil on any failure."
+  (when-let ((key (usage-report--zai-api-key)))
+    (condition-case nil
+        (let ((url-request-extra-headers
+               `(("Authorization" . ,key)
+                 ("Accept" . "application/json"))))
+          (when-let ((buf (url-retrieve-synchronously
+                           usage-report-zai-live-url
+                           t t usage-report-zai-live-timeout)))
+            (unwind-protect
+                (with-current-buffer buf
+                  (goto-char (point-min))
+                  (when (re-search-forward "HTTP/[^ ]+ 200" nil t)
+                    (re-search-forward "^\r?\n" nil t)
+                    (let ((json-object-type 'plist)
+                          (json-array-type 'list)
+                          (json-key-type 'keyword)
+                          (json-false nil))
+                      (usage-report--zai-live-parse (json-read)))))
+              (kill-buffer buf))))
+      (error nil))))
+
+(defun usage-report-zai-live (&optional force)
+  "Return cached live ZAI quota, or nil when unavailable.
+With FORCE non-nil, bypass the cache."
+  (let ((now (float-time)))
+    (when (or force
+              (> (- now usage-report--zai-live-cache-time)
+                 usage-report-zai-live-cache-seconds))
+      (setq usage-report--zai-live-cache (usage-report--zai-live-fetch)
+            usage-report--zai-live-cache-time now))
+    usage-report--zai-live-cache))
+
+(defun usage-report--claude-live-implied-cap (live-pct window-value)
+  "Cap implied by LIVE-PCT covering WINDOW-VALUE of the local proxy metric.
+Assumes the window's spend is all local (headless/phone spend inflates
+per-session shares); still fresher than a manually captured anchor."
+  (when (and (numberp live-pct) (> live-pct 0.0)
+             (numberp window-value) (> window-value 0.0))
+    (/ (float window-value) (/ live-pct 100.0))))
+
+(defun usage-report--resets-clock (resets)
+  "Format an ISO RESETS timestamp as HH:MMZ."
+  (if (and (stringp resets) (>= (length resets) 16))
+      (concat (substring resets 11 16) "Z")
+    "?"))
+
+(defun usage-report--resets-day-clock (resets)
+  "Format an ISO RESETS timestamp as MM-DD HH:MMZ."
+  (if (and (stringp resets) (>= (length resets) 16))
+      (concat (substring resets 5 10) " " (substring resets 11 16) "Z")
+    "?"))
+
+(defun usage-report--epoch-ms-clock (epoch-ms &optional include-day)
+  "Format EPOCH-MS in UTC, including the month/day when INCLUDE-DAY is non-nil."
+  (if (numberp epoch-ms)
+      (format-time-string (if include-day "%m-%d %H:%MZ" "%H:%MZ")
+                          (seconds-to-time (/ epoch-ms 1000.0)) t)
+    "?"))
+
+(defun usage-report--claude-scoped-warnings (live)
+  "Return scoped-limit entries from LIVE worth surfacing (non-normal or active)."
+  (seq-filter (lambda (s)
+                (and (numberp (plist-get s :pct))
+                     (or (plist-get s :active)
+                         (not (equal (plist-get s :severity) "normal")))))
+              (and live (plist-get live :scoped))))
+
+(defun usage-report-capture-claude-anchor-live ()
+  "Capture a Claude anchor from the live usage endpoint (no page visit).
+Keeps the anchor fallback calibrated for when the endpoint is unreachable."
+  (interactive)
+  (let ((live (usage-report-claude-live t)))
+    (unless live
+      (user-error "Live Claude usage unavailable (token expired or endpoint down)"))
+    (let ((five (plist-get live :five-hour-pct))
+          (week (plist-get live :weekly-pct)))
+      (unless (and (numberp five) (> five 0.0)
+                   (numberp week) (> week 0.0))
+        (user-error "Live percentages missing or zero (no calibration signal): 5h=%s wk=%s"
+                    five week))
+      (usage-report-capture-claude-anchor five week))))
+
 ;; --- Formatting helpers ---------------------------------------------------
 
 (defun usage-report--fmt-pct (pct)
@@ -327,14 +596,29 @@ or non-positive (a 0%-used anchor carries no calibration signal)."
       "?")))
 
 (defun usage-report--claude-headline-fragment (current-snap week-snap anchors)
-  "Return Claude fragment for a headline using CURRENT-SNAP, WEEK-SNAP, and ANCHORS."
-  (let* ((current-totals (usage-report--totals current-snap :claude))
+  "Return Claude fragment for a headline using CURRENT-SNAP, WEEK-SNAP, and ANCHORS.
+Prefers exact live percentages from the usage endpoint; falls back to
+anchor-based estimates (labelled est), then raw magnitudes."
+  (let* ((live (usage-report-claude-live))
+         (live-5h (and live (plist-get live :five-hour-pct)))
+         (live-wk (and live (plist-get live :weekly-pct)))
+         (current-totals (usage-report--totals current-snap :claude))
          (week-totals (and week-snap (usage-report--totals week-snap :claude)))
          (estimates (and current-totals
                          week-totals
                          anchors
                          (usage-report--claude-estimates current-snap week-snap anchors))))
     (cond
+     ((and (numberp live-5h) (numberp live-wk))
+      (let ((scoped (usage-report--claude-scoped-warnings live)))
+        (concat (format "Claude %.0f%% 5h / %.0f%% wk" live-5h live-wk)
+                (mapconcat (lambda (s)
+                             (format " · %s wk %.0f%%⚠"
+                                     (or (plist-get s :model) "scoped")
+                                     (plist-get s :pct)))
+                           scoped ""))))
+     ((numberp live-5h)
+      (format "Claude %.0f%% 5h" live-5h))
      ((and estimates
            (numberp (plist-get estimates :current-used-pct))
            (numberp (plist-get estimates :week-used-pct)))
@@ -352,12 +636,26 @@ or non-positive (a 0%-used anchor carries no calibration signal)."
               (usage-report--fmt-int (plist-get current-totals :output))
               (usage-report--fmt-int (plist-get current-totals :messages)))))))
 
+(defun usage-report--zai-headline-fragment (&optional live)
+  "Return a compact free-quota summary from ZAI LIVE usage."
+  (let* ((live (or live (usage-report-zai-live)))
+         (five (and live (plist-get live :five-hour-free-pct)))
+         (week (and live (plist-get live :weekly-free-pct))))
+    (cond
+     ((and (numberp five) (numberp week))
+      (format "ZAI %.0f%% 5h / %.0f%% wk free" five week))
+     ((numberp five) (format "ZAI %.0f%% 5h free" five))
+     ((numberp week) (format "ZAI %.0f%% wk free" week)))))
+
 (defun usage-report-headline-string (&optional snap)
   "Return a one-line summary suitable for a header-line."
   (let* ((snap (or snap (usage-report-snapshot)))
-         (anchors (usage-report-claude-anchors)))
+         (anchors (usage-report-claude-anchors))
+         (zai-fragment (usage-report--zai-headline-fragment)))
     (if (null snap)
-        "Usage: (script unavailable)"
+        (if zai-fragment
+            (format "Usage: (script unavailable) · %s" zai-fragment)
+          "Usage: (script unavailable)")
       (let* ((codex (usage-report--totals snap :codex))
              (cu (plist-get codex :used-pct-max))
              (codex-free (when (numberp cu) (max 0.0 (- 100.0 cu))))
@@ -366,10 +664,12 @@ or non-positive (a 0%-used anchor carries no calibration signal)."
                               usage-report-claude-week-window-minutes)))
              (claude-fragment (usage-report--claude-headline-fragment
                                snap week-snap anchors)))
-        (format "Codex %s free · %s · resets %s"
-                (if codex-free (format "%.0f%%" codex-free) "?")
-                claude-fragment
-                (usage-report--codex-resets-clock snap))))))
+        (concat
+         (format "Codex %s free · %s"
+                 (if codex-free (format "%.0f%%" codex-free) "?")
+                 claude-fragment)
+         (if zai-fragment (concat " · " zai-fragment) "")
+         (format " · resets %s" (usage-report--codex-resets-clock snap)))))))
 
 (defun usage-report-arxana-headline-suffix (&optional snap)
   "Return ` · <usage>' to append to an Arxana Browser headline, or empty.
@@ -408,7 +708,10 @@ Doubles `%' for `format-mode-line' safety."
                         (usage-report--fmt-int (plist-get u :total))))))))
 
 (defun usage-report--insert-claude (current-snap week-snap anchors)
-  (let* ((totals (usage-report--totals current-snap :claude))
+  (let* ((live (usage-report-claude-live))
+         (live-5h (and live (plist-get live :five-hour-pct)))
+         (live-wk (and live (plist-get live :weekly-pct)))
+         (totals (usage-report--totals current-snap :claude))
          (sessions (plist-get current-snap :claude))
          (estimates (and anchors
                          week-snap
@@ -416,26 +719,49 @@ Doubles `%' for `format-mode-line' safety."
          (metric (or (plist-get estimates :metric)
                      usage-report-claude-estimate-metric))
          (metric-label (usage-report--claude-metric-label metric))
-         (current-cap (and estimates (plist-get estimates :current-cap)))
-         (current-pct (and estimates (plist-get estimates :current-used-pct)))
-         (week-pct (and estimates (plist-get estimates :week-used-pct)))
+         (current-value (and totals
+                             (usage-report--claude-window-metric-value totals metric)))
+         ;; Live-implied cap beats a manually captured anchor: it recalibrates
+         ;; every fetch. Anchor cap remains the offline fallback.
+         (current-cap (or (usage-report--claude-live-implied-cap live-5h current-value)
+                          (and estimates (plist-get estimates :current-cap))))
+         (current-pct (or live-5h
+                          (and estimates (plist-get estimates :current-used-pct))))
+         (week-pct (or live-wk
+                       (and estimates (plist-get estimates :week-used-pct))))
          (week-cap (and estimates (plist-get estimates :week-cap)))
          (n-sess (or (plist-get totals :active-sessions) 0))
          (n-msgs (or (plist-get totals :messages) 0)))
-    ;; Top line: prefer percentages when anchors give us a cap; fall back
-    ;; to weighted-token magnitude when not yet calibrated.
+    ;; Top line: exact live percentages when the endpoint answers; anchor
+    ;; estimates (labelled est) when not; raw magnitude when uncalibrated.
     (cond
      ((and current-pct week-pct)
-      (insert (format "    Claude: %.1f%% 5h / %.1f%% wk used  (%d sess, %d msgs)\n"
-                      current-pct week-pct n-sess n-msgs)))
+      (insert (format "    Claude: %.1f%% 5h / %.1f%% wk used%s  (%d sess, %d msgs)\n"
+                      current-pct week-pct
+                      (if live-5h "" " (est)")
+                      n-sess n-msgs)))
      (current-pct
-      (insert (format "    Claude: %.1f%% 5h used  (%d sess, %d msgs)\n"
-                      current-pct n-sess n-msgs)))
+      (insert (format "    Claude: %.1f%% 5h used%s  (%d sess, %d msgs)\n"
+                      current-pct
+                      (if live-5h "" " (est)")
+                      n-sess n-msgs)))
      (t
       (insert (format "    Claude: %s weighted  (%d sess, %d msgs)\n"
                       (usage-report--fmt-int
                        (plist-get totals :weighted-input-equiv))
                       n-sess n-msgs))))
+    ;; Reset clocks and scoped model limits only exist on the live path.
+    (when live
+      (insert (format "      resets: 5h %s · wk %s\n"
+                      (usage-report--resets-clock (plist-get live :five-hour-resets))
+                      (usage-report--resets-day-clock (plist-get live :weekly-resets))))
+      (dolist (s (usage-report--claude-scoped-warnings live))
+        (insert (propertize
+                 (format "      %s: %.0f%% wk (model-scoped limit, %s)\n"
+                         (or (plist-get s :model) "scoped")
+                         (plist-get s :pct)
+                         (or (plist-get s :severity) "active"))
+                 'face 'warning))))
     ;; Per-session: scale each session's metric by the current-window cap so
     ;; rows are directly comparable to Codex's per-session %.
     (dolist (s sessions)
@@ -451,27 +777,63 @@ Doubles `%' for `format-mode-line' safety."
                           sid
                           (usage-report--fmt-int (plist-get u :output))
                           msgs)))))
-    ;; Provenance footer: caps and anchor source, or capture nudge.
-    (if estimates
-        (insert (propertize
-                 (format "      caps: 5h=%s / wk=%s  (%d %s anchor%s in %s)\n"
-                         (usage-report--fmt-int current-cap)
-                         (usage-report--fmt-int week-cap)
-                         (plist-get estimates :current-samples)
-                         metric-label
-                         (if (= (plist-get estimates :current-samples) 1) "" "s")
-                         usage-report-claude-anchor-file)
-                 'face 'shadow))
+    ;; Provenance footer: where the numbers came from, in one line.
+    (cond
+     (live-5h
       (insert (propertize
-               "      est unavailable; capture anchors with M-x usage-report-capture-claude-anchor after checking claude.ai/settings/usage\n"
-               'face 'shadow)))))
+               (format "      source: usage api (live)%s\n"
+                       (if current-cap
+                           (format " · 5h cap≈%s implied (per-session %% assumes local spend)"
+                                   (usage-report--fmt-int current-cap))
+                         ""))
+               'face 'shadow)))
+     (estimates
+      (insert (propertize
+               (format "      caps: 5h=%s / wk=%s  (%d %s anchor%s in %s)\n"
+                       (usage-report--fmt-int current-cap)
+                       (usage-report--fmt-int week-cap)
+                       (plist-get estimates :current-samples)
+                       metric-label
+                       (if (= (plist-get estimates :current-samples) 1) "" "s")
+                       usage-report-claude-anchor-file)
+               'face 'shadow)))
+     (t
+      (insert (propertize
+               "      est unavailable; live api down and no anchors — M-x usage-report-capture-claude-anchor-live\n"
+               'face 'shadow))))))
+
+(defun usage-report--insert-zai (&optional live)
+  "Insert ZAI coding-plan quota details from LIVE usage."
+  (let* ((live (or live (usage-report-zai-live)))
+         (five-used (and live (plist-get live :five-hour-used-pct)))
+         (five-free (and live (plist-get live :five-hour-free-pct)))
+         (week-used (and live (plist-get live :weekly-used-pct)))
+         (week-free (and live (plist-get live :weekly-free-pct)))
+         (level (and live (plist-get live :level))))
+    (if (not live)
+        (insert (propertize "    ZAI: live quota unavailable\n" 'face 'shadow))
+      (insert (format "    ZAI: %s 5h / %s wk used  (%s / %s free%s)\n"
+                      (usage-report--fmt-pct five-used)
+                      (usage-report--fmt-pct week-used)
+                      (usage-report--fmt-pct five-free)
+                      (usage-report--fmt-pct week-free)
+                      (if (and (stringp level) (not (string-empty-p level)))
+                          (format "; %s plan" (capitalize level))
+                        "")))
+      (insert (format "      resets: 5h %s · wk %s\n"
+                      (usage-report--epoch-ms-clock
+                       (plist-get live :five-hour-resets-ms))
+                      (usage-report--epoch-ms-clock
+                       (plist-get live :weekly-resets-ms) t)))
+      (insert (propertize "      source: ZAI quota api (live)\n" 'face 'shadow)))))
 
 (defun usage-report-insert-stack-hud-block ()
   "Render the Token Usage block into the current buffer.
 Bound into stack-hud via the `usage' key in `stack-hud-blocks'."
   (insert "  Usage:\n")
   (let ((snap (usage-report-snapshot))
-        (anchors (usage-report-claude-anchors)))
+        (anchors (usage-report-claude-anchors))
+        (zai-live (usage-report-zai-live)))
     (cond
      ((null snap)
       (insert (propertize "    (script unavailable)\n" 'face 'shadow)))
@@ -484,7 +846,10 @@ Bound into stack-hud via the `usage' key in `stack-hud-blocks'."
                              usage-report-claude-week-window-minutes))))
         (insert (format "    %s\n" (usage-report-headline-string snap)))
         (usage-report--insert-codex snap)
-        (usage-report--insert-claude snap week-snap anchors))))))
+        (usage-report--insert-claude snap week-snap anchors))))
+    ;; ZAI is independent of the local transcript snapshot, so keep it visible
+    ;; when there are no sessions or the bb script is unavailable.
+    (usage-report--insert-zai zai-live)))
 
 ;; Stack-hud auto-registration: only takes effect once stack-hud.el is loaded
 ;; and its dispatch is taught about `usage'. The dispatch edit lives in
