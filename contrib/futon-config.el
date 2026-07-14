@@ -192,6 +192,13 @@
 (with-demoted-errors "futon-agency-ws enable: %S"
   (futon-agency-hud-enable))
 
+;; E-park-delivery-losses finding 0: install the park-resume poller
+;; (claude-repl-park) + jobs visibility (claude-repl-jobs) at startup, so an
+;; Emacs restart cannot silently disable them and parked resumes never rot in
+;; the ready-inbox.  Placement chosen by Joe 2026-07-14.  (futon3c/emacs is
+;; already on load-path above; claude-repl is required in the Futon 3c block.)
+(require 'claude-repl-bootstrap)
+
 ;;; Futon 4:
 
 ;; Stack/Arxana frame naming (used by sway rules).
