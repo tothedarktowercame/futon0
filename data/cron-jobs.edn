@@ -1,0 +1,140 @@
+;; futon0/data/cron-jobs.edn — Canonical registry of installed cron jobs on this machine.
+;;
+;; Purpose: a single source-of-truth for cron jobs the futon stack relies on, so the
+;; operator doesn't lose track of them. Each entry records what the job does, when it
+;; runs, where its logs go, and the contract/mission it serves.
+;;
+;; Lifecycle (per Joe directive 2026-05-21 "make an index of such cron jobs in Arxana
+;; so I don't lose track of them — the list can go right into the root of arxana://"):
+;;   - This file is the canonical, operator-readable form. Edit by hand or via tools.
+;;   - A typed hyperedge `arxana/index/cron-jobs` in the authoritative Futon1b
+;;     substrate mirrors this content
+;;     for runtime queryability. To refresh the mirror after editing this file, run
+;;     the script `bb scripts/upsert_cron_jobs_index.bb` from futon0 (TBD; for now,
+;;     manual re-upsert).
+;;   - The crontab itself lives at `crontab -l`; this registry is a documentation
+;;     layer above it. The crontab's comment header points back here.
+;;
+;; Schema (v1):
+;;   :schema-version    integer
+;;   :installed-by      who first laid this down
+;;   :installed-at      ISO-8601
+;;   :registry-purpose  human-readable summary
+;;   :jobs              vector of job maps with shape:
+;;     :job-id         keyword unique identifier
+;;     :schedule       crontab schedule expression
+;;     :command        the literal command line
+;;     :log-path       absolute path to log file
+;;     :purpose        what the job does in operator terms
+;;     :owner-mission  mission doc(s) this job serves
+;;     :contract-row   contract row (R-criterion / F-criterion / etc.) the job satisfies
+;;     :installed-at   ISO-8601 of when this entry landed
+;;     :installed-by   agent / operator who added it
+;;     :status         :active | :disabled | :retired
+
+{:schema-version 1
+ :installed-by "claude-9"
+ :installed-at "2026-05-21"
+ :registry-purpose
+ "Operator-readable index of every cron job the futon stack relies on.
+  Pair with `crontab -l` to verify the live schedule matches this registry.
+  Mirror in the authoritative Futon1b substrate at hyperedge type
+  `arxana/index/cron-jobs`."
+
+ :jobs
+  [{:job-id :wm-scheduled
+   :schedule "0 * * * *"
+   :command "/home/joe/code/futon2/scripts/wm_full_loop_cron.sh"
+   :log-path "/home/joe/code/futon2/logs/wm-scheduled.log"
+   :purpose
+   "WM AIF full loop — one wall-clock opportunity: readiness and substrate
+    preflight → preference refresh → stop-line memory → selection → pattern
+    cascade → Zai-5 implementation → Codex-7 independent review → Futon1b
+    grounding → repair discharge → Morning Brief queue → cohort close. A
+    process lock prevents overlapping hourly runs without hiding runner errors."
+   :owner-mission ["~/code/futon7/holes/M-war-machine-aif-completion.md"
+                   "~/code/futon0/holes/missions/M-the-futon-stack.md"]
+   :contract-row "WM R10 — Live operation (futon-aif-completeness.md §R10)"
+   :installed-at "2026-07-14"
+   :installed-by "codex"
+   :status :active}
+
+  {:job-id :wm-outer-loop
+   :schedule "0 4 * * *"
+   :command "cd /home/joe/code/futon2 && /usr/local/bin/clojure -M:wm-outer-loop"
+   :log-path "/home/joe/code/futon2/logs/wm-outer-loop.log"
+   :purpose
+   "WM AIF outer loop — slower-cadence hyperparameter inference (R12 narrow
+    take-up apparatus). Reads the trace window written by :wm-scheduled,
+    derives operator follow-through from git history, updates per-class
+    Beta(α,β) posteriors in `futon2.aif.intrinsic-values`, persists update
+    hyperedges to the authoritative substrate. The :intrinsic-value carried by
+    :learn-action-class recommendations moves under this inference."
+   :owner-mission ["~/code/futon0/holes/missions/M-the-futon-stack.md"
+                   "~/code/futon0/holes/missions/M-the-futon-stack-Q6-r12-design-choices.md"]
+   :contract-row "WM R12 — Dual-loop hyperparameter inference (futon-aif-completeness.md §R12)"
+   :installed-at "2026-05-21"
+   :installed-by "claude-9"
+   :status :retired}
+
+  {:job-id :shared-corpus-refresh
+   :schedule "30 4 * * *"
+   :command "cd /home/joe/code/futon3a && CLJ_CMD=/usr/local/bin/clojure PYTHON_BIN=/home/joe/code/futon3a/.venv/bin/python3 /home/joe/code/futon3a/scripts/index_patterns.sh --minilm --include-missions"
+   :log-path "/home/joe/code/futon2/logs/shared-corpus-refresh.log"
+   :purpose
+   "Refreshes the shared pattern+mission embedding corpus used by the WM,
+    notions retrieval, and mission-space work. The job rebuilds the canonical
+    Futon3 TSV, projects flexiargs into embedding input records, refreshes
+    pattern MiniLM embeddings, refreshes mission records / mission embeddings,
+    and writes the merged `minilm_corpus_embeddings.json`. This supersedes
+    the earlier TSV-only cron after E-pattern-mining showed the WM was reading
+    fresh counts from the TSV while the embedding half of the library remained
+    months stale."
+   :owner-mission ["~/code/futon3c/holes/missions/E-pattern-mining.md"
+                   "~/code/futon5a/holes/missions/M-stack-geometry.md"
+                   "~/code/futon0/holes/missions/M-patterns-done-right.md"]
+   :contract-row "pattern-library-ingestion-discipline — shared corpus freshness invariant"
+   :installed-at "2026-05-25"
+   :installed-by "codex-2"
+   :status :active}
+
+  {:job-id :apm-nl-harvest-opus
+   :schedule "17 * * * *"
+   :command "APM_HARVEST_MAX_PER_SLOT=4 APM_HARVEST_MAX_PER_RUN=2 /home/joe/code/futon3c/scripts/apm_nl_harvest_opus_cron.sh"
+   :log-path "/home/joe/code/futon2/logs/apm-nl-harvest-opus.log"
+   :purpose
+   "APM natural-language proof harvest for source problems still missing
+    `data/apm-informal-proofs/apm-<id>.md`. Runs Claude Code directly in
+    print mode with `--model opus`, writes the same raw informal-proof surface
+    used by the APM conductor. Spend control: live usage gate against the
+    Claude usage API (skips when 5-hour utilization >= APM_HARVEST_MAX_5H_UTIL,
+    default 70, or weekly >= APM_HARVEST_MAX_WEEKLY_UTIL, default 90; re-checked
+    between calls), with the local 5-hour slot counter as backstop/damper when
+    the usage API is unavailable."
+   :owner-mission ["~/code/algorithms/apm-nl-proof-harvest.md"
+                   "~/code/algorithms/apm-daily-batch.md"]
+   :contract-row "APM NL-proof harvest — fill missing informal-proof substrate before Lean formalization"
+   :installed-at "2026-07-13"
+   :installed-by "codex-2"
+   :status :active}
+
+  {:job-id :apm-formal-zai
+   :schedule "*/15 * * * *"
+   :command "/home/joe/code/futon3c/scripts/apm_formal_zai_cron.py"
+   :log-path "/home/joe/code/futon2/logs/apm-formal-zai.log"
+   :purpose
+   "Starts one previously unattempted Lean formalization from a canonical
+    `apm-lean/problems/<id>/` bundle that already has an informal solution.
+    Dispatches GLM-5.2 through a local invoke-ready Zai identity in Agency so
+    the custom Zai harness is always present. Spend control is fail-closed:
+    Z.AI's coding-plan quota endpoint must report strictly more than 50%
+    remaining in every token window (currently 5-hour and weekly), and Agency
+    must report no more than one other Zai agent with status `invoking`.
+    Durable per-problem claims prevent overlapping cron ticks from selecting
+    the same problem."
+   :owner-mission ["~/code/algorithms/apm-daily-batch.md"
+                   "~/code/futon3c/holes/missions/M-apm-solutions.md"]
+   :contract-row "APM formalization pass — Agency/Zai completion of informal-only canonical bundles"
+   :installed-at "2026-07-13"
+   :installed-by "codex"
+   :status :active}]}
