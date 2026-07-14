@@ -7,6 +7,10 @@
 
 ;;; Futon 0:
 
+;; This daemon serves both graphical and terminal-client frames.  Keep their
+;; keyboards usable while another frame has an active minibuffer/recursive edit.
+(setq multiple-terminals-merge-keyboards t)
+
 (add-to-list 'load-path "/home/joe/code/futon0/contrib/")
 (add-to-list 'load-path "/home/joe/code/futon0/emacs/")
 
