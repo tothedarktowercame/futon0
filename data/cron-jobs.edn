@@ -57,7 +57,14 @@
    :contract-row "WM R10 — Live operation (futon-aif-completeness.md §R10)"
    :installed-at "2026-07-14"
    :installed-by "codex"
-   :status :active}
+   :status :disabled
+   :disabled-at "2026-07-15"
+   :disabled-reason
+   "Stop-the-line: attempts 2–24 exposed a repeated policy-support failure.
+    The selector chose :learn-action-class/:fire-pattern, which the coding
+    surface could not construct; no-selection did not create a repair
+    obligation, so the habit prior repeated the same failure. Resume only
+    after repair, an independently reviewed canary, and a semantic-epoch bump."}
 
   {:job-id :wm-outer-loop
    :schedule "0 4 * * *"
