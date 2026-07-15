@@ -49,7 +49,7 @@
    :purpose
    "WM AIF full loop — one wall-clock opportunity: readiness and substrate
     preflight → preference refresh → stop-line memory → selection → pattern
-    cascade → Zai-5 implementation → Codex-7 independent review → Futon1b
+    typed construction → configured author → distinct configured reviewer → Futon1b
     grounding → repair discharge → Morning Brief queue → cohort close. A
     process lock prevents overlapping hourly runs without hiding runner errors."
    :owner-mission ["~/code/futon7/holes/M-war-machine-aif-completion.md"
@@ -60,11 +60,11 @@
    :status :disabled
    :disabled-at "2026-07-15"
    :disabled-reason
-   "Stop-the-line: attempts 2–24 exposed a repeated policy-support failure.
-    The selector chose :learn-action-class/:fire-pattern, which the coding
-    surface could not construct; no-selection did not create a repair
-    obligation, so the habit prior repeated the same failure. Resume only
-    after repair, an independently reviewed canary, and a semantic-epoch bump."}
+   "Operator-disabled after the 2026-07-15 stop-line. The technical re-enable
+    gate is now clear: typed capability construction and system-failure memory
+    landed, canary-76c0d5df-0485-4479-a81e-57890c2463cb closed as a
+    Claude-reviewed grounded change, and semantic epoch v3 is live. No cron is
+    installed; choose bounded duree or a wall-clock cadence explicitly."}
 
   {:job-id :wm-outer-loop
    :schedule "0 4 * * *"
