@@ -336,53 +336,25 @@ echo "Emacs dir:    ${emacs_dir}"
 echo "Mode:         $(if $start_new; then echo 'new session'; else echo 'resume'; fi)"
 [[ -n "${clock_target}" ]] && echo "Clock target: ${clock_target}"
 
-# --- Agency auto-start -------------------------------------------------------
+# --- Agency check ------------------------------------------------------------
 
 agency_reachable() {
   curl -sS --max-time 2 "${evidence_base}/api/alpha/agents" >/dev/null 2>&1
 }
 
-start_agency_via_emacs() {
-  local sock="$1"
-  local futon_root
-  futon_root="$(cd "$(dirname "${script_real}")/../../futon3c" && pwd)"
-  local escaped_root
-  escaped_root="$(elisp_escape "${futon_root}")"
-  echo "Agency:       starting via Emacs *server* buffer..."
-  "${emacsclient_bin}" -s "${sock}" -n --eval \
-    "(let ((buf (get-buffer \"*server*\"))) (if (and buf (get-buffer-process buf) (process-live-p (get-buffer-process buf))) (message \"*server* already running\") (let ((buf (get-buffer-create \"*server*\"))) (with-current-buffer buf (let ((default-directory \"${escaped_root}/\")) (unless (derived-mode-p 'shell-mode) (make-comint-in-buffer \"server\" buf shell-file-name) (shell-mode)) (goto-char (point-max)) (insert \"./scripts/dev-laptop-env\") (comint-send-input))) \"started\")))" >/dev/null 2>&1
-}
-
-wait_for_agency() {
-  local max_wait="${FUTON3C_AGENCY_TIMEOUT:-30}"
-  local waited=0
-  while (( waited < max_wait )); do
-    if agency_reachable; then
-      echo "Agency:       up after ${waited}s"
-      return 0
-    fi
-    sleep 1
-    (( waited++ ))
-  done
-  echo "Agency:       timed out after ${max_wait}s" >&2
-  return 1
-}
-
-# Check Agency — auto-start if needed
+# cr is a client launcher: it attaches to an Agency that is already
+# running. It deliberately does NOT start Agency. A client program
+# should not hold the authority to boot server infrastructure — the
+# old path injected a dev-env command into an Emacs *server* buffer,
+# which is far too much power for a REPL launcher. Start Agency
+# yourself first (in its own pane), then run cr.
 if agency_reachable; then
   echo "Agency:       reachable"
 else
-  echo "Agency:       NOT reachable"
-  # Need Emacs socket early for auto-start
-  _sock="$(find_emacs_socket 2>/dev/null)" || true
-  if [[ -n "${_sock}" ]]; then
-    start_agency_via_emacs "${_sock}"
-    if ! wait_for_agency; then
-      echo "Agency:       could not start — continuing without registration" >&2
-    fi
-  else
-    echo "Agency:       no Emacs socket found, cannot auto-start" >&2
-  fi
+  echo "Agency:       NOT reachable" >&2
+  echo "  cr does not start Agency. Launch it first in its own pane:" >&2
+  echo "    cd ~/code/futon3c && ./scripts/dev-linode-env   # laptop: ./scripts/dev-laptop-env" >&2
+  exit 1
 fi
 
 # Show existing session file state
