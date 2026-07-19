@@ -180,6 +180,25 @@ zone holds heavy mass or traffic but no machine capability is the learning targe
   *purely from harvested evidence*; both repair obligations discharge through a normal
   full-loop click with card + executed review + grounding.
 
+### Walk verdict (Joe, 2026-07-19 evening)
+- **Accepted for unsticking.** "Getting it unstuck is the key thing… that's fine, as long as
+  we are getting distinct numbers out." Distinct numbers verified: 12/12 gap classes separate
+  on in-memory replay (0.9375–0.9992). The partition object is **frozen as `pca3-v1`** +
+  `harvest-2026-07-19-3d.edn` per the R9-spirit invariant.
+- **Boundary questions recorded as accepted distortion pending refinement** (not blockers):
+  no-op zone holds 51/269 missions, 25 of them high-D disagreements; disagreement set is
+  79% at commit grain. UI complaints (disagreement toggle, guidance note) fixed same evening
+  (futon6 `7d62d61`).
+- **037 resolved by this mission's existence** (operator judgment): the concrete spec that
+  attempt-037 proved unauthorable now exists and carried two slices. Formal discharge of
+  036/037 still goes through the replayed-036 full-loop click.
+- **Follow-up mission required (Joe):** refine the scores *as the machine runs* — the S2
+  load/demand channels and score-shape refinements belong there; this mission's remaining
+  critical path is deposit → replay-036 → discharge. Winding the machine back to 036 and
+  running from there is acceptable.
+- **Machine start: NOT yet armed.** Joe: "I'm not prepared to start it yet, but we could
+  sanity check that it's ready to go soon." Deposit and arming remain Joe-gated.
+
 ### Steady-state (post-S2 design note, Joe 2026-07-19 — "refine without the big embed")
 The 5-hour S1 embedding was one-time backfill, not a recurring cost. The continuous path:
 - **Trickle embedding:** new commits (tens/day) embed in seconds; ride `daily_reembed.sh`.
