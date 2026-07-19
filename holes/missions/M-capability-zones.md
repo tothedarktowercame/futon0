@@ -180,6 +180,21 @@ zone holds heavy mass or traffic but no machine capability is the learning targe
   *purely from harvested evidence*; both repair obligations discharge through a normal
   full-loop click with card + executed review + grounding.
 
+### Steady-state (post-S2 design note, Joe 2026-07-19 — "refine without the big embed")
+The 5-hour S1 embedding was one-time backfill, not a recurring cost. The continuous path:
+- **Trickle embedding:** new commits (tens/day) embed in seconds; ride `daily_reembed.sh`.
+  Prereq fix: re-key the prepare checkpoints by content/sha instead of chunk position, so
+  appends don't invalidate earlier chunks.
+- **Live evidence needs no embedding:** once S2 is wired, enacted attempts feed the
+  posteriors through the normal R12 `wm-hyperparameter-update` loop in real time — the
+  retro harvest is the bootstrap, not the diet.
+- **Seeds/reduction:** centroids are streaming means; PCA refit is seconds. Full re-embeds
+  recur only on embedding-model change (rare; GPU pass ≈ 1 min if needed).
+- **Drift vs the R9-spirit pin:** the accepted partition is version-frozen, so refinement
+  lands as *discrete accepted generations* — background drift, then a short operator
+  re-walk and a new pinned version when drift crosses a visible threshold. No silent
+  mutation under G. The lumpy v1 partition is acceptable precisely because of this path.
+
 ### DERIVE (later, empirical — not blocking)
 - The attachment-mode hyper-prior: for each historical capability emergence, measure its birth
   adjacency (attached-to-mass vs edge) and correlate with subsequent load-bearingness. If a
