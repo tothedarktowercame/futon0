@@ -232,3 +232,24 @@ for S1.5 re-assignment in the accepted 3-D partition).
 **Test state:** 3 tests, 13 assertions, 0 failures; clj-kondo 0/0; check-parens OK.
 **Next:** S1.5 — build the 3-D reduction, re-assign the harvest, render the 2-D projection
 layer, Joe walks and accepts (disagreement set included in acceptance material).
+
+### Checkpoint 2 — 2026-07-19 (S1.5 built and reviewed; awaiting Joe's walk)
+**What was done:** codex-10 delivered S1.5 in-window (futon2 `9a57a61`, futon3c `fb7c31a`,
+futon6 `22aacfc` — the maintained frontend is `mission_efe_field.py`, hence the extra repo —
+futon0 `953d2d2`); claude-3 ran the full review gate: all four diffs read, gates re-run
+(futon2 5 tests/28 assertions, futon3c 1/6, kondo 0/0 both, parens OK), determinism verified
+independently (transform + zone-of-3d double-call; codex's byte-identical refit sha),
+3-D artifact replayed in-memory (134 records, 14/14 classes non-default), store count read
+directly (:7073 = 108 exact, unchanged — closing the one gap codex reported honestly when the
+store timed out under load), screenshot + legend/toggle inspected.
+**Numbers:** pca3-v1 explains 16.0% of variance (8.7/4.5/2.9); re-assignment: 6810 items,
+6130 assigned, 680 mixed (p10-of-margins threshold — marks exactly 10% by construction),
+**all 14 classes have evidence** (134 records); **disagreement set = 5401/6810 (79%)** vs the
+high-D diagnostic, top flows apply-cascade→survey (804), apply-cascade→advance-mission (584),
+advance-mission→survey (362). Mission-level zone census (269 rendered): survey 82, no-op 51,
+close 39, pursue 23, close-hole 20, apply-cascade 19…
+**Test state:** 6 tests, 34 assertions, 0 failures across futon2+futon3c.
+**Next:** Joe walks the zones (toggle on the mission-efe-field map; acceptance doc:
+`M-capability-zones-S1.5-acceptance.md`). Walk questions on record: is the 3-D partition
+semantically walkable at 16% variance, or does v2 (UMAP-3) get built? Is the no-op zone
+holding 51/269 missions meaningful or a seed artifact? Deposit stays locked until acceptance.
