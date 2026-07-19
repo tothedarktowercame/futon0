@@ -190,3 +190,21 @@ zone holds heavy mass or traffic but no machine capability is the learning targe
 - Ground metric + granularity: `:held` on M-substrate-metric (interim = BGE cosine, named).
 - R2 (train the prior from outcomes): stays in futon6; this mission only produces the corpus.
 - Operator-side capability mining: stays in M-learning-loop; shared vocabulary, no fork.
+
+---
+
+### Checkpoint 1 — 2026-07-19 (S1 landed)
+**What was done:** S1 belled to codex-10; job killed at the 30-min Agency cap mid-embedding;
+claude-3 reviewed the on-disk delivery per the handoff review gate, fixed findings directly
+(checkpointed batch embedding + honest text cap in `capability_zones_prepare.py`; repo-key
+type fix in the coverage table), re-ran the compute under systemd-run (~5 h on CPU), ran the
+harvest, and landed everything: futon2 `56df8e5` (NOTE: on branch `M-propagators-ant-gate`),
+futon0 `6c11b2b`.
+**Numbers:** 6810 items; 4892 assigned / 1918 resisted (28%, margin < 0.01 in raw BGE space —
+provisional per the dimensional amendment); 101 monthly Beta records; 11/14 classes with
+evidence (zero: `open-mission`, `survey`, `pursue`); seed drift 0.26–0.34 cosine; live :7073
+store untouched (108 `wm-hyperparameter-update` hyperedges before and after — deposit waits
+for S1.5 re-assignment in the accepted 3-D partition).
+**Test state:** 3 tests, 13 assertions, 0 failures; clj-kondo 0/0; check-parens OK.
+**Next:** S1.5 — build the 3-D reduction, re-assign the harvest, render the 2-D projection
+layer, Joe walks and accepts (disagreement set included in acceptance material).
