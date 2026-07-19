@@ -195,6 +195,15 @@ The 5-hour S1 embedding was one-time backfill, not a recurring cost. The continu
   re-walk and a new pinned version when drift crosses a visible threshold. No silent
   mutation under G. The lumpy v1 partition is acceptable precisely because of this path.
 
+- **Hypergraph route (Joe, 2026-07-19 evening):** term/hypergraph text indexing
+  (XTDB#5637 lane; demo impls on-laptop: `futon1bi/src/futon1bi/text_index.clj`,
+  futon1b `textprobe_*` + `fts_oracle.clj`) is the witness-bearing complement to
+  embedding classification — postings are auditable term-by-term (R9-friendly) and
+  incremental at millisecond cost. Candidate demo: classify the 1,918 resisted items
+  and cross-check index-vs-embedding agreement on the confident 4,892 (disagreement =
+  a third diagnostic stratum). Lives in the 5637 lane as its demo corpus, not as an
+  obligation here; Joe-gated there (D2 packet).
+
 ### DERIVE (later, empirical — not blocking)
 - The attachment-mode hyper-prior: for each historical capability emergence, measure its birth
   adjacency (attached-to-mass vs edge) and correlate with subsequent load-bearingness. If a
