@@ -199,6 +199,22 @@ zone holds heavy mass or traffic but no machine capability is the learning targe
 - **Machine start: NOT yet armed.** Joe: "I'm not prepared to start it yet, but we could
   sanity check that it's ready to go soon." Deposit and arming remain Joe-gated.
 
+### Meta-pattern layer (Joe idea, 2026-07-19 late — charter material for the follow-up mission)
+Seed a **second, layered partition** from the paper's R-catalog patterns (`p4ng/main-2026.tex`)
+as representative meta-patterns: each WM feature organizes (and competes for) the patterns and
+work in its surrounding region. Rationale (Joe): the 14 action-classes are potentially ad hoc;
+the catalog is well-theorised and definitively represents the WM's capabilities, largely
+reflective of the stack's. Design constraints agreed in conversation:
+- **Layer, don't replace.** The action-class partition keys the R12 posteriors and the 036
+  unstick path — untouched. The meta-pattern zones bridge via a per-zone *distribution over
+  action-classes* (shared vocabulary, no fork).
+- Catalog prose = seed texts (fixes the "Exercise X by…" seed-template bias).
+- Long game: the action vocabulary itself becomes learnable — R17/BMR merges/splits of
+  action classes proposed from pattern-grounded evidence.
+- Arrives as a **versioned v2+ generation** with its own operator walk; `pca3-v1` stays frozen.
+- **First probe (cheap, no state change):** embed the catalog patterns, transform through the
+  existing pca3-v1 matrix, overlay on the map — see which zones the paper's patterns claim.
+
 ### Steady-state (post-S2 design note, Joe 2026-07-19 — "refine without the big embed")
 The 5-hour S1 embedding was one-time backfill, not a recurring cost. The continuous path:
 - **Trickle embedding:** new commits (tens/day) embed in seconds; ride `daily_reembed.sh`.
