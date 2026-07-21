@@ -288,3 +288,24 @@ close 39, pursue 23, close-hole 20, apply-cascade 19…
 `M-capability-zones-S1.5-acceptance.md`). Walk questions on record: is the 3-D partition
 semantically walkable at 16% variance, or does v2 (UMAP-3) get built? Is the no-op zone
 holding 51/269 missions meaningful or a seed artifact? Deposit stays locked until acceptance.
+
+### Checkpoint 3 — 2026-07-21 (deposit live; first clicks; contract-shape finding)
+**What was done:** Joe accepted-for-unsticking and commissioned up to 5 clicks. Deposit
+executed (store 108→242; 12/12 gap classes distinct). Attempt-038 selected the open 036
+repair via stop-line preemption (correct), passed selection/construction, then was
+operator-interrupted (agent reap of codex-8/9; hot-swap to codex-1/2). zai-4's orphaned
+authoring produced futon2 `63fcdb3` — a proposer change deduplicating tied gap-actions —
+which FAILED owner review (invents discrimination at the uniform prior via alphabetical
+representative; shadows omitted classes from evidence; violates principle 2) and was
+REVERTED (`909c2ac`, tests green 7/16). Attempt-039 `:build-failed` (`:not-reached-build`).
+**Finding (the predicted new failure mode):** the repair discharge contract requires
+`:distinct-repair-commit` bound in-attempt — it assumes repairs are code-shaped. THIS
+repair was data-shaped (the deposit); its commits predate any attempt, so authors either
+fail to bind or manufacture code changes. The contract shape, not the machine, is the gap.
+**Test state:** proposer 7/16 green post-revert; machine PAUSED (unit stopped) pending
+Joe's direction on discharge path.
+**Next:** discharge 036/037 honestly — candidate paths: (a) operator-lane discharge citing
+the mission's deposit commits + a replayed discriminating selection as grounding; (b) an
+in-attempt commit that *documents* the data repair (bindable, honest) + normal grounding;
+then the production-shaped successor click shows live discrimination. Contract-shape fix
+(data-shaped repairs) belongs to the follow-up mission.
