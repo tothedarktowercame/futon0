@@ -309,3 +309,27 @@ the mission's deposit commits + a replayed discriminating selection as grounding
 in-attempt commit that *documents* the data repair (bindable, honest) + normal grounding;
 then the production-shaped successor click shows live discrimination. Contract-shape fix
 (data-shaped repairs) belongs to the follow-up mission.
+
+### Checkpoint 4 — 2026-07-21 morning (the tripwire is measuring the right thing)
+**What was done:** OOM recovery; rehydrate-on-startup defect found and fixed (futon2
+`662d159` — no runner code ever called the documented bootstrap-replay); successor cohort
+`wm-outer-loop-41-v1` preregistered + activated (target 10; validator generalized `feecd36`);
+attempt-id global-uniqueness defect found and fixed (`94b1cf2` — cohort-41's attempt-001
+collided with cohort-40's in the global morning-brief store); crew woken by whistle;
+obligations 036/037/039 + initialization carry implementation records (`:awaiting-validation`).
+**The finding (attempt-041):** with posteriors FED and DISTINCT in the candidates
+(iv 0.9615–0.9992 visible in the ranked field), `:G-efe` for gap classes is still
+bit-identical — intrinsic credit enters only `:controller-score` via effective-risk
+(B-2a purity), and `selection-discrimination` reads the CORE, by design ("must not hide a
+flat estimator"). The estimator core IS still flat: the deposit was necessary but not
+sufficient. The tripwire has now correctly refused twice for two different reasons.
+The principled fix is exactly S2's ambiguity item: per-class posterior variance in the
+ambiguity leg — which separates the core itself, leaving the tripwire untouched.
+**Open design question (needs ARGUE before code, Joe's verdict):** the SIGN. Naive
+variance-into-ambiguity makes unexplored classes HIGH-G (repulsive) — anti-epistemic.
+And R17′ quarantines posterior spread OUTSIDE G-efe as a named bonus (not EIG); whether
+R12 per-class Beta variance is "the ambiguity of the learn-action outcome" (belongs in
+the leg) or "posterior spread" (must stay a named augmentation) is a live question the
+paper's own honesty rules force us to answer, not assume.
+**State:** machine paused; `repair-attempt-041-policy-nondiscrimination` open (blocking,
+honestly); 036/037/039 await a grounded production-shaped click for `:resolved`.
