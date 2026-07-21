@@ -337,3 +337,26 @@ the leg) or "posterior spread" (must stay a named augmentation) is a live questi
 paper's own honesty rules force us to answer, not assume.
 **State:** machine paused; `repair-attempt-041-policy-nondiscrimination` open (blocking,
 honestly); 036/037/039 await a grounded production-shaped click for `:resolved`.
+
+### Checkpoint 5 — 2026-07-21 (RESOLVED: the arc closes)
+**What was done:** S2a (native-currency legs, futon2 `b3b0e47`, codex-1) and S2b (contract
+artifact shapes, `03d341d`, codex-2) and S3 (readiness-that-wakes, `200a850c`, codex-1) all
+landed, owner-reviewed, gates green. Pattern "Native-Currency Discrimination (the R17′–R12
+edge)" published (p4ng `718e7a3`); R16 + R9 revised against the recorded failure aggregate
+(`8827c85`). Validation clicks in cohort wm-outer-loop-41-v1: production selections passed
+`selection-discrimination` on the fed core (distinct-g 4) in attempts 042–044;
+**attempt-046 grounded** (repair of 043, author codex-1, reviewer codex-2, commit `9210242`);
+the runner auto-validated the canary obligation, and
+**036, 037, 039, 041, and the initialization obligation are all `:resolved`** against
+attempt-046 as the production-shaped successor.
+**The through-line:** attempt-036 refused because nothing was known; the harvest described
+six months of history; the deposit fed the posteriors; attempt-041 refused because credits
+aren't the core; the pattern put the evidence in the core's own legs; and the tripwire —
+untouched throughout — passed when, and only when, the estimator had earned it.
+**Still open (normal machine life, not this mission):** 044-artifact-binding-mismatch,
+047-review-execution-evidence-missing, 043 awaiting validation; 10 legacy
+awaiting-validation obligations continue draining one per grounded click.
+**Test state:** futon2 aif suite 677 tests / 4492 assertions, 0 failures (S3 run).
+**Next:** S1.5 remains formally acceptable-as-accepted (walk verdict recorded); the
+follow-up mission (score refinement as the machine runs; load/demand channels;
+data/spec failure-kind mapping for contracts; meta-pattern layer) awaits its charter.
