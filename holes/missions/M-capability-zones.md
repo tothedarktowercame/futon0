@@ -176,6 +176,10 @@ zone holds heavy mass or traffic but no machine capability is the learning targe
   (new terms enter through the existing augmentation/preference channels with named keys, per
   the B-2a score-provenance discipline); retries=0-style regression — with an empty posterior
   store, behavior is byte-identical to today.
+  - *Superseded in part (2026-07-21, S2a review):* the Native-Currency Discrimination
+    pattern's degradation clause replaces byte-identity-at-empty-store for learn-actions
+    with **refusal-equivalence** (uniform predictive variance 0.25, zero C shift, tripwire
+    refuses exactly as 036); non-learn actions remain byte-identical (tested).
 - **Acceptance:** a replayed attempt-036 selection discriminates (distinct-G ≥ 2 among top-5)
   *purely from harvested evidence*; both repair obligations discharge through a normal
   full-loop click with card + executed review + grounding.
