@@ -1974,15 +1974,98 @@ Returns plist with :pending-count and :term-count or nil."
 (defvar stack-hud--apm-cache nil)
 (defvar stack-hud--apm-cache-time 0)
 
+(defconst stack-hud-apm-metric-version "current-lean-code.v1"
+  "Version of the APM metric used by scans and burndown samples.")
+
+(defun stack-hud--apm-lean-ident-char-p (char)
+  "Return non-nil when CHAR can continue a Lean identifier."
+  (and char
+       (or (eq (char-syntax char) ?w)
+           (memq char '(?_ ?')))))
+
+(defun stack-hud--apm-count-sorries-in-text (text)
+  "Count executable `sorry` tokens in Lean source TEXT.
+Lowercase tokens inside line comments, nested block comments, strings, and
+quoted identifiers are excluded."
+  (let ((i 0)
+        (len (length text))
+        (state 'code)
+        (block-depth 0)
+        (n 0))
+    (while (< i len)
+      (pcase state
+        ('line-comment
+         (if (= (aref text i) ?\n)
+             (setq state 'code))
+         (setq i (1+ i)))
+        ('block-comment
+         (cond
+          ((and (< (1+ i) len)
+                (= (aref text i) ?/)
+                (= (aref text (1+ i)) ?-))
+           (setq block-depth (1+ block-depth)
+                 i (+ i 2)))
+          ((and (< (1+ i) len)
+                (= (aref text i) ?-)
+                (= (aref text (1+ i)) ?/))
+           (setq block-depth (1- block-depth)
+                 i (+ i 2))
+           (when (zerop block-depth)
+             (setq state 'code)))
+          (t
+           (setq i (1+ i)))))
+        ('string
+         (cond
+          ((= (aref text i) ?\\)
+           (setq i (min len (+ i 2))))
+          ((= (aref text i) ?\")
+           (setq state 'code
+                 i (1+ i)))
+          (t
+           (setq i (1+ i)))))
+        ('quoted-ident
+         (when (= (aref text i) ?»)
+           (setq state 'code))
+         (setq i (1+ i)))
+        ('code
+         (cond
+          ((and (< (1+ i) len)
+                (= (aref text i) ?-)
+                (= (aref text (1+ i)) ?-))
+           (setq state 'line-comment
+                 i (+ i 2)))
+          ((and (< (1+ i) len)
+                (= (aref text i) ?/)
+                (= (aref text (1+ i)) ?-))
+           (setq state 'block-comment
+                 block-depth 1
+                 i (+ i 2)))
+          ((= (aref text i) ?\")
+           (setq state 'string
+                 i (1+ i)))
+          ((= (aref text i) ?«)
+           (setq state 'quoted-ident
+                 i (1+ i)))
+          ((and (<= (+ i 5) len)
+                (string= (substring text i (+ i 5)) "sorry")
+                (not (stack-hud--apm-lean-ident-char-p
+                      (and (> i 0) (aref text (1- i)))))
+                (not (stack-hud--apm-lean-ident-char-p
+                      (and (< (+ i 5) len) (aref text (+ i 5))))))
+           (setq n (1+ n)
+                 i (+ i 5)))
+          (t
+           (setq i (1+ i)))))))
+    n))
+
 (defun stack-hud--apm-count-sorries (dir)
-  "Count `sorry` occurrences across .lean files under DIR."
+  "Count executable `sorry` tokens across current .lean files under DIR."
   (let ((n 0))
     (dolist (f (directory-files-recursively dir "\\.lean\\'"))
       (with-temp-buffer
         (insert-file-contents f)
-        (goto-char (point-min))
-        (while (re-search-forward "\\_<sorry\\_>" nil t)
-          (setq n (1+ n)))))
+        (setq n (+ n (stack-hud--apm-count-sorries-in-text
+                      (buffer-string))))))
     n))
 
 (defun stack-hud--apm-lean-files (dir)
@@ -1998,28 +2081,31 @@ Returns plist with :pending-count and :term-count or nil."
 (defun stack-hud--apm-scan ()
   "Scan APM proof-recovery progress.
 Returns a plist with :total, :informal (canonical informal proofs),
-:lean-total (problems with any Lean material), :lean-with-sorry
-(problems whose Lean material contains sorries), :lean-clean (Lean
-material with zero sorries), and :sorries (total sorry count across
-problem Lean files)."
+:lean-total (problems with current Lean material), :lean-with-sorry
+(problems whose current Lean material contains executable sorries),
+:lean-clean (current Lean material with zero sorries), and :sorries
+(total executable sorry count across current problem Lean files).
+Only `problems/ID/lean/` is current; candidates and history are excluded."
   (let ((ids (mapcar #'file-name-sans-extension
                      (directory-files stack-hud-apm-source-dir nil "\\.tex\\'")))
         (informal 0) (lean-total 0) (lean-with-sorry 0) (lean-clean 0)
         (sorries 0))
     (dolist (id ids)
       (let* ((problem-dir (expand-file-name id stack-hud-apm-problems-dir))
+             (lean-dir (expand-file-name "lean" problem-dir))
              (md (expand-file-name "informal-solution.md" problem-dir))
              (size (stack-hud--apm-file-size md)))
         (when (and size (>= size 100))
           (setq informal (1+ informal)))
-        (when-let ((lean-files (stack-hud--apm-lean-files problem-dir)))
+        (when-let ((lean-files (stack-hud--apm-lean-files lean-dir)))
           (setq lean-total (1+ lean-total))
-          (let ((n (stack-hud--apm-count-sorries problem-dir)))
+          (let ((n (stack-hud--apm-count-sorries lean-dir)))
             (setq sorries (+ sorries n))
             (if (> n 0)
                 (setq lean-with-sorry (1+ lean-with-sorry))
               (setq lean-clean (1+ lean-clean)))))))
-    (list :total (length ids) :informal informal
+    (list :metric-version stack-hud-apm-metric-version
+          :total (length ids) :informal informal
           :lean-total lean-total :lean-with-sorry lean-with-sorry
           :lean-clean lean-clean
           :sorries sorries)))
@@ -2059,14 +2145,19 @@ problem Lean files)."
                  object)))
       (cdr entry))))
 
-(defun stack-hud--apm-sample-from-payload (day payload)
-  "Extract an APM burndown sample for DAY from log PAYLOAD."
+(defun stack-hud--apm-sample-from-payload (day payload metric-version)
+  "Extract a compatible APM sample for DAY from PAYLOAD.
+METRIC-VERSION identifies the current counting semantics."
   (let* ((stack (stack-hud--json-field payload "stack"))
          (apm (stack-hud--json-field stack "apm"))
+         (sample-version (stack-hud--json-field apm "metric-version"))
          (total (stack-hud--json-field apm "total"))
          (clean (stack-hud--json-field apm "lean-clean")))
-    (when (and (numberp total) (numberp clean))
-      (list :date day :total total :lean-clean clean
+    (when (and (stringp sample-version)
+               (string= sample-version metric-version)
+               (numberp total) (numberp clean))
+      (list :date day :metric-version sample-version
+            :total total :lean-clean clean
             :remaining (max 0 (- total clean))))))
 
 (defun stack-hud--apm-last-json-line (path)
@@ -2079,8 +2170,8 @@ problem Lean files)."
                                    (split-string (buffer-string) "\n"))))))
         (stack-hud--decode-json line)))))
 
-(defun stack-hud--apm-sample-for-day (day)
-  "Read the last logged APM sample for DAY."
+(defun stack-hud--apm-sample-for-day (day metric-version)
+  "Read the last compatible logged APM sample for DAY and METRIC-VERSION."
   (let* ((summary-path (stack-hud--summary-path day))
          (log-path (stack-hud--log-path day))
          (payload
@@ -2092,19 +2183,22 @@ problem Lean files)."
                (stack-hud--decode-json (buffer-string)) "last")))
            ((file-readable-p log-path)
             (stack-hud--apm-last-json-line log-path)))))
-    (stack-hud--apm-sample-from-payload day payload)))
+    (stack-hud--apm-sample-from-payload day payload metric-version)))
 
 (defun stack-hud--apm-current-sample (status)
   "Make today's APM burndown sample from STATUS."
   (let ((total (plist-get status :total))
-        (clean (plist-get status :lean-clean)))
+        (clean (plist-get status :lean-clean))
+        (metric-version (or (plist-get status :metric-version)
+                            stack-hud-apm-metric-version)))
     (when (and (numberp total) (numberp clean))
       (list :date (stack-hud--today-string)
+            :metric-version metric-version
             :total total :lean-clean clean
             :remaining (max 0 (- total clean))))))
 
-(defun stack-hud--apm-cron-history (cutoff today)
-  "Read daily last samples between CUTOFF and TODAY from the cron ledger."
+(defun stack-hud--apm-cron-history (cutoff today metric-version)
+  "Read compatible samples between CUTOFF and TODAY from the cron ledger."
   (let (by-day)
     (when (file-readable-p stack-hud-apm-progress-path)
       (with-temp-buffer
@@ -2113,16 +2207,21 @@ problem Lean files)."
           (condition-case nil
               (let* ((payload (stack-hud--decode-json line))
                      (schema (stack-hud--json-field payload "schema"))
+                     (sample-version
+                      (stack-hud--json-field payload "metric_version"))
                      (timestamp (stack-hud--json-field payload "timestamp"))
                      (day (and (stringp timestamp) (substring timestamp 0 10)))
                      (total (stack-hud--json-field payload "total"))
                      (clean (stack-hud--json-field payload "lean_clean")))
-                (when (and (string= schema "apm-formal-progress.v1")
+                (when (and (stringp sample-version)
+                           (string= schema "apm-formal-progress.v2")
+                           (string= sample-version metric-version)
                            day (not (string< day cutoff))
                            (not (string< today day))
                            (numberp total) (numberp clean))
                   (setf (alist-get day by-day nil nil #'string=)
-                        (list :date day :total total :lean-clean clean
+                        (list :date day :metric-version sample-version
+                              :total total :lean-clean clean
                               :remaining (max 0 (- total clean))))))
             (error nil)))))
     (mapcar #'cdr by-day)))
@@ -2130,13 +2229,15 @@ problem Lean files)."
 (defun stack-hud--apm-history (status)
   "Return recent daily APM samples, ending with current STATUS."
   (let* ((today (stack-hud--today-string))
+         (metric-version (or (plist-get status :metric-version)
+                             stack-hud-apm-metric-version))
          (days (max 1 stack-hud-apm-burndown-days))
          (cutoff (format-time-string
                   "%Y-%m-%d"
                   (time-subtract (current-time) (days-to-time (1- days)))))
          (pattern "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\(?:\\.jsonl\\|\\.summary\\.json\\)\\'")
          dates
-         (samples (stack-hud--apm-cron-history cutoff today)))
+         (samples (stack-hud--apm-cron-history cutoff today metric-version)))
     (when (file-directory-p stack-hud-log-dir)
       (dolist (file (directory-files stack-hud-log-dir nil pattern))
         (let ((day (substring file 0 10)))
@@ -2147,7 +2248,8 @@ problem Lean files)."
       (unless (seq-find (lambda (sample)
                           (string= (plist-get sample :date) day))
                         samples)
-        (when-let ((sample (stack-hud--apm-sample-for-day day)))
+        (when-let ((sample (stack-hud--apm-sample-for-day
+                            day metric-version)))
           (push sample samples))))
     ;; The HUD is rendered before its snapshot is appended, so the live scan is
     ;; the authoritative last sample for today.
@@ -2213,20 +2315,34 @@ problem Lean files)."
      (err
       (insert (propertize (format "⚠ %s" err) 'face 'error) "\n\n"))
      (t
-      (let ((total (plist-get s :total)))
-        (insert (format "%d problems | %d with sorries | %d sorries open\n"
-                        total
-                        (plist-get s :lean-with-sorry)
-                        (plist-get s :sorries)))
-        (dolist (row `(("informal  " ,(plist-get s :informal))
-                       ("lean+sorry" ,(plist-get s :lean-total))
-                       ("lean clean" ,(plist-get s :lean-clean))))
+      (let ((total (plist-get s :total))
+            (lean-total (plist-get s :lean-total))
+            (lean-with-sorry (plist-get s :lean-with-sorry))
+            (lean-clean (plist-get s :lean-clean)))
+        (insert (format "%d canonical problems | %d current sorries open\n"
+                        total (plist-get s :sorries)))
+        (dolist (row `(("informal     " ,(plist-get s :informal))
+                       ("lean current  " ,lean-total)))
           (let ((n (cadr row)))
             (insert (format "    %s %s %3d/%d %3d%%\n"
                             (car row)
                             (stack-hud--apm-bar n total)
                             n total
                             (if (> total 0) (floor (* 100.0 n) total) 0)))))
+        (insert
+         (format "      with sorries  %3d/%d %3d%% of attempted\n"
+                 lean-with-sorry lean-total
+                 (if (> lean-total 0)
+                     (round (* 100.0 lean-with-sorry) lean-total)
+                   0)))
+        (insert
+         (format "      clean          %3d/%d %3d%% of attempted | %d/%d %d%% overall\n"
+                 lean-clean lean-total
+                 (if (> lean-total 0)
+                     (round (* 100.0 lean-clean) lean-total)
+                   0)
+                 lean-clean total
+                 (if (> total 0) (floor (* 100.0 lean-clean) total) 0)))
         (stack-hud--apm-insert-burndown s)
         (insert "\n"))))))
 

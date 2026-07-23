@@ -587,13 +587,46 @@ Keeps the anchor fallback calibrated for when the endpoint is unreachable."
   (let ((s (format "%s" (or id ""))))
     (if (> (length s) 8) (substring s 0 8) s)))
 
-(defun usage-report--codex-resets-clock (snap)
+(defun usage-report--codex-reset-clock (resets &optional include-day)
+  "Format Codex ISO RESET time, including month/day when INCLUDE-DAY is non-nil."
+  (if (and (stringp resets) (>= (length resets) 16))
+      ;; 2026-04-25T15:56:03Z -> 15:56Z or 04-25 15:56Z.
+      (concat (if include-day (concat (substring resets 5 10) " ") "")
+              (substring resets 11 16) "Z")
+    "?"))
+
+(defun usage-report--codex-resets-fragment (snap)
+  "Return labelled Codex reset clocks from SNAP."
   (let* ((totals (usage-report--totals snap :codex))
-         (resets (plist-get totals :resets-at)))
-    (if (and resets (>= (length resets) 16))
-        ;; 2026-04-25T15:56:03Z -> 15:56Z
-        (concat (substring resets 11 16) "Z")
-      "?")))
+         (five (plist-get totals :five-hour-resets-at))
+         (week (plist-get totals :weekly-resets-at))
+         (legacy (plist-get totals :resets-at)))
+    (cond
+     ((and five week)
+      (format "5h %s · wk %s"
+              (usage-report--codex-reset-clock five)
+              (usage-report--codex-reset-clock week t)))
+     (five (format "5h %s" (usage-report--codex-reset-clock five)))
+     (week (format "wk %s" (usage-report--codex-reset-clock week t)))
+     (legacy (usage-report--codex-reset-clock legacy))
+     (t "?"))))
+
+(defun usage-report--codex-usage-fragment (snap freep)
+  "Return labelled Codex usage from SNAP.
+When FREEP is non-nil, report remaining quota; otherwise report used quota."
+  (let* ((totals (usage-report--totals snap :codex))
+         (five (plist-get totals :five-hour-used-pct-max))
+         (week (plist-get totals :weekly-used-pct-max))
+         (legacy (plist-get totals :used-pct-max))
+         (convert (lambda (pct) (if freep (max 0.0 (- 100.0 pct)) pct))))
+    (cond
+     ((and (numberp five) (numberp week))
+      (format "%.0f%% 5h / %.0f%% wk"
+              (funcall convert five) (funcall convert week)))
+     ((numberp five) (format "%.0f%% 5h" (funcall convert five)))
+     ((numberp week) (format "%.0f%% wk" (funcall convert week)))
+     ((numberp legacy) (format "%.0f%%" (funcall convert legacy)))
+     (t "?"))))
 
 (defun usage-report--claude-headline-fragment (current-snap week-snap anchors)
   "Return Claude fragment for a headline using CURRENT-SNAP, WEEK-SNAP, and ANCHORS.
@@ -656,20 +689,17 @@ anchor-based estimates (labelled est), then raw magnitudes."
         (if zai-fragment
             (format "Usage: (script unavailable) · %s" zai-fragment)
           "Usage: (script unavailable)")
-      (let* ((codex (usage-report--totals snap :codex))
-             (cu (plist-get codex :used-pct-max))
-             (codex-free (when (numberp cu) (max 0.0 (- 100.0 cu))))
-             (week-snap (and anchors
+      (let* ((week-snap (and anchors
                              (usage-report-snapshot-for-window
                               usage-report-claude-week-window-minutes)))
              (claude-fragment (usage-report--claude-headline-fragment
                                snap week-snap anchors)))
         (concat
          (format "Codex %s free · %s"
-                 (if codex-free (format "%.0f%%" codex-free) "?")
+                 (usage-report--codex-usage-fragment snap t)
                  claude-fragment)
          (if zai-fragment (concat " · " zai-fragment) "")
-         (format " · resets %s" (usage-report--codex-resets-clock snap)))))))
+         (format " · resets %s" (usage-report--codex-resets-fragment snap)))))))
 
 (defun usage-report-arxana-headline-suffix (&optional snap)
   "Return ` · <usage>' to append to an Arxana Browser headline, or empty.
@@ -695,16 +725,26 @@ Doubles `%' for `format-mode-line' safety."
 (defun usage-report--insert-codex (snap)
   (let* ((totals (usage-report--totals snap :codex))
          (sessions (plist-get snap :codex)))
-    (insert (format "    Codex: %s used  (max across %d sess, resets %s)\n"
-                    (usage-report--fmt-pct (plist-get totals :used-pct-max))
-                    (or (plist-get totals :active-sessions) 0)
-                    (usage-report--codex-resets-clock snap)))
+    (insert (format "    Codex: %s used  (max across %d sess)\n"
+                    (usage-report--codex-usage-fragment snap nil)
+                    (or (plist-get totals :active-sessions) 0)))
+    (insert (format "      resets: %s\n"
+                    (usage-report--codex-resets-fragment snap)))
     (dolist (s sessions)
-      (let ((rl (plist-get s :rate-limit))
-            (u  (plist-get s :usage)))
+      (let* ((limits (plist-get s :rate-limits))
+             (five (plist-get (plist-get limits :five-hour) :used-pct))
+             (week (plist-get (plist-get limits :weekly) :used-pct))
+             (legacy (plist-get (plist-get s :rate-limit) :used-pct))
+             (quota (cond
+                     ((and (numberp five) (numberp week))
+                      (format "%.1f%% 5h / %.1f%% wk" five week))
+                     ((numberp five) (format "%.1f%% 5h" five))
+                     ((numberp week) (format "%.1f%% wk" week))
+                     (t (usage-report--fmt-pct legacy))))
+             (u (plist-get s :usage)))
         (insert (format "      %s  used %s  total %s\n"
                         (usage-report--short-id (plist-get s :session-id))
-                        (usage-report--fmt-pct (plist-get rl :used-pct))
+                        quota
                         (usage-report--fmt-int (plist-get u :total))))))))
 
 (defun usage-report--insert-claude (current-snap week-snap anchors)

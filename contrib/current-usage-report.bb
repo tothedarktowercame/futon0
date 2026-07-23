@@ -16,12 +16,14 @@
          '[babashka.fs :as fs]
          '[babashka.http-client :as http])
 
-(import '(java.time Instant Duration ZoneOffset)
-        '(java.time.format DateTimeFormatter))
+(import '(java.time Instant Duration))
 
 (def home (System/getProperty "user.home"))
 (def claude-project-dir (str home "/.claude/projects/-home-joe-code"))
-(def codex-sessions-root (str home "/.codex/sessions"))
+(def codex-sessions-root
+  (str (or (System/getenv "CODEX_HOME")
+           (str home "/.codex"))
+       "/sessions"))
 (def mc-base "http://localhost:7070")
 
 (defn usage []
@@ -54,6 +56,22 @@
   (when (and (string? s) (seq s)) (try (Instant/parse s) (catch Exception _ nil))))
 
 (defn after? [t cutoff] (and t (.isAfter t cutoff)))
+
+(defn rate-limit-summary [limit]
+  (when (map? limit)
+    {:used-pct (:used_percent limit)
+     :window-min (:window_minutes limit)
+     :resets-at (when-let [epoch (:resets_at limit)]
+                  (.toString (Instant/ofEpochSecond (long epoch))))}))
+
+(defn rate-limit-for-window [rate-limits window-min]
+  (->> [(:primary rate-limits)
+        (:secondary rate-limits)
+        (:individual_limit rate-limits)]
+       (filter map?)
+       (filter #(= window-min (:window_minutes %)))
+       first
+       rate-limit-summary))
 
 (defn read-jsonl-lines [f]
   (with-open [r (io/reader (str f))]
@@ -127,18 +145,21 @@
                       lines)
         latest (last tcs)]
     (when latest
-      (let [rl (get-in latest [:payload :rate_limits :primary])
-            ttu (get-in latest [:payload :info :total_token_usage])
-            resets-at (when-let [e (:resets_at rl)]
-                        (.toString (Instant/ofEpochSecond (long e))))]
+      (let [rate-limits (get-in latest [:payload :rate_limits])
+            five-hour (rate-limit-for-window rate-limits 300)
+            weekly (rate-limit-for-window rate-limits 10080)
+            ;; Compatibility for consumers predating the explicit two-window
+            ;; shape. Prefer 5h, but never relabel a weekly-only limit as 5h.
+            legacy-limit (or five-hour weekly)
+            ttu (get-in latest [:payload :info :total_token_usage])]
         {:source :codex
          :session-id sid
          :file (str path)
          :first-at (some-> tcs first :timestamp)
          :last-at  (:timestamp latest)
-         :rate-limit {:used-pct (:used_percent rl)
-                      :window-min (:window_minutes rl)
-                      :resets-at resets-at}
+         :rate-limit legacy-limit
+         :rate-limits {:five-hour five-hour
+                       :weekly weekly}
          :usage (when ttu
                   {:input  (:input_tokens ttu)
                    :cached (:cached_input_tokens ttu)
@@ -147,14 +168,13 @@
                    :total (:total_tokens ttu)})}))))
 
 (defn codex-active-sessions [since]
-  (let [today (.format (java.time.LocalDate/now) (DateTimeFormatter/ofPattern "yyyy/MM/dd"))
-        yday  (.format (.minusDays (java.time.LocalDate/now) 1)
-                       (DateTimeFormatter/ofPattern "yyyy/MM/dd"))
-        dirs  (filter fs/exists? [(str codex-sessions-root "/" today)
-                                  (str codex-sessions-root "/" yday)])
-        files (mapcat #(filter (fn [p] (str/ends-with? (str p) ".jsonl"))
-                               (fs/list-dir %))
-                      dirs)
+  ;; A resumed session remains in the directory for its original start date,
+  ;; so calendar-based pruning loses live sessions. Enumerate the tree and use
+  ;; the transcript mtime/event timestamps as the activity authority.
+  (let [files (when (fs/exists? codex-sessions-root)
+                (->> (file-seq (io/file codex-sessions-root))
+                     (filter #(.isFile ^java.io.File %))
+                     (filter #(str/ends-with? (str %) ".jsonl"))))
         recent (filter (fn [p]
                          (.isAfter (.toInstant (fs/last-modified-time p)) since))
                        files)]
@@ -165,8 +185,7 @@
 (defn short-id [s] (subs (str s) 0 (min 8 (count (str s)))))
 
 (defn fmt-row [r]
-  (let [src (name (:source r))
-        sid (short-id (:session-id r))
+  (let [sid (short-id (:session-id r))
         u (:usage r)
         rl (:rate-limit r)]
     (case (:source r)
@@ -174,12 +193,17 @@
                       sid (:messages u) (:input u) (:cache-create u) (:cache-read u)
                       (:output u) (:weighted-input-equiv u)
                       (or (:last-at r) "?"))
-      :codex  (format "  codex   %s  used=%.1f%%  resets=%s  total=%s  (%s)"
-                      sid
-                      (double (or (:used-pct rl) 0))
-                      (or (:resets-at rl) "?")
-                      (str (or (:total u) "?"))
-                      (or (:last-at r) "?")))))
+      :codex  (let [window-label (case (:window-min rl)
+                                   300 "5h"
+                                   10080 "wk"
+                                   (str (or (:window-min rl) "?") "m"))]
+                (format "  codex   %s  used=%.1f%% %s  resets=%s  total=%s  (%s)"
+                        sid
+                        (double (or (:used-pct rl) 0))
+                        window-label
+                        (or (:resets-at rl) "?")
+                        (str (or (:total u) "?"))
+                        (or (:last-at r) "?"))))))
 
 (defn render-report [{:keys [window-min since claude codex]}]
   (str/join
@@ -243,10 +267,18 @@
    Claude: sums."
   [{:keys [claude codex]}]
   {:codex
-   (let [used (->> codex (keep #(get-in % [:rate-limit :used-pct])) seq)]
+   (let [five-used (->> codex (keep #(get-in % [:rate-limits :five-hour :used-pct])) seq)
+         week-used (->> codex (keep #(get-in % [:rate-limits :weekly :used-pct])) seq)
+         five-reset (some #(get-in % [:rate-limits :five-hour :resets-at]) codex)
+         week-reset (some #(get-in % [:rate-limits :weekly :resets-at]) codex)
+         legacy-used (or five-used week-used)]
      {:active-sessions (count codex)
-      :used-pct-max (when used (apply max used))
-      :resets-at (some-> codex first :rate-limit :resets-at)
+      :five-hour-used-pct-max (when five-used (apply max five-used))
+      :weekly-used-pct-max (when week-used (apply max week-used))
+      :five-hour-resets-at five-reset
+      :weekly-resets-at week-reset
+      :used-pct-max (when legacy-used (apply max legacy-used))
+      :resets-at (or five-reset week-reset)
       :total-tokens (->> codex (keep #(get-in % [:usage :total])) (apply + 0))})
    :claude
    (let [us (map :usage claude)]
@@ -288,4 +320,5 @@
                                (:evidence-status res)
                                (or (:evidence-id res) "-"))))))))))
 
-(apply -main *command-line-args*)
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))

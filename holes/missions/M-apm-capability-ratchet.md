@@ -1,7 +1,7 @@
 # Mission: APM Capability Ratchet — From Solved Proofs to Transferable Mathematical Capability
 
 **Date:** 2026-07-22
-**Status:** MAP — initial capability-topology map added 2026-07-22
+**Status:** MAP — capability-topology map and evidence-observation substrate survey added 2026-07-22
 **Owner:** Joe + agents
 **Mission home:** `futon0`
 **Initial problem corpus:** `apm-lean/problems/`
@@ -271,6 +271,125 @@ MAP must answer:
    exercised the packet?
 6. What operator judgment is genuinely needed, and what can be validated
    mechanically before invoking the UI walkthrough?
+
+### 2.5 MAP findings — evidence observation substrate (2026-07-22)
+
+Research conducted by reading the live code paths. These are facts about
+what exists, not design decisions.
+
+#### Finding 1: the Evidence Landscape already captures agent self-talk
+
+The zai/zaif invoke path (`futon3c/src/futon3c/agents/zai_api.clj`,
+`run-tool-rounds!`) persists each round of agent reasoning as a typed
+`:turn-round` evidence entry via `persist-round!`. Each entry records:
+
+- `:text` — the agent's narration for that round (capped at 4096 chars);
+- `:calls` — tool calls made (name, arguments, result digest with SHA-256
+  and preview);
+- `:round` — round number within the turn;
+- `:final?` — whether this was the closing round.
+
+`persist-turn-start!` separately records the model-facing prompt before the
+turn begins. Both use fail-closed boundary writes: a rejected or lost write
+throws, incrementing a loss-accounting counter.
+
+`futon3c/src/futon3c/marks.clj` then decorates these entries by parsing the
+agent narration for `✘` (self-correction), `💡` (self-idea), and the
+second-string vocabulary (`🧭 ♟ ⚠ 📌` etc.), emitting `:self-correction`,
+`:self-idea`, and other `:self-`-prefixed tags. These are kept out of the
+operator gold-channel by construction (the `self-` prefix).
+
+**Implication:** when a zai agent works through a proof via the Agency
+invoke path — reading a problem, proposing a strategy, trying Lean, hitting
+a type error, switching route — the self-talk and tool-call sequence are
+already flowing into the evidence store. The strategy revision in `a94J05`
+(periodicity → exponential trick) would be visible in the round-by-round
+narration if that proof had been done through this path.
+
+#### Finding 2: the APM cron pipelines bypass the evidence substrate
+
+Two separate pipeline paths exist in `apm-lean/`, neither of which routes
+through the Agency invoke path:
+
+1. `apm-lean/pipeline/run-problem.sh` — calls `claude -p -` (the Claude CLI)
+   directly in bash, piping through `stream-extract.py`. It records a JSON
+   evidence file with `lean_status`, `sorry_count`, `elapsed_seconds`, and
+   `solution_words`. No evidence store, no `:turn-round` persistence, no
+   self-talk capture. The Claude conversation is not saved.
+
+2. `apm-lean/apm/run-apm-problem.sh` — drives a proof-cycle state machine
+   via `curl` to the futon3c eval endpoint, advancing phases with stub
+   payloads (`{:approach "auto"}`, `{:artifacts ["proof"]}`). The cycle
+   completes structurally, but the *reasoning inside each phase* is not from
+   a zai agent doing tool rounds — it is a bash script recording phase
+   transitions, not mathematical decisions.
+
+**Implication:** the completed APM problems (including `a94J05`) were
+produced through paths that captured the *artifacts* but not the *capability
+exercised*. The proof file and informal solution survive; the strategy
+selection, failed routes, and key decision points do not.
+
+#### Finding 3: the conductor v3 can already dispatch to zai agents
+
+`futon3c/dev/futon3c/dev/apm_conductor_v3.clj` dispatches APM problems to
+agents via `reg/invoke-agent!` — the Agency invoke path. The `start!`
+command:
+
+```clojure
+(start! :agent-id "zai-3" :problem-id "a94J05")
+```
+
+would route the problem through the full `run-tool-rounds!` loop, meaning
+all the evidence persistence from Finding 1 applies automatically.
+
+However, the current `make-solve-prompt` is a single-shot "solve this
+completely and return everything inline" prompt. It does not explicitly ask
+the agent to externalize strategy selection, record failed attempts, or
+explain route changes. The captured evidence would be the agent's *natural*
+self-talk across tool rounds, which is valuable but uneven in its coverage
+of capability-relevant decisions.
+
+#### Finding 4: the a94J05 bundle confirms the observation gap concretely
+
+The `a94J05` status.json records `"classification": "complete"` with zero
+sorries and detailed `proof_notes`. But comparing the informal solution to
+the formal proof reveals a strategy revision that no evidence trail
+captures:
+
+- The **informal solution** closes part (b) via periodicity of the complex
+  exponential: `exp` values agree → differ by `2πik` → continuous
+  integer-valued function on connected ℂ is constant.
+- The **formal Lean proof** closes differently: differentiate the constant
+  `exp(-f)` identity and use `Complex.exp_ne_zero` to force `f' = 0`.
+
+The mission charter (§6) names this revision as the key capability datum.
+But the revision event itself — why the agent switched, what it tried first
+in Lean, what failed — exists only as a retrospective inference from
+comparing two finished documents. This is the exact gap from §1.1: "a
+successful shortcut can remain trapped in one `Main.lean`."
+
+#### Ready vs missing (the MAP two-column table)
+
+| Ready (no new code needed) | Missing (the actual work) |
+|---|---|
+| Evidence store with typed `:turn-round` entries | APM cron pipelines do not route through it |
+| `persist-round!` / `persist-turn-start!` fail-closed writes | Prompt design that surfaces strategy decisions, not just final answers |
+| `marks.clj` self-talk recognition (`✘ 💡 🧭 ♟ ⚠ …`) | Structured observe→propose→execute→validate cycle that separates capability-relevant decisions from generic narration |
+| Conductor v3 `start!` dispatching to zai via `reg/invoke-agent!` | One sample run through the evidence-capturing path, to see what actually lands |
+| `a94J05` complete bundle with checked proof and documented strategy revision | Evidence trail of the revision event itself (currently inferential only) |
+| Transcript loss-accounting and SHA-256 result digests | Query/tooling to extract capability candidates from captured episodes |
+
+#### Sequencing implication
+
+The first DERIVE step is not to design the packet schema or the evaluation
+harness. It is to run one APM problem through the evidence-capturing invoke
+path and inspect what the Evidence Landscape actually contains. The shape of
+the real ratchet solution depends on what we observe: if the natural
+self-talk is rich enough, the distillation path is extraction; if it is not,
+the prompt and cycle structure need adjustment first. This is why the sample
+run is a DERIVE prerequisite, not an INSTANTIATE step.
+
+Zai is usage-gated above 50% quota; the sample run waits for quota headroom.
 
 ## 3. Mission result
 
@@ -627,8 +746,18 @@ These checkboxes are the charter's machine-visible open state.
 - [x] Identify the existing capability-graph and
   `E-capability-graph-ui-polish` as the projection family and operator-gated UI
   acceptance surface, without claiming an APM adapter already exists.
+- [x] Survey the evidence-observation substrate: confirm that the zai invoke
+  path already captures agent self-talk as `:turn-round` evidence entries with
+  marks recognition; confirm that the APM cron pipelines bypass this path;
+  confirm that conductor v3 can dispatch to zai agents via `reg/invoke-agent!`
+  (2026-07-22).
 - [ ] DERIVE `apm-capability-topology-map.v1`, including stable identities and
   the zone/graph non-conflation invariants.
+- [ ] Run one APM problem (e.g. `a94J05`) through the evidence-capturing zai
+  invoke path (not cron), inspect what the Evidence Landscape actually
+  contains, and determine whether the natural self-talk is rich enough to
+  distil capability evidence from or whether the prompt/cycle structure needs
+  adjustment first. Waits for zai quota headroom.
 - [ ] Agree the mathematical adapter boundary with the capability-graph owner;
   do not extend the live ingestor opportunistically.
 - [ ] Produce the first `a94J05` topology crosswalk using accepted `pca3-v1`

@@ -93,17 +93,27 @@
           (with-temp-file (expand-file-name "a01/informal-solution.md" problems-dir)
             (insert (make-string 120 ?i)))
           (with-temp-file (expand-file-name "a01/lean/Main.lean" problems-dir)
-            (insert "by\n  sorry\n"))
+            (insert "-- sorry in a comment is not a hole\n"
+                    "/- outer sorry /- nested sorry -/ still a comment -/\n"
+                    "def documentation := \"sorry in a string\"\n"
+                    "def «sorry» := True\n"
+                    "theorem activeHole : True := by\n  sorry\n"))
           (make-directory (expand-file-name "a02/candidates/frame/lean" problems-dir) t)
           (with-temp-file (expand-file-name "a02/candidates/frame/lean/Main.lean" problems-dir)
-            (insert "by\n  trivial\n"))
-          (make-directory (expand-file-name "a03" problems-dir) t)
+            (insert "by\n  sorry\n"))
+          (make-directory (expand-file-name "a02/historical/lean" problems-dir) t)
+          (with-temp-file (expand-file-name "a02/historical/lean/Main.lean" problems-dir)
+            (insert "by\n  sorry\n"))
+          (make-directory (expand-file-name "a03/lean" problems-dir) t)
+          (with-temp-file (expand-file-name "a03/lean/Main.lean" problems-dir)
+            (insert "theorem clean : True := by\n  trivial\n"))
           (with-temp-file (expand-file-name "a03/informal-solution.md" problems-dir)
             (insert "too short"))
           (let ((stack-hud-apm-source-dir source-dir)
                 (stack-hud-apm-problems-dir problems-dir))
             (should (equal (stack-hud--apm-scan)
-                           '(:total 3 :informal 1
+                           '(:metric-version "current-lean-code.v1"
+                             :total 3 :informal 1
                              :lean-total 2 :lean-with-sorry 1
                              :lean-clean 1 :sorries 1)))))
       (delete-directory root t))))
@@ -116,7 +126,7 @@
               (stack-hud-apm-burndown-days 14)
               (stack-hud-apm-cron-interval-minutes 15))
           (with-temp-file (expand-file-name "2026-07-12.jsonl" log-dir)
-            (insert "{\"timestamp\":\"2026-07-12T23:00:00+0000\",\"stack\":{\"apm\":{\"total\":10,\"lean-clean\":2}}}\n"))
+            (insert "{\"timestamp\":\"2026-07-12T23:00:00+0000\",\"stack\":{\"apm\":{\"metric-version\":\"current-lean-code.v1\",\"total\":10,\"lean-clean\":2}}}\n"))
           (cl-letf (((symbol-function 'stack-hud--today-string)
                      (lambda () "2026-07-13"))
                     ((symbol-function 'current-time)
@@ -136,6 +146,23 @@
                   (should (string-match-p "+3 clean in 1d (3.00/day)" text))
                   (should (string-match-p "gated start ceiling 4/hour" text)))))))
       (delete-directory log-dir t))))
+
+(ert-deftest stack-hud-apm-render-shows-explicit-lean-breakdown ()
+  (with-temp-buffer
+    (cl-letf (((symbol-function 'stack-hud--apm-insert-burndown)
+               #'ignore))
+      (my-chatgpt-shell--insert-stack-apm
+       '(:total 491 :informal 462 :lean-total 118
+         :lean-with-sorry 57 :lean-clean 61 :sorries 158)))
+    (let ((text (buffer-string)))
+      (should (string-match-p
+               "491 canonical problems | 158 current sorries open" text))
+      (should (string-match-p "lean current.*118/491.*24%" text))
+      (should (string-match-p
+               "with sorries +57/118 +48% of attempted" text))
+      (should (string-match-p
+               "clean +61/118 +52% of attempted | 61/491 12% overall"
+               text)))))
 
 (ert-deftest stack-hud-apm-burndown-does-not-invent-prehistory ()
   (let* ((stack-hud-log-dir (make-temp-file "stack-hud-apm-empty-" t))
@@ -159,8 +186,9 @@
     (unwind-protect
         (progn
           (with-temp-file stack-hud-apm-progress-path
-            (insert "{\"schema\":\"apm-formal-progress.v1\",\"timestamp\":\"2026-07-12T22:00:00Z\",\"total\":10,\"lean_clean\":3}\n")
-            (insert "{\"schema\":\"apm-formal-progress.v1\",\"timestamp\":\"2026-07-12T23:00:00Z\",\"total\":10,\"lean_clean\":4}\n"))
+            (insert "{\"schema\":\"apm-formal-progress.v1\",\"timestamp\":\"2026-07-12T21:00:00Z\",\"total\":10,\"lean_clean\":9}\n")
+            (insert "{\"schema\":\"apm-formal-progress.v2\",\"metric_version\":\"current-lean-code.v1\",\"timestamp\":\"2026-07-12T22:00:00Z\",\"total\":10,\"lean_clean\":3}\n")
+            (insert "{\"schema\":\"apm-formal-progress.v2\",\"metric_version\":\"current-lean-code.v1\",\"timestamp\":\"2026-07-12T23:00:00Z\",\"total\":10,\"lean_clean\":4}\n"))
           (cl-letf (((symbol-function 'stack-hud--today-string)
                      (lambda () "2026-07-13"))
                     ((symbol-function 'current-time)

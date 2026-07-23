@@ -113,6 +113,31 @@
            '(:five-hour-free-pct 90.0 :weekly-free-pct 66.0))
           "ZAI 90% 5h / 66% wk free")))
 
+(ert-deftest usage-report-codex-fragments-label-weekly-only-quota ()
+  (let ((snap (usage-report-test--snap
+               nil
+               '(:active-sessions 2
+                 :weekly-used-pct-max 17.0
+                 :weekly-resets-at "2026-07-21T20:49:34Z"
+                 :used-pct-max 17.0
+                 :resets-at "2026-07-21T20:49:34Z"))))
+    (should (equal (usage-report--codex-usage-fragment snap t) "83% wk"))
+    (should (equal (usage-report--codex-usage-fragment snap nil) "17% wk"))
+    (should (equal (usage-report--codex-resets-fragment snap)
+                   "wk 07-21 20:49Z"))))
+
+(ert-deftest usage-report-codex-fragments-render-both-windows ()
+  (let ((snap (usage-report-test--snap
+               nil
+               '(:five-hour-used-pct-max 23.0
+                 :weekly-used-pct-max 9.0
+                 :five-hour-resets-at "2026-07-15T18:40:00Z"
+                 :weekly-resets-at "2026-07-21T20:49:34Z"))))
+    (should (equal (usage-report--codex-usage-fragment snap t)
+                   "77% 5h / 91% wk"))
+    (should (equal (usage-report--codex-resets-fragment snap)
+                   "5h 18:40Z · wk 07-21 20:49Z"))))
+
 (ert-deftest usage-report-stack-hud-renders-zai-without-local-snapshot ()
   (cl-letf (((symbol-function 'usage-report-snapshot) (lambda (&rest _) nil))
             ((symbol-function 'usage-report-claude-anchors) (lambda () nil))
