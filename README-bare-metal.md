@@ -196,6 +196,60 @@ ssh zone-joe 'java -version 2>&1 | head -1; clojure --version; bb --version'
 # 2026-08-03 zone-joe: openjdk 21.0.11 / Clojure CLI 1.12.5.1664 / babashka 1.13.219
 ```
 
+### clj-kondo is a THIRD separate install, and it is a mandated gate
+
+`AGENTS.md` and the futon3c handoff protocol require clj-kondo on every Clojure
+change. It ships with neither the Clojure CLI nor babashka, so a box with both
+still fails the gate — silently, because a missing linter produces no output to
+notice. On 2026-08-13 two codex agents independently reported
+`clj-kondo: executable absent` at the end of otherwise-complete jobs; every
+Clojure change on zone-joe up to that point had shipped ungated. A gate nobody
+can run is not a gate.
+
+Same GitHub-releases route as babashka, so the `download.clojure.org` 403 is
+irrelevant:
+
+```bash
+ssh zone-joe '
+  cd /tmp && curl -sSLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo
+  chmod +x install-clj-kondo && sudo ./install-clj-kondo
+  clj-kondo --version'
+```
+
+Installs to `/usr/local/bin`. Pass `--dir ~/.local/bin` if you would rather not
+use sudo; pass `--version <v>` to pin, for the same drift reason as bb.
+
+**The per-repo config is half the install.** clj-kondo reads
+`<repo>/.clj-kondo/config.edn`, and without it the linter does not know the
+project's legitimate dynamic patterns — core.logic `pldb`/`db-rel` relations,
+httpkit's dynamically-resolved `client/get` and `client/post` — and reports
+them all as errors. Measured on zone-joe, 2026-08-13, linting `futon3c/src`:
+
+```
+without .clj-kondo/config.edn   errors: 397   warnings: 70
+with    .clj-kondo/config.edn   errors: 273   warnings: 70
+```
+
+124 of those "errors" are the config's absence, not the code's. So a box where
+the binary is installed but the repo's `.clj-kondo/` directory is missing or
+deleted is *worse* than one with no linter at all: it produces a large, confident,
+wrong result that an agent will either act on or learn to ignore. Check both:
+
+```bash
+clj-kondo --version && ls <repo>/.clj-kondo/config.edn
+```
+
+Note that 273 errors remain **with** the config — that is the repo's real
+backlog, not a config problem, and it is not this README's business. The point
+here is only that you cannot tell the two apart without the config in place.
+
+Record the version alongside the others:
+
+```bash
+ssh zone-joe 'java -version 2>&1 | head -1; clojure --version; bb --version; clj-kondo --version'
+# 2026-08-13 zone-joe: clj-kondo v2026.08.04
+```
+
 ### Lean proof profile — Elan, Lean, Lake, and mathlib
 
 There are two separate pins. **Elan** manages toolchains and is pinned in the box
