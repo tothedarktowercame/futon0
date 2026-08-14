@@ -1983,8 +1983,55 @@ Returns plist with :pending-count and :term-count or nil."
        (or (eq (char-syntax char) ?w)
            (memq char '(?_ ?')))))
 
+(defun stack-hud--apm-opaque-is-hole-p (text pos len)
+  "Non-nil when the `opaque` declaration starting at POS has NO definition.
+
+`opaque x : T := v` is a SEALED DEFINITION -- it has content and is not a hole.
+`opaque x : T` (no `:=`) declares a constant with no definition at all: it
+introduces NO `sorryAx`, so `#print axioms` reports it clean, and it is not a
+`sorry`, so the token counter skips it.  It is nevertheless a proof hole, and
+theorems conditioned on such a symbol can be vacuous.  Found 2026-07-31 in
+a96A02, where `opaque spikeFunction : R -> R` left both headline theorems
+conditional on a specification nothing proved inhabited.
+
+Scans forward from POS for `:=` before the declaration ends.  A declaration is
+taken to end at the first newline followed by a non-whitespace character in
+column 0, matching Lean's layout rule.  Comments and strings are skipped so a
+`:=` inside them does not count as a definition."
+  (let ((i pos) (done nil) (has-def nil) (state 'code))
+    (while (and (< i len) (not done))
+      (pcase state
+        ('line-comment
+         (when (= (aref text i) ?\n) (setq state 'code))
+         (setq i (1+ i)))
+        ('block-comment
+         (cond
+          ((and (< (1+ i) len) (= (aref text i) ?-) (= (aref text (1+ i)) ?/))
+           (setq state 'code i (+ i 2)))
+          (t (setq i (1+ i)))))
+        ('string
+         (cond
+          ((= (aref text i) ?\\) (setq i (min len (+ i 2))))
+          ((= (aref text i) ?\") (setq state 'code i (1+ i)))
+          (t (setq i (1+ i)))))
+        ('code
+         (cond
+          ((and (< (1+ i) len) (= (aref text i) ?-) (= (aref text (1+ i)) ?-))
+           (setq state 'line-comment i (+ i 2)))
+          ((and (< (1+ i) len) (= (aref text i) ?/) (= (aref text (1+ i)) ?-))
+           (setq state 'block-comment i (+ i 2)))
+          ((= (aref text i) ?\") (setq state 'string i (1+ i)))
+          ((and (< (1+ i) len) (= (aref text i) ?:) (= (aref text (1+ i)) ?=))
+           (setq has-def t done t))
+          ((and (= (aref text i) ?\n)
+                (< (1+ i) len)
+                (not (memq (aref text (1+ i)) '(?\s ?\t ?\n))))
+           (setq done t))
+          (t (setq i (1+ i)))))))
+    (not has-def)))
+
 (defun stack-hud--apm-count-sorries-in-text (text)
-  "Count executable `sorry` tokens in Lean source TEXT.
+  "Count executable proof holes in Lean source TEXT.\nCounts `sorry` tokens and definition-free `opaque` declarations.
 Lowercase tokens inside line comments, nested block comments, strings, and
 quoted identifiers are excluded."
   (let ((i 0)
@@ -2054,6 +2101,20 @@ quoted identifiers are excluded."
                       (and (< (+ i 5) len) (aref text (+ i 5))))))
            (setq n (1+ n)
                  i (+ i 5)))
+          ;; `opaque x : T` with no `:=` is a definition-free constant: a proof
+          ;; hole that emits no sorryAx and is not a `sorry` token, so BOTH the
+          ;; axiom census and the sorry count miss it.  Counted here as a
+          ;; synonym for `sorry` (Joe, 2026-07-31).  `opaque x : T := v` is a
+          ;; sealed DEFINITION and is deliberately NOT counted.
+          ((and (<= (+ i 6) len)
+                (string= (substring text i (+ i 6)) "opaque")
+                (not (stack-hud--apm-lean-ident-char-p
+                      (and (> i 0) (aref text (1- i)))))
+                (not (stack-hud--apm-lean-ident-char-p
+                      (and (< (+ i 6) len) (aref text (+ i 6)))))
+                (stack-hud--apm-opaque-is-hole-p text (+ i 6) len))
+           (setq n (1+ n)
+                 i (+ i 6)))
           (t
            (setq i (1+ i)))))))
     n))
