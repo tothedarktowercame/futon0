@@ -86,6 +86,33 @@ is then a separate, explicit mechanism —
 `scripts/backup_evidence.sh` is the existing manifest-driven, sha-verified
 basis. Ignored data does not travel through git, so the sync has to be real.
 
+**We run on `main` or `master`, not on branches.** (Joe, 2026-08-14.) A runtime
+dependency that exists only on a feature branch makes every host's ability to
+start depend on which branch it happens to be sitting on — and that is
+invisible until something stops.
+
+Measured that day: `futon3c/src` requires `futon2.aif.memory-contract` from
+four namespaces (`wm_memory`, `memory_lifecycle`, `dispatch_with_recall`,
+`memory_recall`). That namespace was added by futon2 `b48e463` and exists
+**only on branch `M-propagators-ant-gate`** — never on `main`. Dionysus
+happened to be on that branch, so futon3c started here. lucy was on `main`, so
+lucy's futon3c could not start **at all** — and nobody knew, because its JVM
+had been up for thirteen days holding code loaded back when its checkout still
+provided the namespace. The box was unrestartable for an unknown period and the
+only way to discover it was to stop it.
+
+Note the shape: this is the *same* failure as an uncommitted file, one level
+up. Work that exists only in one place, invisibly load-bearing, discovered when
+the place goes away. A branch is a working tree that happens to have commits.
+
+Current violations on Dionysus (2026-08-14):
+
+| repo | branch | note |
+|---|---|---|
+| `futon2` | `M-propagators-ant-gate` | **load-bearing** — carries `memory-contract`; merge to `main` is the real fix, not putting every host on the branch |
+| `futon5` | `M-propagators-2026-07-15` | four commits of today's sweep landed here |
+| `mathlib4` | `darktower` | **exception**: an upstream fork where `master` is mathlib's, so `darktower` *is* our main |
+
 **Uncommitted deletions of tracked files are accidents until proven otherwise.**
 Restoring them loses nothing, since a deliberate deletion can be redone and
 committed. Applied to 81 files on zone `futon3c` and 34 on zone `futon6`,
