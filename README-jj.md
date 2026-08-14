@@ -1,7 +1,49 @@
-# README-jj — Jujutsu trial (2026-08-14 → 2026-08-21)
+# README-jj — Jujutsu trial (rescoped 2026-08-14; runs 2026-08-15 → 2026-08-22)
 
-**Status:** running. Colocated on `futon3c` (laptop/Dionysus) since 2026-08-14.
-One repo, one week, reversible. Nothing else is migrated.
+**Status:** running, on a **second** scope. The first scope was wrong and is
+recorded below as a false start rather than quietly rewritten.
+
+**What was wrong with it.** It colocated jj on `futon3c` and otherwise carried
+on as before. That tests whether jj *interferes*, not whether jj *helps* — and
+`futon3c` is the worst venue available for either question: eight local agents
+are rooted at `/home/joe/code` and every one of them uses git, and `origin`
+moved twice in the twenty minutes it took to push six commits. Three of the four
+friction incidents on day zero came from **two writers on one repo**, not from
+jj. The features that are the actual reason to want jj — workspaces, undo on a
+real recovery, conflict-tolerant rebase — went unexercised.
+
+## THE RULE THAT WAS MISSING
+
+**One tool per repo. Write with git, or write with jj, never both.**
+
+This is the whole lesson of day zero, promoted from footnote to rule. Colocated
+mode means git *can* still read and write — it does not mean you should
+interleave them. Mixing produced a conflicted `master` bookmark and a rebase
+that silently reverted a file on disk by moving the working copy off the commit
+that held the edit.
+
+## Two tracks
+
+### Track A — `futon3c`: jj as a passive safety net (read-only)
+
+Permitted: `jj log`, `jj status`, `jj diff`, `jj op log`.
+**Forbidden: every jj write** — no `rebase`, no `bookmark set`, no `git push`,
+no `describe`. Agents keep using git; so do I.
+
+This still works, because **jj auto-snapshots on any command, including reads**.
+The safety net — uncommitted work acquires a change-id and stops being
+invisible — is retained at near-zero interference risk. That is the single
+property most worth testing, and it is testable without writing anything.
+
+### Track B — `futon0`: jj as the sole VCS
+
+Single writer, low cadence (one doc at a time, all Joe), no agent traffic. It
+already contains a specimen of the problem this trial exists for: three dirty
+files, two of them untracked READMEs that nobody has committed.
+
+Here jj is the **only** VCS interface, and the untested features get used
+deliberately: `jj undo` on a real recovery, `jj workspace add`, and describing
+work in progress as it happens rather than at the end.
 
 ## Why
 
@@ -44,22 +86,49 @@ reinvent a worse one.
 - **Colocated:** `.git` stays valid, so every existing git tool, script and
   agent keeps working.
 
-## Success criteria (decide on 2026-08-21)
+## Success criteria (decide on 2026-08-22)
 
-Baselines measured 2026-08-14 in `futon3c`.
+Baselines measured 2026-08-14. Split by track, because the tracks test different
+claims and a single table conflated them last time.
+
+### Track A — does the safety net work?
 
 | # | Criterion | Baseline | Target |
 |---|---|---|---|
-| 1 | New orphaned files — untracked, unignored, uncommitted >24h | 15 pre-existing | **0 new** |
-| 2 | Agent friction incidents (blocked / confused / made a mess because of jj) | 1 on day 0 (see Gotcha 1) | ≤2 for the week, none unresolved |
-| 3 | `jj undo` payoff — recoveries that would otherwise be manual patch surgery | benchmark: ~30 min on 2026-08-14 | ≥1 |
-| 4 | Git tooling regressions (`scripts/check-reachable-*`, evidence-manifest verify, `backfill_turn_commit_mission_bestguess.py`, Agency git use) | 0 | **0** |
-| 5 | Store overhead | `.jj` 660K vs `.git` 68M | stays proportionate |
-| 6 | Promotion gate is simpler to write against jj than against git status-baseline diffing | n/a | qualitative, but state a verdict |
+| A1 | New orphaned files in `futon3c` — untracked, unignored, uncommitted >24h | 15 pre-existing | **0 new** |
+| A2 | The net actually catches something — work made visible that git would have hidden | 15 found on day 0, incl. `invoke_activity_test.clj` | ≥1 more, or state that day 0 was the whole yield |
+| A3 | jj-caused incidents | should be **0 by construction** — no writes are permitted | any at all is a finding worth reporting |
+| A4 | Git tooling regressions (`check-reachable-*`, evidence-manifest verify, `backfill_turn_commit_mission_bestguess.py`, Agency git use) | 0 | **0** |
+| A5 | Store overhead | `.jj` 660K vs `.git` 68M | stays proportionate |
 
-Criterion 6 is the one that decides whether this generalises: the whole point of
-the exercise is routine commits onto master, and jj gives "what did this turn
+### Track B — is jj usable as the primary VCS?
+
+| # | Criterion | Target |
+|---|---|---|
+| B1 | A week of `futon0` work done jj-only, end to end, without falling back to git | no fallbacks; log any |
+| B2 | `jj undo` / `jj op restore` on a **real** recovery | ≥1, timed against the ~30-min git equivalent on 2026-08-14 |
+| B3 | `jj workspace add` exercised for per-agent isolation | at least a dry run, with a verdict on whether it beats git worktrees |
+| B4 | A conflict handled without halting mid-operation | ≥1, or state that none arose |
+| B5 | Promotion gate simpler to write against jj than against git status-baseline diffing | qualitative, but **state a verdict** |
+
+B5 is still the criterion that decides whether this generalises: the point of the
+whole exercise is routine commits onto master, and jj gives "what did this turn
 touch" for free as the working-copy commit's diff.
+
+### Friction counter — reset, with one carried forward
+
+Day-zero incidents #2–#4 (detached git HEAD, conflicted `master` bookmark,
+rebase reverting a file on disk) were **design errors of the trial**, not jj
+defects: all three came from interleaving git and jj writes, which the rule
+above now forbids. They are struck from the count.
+
+**Carried forward: incident #1**, the `git commit -a` intent-add hazard. That is
+a genuine consequence of colocation, it is live on `futon3c` for every agent,
+and it stands (Gotcha 1).
+
+Its blast radius shrinks by 154 files once the catalogued evidence corpus moves
+under `data/` — a packet already authorised for other reasons, which now also
+serves this trial.
 
 ### Abort early if
 
@@ -198,18 +267,42 @@ one-repo trial. Order of adoption if the week succeeds:
 ## Not yet exercised
 
 Stated plainly so nobody quotes them as tested. These are the reasons to want
-jj, but this trial has not yet used them:
+jj, and the first scope did not touch any of them — which is precisely why it
+was not a fair try:
 
-- `jj workspace add` (the per-agent-worktree replacement)
-- First-class conflicts during an automated rebase onto a moving master
-- `jj undo` / `jj op restore` on a real recovery — criterion 3 exists precisely
-  to find out
+- `jj workspace add` (the per-agent-worktree replacement) — now **B3**
+- First-class conflicts during an automated rebase onto a moving master — **B4**
+- `jj undo` / `jj op restore` on a real recovery — now **B2**
+
+Track B exists to convert these from reasons-to-want into evidence. If the week
+ends with all three still unexercised, the honest verdict is *not proven*, not
+*passed*.
 
 ## Log
 
-- **2026-08-14** — jj 0.44.0 installed to `~/.local/bin` on Dionysus. `futon3c`
-  colocated. Verified HEAD/branch/worktrees/`.jj`-exclusion unaffected. LaTeX
-  build artifacts ignored + untracked (5 files). Surfaced 15 files of real
-  uncommitted source and confirmed 154 catalogued evidence files were
-  untracked-but-unignored, i.e. the out-of-git rule was enforced by discipline
-  rather than by `.gitignore`. Two gotchas above recorded the same day.
+- **2026-08-14 (day 0, first scope)** — jj 0.44.0 installed to `~/.local/bin` on
+  Dionysus. `futon3c` colocated. Verified HEAD/branch/worktrees/`.jj`-exclusion
+  unaffected. LaTeX build artifacts ignored + untracked (5 files). Surfaced 15
+  files of real uncommitted source, and confirmed the 154 catalogued evidence
+  files were untracked-but-unignored — i.e. the out-of-git rule was enforced by
+  discipline rather than by `.gitignore`. Both gotchas recorded the same day.
+
+  One genuine win, worth keeping in view when weighing the friction: the
+  surfaced `test/futon3c/agency/invoke_activity_test.clj` documents the
+  2026-08-03 finding that *activity age is the liveness signal* — the exact
+  insight re-derived from scratch eleven days later, at cost, because the
+  evidence of it had never been committed. That is the failure this trial
+  exists to prevent, caught within an hour of colocating.
+
+  One genuine demonstration: rebasing six commits onto a 108-commit-newer
+  `origin/master` changed every git sha (`b5785805`→`f3a8389c`, …) while the
+  change-ids (`krqsqpnn`, `lnuussnn`, `osyzrkvt`) survived untouched. A
+  sha-keyed `turn→commit` join would have rotted; a change-id-keyed one did not.
+
+  Four friction incidents, of which three were self-inflicted by mixing git and
+  jj writes. Scope judged unfair to jj and rewritten the same day.
+
+- **2026-08-14 (rescope)** — split into Track A (`futon3c`, read-only safety
+  net) and Track B (`futon0`, jj-only). "One tool per repo" promoted to a rule.
+  Clock restarted 2026-08-15 → 2026-08-22. Friction counter reset except
+  incident #1.
