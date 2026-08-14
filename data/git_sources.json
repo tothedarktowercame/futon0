@@ -3,6 +3,7 @@
     {"label": "futon0", "path": "..", "sphere": "infra"},
     {"label": "futon1", "path": "../../futon1", "sphere": "storage"},
     {"label": "futon1a", "path": "../../futon1a", "sphere": "storage"},
+    {"label": "futon1b", "path": "../../futon1b", "sphere": "storage"},
     {"label": "futon2", "path": "../../futon2", "sphere": "rhythm"},
     {"label": "futon3", "path": "../../futon3", "sphere": "devmaps"},
     {"label": "futon3a", "path": "../../futon3a", "sphere": "devmaps"},
@@ -15,6 +16,8 @@
     {"label": "futon6", "path": "../../futon6", "sphere": "proto"},
     {"label": "futon7", "path": "../../futon7", "sphere": "proto"},
     {"label": "futon7a", "path": "../../futon7a", "sphere": "shopfront"},
-    {"label": "graph-memory-seed", "path": "../../graph-memory-seed", "sphere": "research"}
+    {"label": "graph-memory-seed", "path": "../../graph-memory-seed", "sphere": "research"},
+    {"label": "apm-lean", "path": "../../apm-lean", "sphere": "research"},
+    {"label": "mathlib4", "path": "../../mathlib4", "sphere": "upstream"}
   ]
 }
