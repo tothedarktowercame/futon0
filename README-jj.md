@@ -191,6 +191,14 @@ existing working copy with `jj metaedit --update-author`.
 `jj git init` prints a long `jj bookmark track` hint listing every remote
 branch. Ignore it unless you actually want local bookmarks tracking those.
 
+**A detached git HEAD is normal.** After jj operations, `git symbolic-ref HEAD`
+reports detached, because jj points git's HEAD at `@-` and tracks the branch as
+a bookmark instead. On a **Track B (jj-only)** repo this is correct and should
+be left alone. It only becomes a problem on a **Track A** repo, where git users
+and agents also operate and will be confused by it — reattach there with
+`git symbolic-ref HEAD refs/heads/<branch>`, and note that needing to is a
+symptom of breaking the one-tool-per-repo rule.
+
 ### 3. Verify nothing git-side moved
 
 ```bash
