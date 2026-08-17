@@ -17,8 +17,16 @@ mosh zone -- tmux new-session -A -s main
 ```
 
 `new-session -A` attaches if `main` exists and creates it otherwise, so the same
-command works the first time and every time. **[verified]** idempotent, and the
-session `main` already exists on Zone.
+command works the first time and every time. **[verified]** idempotent.
+
+**Correction 2026-08-17:** the earlier claim that "`main` already exists on Zone"
+went stale — by that afternoon `tmux list-sessions` reported *no server running on
+`/tmp/tmux-1000/default`*, leaving only a stale socket. **A tmux server exits when
+its last session ends**, so a standing session is not self-sustaining and does not
+survive a reboot either. `-A` makes the command work regardless, but §8's model
+("Zone holds the session") is only true while a session is actually up. `main` was
+recreated 2026-08-17 15:46 and is empty. If the model matters, it wants a systemd
+user unit rather than trust.
 
 **mosh survives the network, tmux survives mosh.** A phone changes networks
 constantly — wifi to cellular, cell to cell, sleep to wake — and plain SSH dies
@@ -80,7 +88,39 @@ at "Connecting...". If that happens on cellular but not wifi, that is the cause,
 and plain `ssh` + `tmux` still works as a fallback — you only lose roaming.
 
 **[verified]** the `dexphone` ed25519 key is already in Zone's
-`authorized_keys`. Auth is done; nothing to generate.
+`authorized_keys`. Auth is done; nothing to generate. **Re-verified 2026-08-17**
+— the `dexphone` comment is present, 2 keys authorised in total.
+
+**Verify Zone's host key on the phone rather than blind-accepting it.** The phone
+has no prior `known_hosts` to cross-check against, which per
+`README-secrets.md` §5 is exactly the case where a fingerprint has to be carried
+in out-of-band. Zone's, read from Zone's own `/etc/ssh/ssh_host_*_key.pub` over an
+authenticated session and cross-checked against Dionysus's `known_hosts`
+(**both sources agree**, 2026-08-17):
+
+```
+ED25519  SHA256:rD4PiQkdU1UwjPsIeXiUKApqxK0azy+hiMyjl03+CFA
+RSA      SHA256:+LGf1iffhmx9AlqbSRwD9AzWJZL1JCUqpFBa4FmolLU
+```
+
+Compare what the phone shows on first connect against the ED25519 line. Dionysus
+is the second source, so **do this before the handback** — afterwards there is no
+independent path left to confirm it.
+
+### Zone-side prerequisites — all re-verified 2026-08-17
+
+Nothing on Zone is blocking; the remaining work is entirely phone-side.
+
+| | |
+|---|---|
+| sshd port | **22** — so `-R 2222:…` cannot collide, and 2222 is confirmed free |
+| `allowtcpforwarding` | `yes` |
+| `gatewayports` | `no` (tunnel binds Zone's loopback only — keep it) |
+| `mosh-server` | `/usr/bin/mosh-server`, on the default non-login PATH |
+| `tmux` | `/usr/bin/tmux` |
+| locale | `LANG=en_GB.UTF-8` |
+| `.tmux.conf` | all three claimed settings present; `mouse on`, `history-limit 50000` confirmed live |
+| `dexphone` key | present in `authorized_keys` |
 
 Termux `~/.ssh/config`:
 
