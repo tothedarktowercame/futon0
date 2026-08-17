@@ -171,6 +171,63 @@ ssh zone -t 'ssh -p 2222 u0_a123@localhost'
 loopback only. That is the safe default and is fine here, since you reach it by
 SSHing into Zone first. Do not change it.
 
+### **[verified] 2026-08-17 — the whole path works.** No longer theoretical.
+
+```
+Zone → ssh -p 2222 u0_a61@localhost                 → phone
+anywhere → ssh zone -t "ssh -p 2222 u0_a61@localhost" → phone
+```
+
+Confirmed from Zone's side, not just by the prompt looking right: `ss -tlnp`
+showed `127.0.0.1:2222` **and** `[::1]:2222` bound (loopback only — `gatewayports
+no` doing its job), and the hop returned `REACHED:u0_a61 on Android`. The phone's
+username is **`u0_a61`**.
+
+Phone host key, verified two ways per `README-secrets.md` §5 — its own
+`$PREFIX/etc/ssh/ssh_host_ed25519_key.pub`, and what Zone recorded on first
+connect. Both agree:
+
+```
+ED25519  SHA256:semcbnLwtEmwp3Mx5ef3eHmuR//JWka8xrpFYF0mlEs
+```
+
+**Zone will not notice a dead tunnel.** `sshd -T` on Zone reports
+**`clientaliveinterval 0`**, so it never probes idle clients. A sleeping phone
+therefore leaves port 2222 **bound**, the next rebind fails, and you get a tunnel
+that looks up but routes to a dead socket — silent-wrong, the worst shape. Fix it
+from the phone end, which needs no server change:
+
+```sh
+ssh -N -R 2222:localhost:8022 zone \
+    -o ServerAliveInterval=30 -o ServerAliveCountMax=3 \
+    -o ExitOnForwardFailure=yes
+```
+
+`ServerAlive*` makes the phone notice and exit; `ExitOnForwardFailure` makes a
+failed rebind **loud instead of pretending to work**. Wrap in a retry loop —
+`autossh` is not installed on Zone and would have to be on the phone anyway.
+
+**Don't retype any of this on a touch keyboard.** Two scripts live on Zone;
+pull them rather than transcribing, so the content arrives byte-exact:
+
+```sh
+ssh zone cat phone-setup.sh  > s.sh && less s.sh && sh s.sh   # idempotent
+ssh zone cat phone-tunnel.sh > t.sh && sh t.sh                # leave running
+```
+
+`phone-setup.sh` installs openssh, appends Zone's public key to the phone's
+`authorized_keys` (with a trailing-newline guard so it cannot corrupt an existing
+entry), starts `sshd` only if not already running, takes the wake-lock, and prints
+the `u0_aNNN` username. They are also displayed in tmux `main:scratch` on Zone.
+
+Clipboard *does* work in Termux (long-press, plus `termux-clipboard-get/set` once
+`termux-api` and the Termux:API app are installed) — but a tmux copy lands in
+tmux's own buffer **on Zone** and does not reach the phone's clipboard, and long
+keys are where silent truncation costs an hour. Pulling the file avoids both.
+
+Still manual, once each: battery-optimisation exemption, and the **Termux:Boot**
+addon so `sshd` survives a reboot.
+
 **Tailscale is the better answer if this becomes routine.** Not installed on
 Zone as of today. It handles CGNAT properly, gives every device a stable
 address, survives network changes, and needs no tunnel babysitting. One tailnet
