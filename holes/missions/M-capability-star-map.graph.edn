@@ -11,7 +11,11 @@
   :regions [:wm :t5 :kit :t3 :t2]},
  :capabilities
  {:agency
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Multi-agent dispatch — N:1 registry/routing; many Claude/Codex self-register, route in one JVM",
    :status :satisfied,
    :scope [],
@@ -24,7 +28,11 @@
    :grounding
    "futon3c/src/futon3c/agency/{registry,federation,hop_events}.clj"},
   :ai-passes-prelims
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "AI passes UT-Austin prelims — compute-gated held claim above the shipped corpus/tutor substrate",
    :status :held,
    :scope [:apm-prelim-corpus-substrate],
@@ -34,7 +42,11 @@
    :compute-gated true,
    :region :t3},
   :apm-prelim-corpus-substrate
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :scope [],
    :title
    "APM prelim corpus/tutor substrate — 489-problem APM corpus, canaries, and conductor",
@@ -46,7 +58,11 @@
    :attested-substrate true,
    :minted-by ["M-apm-solutions" "M-futonzero-prelim-practice"]},
   :arxana-hypergraph-store
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :scope [],
    :title
    "Arxana hypergraph store — entities, relations, hyperedges, essays ingest, and hyperedge HTTP/API substrate",
@@ -59,7 +75,11 @@
    :minted-by
    ["M-webarxana" "M-essay-corpus-substrate" "M-arxana-roundtrip"]},
   :cold-eoi-authored-outbox
-  {:title
+  {:curriculum :implicit,
+   :scale "n drafts authored into the outbox",
+   :position "n=2 (andrew-hyatt, james-henderson), 2026-08-15",
+   :next-rung "a third lead drafted",
+   :title
    "Cold EOI can be authored into the outbox — near frontier, outbox integration not wired",
    :status :held,
    :scope [:kit-outbox],
@@ -68,7 +88,11 @@
    :frontier true,
    :region :t2},
   :cold-eoi-sent
-  {:title "Cold EOI gets sent to a real cold lead — the crux, n=0",
+  {:curriculum :implicit,
+   :scale "n cold EOIs sent, each with a chain of custody",
+   :position "n=2; hyatt sent 2026-07-05 22:02 BST, message-id witnessed; 2026-08-15",
+   :next-rung "a third send",
+   :title "Cold EOI gets sent to a real cold lead — the crux, n=0",
    :status :held,
    :scope [:kit-intake],
    :minted-by [],
@@ -82,7 +106,11 @@
     :mission "M-eoi-outbox-management"},
    :region :t2},
   :cold-response-conversion
-  {:title
+  {:curriculum :implicit,
+   :scale "n paid engagements, and their value",
+   :position "n=1 verbal, £5000 of March work, unsigned; operator-attested 2026-08-15",
+   :next-rung "a countersigned MoU",
+   :title
    "Cold response converts to a paid engagement — n_conversion remains zero",
    :status :held,
    :scope [],
@@ -97,7 +125,11 @@
     :mission "M-eoi-outbox-management"},
    :region :t2},
   :cold-send-response
-  {:title "Cold send draws a response — n_outreach remains zero",
+  {:curriculum :implicit,
+   :scale "n substantive responses from cold leads",
+   :position "n=1 (henderson call held 2026-08-05, debrief same day); 2026-08-15",
+   :next-rung "a second response, from a different lead",
+   :title "Cold send draws a response — n_outreach remains zero",
    :status :held,
    :scope [:kit-cadence],
    :minted-by [],
@@ -111,7 +143,11 @@
     :mission "M-eoi-outbox-management"},
    :region :t2},
   :daily-scan-lead-foraging
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :scope [],
    :title "Daily-scan / lead-foraging methodology exists and runs",
    :region :t2,
@@ -121,7 +157,11 @@
    :attested-substrate true,
    :minted-by ["builder/futon7-daily-scan"]},
   :efe-trustworthy-over-starmap
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "EFE does real AIF over the star-map — the WM's pick is an applicable single-cycle leaf (no pilot cherry-pick)",
    :status :held,
    :scope [:wm-steps-forward-guardrailed],
@@ -141,7 +181,11 @@
      :status :candidate}],
    :keystone true},
   :evidence-persistence
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Session/lab persistence — turns persist to XTDB (the substrate precursor)",
    :status :satisfied,
    :scope [],
@@ -149,7 +193,11 @@
    :pre-registered? true,
    :attested true},
   :full-arxiv-mining
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Full ArXiv mining with structure-based representation — held beyond the CT prior substrate",
    :status :held,
    :scope [:math-ct-prior-substrate],
@@ -165,7 +213,11 @@
     :requires-coordination [:joe :rob :mfuton :superpod :sysadmins]},
    :region :t3},
   :distributed-proofreaders
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Distributed-Proofreaders: structure-first recognition + QA over the math corpus — the solo-FUTON, CPU-local core of arxiv mining",
    :status :active,
    :scope [:math-ct-prior-substrate],
@@ -181,7 +233,11 @@
     :since "2026-06-13"},
    :region :t3},
   :concept-authority
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Concept authority — NNexus + nLab + CT-term-prior, brought online for role-gap resolution",
    :status :satisfied,
    :scope [],
@@ -191,7 +247,11 @@
    "data/background-corpus-index.json (80586 NNexus rows + 20653 nLab names + 1678 CT-prior; 130960 term keys); scripts/concept_authority.py (legacy reuse — resolves \\Hom/\\colim/\\End etc. to nnexus/nlab targets).",
    :region :t3},
   :latexml-fragment-parse
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "LaTeXML fragment parse — per-snippet deep parse with the paper's macros prepended",
    :status :satisfied,
    :scope [],
@@ -201,7 +261,11 @@
    "latexmlmath 0.8.8 (verified: \\Hom(A,B) -> MathML); golden-graphs/latexml-math-roles.tsv (967-cseq role lexicon mined from the bindings). Legacy reuse — fragment-scale dodges the whole-document fragility.",
    :region :t3},
   :hypergraph-operator
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "JSDQ hypergraph operator — person-facing 8-sector/39-item capability model over Joe's market-interface topology",
    :status :held,
    :scope [],
@@ -212,7 +276,11 @@
    :grounding
    "M-hypergraph-operator partial-fold ruling: generic operational loop superseded by WM/capability-star-map/pudding-prover; original futon5a pocketwatch not built; JSDQ person-facing operator remains unbuilt"},
   :interest-network-apparatus
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Interest-network apparatus — bipartite essays × interest-territories graph, forward-pass, edit-proposal, and WebArxana render path",
    :status :satisfied,
    :scope [],
@@ -223,7 +291,11 @@
    :grounding
    "interest-network-bipartite-graph-v1.bb; WebArxana interest_network.clj/cljs; annotations.edn"},
   :kit-cadence
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover cadence — forward-model posterior to base-case/capability cadence; not wired",
    :status :held,
    :scope [],
@@ -232,7 +304,11 @@
    :frontier true,
    :region :kit},
   :kit-certify
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover certify — held→satisfied transition plus anti-laundering guard",
    :status :satisfied,
    :scope [],
@@ -242,7 +318,11 @@
    :region :kit,
    :grounding "pudding-prover.bb certify"},
   :kit-intake
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover intake — outreach-sent evidence intake; not wired",
    :status :held,
    :scope [],
@@ -251,7 +331,11 @@
    :frontier true,
    :region :kit},
   :kit-mint
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover mint — static metric to priced conditional sorry",
    :status :satisfied,
    :scope [],
@@ -261,7 +345,11 @@
    :region :kit,
    :grounding "pudding-prover.bb mint"},
   :kit-observables
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover observable tracking — render + observe! verb over the :observables vector (decision-points the prover watches)",
    :status :satisfied,
    :scope [],
@@ -271,7 +359,11 @@
    :region :kit,
    :grounding "pudding-prover.bb observe!/render (futon7 69f690a + fb68d83; render shows observables 1/8 observed)"},
   :kit-outbox
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover outbox — daily-scan → interest-network → EOI → staged outbox; pieces exist, integration held",
    :status :held,
    :scope [],
@@ -280,7 +372,11 @@
    :frontier true,
    :region :kit},
   :kit-registry
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Pudding-prover kit registry — two-kind sorry registry + schema",
    :status :satisfied,
    :scope [],
@@ -290,7 +386,11 @@
    :region :kit,
    :grounding "pudding-prover-registry.edn"},
   :kit-render
-  {:title "Pudding-prover render — headless text/org render and CLI",
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title "Pudding-prover render — headless text/org render and CLI",
    :status :satisfied,
    :scope [],
    :minted-by ["builder/pudding-prover"],
@@ -299,7 +399,11 @@
    :region :kit,
    :grounding "pudding-prover.bb render-text/org"},
   :live-geometric-stack
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Substrate-2 — the live geometric stack / commit-factored hypergraph the WM reads",
    :status :satisfied,
    :scope [:self-representing-stack],
@@ -307,7 +411,11 @@
    :pre-registered? true,
    :attested true},
   :math-ct-prior-substrate
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :scope [],
    :title
    "ArXiv math.CT prior substrate — harvested CT corpus and term prior",
@@ -319,7 +427,11 @@
    :attested-substrate true,
    :minted-by ["M-prior-mathematics"]},
   :math-embedding-retrieval
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :scope [],
    :title
    "Joe-side math embedding/retrieval substrate — graph_embed/similarity/hypergraph over math.CT with BGE retrieval",
@@ -331,7 +443,11 @@
    :attested-substrate true,
    :minted-by ["M-superpod-mark2"]},
   :rob-joe-codrafting
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :external true,
    :scope [],
    :title
@@ -343,7 +459,11 @@
    :pre-registered? true,
    :minted-by ["external/rob-joe-codrafting"]},
   :rob-proof-graph-kb
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :external true,
    :scope [],
    :title
@@ -354,7 +474,11 @@
    :pre-registered? true,
    :minted-by ["external/rob-proof-graph-kb"]},
   :self-representing-stack
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "The stack reflects itself — 6-gate trace chain devmap→evidence→source code",
    :status :satisfied,
    :scope [:agency :evidence-persistence],
@@ -364,7 +488,11 @@
    :grounding
    "VSATARCS (futon7a/vsatarcs.html); ~1529 hyperedges across math/code/project"},
   :stack-stereolithography-substrate
-  {:attested true,
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :attested true,
    :scope [],
    :title
    "Stack stereolithography substrate — harvested stack render / queryable stereolithographic view",
@@ -376,7 +504,11 @@
    :attested-substrate true,
    :minted-by ["M-stack-stereolithography" "M-stack-geometry"]},
   :symbol-grounding
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "Symbol-grounding / CT-vision — categorical wiring vocabulary and prototypes; vision remains held",
    :status :held,
    :scope [],
@@ -386,7 +518,11 @@
    :region :t5,
    :grounding "futon5 CT prototype files; CT-vision not shipped"},
   :war-machine
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "The War Machine — strategic dashboard + pilot REPL (the differential operator v·∇ over the AIF field)",
    :status :satisfied,
    :scope [:live-geometric-stack],
@@ -394,7 +530,11 @@
    :pre-registered? true,
    :attested true},
   :warm-customer-pays
-  {:attested true,
+  {:curriculum :implicit,
+   :scale "n paying customers, and revenue",
+   :position "n=1 (VSAT PoC — invoiced, paid, ledgered)",
+   :next-rung "a second paying customer",
+   :attested true,
    :external true,
    :scope [],
    :title
@@ -406,7 +546,11 @@
    :pre-registered? true,
    :minted-by ["external/vsat-poc-customer"]},
   :wm-overnight-unsupervised
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "The WM runs overnight without supervision — 'I trust the stack to code while I sleep'",
    :status :held,
    :scope
@@ -429,7 +573,11 @@
      :status :candidate}],
    :cap/altitude 80},
   :wm-steps-forward-guardrailed
-  {:title
+  {:curriculum :implicit,
+   :scale :tbd,
+   :position :tbd,
+   :next-rung :tbd,
+   :title
    "WM steps forward (not wedges) under guardrails — engages the top autonomous action, NAGs the operator-forks",
    :status :satisfied,
    :scope [:war-machine],
