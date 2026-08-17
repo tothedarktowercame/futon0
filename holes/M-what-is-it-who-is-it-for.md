@@ -1,8 +1,12 @@
 # M-what-is-it-who-is-it-for
 
-**Status:** HEAD — operator shape captured 2026-08-17, not yet IDENTIFY.
+**Status:** HEAD captured 2026-08-17 · **MAP complete** 2026-08-17 (§2) ·
+IDENTIFY not started · DERIVE not started.
 **Gate:** operator-acceptance — HEAD must be recognised as faithful before
-IDENTIFY hardens it into a gap statement.
+IDENTIFY hardens it into a gap statement. MAP was run ahead of IDENTIFY because
+the landscape was being surveyed anyway (Joe: *"we've been mapping the
+landscape"*); its facts are therefore available to IDENTIFY rather than
+constraining it.
 
 Per `futon4/holes/mission-lifecycle.md`: HEAD preserves the operator's voice and
 carries tensions forward. **It is not design.** Nothing below prescribes a schema,
@@ -183,3 +187,190 @@ and by counting `holes/` docs across futon0–futon7. Cross-ref:
 `futon0/holes/M-capability-levels.md` (same HEAD register, 2026-08-15),
 `futon0/holes/missions/M-the-futon-stack.md`,
 `futon0/holes/E-starmap-vsatarcs-regen.md`.
+
+---
+
+# 2. MAP
+
+**Status:** MAP complete for the questions below, 2026-08-17. Research only —
+facts, not decisions, per `futon4/holes/mission-lifecycle.md` ("Survey what
+exists. Don't design yet — just look.").
+
+Occasion: the Dionysus evidence store was moved to Zone and fully drained the
+same day, giving — for the first time — a **frozen, drained store alongside a
+live one on one machine**. Most of what follows is only observable in that
+configuration.
+
+## 2.1 Inventory — infrastructure
+
+Two futon1b instances on Zone:
+
+| | port | store | state |
+|---|---|---|---|
+| Zone site | 7073 / 7072 | `/home/joe/code/futon1b/migration-store-21` (27 G) | live, receiving; never drains |
+| Dionysus store | 7083 / 7082 | `/home/dionysus/futon1b/migration-store-21` (23 G) | frozen at 2026-08-17T08:51:32, **drained** |
+
+`futon1b-dionysus.service` runs as user `dionysus`, `MALLOC_ARENA_MAX=2`,
+MemoryHigh/Max 48G/50G.
+
+**FTS surface** — `GET /api/alpha/evidence/text-search`:
+`?q=` (fts5 over `:evidence/body`), `?tags=` (repeatable, comma-splittable),
+`?df=t1,…` (≤ `max-df-terms` = 32, index-only), `?stats=true`, `?hydrate=false`,
+`?limit`, `?offset`. `POST {:op :catch-up}` is **penholder-gated and runs in
+place — no restart needed** to process another store.
+
+**Search architecture:** the index proposes, the store certifies. *"A candidate
+survives only if the doc exists in the store AND still passes every requested
+predicate read from the STORE's copy, not the index's."* Every response carries
+`index-as-of` and `index-basis` (checkpoint + `basis-tx` + `basis-captured-at`).
+
+**Object-layer routes, none FTS-indexed:** `/hyperedge`, `/hyperedges`,
+`/entity`, `/entities`, `/entities/latest`, `/entities/batch`, `/relation`,
+`/relations`, `/relations/batch`, `/graph/inhabited`, `/census`, `/types`,
+`/memory/search`, `/memory/projection`, `/documents/retract`,
+`/restart-readiness`.
+
+**No XTQL or SQL surface is exposed.** pgwire binds loopback-only on an
+ephemeral port (`127.0.0.1:35127`, the internal self-connection listener). The
+API is a fixed set of typed routes.
+
+## 2.2 Inventory — data
+
+**Dionysus store, drained:** 140,296 rows; `ready true`; `tx-lag 0`;
+**`recheck-rejections 0`** (index and store agree exactly);
+`index-as-of 2026-08-17T08:51:32`.
+
+**Declared residual — the index states its own blind spots:**
+`channels [:calls :email :speech]` · `history [:before-basis-capture]` ·
+`undeclared-fields [:evidence/in-reply-to :evidence/fork-of :evidence/id]` ·
+**`undeclared-tables [:hyperedges :entities]`**.
+
+**Projection:** `:evidence/body` → `ev_fts/body` as `:fts5-unicode61`;
+`author`/`at`/`session` → btree (dual-homed `ev_fts` + `ev_attr`);
+`type`/`claim-type` → btree `:with-at`;
+**`:evidence/tags` → `ev_tags/tag-id` as `:junction-primary-key`.**
+
+**Type catalogue:**
+
+| | Zone site (7073) | Dionysus (7083) |
+|---|---|---|
+| types | 250 | 222 |
+| shared | 222 | 222 |
+| site-only | **28** | **0** |
+
+138 entity + 85 relation types. The 28 Zone-only are **all test debris** —
+`:h1`, `:h1/probe`, `:h1/probe2`, `:h1/repro`, `:idempotency`,
+`:idempotency/probe`, `:probe`, `:probe/batchver`, `:probe/c`, `:probe/clean`,
+`:probe/clean-newtype-1`, `:probe/n`, … — from the H1/H3 probes recorded in
+`futon3c/holes/excursions/E-apm-A3-ingest-efficiency.md`.
+
+**Evidence shape:** the 1,682 rows dated ≥ 2026-08-14 in the Dionysus store are
+*all* `:evidence/type :coordination`, `:claim-type :step`, `ephemeral 0`.
+Two tag families observed: `[:invoke :dev :<agent> :invoke-complete]` (turn
+telemetry, body is an invoke envelope whose only prose is `result-preview`) and
+`[:claude :chat :turn :user|:assistant]` (actual prose, including Joe's).
+
+## 2.3 Survey questions, answered
+
+**Q1 — Are the two stores the same store?** No. They are two Agency **sites**.
+Evidence dated 2026-03 → 2026-08-10 sampled 12/12 present in both; 2026-08-14,
+-16, -17 sampled 0/12 present. Divergence begins at Zone's own start (Aug 14
+10:17). Federation carries shared evidence, not site-local runtime events.
+
+**Q2 — What is site-local to Dionysus?** 1,682 rows ≥ 2026-08-14:
+claude-6 427, claude-3 335, **joe 263**, claude-8 262, process-watchdog 219,
+codex-9 33, claude-9 29, codex-1 29, mission-control/sync 23, codex-8 12,
+codex-2 9. ~1,463 substantive, ~219 telemetry. All `ephemeral 0`.
+
+**Q3 — Does the store contain descriptions of artifacts?** Partly, and only in
+one tag family. `NEAR(latexml wysiwyg)` returns **0** across 140,296 rows — the
+phrase "WYSIWYG LaTeXML editor" appears nowhere. Coordination evidence records
+*steps*. The three documents containing both terms are `:chat :turn` entries
+(2026-08-08 claude-1, 2026-08-10 **joe**, 2026-08-15 claude-6). Prose exists; it
+lives in chat turns.
+
+**Q4 — How do tags relate to the text?** They do not. Tags are a separate
+exact-match facet (`ev_tags`, junction primary key) queried *beside* the fts5
+body index. "Unified content/attribute search" means two indexes, one call.
+Practically: `?tags=chat,turn` is the lever that separates prose from telemetry.
+
+**Q5 — Does conjunctive FTS work?** Yes, fts5 syntax passes straight through:
+`latexml AND wysiwyg` → 3 · `latexml wysiwyg` (implicit AND) → 3 ·
+`latexml OR wysiwyg` → ~99 · `NEAR(latexml wysiwyg)` → 0.
+
+**Q6 — Is `df` a usable salience signal?** Only with telemetry excluded.
+Measured: `oomd` 2 · `orpm` 2 · `transportability` 14 · `voxterm` 25 ·
+`latexml` 36 · `arena` 46 · `wysiwyg` 66 · `peeragogy` 280 · `anatomy` 306 ·
+`zone` 642 · `vsat` 680 · `arxiv` 693 · `agency` 2,695 · `prelim` 8,100 ·
+`editor` 8,964 · `futon3a` **19,296**. Two failure modes: `futon3a` at 14% of the
+corpus is path noise, not salience; and of 66 `wysiwyg` hits **32 are
+`process-watchdog`**, so at low df a monitor's passing mentions can be most of a
+thing's footprint.
+
+**Q7 — Can an episode be recovered from a rare term?** Yes, but only
+chronologically. `wysiwyg` → all 66 hits in 2026-08-08 → 08-16: an eight-day
+episode. `latexml` → bimodal, June 17 / July 1 / August 18 — two distinct
+episodes sharing a tool name (June = anatomy golden-roles; August = the editor).
+**BM25 ordering surfaced June and hid August; ordering by time exposed it.**
+
+**Q8 — Where did the 223 types come from?** Minted on demand.
+`register-types!` (`futon1b_graph.clj:60`) is called from the entity write path
+(`:280`, `:326`) and relation write path (`:433`, `:504`), and validates exactly
+`(keyword? type-id)`. The parent hierarchy is **inferred from the keyword
+namespace** by `infer-parent` (`:apm/phase` → `:apm`), not authored. Vocabularies
+are traceable to producers: `:would-refute`/`:attacks-claim` from futon5a's AIF
+work (`holistic-argument*.edn`, `extract_holistic_argument.clj`), 12
+`:pattern/*` from the pattern library, 8 `:interest/*` from the Interest Network,
+`:arxana/*`, `:apm/*`.
+
+**Q9 — Is there an audience relation?** **No.** Across 85 relation types there is
+nothing for who-a-thing-is-for. The vocabulary is rich in provenance
+(`:lives-in-repo`, `:covers-repo`, `:minted-from`, `:implemented-by`,
+`:produces`, `:constructs`, `:defines`, `:evolved-into`), argumentation
+(`:attacks-claim`, `:would-refute`, `:supported-by`, `:answered-by`,
+`:responds-to`, `:generates-question`, `:discharged-by`), pattern composition (12
+`:pattern/*`) and interest (8 `:interest/*` — but that models *Joe's* interests,
+the mirror image of audience). Because the catalogue has no gatekeeper, this is
+**not** a schema decision to exclude audience: it records that **no process in
+the stack has ever produced audience information.**
+
+## 2.4 Ready vs missing
+
+| Ready — no new code needed | Missing — the actual work |
+|---|---|
+| Topic entry point over 140k rows, full fts5 boolean syntax | **Audience**: absent from 85 relation types *and* from every producing process |
+| `?tags=` faceting to separate prose (`:chat :turn`) from telemetry (`:invoke`) | Object layer unsearchable — `:entities`/`:hyperedges` in the declared residual |
+| `?df=` rarity signal (≤32 terms) once telemetry authors are excluded | No XTQL/SQL surface; fixed typed routes only, pgwire loopback-only |
+| Episode dating from a rare term, ordered by time | **Bump** not materialised as an object — no identity, so nothing can be said *about* one |
+| Type-vocabulary enumeration, and cross-site diffing of it | Vocabulary hygiene: 28 probe types, 6 entity/relation name collisions, glob types `:pattern/*` `:devmap/*` `:me/*` `:prototype/*` (all on **both** sites, so pre-Aug-14) |
+| 2 of 3 product-filter criteria queryable: boundary (`:lives-in-repo`, `:produces`), demonstrable (`:demo`, `:surface`) | The third criterion — a user other than Joe — is the one that isn't |
+| In-place `POST {:op :catch-up}` to process the other store, no restart | `/census` requires `?type=` or `?entity-type=`; there is no "list everything" entry point |
+| Store-certified results (`recheck-rejections 0`), self-describing coverage | ~700 dated `holes/` docs exist but are **not** joined to evidence or to bumps |
+
+## 2.5 Surprises — recorded before DERIVE
+
+1. **The frozen/live pair is the actual capability.** Single-store facts became
+   differential ones: subset relationships, debris, divergence. Q1, Q2 and the
+   28-type finding are all unaskable with one store.
+2. **The type catalogue was reachable all along** — `:7073` has served `/types`
+   since Aug 14. Nothing new was needed to enumerate it; only looking. The
+   catalogue is thus itself an instance of this mission's subject: real,
+   reachable, never enumerated, forgotten by default.
+3. **Diagnostic writes are indistinguishable from real vocabulary.** 28 probe
+   types persist because `register-types!` has no notion of provisional. Same
+   family as the `#uuid`-string identity defect
+   (`E-apm-A3-ingest-efficiency.md`): a write path validating shape but not
+   identity, failing silently.
+4. **The instrument is biased against its target.** Joe authored 8 of 66
+   `wysiwyg` hits and 3 of 36 `latexml` hits. Dispatched work emits coordination
+   evidence; work done directly at the keyboard barely registers — and that is
+   exactly the category HEAD names as easiest to forget.
+5. **Relevance ranking destroys the temporal structure** that bump-identification
+   needs (Q7).
+6. **`NEAR` = 0 is a load-bearing negative** (Q3): it is positive evidence that
+   no phrase-level description of an artifact exists anywhere in the corpus.
+
+**Exit criterion:** met. Q1–Q9 have concrete answers; the ready/missing table is
+complete. **No design follows here** — DERIVE is not started, and per HEAD it
+remains open whether the answer belongs in `stack-annotations.edn`, in VSATARCS,
+in a new surface, or in none of them.
