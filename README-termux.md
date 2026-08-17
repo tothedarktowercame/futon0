@@ -327,9 +327,98 @@ with the passphrase. The old GPG key is dead — its passphrase was not remember
 and not cached — and its four `pass` entries were Linode credentials, which get
 **rotated, not recovered**. That is the whole reason this store was rebuilt.
 
-**The phone does not need a copy of the secret key.** `pass` encrypts each entry
-to any number of recipients, so the phone gets its *own* key and is added as a
-second recipient:
+### **[verified] 2026-08-17 — done, and the phone can read the store.**
+
+```
+.gpg-id  E423CC2085636DA3C675702805B0D5246477D771   Zone
+         60AF16A0FA0E9C6E80F060D2D1A1F83AD5D1C737   phone ("Joe (phone)")
+entries encrypted to 2+ recipients:  61 / 61
+```
+
+### How this works, for someone new to GPG
+
+A `pass` entry is just a file encrypted to one or more **recipients**. A recipient
+is a *public* key; anyone holding the matching *secret* key can decrypt. So:
+
+- `.gpg-id` in the store lists the recipients. `pass init <fpr> <fpr>` rewrites
+  that list and **re-encrypts every entry** to all of them.
+- With two recipients, Zone and the phone can each read all 61 entries **using
+  their own separate keys**. Neither holds the other's secret key.
+- That is what removes the single point of failure. Copying one key to both
+  devices would look equivalent and would not be: losing either device would then
+  mean rotating everything, instead of deleting one fingerprint.
+
+Passphrases are per-key, so the phone's passphrase is its own and Zone's is
+unchanged. Losing a *passphrase* is unrecoverable — see `README-secrets.md` §4,
+which exists because that is exactly how the previous key was lost.
+
+### The procedure — three steps, in this order
+
+Scripts live on Zone; pull them rather than typing on a touch keyboard, and they
+are also shown in tmux `main:scratch`.
+
+```sh
+# 1. on the PHONE — generates its own key, sends only the PUBLIC half to Zone
+ssh zone cat phone-pass-1.sh > p1.sh && less p1.sh && sh p1.sh
+
+# 2. on ZONE — re-encrypts all entries to both keys (asks for your ZONE passphrase)
+sh ~/zone-pass-add.sh
+
+# 3. on the PHONE — clones, then PROVES it can decrypt
+ssh zone cat phone-pass-2.sh > p2.sh && sh p2.sh
+```
+
+**Order matters.** Cloning before step 2 gives a store encrypted only to Zone's
+key: it clones cleanly and cannot be read. Step 3 checks by actually running
+`pass show`, not by looking for files, and says which step is missing if it fails.
+Step 2 **refuses** if the phone's fingerprint equals Zone's, since that would mean
+a copied key.
+
+### Syncing afterwards — it is just git
+
+The store *is* a git repo, and `pass git …` passes straight through to git.
+
+```sh
+pass git pull        # on the phone, before reading — get Zone's additions
+pass insert some/new-thing
+pass git push        # send it back to Zone
+```
+
+**Zone is the origin.** The phone's clone has Zone as `origin`; Zone itself has
+**no remote**, so `pass git push` on *Zone* has nowhere to go — on Zone you just
+`pass insert` and let the phone pull.
+
+**[verified] one setting was needed for this to work.** Zone's store is a normal
+non-bare checkout, so an incoming push to its checked-out `master` is refused by
+default (`receive.denyCurrentBranch` unset → `refuse`). Set once on Zone:
+
+```sh
+git -C ~/.password-store config receive.denyCurrentBranch updateInstead
+```
+
+`updateInstead` accepts a push **only when Zone's worktree is clean** and updates
+it to match — right for this shape, where Zone is a working copy rather than a
+bare hub. If you ever get a rejected push, check for uncommitted changes on Zone
+first.
+
+### If a device is lost
+
+Revocation is one command on Zone — re-run `pass init` listing only the
+fingerprints you still trust:
+
+```sh
+pass init E423CC2085636DA3C675702805B0D5246477D771     # phone's fpr omitted
+```
+
+Every entry is re-encrypted without the lost device. The passwords themselves
+only need rotating if you think the device was compromised rather than merely
+lost — which is the whole benefit of per-device keys.
+
+---
+
+**The mechanism, if you want it in one place.** `pass` encrypts each entry to any
+number of recipients, so the phone gets its *own* key and is added as a second
+recipient:
 
 ```bash
 # on the phone (Termux)
