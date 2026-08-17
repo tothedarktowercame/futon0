@@ -214,7 +214,53 @@ otherwise. Worth testing before committing to the setup.
 
 ---
 
-## 7. Working with both machines at once
+## 7. Passwords on the phone
+
+The store now lives on **Zone**, not on Dionysus. **[verified]** 2026-08-17:
+
+```
+sec  ed25519/05B0D5246477D771  2026-08-17 [SC] [expires 2029-08-16]
+ssb  cv25519/0B84F53B943B2184  [E]
+~/.password-store   61 entries, git-initialised
+```
+
+61 logins exported from Firefox and imported as `firefox/<host>/<username>`;
+**[verified]** all 61 are encrypted to the cv25519 subkey, so all are recoverable
+with the passphrase. The old GPG key is dead — its passphrase was not remembered
+and not cached — and its four `pass` entries were Linode credentials, which get
+**rotated, not recovered**. That is the whole reason this store was rebuilt.
+
+**The phone does not need a copy of the secret key.** `pass` encrypts each entry
+to any number of recipients, so the phone gets its *own* key and is added as a
+second recipient:
+
+```bash
+# on the phone (Termux)
+pkg install gnupg pass git
+gpg --quick-generate-key "Joe (phone) <holtzermann17@gmail.com>" default default 3y
+gpg --export --armor > phone.pub          # move this to Zone; email or paste is fine
+
+# on Zone
+gpg --import phone.pub
+pass init <zone-fingerprint> <phone-fingerprint>   # re-encrypts the whole store to both
+
+# on the phone
+git clone ssh://zone/~/.password-store ~/.password-store
+```
+
+`pass init` with several ids re-encrypts every entry, so this is additive and
+costs nothing to defer — do it whenever the phone is actually set up.
+
+**Untested**, because there was no phone in the loop: whether Termux's `pass`
+finds a working pinentry (it may need `pinentry-tty` and
+`export GPG_TTY=$(tty)` in `~/.bashrc`), and whether `gpg-agent` caching behaves
+under Android's process lifecycle. Both are phone-side unknowns, not Zone-side.
+
+**Do not** move the secret key between devices to save a step. Separate
+per-device keys mean a lost phone is revoked by re-running `pass init` without
+its fingerprint, rather than by rotating all 61 passwords.
+
+## 8. Working with both machines at once
 
 While Dionysus is still around: **Zone holds the session, both clients attach to
 it.** Work lives on neither client. `aggressive-resize` stops the phone's small
