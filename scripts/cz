@@ -1,239 +1,149 @@
 #!/usr/bin/env bash
 set -euo pipefail
 #
-# cz — Z.AI REPL in Emacs.
+# cz — ZAI lane in the terminal, the zai sibling of cr/cx.
 #
-# Allocates a fresh zai-N Agency agent and opens a named Z.AI REPL buffer.
+# Opens *zai-repl:zai-N* Emacs lanes with the same numbering rule as cx
+# (2026-08-12, Joe): lane numbers depend on WHAT NUMBERS EXIST in the
+# local site display column (plain zai-N and <site>-zai-N), never on
+# attached/busy status.
 #
 # Usage:
-#   cz             # fresh Z.AI lane
-#   cz new M-foo   # fresh lane clocked into M-foo
-#   cz headless    # prefer futon-ops/headless Emacs
+#   cz                    # attach highest existing plain zai-N (mint if none)
+#   cz new | cz --new     # mint smallest unused zai-N, open fresh lane
+#   cz -a zai-5           # target a specific lane id (registers it if new)
+#   cz zai-5              # same as -a zai-5
+#
+# Requires: futon3c checkout (FUTON3C_ROOT or ~/code/futon3c), Agency on
+# FUTON3C_PORT (default 7070), Emacs daemon (socket discovered via
+# emacs-socket-lib.sh).
 
-agency_base="${FUTON3C_EVIDENCE_BASE:-http://localhost:${FUTON3C_PORT:-7070}}"
-emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
 futon3c_root="${FUTON3C_ROOT:-${HOME}/code/futon3c}"
-emacs_dir="${FUTON3C_EMACS_DIR:-${futon3c_root}/emacs}"
-socket_lib="${futon3c_root}/scripts/emacs-socket-lib.sh"
+agency_base="${FUTON3C_BASE:-http://127.0.0.1:${FUTON3C_PORT:-7070}}"
+emacsclient_bin="${EMACSCLIENT_BIN:-emacsclient}"
+site="${FUTON_SITE:-ams}"
+cwd_for_agent="${FUTON3C_BOOTSTRAP_AGENT_CWD:-${HOME}/code}"
 
+socket_lib="${futon3c_root}/scripts/emacs-socket-lib.sh"
 if [[ -f "${socket_lib}" ]]; then
-  # shellcheck source=/home/joe/code/futon3c/scripts/emacs-socket-lib.sh
+  # shellcheck source=/dev/null
   source "${socket_lib}"
 fi
 
-running_inside_emacs() {
-  [[ -n "${INSIDE_EMACS:-}" || -n "${EMACS:-}" ]]
-}
-
-find_emacs_socket() {
-  if declare -F futon_preferred_emacs_socket >/dev/null 2>&1; then
-    futon_preferred_emacs_socket && return 0
-  fi
-  echo "No preferred Emacs daemon found. Starting one..." >&2
-  if declare -F futon_start_preferred_emacs_daemon >/dev/null 2>&1; then
-    futon_start_preferred_emacs_daemon && return 0
-  fi
-  return 1
-}
-
-json_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "${1:-}"; }
-elisp_escape() { sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<< "$1"; }
-
-new_session_id() {
-  python3 - <<'PY'
-import uuid
-print("zai-" + uuid.uuid4().hex)
-PY
-}
-
-agency_reachable() {
-  curl -sS --max-time 2 "${agency_base%/}/api/alpha/agents" >/dev/null 2>&1
-}
-
-start_agency_via_emacs() {
-  local sock="$1" escaped_root
-  escaped_root="$(elisp_escape "$(cd "${futon3c_root}" && pwd)")"
-  echo "Agency:       starting via Emacs *server* buffer..."
-  "${emacsclient_bin}" -s "${sock}" -n --eval \
-    "(let ((buf (get-buffer \"*server*\"))) (if (and buf (get-buffer-process buf) (process-live-p (get-buffer-process buf))) (message \"*server* already running\") (let ((buf (get-buffer-create \"*server*\"))) (with-current-buffer buf (let ((default-directory \"${escaped_root}/\")) (unless (derived-mode-p 'shell-mode) (make-comint-in-buffer \"server\" buf shell-file-name) (shell-mode)) (goto-char (point-max)) (insert \"./scripts/dev-laptop-env\") (comint-send-input))) \"started\")))" >/dev/null 2>&1
-}
-
-wait_for_agency() {
-  local max_wait="${FUTON3C_AGENCY_TIMEOUT:-30}" waited=0
-  while (( waited < max_wait )); do
-    if agency_reachable; then
-      echo "Agency:       up after ${waited}s"
-      return 0
-    fi
-    sleep 1
-    (( waited++ ))
-  done
-  echo "Agency:       timed out after ${max_wait}s" >&2
-  return 1
-}
-
-next_zai_agent_id() {
-  local roster
-  roster="$(curl -sS --max-time 3 "${agency_base%/}/api/alpha/agents" 2>/dev/null || true)"
-  ZAI_ROSTER_JSON="${roster}" python3 - <<'PY'
-import json
-import os
-import re
-
-try:
-    payload = json.loads(os.environ.get("ZAI_ROSTER_JSON") or "{}")
-except Exception:
-    payload = {}
-agents = payload.get("agents") or {}
-used = set()
-for aid in agents:
-    m = re.match(r"^zai-(\d+)$", str(aid))
-    if m:
-        used.add(int(m.group(1)))
-n = 1
-while n in used:
-    n += 1
-print(f"zai-{n}")
-PY
-}
-
-register_zai_agent() {
-  local sid="$1" cwd="$2" socket_name="$3" payload result aid sf
-  payload='{"type":"zai","session-id":"'"$(json_escape "${sid}")"'","cwd":"'"$(json_escape "${cwd}")"'"'
-  if [[ -n "${socket_name}" ]]; then
-    payload+=',"emacs-socket":"'"$(json_escape "${socket_name}")"'"'
-  fi
-  case "${clock_target:-}" in
-    C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
-    M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
-    E-*) payload+=',"excursion-id":"'"$(json_escape "${clock_target}")"'"' ;;
-  esac
-  payload+='}'
-
-  result="$(curl -sS --max-time 5 \
-    -H "Content-Type: application/json" \
-    -X POST -d "${payload}" \
-    "${agency_base%/}/api/alpha/agents/auto" 2>&1 || true)"
-  aid="$(printf '%s' "${result}" | python3 -c "import json,sys; print((json.load(sys.stdin).get('agent-id') or ''))" 2>/dev/null || true)"
-  sf="$(printf '%s' "${result}" | python3 -c "import json,sys; print((json.load(sys.stdin).get('session-file') or ''))" 2>/dev/null || true)"
-
-  if [[ -z "${aid}" ]]; then
-    aid="$(next_zai_agent_id)"
-    sf="/tmp/futon-zai-session-id-${aid}"
-    payload='{"agent-id":"'"$(json_escape "${aid}")"'","type":"zai","session-id":"'"$(json_escape "${sid}")"'","session-file":"'"$(json_escape "${sf}")"'","cwd":"'"$(json_escape "${cwd}")"'"'
-    if [[ -n "${socket_name}" ]]; then
-      payload+=',"emacs-socket":"'"$(json_escape "${socket_name}")"'"'
-    fi
-    case "${clock_target:-}" in
-      C-*) payload+=',"campaign-id":"'"$(json_escape "${clock_target}")"'"' ;;
-      M-*) payload+=',"mission-id":"'"$(json_escape "${clock_target}")"'"' ;;
-      E-*) payload+=',"excursion-id":"'"$(json_escape "${clock_target}")"'"' ;;
-    esac
-    payload+='}'
-    result="$(curl -sS --max-time 5 \
-      -H "Content-Type: application/json" \
-      -X POST -d "${payload}" \
-      "${agency_base%/}/api/alpha/agents/restore" 2>&1)"
-  fi
-
-  printf '%s\n%s\n%s\n' "${aid}" "${sf:-/tmp/futon-zai-session-id-${aid}}" "${result}"
-}
-
-headless=false
-clock_target=""
+start_new=false
+lane_id="${AGENCY_AGENT_ID:-}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --new|new)
+    new|--new) start_new=true; shift ;;
+    -a|--agent)
       shift
-      if [[ $# -gt 0 && "$1" != -* ]]; then
-        clock_target="$1"
-        shift
-      fi
-      ;;
-    --headless|headless) headless=true; shift ;;
-    --help|-h)
-      echo "Usage: cz [new [C-foo|M-foo|E-foo]] [headless]"
-      exit 0
-      ;;
-    C-*|M-*|E-*) clock_target="$1"; shift ;;
-    *) echo "Unknown argument: $1" >&2; exit 2 ;;
+      [[ $# -gt 0 ]] || { echo "cz: -a needs a lane id (e.g. zai-5)" >&2; exit 1; }
+      lane_id="$1"; shift ;;
+    -h|--help)
+      sed -n '3,19p' "$(readlink -f "${BASH_SOURCE[0]}")" | sed 's/^# \{0,1\}//'
+      exit 0 ;;
+    zai-*) lane_id="$1"; shift ;;
+    *) echo "cz: unknown argument: $1" >&2; exit 1 ;;
   esac
 done
 
-if $headless; then
-  export FUTON3C_EMACS_PREFERENCE=headless
-else
-  export FUTON3C_EMACS_PREFERENCE=interactive
-fi
-
-echo "--- cz debug ---"
-echo "Agency:       ${agency_base}"
-echo "Emacs dir:    ${emacs_dir}"
-echo "Working dir:  $(pwd)"
-echo "Emacs pref:   $(if $headless; then echo 'headless'; else echo 'interactive'; fi)"
-[[ -n "${clock_target}" ]] && echo "Clock target: ${clock_target}"
-
-if agency_reachable; then
-  echo "Agency:       reachable"
-else
-  echo "Agency:       NOT reachable"
-  sock_for_start="$(find_emacs_socket 2>/dev/null)" || true
-  if [[ -n "${sock_for_start}" ]]; then
-    start_agency_via_emacs "${sock_for_start}"
-    wait_for_agency || exit 1
-  else
-    echo "Agency:       no Emacs socket found, cannot auto-start" >&2
-    exit 1
-  fi
-fi
-
-socket="$(find_emacs_socket)" || exit 1
-sid="$(new_session_id)"
-mapfile -t reg_lines < <(register_zai_agent "${sid}" "$(pwd)" "${socket}")
-aid="${reg_lines[0]:-}"
-sf="${reg_lines[1]:-}"
-reg_result="${reg_lines[2]:-}"
-
-if [[ -z "${aid}" ]]; then
-  echo "Registration failed: ${reg_result}" >&2
+if ! curl -sS --max-time 2 "${agency_base%/}/api/alpha/agents" >/dev/null 2>&1; then
+  echo "cz: Agency not reachable at ${agency_base} — start it first." >&2
   exit 1
 fi
 
-printf '%s' "${sid}" > "${sf}"
-
-echo "Emacs socket: ${socket}"
-echo "Agent:        ${aid}"
-echo "Session:      ${sid}"
-echo "Session file: ${sf}"
-echo "Registration: ${reg_result}"
-
-escaped_chat="$(elisp_escape "${emacs_dir}/agent-chat.el")"
-escaped_repl="$(elisp_escape "${emacs_dir}/zai-repl.el")"
-escaped_agent="$(elisp_escape "${aid}")"
-escaped_session_file="$(elisp_escape "${sf}")"
-escaped_clock_target="$(elisp_escape "${clock_target}")"
-escaped_session_id="$(elisp_escape "${sid}")"
-
-zai_repl_eval="$(cat <<EOF
-(progn
-  (add-to-list 'load-path "${emacs_dir}")
-  (load "${escaped_chat}" nil t)
-  (load "${escaped_repl}" nil t)
-  (zai-repl--open-instance
-   (format "*zai-repl:%s*" "${escaped_agent}")
-   "${escaped_agent}"
-   "${escaped_session_file}"
-   (unless (string-empty-p "${escaped_clock_target}")
-     "${escaped_clock_target}")
-   "${escaped_session_id}")
-  (switch-to-buffer (format "*zai-repl:%s*" "${escaped_agent}")))
-EOF
-)"
-
-if running_inside_emacs; then
-  "${emacsclient_bin}" -s "${socket}" -n --eval "${zai_repl_eval}" 2>&1 || true
-  exit 0
+# Numbering by name-existence, local-site-scoped (see cx / codex-picker).
+if [[ -z "${lane_id}" ]]; then
+  lane_id="$(curl -sS --max-time 5 "${agency_base%/}/api/alpha/agents" \
+    | python3 -c '
+import json, re, sys
+mode, site = sys.argv[1], sys.argv[2]
+try:
+    ids = list((json.load(sys.stdin).get("agents") or {}).keys())
+except Exception:
+    ids = []
+used = set()
+plain = []
+for i in ids:
+    m = re.fullmatch(r"zai-([0-9]+)", i) or re.fullmatch(
+        re.escape(site) + r"-zai-([0-9]+)", i)
+    if m:
+        used.add(int(m.group(1)))
+    if re.fullmatch(r"zai-([0-9]+)", i):
+        plain.append(int(i.rsplit("-", 1)[1]))
+if mode == "attach" and plain:
+    print(f"zai-{max(plain)}")
+else:
+    n = 1
+    while n in used:
+        n += 1
+    print(f"zai-{n}")' "$( $start_new && echo new || echo attach )" "${site}")"
 fi
 
-exec "${emacsclient_bin}" -s "${socket}" -n --eval "${zai_repl_eval}" >/dev/null
+# Register.
+#
+# POST /api/alpha/agents installs a STUB invoke-fn returning
+# {:result "registered-via-http"} that never calls the model
+# (transport/http.clj:2705). For an id that ALREADY exists this is harmless --
+# 409, real invoke-fn untouched -- which is why attaching has always worked.
+# Minting a genuinely new lane through it yields a seat that answers
+# "registered-via-http" to everything, silently, while the roster reports
+# invoke-ready? true (the stub IS a registered invoke-fn).
+#
+# POST /api/alpha/agents/auto is the endpoint that builds a real invoke-fn.
+# It is what scripts/systemd/bootstrap-local-agents uses, what cr and cx use,
+# and what the tracked futon0/scripts/cz used before the 2026-08-12 rewrite
+# of this file dropped it.
+if curl -fsS --max-time 3 "${agency_base%/}/api/alpha/agents/${lane_id}" \
+     >/dev/null 2>&1; then
+  : # exists already; leave its invoke-fn alone
+else
+  auto_response="$(curl -sS --max-time 15 -H "Content-Type: application/json" \
+    -X POST -d "{\"type\":\"zai\",\"cwd\":\"${cwd_for_agent}\"}" \
+    "${agency_base%/}/api/alpha/agents/auto" || true)"
+  auto_id="$(printf '%s' "${auto_response}" | python3 -c 'import json,sys
+try:
+    d = json.load(sys.stdin)
+    print(d.get("agent-id") or "" if d.get("ok") else "")
+except Exception:
+    print("")' 2>/dev/null || true)"
+  if [[ -z "${auto_id}" ]]; then
+    echo "cz: could not mint a zai lane via /api/alpha/agents/auto" >&2
+    echo "cz: response was: ${auto_response}" >&2
+    exit 1
+  fi
+  if [[ "${auto_id}" != "${lane_id}" ]]; then
+    # /auto allocates its own next-unused id and cannot be told which to use.
+    # Adopt it rather than falling back to the stub path.
+    echo "cz: requested ${lane_id}, Agency allocated ${auto_id} — using ${auto_id}" >&2
+    lane_id="${auto_id}"
+  fi
+fi
+
+session_file="/tmp/futon-zai-session-id-${lane_id}"
+if $start_new; then
+  rm -f "${session_file}"
+fi
+
+socket_name=""
+if declare -F futon_preferred_emacs_socket >/dev/null 2>&1; then
+  socket_name="$(futon_preferred_emacs_socket || true)"
+fi
+socket_args=()
+[[ -n "${socket_name}" ]] && socket_args=(-s "${socket_name}")
+
+esc() { python3 -c 'import json,sys; print(json.dumps(sys.argv[1])[1:-1])' "$1"; }
+agent_chat_el="$(esc "${futon3c_root}/emacs/agent-chat.el")"
+zai_repl_el="$(esc "${futon3c_root}/emacs/zai-repl.el")"
+esc_lane="$(esc "${lane_id}")"
+esc_sf="$(esc "${session_file}")"
+
+echo "cz: lane ${lane_id} (session file ${session_file})"
+"${emacsclient_bin}" "${socket_args[@]}" --timeout 8 --no-wait -e "(progn
+  (load \"${agent_chat_el}\" nil t)
+  (load \"${zai_repl_el}\" nil t)
+  (zai-repl--open-instance (format \"*zai-repl:%s*\" \"${esc_lane}\")
+                           \"${esc_lane}\"
+                           \"${esc_sf}\"))" >/dev/null
+echo "cz: opened *zai-repl:${lane_id}*"
