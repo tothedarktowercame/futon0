@@ -307,6 +307,74 @@ enumerates cases looks complete and fails silently on the case in front of you.*
 Ignore rules, checklists, and the `futon-sync` dashboard before it fetched are
 all the same shape.
 
+## The Street Sweeper already solved this, in May
+
+`futon3c/src/futon3c/peripheral/street_sweeper.clj` and siblings — 2,284 lines,
+29 deftests, 94 assertions passing — read the dirty working trees and package
+them into semantically chunked, ready-to-apply patches. Exactly the job. It
+works. Inspected 2026-08-19, the patches are sensible: a `load-prefer-newer t`
+in a bootstrap file, a mission-doc checkpoint, load-path additions.
+
+It ran on **2026-05-25**. It has not run since. There is no timer, no unit, no
+Makefile target, no hook — the same unwired state as `futon-sync`, as
+`library-check`, as the `FOLLOW-UP:` comment that became a blocker a year later.
+
+But the wiring is the smaller half. Look at where it terminates:
+
+> **Status:** ACTIVE — defer-queue awaits **operator review**
+
+    115 packet directories
+    2,551 patches
+    10 repos
+    all dated 2026-05-25
+
+That is the inbox. It has been non-zero for three months. **The mechanism built
+to deliver inbox zero produced an operator queue of 2,551 items and stopped.**
+
+### And the queue decayed to nothing
+
+Sampled 60 of those patches on 2026-08-19 and tested each with
+`git apply --check`:
+
+    still apply cleanly :  0
+    no longer apply     : 56
+    repo not found      :  4
+
+Zero. The trees moved on and every packet died on the vine.
+
+Meanwhile the fleet now carries ~68 real dirty files, not the 929 that prompted
+the excursion. So the work itself was not lost — **it was redone by hand**, in
+one of the sweeps this document exists because of. The Street Sweeper did the
+job correctly in May and a person did it again anyway, because the output was a
+proposal and proposals need someone to say yes.
+
+### The rule this establishes
+
+**A mechanism whose output is a human queue is not a mechanism. It is a
+deferral, and deferred work decays.**
+
+This is the strongest evidence in the document, and it retires an idea that
+appeared in this very file earlier the same day: an "escalate the outlier"
+threshold on auto-push, justified as keeping a human informed. Joe rejected it
+immediately — *"nothing should be routed to me unless absolutely necessary"* —
+and the Street Sweeper is what that rejection looks like when it goes the other
+way. 2,551 patches, three months, zero applied.
+
+The test for any proposed mechanism here: **does its output act, or does it
+wait?** If it waits, it will silt up at exactly the rate the work arrives, and
+the silt will be worthless by the time anyone looks.
+
+Joe's own framing at the excursion's start already said this, and was not
+followed:
+
+> "I do broadly trust either claude or codex to deal appropriately with a mere
+> 929 dirty paths (piffle!) — but actually we'd need some invariants in place to
+> make sure we're doing that sensibly."
+
+The invariants were built — the INV catalog grew 9 → 22, there is a per-repo
+`.sweeper-policy.edn`. The trust was not extended. What shipped was the
+guardrail without the action it was meant to make safe.
+
 ## Why fifty sweeps did not hold
 
 Pushing the commits and packing up the dirty files has been done many times. It
