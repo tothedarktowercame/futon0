@@ -396,7 +396,7 @@
         ;; consent from the absence of a terminal.
         (when (and (not assume-yes?) (not interactive?))
           (println (c ansi-yellow "Not a terminal and no --yes: refusing rather than aborting silently.")))
-        (when-not assume-yes?
+        (when (and (not assume-yes?) interactive?)
           (printf "%nPush %d repo%s? [y/N] " (count pushable)
                   (if (= 1 (count pushable)) "" "s"))
           (flush))
