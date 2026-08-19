@@ -307,6 +307,72 @@ enumerates cases looks complete and fails silently on the case in front of you.*
 Ignore rules, checklists, and the `futon-sync` dashboard before it fetched are
 all the same shape.
 
+## Why fifty sweeps did not hold
+
+Pushing the commits and packing up the dirty files has been done many times. It
+has never once changed the outcome, and the reason is visible in the numbers
+above: **every sweep treated one undifferentiated pile.**
+
+A pile that contains judgement cannot be automated. So it stays manual. So it
+recurs. Each sweep moves items out of the pile without changing what the pile is
+made of, which is why the next one arrives on schedule.
+
+The 2,610 dirty files are not one problem. They are three, with different
+remedies and — critically — **different amounts of human judgement required**:
+
+| class | fleet count | judgement needed | remedy |
+|---|---|---|---|
+| committed but unpushed | 35 commits | **none** | mechanical, automatable today |
+| generated noise | ~2,012 files | **none, once per kind** | describe the kind in `.gitignore` |
+| real uncommitted work | ~68 files | **all of it** | a person, per file |
+
+Read that way the problem is not large and it is not hopeless. It is one timer,
+a handful of one-time pattern fixes, and a queue of about sixty files.
+
+### Committed-but-unpushed is not a hygiene problem, it is mechanics
+
+**The author already declared the work done by committing it.** Pushing carries
+no judgement whatsoever — it is the difference between a decision that exists on
+one disk and a decision that exists somewhere else too. That is the entire
+"exists in only one place" risk class, and it needs no human at all.
+
+The objection is that automation might push a broken commit. Note the
+asymmetry: a broken commit that is pushed is a **code-quality** problem, visible
+and revertible. A broken commit that is *not* pushed is a **data-loss** problem
+sitting on one disk. Not pushing does not make the commit less broken; it makes
+it less recoverable. Where a compile check is cheap, gate on it — but do not let
+the gate become the reason nothing is pushed.
+
+The mechanism is not new. `futon-sync push` has existed all along and calls
+`read-line`, so it can only ever run when a human is already sitting there
+deciding to do the thing. **A capability that requires the discipline it is
+meant to replace is not a mechanism.** The same was true of `futon-sync status`
+until it was put on a timer, and of `library-check.py` until it was wired.
+
+### The anomaly is the thing worth a human
+
+Auto-pushing normal work is safe precisely because normal work is small. What
+deserves a person is the *unusual* accumulation: on 2026-08-19 Zone held **110
+commits diverged for two days** — the whole APM series since 08-17, on one disk.
+No sweep would have caught that sooner, because nothing was watching the number.
+
+So the rule is: **push the ordinary case automatically, escalate the outlier
+loudly.** A repo more than a handful of commits ahead is not routine drift, it
+is a signal that something happened — a long offline stretch, a divergent
+branch, a box nobody has looked at — and that is exactly when a human should be
+told rather than have the evidence quietly tidied away.
+
+### What stays manual, honestly
+
+Real uncommitted work needs a person, and no mechanism here changes that. What
+changes is that ~68 files are visible instead of buried under 2,012 files of
+store data. The deeper fix is **turn-end promotion** (#1 below): commit and push
+what a turn touched, at the moment the author still knows what "done" meant.
+That is the only mechanism that attacks class 3 at its source rather than
+sweeping it afterwards, and it is not built. It is also harness-specific — a
+hook in `agent-chat` does not cover Codex or Claude Code sessions — so it is
+several mechanisms, not one.
+
 ## Mechanisms still on the table
 
 The goal is routine commits onto master, not merely a one-off sweep — a
