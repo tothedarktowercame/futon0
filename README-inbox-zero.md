@@ -245,6 +245,68 @@ including four technical notes.
 touch the files you are about to re-apply. Used twice; both syncs were
 non-destructive as a result.
 
+## The fleet, measured for the first time (2026-08-19)
+
+The stated goal is that every repo on every box stays in lock step and clean.
+Here is what that goal was actually facing. Five boxes carry the repos
+(`hyperreal` carries none), 73 repo-instances, 18 distinct repos:
+
+    17 repos present on more than one box:  2 in lock step, 15 DIVERGED
+
+`futon1` is identical everywhere. `futon1a` agrees on three boxes and differs on
+the two Linodes. `futon3c` exists in **four different states at once**. The two
+Linodes are byte-identical to each other on every repo and systematically older
+than everything else — a mirrored pair, one generation behind.
+
+**Lock step is the wrong target, and that is why it keeps feeling tricky.** The
+boxes are not five copies of one workspace; they are doing different work. Zone
+runs the APM series, this laptop runs whatever I am on, the Linodes are an older
+deployment. Demanding they be identical means either pushing and pulling every
+change everywhere the moment it happens, or blocking work until they agree.
+Neither survives contact with an actual day.
+
+The invariant worth holding is narrower and achievable:
+
+> **Nothing exists in only one place.**
+> *Behind* is benign as long as it is visible. *Ahead* and *dirty* are the
+> dangerous states, because those are the ones that vanish with the disk.
+
+Measured against that invariant instead, the same fleet reads:
+
+| box | unpushed commits | dirty files |
+|---|---|---|
+| dionysus | 0 | 20 |
+| zone-joe | **35** | 30 |
+| lucy-joe | 0 | 18 |
+| linode-chicago | 0 | 1271 |
+| linode-joe | 0 | 1271 |
+| **fleet** | **35** | **2610** |
+
+## Two kinds of dirt, with opposite remedies
+
+Counting them together is what makes the problem look both enormous and
+hopeless. They are not the same thing:
+
+**Real uncommitted work** — 35 commits, all on Zone, four repos. This is the
+whole risk, and it is the number that matters. It is also small enough to fix in
+an afternoon.
+
+**Generated noise** — of the 2,610 dirty files, **2,012 were one missing
+`.gitignore` pattern**. The Linodes name their XTDB store `chicago-store/`; the
+rules enumerated `migration-store*`, `switchover-store`, `ams-store.retired-*`
+and every other name the repo had happened to see. A list of instances rather
+than a description of the kind, failing silently on the first box that picked a
+new name — 1,006 untracked `.binpb`/`.arrow` files per box, from one unlisted
+directory. Fixed in futon1b as `*-store*/` (`49cc714`), after verifying that
+every `*-store*` directory on every box is a store and none is tracked anywhere.
+
+Those boxes looked neglected for months. They were missing a pattern.
+
+The general form, which this document has now hit in four places: **a rule that
+enumerates cases looks complete and fails silently on the case in front of you.**
+Ignore rules, checklists, and the `futon-sync` dashboard before it fetched are
+all the same shape.
+
 ## Mechanisms still on the table
 
 The goal is routine commits onto master, not merely a one-off sweep — a
