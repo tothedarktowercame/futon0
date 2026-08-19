@@ -274,7 +274,14 @@ not a single abandoned batch, which is what makes a mechanism necessary.
    unpushed on one disk for two days. The machines already talk over Agency;
    the missing piece is each host publishing its own reading somewhere shared,
    so the question is a query rather than an expedition. Not built.
-5. **The timer exists on the laptop only.** Zone runs the same repos and has
+5. **Gitignored and non-repo material is invisible to all of this.** `futon-sync`
+   reports drift in *tracked* files, so a repo can read `0 dirty / 0 untracked`
+   while holding artifacts that exist on one disk. Audited 2026-08-19 in
+   [README-git-invisible.md](README-git-invisible.md): three unique items needed
+   by live work, totalling under 1 MB, none of them visible to any check in this
+   document. A `storage/` repo with no remote and 45,685 uncommitted files is
+   not in the manifest at all.
+6. **The timer exists on the laptop only.** Zone runs the same repos and has
    the same failure mode; it does not yet have the unit.
 
 A compile check before push would have caught **all three** non-compiling
