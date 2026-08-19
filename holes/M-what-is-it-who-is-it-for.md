@@ -349,9 +349,21 @@ the stack has ever produced audience information.**
 
 ## 2.5 Surprises — recorded before DERIVE
 
-1. **The frozen/live pair is the actual capability.** Single-store facts became
-   differential ones: subset relationships, debris, divergence. Q1, Q2 and the
-   28-type finding are all unaskable with one store.
+1. **Two separate gains, from two separate acts — do not conflate them.**
+   An earlier draft of this section claimed "the frozen/live pair is the
+   capability." That did not survive checking and is retracted. Tracing what
+   each finding actually required:
+   - **Copying** the store to Zone bought the *differential* queries — subset
+     relationships, divergence, debris (Q1, Q2, the 28 types). These need two
+     **reachable** stores and nothing more; `/api/alpha/types` reads the
+     type-catalog directly from XTDB and never touches the FTS index. Neither
+     frozenness nor drainedness is required.
+   - **Processing** the FTS index bought *term → episode* (Q3, Q5, Q6, Q7): `df`
+     statistics, conjunctive search, episode dating from a rare term.
+
+   The practical consequence: the differential capability was available as soon
+   as the bytes landed, hours before the index finished, and would be available
+   for any two co-located stores regardless of index state.
 2. **The type catalogue was reachable all along** — `:7073` has served `/types`
    since Aug 14. Nothing new was needed to enumerate it; only looking. The
    catalogue is thus itself an instance of this mission's subject: real,
