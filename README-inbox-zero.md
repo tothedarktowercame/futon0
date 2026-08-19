@@ -120,6 +120,54 @@ until something forces the question. Dirt is local work missing from the
 remote; being behind is remote work missing from the local. Both are one host
 disagreeing with the record, and only the first was being measured.
 
+**A dispatch inherits the base of whatever checkout it lands in — 355 commits,
+2026-08-19.** This is the sharpest version of "being behind counts" so far,
+because being behind did not stop anything. It silently redefined what was
+being tested.
+
+A packet was belled to `codex-10` to add bounded retry to futon3c's evidence
+append. It came back clean: implementation correct, clj-kondo 0/0, paren check
+OK, focused namespace 14 tests / 48 assertions / 0 failures. The review re-ran
+every gate independently rather than trusting the report, found a real defect
+in the retry schedule, fixed it, and re-verified with a live kill-and-restart
+against a running store. All of that was honest work.
+
+**All of it was performed against a base 355 commits and three days stale.**
+Dionysus `futon3c` sat at `42196c67` (08-14) while `origin/master` was at
+`33e6493c` (08-17). Nobody noticed until the branch state was checked before
+pushing — *after* the review had concluded.
+
+Note what this is not. The tree was clean: `dirty=0`. It was not a case of
+unpushed work. The failure is the third variant of the same shape:
+
+| | what is missing where |
+|---|---|
+| dirty tree | local work missing from the remote |
+| behind | remote work missing from the local |
+| **stale-base authoring** | **new work built on top of the second one** |
+
+The result is a commit that is simultaneously 2 ahead and 355 behind, and a
+green test run describing a tree that exists on exactly one machine. The
+evidence that the base mattered is direct: the same suite ran 2,499 tests at
+base and 2,504 after, and once rebased the changed namespace went from 17
+tests / 53 assertions to 18 / 55 — upstream had added a test to the very file
+under review, which the reviewer had never seen.
+
+It was salvageable, which is luck rather than method: the rebase produced zero
+conflict markers, only one upstream commit had touched each file, and that
+commit (`c1050842`, "Unify problem subject vocabulary") changed the *read*
+path while the packet changed the *append* path. Every gate was re-run on the
+new base afterwards. Had the two overlapped, the review verdict would simply
+have been void.
+
+**The rule: state the base sha in the packet, and check the recipient is not
+behind before belling.** `git rev-list --count HEAD..@{u}` is the whole check.
+A packet that says "implement X in file Y" contains no statement about *which*
+Y, so base freshness is part of the handoff contract and was not part of this
+one. This extends the dirty-base gate proposed below (*Mechanisms still on the
+table*, #2) from dirty files to behind branches — the proposal was written for
+uncommitted work and this shows the same gate is needed for stale ones.
+
 **Coherence is a property of the set, not of each repo.** This is the sharper
 half. I pulled lucy's futon3c 445 commits forward and restarted, and it broke
 *worse* — because moving one repo to a new generation while its dependencies
@@ -236,6 +284,12 @@ Turned off on Dionysus `futon3c` (1.1M), Dionysus `futon0`, and zone `futon3c`
 (632K) on 2026-08-14.
 
 ## Log
+
+- **2026-08-19** — A belled packet was authored, gated and reviewed on a base
+  355 commits behind `origin/master`; discovered only when checking branch
+  state before pushing. Rebase was clean and all gates were re-run on the new
+  base. Rule added: state the base sha in the packet and check
+  `HEAD..@{u}` before dispatching.
 
 - **2026-08-14** — Goal set: no uncommitted work older than a day. Dionysus
   `futon3c` 29 → 0. jj tried, rescoped once, parked the same day. Zone
