@@ -356,28 +356,32 @@
 
 ;; ── Push command ─────────────────────────────────────────────────────────────
 
-(def ^:private max-auto-ahead
-  "Above this, a repo is not pushed automatically -- it is escalated.
+(def ^:private notable-ahead
+  "Piles at or above this are NOTED in the output. They are still pushed.
 
-   Ordinary work is small. An unusual pile is a SIGNAL (a long offline stretch,
-   a divergent branch, a box nobody has looked at), and quietly tidying it away
-   destroys the evidence. Zone held 110 commits diverged for two days on
-   2026-08-19; nothing was watching the number, so nothing said so."
+   An earlier version withheld them for a human to approve. That was wrong:
+   the action attached to the alert was 'push them', which is exactly what the
+   system can do unaided, so it was an interrupt with no decision behind it.
+   The target is that nothing routes to a person unless a person is genuinely
+   required, and a large pile does not require one -- it is the same mechanical
+   push, more of it.
+
+   Note also that under continuous pushing the pile cannot form. Zone reached
+   110 commits because nothing pushed for two days, not because 110 needed
+   deciding."
   (let [args (vec *command-line-args*)
-        i (.indexOf args "--max-ahead")]
+        i (.indexOf args "--notable-ahead")]
     (if (neg? i) 10 (parse-long (or (get args (inc i)) "10")))))
 
 (defn cmd-push [repos]
   (let [assume-yes? (contains? (set *command-line-args*) "--yes")
         interactive? (some? (System/console))
         statuses (mapv repo-status repos)
-        pushable* (filterv #(and (pos? (:ahead %)) (not (:no-remote %))) statuses)
-        held (filterv #(> (:ahead %) max-auto-ahead) pushable*)
-        pushable (filterv #(<= (:ahead %) max-auto-ahead) pushable*)]
-    (doseq [h held]
-      (println (str (c ansi-red "HELD  ") (:label h)
-                    (format " %d commits ahead - over the %d threshold; push it deliberately"
-                            (:ahead h) max-auto-ahead))))
+        pushable (filterv #(and (pos? (:ahead %)) (not (:no-remote %))) statuses)
+        notable (filterv #(>= (:ahead %) notable-ahead) pushable)]
+    (doseq [n notable]
+      (println (c ansi-dim (format "note: %s is %d commits ahead - pushing, not asking"
+                                   (:label n) (:ahead n)))))
     (if (empty? pushable)
       (println (c ansi-green "All repos up to date with origin."))
       (do
