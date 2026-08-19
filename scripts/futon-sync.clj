@@ -163,6 +163,43 @@
     (str (c ansi-red (str (count noisy-files)))
          (c ansi-dim (str " (" (str/join "," noisy-suggestions) ")")))))
 
+(defn- shelf-report
+  "The behind-the-desk shelf, from data/library.json.
+
+   Shells out to library-check.py rather than reimplementing the check here:
+   two copies of one rule drift, and this repo has spent a day on exactly that
+   class of bug. Report only -- a missing reference item is never fetched
+   automatically, because that would quietly copy data between machines, which
+   is the thing the tiering exists to avoid.
+
+   Deliberately reported next to the repo table because futon-sync itself
+   cannot see any of it: every shelf item is gitignored, non-repo, or a repo
+   with no remote, so a clean status column says nothing about the shelf."
+  []
+  (let [script (str (fs/path (fs/parent (fs/parent (fs/real-path *file*)))
+                            "scripts" "library-check.py"))
+        cat (str (fs/path (fs/parent (fs/parent (fs/real-path *file*)))
+                          "data" "library.json"))]
+    (when (and (fs/exists? script) (fs/exists? cat))
+      (let [{:keys [out exit]} (proc/sh "python3" script)
+            ls (str/split-lines (str/trim (str out)))
+            ;; item lines only -- the checker also prints a summary line
+            ;; containing "MISSING", which would double-count
+            missing (filterv #(str/starts-with? (str/triml %) "MISSING ") ls)
+            summary (first (filterv #(str/includes? % "shelf:") ls))]
+        (println)
+        (if (seq missing)
+          (do (println (str ansi-bold "behind-the-desk shelf" ansi-reset "  "
+                            (c ansi-red (str (count missing) " MISSING"))))
+              (doseq [m missing] (println (str "  " (c ansi-red (str/trim m)))))
+              (println (c ansi-dim "  reported only — nothing is fetched automatically")))
+          (println (str ansi-bold "behind-the-desk shelf" ansi-reset "  "
+                        (c ansi-green "complete")
+                        (c ansi-dim (str "  " (str/trim (or summary "")))))))
+        (when (and (not= 0 exit) (empty? missing))
+          (println (c ansi-yellow "  shelf check exited non-zero — see library-check.py")))))))
+
+
 (defn cmd-status [repos]
   (let [now (java.time.LocalDateTime/now)
         fmt (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm")
@@ -189,7 +226,8 @@
       (when (pos? n-behind) (printf "  |  %s behind" (c ansi-cyan (str n-behind))))
       (when (pos? n-dirty)  (printf "  |  %s dirty" (c ansi-yellow (str n-dirty))))
       (when (pos? n-noisy)  (printf "  |  %s noisy" (c ansi-red (str n-noisy))))
-      (println))))
+      (println)
+      (shelf-report))))
 
 ;; ── Review command ───────────────────────────────────────────────────────────
 
