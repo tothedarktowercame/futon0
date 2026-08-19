@@ -168,6 +168,39 @@ one. This extends the dirty-base gate proposed below (*Mechanisms still on the
 table*, #2) from dirty files to behind branches — the proposal was written for
 uncommitted work and this shows the same gate is needed for stale ones.
 
+**A monitor that degrades toward "fine" is worse than no monitor — 2026-08-19.**
+The mechanism this document asks for in #3 below already existed, as
+`scripts/futon-sync.clj`: 393 lines, manifest-driven across 19 repos, with
+`status`, `review`, `pull`, `push`, `park` and `hygiene` subcommands. It was
+wired to nothing — no timer, no service, no caller anywhere in the stack. The
+capability had been written and the automation never added, which is the same
+shape as a `FOLLOW-UP:` comment left in code for a year while the problem it
+names becomes the blocker.
+
+Worse, running it would not have told the truth. It computed ahead/behind from
+`HEAD...@{u}` and **never fetched**, so `=` meant "equal to this machine's ref
+as of its last fetch" rather than "equal to the remote". The failure points
+toward false confidence, and it is largest exactly where it matters most: on a
+box that has stopped fetching, everything reads in sync.
+
+Measured on one laptop, same machine, minutes apart:
+
+| | repos | behind | dirty |
+|---|---|---|---|
+| before the fix | 17 | **1** | 2 |
+| after the fix | 17 | **5** | 3 |
+
+`futon3` was **27 commits behind and reported `=`**; `futon4` ↓7, `futon3a` ↓6,
+`futon7` ↓1 were all invisible. The tool was under-reporting drift by four
+repos while presenting a green dashboard.
+
+This is the same error as everything else in this document, applied to the
+instrument: *a conclusion about a population — the remote — drawn from a proxy
+that never looked at it.* `git log --all` shares the trap, since "all" means all
+**local** refs; on an unfetched tree it returns a confident empty answer.
+`git ls-remote` is the one that asks. Fetch is now the default and `--no-fetch`
+is the opt-out.
+
 **Coherence is a property of the set, not of each repo.** This is the sharper
 half. I pulled lucy's futon3c 445 commits forward and restarted, and it broke
 *worse* — because moving one repo to a new generation while its dependencies
@@ -228,8 +261,21 @@ not a single abandoned batch, which is what makes a mechanism necessary.
    files are already dirty. This would have prevented the day's worst
    self-inflicted error: a packet that required committing a caller while
    leaving its callee uncommitted, which put a non-compiling commit on master.
-3. **A daily `check-clean` reading.** Count and max-age per repo. Without it,
-   "clean for a week" is an impression rather than a measurement.
+3. ~~**A daily `check-clean` reading.**~~ **LANDED 2026-08-19.**
+   `futon-sync.timer` on the laptop: every 30 minutes, `futon-sync status`,
+   which now fetches first. The fetch is the load-bearing half — it removes the
+   stale-ref class outright, and it is read-only, so it is safe to run beside
+   working agents (fetch never touches a working tree, HEAD, or an index).
+   Verified: unit exits 0, next trigger scheduled, drift logged to the journal.
+4. **Cross-machine visibility — the remaining gap.** Each box now measures
+   *itself*. Nothing aggregates, so "is Zone in sync?" is still answered by
+   ssh-ing to Zone. On 2026-08-19 that cost an exchange between two agents and
+   a wrong claim in both directions, while 110 commits of series work sat
+   unpushed on one disk for two days. The machines already talk over Agency;
+   the missing piece is each host publishing its own reading somewhere shared,
+   so the question is a query rather than an expedition. Not built.
+5. **The timer exists on the laptop only.** Zone runs the same repos and has
+   the same failure mode; it does not yet have the unit.
 
 A compile check before push would have caught **all three** non-compiling
 commits seen on 2026-08-14 — two of them ours, one upstream
@@ -285,6 +331,10 @@ Turned off on Dionysus `futon3c` (1.1M), Dionysus `futon0`, and zone `futon3c`
 
 ## Log
 
+- **2026-08-19** — `futon-sync.clj` found already written and wired to nothing,
+  and computing ahead/behind without fetching: it reported 1 repo behind where
+  5 were, hiding `futon3` at 27 commits behind. Fixed to fetch by default and
+  put on a 30-minute timer, which lands mechanism #3.
 - **2026-08-19** — A belled packet was authored, gated and reviewed on a base
   355 commits behind `origin/master`; discovered only when checking branch
   state before pushing. Rebase was clean and all gates were re-run on the new
