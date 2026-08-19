@@ -1,0 +1,122 @@
+{
+  "_readme": [
+    "The behind-the-desk shelf. Three tiers, one judgement per item, recorded once.",
+    "",
+    "  reference   -- present on EVERY host. Bounded by ceiling_bytes. If you cannot",
+    "                 work without it and it is small, it lives here.",
+    "  circulating -- fetched where needed, not everywhere. Recorded so it is findable.",
+    "  storage     -- one copy plus backup. NEVER synced. Recorded so nobody re-audits",
+    "                 82G to discover it was 82G of things they did not want.",
+    "",
+    "The point of listing storage-tier items is that a catalogue covers what you do",
+    "NOT hold. On 2026-08-19 finding one 140K directory cost a survey of ~82G because",
+    "nothing recorded which part mattered.",
+    "",
+    "'reproducible' means it can be regenerated or re-downloaded from a stated source.",
+    "Reproducible items are never reference tier however useful, because the shelf is",
+    "for things that would otherwise be lost.",
+    "",
+    "'bytes' is APPARENT size (sum of file sizes), matching what library-check.py measures. Storage-tier figures are du(1) disk usage and approximate -- they exist for magnitude only.",
+    "",
+    "This file had to be force-added: futon0/.gitignore:3 is a blanket 'data/'. The catalogue of git-invisible material was itself made git-invisible, and the first commit silently dropped it -- git printed a hint, the commit succeeded on the other file, and the checker shipped to Zone with nothing to read. Same convention as data/git_sources.json and the other four force-added ledgers here: if you add an item to this shelf that lives under an ignored path, check `git ls-files` afterwards rather than trusting that `git commit` succeeded."
+  ],
+  "ceiling_bytes": 104857600,
+  "items": [
+    {
+      "path": "futon1bi",
+      "tier": "reference",
+      "bytes": 94284,
+      "reproducible": false,
+      "purpose": "Standalone XTDB2 text-index companion extracted from the live futon1b FTS5 sidecar; reference implementation for the F1' removal spec (futon7/holes/M-demonstration-foundry.F1-removal-spec.md).",
+      "invisible_because": "git repo with NO REMOTE -- committed and versioned, and still on one disk",
+      "masters": [
+        "dionysus",
+        "zone"
+      ]
+    },
+    {
+      "path": "futon6/data/showcases/clean-demo",
+      "tier": "reference",
+      "bytes": 127365,
+      "reproducible": false,
+      "purpose": "Structure+text embeddings of 7 APM problems (structure_dim 33, text_dim 384) plus ingest/ -- the neo4j + pgvector handoff artifacts E-clean.md specifies for Rob's pipeline.",
+      "invisible_because": "gitignored by futon6/.gitignore:9 blanket 'data/*'",
+      "masters": [
+        "dionysus",
+        "zone"
+      ]
+    },
+    {
+      "path": "sequel-probe",
+      "tier": "reference",
+      "bytes": 404964,
+      "reproducible": false,
+      "purpose": "MetaCA edge-of-chaos sweep generator handoff (codex-3) and resulting curves; feeds the M-metaca-eoc paper.",
+      "invisible_because": "not a git repo at all",
+      "masters": [
+        "dionysus",
+        "zone"
+      ]
+    },
+    {
+      "path": "futon6/data/mission-structure-embed",
+      "tier": "circulating",
+      "bytes": 294803,
+      "reproducible": false,
+      "purpose": "Structure embeddings over 198 mission stems (dims: pat_vocab, bigrams, struct_dim).",
+      "invisible_because": "gitignored",
+      "masters": [
+        "dionysus",
+        "zone"
+      ]
+    },
+    {
+      "path": "corpora",
+      "tier": "storage",
+      "bytes": 1288490188,
+      "reproducible": true,
+      "purpose": "leanprover-zulip-archive and xtdb-issues mirrors.",
+      "reproduce_from": "re-download from upstream Zulip / GitHub",
+      "masters": [
+        "dionysus",
+        "lenovobackup"
+      ]
+    },
+    {
+      "path": "storage/math-processed-gpu",
+      "tier": "storage",
+      "bytes": 75161927680,
+      "reproducible": true,
+      "purpose": "Derived BGE embeddings + FAISS structural-similarity index over the math corpus.",
+      "reproduce_from": "recompute from the source corpus (expensive, not lost)",
+      "masters": [
+        "dionysus",
+        "lenovobackup"
+      ]
+    },
+    {
+      "path": "_linode_reclaimed",
+      "tier": "storage",
+      "bytes": 17179869184,
+      "reproducible": false,
+      "purpose": "Reclaimed Linode server dump, 172.236.108.82, 2026-04-16. Dormant since April.",
+      "masters": [
+        "dionysus",
+        "lenovobackup"
+      ]
+    },
+    {
+      "path": "storage",
+      "tier": "storage",
+      "bytes": 322122547200,
+      "reproducible": false,
+      "purpose": "Bulk data repo: mark2 126G, math-processed-gpu 70G, futon6 45G, zoomr4 29G, futon1a 27G.",
+      "invisible_because": "git repo with NO REMOTE, HEAD 2026-03-30, 45,685 uncommitted files, absent from git_sources.json",
+      "masters": [
+        "dionysus",
+        "lenovobackup"
+      ],
+      "note": "Most of this must never sync. The open problem is that nothing distinguishes the exception; that is what this catalogue is for."
+    }
+  ]
+}
