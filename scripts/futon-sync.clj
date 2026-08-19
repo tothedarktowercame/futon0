@@ -89,8 +89,23 @@
         path (subs line 3)]
     {:code code :path path :raw line}))
 
+(def ^:private fetch?
+  ;; Default ON. Without it, ahead/behind is computed against @{u} -- the ref
+  ;; as of THIS machine's last fetch -- so a box that stopped fetching reports
+  ;; "=" while diverging. Measured 2026-08-19: a checkout last fetched two days
+  ;; earlier showed in sync while 3 behind and 110 ahead of the real remote, and
+  ;; an agent read that ref and reported it as a fact about the world. The
+  ;; dashboard is least trustworthy exactly when it matters most, so refreshing
+  ;; is the default and skipping it is the flag.
+  (not (contains? (set *command-line-args*) "--no-fetch")))
+
+(defn- refresh-remote! [repo]
+  (when fetch?
+    (git (:abs-path repo) "fetch" "--quiet" "--all" "--prune")))
+
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
+        _ (refresh-remote! repo)
         st (git path "status" "--porcelain=v1" "-b")
         lines (str/split-lines (:out st))
         header (first lines)
