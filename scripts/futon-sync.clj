@@ -356,9 +356,28 @@
 
 ;; ── Push command ─────────────────────────────────────────────────────────────
 
+(def ^:private max-auto-ahead
+  "Above this, a repo is not pushed automatically -- it is escalated.
+
+   Ordinary work is small. An unusual pile is a SIGNAL (a long offline stretch,
+   a divergent branch, a box nobody has looked at), and quietly tidying it away
+   destroys the evidence. Zone held 110 commits diverged for two days on
+   2026-08-19; nothing was watching the number, so nothing said so."
+  (let [args (vec *command-line-args*)
+        i (.indexOf args "--max-ahead")]
+    (if (neg? i) 10 (parse-long (or (get args (inc i)) "10")))))
+
 (defn cmd-push [repos]
-  (let [statuses (mapv repo-status repos)
-        pushable (filterv #(and (pos? (:ahead %)) (not (:no-remote %))) statuses)]
+  (let [assume-yes? (contains? (set *command-line-args*) "--yes")
+        interactive? (some? (System/console))
+        statuses (mapv repo-status repos)
+        pushable* (filterv #(and (pos? (:ahead %)) (not (:no-remote %))) statuses)
+        held (filterv #(> (:ahead %) max-auto-ahead) pushable*)
+        pushable (filterv #(<= (:ahead %) max-auto-ahead) pushable*)]
+    (doseq [h held]
+      (println (str (c ansi-red "HELD  ") (:label h)
+                    (format " %d commits ahead - over the %d threshold; push it deliberately"
+                            (:ahead h) max-auto-ahead))))
     (if (empty? pushable)
       (println (c ansi-green "All repos up to date with origin."))
       (do
@@ -371,10 +390,17 @@
                     (:label s) (:ahead s)
                     (if (= 1 (:ahead s)) "" "s")
                     target)))
-        (printf "%nPush %d repo%s? [y/N] " (count pushable)
-                (if (= 1 (count pushable)) "" "s"))
-        (flush)
-        (let [answer (str/trim (or (read-line) ""))]
+        ;; Unattended, read-line returns nil and this aborts SILENTLY -- so the
+        ;; command could be put on a timer and look like it worked while
+        ;; pushing nothing. Require --yes explicitly rather than inferring
+        ;; consent from the absence of a terminal.
+        (when (and (not assume-yes?) (not interactive?))
+          (println (c ansi-yellow "Not a terminal and no --yes: refusing rather than aborting silently.")))
+        (when-not assume-yes?
+          (printf "%nPush %d repo%s? [y/N] " (count pushable)
+                  (if (= 1 (count pushable)) "" "s"))
+          (flush))
+        (let [answer (if assume-yes? "y" (str/trim (or (read-line) "")))]
           (if (= (str/lower-case answer) "y")
             (doseq [s pushable]
               (let [r (git (:abs-path s) "push")]
