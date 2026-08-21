@@ -1,0 +1,237 @@
+[
+ {:case-id :openhands-all-hands-ai
+  :org "OpenHands (formerly OpenDevin) and All Hands AI"
+  :entity-type :company
+  :period {:from "2024" :to "open" :note "Open as of 2026-08-20"}
+  :node-types {:primary :dependency :secondary [:environment]}
+  :seat :travelling
+  :chain {:artifact "OSS agent/runtime"
+          :sponsor "All Hands AI"
+          :payer "Enterprise software-engineering or AI-tooling budget for cloud/enterprise control plane"
+          :terminal :interest}
+  :terminal-note {:manufactured-when "after one month of OpenHands Enterprise use"
+                  :rests-on "Public-core adoption position; Enterprise requires a paid licence after one month."}
+  :artifact-oracle {:what "Whether independent teams put OpenHands into real workflows and return." :hardness :interpretive}
+  :sale-oracle {:what "Whether the enterprise control plane securely operates and governs agents at organisational scale." :hardness :interpretive}
+  :distance {:hops 2 :note "OSS artifact to organisational adoption to paid cloud or enterprise line item."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "On 2026-08-20, the company reports 81,000+ GitHub stars,
+  500+ OSS contributors, and 9 million+ downloads; these are adoption signals,
+  not revenue or retention evidence. [OH5] It announced $18.8 million Series A
+  funding in November 2025 and says commercial development targets user
+  management, cloud deployment, and team coordination. [OH6] The public core
+  is MIT-licensed while the enterprise directory has separate commercial
+  terms. [OH2] Whether adoption converts into durable paid control-plane use is
+  not publicly established by the reviewed sources."
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors ["OpenDevin"]}
+  :prediction {:claim "Given a strong public Dependency position, an Environment
+  product adjacent to adoption, medium distance, and a manufactured licence
+  obligation, the schema predicts that All Hands AI will capture value through
+  organisation-level control, deployment, and support rather than charging for
+  the core agent. `[inference from OH2, OH4, OH5]`"
+               :falsifier "by 2028-12-31,
+  no publicly evidenced recurring enterprise/control-plane customers or
+  enterprise revenue, accompanied by discontinuation or relicensing-away of the
+  paid enterprise offering while the OSS project remains materially active."
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "The record spans a company and its OSS project, which v1 cannot represent as two linked entities."
+    :provenance :cited :ref "https://github.com/OpenHands/OpenHands"}
+   {:text "Dependency and Environment assignments follow from the MIT core and commercial control plane."
+    :provenance :inferred :from [:OH2 :OH4]}
+   {:text "The manufactured licence obligation follows from OpenHands Enterprise terms."
+    :provenance :inferred :from [:OH2]}
+   {:text "The adoption and sale oracles are distinct."
+    :provenance :inferred :from [:OH4]}
+   {:text "Distance is two hops."
+    :provenance :inferred :from [:OH2 :OH4]}]}
+
+ {:case-id :swe-agent
+  :org "SWE-agent (Princeton NLP / Stanford researchers)"
+  :entity-type :research-system
+  :period {:from "2024" :to "open" :note "Open as of 2026-08-20"}
+  :node-types {:primary :call :secondary [:benchmark]}
+  :seat :travelling
+  :chain {:artifact "Research code and Agent-Computer Interface"
+          :sponsor "Princeton/Stanford research programme"
+          :payer "University lab or grant budget"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "No commercial sale or named funding obligation was found."}
+  :artifact-oracle {:what "Percentage of real GitHub issues resolved under SWE-bench's test harness." :hardness :mechanical}
+  :sale-oracle {:what "Peer review or funder/lab judgment for supporting the research programme." :hardness :interpretive}
+  :distance {:hops 2 :note "Research artifact through lab/funder to research budget; benchmark success does not itself pay."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :unknown}
+  :beneficiary :unknown
+  :knowable-at-T "On 2026-08-20, SWE-agent is an open, configurable research
+  system for fixing GitHub issues and other tasks, maintained by Princeton and
+  Stanford researchers. [SA1] Its documentation says current effort has shifted
+  toward the simpler mini-SWE-agent, which supersedes SWE-agent while matching
+  its performance. [SA1] No reviewed source identifies a company, paid product,
+  or project-specific grant."
+  :adoption-outcome :sustained-noncommercially
+  :capture-outcome :sustained-noncommercially
+  :lineage {:successors ["mini-SWE-agent"] :predecessors []}
+  :prediction {:claim "Given a Call terminal that is only hypothesised, a hard public
+  Benchmark oracle, and no direct payer line, the schema predicts sustained
+  noncommercial influence through papers, forks, and successor systems rather
+  than value capture by SWE-agent itself. `[inference from SA1, SA2]`"
+               :falsifier "by 2028-12-31, SWE-agent becomes the named core of a paid product
+  or licence with publicly evidenced recurring revenue attributable to the
+  project, rather than merely being reused by another product."
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "The Call assignment is a model hypothesis rather than an evidenced award."
+    :provenance :inferred :from [:SA1]}
+   {:text "University lab or grant budget supports SWE-agent."
+    :provenance :unverified
+    :discharge "A named grant, university budget, or funder award explicitly supporting SWE-agent."}
+   {:text "Distance is two hops through lab or funder."
+    :provenance :inferred :from [:SA1 :SA2]}
+   {:text "SWE-agent reports its benchmark performance and research organisation."
+    :provenance :cited :ref "https://github.com/princeton-nlp/SWE-agent/blob/main/docs/index.md"}]}
+
+ {:case-id :swe-bench
+  :org "SWE-bench"
+  :entity-type :benchmark
+  :period {:from "2023" :to "open" :note "ICLR 2024; open as of 2026-08-20"}
+  :node-types {:primary :benchmark :secondary [:call]}
+  :seat :operating
+  :chain {:artifact "Dataset, containerised harness, and leaderboard"
+          :sponsor "SWE-bench research maintainers"
+          :payer "Princeton/lab/collaboration budget"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Maintain a credible shared evaluation fixture; OpenAI support did not establish payment terms or continuing obligation."}
+  :artifact-oracle {:what "Tests in reproducible containers decide whether an agent-generated patch resolves a real GitHub issue." :hardness :mechanical}
+  :sale-oracle {:what "Whether a lab, sponsor, or funder continues to support benchmark maintenance." :hardness :interpretive}
+  :distance {:hops :unknown :note "Far: score informs model/agent buyers and research funders, but the benchmark has no evidenced toll."}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "On 2026-08-20, SWE-bench provides public datasets,
+  containerised evaluation, a leaderboard ecosystem, Lite/Verified/Multimodal
+  variants, and an OpenAI-supported Verified collaboration. [SB1] The reviewed
+  sources establish substantial field use but no durable capture mechanism for
+  the benchmark maintainers. `[inference from SB1]`"
+  :adoption-outcome :open
+  :capture-outcome :sustained-noncommercially
+  :lineage {:successors ["SWE-bench Lite" "SWE-bench Verified" "SWE-bench Multimodal"] :predecessors []}
+  :prediction {:claim "A pure Benchmark with a hard oracle but far distance and an
+  interest terminal should create substantial downstream value while capturing
+  little direct revenue; maintenance will depend on university, sponsor, or
+  in-kind infrastructure support. `[inference from SB1]`"
+               :falsifier "by
+  2028-12-31, the SWE-bench maintainers operate a paid scoring, certification,
+  or data-access service with publicly evidenced recurring revenue sufficient
+  to fund benchmark maintenance directly."
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "Princeton/lab/collaboration budget maintains SWE-bench."
+    :provenance :unverified
+    :discharge "A named budget, grant, or collaboration agreement funding SWE-bench maintenance."}
+   {:text "The score is far from downstream payer line items and imposes no toll."
+    :provenance :inferred :from [:SB1]}
+   {:text "Reviewed sources show substantial field use but no durable capture mechanism."
+    :provenance :inferred :from [:SB1]}
+   {:text "The public repository documents datasets, variants, harness and OpenAI collaboration."
+    :provenance :cited :ref "https://github.com/princeton-nlp/SWE-bench/blob/main/README.md?plain=1"}]}
+
+ {:case-id :sica-self-improving-coding-agent
+  :org "SICA — A Self-Improving Coding Agent"
+  :entity-type :research-system
+  :period {:from "2025" :to "open" :note "Open as of 2026-08-20"}
+  :node-types {:primary :call :secondary [:benchmark]}
+  :seat :travelling
+  :chain {:artifact "Self-editing agent framework and experimental result"
+          :sponsor "Authors' research programme"
+          :payer "University/lab budget"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Publish and extend self-improving-agent research; no buyer obligation or commercial line item was found."}
+  :artifact-oracle {:what "Held benchmark performance after the agent edits its own code." :hardness :mechanical}
+  :sale-oracle {:what "Experiment-design, generalisation, and research-funding judgment." :hardness :interpretive}
+  :distance {:hops 2 :note "Two or more hops through lab/funder; downstream commercial reuse adds another."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :unknown}
+  :beneficiary :unknown
+  :knowable-at-T "On 2026-08-20, SICA consists of an MIT-licensed reference
+  framework and a workshop paper demonstrating autonomous self-editing against
+  benchmark utility. [SI1][SI2] The repository showed 336 stars and 56 forks
+  when indexed, but these volatile counts are adoption hints rather than payer
+  evidence. [SI2] No reviewed source establishes an ongoing team, service,
+  product, or dedicated funding stream."
+  :adoption-outcome :open
+  :capture-outcome :sustained-noncommercially
+  :lineage {:successors [] :predecessors []}
+  :prediction {:claim "With a hard Benchmark oracle, distant/unknown payer, and an
+  interest terminal, the schema predicts that SICA's code or method may be
+  absorbed into other agents without the named system capturing value.
+  `[inference from SI1, SI2]`"
+               :falsifier "by 2028-12-31, SICA itself becomes
+  a maintained paid service, licensed product, or funded standalone programme
+  with a publicly named recurring payer."
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "Call is a plausible research-budget route, not an evidenced award."
+    :provenance :inferred :from [:SI1 :SI2]}
+   {:text "A university/lab budget supports SICA."
+    :provenance :unverified
+    :discharge "A named university budget, grant, or recurring funder explicitly supporting SICA."}
+   {:text "Benchmark scoring is mechanical, with interpretive experiment-design risk."
+    :provenance :inferred :from [:SI1]}
+   {:text "Distance is two or more hops."
+    :provenance :inferred :from [:SI2]}
+   {:text "The paper reports benchmark improvements and the repository publishes the implementation."
+    :provenance :cited :ref "https://arxiv.org/abs/2504.15228"}]}
+
+ {:case-id :verses-ai-active-inference-patent
+  :org "VERSES AI, Inc., scoped to US Patent 12,393,581"
+  :entity-type :company
+  :period {:from "2023-07-12" :to "open" :note "Patent granted August 2025; open as of 2026-08-20"}
+  :node-types {:primary :requirement :secondary [:dependency]}
+  :seat :travelling
+  :chain {:artifact "Patented method/implementation"
+          :sponsor "VERSES product or licence"
+          :payer "Adopter's agent-platform or software line item"
+          :terminal :interest}
+  :terminal-note {:manufactured-when "conditional on an implementation practising a valid patent claim"
+                  :rests-on "No evidenced adoption position at T; the potential vendor-manufactured obligation is conditional and unrealised."}
+  :artifact-oracle {:what "Whether the compiled agent satisfies the adopter's specification." :hardness :interpretive}
+  :sale-oracle {:what "Claim construction and evidence that a product practises every limitation of an enforceable claim." :hardness :interpretive}
+  :distance {:hops 2 :note "Two or more hypothetical hops through VERSES product/licence to adopter line item until adoption or licensing is evidenced."}
+  :acceptance-event :none
+  :fixture-access {:public :n :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "On 2026-08-20, US 12,393,581 is a granted active patent
+  assigned to VERSES AI and names Karl Friston among thirteen listed inventors.
+  [V1] Its claims describe receiving natural-language input, producing queries,
+  and representing observation/state entities of an active-inference model in
+  an HSML knowledge graph; this record does not broaden that language into a
+  monopoly on all natural-language agent generation. [V2] VERSES identifies the
+  patent in investor materials. [V3] Public evidence reviewed here does not show
+  that third parties have adopted the patented route or paid to license it."
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction {:claim "A granted patent can manufacture an obligation only after a
+  non-manufacturable adoption position exists; with no evidenced adoption at T,
+  the schema predicts that this patent alone will not produce material capture
+  by 2028. `[inference from V1, V3]`"
+               :falsifier "by 2028-12-31, VERSES reports
+  a named arms-length licensee, material patent-linked licensing revenue, or a
+  final enforceable infringement judgment/settlement specifically tied to US
+  12,393,581."
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "Patent capture requires claim construction and evidence of practising every limitation."
+    :provenance :inferred :from [:V2]}
+   {:text "Patent scope, infringement, validity and commercial acceptance remain interpretive."
+    :provenance :inferred :from [:V1 :V2]}
+   {:text "Current distance is hypothetical until adoption or licensing is evidenced."
+    :provenance :inferred :from [:V1]}
+   {:text "The patent record establishes assignment, dates, status and claims."
+    :provenance :cited :ref "https://patents.google.com/patent/US20250021548A1/en"}]}
+]

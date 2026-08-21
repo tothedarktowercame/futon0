@@ -1,0 +1,187 @@
+[
+ {:case-id :kaggle
+  :org "Kaggle"
+  :entity-type :unknown
+  :period {:from "2010" :to "2017" :note "Google acquisition"}
+  :node-types {:primary :market-exchange :secondary [:benchmark :environment]}
+  :seat :operating
+  :chain {:artifact "Competition dataset/metric/leaderboard"
+          :sponsor "Kaggle platform plus the named competition host"
+          :payer "The host pays prizes and, for featured competitions, variable Kaggle service fees"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "No external obligation; hosts voluntarily seek solutions, community, research, recruitment, or promotion."}
+  :artifact-oracle {:what "Held-out competition score and ranking; the host defines the metric before launch." :hardness :mechanical}
+  :sale-oracle {:what "Whether the platform attracts enough qualified teams and produces useful solutions for the host." :hardness :interpretive}
+  :distance {:hops 1 :note "Kaggle operator: host need for a managed competition to platform-services line item. Competitor distance is 3 hops and is recorded as a separate unverified claim."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :unknown}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately April 2011. A blind scan could see a young online platform connecting organisations' real-world prediction problems with outside data scientists through scored competitions. [K1] It could see the unusually hard oracle: entrants did not hold the host's scorer, and prizes were specified by competition rules. [K3] It could hypothesise that hosts would pay for problem design, community reach, and administration `[recollection - unverified]`, but could not know whether this would become a durable line item, a recruiting market, a learning community, or an acquisition target."
+  :adoption-outcome :open
+  :capture-outcome :acquired-sideways
+  :lineage {:successors ["Kaggle inside Google"] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Kaggle is the operator of Benchmark nodes, not usually a competitor selling the winning capability."
+    :provenance :inferred :from [:K3 :K5]}
+   {:text "For Kaggle's sale to a host, the check is whether the platform attracts enough qualified teams and produces useful solutions."
+    :provenance :inferred :from [:K5]}
+   {:text "For a competitor, the distance is 3 hops: scored submission to reputation or winning solution to capability/employment/licensing opportunity to payer line item."
+    :provenance :unverified
+    :discharge "Cited longitudinal evidence linking a Kaggle submission or win to a named employment, licensing, or budget line item and enumerating the intervening steps."}
+   {:text "Hosts would pay for problem design, community reach, and administration."
+    :provenance :unverified
+    :discharge "A dated circa-2011 Kaggle price sheet, host contract, invoice, or named host statement identifying those purchased services."}
+   {:text "Google acquired Kaggle in 2017."
+    :provenance :cited :ref "https://www.axios.com/2017/12/15/google-buys-machine-learning-startup-releases-video-search-tool-1513300825"}]}
+
+ {:case-id :hackerone
+  :org "HackerOne"
+  :entity-type :unknown
+  :period {:from "2012" :to "open" :note "Open as of 2026"}
+  :node-types {:primary :market-exchange :secondary [:bounty :environment]}
+  :seat :operating
+  :chain {:artifact "Vulnerability report"
+          :sponsor "Affected organisation sponsors a program through HackerOne"
+          :payer "The organisation pays HackerOne for platform/managed access and pays the researcher an accepted bounty"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Program-defined expectation to pay an accepted report; no general external requirement to use HackerOne."}
+  :artifact-oracle {:what "Customer reproduction, scope, severity, novelty, duplication and acceptance decision gate an individual bounty." :hardness :interpretive}
+  :sale-oracle {:what "Whether HackerOne supplies credible researchers and actionable reports while managing disclosure and global payouts." :hardness :interpretive}
+  :distance {:hops 1 :note "Operator route: customer desire to operate a bounty/disclosure program to platform or managed-service subscription. Researcher route is zero hops."}
+  :acceptance-event :per-unit
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2013. A blind scan could see security researchers and organisations attempting to replace ad hoc vulnerability email with structured program scope, disclosure, acceptance, and rewards. `[recollection - unverified]` The founders' stated early belief was that outside hackers could make organisations safer more efficiently than traditional approaches, and an early operational pain was paying researchers globally. [H1] A scan could test whether real programs attracted valid reports, but could not assume marketplace liquidity, enterprise willingness to expose attack surfaces, or later scale."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "HackerOne is an operator of many Bounty nodes and needs the Market/Exchange node type."
+    :provenance :inferred :from [:H1 :H3]}
+   {:text "Public programs are openly attemptable while private programs require invitation."
+    :provenance :unverified
+    :discharge "Current cited HackerOne documentation explicitly distinguishing public program access from invitation-only private programs."}
+   {:text "In approximately 2013, researchers and organisations were attempting to replace ad hoc vulnerability email with structured scope, disclosure, acceptance, and rewards."
+    :provenance :unverified
+    :discharge "A dated 2012–2013 primary source describing the early workflow and intended replacement of ad hoc vulnerability email."}
+   {:text "Revenue and profitability at the reported scale are unknown."
+    :provenance :unverified
+    :discharge "Audited financial statements or a reliable company filing reporting HackerOne revenue and profitability."}
+   {:text "HackerOne reported its founding, payout product, customer scale and $100m bounty milestone."
+    :provenance :cited :ref "https://www.hackerone.com/blog/thanks-being-part-journey-100-million-bounties"}]}
+
+ {:case-id :gitcoin
+  :org "Gitcoin"
+  :entity-type :unknown
+  :period {:from "2017" :to "open" :note "Pivoted from bounties toward grants and quadratic-funding infrastructure beginning in 2018–19."}
+  :node-types {:primary :market-exchange :secondary [:bounty :call]}
+  :seat :operating
+  :chain {:artifact "Initially a funded open-source GitHub issue; later a grant application/public-good project"
+          :sponsor "Initially project/backer through Gitcoin; later a Gitcoin grants round"
+          :payer "Initially bounty backer; later community donors and matching partners"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Posted or escrowed bounty creates a program-level payment expectation, but no external regulation compels the bounty."}
+  :artifact-oracle {:what "Issue sponsor accepts completed work; for grants, eligibility, community contributions and quadratic allocation gate funding." :hardness :interpretive}
+  :sale-oracle {:what "Gitcoin operator revenue was linked to sponsors or ecosystem-program budgets; the prose does not establish a single sale oracle." :hardness :unknown}
+  :distance {:hops 1 :note "Operator route is at least one hop from operated funding event to sponsor/ecosystem budget; bounty-worker route is zero."}
+  :acceptance-event :per-unit
+  :fixture-access {:public :y :decisive :unknown}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately late 2018. A blind scan could see a bounty MVP launched in autumn 2017, self-funded initially and then funded by ConsenSys, intended to remove recruiting intermediaries and fund open-source software. [G2] It could see growing access to Ethereum projects through ConsenSys and test whether developers completed posted issues. [G2] It could also see the founder's early finding that bounties were transactional, non-recurring, and poorly matched to some open-source work. [G2] This snapshot does not assume the later success of quadratic grants, token governance, or cumulative distributions."
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors ["Gitcoin Grants" "modular funding protocols"] :predecessors ["GitHub-issue bounty marketplace"]}
+  :prediction :unknown
+  :claims
+  [{:text "Gitcoin operated Bounty nodes and therefore needs Market/Exchange in addition to Bounty and Call."
+    :provenance :inferred :from [:G2 :G4]}
+   {:text "The operator route is at least one hop from funding event to sponsor or ecosystem-program budget."
+    :provenance :inferred :from [:G2]}
+   {:text "Current revenue and profitability are unknown."
+    :provenance :unverified
+    :discharge "Audited accounts, a reliable filing, or a current Gitcoin financial report identifying revenue and profitability."}
+   {:text "Gitcoin evolved into grants and modular funding-protocol work and reports more than $60m distributed by 2024."
+    :provenance :cited :ref "https://gitcoin.co/about"}]}
+
+ {:case-id :appjet-etherpad
+  :org "AppJet, Inc."
+  :entity-type :unknown
+  :period {:from "2007" :to "2009" :note "Google acquisition; Etherpad continued as open source."}
+  :node-types {:primary :environment :secondary [:dependency]}
+  :seat :travelling
+  :chain {:artifact "AppJet development/hosting platform"
+          :sponsor "AppJet"
+          :payer "Hoped-for developer or application-hosting payer"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "No mandatory procurement obligation was found; Etherpad/Google is excluded from the T-snapshot chain."}
+  :artifact-oracle {:what "Whether independent developers could create useful web applications and returned or paid for hosting." :hardness :interpretive}
+  :sale-oracle {:what "Whether developers adopted and paid for the original platform." :hardness :interpretive}
+  :distance {:hops 1 :note "Original AppJet environment use to hosting/platform charge. The excluded sideways Etherpad chain was 2 hops."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :unknown}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately mid/late 2008. A blind scan could see a public browser-based environment for creating and hosting web applications with server-side JavaScript, backed by Y Combinator. [A1] The proposed payer was a developer or team valuing simplified application development/hosting `[recollection - unverified]`. A scan could test whether newcomers built apps and returned, but could not presume that the platform would fail, that the team would build a collaborative editor as its own application, or that Google would acquire it. Etherpad launched in November 2008, near the edge of this T window; to avoid hindsight leakage, it is not used to redefine the founding model. [A3]"
+  :adoption-outcome :failed
+  :capture-outcome :acquired-sideways
+  :lineage {:successors ["Etherpad" "Google Wave team"] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "The hoped-for payer was a developer or application-hosting customer."
+    :provenance :unverified
+    :discharge "A dated AppJet pricing page, business plan, customer contract, invoice, or founder statement naming the intended payer and charge."}
+   {:text "Original AppJet had a direct one-hop path from environment use to hosting or platform charge."
+    :provenance :unverified
+    :discharge "A dated AppJet commercial offering showing the hosting/platform charge and its relation to use."}
+   {:text "The proposed payer at T was a developer or team valuing simplified development and hosting."
+    :provenance :unverified
+    :discharge "A circa-2007/2008 primary source identifying developer/team payment for AppJet development or hosting."}
+   {:text "Users supplied their own goals, so AppJet could not manufacture the adoption check."
+    :provenance :inferred :from [:A1]}
+   {:text "Google acquired AppJet around Etherpad and the team joined Google Wave."
+    :provenance :cited :ref "https://techcrunch.com/2009/12/04/google-acquires-etherpad/"}]}
+
+ {:case-id :wolfram-research
+  :org "Wolfram Research"
+  :entity-type :unknown
+  :period {:from "1987" :to "open" :note "Open as of 2026"}
+  :node-types {:primary :environment :secondary [:dependency]}
+  :seat :travelling
+  :chain {:artifact "Mathematica/Wolfram computational environment and engine"
+          :sponsor "Wolfram Research"
+          :payer "Individuals, universities, companies, and software distributors buy licences/subscriptions"
+          :terminal :interest}
+  :terminal-note {:manufactured-when "after product choice" :rests-on "Proprietary product adoption; copyright and licence create a vendor-manufactured obligation to obtain the applicable licence class."}
+  :artifact-oracle {:what "Whether Mathematica correctly and usefully performs a user's real symbolic, numerical, graphical, or programming task." :hardness :interpretive}
+  :sale-oracle {:what "Whether workflow value justifies a licence; deployment facts then mechanically determine licence compliance." :hardness :interpretive}
+  :distance {:hops 1 :note "Interactive environment to licence line item; embedded Wolfram Engine has a 2-hop route through customer application/deployment."}
+  :acceptance-event :per-unit
+  :fixture-access {:public :n :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 1988. A blind scan could see a newly founded company and a newly released integrated technical-computing product, Mathematica. [W1] A user could test it on their own mathematical/scientific work and compare whether one coherent environment displaced separate tools `[recollection - unverified]`. The visible commercial hypothesis was direct software licensing to technical users and institutions `[recollection - unverified]`; the scan could not know multi-decade survival, millions of users, Wolfram|Alpha, cloud delivery, or later engine embedding."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors ["Wolfram|Alpha" "Wolfram Cloud" "Wolfram Engine embedding"] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Individuals, universities, companies, and software distributors buy licences or subscriptions."
+    :provenance :unverified
+    :discharge "Wolfram customer segmentation, licence sales records, or cited contracts identifying payer classes."}
+   {:text "At T, complete commercial-product access beyond demonstrations or evaluation access was unavailable without purchase."
+    :provenance :unverified
+    :discharge "A dated 1988 Mathematica access, demonstration, evaluation, and licensing policy."}
+   {:text "A user could test whether one coherent environment displaced separate tools in their work."
+    :provenance :unverified
+    :discharge "A dated early-user study, review, or testimonial comparing Mathematica with the separate tools it displaced."}
+   {:text "The visible commercial hypothesis was direct software licensing to technical users and institutions."
+    :provenance :unverified
+    :discharge "A circa-1987/1988 price list, sales material, business plan, or institutional licence."}
+   {:text "Revenue, profitability, and exact paid-seat counts are unknown."
+    :provenance :unverified
+    :discharge "Audited accounts or reliable company filings reporting revenue, profitability, and paid-seat counts."}
+   {:text "The user-workflow oracle is non-manufacturable."
+    :provenance :inferred :from [:W1 :W4]}
+   {:text "Wolfram Research reports its 1987 founding, 1988 Mathematica release, longevity, and millions of users."
+    :provenance :cited :ref "https://www.wolfram.com/company/"}]}
+]

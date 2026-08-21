@@ -1,0 +1,191 @@
+[
+ {:case-id :langchain-langsmith
+  :org "LangChain, Inc."
+  :entity-type :company
+  :period {:from "2022" :to "open" :note "OSS launched October 2022; company formed February 2023; open in 2026."}
+  :node-types {:primary :dependency :secondary [:environment]}
+  :seat :travelling
+  :chain {:artifact "MIT-licensed LangChain/LangGraph framework dependency"
+          :sponsor "LangChain"
+          :payer "Team or enterprise software/infrastructure budget for LangSmith"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "No external requirement to procure LangSmith; existing MIT releases cannot retroactively become a paid-use obligation."}
+  :artifact-oracle {:what "Framework appears in package and build graphs; open-source downloads measure adoption." :hardness :mechanical}
+  :sale-oracle {:what "Whether LangSmith improves an agent enough to justify purchase and renewal." :hardness :interpretive}
+  :distance {:hops 2 :note "OSS dependency to team choice of LangSmith to paid platform line item; direct LangSmith metered use is one hop."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "As of 2026-08-20, the company describes an explicit open-source-to-commercial learning loop: develop open projects, incorporate what is learned into LangSmith, and sell observability, evaluation, deployment and related agent engineering services. [LC1] It reports 35% Fortune 500 usage, more than one billion OSS downloads, and more than one billion LangSmith events per day; these are company-reported figures, not independently audited here. [LC1] Public pricing is $0 for Developer, $39/seat/month plus usage for Plus, and custom Enterprise pricing. [LC4] LangGraph's published repository is MIT licensed. [LC3] Existing MIT releases cannot be converted retroactively into a paid-use obligation; any manufactured-obligation strategy would require a new controlled component, future licence change, or commercial platform checkpoint. [inference from LC3]"
+  :adoption-outcome :scaled
+  :capture-outcome :open
+  :lineage {:successors ["LangGraph" "LangSmith"] :predecessors []}
+  :prediction {:claim "Given a strong Dependency oracle but a two-hop gap to a separately purchased Environment, the schema predicts that LangChain will capture value primarily through LangSmith enterprise/usage contracts, not by turning existing MIT-licensed LangChain or LangGraph adoption itself into a toll. Capture will remain materially narrower than OSS adoption through **end 2028**."
+               :falsifier "This claim is falsified if, by then, LangChain publicly reports that a majority of active framework-using organisations are paying LangChain, or introduces and successfully enforces a licence/payment checkpoint required for ordinary use of the dominant framework line. [inference from LC1][LC3][LC4]"
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "The open-source frameworks and separate LangSmith platform form different adoption and capture checkpoints."
+    :provenance :inferred :from [:LC1 :LC3 :LC4]}
+   {:text "The adoption oracle is mechanical while quality improvement and renewal are interpretive."
+    :provenance :inferred :from [:LC1 :LC4]}
+   {:text "The principal distance is two hops."
+    :provenance :inferred :from [:LC1 :LC4]}
+   {:text "Revenue and profitability are unknown."
+    :provenance :unverified
+    :discharge "Audited financial statements or a reliable filing reporting LangChain revenue and profitability."}
+   {:text "LangGraph is MIT licensed."
+    :provenance :cited :ref "https://github.com/langchain-ai/langgraph/blob/main/LICENSE"}]}
+
+ {:case-id :braintrust-ai-evals
+  :org "Braintrust"
+  :entity-type :company
+  :period {:from "2023" :to "open" :note "Open in 2026"}
+  :node-types {:primary :environment :secondary [:requirement]}
+  :seat :operating
+  :chain {:artifact "Customer AI interaction or trace"
+          :sponsor "Braintrust evaluation and observability workspace"
+          :payer "AI engineering/product team platform, data, or developer-tools budget"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Compliance features govern customer data handling but do not require Braintrust as vendor."}
+  :artifact-oracle {:what "Configured scores, trace volume, and regressions are mechanically recorded." :hardness :mechanical}
+  :sale-oracle {:what "Whether customer-selected scorers represent user value well enough to gate releases and justify purchase." :hardness :interpretive}
+  :distance {:hops 1 :note "AI-native team workload to Braintrust plan; enterprise procurement can add a second hop."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "As of 2026-08-20, public plans include a free Starter tier, a $249/month Pro tier, and custom Enterprise terms; usage is metered by processed data, scores and retention. [BT2] Braintrust says Notion, Stripe, Vercel, Airtable, Instacart, Zapier, Coda and The Browser Company use its product, and announced an $80m Series B in February 2026. [BT4][BT5] Those are vendor-published customer/funding claims, not audited revenue. Enterprise deployment and compliance features create procurement fit, but no buyer obligation specific to Braintrust was found. [BT2][BT3]"
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction {:claim "Given an Environment with a short usage-to-billing path but an interpretive, customer-manufactured oracle, the schema predicts that Braintrust will capture durable value among AI-native teams with continuous production traffic, while broader enterprises will remain vulnerable to internal tooling and bundled observability substitutes. By **end 2028**, it should retain a paid standalone platform and publish continuing named production customers, but not become a generally mandatory AI-release checkpoint."
+               :falsifier "Falsification is either shutdown or sale followed by product sunset, or evidence by end 2028 that an external standard/regulator broadly requires Braintrust specifically (or its proprietary oracle) for AI release approval. [inference from BT1][BT2][BT3]"
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "Customer release criteria are supplied by the customer rather than an outside authority."
+    :provenance :inferred :from [:BT2 :BT3]}
+   {:text "The decisive oracle is interpretive and customer-authored."
+    :provenance :inferred :from [:BT1 :BT2]}
+   {:text "Enterprise procurement can add a second hop."
+    :provenance :inferred :from [:BT2 :BT3]}
+   {:text "Revenue and profitability are unknown."
+    :provenance :unverified
+    :discharge "Audited financial statements or a reliable filing reporting Braintrust revenue and profitability."}
+   {:text "Braintrust announced an $80m Series B in February 2026."
+    :provenance :cited :ref "https://www.braintrust.dev/blog/announcing-series-b"}]}
+
+ {:case-id :humanloop-evals-platform
+  :org "Humanloop"
+  :entity-type :company
+  :period {:from :unknown :to "2025" :note "Acquisition and platform sunset"}
+  :node-types {:primary :environment :secondary [:requirement]}
+  :seat :operating
+  :chain {:artifact "Customer prompt/agent and evaluation data"
+          :sponsor "Humanloop collaboration/evaluation platform"
+          :payer "Enterprise AI product-team software budget"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Acquisition redirected value to the acquirer and ended the standalone payer route."}
+  :artifact-oracle {:what "Evaluation runs and expert annotations supplied repeatable evidence." :hardness :mechanical}
+  :sale-oracle {:what "Whether customer-authored evaluations represented product quality and justified purchase." :hardness :interpretive}
+  :distance {:hops 1 :note "Before acquisition, 1–2 hops from workflow through reliability need to paid platform; after sunset there is no standalone billing hop."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :n :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "As of 2026-08-20, Humanloop's documentation explicitly records acquisition, billing cessation, mandatory data export and platform sunset. [HL1] Archived pricing copy describes an enterprise LLM-evals product and dedicated HIPAA deployment options, but no current purchasable Humanloop service. [HL3] The official Humanloop changelog identifies the event as “Humanloop joins Anthropic.” [HL1]"
+  :adoption-outcome :acquired-sideways
+  :capture-outcome :acquired-sideways
+  :lineage {:successors ["Anthropic"] :predecessors []}
+  :prediction {:claim "Given an Environment whose standalone payer route has already terminated, the schema predicts no renewed independent Humanloop subscription revenue through **end 2027**; any remaining value will be realised inside the acquirer through team, know-how or product integration rather than through the frozen platform."
+               :falsifier "This is falsified if a Humanloop-branded paid platform becomes generally available again, with new independent customer billing, by end 2027. [inference from HL1][HL2]"
+               :horizon "2027-12-31" :frozen? true}
+  :claims
+  [{:text "Humanloop founding date is unknown."
+    :provenance :unverified
+    :discharge "A cited incorporation record, founder announcement, or company history giving Humanloop's founding date."}
+   {:text "The pre-acquisition payer path was one to two hops."
+    :provenance :inferred :from [:HL2 :HL3]}
+   {:text "Historical public trial and access conditions are unknown."
+    :provenance :unverified
+    :discharge "A dated Humanloop pricing, signup, or documentation page stating trial and public-access conditions."}
+   {:text "The standalone product and customer data were shut down."
+    :provenance :cited :ref "https://humanloop.com/docs/changelog/2025/08"}]}
+
+ {:case-id :tessl-spec-driven-ai-coding
+  :org "Tessl"
+  :entity-type :company
+  :period {:from :unknown :to "open" :note "Open in 2026"}
+  :node-types {:primary :environment :secondary [:dependency]}
+  :seat :operating
+  :chain {:artifact "Developer intent/specification and reusable skill"
+          :sponsor "Tessl workspace/agent"
+          :payer "Team usage credits or enterprise platform fee for standardisation and governance"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Enterprise controls can mandate skills only inside an organisation that voluntarily adopted Tessl."}
+  :artifact-oracle {:what "Approved specification and generated implementation checked against tests, reviews, and eval scenarios." :hardness :mechanical}
+  :sale-oracle {:what "Whether specifications capture product intent and organisation-wide standardisation is valuable." :hardness :interpretive}
+  :distance {:hops 1 :note "Self-serve actions to Team credits; enterprise governance route is two hops."}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "As of 2026-08-20, Tessl documents spec-driven development as requirements and specification approval before code generation. [TS1] Pricing is Free, $100/month Team, and custom Enterprise, with credits consumed by reviews, evals and agent runs; publishing/installing plugins is free. [TS2] Enterprise adds mandatory skills, audit logs, inventory, analytics, SSO and deployment options. [TS2] Tessl publicly described a $125m funding milestone in November 2024; this is a company-published claim. [TS3] The earlier candidate file's description of “specifications drive code” is consistent with current Tessl documentation; its London/remote footprint was not freshly established here and remains `[recollection - unverified]`."
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction {:claim "Given an accessible Environment and only an emerging Dependency position, the schema predicts that Tessl will capture value first from teams purchasing agent/eval usage and governance, not from a universal specification standard. By **end 2028**, it should either demonstrate repeat organisation-wide use of mandated Tessl skills/specifications or remain a voluntary coding-tool subscription with `terminal{interest}`."
+               :falsifier "The prediction is falsified if, by then, a Tessl-controlled spec or skill format becomes an externally required industry/procurement standard, or if the paid product closes without evidence of repeat team/enterprise adoption. [inference from TS1][TS2]"
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "Tessl founding date is unknown."
+    :provenance :unverified
+    :discharge "A cited incorporation record, founder announcement, or company history giving Tessl's founding date."}
+   {:text "The shared-skill dependency position is emerging rather than established as unavoidable."
+    :provenance :inferred :from [:TS2]}
+   {:text "Intent-to-spec correctness remains interpretive."
+    :provenance :inferred :from [:TS1]}
+   {:text "The London/remote footprint was not freshly established."
+    :provenance :unverified
+    :discharge "A current Tessl company or careers page establishing office and remote-work locations."}
+   {:text "Revenue, customer count and profitability are unknown."
+    :provenance :unverified
+    :discharge "Audited accounts, reliable filings, or company disclosures reporting revenue, customer count, and profitability."}
+   {:text "Tessl documents current plan pricing and enterprise governance."
+    :provenance :cited :ref "https://tessl.io/pricing"}]}
+
+ {:case-id :cognition-devin
+  :org "Cognition"
+  :entity-type :company
+  :period {:from "2024-03" :to "open" :note "Open in 2026"}
+  :node-types {:primary :requirement :secondary [:environment :benchmark]}
+  :seat :travelling
+  :chain {:artifact "Customer engineering requirement"
+          :sponsor "Devin session producing or reviewing code"
+          :payer "Customer engineering organisation's agent/developer-productivity budget"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "Downstream work may satisfy contracts, but no outside party requires purchase of Devin specifically."}
+  :artifact-oracle {:what "Repository tests, builds, review acceptance, and merged PRs." :hardness :mechanical}
+  :sale-oracle {:what "Productivity and human-equivalent value across varied work, sufficient for renewal." :hardness :interpretive}
+  :distance {:hops 1 :note "Customer ticket/repository task to metered Devin plan or enterprise account."}
+  :acceptance-event :per-unit
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "As of 2026-08-20, Cognition presents Devin as planning, writing, testing and shipping code inside existing customer tools, and says it is deployed at large institutions. [CG1] Its April 2026 self-serve announcement lists Free and a $20/month Pro entry while retiring the earlier $500/month Team threshold. [CG3] Enterprise accounts support central membership and billing, with usage-based overages. [CG4] Cognition's blog lists partnerships with Cognizant and Infosys and a London office; these are company-published claims. [CG5] The prior candidate file called Cognition the canonical autonomous-engineer case and an agentic-coding/closing-the-loop fit; current product material agrees with that characterization, so no disagreement is recorded. [inference from CG1 and the prior-art file]"
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction {:claim "Given a Requirement node, hard repository-level oracles and a one-hop billing path, the schema predicts stronger direct value capture than for the eval-only Environments in this batch: Cognition should sustain paid self-serve and enterprise sales through **end 2028**, with pricing increasingly tied to accepted engineering work or measured usage. It does not predict monopoly or profitability."
+               :falsifier "Falsification is product shutdown/acquisition followed by Devin sunset, or public evidence by end 2028 that paid adoption cannot persist unless Devin is bundled free with another product despite continued task-level test success. [inference from CG1][CG3][CG4]"
+               :horizon "2028-12-31" :frozen? true}
+  :claims
+  [{:text "SWE-bench is not the primary commercial node because customers pay for work in their own repositories."
+    :provenance :inferred :from [:CG1]}
+   {:text "No external party obliges a team to purchase Devin specifically."
+    :provenance :inferred :from [:CG1 :CG3]}
+   {:text "Portfolio productivity and renewal remain interpretive."
+    :provenance :inferred :from [:CG3 :CG4]}
+   {:text "The one-hop payer path is the shortest in this batch."
+    :provenance :inferred :from [:CG1 :CG3]}
+   {:text "Revenue and profitability are unknown."
+    :provenance :unverified
+    :discharge "Audited financial statements or a reliable filing reporting Cognition revenue and profitability."}
+   {:text "Cognition presents Devin as planning, writing, testing and shipping production code."
+    :provenance :cited :ref "https://cognition.com/"}]}
+]
