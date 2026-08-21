@@ -336,6 +336,50 @@ assertions with 0 failures/errors; clj-kondo reports 0 errors and 0 warnings;
 `check-parens.el` and `git diff --check` pass. Watcher ingestion remains the
 next slice; no notification has yet been emitted.
 
+### Slice 3 — watcher observations and explicit witness intake (2026-08-21)
+
+`multi_watcher.clj` now has an opt-in inbox-zero lifecycle:
+
+```text
+--inbox-zero-state <snapshot.edn>
+--inbox-zero-witnesses <immutable-record-directory>
+```
+
+On every cycle it reads typed seat/claim witnesses, scans each configured Git
+worktree with porcelain status, emits only meaningful state transitions, writes
+the snapshot atomically, and computes the pure dirty-set projection. With no
+state option, existing watcher behavior is unchanged.
+
+The edit-source audit found no honest canonical stream that already covered all
+surfaces. JVM autoclock observes agent edits only for exact mission documents
+and durably records only clock transitions; Emacs after-save activity is also
+mission-document-specific and is not an exact-seat authorship stream; session
+artifact lists are summaries rather than immutable edit witnesses. Therefore
+the slice adds `futon3.inbox-zero.watcher/write-witness!` as the canonical
+producer boundary instead of inferring claims from dirt:
+
+- every seat or claim is one immutable EDN file, atomically published;
+- several surface producers may safely publish distinct witness files;
+- the watcher is the single writer of the derived state snapshot;
+- a witness id reused with different content fails closed;
+- malformed witness input cannot replace state;
+- a missing claim leaves a dirty path explicitly `:unattributed`.
+
+Git observation covers modified, untracked, deleted, and renamed paths, hashes
+current file content, records HEAD and stable local worktree identity, emits a
+clean transition when prior dirt disappears, and emits nothing on unchanged
+rescans. The transition id includes the prior observation id, so a path that
+becomes dirty, clean, and dirty again remains a real history while restarts are
+idempotent.
+
+Evidence: all three inbox-zero namespaces run 20 tests / 46 assertions with 0
+failures/errors; clj-kondo reports 0 errors and 0 warnings; `check-parens.el`
+and `git diff --check` pass. A real Babashka `multi_watcher` one-cycle smoke on
+a temporary Git repository wrote one durable observation for one untracked
+file and projected it as one unattributed path. Producers on Emacs, Codex, and
+Claude still need to call the typed witness boundary; that explicit producer
+gap is the next integration after delivery semantics, not a reason to guess.
+
 ## Open decisions
 
 - Where tool-edit/save witnesses should be emitted for Emacs, Claude Code, and
