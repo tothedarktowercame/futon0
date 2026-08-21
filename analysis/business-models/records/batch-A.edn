@@ -1,0 +1,181 @@
+[
+ {:case-id :andela
+  :org "Andela"
+  :entity-type :company
+  :period {:from "2014" :to "2024" :note "ten-year operating-status checkpoint"}
+  :node-types {:primary :requirement :secondary [:environment]}
+  :seat :unknown
+  :chain {:artifact "trained engineer/team"
+          :sponsor "Andela matching and employment apparatus"
+          :payer "client company's engineering/staffing line item"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "Andela's skills screening" :hardness :interpretive}
+  :sale-oracle {:what "the client company's decision to engage and retain the engineer" :hardness :interpretive}
+  :distance {:hops 1 :note "accepted engineering capacity to the client's staffing/engineering line item"}
+  :acceptance-event :per-unit
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T "By roughly mid-2015, an observer could see a company that had hired an initial Lagos cohort, screened and trained developers, sold placements to client companies, raised a $10 million Series A, and begun expanding to Nairobi. [A1] The visible hypothesis was that scarce global demand for developers could pay for intensive African talent formation and matching. [A2] At T, client retention, training cost, geographic replication, and dependence on external capital remained observable risks; later pivots and valuation are deliberately excluded from this field. [A1][A2]"
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Andela began in May 2014 and was still operating with a newly appointed CEO in September 2024."
+    :provenance :cited :ref "A1"}
+   {:text "The sellable unit was trained engineering capacity matched to a client need."
+    :provenance :cited :ref "A2"}]}
+
+ {:case-id :galois-inc
+  :org "Galois, Inc."
+  :entity-type :company
+  :period {:from "1999" :to "2023" :note "employee-ownership checkpoint"}
+  :node-types {:primary :call :secondary [:requirement]}
+  :seat :unknown
+  :chain {:artifact "formal model/tool/high-assurance implementation"
+          :sponsor "government programme or customer project"
+          :payer "agency/customer R&D line item"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "funded contract or award work statement and acceptance terms"}
+  :artifact-oracle {:what "mathematical proof inside the artifact" :hardness :mechanical}
+  :sale-oracle {:what "sponsor review of programme milestones and contracted technical deliverables" :hardness :interpretive}
+  :distance {:hops :unknown :note "1 hop where Galois is a prime contractor, or 2 where a programme prime intervenes"}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T "Around 2000, an observer could see a newly formed company proposing to apply functional programming and formal methods to information assurance `[recollection - unverified]`. Government high-assurance R&D was a plausible buyer class, but repeat awards, procurement access, commercial demand, and the ability to turn research into accepted systems were not yet demonstrated `[recollection - unverified]`. No later client list, HACMS result, or ownership outcome is used in this snapshot."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Galois was founded in 1999."
+    :provenance :unverified
+    :discharge "a citable Galois source establishing the 1999 founding date"}
+   {:text "Distance is 1 hop where Galois is a prime contractor, or 2 where a programme prime sits between its artifact and the agency line item."
+    :provenance :unverified
+    :discharge "a cited contract or programme record identifying Galois's prime/subcontractor position"}
+   {:text "A newcomer cannot attempt the funded programme's acceptance test without proposal selection and access to the relevant system."
+    :provenance :unverified
+    :discharge "published programme access and acceptance-test rules"}
+   {:text "Around 2000, Galois proposed applying functional programming and formal methods to information assurance."
+    :provenance :unverified
+    :discharge "a contemporaneous Galois description from approximately 1999-2000"}
+   {:text "Government high-assurance R&D was plausible, but repeat awards, procurement access, commercial demand, and accepted-system delivery were not demonstrated at T."
+    :provenance :unverified
+    :discharge "contemporaneous award, procurement, customer, and accepted-delivery records"}
+   {:text "Galois identifies DARPA, NASA, and DoD among its clients and describes both R&D and delivered solutions."
+    :provenance :cited :ref "G1"}
+   {:text "Galois became 100% employee-owned in June 2023."
+    :provenance :cited :ref "G2"}]}
+
+ {:case-id :trail-of-bits
+  :org "Trail of Bits"
+  :entity-type :company
+  :period {:from "2012" :to "2026" :note "current operating-status checkpoint"}
+  :node-types {:primary :requirement :secondary [:call]}
+  :seat :unknown
+  :chain {:artifact "findings/tool/repair"
+          :sponsor "security-review engagement"
+          :payer "customer's security or product-engineering line item"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "reproducible findings, mitigations, or delivered security feature" :hardness :mechanical}
+  :sale-oracle {:what "customer acceptance of the contracted engagement scope" :hardness :interpretive}
+  :distance {:hops 1 :note "accepted audit/engineering deliverable to the customer's security line item"}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T "Around 2013, an observer could see a young security firm founded in 2012 offering attacker-minded security research and engineering `[recollection - unverified]`. The visible market hypothesis was that organisations facing targeted attacks would pay scarce specialists to find and close security gaps `[recollection - unverified]`. Repeat demand, reputation, access to sensitive targets, and whether reusable tools would compound rather than merely subsidise consulting were open questions `[recollection - unverified]`."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Around 2013, Trail of Bits was a young security firm offering attacker-minded security research and engineering."
+    :provenance :unverified
+    :discharge "a contemporaneous 2012-13 company or customer description"}
+   {:text "Organisations facing targeted attacks would pay scarce specialists to find and close security gaps."
+    :provenance :unverified
+    :discharge "a contemporaneous paid engagement or customer statement"}
+   {:text "Repeat demand, reputation, sensitive-target access, and compounding reusable tools were open questions."
+    :provenance :unverified
+    :discharge "contemporaneous repeat-customer, access, and reusable-tool adoption records"}
+   {:text "Trail of Bits has operated since 2012 and offers audits, consultation, and feature development."
+    :provenance :cited :ref "T1"}
+   {:text "Trail of Bits reports 620 audits and more than 200 open-source repositories."
+    :provenance :cited :ref "T2"}]}
+
+ {:case-id :runtime-verification-inc
+  :org "Runtime Verification, Inc."
+  :entity-type :company
+  :period {:from "2010" :to "2026" :note "current operating-status checkpoint"}
+  :node-types {:primary :call :secondary [:requirement]}
+  :seat :unknown
+  :chain {:artifact "executable semantics/proof or analysis report"
+          :sponsor "sponsored project or verification engagement"
+          :payer "agency/customer R&D or assurance line item"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "NASA SBIR contract 80NSSC20C0497 where applicable"}
+  :artifact-oracle {:what "theorems checked against a mathematical EVM model" :hardness :mechanical}
+  :sale-oracle {:what "agency/customer acceptance of requirements, scope, milestones, toolset, and analysis" :hardness :interpretive}
+  :distance {:hops 1 :note "verification deliverable to a direct customer or agency line item"}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T "Around 2011, an observer could see a University of Illinois spinout centred on Grigore Roșu's runtime-verification and language-semantics research. [R1] A plausible buyer landscape included aerospace and other critical-software organisations, but product-market fit, procurement access, repeatability beyond founder-led research, and willingness to pay for proofs rather than conventional testing were unresolved `[recollection - unverified]`. Blockchain work, later clients, and later SBIR awards are excluded from this snapshot."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Early university technology commercialisation and sponsored R&D fit Call."
+    :provenance :unverified
+    :discharge "a contemporaneous commercialisation or sponsored-R&D agreement"}
+   {:text "At T, product-market fit, procurement access, repeatability beyond founder-led research, and willingness to pay for proofs were unresolved."
+    :provenance :unverified
+    :discharge "contemporaneous procurement, repeat-customer, and paid-proof engagement records"}
+   {:text "Runtime Verification was founded in 2010 as a University of Illinois spinout."
+    :provenance :cited :ref "R1"}
+   {:text "The NASA SBIR case was contract 80NSSC20C0497."
+    :provenance :cited :ref "R3"}
+   {:text "Runtime Verification reports more than 100 protected clients and work for DARPA, NASA, Boeing, Ethereum Foundation, Solana, and Stellar."
+    :provenance :cited :ref "R4"}]}
+
+ {:case-id :kestrel-institute
+  :org "Kestrel Institute"
+  :entity-type :research-system
+  :period {:from "1981" :to "2026" :note "current operating-status checkpoint"}
+  :node-types {:primary :call :secondary [:requirement]}
+  :seat :unknown
+  :chain {:artifact "formal specification/proof/synthesised program"
+          :sponsor "research sponsor or customer project"
+          :payer "government research or customer assurance line item"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on "programme deliverables or a product sponsor's certification objective"}
+  :artifact-oracle {:what "ACL2-generated correctness proof" :hardness :mechanical}
+  :sale-oracle {:what "sponsor review or external certification evaluator's evidence process" :hardness :interpretive}
+  :distance {:hops :unknown :note "1 hop for direct sponsored work; 2 where proof evidence passes through a product owner to a certification evaluator"}
+  :acceptance-event :aggregate
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T "Around 1982, an observer could see a Stanford-adjacent nonprofit research institute pursuing knowledge-based software development and formal specification `[recollection - unverified]`. Government research sponsorship was a plausible terminal `[recollection - unverified]`, but the practical scalability of program synthesis, availability of automated proof infrastructure, repeat sponsor demand, and transfer into deployed systems were unresolved `[recollection - unverified]`. Later ACL2 work, named modern sponsors, and certification offerings are excluded from this snapshot."
+  :adoption-outcome :sustained-noncommercially
+  :capture-outcome :sustained-noncommercially
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Around 1982, Kestrel was a Stanford-adjacent nonprofit pursuing knowledge-based software development and formal specification."
+    :provenance :unverified
+    :discharge "a contemporaneous 1981-82 institutional description"}
+   {:text "Government research sponsorship was a plausible terminal."
+    :provenance :unverified
+    :discharge "a contemporaneous government research award or sponsor statement"}
+   {:text "Program-synthesis scalability, automated-proof infrastructure, repeat sponsor demand, and deployed-system transfer were unresolved."
+    :provenance :unverified
+    :discharge "contemporaneous proof-infrastructure, repeat-award, and deployment records"}
+   {:text "Kestrel was founded out of Stanford in 1981 and remains an operating nonprofit research centre."
+    :provenance :cited :ref "K1; K2"}
+   {:text "Kestrel offers certification evidence for Common Criteria, DO-178B/C, and FIPS 140-3."
+    :provenance :cited :ref "K2"}]}]

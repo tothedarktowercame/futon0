@@ -1,0 +1,200 @@
+[
+ {:case-id :docker-inc
+  :org "Docker, Inc."
+  :entity-type :company
+  :period {:from "2013" :to "2019" :note "project/company pivot to enterprise-business sale and recapitalisation"}
+  :node-types {:primary :dependency :secondary [:environment]}
+  :seat :unknown
+  :chain {:artifact "Docker Engine/image format and tooling"
+          :sponsor "Docker, Inc."
+          :payer "organisations buying Desktop/Hub/Business governance, security, collaboration, and support"
+          :terminal :interest}
+  :terminal-note {:manufactured-when "2021" :rests-on "adoption position; Docker's commercial-use Desktop licence"}
+  :artifact-oracle {:what "downloads, contributors, Dockerfiles/images, and platforms able to run them" :hardness :mechanical}
+  :sale-oracle {:what "adoption crossing into a Docker-controlled billable entitlement" :hardness :interpretive}
+  :distance {:hops 3 :note "At T: artifact -> somebody else's build/platform -> Docker-adjacent product -> payer; later Desktop licensing shortened one branch to 1 hop"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately March 2014, one year after launch. A blind landscape scan could see a portable application-container artifact addressing incompatibility between hosts; more than 400,000 downloads; about 300 contributors; a $15m financing round intended to expand engineering, sales, and support; and the possibility of enterprise pilots. [D1] It could also see that the artifact's adoption oracle was much clearer than its payer oracle: the visible commercial hypothesis was sales/support around a potentially fundamental architecture, not a mandatory toll embedded in every Docker use. [inference from D1] Nothing in this snapshot presupposes the later enterprise sale, Kubernetes competition, or Desktop licensing."
+  :adoption-outcome :scaled
+  :capture-outcome :acquired-sideways
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "At T, the distance was 3 hops."
+    :provenance :inferred :from [:D1 :D2]}
+   {:text "Cloud vendors and application teams could realise portability and standardisation value without it passing through a Docker-controlled checkpoint."
+    :provenance :inferred :from [:D1 :D4]}
+   {:text "The visible commercial hypothesis was sales/support around a potentially fundamental architecture, not a mandatory toll embedded in every Docker use."
+    :provenance :inferred :from [:D1]}
+   {:text "The 2019 Mirantis transaction acquired Docker's enterprise business while Docker recapitalised and continued."
+    :provenance :cited :ref "D4"}
+   {:text "Docker reports more than 20 million developers today."
+    :provenance :cited :ref "D2; D3"}]}
+
+ {:case-id :juxt-xtdb
+  :org "JUXT, sponsor and developer of XTDB"
+  :entity-type :company
+  :period {:from "2019" :to "2026" :note "XTDB/Crux initial public period to open"}
+  :node-types {:primary :dependency :secondary [:requirement]}
+  :seat :unknown
+  :chain {:artifact "XTDB database artifact"
+          :sponsor "JUXT sponsorship/R&D"
+          :payer "design-partner, support, or consulting payer"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "preservation and querying of valid-time and system-time history" :hardness :mechanical}
+  :sale-oracle {:what "a client's system-of-record acceptance tests or reconstruction needs" :hardness :interpretive}
+  :distance {:hops 2 :note "database dependency -> client application/system-of-record requirement -> JUXT service/support line item"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2020. A blind scan could see an open-source database being developed by JUXT, aimed at point-in-time/bitemporal queries, with a consulting company close to the implementation. [J1][J5] It could test the artifact and hypothesise demand in domains where corrections and historical reconstruction matter. [J5] It could **not** infer from those capabilities alone that a named regulator would compel procurement, nor that open-source users would convert to JUXT clients. [inference from J2][J5]"
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "The exact XTDB public-release date is approximately 2019."
+    :provenance :unverified
+    :discharge "a cited XTDB release announcement with its date"}
+   {:text "The payer is a design partner, support customer, or consulting customer."
+    :provenance :unverified
+    :discharge "a named JUXT customer and cited XTDB-linked purchase"}
+   {:text "The sales oracle remains partly interpretive absent a published customer requirement."
+    :provenance :inferred :from [:J2 :J4]}
+   {:text "Temporal database behavior is mechanically checkable while the consulting purchase and alleged regulatory necessity are interpretive."
+    :provenance :inferred :from [:J2 :J4]}
+   {:text "Distance is 2 hops from database dependency through the client's system requirement to a JUXT line item."
+    :provenance :unverified
+    :discharge "a named JUXT customer with a cited procurement and system requirement"}
+   {:text "Capabilities alone do not show regulatory compulsion or conversion of open-source users to JUXT clients."
+    :provenance :inferred :from [:J2 :J5]}
+   {:text "Revenue, profitability, and named XTDB-linked consulting customers are not verified."
+    :provenance :unverified
+    :discharge "cited revenue/profitability data and a named XTDB-linked consulting customer"}
+   {:text "XTDB is free/open source under MPL and JUXT still leads its R&D."
+    :provenance :cited :ref "J1; J2"}]}
+
+ {:case-id :lightbend-typesafe-akka
+  :org "Typesafe, later Lightbend and now doing business as Akka"
+  :entity-type :company
+  :period {:from "2011" :to "2026" :note "company consolidation onto Akka product and brand"}
+  :node-types {:primary :dependency :secondary [:requirement]}
+  :seat :unknown
+  :chain {:artifact "Akka/Scala ecosystem artifacts"
+          :sponsor "Typesafe/Lightbend"
+          :payer "enterprises running Akka and buying subscriptions/support"
+          :terminal :interest}
+  :terminal-note {:manufactured-when "current Akka BSL releases" :rests-on "production dependency adoption outside stated licence grants"}
+  :artifact-oracle {:what "Akka dependency presence, load/resilience behavior, and current production licence coverage" :hardness :mechanical}
+  :sale-oracle {:what "whether support/productivity justifies a voluntary subscription" :hardness :interpretive}
+  :distance {:hops 2 :note "originally library -> mission-critical application -> subscription; current covered production use can be 1 hop"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2012. A blind scan could see a company founded around the creators of Scala and Akka, with language/runtime dependencies that developers could adopt independently. [L1] Commercial support and training were plausible adjacent products `[recollection - unverified]`, but the scan could not know whether dependency adoption would convert, whether one project would dominate, or whether licensing would later change."
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Initial enterprise demand terminated in interest in supported reactive/distributed infrastructure."
+    :provenance :unverified
+    :discharge "a contemporaneous Typesafe customer purchase and stated motivation"}
+   {:text "Technical load/resilience acceptance is customer-specific."
+    :provenance :unverified
+    :discharge "a cited customer acceptance test for Akka load or resilience"}
+   {:text "Current dependency/licence coverage is mechanical while original subscription value was interpretive."
+    :provenance :inferred :from [:L3]}
+   {:text "The original distance was 2 hops."
+    :provenance :unverified
+    :discharge "a contemporaneous customer path from Akka adoption to support subscription"}
+   {:text "Commercial support and training were plausible adjacent products at T."
+    :provenance :unverified
+    :discharge "a contemporaneous Typesafe support or training offer"}
+   {:text "Private-company revenue/profitability is not verified."
+    :provenance :unverified
+    :discharge "audited or company-reported revenue and profitability"}
+   {:text "Current Akka production use under BSL requires a commercial licence outside stated grants."
+    :provenance :cited :ref "L3"}]}
+
+ {:case-id :sourcegraph
+  :org "Sourcegraph"
+  :entity-type :company
+  :period {:from "2013" :to "2026" :note "scaled funding milestone in 2021; operating in 2026"}
+  :node-types {:primary :environment :secondary []}
+  :seat :unknown
+  :chain {:artifact "code-search/indexing environment"
+          :sponsor "Sourcegraph"
+          :payer "software organisations buying enterprise deployment over their code estate"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "correct, sufficiently fast cross-repository search/navigation on a customer's corpus" :hardness :mechanical}
+  :sale-oracle {:what "the organisation's productivity/security judgment" :hardness :interpretive}
+  :distance {:hops 1 :note "customer code corpus and developer workflow -> enterprise tooling line item"}
+  :acceptance-event :per-unit
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T "T = approximately 2014. A blind scan could see a large-scale, multi-language code search and cross-reference engine indexing hundreds of thousands of open repositories, publicly demonstrated in a Google I/O 2014 talk. [S1] It could see the external fixture (real repositories and developer questions) and test search utility. [S1] It could not know that enterprises would buy private-code deployment, that code search would become mainstream, or that the company would later raise at a multi-billion-dollar valuation."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Sourcegraph does not fit Dependency merely because it reads dependency graphs or repositories."
+    :provenance :inferred :from [:S3]}
+   {:text "The customer corpus and questions come from outside Sourcegraph."
+    :provenance :inferred :from [:S3]}
+   {:text "Sale conversion is a contextual productivity/security judgment."
+    :provenance :inferred :from [:S3 :S4]}
+   {:text "Distance is 1 hop to an enterprise tooling line item."
+    :provenance :inferred :from [:S3 :S4]}
+   {:text "Sourcegraph indexed hundreds of thousands of public repositories in its 2014-era system."
+    :provenance :cited :ref "S1"}
+   {:text "Sourcegraph announced a $125m Series D at a $2.625bn valuation in 2021."
+    :provenance :cited :ref "S2"}]}
+
+ {:case-id :redis-labs-redis-inc
+  :org "Redis Ltd. / Redis Labs / Redis Inc."
+  :entity-type :company
+  :period {:from "2011" :to "2025" :note "scaled funding milestone in 2021 with licensing changes through 2025"}
+  :node-types {:primary :dependency :secondary [:environment]}
+  :seat :unknown
+  :chain {:artifact "Redis database artifact"
+          :sponsor "community/creator, then Redis Labs/Inc."
+          :payer "customers buying managed Redis, enterprise software/support, or commercial rights"
+          :terminal :interest}
+  :terminal-note {:manufactured-when "2024" :rests-on "production dependency adoption outside source-available licence grants; version and use determine coverage"}
+  :artifact-oracle {:what "dependency presence, load/latency behavior, performance, and licence applicability" :hardness :mechanical}
+  :sale-oracle {:what "managed-service or support conversion" :hardness :interpretive}
+  :distance {:hops 2 :note "originally dependency -> operational need -> service/support; restricted covered uses later shorten to 1 hop"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2012. A blind scan could see a company founded in 2011 that began contributing to the young Redis project shortly afterward. [R1] A hosted Redis/service business and conversion from users needing operations or support were plausible `[recollection - unverified]`. The scan could not know that the company would become project sponsor in 2015, reach a multi-billion-dollar valuation, or alter licensing years later. [R1][R2][R3]"
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Early demand terminated in voluntary interest in performance, operations, and support."
+    :provenance :unverified
+    :discharge "a contemporaneous Redis Labs customer purchase and stated motivation"}
+   {:text "Redis adoption appears mechanically in an application's deployed data path and can be load/latency tested."
+    :provenance :unverified
+    :discharge "a cited early deployment and its load/latency test"}
+   {:text "Dependency/performance/licence checks are mechanical; managed-service conversion is interpretive."
+    :provenance :inferred :from [:R2 :R3]}
+   {:text "The original distance was 2 hops."
+    :provenance :unverified
+    :discharge "a contemporaneous path from Redis dependency adoption to a managed-service or support purchase"}
+   {:text "A hosted Redis/service business and support/operations conversion were plausible at T."
+    :provenance :unverified
+    :discharge "a contemporaneous hosted-service offer or customer purchase"}
+   {:text "Redis Inc. profitability is not verified."
+    :provenance :unverified
+    :discharge "audited or company-reported profitability"}
+   {:text "Redis Labs announced a $110m financing above a $2bn valuation in 2021."
+    :provenance :cited :ref "R2"}]}]

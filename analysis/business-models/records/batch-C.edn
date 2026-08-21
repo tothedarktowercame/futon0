@@ -1,0 +1,204 @@
+[
+ {:case-id :mojang-minecraft
+  :org "Mojang Specifications"
+  :entity-type :company
+  :period {:from "2009" :to "2014" :note "Microsoft acquisition"}
+  :node-types {:primary :environment :secondary []}
+  :seat :unknown
+  :chain {:artifact "Minecraft sandbox executable/world rules"
+          :sponsor "Mojang"
+          :payer "players buying copies and later platform versions/content"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "purchases, downloads, activity, and people entering, creating, sharing, playing, and returning" :hardness :mechanical}
+  :sale-oracle {:what "whether the environment supports intrinsically valuable user-created goals" :hardness :interpretive}
+  :distance {:hops 1 :note "access to the sandbox -> paid game copy"}
+  :acceptance-event :per-unit
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately May 2010, one year after the first public alpha. A blind scan could see a small, repeatedly updated block-building/survival sandbox that had become popular on forums, with paid-alpha revenue beginning to exceed its creator's employment income. [M1] It could see that users, rather than a authored campaign, supplied much of the activity. [inference from M3] The visible test was continued purchasing, creating, sharing, and returning; the scan could not presume a full release, console ports, mass adoption, or acquisition."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Multiplayer servers and modifications can become dependencies in other creations."
+    :provenance :unverified
+    :discharge "a cited Minecraft server or modification used as a dependency by another creation"}
+   {:text "Players buy copies and later platform versions/content."
+    :provenance :unverified
+    :discharge "cited Mojang product and sales records identifying those purchases"}
+   {:text "Purchase and activity measures are mechanical proxies while user-goal value is interpretive."
+    :provenance :inferred :from [:M2 :M3]}
+   {:text "Purchases, downloads, and activity are mechanical while intrinsically valuable user-created goals are interpretive."
+    :provenance :inferred :from [:M2 :M3]}
+   {:text "A public self-serve population can arrive without prior permission."
+    :provenance :inferred :from [:M1]}
+   {:text "Users rather than an authored campaign supplied much of the activity."
+    :provenance :inferred :from [:M3]}
+   {:text "Capture was scaled before acquisition, and the acquisition was of the core environment."
+    :provenance :inferred :from [:M2 :M4]}
+   {:text "Minecraft beta passed 16m registrations and 4m purchases before full release."
+    :provenance :cited :ref "M2; M4"}]}
+
+ {:case-id :roblox-corporation
+  :org "Roblox Corporation"
+  :entity-type :company
+  :period {:from "2004" :to "2026" :note "scaled public company, 2021-26"}
+  :node-types {:primary :environment :secondary [:dependency]}
+  :seat :unknown
+  :chain {:artifact "Roblox creation/play platform"
+          :sponsor "Roblox Corporation"
+          :payer "players buying virtual currency/access and brands or advertisers buying exposure"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "logged activity, transactions, creator output, and whether creators and players build, choose, socialize, spend, and return" :hardness :mechanical}
+  :sale-oracle {:what "whether activity constitutes durable community and creative value" :hardness :interpretive}
+  :distance {:hops :unknown :note "1 hop for player spending; 2 for creator experience -> engagement/spending -> platform share"}
+  :acceptance-event :per-unit
+  :fixture-access {:public :n :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2005. A blind scan could see an in-development 3D construction/physics environment seeded with a few hundred developers, investors, testers, and friends. [R1] It could observe whether this invited population built things and returned, but there was not yet a large public population on which to test the broader platform hypothesis. [inference from R1] The scan could not assume the 2006 public release, a child audience, virtual economy scale, mobile distribution, or public listing."
+  :adoption-outcome :scaled
+  :capture-outcome :scaled
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Creators depend on Roblox Studio/runtime, distribution, identity, and economy."
+    :provenance :inferred :from [:R2]}
+   {:text "Players buy virtual currency/access and brands or advertisers buy exposure."
+    :provenance :unverified
+    :discharge "cited Roblox payer/product records for player and advertiser purchases"}
+   {:text "Creators receive a share of platform economics."
+    :provenance :unverified
+    :discharge "a cited Roblox creator-payout policy or filing"}
+   {:text "Logged measures are mechanical while durable community and creative value are interpretive."
+    :provenance :inferred :from [:R2 :R3]}
+   {:text "Player spending is 1 hop from access to platform capture."
+    :provenance :unverified
+    :discharge "a cited player transaction and Roblox capture path"}
+   {:text "Creator experience to player spending to Roblox platform share is 2 hops."
+    :provenance :unverified
+    :discharge "a cited creator-experience transaction and platform-share record"}
+   {:text "The invited T population was insufficient to test the broader public-platform hypothesis."
+    :provenance :inferred :from [:R1]}
+   {:text "Roblox reported 49.5m average daily users in 2021."
+    :provenance :cited :ref "R2; R3"}]}
+
+ {:case-id :linden-lab-second-life
+  :org "Linden Lab"
+  :entity-type :company
+  :period {:from "1999" :to "2026" :note "Second Life launched in 2003; open in 2026"}
+  :node-types {:primary :environment :secondary []}
+  :seat :unknown
+  :chain {:artifact "Second Life world/creation tools/economy"
+          :sponsor "Linden Lab"
+          :payer "residents paying memberships, land, and transaction/economy charges"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "registration, concurrency, active use, creations, transactions, and resident-created places and activities" :hardness :mechanical}
+  :sale-oracle {:what "meaningful community, creator welfare, and healthy resident-generated value" :hardness :interpretive}
+  :distance {:hops :unknown :note "1 hop for environment access/land; 2 for resident creation -> resident transaction -> Linden capture"}
+  :acceptance-event :per-unit
+  :fixture-access {:public :n :decisive :n}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2000. A blind scan could see a company founded to develop a new form of shared 3D entertainment/experience. [L1][L5] It could inspect a technical vision or prototype `[recollection - unverified]`, but could not run the decisive Environment test because there was no public resident population. The first closed beta arrived in 2002, and Second Life launched in late 2003 with about 500 residents and a one-square-kilometre world. [L3][L4] Those later facts are cited here only to bound how long the population test took, not to backfill T with its outcome."
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Residents pay memberships, land charges, and transaction/economy-related charges."
+    :provenance :unverified
+    :discharge "cited Linden Lab pricing and transaction-charge records"}
+   {:text "Environment access/land to Linden Lab charge is 1 hop."
+    :provenance :unverified
+    :discharge "a cited resident charge for access or land"}
+   {:text "Resident creation to another resident's transaction to Linden capture is 2 hops."
+    :provenance :unverified
+    :discharge "a cited resident transaction and Linden Lab capture record"}
+   {:text "At launch, enrollment became public/self-serve."
+    :provenance :unverified
+    :discharge "a cited launch enrollment policy"}
+   {:text "A technical vision or prototype was inspectable around 2000."
+    :provenance :unverified
+    :discharge "a contemporaneous 1999-2000 prototype or technical demonstration"}
+   {:text "Private-company revenue and profitability are not verified."
+    :provenance :unverified
+    :discharge "audited or company-reported Linden Lab revenue and profitability"}
+   {:text "Second Life reported roughly 750,000 monthly active users and a $650m resident economy in 2023."
+    :provenance :cited :ref "L2"}]}
+
+ {:case-id :planetmath
+  :org "PlanetMath"
+  :entity-type :oss-project
+  :period {:from "2001" :to "2018" :note "inactive by approximately 2018/currently"}
+  :node-types {:primary :environment :secondary [:call]}
+  :seat :unknown
+  :chain {:artifact "PlanetMath encyclopedia/Noosphere collaboration environment"
+          :sponsor "PlanetMath.org nonprofit and volunteer community"
+          :payer "possible donors, sponsors, or grant funders"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "article counts, edits, active contributors, and mathematicians contributing, linking, correcting, and maintaining entries" :hardness :interpretive}
+  :sale-oracle {:what "voluntary donor, sponsor, or grant support for correctness, pedagogy, and community maintenance" :hardness :interpretive}
+  :distance {:hops 2 :note "at least 2: contributor value -> public use/community legitimacy -> voluntary funding"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 2002. A blind scan could see a free, community-driven mathematics encyclopedia created after MathWorld went offline during litigation, with interlinked LaTeX mathematical entries and an ownership model in which an article author acted as gatekeeper while others proposed corrections. [P1] It could observe whether the initial community contributed and reviewed entries, but reliable T-year user/article counts and funding records were not established `[recollection - unverified]`. It could not assume institutional hosting, software migrations, a 2,300-page snapshot, or eventual inactivity."
+  :adoption-outcome :zombie
+  :capture-outcome :zombie
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Reliable historical contribution and population series could not be established."
+    :provenance :unverified
+    :discharge "a citable historical series of PlanetMath articles, edits, and active contributors"}
+   {:text "Distance to voluntary funding is at least 2 hops."
+    :provenance :inferred :from [:P4]}
+   {:text "PlanetMath's first population included members of the Undernet #math channel."
+    :provenance :unverified
+    :discharge "a strong English primary source for the Undernet #math origin"}
+   {:text "Reliable T-year user/article counts and funding records were not established."
+    :provenance :unverified
+    :discharge "cited 2001-02 user/article counts and funding records"}
+   {:text "PlanetMath is inactive while freely licensed content and a large snapshot survive."
+    :provenance :cited :ref "P2"}
+   {:text "Portal operations ended in 2018 and source content moved to GitHub."
+    :provenance :cited :ref "P3"}]}
+
+ {:case-id :gnu-emacs-fsf
+  :org "GNU Emacs / Free Software Foundation"
+  :entity-type :oss-project
+  :period {:from "1984/85" :to "2026" :note "sustained noncommercially"}
+  :node-types {:primary :environment :secondary [:dependency]}
+  :seat :unknown
+  :chain {:artifact "GNU Emacs executable/source/extension environment"
+          :sponsor "GNU Project and FSF plus volunteer maintainers"
+          :payer "historical tape/manual purchasers and FSF donors/supporters"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :unknown :rests-on :unknown}
+  :artifact-oracle {:what "downloads, contributions, packages, continued releases, adoption for user work, and shared extensions" :hardness :interpretive}
+  :sale-oracle {:what "demand for convenient distribution/manuals or commitment to software freedom" :hardness :interpretive}
+  :distance {:hops :unknown :note "none from use to sponsor revenue; historical funding path was 2 hops"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :unknown
+  :knowable-at-T "T = approximately 1985-86. A blind scan could see GNU Emacs becoming usable and widely distributed, users asking to obtain it, and an extensible editor whose commands and user additions were written through the same Lisp machinery. [E2][E6][E7] Growing demand supported creation of the FSF and a tape-distribution and manual-sales operation. [E1][E2] The scan could test user adoption and extension sharing, but could not assume decades of maintenance, GNU/Linux distribution, modern package ecosystems, or breadth beyond editing."
+  :adoption-outcome :sustained-noncommercially
+  :capture-outcome :sustained-noncommercially
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "Organisational workflows and configurations depend on Emacs and its extension interfaces."
+    :provenance :unverified
+    :discharge "a cited organisational workflow whose operation depends on Emacs interfaces"}
+   {:text "There is no single score for the variety or value of user-owned workflows."
+    :provenance :inferred :from [:E5 :E6]}
+   {:text "Free redistribution removes the permission gate from the Environment test."
+    :provenance :inferred :from [:E1]}
+   {:text "Growing Emacs demand supported creation of the FSF and tape/manual distribution."
+    :provenance :cited :ref "E1; E2"}
+   {:text "GNU Emacs remains maintained and distributed as free software."
+    :provenance :cited :ref "E3; E4; E5"}]}]
