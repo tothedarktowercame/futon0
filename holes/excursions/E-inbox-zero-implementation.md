@@ -449,6 +449,42 @@ in-JVM watcher still lacks this optional lifecycle, so production activation
 requires one final slice to integrate it while retaining exactly one state
 writer; running two watchers would violate the storage contract.
 
+### Slice 6 — bootstrap-owned lifecycle and closure (2026-08-21)
+
+`futon3c.watcher.multi` now adapts directly to the futon3-owned v0 state,
+observation, projection, and sender namespaces. A minimal
+`futon3/inbox-zero-lib/deps.edn` exposes those exact sources without importing
+futon3's unrelated XTDB1/NLP dependency graph into the deliberately
+single-major futon3c JVM. There is no second implementation of the rules.
+
+The feature is explicit and defaults off. `FUTON3C_INBOX_ZERO_ENABLED=true`
+activates it; state, witness intake, and followup URL have separate environment
+settings and documented defaults. Bootstrap passes its canonical root/label
+set into the v0 observer each cycle. The watcher acquires an OS-level exclusive
+`<state>.writer.lock`, holds it for its service lifetime, and releases it on
+stop. Competing lock-aware JVM ownership fails closed. The standalone Babashka watcher
+remains a diagnostic/manual alternative and must not target the production
+state concurrently.
+
+Watcher status is the readiness projection: before the first successful cycle
+it is enabled but not ready; afterward it reports paths plus observation,
+dirty-set, ambiguity, unattributed, and delivery counts and the last successful
+inbox-zero cycle time. A feature exception enters the watcher's existing loud
+cycle-error state rather than being mistaken for successful readiness.
+
+Focused tests cover disabled compatibility, adapter inputs, readiness counts,
+exact HTTP forwarding, competing writer rejection, stop/restart lease release,
+and durable replay/idempotency. Live activation is now configuration plus a
+service restart performed from a separate operator session; this excursion does
+not authorize this routed agent to restart its own Agency JVM.
+
+Evidence: the combined futon3c watcher/witness/followup focus runs 28 tests / 108
+assertions with zero failures or errors; the futon3 suite runs 171 tests / 1254
+assertions green after extracting the library boundary. Clj-kondo reports 0
+errors and 0 warnings on all changed Clojure, `check-parens.el` is clean, and
+dependency-tree inspection shows `futon3/inbox-zero` without futon3's XTDB1 or
+Stanford NLP graph.
+
 ## Open decisions
 
 - Which future exact-success boundaries can cover Codex and direct Emacs edits;
@@ -459,8 +495,6 @@ writer; running two watchers would violate the storage contract.
   remains.
 - Whether count thresholds are per seat across a worktree or per seat/repo.
   v0 specifies per seat/repo because it makes the requested action coherent.
-- Which durable store owns the records. This must be chosen from replay,
-  query, and delivery requirements rather than by convenience.
 
 ## References
 
