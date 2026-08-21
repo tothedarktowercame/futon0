@@ -4,7 +4,7 @@
   :entity-type :company
   :period {:from "2022" :to "open" :note "OSS launched October 2022; company formed February 2023; open in 2026."}
   :node-types {:primary :dependency :secondary [:environment]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "MIT-licensed LangChain/LangGraph framework dependency"
           :sponsor "LangChain"
           :payer "Team or enterprise software/infrastructure budget for LangSmith"
@@ -41,7 +41,7 @@
   :entity-type :company
   :period {:from "2023" :to "open" :note "Open in 2026"}
   :node-types {:primary :environment :secondary [:requirement]}
-  :seat :operating
+  :seat :unknown
   :chain {:artifact "Customer AI interaction or trace"
           :sponsor "Braintrust evaluation and observability workspace"
           :payer "AI engineering/product team platform, data, or developer-tools budget"
@@ -78,7 +78,7 @@
   :entity-type :company
   :period {:from :unknown :to "2025" :note "Acquisition and platform sunset"}
   :node-types {:primary :environment :secondary [:requirement]}
-  :seat :operating
+  :seat :unknown
   :chain {:artifact "Customer prompt/agent and evaluation data"
           :sponsor "Humanloop collaboration/evaluation platform"
           :payer "Enterprise AI product-team software budget"
@@ -114,7 +114,7 @@
   :entity-type :company
   :period {:from :unknown :to "open" :note "Open in 2026"}
   :node-types {:primary :environment :secondary [:dependency]}
-  :seat :operating
+  :seat :unknown
   :chain {:artifact "Developer intent/specification and reusable skill"
           :sponsor "Tessl workspace/agent"
           :payer "Team usage credits or enterprise platform fee for standardisation and governance"
@@ -155,7 +155,7 @@
   :entity-type :company
   :period {:from "2024-03" :to "open" :note "Open in 2026"}
   :node-types {:primary :requirement :secondary [:environment :benchmark]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "Customer engineering requirement"
           :sponsor "Devin session producing or reviewing code"
           :payer "Customer engineering organisation's agent/developer-productivity budget"

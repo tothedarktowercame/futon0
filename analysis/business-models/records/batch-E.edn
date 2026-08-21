@@ -4,7 +4,7 @@
   :entity-type :company
   :period {:from "2024" :to "open" :note "Open as of 2026-08-20"}
   :node-types {:primary :dependency :secondary [:environment]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "OSS agent/runtime"
           :sponsor "All Hands AI"
           :payer "Enterprise software-engineering or AI-tooling budget for cloud/enterprise control plane"
@@ -55,7 +55,7 @@
   :entity-type :research-system
   :period {:from "2024" :to "open" :note "Open as of 2026-08-20"}
   :node-types {:primary :call :secondary [:benchmark]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "Research code and Agent-Computer Interface"
           :sponsor "Princeton/Stanford research programme"
           :payer "University lab or grant budget"
@@ -145,7 +145,7 @@
   :entity-type :research-system
   :period {:from "2025" :to "open" :note "Open as of 2026-08-20"}
   :node-types {:primary :call :secondary [:benchmark]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "Self-editing agent framework and experimental result"
           :sponsor "Authors' research programme"
           :payer "University/lab budget"
@@ -192,7 +192,7 @@
   :entity-type :company
   :period {:from "2023-07-12" :to "open" :note "Patent granted August 2025; open as of 2026-08-20"}
   :node-types {:primary :requirement :secondary [:dependency]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "Patented method/implementation"
           :sponsor "VERSES product or licence"
           :payer "Adopter's agent-platform or software line item"

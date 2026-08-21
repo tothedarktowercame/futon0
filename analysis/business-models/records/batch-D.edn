@@ -110,7 +110,7 @@
   :entity-type :unknown
   :period {:from "2007" :to "2009" :note "Google acquisition; Etherpad continued as open source."}
   :node-types {:primary :environment :secondary [:dependency]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "AppJet development/hosting platform"
           :sponsor "AppJet"
           :payer "Hoped-for developer or application-hosting payer"
@@ -147,7 +147,7 @@
   :entity-type :unknown
   :period {:from "1987" :to "open" :note "Open as of 2026"}
   :node-types {:primary :environment :secondary [:dependency]}
-  :seat :travelling
+  :seat :unknown
   :chain {:artifact "Mathematica/Wolfram computational environment and engine"
           :sponsor "Wolfram Research"
           :payer "Individuals, universities, companies, and software distributors buy licences/subscriptions"
