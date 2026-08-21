@@ -380,6 +380,43 @@ file and projected it as one unattributed path. Producers on Emacs, Codex, and
 Claude still need to call the typed witness boundary; that explicit producer
 gap is the next integration after delivery semantics, not a reason to guess.
 
+### Slice 4 — typed durable followup delivery (2026-08-21)
+
+Agency now owns a distinct `futon3c.agency.followup-queue`; inbox-zero messages
+do not enter `parked_on` and never acquire a `park-id` or continuation meaning.
+The HTTP contract is:
+
+```text
+POST /api/alpha/followups
+GET  /api/alpha/followups/ready?agent=&session=
+POST /api/alpha/followups/ready/ack
+POST /api/alpha/followups/cancel
+```
+
+Queue records carry `followup-id`, `:type :inbox-zero`, exact agent/session,
+dedupe key, prompt, metadata, and lifecycle timestamps. Enqueue rejects an
+agent/session pair that does not exactly match the live registry. Ready polling
+uses the same authoritative server-side busy signal as parks but leases from a
+separate durable queue. Immediately before lease, a validation callback checks
+the queued exact session again; rotation cancels the item and never redirects
+it. Unacknowledged leases expire and requeue. Explicit cancellation is
+available for a sender that rechecks its source condition.
+
+The Emacs poller now polls this queue separately and injects its messages as
+`followup:` rather than `continuation:`. It deduplicates by `followup-id` and
+ACKs only through the followup endpoint. Park finalization and `more-pending`
+remain untouched.
+
+On the producer side, `multi_watcher` accepts an optional
+`--inbox-zero-followup-url`. It posts only sets passing the pure five-file or
+24-hour eligibility rule, carrying the exact witnessed seat and stable dedupe
+key. Agency remains authoritative for identity and delivery.
+
+Evidence: futon3 inbox-zero tests run 21 tests / 51 assertions; the new
+futon3c queue tests run 2 tests / 9 assertions; all pass with 0 failures/errors.
+clj-kondo reports 0 errors and 0 warnings for the new/changed namespaces;
+`check-parens.el` and `git diff --check` pass.
+
 ## Open decisions
 
 - Where tool-edit/save witnesses should be emitted for Emacs, Claude Code, and
