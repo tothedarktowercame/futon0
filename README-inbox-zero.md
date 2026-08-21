@@ -384,7 +384,9 @@ not a single abandoned batch, which is what makes a mechanism necessary.
    invoked at `:572`), scope to what the turn touched, gate on
    compile + clj-kondo, commit and push. Held promotions must be **loud** —
    surfaced in `*agents*` the way parks are — because a silent hold is how a
-   four-day slice happens.
+   four-day slice happens. The data contract and staged watcher/followup
+   implementation are tracked in
+   [`E-inbox-zero-implementation`](holes/excursions/E-inbox-zero-implementation.md).
 2. **A dirty-base gate on dispatch.** Refuse to bell a packet whose target
    files are already dirty. This would have prevented the day's worst
    self-inflicted error: a packet that required committing a caller while
