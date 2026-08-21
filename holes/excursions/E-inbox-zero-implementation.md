@@ -289,6 +289,29 @@ record.
 - Every notification and link can be traced back to immutable observation and
   witness ids.
 
+## Implementation log
+
+### Slice 1 — durable observation and claim foundation (2026-08-21)
+
+The storage boundary belongs to `futon3`, alongside `multi_watcher`, while
+Agency remains the later delivery owner. Implemented
+`futon3.inbox-zero.state` as a policy-free v0 store for session seats, file
+observations, and session-file claims:
+
+- records validate their required identity and witness fields;
+- claims fail closed unless their exact seat has already been witnessed;
+- record ids are immutable and identical replay is idempotent;
+- snapshots replace atomically under an inter-process file lock;
+- missing state starts empty, while corrupt, unsupported, or noncanonical state
+  raises rather than being mistaken for an empty inbox;
+- an EDN fixture exercises the v0 record shapes independently of live watcher
+  and Agency services.
+
+Evidence: `futon3/test/futon3/inbox_zero/state_test.clj` — 7 tests, 13
+assertions, 0 failures/errors; clj-kondo clean; `check-parens.el` clean. The
+watcher is not wired to this store yet. That remains deliberately outside the
+foundation slice.
+
 ## Open decisions
 
 - Where tool-edit/save witnesses should be emitted for Emacs, Claude Code, and
