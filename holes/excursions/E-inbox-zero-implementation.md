@@ -312,6 +312,30 @@ assertions, 0 failures/errors; clj-kondo clean; `check-parens.el` clean. The
 watcher is not wired to this store yet. That remains deliberately outside the
 foundation slice.
 
+### Slice 2 — association, dirty sets, and eligibility (2026-08-21)
+
+Implemented `futon3.inbox-zero.projection` as a pure view over the durable v0
+records:
+
+- the latest observation per worktree/path determines current Git state;
+- the latest immutable claim per worktree/path/seat determines whether that
+  seat still has an active claim;
+- exactly one active seat produces membership, zero produces `:unattributed`,
+  and competing seats produce `:ambiguous` with no routed dirty set;
+- dirty age begins at the first observation in the current uninterrupted dirty
+  run, so a clean transition resets the clock;
+- sets contain distinct paths and remain scoped to seat/repo/worktree;
+- notification eligibility defaults to five paths or an independently elapsed
+  24 hours;
+- dedupe keys hash evidence-bearing member state and remain stable across scan
+  time and member ordering;
+- a replacement session for the same agent receives no inherited claim.
+
+Evidence: the state and projection namespaces together run 16 tests / 33
+assertions with 0 failures/errors; clj-kondo reports 0 errors and 0 warnings;
+`check-parens.el` and `git diff --check` pass. Watcher ingestion remains the
+next slice; no notification has yet been emitted.
+
 ## Open decisions
 
 - Where tool-edit/save witnesses should be emitted for Emacs, Claude Code, and
