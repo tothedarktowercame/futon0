@@ -1,0 +1,97 @@
+[{:id :every-unverified-has-discharge
+  :kind :lint
+  :statement "Every unverified claim has a non-empty discharge condition."
+  :quantifier :forall
+  :over :unverified-claims
+  :pred [:non-empty? [:get :discharge]]
+  :established "RECORDS-SPEC v2 extraction invariant"
+  :expected {:holds? true :counterexamples []}}
+
+ {:id :frozen-predictions-unedited
+  :kind :lint
+  :statement "Every case carrying an E/F prediction has frozen=true, a falsifier, and a horizon."
+  :quantifier :forall
+  :over :predicted-cases
+  :pred [:and
+         [:= [:get-in [:prediction :frozen?]] true]
+         [:non-empty? [:get-in [:prediction :falsifier]]]
+         [:non-empty? [:get-in [:prediction :horizon]]]]
+  :established "RECORDS-SPEC v2 frozen-prediction invariant"
+  :expected {:holds? true :n 5 :counterexamples []}}
+
+ {:id :all-terminals-interest
+  :kind :world
+  :statement "Every case terminates in :interest."
+  :quantifier :forall
+  :over :cases
+  :pred [:= [:get-in [:chain :terminal]] :interest]
+  :established "2026-08-20 session, by hand"
+  :expected {:holds? true :n 25 :counterexamples []}}
+
+ {:id :no-external-obligation
+  :kind :world
+  :statement "No case has terminal :obligation-external."
+  :quantifier :forall
+  :over :cases
+  :pred [:not= [:get-in [:chain :terminal]] :obligation-external]
+  :established "2026-08-20 session, by hand"
+  :expected {:holds? true :n 25 :counterexamples []}}
+
+ {:id :manufactured-needs-position
+  :kind :world
+  :statement "Every manufactured obligation rests on a prior adoption position."
+  :quantifier :forall
+  :over :cases
+  :where [:non-empty? [:get-in [:terminal-note :manufactured-when]]]
+  :pred [:non-empty? [:get-in [:terminal-note :rests-on]]]
+  :established "Docker, Lightbend, Redis, Wolfram, and OpenHands; 2026-08-20"
+  :expected {:holds? true :n 5 :counterexamples []}}
+
+ {:id :sale-oracle-never-mechanical
+  :kind :world
+  :statement "No case has a mechanical sale oracle."
+  :quantifier :forall
+  :over :cases
+  :pred [:not= [:get-in [:sale-oracle :hardness]] :mechanical]
+  :established "2026-08-20 session, by hand"
+  :expected {:holds? true :n 25 :counterexamples []}}
+
+ {:id :acceptance-predicts-survival
+  :kind :world
+  :statement "Per-unit acceptance implies capture outcome scaled or open."
+  :quantifier :forall
+  :over :cases
+  :where [:= [:get :acceptance-event] :per-unit]
+  :pred [:in [:get :capture-outcome] #{:scaled :open}]
+  :established "Environment row was 3/3; 2026-08-20"
+  :expected {:holds? true :counterexamples []}}
+
+ {:id :no-acceptance-implies-zombie
+  :kind :world
+  :statement "No acceptance event implies capture outcome is not scaled."
+  :quantifier :forall
+  :over :cases
+  :where [:= [:get :acceptance-event] :none]
+  :pred [:not= [:get :capture-outcome] :scaled]
+  :established "PlanetMath and Emacs; 2026-08-20"
+  :expected {:holds? true :n 2 :counterexamples []}}
+
+ {:id :operating-seat-rare
+  :kind :world
+  :statement "At least three cases occupy an operating seat."
+  :quantifier :count-at-least
+  :over :cases
+  :pred [:= [:get :seat] :operating]
+  :threshold 3
+  :established "HackerOne, Gitcoin, and Kaggle; 2026-08-20"
+  :expected {:holds? true :counterexamples []}}
+
+ {:id :market-exchange-convergence
+  :kind :world
+  :statement "At least three cases are assigned :market-exchange."
+  :quantifier :count-at-least
+  :over :cases
+  :pred [:contains-node-type? :market-exchange]
+  :threshold 3
+  :established "2026-08-20 session, by hand"
+  :expected {:holds? true :counterexamples []}}]
