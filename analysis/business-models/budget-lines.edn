@@ -1,0 +1,97 @@
+{:engineering-headcount
+ {:label "Engineering / staffing headcount"
+  :evidence
+  [{:case :andela
+    :quote "client company's engineering/staffing line item"}]}
+
+ :sponsored-r-and-d
+ {:label "Sponsored research and development"
+  :evidence
+  [{:case :galois-inc
+    :quote "agency/customer R&D line item"}
+   {:case :runtime-verification-inc
+    :quote "agency/customer R&D or assurance line item"}
+   {:case :kestrel-institute
+    :quote "government research or customer assurance line item"}]}
+
+ :security-assurance
+ {:label "Security review and assurance"
+  :evidence
+  [{:case :trail-of-bits
+    :quote "customer's security or product-engineering line item"}]}
+
+ :enterprise-infrastructure
+ {:label "Enterprise software infrastructure and tooling"
+  :evidence
+  [{:case :docker-inc
+    :quote "organisations buying Desktop/Hub/Business governance, security, collaboration, and support"}
+   {:case :lightbend-typesafe-akka
+    :quote "enterprises running Akka and buying subscriptions/support"}
+   {:case :sourcegraph
+    :quote "software organisations buying enterprise deployment over their code estate"}
+   {:case :redis-labs-redis-inc
+    :quote "customers buying managed Redis, enterprise software/support, or commercial rights"}
+   {:case :langchain-langsmith
+    :quote "Team or enterprise software/infrastructure budget for LangSmith"}]}
+
+ :professional-services
+ {:label "Consulting, design-partner, and support services"
+  :evidence
+  [{:case :juxt-xtdb
+    :quote "design-partner, support, or consulting payer"}]}
+
+ :consumer-discretionary
+ {:label "Consumer discretionary entertainment and virtual goods"
+  :evidence
+  [{:case :mojang-minecraft
+    :quote "players buying copies and later platform versions/content"}
+   {:case :roblox-corporation
+    :quote "players buying virtual currency/access and brands or advertisers buying exposure"}
+   {:case :linden-lab-second-life
+    :quote "residents paying memberships, land, and transaction/economy charges"}]}
+
+ :challenge-bounty-programs
+ {:label "Challenges, bounties, prizes, and ecosystem funding"
+  :evidence
+  [{:case :kaggle
+    :quote "The host pays prizes and, for featured competitions, variable Kaggle service fees"}
+   {:case :hackerone
+    :quote "The organisation pays HackerOne for platform/managed access and pays the researcher an accepted bounty"}
+   {:case :gitcoin
+    :quote "Initially bounty backer; later community donors and matching partners"}]}
+
+ :developer-platform-hosting
+ {:label "Developer platform and application hosting"
+  :evidence
+  [{:case :appjet-etherpad
+    :quote "Hoped-for developer or application-hosting payer"}]}
+
+ :software-licensing
+ {:label "General software licences and subscriptions"
+  :evidence
+  [{:case :wolfram-research
+    :quote "Individuals, universities, companies, and software distributors buy licences/subscriptions"}]}
+
+ :academic-research
+ {:label "University and laboratory research"
+  :evidence
+  [{:case :swe-agent
+    :quote "University lab or grant budget"}
+   {:case :swe-bench
+    :quote "Princeton/lab/collaboration budget"}
+   {:case :sica-self-improving-coding-agent
+    :quote "University/lab budget"}]}
+
+ :ai-engineering-tooling
+ {:label "AI engineering and developer-productivity tooling"
+  :evidence
+  [{:case :openhands-all-hands-ai
+    :quote "Enterprise software-engineering or AI-tooling budget for cloud/enterprise control plane"}
+   {:case :braintrust-ai-evals
+    :quote "AI engineering/product team platform, data, or developer-tools budget"}
+   {:case :humanloop-evals-platform
+    :quote "Enterprise AI product-team software budget"}
+   {:case :tessl-spec-driven-ai-coding
+    :quote "Team usage credits or enterprise platform fee for standardisation and governance"}
+   {:case :cognition-devin
+    :quote "Customer engineering organisation's agent/developer-productivity budget"}]}}

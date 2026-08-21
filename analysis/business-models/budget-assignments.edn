@@ -1,0 +1,127 @@
+{:andela
+ {:budget-line :engineering-headcount
+  :quote "client company's engineering/staffing line item"}
+
+ :galois-inc
+ {:budget-line :sponsored-r-and-d
+  :quote "agency/customer R&D line item"}
+
+ :trail-of-bits
+ {:budget-line :security-assurance
+  :quote "customer's security or product-engineering line item"
+  :secondary :enterprise-infrastructure}
+
+ :runtime-verification-inc
+ {:budget-line :sponsored-r-and-d
+  :quote "agency/customer R&D or assurance line item"
+  :secondary :security-assurance}
+
+ :kestrel-institute
+ {:budget-line :sponsored-r-and-d
+  :quote "government research or customer assurance line item"
+  :secondary :security-assurance}
+
+ :docker-inc
+ {:budget-line :enterprise-infrastructure
+  :quote "organisations buying Desktop/Hub/Business governance, security, collaboration, and support"}
+
+ :juxt-xtdb
+ {:budget-line :professional-services
+  :quote "design-partner, support, or consulting payer"}
+
+ :lightbend-typesafe-akka
+ {:budget-line :enterprise-infrastructure
+  :quote "enterprises running Akka and buying subscriptions/support"}
+
+ :sourcegraph
+ {:budget-line :enterprise-infrastructure
+  :quote "software organisations buying enterprise deployment over their code estate"}
+
+ :redis-labs-redis-inc
+ {:budget-line :enterprise-infrastructure
+  :quote "customers buying managed Redis, enterprise software/support, or commercial rights"
+  :secondary :software-licensing}
+
+ :mojang-minecraft
+ {:budget-line :consumer-discretionary
+  :quote "players buying copies and later platform versions/content"}
+
+ :roblox-corporation
+ {:budget-line :consumer-discretionary
+  :quote "players buying virtual currency/access and brands or advertisers buying exposure"}
+
+ :linden-lab-second-life
+ {:budget-line :consumer-discretionary
+  :quote "residents paying memberships, land, and transaction/economy charges"}
+
+ :planetmath
+ {:budget-line :unclassified
+  :quote "possible donors, sponsors, or grant funders"
+  :note "The payer text names only possible funding routes and does not identify an evidenced primary budget line."}
+
+ :gnu-emacs-fsf
+ {:budget-line :unclassified
+  :quote "historical tape/manual purchasers and FSF donors/supporters"
+  :note "The payer text combines retail purchases with nonprofit donations and does not identify either as the primary budget function."}
+
+ :kaggle
+ {:budget-line :challenge-bounty-programs
+  :quote "The host pays prizes and, for featured competitions, variable Kaggle service fees"}
+
+ :hackerone
+ {:budget-line :challenge-bounty-programs
+  :quote "The organisation pays HackerOne for platform/managed access and pays the researcher an accepted bounty"}
+
+ :gitcoin
+ {:budget-line :challenge-bounty-programs
+  :quote "Initially bounty backer; later community donors and matching partners"}
+
+ :appjet-etherpad
+ {:budget-line :developer-platform-hosting
+  :quote "Hoped-for developer or application-hosting payer"}
+
+ :wolfram-research
+ {:budget-line :software-licensing
+  :quote "Individuals, universities, companies, and software distributors buy licences/subscriptions"}
+
+ :openhands-all-hands-ai
+ {:budget-line :ai-engineering-tooling
+  :quote "Enterprise software-engineering or AI-tooling budget for cloud/enterprise control plane"}
+
+ :swe-agent
+ {:budget-line :academic-research
+  :quote "University lab or grant budget"
+  :secondary :sponsored-r-and-d}
+
+ :swe-bench
+ {:budget-line :academic-research
+  :quote "Princeton/lab/collaboration budget"}
+
+ :sica-self-improving-coding-agent
+ {:budget-line :academic-research
+  :quote "University/lab budget"}
+
+ :verses-ai-active-inference-patent
+ {:budget-line :unclassified
+  :quote "Adopter's agent-platform or software line item"
+  :note "The payer is conditional and hypothetical; the record does not evidence an adopter or a realised budget line."}
+
+ :langchain-langsmith
+ {:budget-line :enterprise-infrastructure
+  :quote "Team or enterprise software/infrastructure budget for LangSmith"}
+
+ :braintrust-ai-evals
+ {:budget-line :ai-engineering-tooling
+  :quote "AI engineering/product team platform, data, or developer-tools budget"}
+
+ :humanloop-evals-platform
+ {:budget-line :ai-engineering-tooling
+  :quote "Enterprise AI product-team software budget"}
+
+ :tessl-spec-driven-ai-coding
+ {:budget-line :ai-engineering-tooling
+  :quote "Team usage credits or enterprise platform fee for standardisation and governance"}
+
+ :cognition-devin
+ {:budget-line :ai-engineering-tooling
+  :quote "Customer engineering organisation's agent/developer-productivity budget"}}
