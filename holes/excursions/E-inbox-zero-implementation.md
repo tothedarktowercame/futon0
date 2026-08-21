@@ -417,10 +417,42 @@ futon3c queue tests run 2 tests / 9 assertions; all pass with 0 failures/errors.
 clj-kondo reports 0 errors and 0 warnings for the new/changed namespaces;
 `check-parens.el` and `git diff --check` pass.
 
+### Slice 5 — exact-seat producer and end-to-end contract (2026-08-21)
+
+The first honest surface producer is the server-side Claude tool stream. It
+retains edit-shaped `tool_use` details by tool id, then emits an immutable seat
+and session-file claim only when the correlated `tool_result` is not an error.
+Intent alone is not authorship evidence. The supported tools are `Edit`,
+`Write`, and `MultiEdit`; the named file must resolve into a Git worktree.
+
+`FUTON3_INBOX_ZERO_WITNESS_DIR` is the canonical producer/consumer boundary.
+Claims carry the exact agent/session passed through the invoke path. Repeated
+delivery of one result is idempotent and session rotation creates a different
+seat. The producer never inspects Git dirt; the watcher remains responsible for
+that independent observation.
+
+The end-to-end focused tests now cover two joined halves of the real boundary:
+
+- immutable witness intake -> five Git observations -> pure count threshold ->
+  exact-session HTTP enqueue body;
+- HTTP enqueue -> authoritative busy withholding -> Emacs-shaped ready lease ->
+  ACK and terminal state.
+
+The followup tests also bind a private queue path, ensuring a test run cannot
+overwrite the serving JVM's durable queue.
+
+Surface gaps remain explicit. The server does not receive a successful Codex
+edit-tool result stream at this boundary, and ordinary Emacs save hooks do not
+prove an authoring seat. Neither emits claims. The operational README documents
+the standalone watcher command and shared intake path. The bootstrap-owned
+in-JVM watcher still lacks this optional lifecycle, so production activation
+requires one final slice to integrate it while retaining exactly one state
+writer; running two watchers would violate the storage contract.
+
 ## Open decisions
 
-- Where tool-edit/save witnesses should be emitted for Emacs, Claude Code, and
-  Codex, and how all three surfaces share one event shape.
+- Which future exact-success boundaries can cover Codex and direct Emacs edits;
+  neither may use a save-time last-editor guess.
 - Whether explicit file subscription should override competing edit claims or
   coexist as a differently typed claim.
 - The reminder interval after acknowledgement when the exact same dirty set
