@@ -144,6 +144,20 @@
   :sale-oracle {:what "voluntary donor, sponsor, or grant support for correctness, pedagogy, and community maintenance" :hardness :interpretive}
   :distance {:hops 2 :note "at least 2: contributor value -> public use/community legitimacy -> voluntary funding"}
   :acceptance-event :none
+  :counterfactual-success-mode
+  {:mode :infrastructure-sponsor
+   :approached ["The Math Forum @ Drexel" "MAA" "The Open University" "Wolfram Research"]
+   :outcome "Some of those talks went further than others. None went through."
+   :source "Joe, 2026-08-22 -- first-hand; he was there"
+   :note "This is the missing DEMAND-SIDE obligation named concretely. An
+          institutional host carries a budget line and a staffing commitment,
+          which is precisely what 'possible donors, sponsors, or grant funders'
+          is not. NOTE that `wolfram-research` is itself a case in this corpus."
+   :caveat "The exemplar does NOT support a sponsor-only reading -- see claims
+            P6/P7. The Math Forum combined an institutional host, a research-
+            funding origin, AND a subscription product, so the model PlanetMath
+            was reaching for already contained a per-unit acceptance event.
+            'Find a sponsor' understates what would have been required."}
   :fixture-access {:public :y :decisive :y}
   :beneficiary :unknown
   :knowable-at-T "T = approximately 2002. A blind scan could see a free, community-driven mathematics encyclopedia created after MathWorld went offline during litigation, with interlinked LaTeX mathematical entries and an ownership model in which an article author acted as gatekeeper while others proposed corrections. [P1] It could observe whether the initial community contributed and reviewed entries, but reliable T-year user/article counts and funding records were not established `[recollection - unverified]`. It could not assume institutional hosting, software migrations, a 2,300-page snapshot, or eventual inactivity."
@@ -166,7 +180,18 @@
    {:text "PlanetMath is inactive while freely licensed content and a large snapshot survive."
     :provenance :cited :ref "P2"}
    {:text "Portal operations ended in 2018 and source content moved to GitHub."
-    :provenance :cited :ref "P3"}]}
+    :provenance :cited :ref "P3"}
+   {:text "PlanetMath's one hypothetical success mode, never realised, was to acquire an infrastructure sponsor; The Math Forum @ Drexel was the model. MAA, The Open University and Wolfram Research were also approached. Some talks went further than others; none went through."
+    :provenance :unverified :ref "P5"
+    :discharge "Settled by correspondence or minutes from those approaches; Joe holds the first-hand account."}
+   {:text "The Math Forum was a unit of Drexel University's School of Education and grew out of National Science Foundation-funded research."
+    :provenance :cited :ref "P6" :src "https://drexel.edu/news/archive/2014/november/math-forum"}
+   {:text "The Math Forum ran free AND subscription-based services -- Problems of the Week with a purchasable Premium Bundle -- and in 2014 partnered with a commercial iPad application whose customers could buy that bundle. So the exemplar carried a per-unit acceptance event alongside its institutional host."
+    :provenance :cited :ref "P7" :src "https://drexel.edu/news/archive/2014/november/math-forum"}
+   {:text "The Math Forum's operating status after 2014 is NOT established here. The cited page shows it active in 2014; a past-tense description encountered in a search summary is not evidence of closure."
+    :provenance :unverified :ref "P8"
+    :discharge "Settled by Drexel's own current pages or an archived announcement of closure or transfer."}
+  ]}
 
  {:case-id :gnu-emacs-fsf
   :org "GNU Emacs / Free Software Foundation"

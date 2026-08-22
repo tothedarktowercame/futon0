@@ -60,6 +60,37 @@ the demand side was ever obliged to accept a unit** — which is why its payer
 field reads *possible* donors. A code-for-hire platform with an identical supply
 side captures, because its client is obliged.
 
+## The counterfactual, and why "find a sponsor" understates it
+
+PlanetMath's one hypothetical success mode, never realised, was to acquire an
+**infrastructure sponsor** — The Math Forum @ Drexel was the model, and MAA,
+The Open University and Wolfram Research were also approached. Some talks went
+further than others; **none went through.** (Joe, 2026-08-22, first-hand;
+recorded in the `:planetmath` record as `:counterfactual-success-mode`. Note
+that `wolfram-research` is itself a case in this corpus.)
+
+That is the missing demand-side obligation named concretely: an institutional
+host carries a budget line and a staffing commitment, which is exactly what
+*"possible donors, sponsors, or grant funders"* is not.
+
+But the exemplar does not support a sponsor-only reading, and checking it
+mattered. Drexel's own 2014 page shows The Math Forum as **a unit of Drexel
+University's School of Education**, grown out of **NSF-funded research**, running
+**free *and subscription-based* services** — Problems of the Week with a
+purchasable Premium Bundle, sold that year through a commercial iPad
+application. So the model PlanetMath was reaching for carried **three**
+obligation sources, one of them a per-unit acceptance event.
+
+*"Find a sponsor"* therefore understates what would have been required. The
+exemplar did not survive on institutional goodwill; it had a product with
+buyers, hosted inside an institution, seeded by a research funder. A sponsor
+alone installs an obligation that lasts exactly as long as the host's budget
+cycle.
+
+(The Math Forum's status after 2014 is not established here. The cited page
+shows it active; a past-tense phrasing in a search summary is not evidence of
+closure, and the record carries a discharge condition rather than an assertion.)
+
 ## What this does to the screening rule
 
 The first version proposed reading an organisation's calls to action — "volunteer
