@@ -39,7 +39,28 @@ patterns are **boxes**, `@why` edges are **wires**, `@how` targets are
 
 ## Why this matters more than tidiness
 
-**The four red rings are exactly the war-room patterns with no `@how`.**
+**CORRECTION (2026-08-22, after annotating): this is false as stated.** The
+claim below was that a red ring means a pattern with no mechanism. Annotating
+the ten spine patterns against `wr-overlay.edn` falsifies it: `WR-25` is hollow
+at \(R5\) but **holds** at \(R9\) and \(R12\); `WR-19` is hollow at \(R6\)
+but **holds** at \(R17\). A pattern can be satisfied by one mechanism and
+unmet at another node.
+
+So `@how` is a **set**, and a red ring is a *(node, pattern)* pair whose
+requirement is unmet at that node --- not a pattern with nothing behind it. The
+vocabulary now used in the flexiargs reflects that: `@how` lists the mechanisms
+that hold, `@how-open` lists the nodes where the pattern's requirement is not
+yet met.
+
+The sharper finding survives, and is stronger for being narrower:
+**`WR-27` is the only spine pattern with no holding mechanism at all** --- it is
+`@how-open` at \(R8\) and \(R14\) and holds nowhere. `WR-19`, which the paper
+leans on hardest, does hold at \(R17\); what it lacks is a *generative* source
+at \(R6\), which is a different and more precise complaint than "unbuilt".
+
+The superseded claim, kept for the record:
+
+> **The four red rings are exactly the war-room patterns with no `@how`.**
 
 | ring | node | pattern | missing mechanism |
 |---|---|---|---|
@@ -70,3 +91,34 @@ remembering to edit an EDN file.
 
 Step 3 is the one that pays: it converts Figure 2 from a hand-drawn claim into a
 generated one, and it fails loudly if a pattern's mechanism is removed.
+
+
+## Annotation as built (2026-08-22)
+
+Ten spine patterns annotated. `@why` is an up-edge to the pattern served,
+derived from the conclusions; `@how` is taken **only** from `wr-overlay.edn`'s
+holding entries, never invented.
+
+| pattern | `@why` | `@how` (holds) | `@how-open` |
+|---|---|---|---|
+| WR-0 | `root` | — | — |
+| WR-4 | WR-0 | — | — |
+| WR-8 | WR-0 | — | — |
+| WR-9 | WR-8 | — | — |
+| WR-16 | WR-4 | R2 | — |
+| WR-19 | WR-0 | R17 | **R6** |
+| WR-24 | WR-9 | R13, R15 | — |
+| WR-25 | WR-9 | R9, R12 | **R5** |
+| WR-26 | WR-8 | R20 | — |
+| WR-27 | WR-16 | **—** | **R8, R14** |
+
+`WR-0` carries `@why root` explicitly, so a generator can tell a terminal from
+an unannotated file.
+
+**Still open.** WR-4, WR-8 and WR-9 have no `@how` because they place no badge
+on the control map --- they are not control-loop patterns, and their mechanisms
+are artefacts (typed files, generators, the regeneration discipline) rather than
+R-nodes. Assigning those honestly needs a pass over the artefacts, not a reading
+of the overlay, and is not done here. Note that this paper is itself an instance
+of WR-8's mechanism, which is a candidate `@how` but should be verified before
+being asserted.
