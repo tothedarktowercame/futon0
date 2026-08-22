@@ -157,7 +157,28 @@
             P6/P7. The Math Forum combined an institutional host, a research-
             funding origin, AND a subscription product, so the model PlanetMath
             was reaching for already contained a per-unit acceptance event.
-            'Find a sponsor' understates what would have been required."}
+            'Find a sponsor' understates what would have been required."
+   :what-the-host-would-be-buying
+   {:hypothesis :brand-reach
+    :statement "The problem solved FOR the host is something like marketing:
+                everyone reaching the resource sees the host's name on it. The
+                same could in principle have held for PlanetMath + The Open
+                University. (Joe, 2026-08-22.)"
+    :structural-consequence
+    "This is NOT an external demand-side obligation. It is an INTERNAL BUDGET
+     JUSTIFICATION for a cost centre. The two fail differently: a contract is
+     breached, whereas an internal justification simply stops being made when
+     the sponsor's priorities move, with nothing to breach. It also implies an
+     :aggregate acceptance event (attention) rather than a :per-unit one."
+    :corpus-caution
+    "Attention-as-payer appears in exactly ONE of the 32 cases, and never
+     standalone: roblox-corporation lists 'brands or advertisers buying
+     exposure' SECONDARY to 'players buying virtual currency/access', which is
+     the per-unit primary. The corpus contains no case where brand reach alone
+     sustained a resource. So the marketing route is real but is the middle of
+     three tiers: external per-unit obligation > internal budget justification
+     > hoped-for donors. It is likely why the exemplar ALSO needed
+     subscriptions."}}
   :fixture-access {:public :y :decisive :y}
   :beneficiary :unknown
   :knowable-at-T "T = approximately 2002. A blind scan could see a free, community-driven mathematics encyclopedia created after MathWorld went offline during litigation, with interlinked LaTeX mathematical entries and an ownership model in which an article author acted as gatekeeper while others proposed corrections. [P1] It could observe whether the initial community contributed and reviewed entries, but reliable T-year user/article counts and funding records were not established `[recollection - unverified]`. It could not assume institutional hosting, software migrations, a 2,300-page snapshot, or eventual inactivity."
@@ -188,6 +209,12 @@
     :provenance :cited :ref "P6" :src "https://drexel.edu/news/archive/2014/november/math-forum"}
    {:text "The Math Forum ran free AND subscription-based services -- Problems of the Week with a purchasable Premium Bundle -- and in 2014 partnered with a commercial iPad application whose customers could buy that bundle. So the exemplar carried a per-unit acceptance event alongside its institutional host."
     :provenance :cited :ref "P7" :src "https://drexel.edu/news/archive/2014/november/math-forum"}
+   {:text "The problem the Math Forum solved for its host was plausibly brand reach -- visitors see the host's name -- rather than mathematics education as such. The same could in principle have held for PlanetMath with The Open University."
+    :provenance :unverified :ref "P9"
+    :discharge "Settled by Drexel's own stated rationale for hosting, or by the book at P10, which analyses the community directly."}
+   {:text "Further reading, not yet consulted: 'Inside Mathforum.org: Analysis of an Internet-Based Education Community'."
+    :provenance :unverified :ref "P10"
+    :discharge "Read it; the book is the obvious primary source for both the hosting rationale and the community's funding history."}
    {:text "The Math Forum's operating status after 2014 is NOT established here. The cited page shows it active in 2014; a past-tense description encountered in a search summary is not evidence of closure."
     :provenance :unverified :ref "P8"
     :discharge "Settled by Drexel's own current pages or an archived announcement of closure or transfer."}
