@@ -662,6 +662,75 @@ honour the filter (verified for `joe` and `claude-13`); only
 the miss to both — tested instead. The mark-vocab probe's 6,086-turn pull used
 `/evidence` and was correctly filtered, so its clustering result stands.
 
+### D14 — What led to the text sidecar: the thesis, already executed once
+
+Joe (2026-08-22): *"we just need to think through what led me to create the
+text sidecar — and according to protocol it would say in the HEAD or in
+IDENTIFY."* It does. `futon2/holes/M-text-sidecar.md` (2026-07-10) names **two**
+problems, and the second is this mission's whole question answered in advance.
+
+**Problem 1 — internal.** futon1b had no free-text recall: the Zai memory seam
+filtered structured fields only, over 147,893 migrated docs. Net-new capability,
+not lost functionality (verified: futon1a never used XTDB 1's Lucene module).
+
+**Problem 2 — external, and this is the one.** XTDB issue #5637 was *"starved of
+real-world evidence."* JUXT's design notes proposed an "ever held" inverted index
+and estimated **~1.5–2× divergence "for typical edit patterns" with no data.**
+They also named their own stress case: rewrite-heavy, wiki-style documents. The
+mission's observation: *our corpus is plausibly exactly that stress shape, and we
+hold the full bitemporal history to measure it.*
+
+**The strategic move was to decline the obvious project.** Not the in-core PR —
+assessed cold as likely unmergeable because the secondary-index substrate
+(#3663) is itself unbuilt. Instead: *build the text index we need anyway as an
+out-of-process sidecar, instrument it, and contribute the measurements.* The
+capability was going to be built regardless; only the instrumentation was extra.
+
+**What the measurement found.** Full population, 131,807 histories (41,037
+source-bearing entities + 90,770 evidence docs): aggregate posting inflation
+**1.028** — against an estimate of 1.5–2×. Plus two structural findings the
+chalk notes do not model: (i) migration *flattens* ever-held accumulation, so
+divergence accrues from migration day rather than corpus age; (ii) current-state
+fields cannot predict write history — `:entity/seen-count` counts an application
+event, not writes, so the first sample keyed on the wrong signal.
+
+**What came back.** Receipt `futon7/data/outbox/receipts/2026-07-28-jhenderson-xtdb5637.edn`:
+`:receipt/class :warm-reply`, `:receipt/first-of-campaign true`, noted as *"the
+first outreach email of either warm or cold that came back with something"*
+(Joe, 2026-07-29). Call held **2026-08-05** with James Henderson: he is *happy
+to collaborate on #3663 first*, and Joe proposed developing a **benchmark for
+#5637** using FUTON's arXiv and Stack Exchange mining assets.
+
+**Why this matters here.** It is every piece of the argument, already done:
+
+- **The serendipity Bridge, instantiated.** `SPINE.md`: *"a Bridge connects a
+  capability delta to an unattached need."* Capability delta = free-text recall
+  we needed anyway; unattached need = a maintainer's undated, unmeasured
+  assumption. Neither side was built for the other.
+- **`mh7` engaged.** *A yardstick someone else holds* — and they replied.
+- **§6's *n=1 is instrument construction*, already performed.** The sidecar was
+  built for us; the *measurement* was the deliverable.
+- **The offer shape from `sec-transfer`**: the artefact was **findings**, not
+  software — the assurance/R&D cluster, not a software budget.
+- **And it is the R5 red ring with a name.** This is a satisfied outcome that is
+  uncounted and unsurfaced — precisely WR-25. The first reply of any campaign,
+  and a live collaboration offer, appear in no capability-star position.
+
+**The honest bound.** It produced *collaboration*, not money. On the 30-case
+discriminator — a discrete per-unit acceptance event that moves money — this is
+a **calibration instrument, not a business**. Both are worth having; the
+obligation is to say which. It is, however, the strongest external validation
+signal in the corpus, and it was produced by exactly the method the paper
+proposes.
+
+**Practical implication for the September gate.** The sentence Joe asked for
+exists with receipts: *using this stack let us ship an out-of-process text index
+and a full-population divergence measurement, which falsified an open-source
+project's stated design assumption by a factor of roughly fifty, with the
+practical implication that its maintainer opened a collaboration.* The
+repeatable shape is: find a party whose stated assumptions are unmeasured, whose
+stress case matches a corpus we already hold, and measure it.
+
 ## 3. The paper as projection
 
 `p4ng/futon-2026.tex` is the working draft, in the role `plop-2026.tex` played
