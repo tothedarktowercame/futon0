@@ -1,0 +1,133 @@
+;; Batch G — FIRST-HAND cases. FUTON's own two, encoded in the same schema.
+;;
+;; SCHEMA.md states the purpose as validating the object model "against real
+;; companies with known outcomes, BEFORE applying it to FUTON." This batch is
+;; that application. Two things make it different from batches A-F, and both
+;; are recorded rather than smoothed over:
+;;
+;; (1) HAZARD — self-scoring is layer-6 self-supply. The corpus is an
+;;     instrument for judging business models; scoring oneself with it is
+;;     exactly what `mh7` says cannot be self-supplied. Mitigation: the
+;;     terminal is assigned by the SAME rule as every other case (follow the
+;;     chain to an obligation or an interest), with no exception carved. Both
+;;     cases land on :interest, as 30/30 of the surveyed cases do. The corpus
+;;     finding is reproduced from the inside, not escaped.
+;;
+;; (2) ADVANTAGE — :knowable-at-T is normally reconstructed from public
+;;     sources with total hindsight, which is why SCHEMA.md has to impose
+;;     blind encoding as a discipline. These two have a CONTEMPORANEOUS dated
+;;     problem statement: the mission protocol requires the problem to be
+;;     stated in HEAD or IDENTIFY before the work runs. So :knowable-at-T here
+;;     is cited to a dated repo artifact rather than remembered — stronger
+;;     provenance than most of batches A-F, not weaker.
+;;
+;; SCHEMA TEST 1 RESULT (schema adequacy): case :xtdb-text-index does NOT fit
+;; rows 1-6 without residue. See :node-types/:residual below. Per SCHEMA.md,
+;; "Needing a new node type is a result, not a failure."
+
+[
+ {:case-id :xtdb-text-index
+  :org "FUTON stack (Hyperreal Enterprises) / upstream xtdb"
+  :entity-type :self-case
+  :provenance-class :first-hand
+  :period {:from "2026-07-10" :to "2026-08-22" :note "mission opened -> encoding date; outcome still open"}
+  :node-types
+  {:primary :dependency
+   :secondary []
+   :residual
+   "Rows 1-5 share a direction: the world hands you a specification and you
+    satisfy it. Row 6 reverses it (users bring goals into your apparatus).
+    This case is NEITHER. The fixture was an UNMEASURED ASSUMPTION in someone
+    else's public design record -- a maintainer's estimate of ~1.5-2x
+    divergence 'for typical edit patterns', offered with no data, alongside a
+    named stress case. Nothing was specified and nothing was demanded; a gap
+    in another party's evidence was identified and filled. Candidate 7th node
+    type: ASSUMPTION. Fixture = a public, unmeasured quantitative claim.
+    Oracle = mechanical (the measurement either matches the estimate or does
+    not). Distance = far. Fixture-access = public and decisive: anyone may
+    read the issue and measure. Encoded as :dependency because xtdb is our
+    upstream, but the fit is poor and the residue is the finding."}
+  :seat :unknown
+  :chain {:artifact "out-of-process FTS5 sidecar + full-population ever-held/current divergence measurement"
+          :sponsor "FUTON's own migration need -- the index was being built regardless; only the instrumentation was marginal cost"
+          :payer :none-identified
+          :terminal :interest}
+  :terminal-note {:manufactured-when :not-manufactured
+                  :rests-on "an open-source maintainer's engagement; no obligation exists on any party"}
+  :artifact-oracle {:what "the measurement reproduces from the store's own bitemporal history" :hardness :mechanical}
+  :sale-oracle {:what "none -- nothing was offered for sale" :hardness :none}
+  :distance {:hops :unknown :note "no payer line item identified; a findings artefact of this kind would sit on an assurance or R&D line, not a software budget"}
+  :acceptance-event :none
+  :fixture-access {:public :y :decisive :y}
+  :beneficiary :known-party
+  :knowable-at-T
+  "At 2026-07-10, from `futon2/holes/M-text-sidecar.md` IDENTIFY (written that
+   day, before any result): futon1b had no free-text recall over 147,893
+   migrated docs, and futon1a had never used XTDB 1's Lucene module, so this
+   was net-new capability rather than restored function. Separately, xtdb#5637
+   proposed an 'ever held' inverted index and estimated ~1.5-2x divergence for
+   typical edit patterns with no supporting data, naming rewrite-heavy
+   wiki-style documents as its own stress case. Visible at T: our corpus was
+   plausibly that stress shape and we held the full bitemporal history to
+   measure it. Also visible at T: the in-core implementation was assessed as
+   likely unmergeable cold, because the secondary-index substrate (#3663) does
+   not exist. The decision recorded at T was to build the sidecar we needed
+   anyway, instrument it, and contribute measurements. NOT knowable at T, and
+   deliberately excluded from this field: any subsequent correspondence. [G1]"
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "The mission's IDENTIFY, dated 2026-07-10, states both the internal gap and the external unmeasured assumption."
+    :provenance :cited :ref "G1" :src "futon2/holes/M-text-sidecar.md"}
+   {:text "Measured aggregate ever-held/current posting inflation is 1.028 over 131,807 document histories, against an estimate of 1.5-2x."
+    :provenance :cited :ref "G2" :src "futon2/holes/M-text-sidecar.md; futon1b/textprobe/divergence-full.edn"}
+   {:text "Two structural findings accompanied it: a store migration resets ever-held accumulation, so divergence accrues from migration day rather than corpus age; and current-state fields do not predict write history."
+    :provenance :cited :ref "G3" :src "futon2/holes/M-text-sidecar.md"}
+   {:text "The index is in standing internal use for ranked text+author+since retrieval, retroactive lexical correction detection over ~90k turns, and search over typed-hole prose."
+    :provenance :cited :ref "G4" :src "futon2/holes/M-text-sidecar.md section P4"}
+   {:text "No money has moved and no obligation exists on any party."
+    :provenance :cited :ref "G5" :src "no acceptance event recorded in futon7/data/outbox/receipts/"}]}
+
+ {:case-id :ukrn-services-simulation
+  :org "UKRN Open Research Programme / Oxford Brookes University"
+  :entity-type :self-case
+  :provenance-class :first-hand
+  :period {:from "2026" :to "2026-08-22" :note "working paper in progress at encoding date"}
+  :node-types {:primary :call :secondary [:requirement]}
+  :seat :unknown
+  :chain {:artifact "an active-inference simulation engine, verification harness, and reproducible-figures pipeline underwriting section 4 of a working paper"
+          :sponsor "UKRN Open Research Programme"
+          :payer "Research England, via the UKRN Open Research Programme"
+          :terminal :interest}
+  :terminal-note {:manufactured-when :not-manufactured
+                  :rests-on "a funded programme's interest in an evaluation instrument; no per-unit obligation identified"}
+  :artifact-oracle {:what "the simulation reproduces its figures deterministically from released assumptions; regression fixtures pinned" :hardness :mechanical}
+  :sale-oracle {:what "whether UKRN adopts the working paper's recommendations" :hardness :interpretive}
+  :distance {:hops :unknown :note "the programme is funded; the relationship between that funding and this contribution is NOT established here"}
+  :acceptance-event :unknown
+  :fixture-access {:public :y :decisive :n}
+  :beneficiary :known-party
+  :knowable-at-T
+  "Visible from the released repository: a national-network-scale model of
+   open-research training delivery and uptake, built to be re-run against
+   updated quarterly counts and additional focus-group profiles without
+   redesign, satisfying a stated R1-R12 active-inference completeness contract.
+   The releasable artefact is the numerical scoring derived from ethics-approved
+   transcripts, not the transcripts. [G6] What the model itself makes visible is
+   a limit on the offer: training raises knowledge without raising institutional
+   support, so most modelled trajectories run horizontal -- a capability
+   delivered without the complement that would let the recipient act on it. [G7]"
+  :adoption-outcome :open
+  :capture-outcome :open
+  :lineage {:successors [] :predecessors []}
+  :prediction :unknown
+  :claims
+  [{:text "The repository is released under Apache 2.0 by Joseph Corneli (Oxford Brookes University), with funding from Research England via the UKRN Open Research Programme."
+    :provenance :cited :ref "G6" :src "~/code/ukrn-services-simulation/README.md"}
+   {:text "Most modelled trajectories are largely horizontal; only the matured-and-favourable panel shows sustained diagonal ascent."
+    :provenance :cited :ref "G7" :src "ukrn_v2_lesion_comparison.png"}
+   {:text "The engagement is described by the operator as a pro bono consulting effort; whether and how it was remunerated is NOT established by any artefact consulted here."
+    :provenance :unverified :ref "G8"
+    :discharge "Settled by the invoice ledger (futon7 ledger.edn :item/delivered? lines) or by the operator stating it; until then the payer field records only that the PROGRAMME was funded by Research England, not that this contribution was."}]}]
