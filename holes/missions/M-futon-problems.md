@@ -513,6 +513,26 @@ F evaluates by epistemic gain, E by money. With no common currency, maxing one
 while starving the other is the expected behaviour of the architecture, not a
 lapse of operator discipline.
 
+### D10 — Pointer: the vertical spine proposal (2026-08-22)
+
+Joe proposes futon-2026 organise on the **vertical A–F** axis, plop-2026 having
+used the **horizontal** PERCEIVE→ACT one. Worked up in two files under `p4ng/`:
+
+- `SPINE-vertical.md` — the two axes are different kinds (one turn of the
+  horizontal happens *inside* a row); A–F mapped to their 23 missions; the
+  half-match with `analysis/business-models/SPINE.md`'s seven layers; and the
+  thesis it buys — **one hole, rediscovered three times under three names**
+  (layer 6 Valuation / mh7 xeno-evaluation / the dead `wm_outer_loop.clj`
+  calibration term).
+- `NOTE-bridge-as-surprisal.md` — Joe's conjecture stated falsifiably: a Bridge
+  is high surprisal requiring *structure learning* and lowering expected
+  surprisal thereafter (noise is high surprisal that does not generalise);
+  serendipity potential = the epistemic term of EFE; **WR-19 is the serendipity
+  pattern** (a ranking signal cannot create an absent option, and the Bridge is
+  definitionally absent).
+
+Both await Joe's word before any restructuring.
+
 ## 3. The paper as projection
 
 `p4ng/futon-2026.tex` is the working draft, in the role `plop-2026.tex` played
