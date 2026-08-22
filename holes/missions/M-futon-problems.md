@@ -162,24 +162,27 @@ Take the second.
 
 ## Discipline (inherited, non-negotiable)
 
-**D1 — No fabricated tensions.** A `+ HOWEVER:` must be quotable or closely
+*Renumbered `DP*` on 2026-08-22: bare `D*` collided with the DERIVE items in
+§2 of this same file. See `futon0/holes/GLOSSARY-numbering.md`.*
+
+**DP1 — No fabricated tensions.** A `+ HOWEVER:` must be quotable or closely
 paraphrasable from its source. Where a source states a ruling with no tension,
 mark `@verdict incomplete` and record what is missing. *A tension we invent is
 a false problem.* Three of 27 WR patterns are so marked: WR-12, WR-17, WR-20 —
 all architectural assertions rather than friction residues.
 
-**D2 — State the denominator.** The corpora span 27 to thousands. §7.1 of the
+**DP2 — State the denominator.** The corpora span 27 to thousands. §7.1 of the
 whitepaper: *"Four inherited denominators failed on re-counting."* Every count
 in this mission carries its population or it does not count.
 
-**D3 — Rank by agreement, never by one statistic.** Four consistent data points
+**DP3 — Rank by agreement, never by one statistic.** Four consistent data points
 now say a single spectral measure rewards degeneracy on these graphs.
 
-**D4 — No clique expansion.** A file touched by *k* commits is one incidence
+**DP4 — No clique expansion.** A file touched by *k* commits is one incidence
 relation, not *k(k−1)/2* pairwise ones. The whitepaper records that this error
 inverted a metric once already.
 
-**D5 — Populated ≠ correct.** Recurrent failure family across this workspace,
+**DP5 — Populated ≠ correct.** Recurrent failure family across this workspace,
 observed six times on 2026-08-21 alone: `state: done` over
 `execution.executed: false`; star titles reading n=0 over `:position` n=1–2;
 autoclock mission-linkage present on 65% of turns and substantially wrong;
@@ -432,7 +435,7 @@ ignored* — the response echoes `:author-filter null` and the same 1,025-sessio
 total for every value tried (`author`, `authors`, `author-filter`). The filter
 is client-side, over the row's `:authors` array. An earlier draft of
 `p4ng/sec-operator.tex` stated the server-side form; corrected 2026-08-22, and
-the footnote now names the miss as an instance of **D5 (populated ≠ correct)**.
+the footnote now names the miss as an instance of **DP5 (populated ≠ correct)**.
 
 **Cross-domain instrument.** `~/code/ukrn-services-simulation/` satisfies the
 same R1–R12 contract (`docs/aif-completeness.md`) and supplies two transferable
