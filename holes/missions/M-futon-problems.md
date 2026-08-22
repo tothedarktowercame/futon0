@@ -694,14 +694,53 @@ divergence accrues from migration day rather than corpus age; (ii) current-state
 fields cannot predict write history — `:entity/seen-count` counts an application
 event, not writes, so the first sample keyed on the wrong signal.
 
-**What came back.** Receipt `futon7/data/outbox/receipts/2026-07-28-jhenderson-xtdb5637.edn`:
+**What it solves standing, independent of anyone outside** — and this, not the
+outreach, is the point (Joe, 2026-08-22: *"my point is not that text-sidecar got
+me a potential contract … The point is that the text-sidecar solves concrete
+problems for me already independent of that"*). `M-text-sidecar` §P4 (ANSWERED)
+names three consumers:
+
+1. **C-inference retrieval** — `text + author + since`, ranked, small k:
+   *"operator-authored evidence matching these terms, recency-weighted."*
+   The mission's own gloss is the load-bearing bit: **retrieval is a G-scored
+   epistemic action, so scores matter, not just membership.** Its value is
+   expected information gain — which is a quantity over *paths*, not a reading
+   at a point. That is the UKRNS parallel Joe drew: worth measured along a
+   trajectory, not at a destination.
+2. **The γ event stream — correction detection.** Corrections are lexical over
+   turn text (*"not"*, *"instead"*, agent self-talk *"I should have used…"*),
+   not a formal claim-type. Session-mode supplies turn boundaries; the index
+   makes the lexicon runnable — **retroactively over the 90k-turn corpus, so
+   precision bootstraps from history instead of cold-starting.** A correction
+   detector cannot be cold-started; this is what makes it possible at all.
+3. **Sorry prose** — text within `:sorry/title` / `:want` descriptions and
+   terminal names and docstrings.
+
+Used three times in this session alone, as an ordinary working tool: to settle
+whether workshop participants appear as authors, to build windowed term
+attention over operator turns (`futon0/scripts/attention_terms.py`), and to test
+whether Deleuze discriminates between two missions. None of those needed JUXT.
+
+**What came back from outside — real, and weaker than it looks.** Receipt
+`futon7/data/outbox/receipts/2026-07-28-jhenderson-xtdb5637.edn`:
 `:receipt/class :warm-reply`, `:receipt/first-of-campaign true`, noted as *"the
 first outreach email of either warm or cold that came back with something"*
 (Joe, 2026-07-29). Call held **2026-08-05** with James Henderson: he is *happy
 to collaborate on #3663 first*, and Joe proposed developing a **benchmark for
 #5637** using FUTON's arXiv and Stack Exchange mining assets.
 
-**Why this matters here.** It is every piece of the argument, already done:
+**Discount it properly (Joe, 2026-08-22).** James does not hold hiring or firing
+power at JUXT, it is early days, and Joe only replied on #3663 on ~2026-08-21.
+So this is **not** a validated route to a contract and must not be booked as
+one. What it is: evidence that the *method* reaches someone who holds a
+yardstick, and a possible path toward solving problems for JUXT and their
+clients **in a documented way we could piece together** — the same shape as the
+UKRNS work, whose value likewise does not wait on an endpoint.
+
+**Near-term want (Joe):** the Stack Exchange test data / fixture, sooner rather
+than later. It is the #5637 benchmark's corpus and it is a FUTON asset already.
+
+**Why this matters here.** With the emphasis corrected, the argument is:
 
 - **The serendipity Bridge, instantiated.** `SPINE.md`: *"a Bridge connects a
   capability delta to an unattached need."* Capability delta = free-text recall
@@ -716,15 +755,24 @@ to collaborate on #3663 first*, and Joe proposed developing a **benchmark for
   uncounted and unsurfaced — precisely WR-25. The first reply of any campaign,
   and a live collaboration offer, appear in no capability-star position.
 
-**The honest bound.** It produced *collaboration*, not money. On the 30-case
-discriminator — a discrete per-unit acceptance event that moves money — this is
-a **calibration instrument, not a business**. Both are worth having; the
-obligation is to say which. It is, however, the strongest external validation
-signal in the corpus, and it was produced by exactly the method the paper
-proposes.
+**The honest bound.** It produced *collaboration*, not money, and collaboration
+from someone without purchasing authority. On the 30-case discriminator — a
+discrete per-unit acceptance event that moves money — this is a **calibration
+instrument, not a business**. Both are worth having; the obligation is to say
+which.
 
-**Practical implication for the September gate.** The sentence Joe asked for
-exists with receipts: *using this stack let us ship an out-of-process text index
+But the bound cuts the other way too, and that is the correction this entry
+needed. **The tool's worth does not rest on that outcome at all.** It answers
+`text + author + since` queries the operator makes constantly, and it makes
+retroactive correction detection possible over 90k turns. Had James never
+replied, all of that would still be true. Treating the reply as the validation
+inverts the argument: it makes an internal instrument's value contingent on an
+external event, which is the same error as pricing a capability by its most
+legible outcome rather than its use.
+
+**Practical implication for the September gate.** The sentence exists with
+receipts, stated at the right strength: *using this stack let us ship an
+out-of-process text index
 and a full-population divergence measurement, which falsified an open-source
 project's stated design assumption by a factor of roughly fifty, with the
 practical implication that its maintainer opened a collaboration.* The
