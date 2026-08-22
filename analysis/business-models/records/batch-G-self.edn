@@ -111,7 +111,21 @@
                   :rests-on "a funded programme's interest in an evaluation instrument; no per-unit obligation identified"}
   :artifact-oracle {:what "the simulation reproduces its figures deterministically from released assumptions; regression fixtures pinned" :hardness :mechanical}
   :sale-oracle {:what "whether UKRN adopts the working paper's recommendations" :hardness :interpretive}
-  :response-signal {:class :none :note "Delivered; nothing came back. NOT the same as unknown -- the absence is observed as of 2026-08-22, not merely unchecked."}
+  :response-signal
+  {:class :declined-on-capacity
+   :note "Not silence. The recipient responded, repeatedly, with a TYPED
+          decline: approximately 'that's a great idea, but we don't have
+          capacity for it right now.' Recorded as its own class because
+          :none would lose the information -- an offer that is refused for
+          capacity is diagnostically different from one that is ignored, and
+          the reason is checkable in advance."}
+  :recipient-capacity
+  {:scale "~2.5 person-days per week"
+   :admits :immediate-revenue-only
+   :note "At that scale the only tractable work is what solves an immediate
+          get-revenue-quickly problem. A strategic instrument cannot be
+          acted on regardless of its quality, so the offer and the recipient
+          are mismatched in TIME HORIZON, not in merit."}
   :distance {:hops :unknown :note "the programme is funded; the relationship between that funding and this contribution is NOT established here"}
   :acceptance-event :none
   :fixture-access {:public :y :decisive :n}
@@ -135,6 +149,9 @@
     :provenance :cited :ref "G6" :src "~/code/ukrn-services-simulation/README.md"}
    {:text "Most modelled trajectories are largely horizontal; only the matured-and-favourable panel shows sustained diagonal ascent."
     :provenance :cited :ref "G7" :src "ukrn_v2_lesion_comparison.png"}
+   {:text "The recipient declined on capacity rather than on merit: approximately 'that's a great idea, but we don't have capacity for it right now', said on more than one occasion, against an operation of roughly 2.5 person-days per week. The mismatch is one of time horizon -- a strategic instrument offered to an operation with no strategic slack."
+    :provenance :unverified :ref "G10"
+    :discharge "Settled by a dated record of the exchange (mail, minutes, or the operator restating it); the capacity figure is the operator's estimate and would be confirmed or corrected by UKRN's own staffing statement."}
    {:text "No acknowledgement of usefulness has been received from the recipient. Joe, 2026-08-22: 'it's not actually clear that we've really helped them solve a problem -- I tried, but they haven't necessarily said thanks that's super helpful.' The case is therefore a DELIVERY WITHOUT RESPONSE, and is kept in the corpus for exactly that reason: SCHEMA.md warns that a winners-only set is explained perfectly by any schema and predicts nothing."
     :provenance :unverified :ref "G9"
     :discharge "Settled if UKRN cites, adopts, or acknowledges the working paper's section 4; revisit :response-signal and :adoption-outcome then."}
