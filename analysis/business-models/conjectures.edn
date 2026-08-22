@@ -1,3 +1,8 @@
+;; Expectation :n values rebased 2026-08-22 when the corpus grew 30 -> 32
+;; with batch G (first-hand cases: xtdb-text-index, ukrn-services-simulation).
+;; Only counts moved. all-terminals-interest and no-external-obligation both
+;; still HOLD at n=32 -- the survey's central finding survived first-hand data
+;; rather than being an artefact of desk research. corpus grew
 [{:id :every-unverified-has-discharge
   :kind :lint
   :statement "Every unverified claim has a non-empty discharge condition."
@@ -26,7 +31,7 @@
   :over :cases
   :pred [:= [:get-in [:chain :terminal]] :interest]
   :established "2026-08-20 session, by hand"
-  :expected {:holds? true :n 30 :counterexamples []}}
+  :expected {:holds? true :n 32 :counterexamples []}}
 
  {:id :no-external-obligation
   :kind :world
@@ -35,7 +40,7 @@
   :over :cases
   :pred [:not= [:get-in [:chain :terminal]] :obligation-external]
   :established "2026-08-20 session, by hand"
-  :expected {:holds? true :n 30 :counterexamples []}}
+  :expected {:holds? true :n 32 :counterexamples []}}
 
  {:id :manufactured-needs-position
   :kind :world
@@ -45,7 +50,7 @@
   :where [:non-empty? [:get-in [:terminal-note :manufactured-when]]]
   :pred [:non-empty? [:get-in [:terminal-note :rests-on]]]
   :established "Docker, Lightbend, Redis, Wolfram, and OpenHands; 2026-08-20"
-  :expected {:verdict :undecided :n 6 :counterexamples []}
+  :expected {:verdict :undecided :n 8 :counterexamples []}
   :note "VERSES manufactures an obligation with NO adoption position (rests-on records exactly that). The universal as first stated is refuted by it; the surviving claim is that manufactured obligations which PRODUCE CAPTURE rest on a position, and VERSES is the frozen 2028 test of that. Indeterminates are cases with no manufactured obligation at all."}
 
  {:id :sale-oracle-never-mechanical
@@ -55,7 +60,7 @@
   :over :cases
   :pred [:not= [:get-in [:sale-oracle :hardness]] :mechanical]
   :established "2026-08-20 session, by hand"
-  :expected {:verdict :undecided :n 29 :counterexamples []}
+  :expected {:verdict :undecided :n 31 :counterexamples []}
   :note "29 of 30 are :interpretive; gitcoin is :unknown, so the universal is not decidable. Discharge: extract gitcoin's sale oracle from the batch-D prose."}
 
  {:id :acceptance-predicts-survival
@@ -76,7 +81,7 @@
   :where [:= [:get :acceptance-event] :none]
   :pred [:not= [:get :capture-outcome] :scaled]
   :established "PlanetMath and Emacs; 2026-08-20"
-  :expected {:verdict :refuted :counterexamples [:redis-labs-redis-inc] :n 8}
+  :expected {:verdict :refuted :counterexamples [:redis-labs-redis-inc] :n 10}
   :note "REFUTED, and the diagnosis is a field defect not a world fact: :acceptance-event was extracted off the ARTIFACT rather than the CAPTURE VEHICLE. All four open-core cases (docker, juxt-xtdb, lightbend, redis) read :none because the free OSS artifact has no payment event, while the enterprise subscription plainly does. This is defect 1 recurring a third time (after :outcome and :oracle): :acceptance-event needs the same artifact/capture split. When that split lands this conjecture will mismatch again, which is correct."}
 
  {:id :operating-seat-rare

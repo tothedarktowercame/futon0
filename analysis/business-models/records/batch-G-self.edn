@@ -5,13 +5,18 @@
 ;; that application. Two things make it different from batches A-F, and both
 ;; are recorded rather than smoothed over:
 ;;
-;; (1) HAZARD — self-scoring is layer-6 self-supply. The corpus is an
-;;     instrument for judging business models; scoring oneself with it is
-;;     exactly what `mh7` says cannot be self-supplied. Mitigation: the
-;;     terminal is assigned by the SAME rule as every other case (follow the
-;;     chain to an obligation or an interest), with no exception carved. Both
-;;     cases land on :interest, as 30/30 of the surveyed cases do. The corpus
-;;     finding is reproduced from the inside, not escaped.
+;; (1) SELF-INCLUSION IS NOT A PROBLEM HERE (Joe, 2026-08-22). An earlier
+;;     version of this header held these two out of the survey as layer-6
+;;     self-supply. That was wrong, and Joe said why: "throwing out Juxt
+;;     because we know about it & have contributed something useful to them
+;;     and useful to us would be exactly the wrong move." The reasoning fails
+;;     because the terminal rule is MECHANICAL -- follow the chain to an
+;;     obligation or an interest -- so first-hand knowledge yields BETTER
+;;     data, not biased data. Self-supply would bite only if the corpus scored
+;;     FUTON leniently, and it does not: both land on :interest, as 30/30 of
+;;     the desk-researched cases do, and `all-terminals-interest` still HOLDS
+;;     at n=32. The survey's central finding survived first-hand data rather
+;;     than being an artefact of desk research.
 ;;
 ;; (2) ADVANTAGE — :knowable-at-T is normally reconstructed from public
 ;;     sources with total hindsight, which is why SCHEMA.md has to impose
@@ -57,6 +62,7 @@
   :artifact-oracle {:what "the measurement reproduces from the store's own bitemporal history" :hardness :mechanical}
   :sale-oracle {:what "none -- nothing was offered for sale" :hardness :none}
   :distance {:hops :unknown :note "no payer line item identified; a findings artefact of this kind would sit on an assurance or R&D line, not a software budget"}
+  :response-signal {:class :engaged :note "A reply and a subsequent conversation. NOT an acceptance event and NOT a purchase; the correspondent holds no purchasing authority. Recorded because it distinguishes this case from :ukrn-services-simulation, where an equivalent delivery produced nothing."}
   :acceptance-event :none
   :fixture-access {:public :y :decisive :y}
   :beneficiary :known-party
@@ -105,8 +111,9 @@
                   :rests-on "a funded programme's interest in an evaluation instrument; no per-unit obligation identified"}
   :artifact-oracle {:what "the simulation reproduces its figures deterministically from released assumptions; regression fixtures pinned" :hardness :mechanical}
   :sale-oracle {:what "whether UKRN adopts the working paper's recommendations" :hardness :interpretive}
+  :response-signal {:class :none :note "Delivered; nothing came back. NOT the same as unknown -- the absence is observed as of 2026-08-22, not merely unchecked."}
   :distance {:hops :unknown :note "the programme is funded; the relationship between that funding and this contribution is NOT established here"}
-  :acceptance-event :unknown
+  :acceptance-event :none
   :fixture-access {:public :y :decisive :n}
   :beneficiary :known-party
   :knowable-at-T
@@ -128,6 +135,9 @@
     :provenance :cited :ref "G6" :src "~/code/ukrn-services-simulation/README.md"}
    {:text "Most modelled trajectories are largely horizontal; only the matured-and-favourable panel shows sustained diagonal ascent."
     :provenance :cited :ref "G7" :src "ukrn_v2_lesion_comparison.png"}
+   {:text "No acknowledgement of usefulness has been received from the recipient. Joe, 2026-08-22: 'it's not actually clear that we've really helped them solve a problem -- I tried, but they haven't necessarily said thanks that's super helpful.' The case is therefore a DELIVERY WITHOUT RESPONSE, and is kept in the corpus for exactly that reason: SCHEMA.md warns that a winners-only set is explained perfectly by any schema and predicts nothing."
+    :provenance :unverified :ref "G9"
+    :discharge "Settled if UKRN cites, adopts, or acknowledges the working paper's section 4; revisit :response-signal and :adoption-outcome then."}
    {:text "The engagement is described by the operator as a pro bono consulting effort; whether and how it was remunerated is NOT established by any artefact consulted here."
     :provenance :unverified :ref "G8"
     :discharge "Settled by the invoice ledger (futon7 ledger.edn :item/delivered? lines) or by the operator stating it; until then the payer field records only that the PROGRAMME was funded by Research England, not that this contribution was."}]}]

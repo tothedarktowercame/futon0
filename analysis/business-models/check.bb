@@ -221,12 +221,17 @@
         records-dir (io/file base "records")
         conjectures-file (io/file base "conjectures.edn")
         {:keys [records errors files]} (load-records records-dir)
-        ;; Self-cases (batch G) are loaded and shape-checked like any other,
-        ;; but MUST NOT enter the survey statistics: the corpus is the
-        ;; instrument used to judge FUTON's own cases, so letting them into
-        ;; the denominator would be layer-6 self-supply. Split here, not by
-        ;; keeping them out of the directory -- they still get validated.
-        survey (remove #(= :first-hand (:provenance-class %)) records)
+        ;; Self-cases (batch G) are IN the survey. An earlier version held
+        ;; them out as layer-6 self-supply; Joe corrected that 2026-08-22:
+        ;; "throwing out Juxt because we know about it & have contributed
+        ;; something useful to them and useful to us would be exactly the
+        ;; wrong move." The reasoning was wrong because the terminal rule is
+        ;; MECHANICAL -- follow the chain to an obligation or an interest --
+        ;; so first-hand knowledge is better data, not biased data. Self-supply
+        ;; would bite if the corpus scored FUTON leniently; it does not (both
+        ;; land on :interest, as 30/30 others do). :provenance-class stays so
+        ;; first-hand and desk-researched remain distinguishable.
+        survey records
         self-cases (filter #(= :first-hand (:provenance-class %)) records)
         conjectures (edn/read-string (slurp conjectures-file))
         duplicate-ids (duplicate-case-ids records)
@@ -235,9 +240,9 @@
     (println "Business-model conjecture checker")
     (println "records directory:" (.getPath records-dir))
     (println "files found:" (count files) "records loaded:" (count records)
-             "| survey:" (count survey) "expected:" 30
-             "missing:" (max 0 (- 30 (count survey)))
-             "| self-cases (excluded from statistics):" (count self-cases))
+             "| survey:" (count survey) "expected:" 32
+             "missing:" (max 0 (- 32 (count survey)))
+             "| of which first-hand:" (count self-cases))
     (when (empty? files)
       (println "NOTE: records directory is absent or contains no .edn files."))
     (doseq [{:keys [file message]} errors]
@@ -246,7 +251,7 @@
       (println "DUPLICATE CASE IDS:" (str/join ", " (map name duplicate-ids))))
     (println "\nLINT CONJECTURES  (shape discipline -- ALL records, self-cases included)")
     (let [lint-diffs (mapv (fn [c] (print-result! c (check-conjecture c records))) lints)]
-      (println "\nWORLD CONJECTURES  (empirical -- SURVEY ONLY, self-cases excluded)")
+      (println "\nWORLD CONJECTURES  (empirical -- all 32, first-hand included)")
       (let [world-diffs (mapv (fn [c] (print-result! c (check-conjecture c survey))) world)
             mismatches (+ (count (filter seq lint-diffs))
                           (count (filter seq world-diffs)))
