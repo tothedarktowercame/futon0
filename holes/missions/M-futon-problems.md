@@ -647,12 +647,11 @@ the gate material for D11. It contains, already written:
 - **§5, §9, §10** — why clients before Hyperreal; strategic position; open
   questions for Joe.
 
-**Two things to check before leaning on it**, both dated 2026-07-30 and
-possibly moved: it records invoice 202506 as **41.25 hours still owed across
-six VSAT lines** against an engagement dated **2026-08-31** — nine days out
-from today — and it treats August as having three partial claimants. The
-document also warns, in §6's register, that *"overclaiming would be the fastest
-way to lose a technically careful collaborator"* — worth carrying into the
+**Currency caveat.** §8's sequencing notes are dated 2026-07-30 and may have
+moved; they are delivery-capacity detail, not gate material (Joe, 2026-08-22:
+*"let's not get lost in the details with VSAT invoices"*). The part that does
+carry forward is §6's register — *overclaiming would be the fastest way to lose
+a technically careful collaborator* — which is worth taking into the
 September 11 meeting.
 
 
