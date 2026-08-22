@@ -588,12 +588,74 @@ assumed — **it fails today, in three distinct ways:**
    fold logic treats one named human specially, so adding an operator changes
    scores rather than just widening a filter.
 
-Corroborating shape: of **146 distinct authors** in the store, `joe` is the
-**only human**; every other author is an agent or a pipeline persona
-(`gate-pipeline`, `outcome-sweeper`, `ground-control`, `f*-guide`). The store's
-`:authors` field is already a list and imposes no limit — the singularity is in
-the consumers, not the substrate. **So the fix is a rename-and-widen
-(`"joe"` → an operator set, resolved from config), not a schema change.**
+Corroborating shape, **restated after a correction from Joe (2026-08-22)**:
+an earlier version of this entry said *"of 146 distinct authors, `joe` is the
+only human"* on the strength of eyeballing the top 15 of a name-prefix
+heuristic — the DP5 failure again. Joe: *"It may be that 'charlie' is in there
+or some other such — I had workshop participants joining in a live IRC
+workshop."* Enumerated properly this time, on **both** stores (:7070 JSON and
+:7073 EDN — same content, 1025 sessions, ~122k entries): the full author list
+contains no `charlie` and no workshop participants, and `?author=charlie`
+returns **0 entries on both**. So the count survives, but the framing was
+wrong, and the right framing is more useful:
+
+**The stack has two unconnected vocabularies for humans.**
+
+- **Authorship** — the evidence store's `:evidence/author`. Populated by one
+  human (`joe`) and 145 agent/pipeline personas.
+- **Transport** — *"exogenous writes into the genotype"*
+  (`futon3c/holes/excursions/E-causal-coupling-top-down.md` §7), with a
+  measured caveat: *ungated transport stays ordered; only transport gated on a
+  real interface clears.* This is where the other humans actually live. Charlie
+  appears in a **2026-07-29 standup with Joe and Charlie**; Rob appears
+  throughout `futon7/holes/E-business-exotype-audit.md`.
+
+**And the IRC bridge is the existing precedent for multi-human ingestion.**
+`futon3c/README-irc.md` describes "Human clients" (plural) on ngircd 6667/6697,
+and `!todo add <text>` is *"attributed to the sender"* — so per-sender identity
+exists **at the surface** and simply does not reach `:evidence/author`.
+
+So the gap is sharper than "no second human has authored": **Rob joining a
+delivery team means crossing from transport to authorship, and nothing bridges
+those two vocabularies today.** The substrate does not block it — `:authors` is
+already a list — so the work is (i) route the bridge's per-sender identity into
+the author field, and (ii) rename-and-widen the 8 hardcoded `"joe"` literals to
+an operator set resolved from config. Neither is a schema change.
+
+### D13 — The September gate already has a worked answer document
+
+`futon7/holes/E-business-exotype-audit.md` predates this conversation and is
+the gate material for D11. It contains, already written:
+
+- **§4 — two failure modes stated in client language**: *"Boolean gates buy
+  nothing"* (every stage-gate/sign-off/RAG status that reduces a rich outcome
+  to a yes/no is not neutral overhead — on this measure it is *silent*) and
+  *"Frozen reads are blind reads"* (deciding against last quarter's dashboard
+  is not "less good than live", it is *no better than not looking*). That is
+  **what problems are we solving**, in the client's own idiom.
+- **§6 — what not to sell past**: no calibration anchors (the business version
+  has no equivalent of the elementary-rule scale, so a first engagement yields
+  *relative* ordering only); selection unproven (the honest claim is
+  **diagnostic, not evolutionary**); and — the line that anticipates Joe's
+  2026-08-22 thesis exactly — **"n=1 is instrument construction. The first
+  engagement is *building the instrument on a real subject*, and should be
+  scoped and priced as that, not as a validated diagnostic."**
+- **§8 — deliverable shape** *"for a month run-up, or a mini-sabbatical"*: four
+  steps (exotype inventory → gain measurement → blind control → xenotype map),
+  with the acceptance bar *steps 1–3 on one real subject, blind control run and
+  reported even where it embarrasses the instrument.*
+- **§5, §9, §10** — why clients before Hyperreal; strategic position; open
+  questions for Joe.
+
+**Two things to check before leaning on it**, both dated 2026-07-30 and
+possibly moved: it records invoice 202506 as **41.25 hours still owed across
+six VSAT lines** against an engagement dated **2026-08-31** — nine days out
+from today — and it treats August as having three partial claimants. The
+document also warns, in §6's register, that *"overclaiming would be the fastest
+way to lose a technically careful collaborator"* — worth carrying into the
+September 11 meeting.
+
+
 
 **Endpoint note, corrected.** `GET /api/alpha/evidence?author=X` **does**
 honour the filter (verified for `joe` and `claude-13`); only
