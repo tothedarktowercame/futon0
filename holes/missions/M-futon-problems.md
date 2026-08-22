@@ -445,6 +445,74 @@ current allocation. Figure candidate for the paper:
 `ukrn_v2_lesion_comparison.png` (awaiting Joe's word; it is a UKRN
 working-paper asset and its reuse is his call).
 
+### D9 — The star presupposes its complement; the rows are not phases (2026-08-22)
+
+**The claim.** "It is worth it because I will get a capability star" presupposes
+that something becomes possible once the star is held. Joe's UKRNS reading is
+the counterexample made visual: in `ukrn_v2_lesion_comparison.png` most
+trajectories are **mostly horizontal most of the time** — training raises
+knowledge (x = delivery viability) but does not by itself raise institutional
+support (y = architectural sustainability). Only the bottom-right *Rosy
+(matured + favourable conditions)* panel shows sustained diagonal ascent.
+
+**Diagnostic that falls out:** *a capability star without its complement
+produces horizontal motion* — travel along the axis you can affect, none along
+the axis that decides whether it mattered. A rung flipping to `:satisfied` is
+x-motion. Whether anything downstream can now happen is y-motion, and the star
+map does not currently record it.
+
+**The two failure modes** (Joe, 2026-08-22):
+1. chase stars reachable with laptop + agents but not valuable to others → no money;
+2. chase stars related to making money → solve no problem of interest to me.
+
+**Where each is already handled — and how:**
+
+- Mode 2 is **named and deliberately unresolved**:
+  `M-futon-forward-model.backlog-cascade-merged-v0.edn` `:tensions` `:t3` —
+  *"centrality vs interest (inherited from v0, unresolved by design)"*, priced
+  as *"structure says m13/fulab-logic; heart says m19/ukrns"*. Note that this
+  put **UKRNS on the heart pole in July 2026**; proposing it now as a portfolio
+  piece is an attempt to make one item serve both poles, which is the correct
+  move under WR-19 (below).
+- Mode 1's guard is **not a pattern but an open hole**: `mh7` — *"T-inf
+  evaluation rubric (a yardstick someone else holds) … xeno-evaluation cannot
+  be self-supplied; R9 at the ladder's top."* The defence against building what
+  no one values is an acknowledged missing artefact.
+- The refusal to average them is **rule (4)**: *"terminals union, ψ composes
+  conjunctively — no weighted sum, no in-band scalarization."* The tension is
+  not a modelling defect; it is the model declining to assert a commensurability
+  that does not exist.
+
+**The design pattern Joe guessed at exists: WR-19** (*Tension Must GENERATE,
+Not Only Rank*) — "a ranking signal cannot create an option that is absent from
+the menu." If domains cannot be scalarized, tension can only act by
+**proposing candidates in the intersection**. But WR-19's `IF` clause is
+currently scoped to the geometric manifold ("the geometric stack detects
+high-tension regions", ΔT as a sorry-only tie-breaker). Joe's case is the same
+shape one level up — portfolio tension between incommensurable streams.
+**Pattern-work item: widen WR-19's IF, or mint a sibling at portfolio
+altitude.** This is concrete work for the "WR patterns need work" increment.
+
+**Rows vs columns — the resemblance is real but not an identity.** Joe noticed
+the merged cascade's rows A–F resembling Figure 2's columns
+PERCEIVE/BELIEVE/EVALUATE/SELECT/ACT. They are not the same kind:
+
+- The columns are **phases of one loop** and are sequential.
+- The rows are **not** sequential — E *preempts all*, and the brief lists them
+  out of order (A, B, D, C, E, F).
+
+The defensible reading is a **grid, not a match**: A (certifying
+instrumentation) and B (grammar & actuator) are the phase-like rails — the
+PERCEIVE and ACT ends factored out as shared infrastructure. C (told outward),
+D (operator loop), E (livelihood), F (mathematics) are four **domains** that
+run on those rails, each carrying its own BELIEVE/EVALUATE/SELECT.
+
+That is precisely why the two failure modes are structural rather than
+accidental: **each domain has its own EVALUATE and there is no shared one.**
+F evaluates by epistemic gain, E by money. With no common currency, maxing one
+while starving the other is the expected behaviour of the architecture, not a
+lapse of operator discipline.
+
 ## 3. The paper as projection
 
 `p4ng/futon-2026.tex` is the working draft, in the role `plop-2026.tex` played
