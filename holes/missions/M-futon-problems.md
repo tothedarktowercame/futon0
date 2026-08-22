@@ -536,6 +536,71 @@ used the **horizontal** PERCEIVE→ACT one. Worked up in two files under `p4ng/`
 
 Both await Joe's word before any restructuring.
 
+### D11 — The mission acquires a hard external gate (Joe, 2026-08-22)
+
+**The cliffedge did not disappear; it moved to Rob.** D10/§7 recorded Joe's
+runway extending to *sinecure → sabbatical → ?* and concluded the external
+forcing function was removed. That is **half wrong**: the joint venture runs on
+Rob's clock, and Rob has said he needs *"a clear path to be making money
+sometime in October."*
+
+**Dated gates** (from 2026-08-22):
+
+| by | gate |
+|---|---|
+| ~2026-09-11 (~20 days) | meet Rob; until then, **loosely coupled** work |
+| ~09-11 → ~10-01 (~20 days) | work on *the* or *a* candidate project that would actually make money |
+| **end of 2026-09** | **a very clear idea of who the client would be** |
+| 2026-10 | Rob's bar: a clear path to making money |
+
+So *what problems are we solving* is no longer an open-ended inquiry with a
+sabbatical behind it — it is gated, and the gate is **client identity by end of
+September**. Joe: *"asking 'what problems are we solving' is crucial to do
+now."* Note this lands directly on the 30-case finding: the discriminator was
+never distance-in-hops but **whether a discrete per-unit acceptance event moves
+money**, and "who is the client" is that question with a date attached.
+
+**Rob's standing:** he holds capability FUTON does not have, which would form
+part of a shared offering; some of the framing already in use came from
+conversations with him; he would be part of a delivery team. So his input is
+wanted *into* the problem statement, not after it. That is also the first
+concrete answer to `mh7` (*a yardstick someone else holds*) — Rob is a
+plausible holder, though a partner's verdict is not the same as a buyer's and
+should not be recorded as one.
+
+### D12 — Acceptance criterion: multi-operator from the start (measured)
+
+Joe's criterion: *"if we ingest Joe's turns now, great, but we should also be
+able to ingest Rob's turns later."* Checked against the code rather than
+assumed — **it fails today, in three distinct ways:**
+
+1. **Operator identity is a hardcoded string literal**, not a parameter, in at
+   least 8 files: `futon0/scripts/futon0/report/joe_hud.clj`,
+   and in `futon2/holes/labs/M-zaif-harness/`: `z1_views.clj`,
+   `l1_referent_resolution.clj`, `b1_gamma_mission_fold.clj`,
+   `pz1_build_labeling_sheet.clj`, `pz1_lexicon_scan.clj`,
+   `mark_vocab_probe.py`.
+2. **The concept is singular, not a set.** `joe_hud.clj` partitions turns into
+   `joe-turns` vs `agent-turns` — a binary with no room for a second operator.
+   A second human would be classified as an agent.
+3. **Worst: operator identity is inside a scoring predicate.**
+   `b1_gamma_mission_fold.clj:43` — `(or (neg? perf) (= author "joe"))`. The
+   fold logic treats one named human specially, so adding an operator changes
+   scores rather than just widening a filter.
+
+Corroborating shape: of **146 distinct authors** in the store, `joe` is the
+**only human**; every other author is an agent or a pipeline persona
+(`gate-pipeline`, `outcome-sweeper`, `ground-control`, `f*-guide`). The store's
+`:authors` field is already a list and imposes no limit — the singularity is in
+the consumers, not the substrate. **So the fix is a rename-and-widen
+(`"joe"` → an operator set, resolved from config), not a schema change.**
+
+**Endpoint note, corrected.** `GET /api/alpha/evidence?author=X` **does**
+honour the filter (verified for `joe` and `claude-13`); only
+`/evidence/sessions?author=` ignores it. An earlier draft risked generalising
+the miss to both — tested instead. The mark-vocab probe's 6,086-turn pull used
+`/evidence` and was correctly filtered, so its clustering result stands.
+
 ## 3. The paper as projection
 
 `p4ng/futon-2026.tex` is the working draft, in the role `plop-2026.tex` played
