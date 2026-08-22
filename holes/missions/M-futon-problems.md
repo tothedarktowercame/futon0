@@ -404,6 +404,47 @@ measurement: rung events are dated and lumpy, and attributing them backwards to
 turns needs G5 (trustworthy attribution) and G2 (visible rungs). Neither
 requires new theory.
 
+### D8 — Operator attention is one typed field short of computable (measured 2026-08-22)
+
+Joe (2026-08-22): the interesting model is not one "largely derived a priori"
+but one "pegged to what you (and your team) are actually doing" — e.g. *how
+much operator attention went to M-futon-problems vs M-apm-demonstration, while
+everything else seemingly languishes unattended*, with the rebuttal available:
+"yes, but this is dealing with crucial capability stars and it is worth the
+investment."
+
+Measured against the live store rather than assumed:
+
+| hop | status | where |
+|---|---|---|
+| operator presence + recency | **available** | `GET /api/alpha/evidence/sessions` — 1,025 sessions, 348 ever attended by joe, 9 active in 24h, 4 within 5 min |
+| session → mission | **MISSING as data** | exists only in mission-file prose (`**Status:** ... claude-13 + Joe`) |
+| mission → capability star | **available, typed** | `M-capability-star-map.graph.edn` (33,776 b), built via `:mission-source :futon2.aif.mission-registry/load-missions`; carries `:status`, `:position`, `:next-rung` |
+
+So the chain is broken in exactly one place. A mission binding on a session
+makes attention-by-mission divide, join to the stars each mission advances, and
+turn the investment case into a computation. This is WR-8 failing in its own
+house: the seat→mission binding is real and instantly suppliable by the
+operator, but its source of truth is prose.
+
+**Correction folded in:** `?author=joe` on the sessions endpoint is *silently
+ignored* — the response echoes `:author-filter null` and the same 1,025-session
+total for every value tried (`author`, `authors`, `author-filter`). The filter
+is client-side, over the row's `:authors` array. An earlier draft of
+`p4ng/sec-operator.tex` stated the server-side form; corrected 2026-08-22, and
+the footnote now names the miss as an instance of **D5 (populated ≠ correct)**.
+
+**Cross-domain instrument.** `~/code/ukrn-services-simulation/` satisfies the
+same R1–R12 contract (`docs/aif-completeness.md`) and supplies two transferable
+constructions: (i) the **Latent / Multiplied / Mismatch / Absorbed** quadrants
+on a delivery-viability × architectural-sustainability plane — *latent is not
+mismatch*, so "looks unattended" does not license cutting; (ii) **lesion
+panels** (evaluator role disabled, researcher-advisor role disabled) as the way
+to argue a role's worth — project the counterfactual rather than defend the
+current allocation. Figure candidate for the paper:
+`ukrn_v2_lesion_comparison.png` (awaiting Joe's word; it is a UKRN
+working-paper asset and its reuse is his call).
+
 ## 3. The paper as projection
 
 `p4ng/futon-2026.tex` is the working draft, in the role `plop-2026.tex` played
