@@ -170,9 +170,18 @@
                  :count-at-least (>= n (long (:threshold conjecture))))
         counterexamples (case quantifier
                           :forall (ids failed)
-                          :count-at-least (if holds? [] (ids (get buckets :excluded []))))]
+                          :count-at-least (if holds? [] (ids (get buckets :excluded []))))
+        ;; A boolean cannot distinguish "refuted by a counterexample" from
+        ;; "not decidable because some records are :unknown". Conflating them
+        ;; manufactures false findings in both directions, so report three.
+        verdict (case quantifier
+                  :forall (cond (seq failed)        :refuted
+                                (seq indeterminate) :undecided
+                                :else               :holds)
+                  :count-at-least (if holds? :holds :refuted))]
     {:id (:id conjecture)
      :holds? holds?
+     :verdict verdict
      :n n
      :counterexamples counterexamples
      :indeterminate (ids indeterminate)}))
@@ -187,8 +196,10 @@
 
 (defn print-result! [conjecture result]
   (let [diff (expectation-diff (:expected conjecture) result)]
-    (println (format "%-36s holds? %-5s n=%d"
-                     (name (:id conjecture)) (:holds? result) (:n result)))
+    (println (format "%-36s %-10s n=%d"
+                     (name (:id conjecture))
+                     (name (:verdict result))
+                     (:n result)))
     (when (seq (:counterexamples result))
       (println "  counterexamples:" (str/join ", " (map name (:counterexamples result)))))
     (when (seq (:indeterminate result))
@@ -217,7 +228,7 @@
     (println "Business-model conjecture checker")
     (println "records directory:" (.getPath records-dir))
     (println "files found:" (count files) "records loaded:" (count records)
-             "expected corpus:" 25 "missing:" (max 0 (- 25 (count records))))
+             "expected corpus:" 30 "missing:" (max 0 (- 30 (count records))))
     (when (empty? files)
       (println "NOTE: records directory is absent or contains no .edn files."))
     (doseq [{:keys [file message]} errors]

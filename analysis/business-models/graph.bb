@@ -13,7 +13,7 @@
 (def snapshot-file (io/file root "graph-snapshot.edn"))
 
 (def node-type-ids
-  [:requirement :call :contest :benchmark :dependency :environment :market-exchange])
+  [:requirement :call :bounty :benchmark :dependency :environment :market-exchange])
 (def terminal-kind-ids
   [:interest :obligation-external :obligation-manufactured :none])
 

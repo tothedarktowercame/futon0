@@ -77,8 +77,10 @@
   :quote "Initially bounty backer; later community donors and matching partners"}
 
  :appjet-etherpad
- {:budget-line :developer-platform-hosting
-  :quote "Hoped-for developer or application-hosting payer"}
+ {:budget-line :unclassified
+  :quote "Hoped-for developer or application-hosting payer"
+  :attempted-line :developer-platform-hosting
+  :note "REVIEW FIX (claude-13, 2026-08-21): the payer text begins \"Hoped-for\" and is as hypothetical as VERSES, which was correctly :unclassified on exactly that ground. Assigning it to a realised line made :developer-platform-hosting exist on the strength of a payer that never materialised. :attempted-line records what AppJet aimed at; the line stays in the vocabulary as an ORPHAN, which is the correct reading -- an unattached need bank with a case that tried to be paid from it and was not."}
 
  :wolfram-research
  {:budget-line :software-licensing
