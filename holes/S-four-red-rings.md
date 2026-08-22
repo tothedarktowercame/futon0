@@ -99,12 +99,58 @@ than the file-appears count.
 
 ## Why these four and not four missions
 
-The merged cascade was probed for current state on 2026-08-22: of its 23
-missions, **one** (`m1` M-points-de-fuite) is complete, `m11` is INSTANTIATE in
-progress, and the remainder sit at IDENTIFY or MAP. The cascade is a good map of
-*intent* and a poor list of *near-term shippables*. The rings are interfaces
-rather than programmes, each with a named failing consumer and a test, which is
-what makes them dispatchable now.
+The merged cascade was probed for current state on 2026-08-22 **by reading each
+mission's `**Status:**` header — which was the wrong method.** Joe corrected it
+immediately: `m3` M-text-sidecar reported *"OPEN — IDENTIFY drafted, awaiting
+Joe's read"* and is in fact **DONE**. Verified by exercising the capability
+rather than reading about it: `GET /api/alpha/evidence/text-search?q=…` returns
+scored FTS5 hits, and a nonsense control returns `:count 0`. The cascade brief's
+own `:partial — D1 LIVE` was closer to the truth than the mission file, and the
+live endpoint was closer still.
+
+**Method correction (DP5 again, third time today): probe a capability by
+exercising it, not by reading its status header.** Status lines are written once
+and drift; endpoints do not. Any re-probe of the remaining 22 should call the
+thing.
+
+With that said, the rings remain the dispatchable set — they are interfaces with
+a named failing consumer and a test each — but the framing below was incomplete.
+
+## The fourth kind: the retrieval leg (Joe, 2026-08-22)
+
+R5 / R6 / R8 are all **control-loop** interfaces: landing site, generator, gain
+meter. Text-sidecar is none of those, which is why it did not appear — it is a
+**retrieval** capability, and Joe's point is that it *"is exactly the one that
+enables digging into operator turns."*
+
+It is done, and it already answers, approximately, the question D8 said was one
+typed field away. `text-search` honours `author=`, so operator turns can be
+searched by topic **today**. Measured 2026-08-22, `author=joe`, untruncated:
+
+| query | joe-authored turns |
+|---|---|
+| `apm-demonstration` | **1041** |
+| `war+machine` | 380 |
+| `capability+star` | 147 |
+| `futon-problems` | **93** |
+| `text-sidecar` | 2 |
+
+That is the futon-problems-vs-apm-demonstration comparison Joe imagined, at
+roughly **11:1**, available with no new field at all.
+
+**What it is not.** Mentions are not attention: these are lifetime counts, not
+windowed; a long-running mission accumulates more of them; and a turn that
+merely names a mission is scored the same as one that works on it. So the typed
+session→mission binding (D8) still buys *exact* attribution. But the
+approximation is free, it is live, and it should be the baseline any exact
+measure has to beat — which is a better first deliverable than the binding
+itself.
+
+**Consequence for dispatch order.** A fourth packet, cheaper than the three
+rings: an attention view over `text-search` with `author=` and a time window,
+reported per mission. It has a consumer (the investment-case argument in
+`p4ng/sec-operator.tex`), a test (counts reproduce), and it does not wait on
+anything.
 
 They also give the sentence Joe asked for, per ring: *using this stack let us
 ship X, which achieves Y, with practical implication Z.* For ring 3 that reads:
