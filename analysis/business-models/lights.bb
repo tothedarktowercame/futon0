@@ -77,6 +77,13 @@
                 (when (string? p) p))
        :why (get-in d [:failing-phase :why])
        :response (or (get-in d [:response-signal :class]) :unknown)
+       ;; Whose offer the response describes. For thirty cases it is the case's
+       ;; own recorded history -- DoD paying HackerOne, OpenAI funding
+       ;; SWE-bench's annotation campaign -- and for the two self-cases it is an
+       ;; offer this stack made. Same colour channel, different subject, and the
+       ;; figure said nothing about which until a reader asked what a green
+       ;; PERCEIVE cell meant (Joe, 2026-08-25).
+       :self (= :self-case (:entity-type c))
        :problem (get-in d [:problem-class])
        :paired (boolean d)})))
 
@@ -218,7 +225,7 @@ the person with the problem and the person who can sign — is
         by-state (frequencies (map :response lit))
         width (+ x0 (* (count ps) (+ cw gap)) 8)
         wrapped (wrap-names (map :org dark) (- width 130))
-        height (+ y0 (* (count lit) row) 74 (* 13 (count wrapped)))
+        height (+ y0 (* (count lit) row) 90 (* 13 (count wrapped)))
         idx (into {} (map-indexed (fn [i p] [p i]) ps))]
     (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
          ;; width/height on the ROOT, not just a viewBox. tuftify.py sizes a
@@ -251,7 +258,9 @@ the person with the problem and the person who can sign — is
                  :let [y (+ y0 (* i row))]]
              (str (format "<text class=\"o%s\" x=\"%d\" y=\"%d\" text-anchor=\"end\">%s</text>"
                           (if (:phase r) "" " u") (- x0 10) (+ y 11)
-                          (esc (let [o (:org r)] (if (> (count o) 34) (str (subs o 0 33) "\u2026") o))))
+                          (esc (let [o (:org r)
+                                     o (if (> (count o) 32) (str (subs o 0 31) "\u2026") o)]
+                                 (if (:self r) (str o " *") o))))
                   (apply str
                     (for [p ps
                           :let [x (+ x0 (* (idx p) (+ cw gap)))
@@ -279,12 +288,15 @@ the person with the problem and the person who can sign — is
                             (+ lx 16) ly (:glyph st) (esc (:label st)) (get by-state k 0))))))
          (let [by (+ y0 (* (count lit) row) 48)]
            (str (format (str "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#5a5a52\">"
+                             "* an offer this stack made itself; every other row is the case's own recorded history."
+                             "</text>") by)
+                (format (str "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#5a5a52\">"
                              "Not located (%d of %d) — no source places the problem at a phase:"
-                             "</text>") by (count dark) (count rs))
+                             "</text>") (+ by 16) (count dark) (count rs))
                 (apply str
                   (for [[k line] (map-indexed vector wrapped)]
                     (format "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#8a8a80\">%s</text>"
-                            (+ by 14 (* k 13)) (esc line))))))
+                            (+ by 30 (* k 13)) (esc line))))))
          "</svg>")))
 
 (defn -main []
