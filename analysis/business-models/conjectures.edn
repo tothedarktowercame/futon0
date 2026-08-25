@@ -170,16 +170,16 @@
          [:or
           [:not [:present? [:get-in [:response-signal :class]]]]
           [:in [:get-in [:response-signal :class]]
-           #{:engaged :declined-on-capacity :declined-on-merit
+           #{:engaged :interest-no-offer :declined-on-capacity :declined-on-merit
              :forked-after-engagement :declined-ground-unknown :silent}]]
          [:or
           [:not [:present? [:get-in [:response-signal :by-buyer-classes]]]]
           [:all-in [:get-in [:response-signal :by-buyer-classes]]
-           #{:engaged :declined-on-capacity :declined-on-merit
+           #{:engaged :interest-no-offer :declined-on-capacity :declined-on-merit
              :forked-after-engagement :declined-ground-unknown :silent :unknown}]]]
   :established "RESEARCH-SPEC-demand-side, extended 2026-08-25 with the cases that forced it"
   :expected {:verdict :holds :n 32 :counterexamples []}
-  :note ":forked-after-engagement (Lucid against Emacs) and :declined-ground-unknown (Andela) were added with their forcing cases. :by-buyer-classes is a flat denormalisation of the :by-buyer entries' classes, carried so the closed list can be checked without a predicate that walks maps inside vectors -- the checker's vocabulary reads values, not structures. Absent means the record has one buyer and the field does not apply, so the predicate admits absence explicitly rather than reading it as indeterminate; what it will not admit is a PRESENT list carrying a class off the vocabulary. The same admission covers :class :unknown, which the checker reads as the third truth value: an unknown response is a finding this batch expects to record 6 times, not a record the vocabulary cannot decide."}
+  :note ":forked-after-engagement (Lucid against Emacs), :declined-ground-unknown (Andela) and :interest-no-offer (xtdb-text-index) were added with their forcing cases. :by-buyer-classes is a flat denormalisation of the :by-buyer entries' classes, carried so the closed list can be checked without a predicate that walks maps inside vectors -- the checker's vocabulary reads values, not structures. Absent means the record has one buyer and the field does not apply, so the predicate admits absence explicitly rather than reading it as indeterminate; what it will not admit is a PRESENT list carrying a class off the vocabulary. The same admission covers :class :unknown, which the checker reads as the third truth value: an unknown response is a finding this batch expects to record 6 times, not a record the vocabulary cannot decide."}
 
  {:id :every-case-has-demand-side
   :kind :world

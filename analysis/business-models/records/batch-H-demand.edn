@@ -52,8 +52,8 @@
   :transition-slots {:present [] :absent [] :provenance :unverified
                      :discharge "Settled by reading the XTDB issue and design thread against the eight slots. Not attempted here: the slots describe a repository transition, and no transition was underway on the recipient's side."}
 
-  :response-signal {:class :engaged
-                    :note "A reply and a subsequent conversation. NOT an acceptance event and NOT a purchase; the correspondent holds no purchasing authority. Carried over from the supply-side record, where it is the fact that distinguishes this case from :ukrn-services-simulation -- an equivalent delivery that produced nothing."}
+  :response-signal {:class :interest-no-offer
+                    :note "Interest, and no offer on either side. A reply and a subsequent conversation, but NOT an acceptance event and NOT a purchase: the correspondent holds no purchasing authority and no commercial offer was ever made or received. RETYPED 2026-08-25 from :engaged (Joe): green read as the HackerOne shape, where a buyer paid and expanded a contract, and this is not that. Still the fact that distinguishes the case from :ukrn-services-simulation, where an equivalent delivery produced nothing -- but the two now differ in KIND rather than in degree: interest with no offer, against an offer declined for capacity."}
 
   :claims
   [{:text "The recipient's unmeasured assumption is stated in their own public issue: ~1.5-2x divergence for typical edit patterns, no supporting data, rewrite-heavy wiki-style documents named as the stress case."

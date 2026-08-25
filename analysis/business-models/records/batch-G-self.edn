@@ -62,7 +62,8 @@
   :artifact-oracle {:what "the measurement reproduces from the store's own bitemporal history" :hardness :mechanical}
   :sale-oracle {:what "none -- nothing was offered for sale" :hardness :none}
   :distance {:hops :unknown :note "no payer line item identified; a findings artefact of this kind would sit on an assurance or R&D line, not a software budget"}
-  :response-signal {:class :engaged :note "A reply and a subsequent conversation. NOT an acceptance event and NOT a purchase; the correspondent holds no purchasing authority. Recorded because it distinguishes this case from :ukrn-services-simulation, where an equivalent delivery produced nothing."}
+  :response-signal {:class :interest-no-offer
+                    :note "Interest, and no offer on either side. A reply and a subsequent conversation, but NOT an acceptance event and NOT a purchase: the correspondent holds no purchasing authority and no commercial offer was ever made or received. RETYPED 2026-08-25 from :engaged (Joe): green read as the HackerOne shape, where a buyer paid and expanded a contract, and this is not that. Still the fact that distinguishes the case from :ukrn-services-simulation, where an equivalent delivery produced nothing -- but the two now differ in KIND rather than in degree: interest with no offer, against an offer declined for capacity."}
   :acceptance-event :none
   :fixture-access {:public :y :decisive :y}
   :beneficiary :known-party

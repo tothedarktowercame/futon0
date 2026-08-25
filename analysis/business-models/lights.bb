@@ -50,6 +50,12 @@
 ;; everywhere.
 (def states
   {:engaged                 {:label "Engaged" :short "Engaged" :glyph "●" :tone "good"}
+   ;; Two amber states, differing in kind and not in degree. Capacity: an offer
+   ;; was made and declined on the clock. Interest-no-offer: interest arrived
+   ;; and no offer existed on either side. Both are "not a sale", and calling
+   ;; either of them green would read as the HackerOne shape, where a buyer paid
+   ;; and expanded a contract.
+   :interest-no-offer       {:label "Interest, no offer" :short "Interest" :glyph "◒" :tone "warning"}
    :declined-on-capacity    {:label "Declined — capacity" :short "Capacity" :glyph "◐" :tone "warning"}
    :declined-on-merit       {:label "Declined — merit" :short "Merit" :glyph "×" :tone "critical"}
    :silent                  {:label "Silent" :short "Silent" :glyph "·" :tone "muted"}
@@ -156,7 +162,7 @@ we could fix it. The acceptance grid is a different artefact and all 160 of its
 cells are still unrun.</p>
 <div class=legend>"
          (str/join
-          (for [k [:engaged :declined-on-capacity :declined-on-merit
+          (for [k [:engaged :interest-no-offer :declined-on-capacity :declined-on-merit
                    :silent :declined-ground-unknown :forked-after-engagement]
                 :let [st (states k)]
                 :when (pos? (get by-state k 0))]
@@ -225,7 +231,7 @@ the person with the problem and the person who can sign — is
         by-state (frequencies (map :response lit))
         width (+ x0 (* (count ps) (+ cw gap)) 8)
         wrapped (wrap-names (map :org dark) (- width 130))
-        height (+ y0 (* (count lit) row) 90 (* 13 (count wrapped)))
+        height (+ y0 (* (count lit) row) 105 (* 13 (count wrapped)))
         idx (into {} (map-indexed (fn [i p] [p i]) ps))]
     (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
          ;; width/height on the ROOT, not just a viewBox. tuftify.py sizes a
@@ -279,14 +285,20 @@ the person with the problem and the person who can sign — is
            (apply str
              (for [[j k] (map-indexed vector
                            (filter #(pos? (get by-state % 0))
-                                   [:engaged :declined-on-capacity :declined-on-merit
-                                    :silent :declined-ground-unknown :forked-after-engagement]))
-                   :let [st (states k) lx (+ 8 (* j 185))]]
+                                   [:engaged :interest-no-offer :declined-on-capacity
+                                    :declined-on-merit :silent :declined-ground-unknown
+                                    :forked-after-engagement]))
+                   ;; Four to a row. A fifth state pushed the last entry past
+                   ;; the viewBox and it simply vanished from the figure.
+                   :let [st (states k)
+                         lx (+ 8 (* (mod j 4) 185))
+                         ry (+ ly (* 15 (quot j 4)))]]
                (str (format "<rect x=\"%d\" y=\"%d\" width=\"11\" height=\"11\" rx=\"2\" fill=\"%s\"/>"
-                            lx (- ly 9) (tone-hex (:tone st)))
+                            lx (- ry 9) (tone-hex (:tone st)))
                     (format "<text class=\"lg\" x=\"%d\" y=\"%d\">%s %s (%d)</text>"
-                            (+ lx 16) ly (:glyph st) (esc (:label st)) (get by-state k 0))))))
-         (let [by (+ y0 (* (count lit) row) 48)]
+                            (+ lx 16) ry (:glyph st) (esc (:label st)) (get by-state k 0))))))
+         (let [nstates (count (filter #(pos? (get by-state % 0)) (keys states)))
+               by (+ y0 (* (count lit) row) 48 (* 15 (dec (quot (+ 3 nstates) 4))))]
            (str (format (str "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#5a5a52\">"
                              "* an offer this stack made itself; every other row is the case's own recorded history."
                              "</text>") by)
