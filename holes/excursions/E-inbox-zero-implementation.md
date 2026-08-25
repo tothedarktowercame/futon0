@@ -485,6 +485,186 @@ errors and 0 warnings on all changed Clojure, `check-parens.el` is clean, and
 dependency-tree inspection shows `futon3/inbox-zero` without futon3's XTDB1 or
 Stanford NLP graph.
 
+### Slice 7 — commit observation and session linkage (2026-08-24)
+
+The original plan's "Link commits" slice, built by codex-9 (futon3
+`2b82dc21`, base `8d8e705`), reviewed by claude-3 (all gates re-run
+independently; all nine acceptance behaviours verified as named tests).
+Records `:inbox-zero/commit-observation` and `:inbox-zero/session-commit-link`
+land per data spec §6, with `:basis :path-claim-intersection` enforced by
+validation (author-name matching structurally absent). Coverage is
+`:complete` only when every changed path has exactly one unambiguous active
+claim from one seat; multi-seat commits yield partial links.
+
+**Spec extension (settled by two stop-and-bell rounds):** the commit scanner's
+durable cursor is a third immutable record type, not mutable snapshot state —
+
+```clojure
+{:record/type :inbox-zero/commit-scan-cursor
+ :cursor/id "commit-scan-cursor:<hash>"
+ :worktree/id "worktree:<id>"
+ :cursor/sha "<last-observed commit>"
+ :cursor/reason :baseline            ; | :advance | :rebaseline-rewrite
+ :prior/cursor-id nil                ; nil only on :baseline; chains otherwise
+ :observed-at #inst "..."}
+```
+
+Written only on movement (volume bounded by commit activity, not scan
+frequency). The current cursor is the head of the `:prior/cursor-id` chain —
+never timestamp-ordered; a forked or cyclic chain fails closed as corrupt
+state. First run baselines at HEAD and emits no observations (claims cannot
+predate producer activation, so deeper history cannot link);
+`:commit-lookback` (default 0) is the explicit backfill knob, and retroactive
+mission claiming remains a separate pass. A history rewrite emits a loud
+`:rebaseline-rewrite` cursor whose prior-id names the cursor whose sha became
+unreachable. Evidence: 30 tests / 87 assertions / 0 failures; clj-kondo 0/0;
+check-parens and `git diff --check` clean — reported by the author and re-run
+by the reviewer.
+
+### Slices 8 and 9 — attribution join; pure promotion planner (2026-08-24)
+
+Both authored by codex-9, reviewed by claude-3 (gates re-run independently).
+
+**Slice 8** (futon3c `520cefb1`): `futon3c.inbox-zero.attribution` — the
+commit→mission join. Pure exact-seat attribution of session-commit-links
+against clock-lineage edges at a temporal basis; IO wrapper issues one
+bounded `type+end+as-of` query per (agent, linked-at) group against the
+futon1b compatibility server. Contract points settled during the exchange:
+temporal validity is a QUERY BASIS, never a document field (no retraction
+key exists or may be invented — `as-of` sets the XTDB2 valid-time base
+server-side); fetch failure maps to `:attribution/status :unknown`, never
+`:unattributed` (a store error must not read as "no mission"); a defensive
+`clocked-at-ms <= linked-at` guard protects against wrong-basis callers.
+Statuses: `:attributed`/`:unattributed`/`:ambiguous`/`:unknown`. Verified
+live against the production substrate in review: a real 35-day-old edge
+attributes (`M-capability-zones`), and a seat with zero edges reads
+`:unattributed` against confirmed ground truth. Incidental find, fixed
+directly: `clock_lineage/query-edges-of-type` sent `limit=10000` into a
+server that 400s above 1000, so `reconstitute` silently read `[]` through
+its error-swallowing fallback.
+
+**Slice 9** (futon3 `d522f7c2`): `futon3.inbox-zero.promotion/plan-promotion`
+— the pure first slice of turn-end promotion. Per repo/worktree with current
+dirt: include only paths whose sole active claim names the seat; exclude
+with visible reasons (`:ambiguous`/`:unattributed`/`:other-seat`); deletions
+includable; a worktree whose dirt is all excluded yields a LOUD held plan
+(`:verdict :held`, `:held/reason :nothing-promotable`) rather than
+vanishing; globally clean state yields `[]` (no tuple exists — an unscoped
+held record would be a manufactured edge). No IO, git, gates, messages, or
+execution — those are later slices, and the execution slice's push policy is
+an open operator decision. Evidence for both: focused suite 39 tests / 105
+assertions / 0 failures; clj-kondo 0/0; check-parens and `git diff --check`
+clean — author-reported and reviewer-re-run.
+
+### Slices 10 and 11 — promotion execution and push decision (2026-08-24)
+
+Both authored by codex-9, reviewed by claude-3 (gates re-run independently;
+full focused suite now 51 tests / 155 assertions / 0 failures).
+
+**Slice 10** (futon3 `3c3d75f8`): `futon3.inbox-zero.promote-exec/execute-plan!`
+— executes one promotion plan: empty-index preflight (an occupied index holds
+as `:index-not-empty` with the occupying paths, a NEW held reason — the plan
+is not stale, the index is occupied, and the escalation routing needs the
+distinction), per-path staleness revalidation, ordered gates with 4KB-bounded
+output, staging of exactly the planned paths (NUL-delimited set equality
+against `git diff --cached`), commit with caller-supplied message. Every
+failure path resets only the index this call owns; `git reset --` is safe
+precisely because the preflight guarantees ownership of the entire staged
+set (codex-9's catch — the original spec's rollback would have flattened
+pre-existing staged work).
+
+**Slice 11** (futon3 `0ab1e579`): `futon3.inbox-zero.promote-push/push-promoted!`
+— the auto-push-ordinary / escalate-outliers policy (Joe, 2026-08-24) as
+data: ahead-count measured before pushing; counts above the threshold
+(default 10) are never pushed and escalate as `:ahead-outlier` — unusual
+accumulation is evidence a human should see, not tidy away; plain
+fast-forward push otherwise; `:push-failed` (bounded stderr) and
+`:no-upstream` are distinct reasons. Deliberately never fetches — fetch
+cadence belongs to futon-sync's timer, and the docstring states honestly
+that a stale upstream ref undercounts divergence, which the plain push then
+surfaces as non-fast-forward.
+
+**Build phase complete.** The unbuilt remainder is wiring: the turn-end hook
+in the pouch path (plan → gates/execute → push-or-escalate per seat), and the
+**escalation router** (policy refined by Joe, 2026-08-24 — see the tier table
+in README-inbox-zero): tier 1 routes outliers and held plans to the
+responsible seats resolved from session-commit-links (deliver via the slice-4
+followup queue, exact-seat); tier 2 falls through to the street-sweeper
+peripheral when exact-seat validation fails; tier 3 — the operator — receives
+only holds that need human judgement, canonically `:held :sensitive-content`
+from a pre-push sensitivity screen (describe-the-kind rules, not filename
+enumerations). Volume alone never reaches the operator.
+
+### 2026-08-24 (afternoon) — held-plan messages, amnesty planner, inferrer
+
+Four reviewed handoffs plus one direct fix, all landed the same day the
+watcher went live:
+
+- **Held-plan messages** (futon3c `227eb140`): propose-mode tier-1 messages
+  for empty-include plans now summarize exclusions ("N unattributed, M
+  other-seat; unattributed: p1..p5 (+n more)") instead of "would promote 0
+  path(s)". The loudest output was carrying the least information.
+- **Amnesty planner** (futon3 `b0d4928b`): pure `futon3.inbox-zero.amnesty`
+  partitions pre-witnessing unattributed dirt into `:exempt` / `:sensitive`
+  / `:baseline` per repo/worktree. Exemption outranks sensitivity so a
+  deliberate tracer survives every sweep. Execution slice deferred.
+- **Attribution-inference discovery** (read-only): for the tracer
+  (`futon3c-d:scripts/session-cost.py`, deliberately left unattributed),
+  substrate session evidence at 08:21:54 + file mtime 08:21:27 + the seat's
+  later same-worktree claims recover the ground truth
+  (`seat:claude-3:7cdc25b0-…`). Git authorship is a shared-human-name
+  prior, not seat evidence; post-restart roster proves nothing historical.
+- **Inferrer core** (futon3 `a0f41644`): pure `futon3.inbox-zero.infer`,
+  deterministic evidence-class ranking (`:direct` / `:corroborated` /
+  `:weak`), fail-closed verdicts, `:weak` proposals gated behind explicit
+  `:allow-weak? true`. Never mints; confirmation does. Adapters slice
+  (state + substrate + stat) in flight.
+- **Repo-id normalization** (futon3c `09fa4176`, direct fix): witness claims
+  minted repo-id from directory basenames while observations carried watcher
+  labels ("futon3c" vs "futon3c-d") — every repo-id join would silently miss
+  all claims. Root table extracted to `futon3c.watcher.roots`, shared by
+  bootstrap and the witness producer. Historical claims keep old labels
+  (immutable), so joins stay worktree-id + path keyed forever.
+
+Promotion stays in propose mode until the inferrer arc completes (Joe,
+2026-08-24).
+
+## 2026-08-25 — loop closed, restart, epoch amnesty
+
+Slices E–I landed 2026-08-24 evening (all Codex handoffs, each reviewed as a
+gate): evidence adapters (`futon3c.inbox-zero.infer-adapters`, 2e5647e2),
+amnesty executor (`futon3.inbox-zero.amnesty-exec`, 94f3192f), sweeper lane
+(`futon3c.inbox-zero.sweeper`, 5ac4531b), confirmation minting
+(`futon3.inbox-zero.confirm`, 57866b31), confirmation intake + route
+`POST /api/alpha/inbox-zero/confirm-attribution` (f260f639).
+
+**Closing act (2026-08-24):** the tracer `futon3c/scripts/session-cost.py`
+(edited before witnessing existed, deliberately left unattributed by hand) was
+attributed end to end by the system: sweep proposed it to `claude-3`, the
+seat confirmed via the endpoint, intake re-inferred server-side, minted
+`claim:707c154e…` (repeat confirm → `:already? true`), and the next watcher
+cycle projected it as a dirty-set member. No state was edited by hand.
+
+**Restart (2026-08-25 18:44):** dev-zone-env block landed (`PROMOTION=propose`,
+`SWEEPER=true`, 30 min). Watcher up with all 14 labelled roots; tracer
+attribution survived the process boundary. Separately, c4922353 (Opus) made
+`promote-at-turn-end!` refuse sessionless seats — 3,263 held-on-nothing plans
+over 30 h were that flood seen from the other side.
+
+**Epoch amnesty (2026-08-25 18:5x, Joe: "the usual one, in batches"):**
+`plan-amnesty` on live state → 107 unattributed across 9 repos, 0 sensitive.
+Exempt: `futon3c src/futon3c/substrate/client.clj` (someone's live, reasoned
+change — deserves its own author) and `futon3 li` (1-byte stray). Executed
+15 batches with `execute-amnesty-plan!` (kondo error-level gate on .clj):
+futon0 1, futon3 3 (cycle-machine / math-formalization / war-room), futon3b 1,
+futon3c 3 (labs / technotes / rest), futon5 2 (on branch
+`M-propagators-2026-07-15`), futon5a 2, futon6 1, futon7 1 (re-run with
+`namespace-name-mismatch` off — a standalone repro script), futon7a 1. All
+`:committed`, index empty after each; nothing pushed. Next cycle:
+unattributed 107 → 3 (the two exemptions plus
+`holes/labs/M-diagramprover/apm-driver/axiom-audit.jsonl`, an append-only log
+some process keeps writing — it will keep reappearing until gitignored).
+
 ## Open decisions
 
 - Which future exact-success boundaries can cover Codex and direct Emacs edits;
