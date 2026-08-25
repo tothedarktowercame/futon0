@@ -201,8 +201,14 @@ the person with the problem and the person who can sign — is
         height (+ y0 (* (count rs) row) 78)
         idx (into {} (map-indexed (fn [i p] [p i]) ps))]
     (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-         (format (str "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 %d %d\" "
-                      "role=\"img\" aria-labelledby=\"t d\">") width height)
+         ;; width/height on the ROOT, not just a viewBox. tuftify.py sizes a
+         ;; figure by scanning the first 2000 characters of the asset for
+         ;; width="...", so a root carrying only a viewBox matched the first
+         ;; cell rect instead -- 96px, under its margin-figure threshold, and
+         ;; the paper rendered this grid at the size of a penny.
+         (format (str "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\" "
+                      "viewBox=\"0 0 %d %d\" role=\"img\" aria-labelledby=\"t d\">")
+                 width height width height)
          "<title id=\"t\">Where each case's problem sits, and what the recipient did</title>"
          "<desc id=\"d\">Thirty-two business-model cases against the five phases of the "
          "customer's own control loop. A filled cell means the demand-side record locates "
