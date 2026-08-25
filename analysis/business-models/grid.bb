@@ -88,7 +88,13 @@
                :acceptance-event (:acceptance-event c)
                ;; A named successor is a trajectory with a "there" to get to
                ;; sooner -- the clearest form of the faster/better question.
-               :trajectory (boolean (seq (get-in c [:lineage :successors])))}))
+               :trajectory (boolean (seq (get-in c [:lineage :successors])))
+               ;; What the recipient actually did when something was offered.
+               ;; Present only on the first-hand cases, because it is the one
+               ;; fact desk research cannot supply -- and it is the beginning of
+               ;; a demand-side record: :declined-on-capacity says the offer
+               ;; failed on the recipient's time horizon rather than on merit.
+               :response (get-in c [:response-signal :class])}))
        vec))
 
 (defn phases []
@@ -99,16 +105,24 @@
          {:case (:case c) :phase p :solved :unknown :paid :unknown :basis nil})))
 
 (defn cell-state
-  "Three-valued, and amber is a fourth reading of the two-valued pair rather
-   than a state of its own: solved without payment is the PlanetMath shape."
+  "Solved and paid are separate, and `paid` is not a boolean.
+
+   :deferred is a real third value, not a hedge. UKRN's record already carries
+   the distinction as `:declined-on-capacity`: the recipient answered, and
+   answered that the idea was good and the capacity was not there -- at roughly
+   2.5 person-days per week, admitting only immediate-revenue work. That fails
+   on TIME HORIZON, not on merit, and lumping it with :n would lose the one
+   thing that says which remedy could work. An offer nobody values and an offer
+   nobody can act on yet want different moves."
   [{:keys [solved paid]}]
   (cond
-    (= :n solved)              :red
-    (and (= :y solved) (= :y paid)) :green
-    (and (= :y solved) (= :n paid)) :amber
-    :else                      :unknown))
+    (= :n solved)                        :red
+    (and (= :y solved) (= :y paid))      :green
+    (and (= :y solved) (= :deferred paid)) :deferred
+    (and (= :y solved) (= :n paid))      :amber
+    :else                                :unknown))
 
-(def glyph {:green "G" :amber "A" :red "R" :unknown "."})
+(def glyph {:green "G" :amber "A" :deferred "D" :red "R" :unknown "."})
 
 (defn -main []
   (let [cs (cases)
@@ -141,14 +155,17 @@
                      (str/join ", " (map (fn [[k n]] (str n " " (name k)))
                                          (sort-by (comp - val) (frequencies (map :target cs)))))
                      (count (filter :trajectory cs))))
+    (doseq [c cs :when (:response c)]
+      (println (format "  response recorded: %-30s %s" (name (:case c)) (name (:response c)))))
     (println (format "  fixture: %d of %d publicly attemptable without permission"
                      (count (filter #(= :y (get-in % [:fixture :public])) cs)) (count cs)))
     (println)
-    (doseq [k [:green :amber :red :unknown]]
+    (doseq [k [:green :deferred :amber :red :unknown]]
       (when-let [n (get tally k)]
         (println (format "  %-8s %3d  %s" (name k) n
                          (case k
                            :green "got them there better, and it was worth paying for"
+                           :deferred "got them there better; they would pay, but not now"
                            :amber "got them there better, nobody would have paid"
                            :red "simulated, and we could not"
                            :unknown "simulation not run")))))))
