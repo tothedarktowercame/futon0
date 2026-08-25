@@ -779,6 +779,120 @@ practical implication that its maintainer opened a collaboration.* The
 repeatable shape is: find a party whose stated assumptions are unmeasured, whose
 stress case matches a corpus we already hold, and measure it.
 
+### D15 — Inbox-zero is the attribution instrument D8 is missing (2026-08-24)
+
+Traced live (claude-3 + Joe) while activating the inbox-zero machinery on zone
+(`futon0/README-inbox-zero.md`, 2026-08-24 log entry). The finding: the
+session→file→commit chain that inbox-zero builds
+(`E-inbox-zero-implementation`, slices 1–6, live at zone's next restart) is a
+DP5-compliant attribution instrument, and its design already refused the exact
+error DP5 documents. Where autoclock mission-linkage is "present on 65% of
+turns and substantially wrong" (D8/DP5), inbox-zero's contract is: attribution
+only from an explicit witness (a successful `Edit`/`Write` tool result, exact
+seat), fail-closed to `:unattributed`/`:ambiguous` rather than manufactured
+edges, and — for the mission hop specifically — "link to a clock-state
+observation by id rather than copying mutable labels into every record" (its
+M-autoclock-in section). That is D2's record-type fix applied to attribution.
+
+The composed chain closes D8's one missing hop as a byproduct of turn-end
+promotion (README-inbox-zero mechanism #1, unbuilt): a promotion commit is the
+moment when seat, files, and mission-clock are simultaneously known, so
+commit-observation → session-commit-link → seat → clock-state observation →
+star map becomes a join, not prose. Side effect for the panel: a **work
+attribution** measure (files/commits per mission per seat) alongside M1
+citation and M6 retrieval — the silent-workhorse quadrant gains a third axis,
+worked-on but never cited or retrieved.
+
+Binding constraints, measured: (i) the only claim producer today is the
+server-side Claude tool stream (`dev.clj record-inbox-zero-tool-results!`);
+Codex and the operator's own Emacs edits are `:unattributed` by design — the
+excursion's open decisions (no save-time last-editor guess; explicit file
+subscription) are the right shape, and subscription composes with clock-in:
+clocking into a mission could subscribe the seat to the files it edits, an
+explicit operator act. (ii) The seat→mission binding D8 calls "instantly
+suppliable" exists as typed buffer-local state (`agent-chat--mission-id` et
+al.) but lands nowhere a claim can reference by id. (iii) Sequencing per the
+excursion's own gate: evaluate slices 1–6 on the live system first (false
+attribution, nag rate), then slice 7 — which already names "autoclock
+witnesses, mission summaries, automatic promotion."
+
+### D16 — Primary + crosslist mission attribution; inference proposes, confirmation mints (Joe + claude-3, 2026-08-24)
+
+Joe, extending D15: producers for Codex and Zai are easy (agreed — the witness
+boundary is producer-agnostic; Zai is in-process, Codex ships `tool_use` ledger
+events since futon3c `bed3dd47`). The harder cases: sessions that are not
+clocked in, and sessions clocked into one mission committing work that belongs
+to others — "right now this session is clocked in on M-futon-problems but we
+could commit work related to other missions." Proposal: infer mission
+attribution from files, commits, and substrate-2, and "do M-autoclock-in on
+that basis," with **primary + crosslist** attribution (arXiv-style).
+
+**The safeguard that keeps DP5: inference proposes, confirmation mints.** The
+65%-wrong autoclock linkage is what infer-and-write produces. Instead, an
+unclocked session accumulating claims receives a typed followup — "this
+session's work looks like M-x; clock in?" — through the slice-4 followup queue
+(already built, busy-gated, exact-seat). The confirmation is the explicit act
+that mints the witness; autoclock proceeds on witness-strength evidence.
+
+**Primary and crosslist run different evidence budgets because the risk is
+asymmetric.** A wrong primary corrupts the attention ledger (D8's
+divide-by-mission); a wrong crosslist adds noise to a deliberately generous
+index. Primary requires witness-strength (clock-in or confirmed proposal).
+Crosslist may be structural/inferred but each edge names its basis
+(`:path-containment`, `:retrieval-exhaust`, `:commit-cooccurrence`) so
+downstream measures can filter by evidence strength. Signal inventory, in
+precision order: path containment (`holes/labs/M-<mission>/…` — structural,
+the path names the mission); substrate-2 commit→file incidences (commit-ingest
+default-ON since 2026-06-25; DP4 applies — incidences, no clique expansion);
+retrieval exhaust (lexical-adjacent — crosslist-only, per the two falsified
+lexical mechanisms, whitepaper §4.2). Checked and rejected as a primary
+signal: mission scope trees (`futon6/data/mission-scope-trees/`, 575
+hyperedges for this mission) are intra-document section/concept structure, not
+file→mission maps; concept-overlap inference from them is lexical.
+
+**"No mission" must remain a valid value, and it is an instrument, not a
+gap.** Worked example from this session: primary M-futon-problems (clocked;
+doc edit path-structural); crosslist E-inbox-zero-implementation for
+`README-inbox-zero.md` + `dev-zone-env` (session read the excursion; diffs
+name it); and `futon3c/scripts/session-cost.py` — real, verified, committed-
+intent work belonging to **no mission at all**. Forcing it into one would
+manufacture an edge. The four-corpora table says missions catch problems
+someone *chose* and miss emergent ones: a stream of witnessed, seat-attributed,
+mission-less commits is the emergent-work detector. Some of D8's "everything
+else seemingly languishes unattended" may be mission-less real work no current
+ledger can see.
+
+**Refinement (Joe, 2026-08-24): orphans are claimable, retroactively.** "None"
+is not a terminal state — it leaves the work orphaned from the mission
+landscape, and a later-minted mission (or another agent) may claim it: "if we
+wanted to make an M-cost-tracking mission, it would be natural to claim
+[session-cost.py] later." Four consequences:
+
+1. **Late binding is native to the data model.** Observations are immutable and
+   linkage lives in separate records, so a retroactive claim is a new
+   `mission-commit-claim` carrying claimant, claim date, and basis — the commit
+   observation never changes. Competing claims reuse the existing ambiguity
+   machinery: fail closed to `:ambiguous`, operator-gate resolves. Seat
+   attribution (who did it) stays separate from mission attribution (what for);
+   claiming does not transfer authorship.
+2. **Two timestamps, kept distinct.** *When the work happened* vs *when it was
+   claimed*. The emergent-work instrument must be computed over "unclaimed at
+   commit time," never "unclaimed now" — otherwise late claiming silently
+   destroys the very signal it feeds on. The substrate is bitemporal; this is
+   native there.
+3. **The orphan pool is a mission-minting menu — WR-19 one level up.** A
+   ranking signal cannot create an option absent from the menu; the orphan pool
+   *is* the menu. A coherent orphan cluster is evidence a mission wants to
+   exist. Measured today: ~14 cost-related commits since 2026-07 across three
+   workstreams (Emacs cost-segment series, `session-cost.py`, zai per-turn
+   cost capture), all mission-less — M-cost-tracking has a well-defined
+   retroactive claim set before it is even minted. This is the fourth corpus's
+   reverse-morphogenesis logic applied to git history: the accumulated form
+   reveals the problem that was being solved.
+4. **Precedent:** WR-11..22 "were not missing — they were in bulletins 9 and
+   10, unpromoted." Claiming orphans is promotion, applied to commits instead
+   of bulletin prose.
+
 ## 3. The paper as projection
 
 `p4ng/futon-2026.tex` is the working draft, in the role `plop-2026.tex` played

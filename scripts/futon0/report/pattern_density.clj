@@ -21,7 +21,7 @@
    Env: FUTON3C_PORT (default 7070), FUTON3C_SERVER, FUTON3C_EVIDENCE_BASE."
   (:require [babashka.http-client :as http]
             [cheshire.core :as json]
-            [clojure.string :as str])
+            [clojure.edn :as edn])
   (:import (java.time LocalDate ZoneId)))
 
 (def ^:private tz (ZoneId/of "Europe/London"))
@@ -33,13 +33,20 @@
 
 (def ^:private spark-chars "▁▂▃▄▅▆▇█")
 
+(def ^:private evidence-timeout-ms
+  ;; A 5,000-row evidence response is several MB and a cold live read can take
+  ;; longer than the old fixed 10s budget. Keep this fail-closed but give the
+  ;; serving JVM the same 90s budget used by snapshot publishers.
+  (or (some-> (System/getenv "FUTON3C_EVIDENCE_TIMEOUT_MS") parse-long)
+      90000))
+
 ;; ---------- HTTP ----------
 
 (defn- fetch-evidence [limit]
   (let [url (str futon3c-url "/api/alpha/evidence?limit=" limit)
         resp (http/get url {:headers {"accept" "application/json"}
                             :throw false
-                            :timeout 10000})]
+                            :timeout evidence-timeout-ms})]
     (when (= 200 (:status resp))
       (let [parsed (json/parse-string (:body resp) true)]
         (when (:ok parsed)
@@ -50,14 +57,27 @@
 (defn- entry->day [entry]
   (some-> (:evidence/at entry) (subs 0 10)))
 
+(defn- evidence-body
+  "The evidence API historically returned decoded bodies and now returns the
+   durable EDN body string. Accept both explicit wire shapes; malformed bodies
+   remain non-events rather than being fabricated as empty retrievals."
+  [entry]
+  (let [body (:evidence/body entry)]
+    (cond
+      (map? body) body
+      (string? body) (try (edn/read-string body) (catch Exception _ nil))
+      :else nil)))
+
 (defn- context-retrieval?
   [entry]
-  (= "context-retrieval" (get-in entry [:evidence/body :event])))
+  (let [body (evidence-body entry)]
+    (= "context-retrieval" (or (:event body) (get body "event")))))
 
 (defn- retrieval-results
   "Yields {:pattern-id <id> :score <score>} per retrieved item."
   [entry]
-  (for [r (get-in entry [:evidence/body :results])
+  (for [r (let [body (evidence-body entry)]
+            (or (:results body) (get body "results")))
         :let [pid (or (:id r) (get r "id"))]
         :when pid]
     {:pattern-id pid

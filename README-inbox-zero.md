@@ -362,6 +362,28 @@ is a signal that something happened — a long offline stretch, a divergent
 branch, a box nobody has looked at — and that is exactly when a human should be
 told rather than have the evidence quietly tidied away.
 
+**Refined (Joe, 2026-08-24): loud does not mean "to Joe."** Threshold
+escalations routed to the operator by default would make him field a queue of
+routine requests — exactly the outcome this document exists to prevent. The
+escalation router is a tier ladder ordered by *who can act*, and each tier is
+tried before the next:
+
+| tier | goes to | when | resolved how |
+|---|---|---|---|
+| 0 | nobody | ordinary accumulation | auto-push |
+| 1 | the **responsible seats** | outlier / held plan / stale base | session-commit-links + claims say exactly whose commits these are; deliver via the followup queue, exact-seat |
+| 2 | the **street-sweeper peripheral** | tier-1 seat unfindable (exact-seat validation fails: session rotated, agent gone) | orphaned hygiene becomes an ordinary sweep item |
+| 3 | **Joe** | judgement only a human can make | a *hold with a question*, not a notification |
+
+Tier 3's defining examples: *"this seems like a potentially sensitive file —
+do you want it in a public repo? Holding on your word"*; an agent explicitly
+declaring it cannot decide. Volume is never by itself a tier-3 signal. This
+implies a **sensitivity screen before push** (the publish moment): a
+describe-the-kind rule set (key material, credentials, personal data, large
+binaries), configurable, deliberately not an enumeration of filenames — the
+2,012-file lesson above. A sensitive hit is `:held :sensitive-content` and is
+the canonical tier-3 item.
+
 ### What stays manual, honestly
 
 Real uncommitted work needs a person, and no mechanism here changes that. What
@@ -413,11 +435,66 @@ not a single abandoned batch, which is what makes a mechanism necessary.
    not in the manifest at all.
 6. **The timer exists on the laptop only.** Zone runs the same repos and has
    the same failure mode; it does not yet have the unit.
+7. **An operator seat — `*joe-repl*` (Joe, 2026-08-24: "maybe we need a
+   joe-repl where agents can bell *me* with things that need attention").**
+   Push policy is auto-push-ordinary / escalate-outliers, and the outlier
+   escalation needs a destination. The delivery half already exists: the
+   slice-4 followup queue delivers typed, deduped, busy-gated messages to an
+   exact seat, and the Emacs poller injects them as turns. What is missing is
+   only a registered `joe` seat with a buffer behind it — no model, just an
+   inbox rendering followups/bells and letting the operator's replies go back
+   as bells. Side effect worth as much as the feature: a witnessed operator
+   seat makes operator attention measurable through the same fail-closed
+   machinery (`M-futon-problems` D8), instead of being inferred from prose.
 
 A compile check before push would have caught **all three** non-compiling
 commits seen on 2026-08-14 — two of them ours, one upstream
 (`No such var: turn-queue/queue-view`, where a caller was pushed and its
 definition left uncommitted on another box for three days).
+
+## Attribution — what the witness chain is for (2026-08-24)
+
+The machinery built for hygiene turns out to be an attribution instrument. The
+seat→file→commit chain (`E-inbox-zero-implementation`, slices 1–6) is the only
+place in the stack where *who did the work* is recorded from an explicit
+witness rather than inferred — and `M-futon-problems` D8 measures the cost of
+inference elsewhere: autoclock mission-linkage "present on 65% of turns and
+substantially wrong." Full derivation in `M-futon-problems` D15/D16; the
+design, as it bears on this document:
+
+**Turn-end promotion is where attribution is nearly free.** A promotion commit
+is the one moment when seat, files, and the session's mission-clock are
+simultaneously known. So the mechanism that removes "think about git commits"
+is the same mechanism that closes the session→mission hop as data instead of
+prose — one wire, both goals.
+
+**Primary + crosslist, on different evidence budgets.** A commit's *primary*
+mission comes from the seat's clock-in — witness-strength, because a wrong
+primary corrupts the attention ledger. *Crosslists* may be structural or
+inferred (path containment, substrate-2 commit co-occurrence, retrieval
+exhaust — in that precision order), because a wrong crosslist only adds noise
+to a deliberately generous index. Every edge names its basis, so downstream
+measures can filter by evidence strength.
+
+**Inference proposes; confirmation mints.** For unclocked sessions, inferred
+attribution is delivered as a typed followup through the slice-4 queue ("this
+work looks like M-x; clock in?") — the confirmation keystroke is the explicit
+act that converts inference-strength into witness-strength. Infer-and-write is
+what produced the 65% figure; the confirm step is the whole difference.
+
+**"No mission" is a valid value, and an instrument.** Work witnessed to a seat
+but claimed by no mission is the emergent-work detector: the mission corpus
+only catches problems someone *chose*. Orphans are claimable retroactively —
+a later-minted mission adds a claim record (claimant, date, basis) over the
+immutable commit observation, with competing claims failing closed to
+`:ambiguous` as usual. Two timestamps stay distinct: *unclaimed at commit
+time* is the emergent-work signal and must not be erased by later claiming;
+*unclaimed now* is the mission-minting menu. A coherent orphan cluster is
+evidence a mission wants to exist — measured 2026-08-24: ~14 cost-related
+commits since July across three workstreams, all mission-less, forming a
+ready-made claim set for an M-cost-tracking that has not been minted. WR-11..22
+set the precedent: they "were not missing — they were in bulletins 9 and 10,
+unpromoted." Claiming orphans is promotion, applied to commits.
 
 ## Appendix — the Jujutsu sub-experiment (2026-08-14, parked)
 
@@ -467,6 +544,51 @@ Turned off on Dionysus `futon3c` (1.1M), Dionysus `futon0`, and zone `futon3c`
 (632K) on 2026-08-14.
 
 ## Log
+
+- **2026-08-24** — **Live case: one verified fix, traced through the whole
+  pipeline (zone).** A one-function fix to `futon3c/scripts/session-cost.py`
+  (SDK-driven sessions record prompts as text-block lists; the string-only
+  `is_typed_prompt` test made pouch-driven sessions price as turnless) was
+  finished and verified at 08:21 and deliberately left uncommitted to see what
+  the machinery would do with it. What *should* happen, per
+  [`E-inbox-zero-implementation`](holes/excursions/E-inbox-zero-implementation.md)
+  slices 1–6: the slice-5 producer sees the successful `Edit` in claude-3's
+  invoke stream → writes a seat witness and session-file claim for the exact
+  seat → the watcher observes `scripts/session-cost.py :modified` → a dirty set
+  of one for that seat → the 24-hour age trigger queues a followup → delivered
+  into that seat's REPL buffer when idle. What *did* happen: nothing. The
+  serving JVM has no `FUTON3C_INBOX_ZERO_*` environment, no witness dir, and no
+  state files; only slice-4's HTTP routes are live (`/api/alpha/followups/ready`
+  answers — and correctly withheld delivery during the seat's turn). All six
+  slices merged and tested 2026-08-21 — and "needs a restart" turned out to be
+  false: **zone's JVM was restarted 2026-08-23 and the feature correctly stayed
+  off**, because the activation exports were added to `scripts/dev-laptop-env`
+  only, and even there `FUTON3C_INBOX_ZERO_ENABLED` defaults to `false`; zone's
+  launcher (`dev-zone-env`) got nothing. Per-box launcher scripts are an
+  enumeration of cases, and zone was the case not in the list — the enumerated-
+  cases failure form, fifth instance. There is also a half-activation trap:
+  bootstrap falls back to `/home/joe/code/storage/inbox-zero/witnesses` when
+  `FUTON3_INBOX_ZERO_WITNESS_DIR` is unset, but the slice-5 producer
+  (`dev.clj` `record-inbox-zero-tool-results!`) reads that variable raw with no
+  fallback and "returns nil when disabled" — so `ENABLED=true` alone yields a
+  watcher that observes dirt and a producer that never writes claims: every
+  path `:unattributed`, zero followups, indistinguishable from working. The
+  code even documents its own precedent one line above the gate
+  (`bootstrap.clj:554`): commit-ingest's prior default-false "silently froze
+  substrate-2's commit/code-history layer" for a month and was fixed by
+  defaulting ON. *A capability that requires the discipline it is meant to
+  replace is not a mechanism*, third instance — and a default-off capability
+  requires the most discipline of all.
+  Meanwhile the fix is **live-serving from dirt**: every cost refresh on zone
+  spawns the working-tree script, so production behavior already diverges from
+  HEAD — the unreliable-narrator cost, running in the same hour it was measured.
+  Measured while tracing, same repo: 12 dirty paths (4 modified, 8 untracked),
+  oldest 2026-08-20 — past both the 5-count and 24-hour thresholds, but with no
+  witnesses every one is `:unattributed`, and the fail-closed rule correctly
+  routes no followup; and **387 commits ahead of `origin/master`, 0 behind,
+  oldest 08-20** (fetch-verified; `ls-remote` agrees) — the 08-19 outlier (110
+  commits, one disk) recurring at 3.5× on the same box, still class 1: zero
+  judgement needed, still in exactly one place.
 
 - **2026-08-19** — `futon-sync.clj` found already written and wired to nothing,
   and computing ahead/behind without fetching: it reported 1 repo behind where
