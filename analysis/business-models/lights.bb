@@ -193,12 +193,32 @@ the person with the problem and the person who can sign — is
 
 (def geom {:x0 250 :y0 46 :cw 96 :ch 15 :gap 3 :row 18})
 
+(defn wrap-names
+  "SVG has no line wrapping, so the not-located list is broken by hand.
+   Georgia at 9.5px averages a shade under 5px per character; 5 is the safe
+   budget and an overrun would run off the viewBox rather than reflow."
+  [names budget-px]
+  (let [per 5.0]
+    (reduce (fn [lines n]
+              (let [cur (peek lines)
+                    cand (if cur (str cur ", " n) n)]
+                (if (and cur (< (* per (count cand)) budget-px))
+                  (conj (pop lines) cand)
+                  (conj lines n))))
+            [] names)))
+
 (defn svg [rs ps]
+  ;; Only the rows with a phase claim are drawn. Seventeen empty rows cost more
+  ;; vertical space than the grid itself and say one thing that a single line
+  ;; underneath says better (Joe, 2026-08-25); the cases are named there, so
+  ;; nothing is dropped from the figure, only from the lattice.
   (let [{:keys [x0 y0 cw ch gap row]} geom
-        lit (filter :phase rs)
+        lit (vec (filter :phase rs))
+        dark (vec (remove :phase rs))
         by-state (frequencies (map :response lit))
         width (+ x0 (* (count ps) (+ cw gap)) 8)
-        height (+ y0 (* (count rs) row) 78)
+        wrapped (wrap-names (map :org dark) (- width 130))
+        height (+ y0 (* (count lit) row) 74 (* 13 (count wrapped)))
         idx (into {} (map-indexed (fn [i p] [p i]) ps))]
     (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
          ;; width/height on the ROOT, not just a viewBox. tuftify.py sizes a
@@ -227,7 +247,7 @@ the person with the problem and the person who can sign — is
                               (+ x0 (* (idx p) (+ cw gap))) (- y0 8) (esc p))))
          ;; rows
          (apply str
-           (for [[i r] (map-indexed vector rs)
+           (for [[i r] (map-indexed vector lit)
                  :let [y (+ y0 (* i row))]]
              (str (format "<text class=\"o%s\" x=\"%d\" y=\"%d\" text-anchor=\"end\">%s</text>"
                           (if (:phase r) "" " u") (- x0 10) (+ y 11)
@@ -246,7 +266,7 @@ the person with the problem and the person who can sign — is
                                      (if (#{"critical" "muted"} (:tone st)) "#ffffff" "#1a1a19")
                                      (:glyph st) (esc (:short st))))))))))
          ;; legend
-         (let [ly (+ y0 (* (count rs) row) 24)]
+         (let [ly (+ y0 (* (count lit) row) 24)]
            (apply str
              (for [[j k] (map-indexed vector
                            (filter #(pos? (get by-state % 0))
@@ -257,10 +277,14 @@ the person with the problem and the person who can sign — is
                             lx (- ly 9) (tone-hex (:tone st)))
                     (format "<text class=\"lg\" x=\"%d\" y=\"%d\">%s %s (%d)</text>"
                             (+ lx 16) ly (:glyph st) (esc (:label st)) (get by-state k 0))))))
-         (format (str "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#5a5a52\">"
-                      "%d of %d rows carry a phase claim; the rest are :unknown "
-                      "because no source located the problem.</text>")
-                 (+ y0 (* (count rs) row) 48) (count lit) (count rs))
+         (let [by (+ y0 (* (count lit) row) 48)]
+           (str (format (str "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#5a5a52\">"
+                             "Not located (%d of %d) — no source places the problem at a phase:"
+                             "</text>") by (count dark) (count rs))
+                (apply str
+                  (for [[k line] (map-indexed vector wrapped)]
+                    (format "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#8a8a80\">%s</text>"
+                            (+ by 14 (* k 13)) (esc line))))))
          "</svg>")))
 
 (defn -main []
