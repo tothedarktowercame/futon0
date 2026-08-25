@@ -44,10 +44,14 @@
 ;; Response states. `other` is a real slot, not a dumping ground: it holds the
 ;; classes that exist once each and would otherwise each demand a hue nobody
 ;; can tell apart from its neighbour.
+;; Glyphs are deliberately Latin-1 or common Geometric Shapes. U+2715 MULTIPLICATION
+;; X rendered as tofu when cairosvg rasterised the figure for print -- the web page
+;; was fine, so the missing glyph would have shipped to the PDF only. U+00D7 is safe
+;; everywhere.
 (def states
   {:engaged                 {:label "Engaged" :short "Engaged" :glyph "●" :tone "good"}
    :declined-on-capacity    {:label "Declined — capacity" :short "Capacity" :glyph "◐" :tone "warning"}
-   :declined-on-merit       {:label "Declined — merit" :short "Merit" :glyph "✕" :tone "critical"}
+   :declined-on-merit       {:label "Declined — merit" :short "Merit" :glyph "×" :tone "critical"}
    :silent                  {:label "Silent" :short "Silent" :glyph "·" :tone "muted"}
    :declined-ground-unknown {:label "Declined — ground unknown" :short "Ground?" :glyph "◌" :tone "muted"}
    :forked-after-engagement {:label "Forked after engagement" :short "Forked" :glyph "◆" :tone "muted"}
@@ -177,10 +181,88 @@ the person with the problem and the person who can sign — is
                     (esc (if-let [pc (:problem r)] (str/join ", " (map name pc)) "—")))))
          "</table>")))
 
+(def svg-file (io/file root "grid-lights.svg"))
+
+;; SVG rather than a screenshot: the paper's build converts every SVG figure to
+;; PDF for pdflatex (p4ng/svg2pdf.py) and LaTeXML embeds the same file for the
+;; web, so one vector source serves both and neither is a raster of a browser.
+;; Drawn from the same rows the HTML uses, so the two cannot disagree.
+(def tone-hex
+  {"good" "#0ca30c" "warning" "#fab219" "critical" "#d03b3b"
+   "muted" "#8a8a80" "none" "none"})
+
+(def geom {:x0 250 :y0 46 :cw 96 :ch 15 :gap 3 :row 18})
+
+(defn svg [rs ps]
+  (let [{:keys [x0 y0 cw ch gap row]} geom
+        lit (filter :phase rs)
+        by-state (frequencies (map :response lit))
+        width (+ x0 (* (count ps) (+ cw gap)) 8)
+        height (+ y0 (* (count rs) row) 78)
+        idx (into {} (map-indexed (fn [i p] [p i]) ps))]
+    (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+         (format (str "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 %d %d\" "
+                      "role=\"img\" aria-labelledby=\"t d\">") width height)
+         "<title id=\"t\">Where each case's problem sits, and what the recipient did</title>"
+         "<desc id=\"d\">Thirty-two business-model cases against the five phases of the "
+         "customer's own control loop. A filled cell means the demand-side record locates "
+         "the problem at that phase; its glyph and colour name what the recipient did when "
+         "something was offered. Fifteen of thirty-two rows carry a phase claim.</desc>"
+         "<style>"
+         ".o{font:10px Georgia,serif;fill:#1a1a19}"
+         ".o.u{fill:#9a9a92}"
+         ".h{font:9px Georgia,serif;fill:#5a5a52;letter-spacing:.08em}"
+         ".g{font:10px Georgia,serif;text-anchor:middle;dominant-baseline:central}"
+         ".lg{font:9.5px Georgia,serif;fill:#3a3a34}"
+         "</style>"
+         ;; phase headers
+         (apply str (for [p ps]
+                      (format "<text class=\"h\" x=\"%d\" y=\"%d\">%s</text>"
+                              (+ x0 (* (idx p) (+ cw gap))) (- y0 8) (esc p))))
+         ;; rows
+         (apply str
+           (for [[i r] (map-indexed vector rs)
+                 :let [y (+ y0 (* i row))]]
+             (str (format "<text class=\"o%s\" x=\"%d\" y=\"%d\" text-anchor=\"end\">%s</text>"
+                          (if (:phase r) "" " u") (- x0 10) (+ y 11)
+                          (esc (let [o (:org r)] (if (> (count o) 34) (str (subs o 0 33) "\u2026") o))))
+                  (apply str
+                    (for [p ps
+                          :let [x (+ x0 (* (idx p) (+ cw gap)))
+                                lit? (= p (:phase r))
+                                st (get states (:response r) (:unknown states))
+                                fill (if lit? (tone-hex (:tone st)) "#eeeeea")]]
+                      (str (format "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" rx=\"3\" fill=\"%s\"/>"
+                                   x y cw ch fill)
+                           (when lit?
+                             (format "<text class=\"g\" x=\"%d\" y=\"%d\" fill=\"%s\">%s %s</text>"
+                                     (+ x (quot cw 2)) (+ y (quot ch 2))
+                                     (if (#{"critical" "muted"} (:tone st)) "#ffffff" "#1a1a19")
+                                     (:glyph st) (esc (:short st))))))))))
+         ;; legend
+         (let [ly (+ y0 (* (count rs) row) 24)]
+           (apply str
+             (for [[j k] (map-indexed vector
+                           (filter #(pos? (get by-state % 0))
+                                   [:engaged :declined-on-capacity :declined-on-merit
+                                    :silent :declined-ground-unknown :forked-after-engagement]))
+                   :let [st (states k) lx (+ 8 (* j 185))]]
+               (str (format "<rect x=\"%d\" y=\"%d\" width=\"11\" height=\"11\" rx=\"2\" fill=\"%s\"/>"
+                            lx (- ly 9) (tone-hex (:tone st)))
+                    (format "<text class=\"lg\" x=\"%d\" y=\"%d\">%s %s (%d)</text>"
+                            (+ lx 16) ly (:glyph st) (esc (:label st)) (get by-state k 0))))))
+         (format (str "<text class=\"lg\" x=\"8\" y=\"%d\" fill=\"#5a5a52\">"
+                      "%d of %d rows carry a phase claim; the rest are :unknown "
+                      "because no source located the problem.</text>")
+                 (+ y0 (* (count rs) row) 48) (count lit) (count rs))
+         "</svg>")))
+
 (defn -main []
   (let [rs (rows) ps (phases)]
     (spit out-file (html rs ps))
-    (println (format "wrote %s -- %d rows, %d with a phase claim"
-                     (str out-file) (count rs) (count (filter :phase rs))))))
+    (spit svg-file (svg rs ps))
+    (println (format "wrote %s and %s -- %d rows, %d with a phase claim"
+                     (.getName out-file) (.getName svg-file)
+                     (count rs) (count (filter :phase rs))))))
 
 (-main)
