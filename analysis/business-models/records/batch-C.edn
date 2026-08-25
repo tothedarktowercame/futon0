@@ -143,7 +143,28 @@
   :artifact-oracle {:what "article counts, edits, active contributors, and mathematicians contributing, linking, correcting, and maintaining entries" :hardness :interpretive}
   :sale-oracle {:what "voluntary donor, sponsor, or grant support for correctness, pedagogy, and community maintenance" :hardness :interpretive}
   :distance {:hops 2 :note "at least 2: contributor value -> public use/community legitimacy -> voluntary funding"}
-  :acceptance-event :none
+  ;; CORRECTED 2026-08-25, batch H. Was :none. Corneli's 2011 paper records
+  ;; that PlanetMath's software "improved further under contract with Springer,
+  ;; pursuant to the creation of StatProb.com" -- a named commercial publisher
+  ;; paying for work. Joe confirmed it the same day: "there was a contract with
+  ;; Springer, I had forgotten."
+  ;;
+  ;; This is defect 1 recurring a FOURTH time (after :outcome, :oracle, and the
+  ;; open-core reading that refuted no-acceptance-implies-zombie): :none was
+  ;; read off the ARTIFACT -- the encyclopedia, which nobody ever paid for --
+  ;; while an aggregate event existed on a services engagement beside it.
+  ;;
+  ;; Google Summer of Code (2006, 2007, 2008, producing NNexus) is NOT counted.
+  ;; Joe, 2026-08-25: GSoC "only paid the interns." Money reached students, not
+  ;; the project, so it is not an acceptance event for PlanetMath's own work.
+  ;; Recorded explicitly because a later reader counting three fundings would
+  ;; otherwise overstate the demand side threefold.
+  ;;
+  ;; What the corpus still cannot say: the Springer event happened once and
+  ;; never recurred. :per-unit | :aggregate | :none has no way to distinguish a
+  ;; standing aggregate line from a single engagement that ended. PlanetMath is
+  ;; the case that forces that distinction; it is named here and not yet added.
+  :acceptance-event :aggregate
   :counterfactual-success-mode
   {:mode :infrastructure-sponsor
    :approached ["The Math Forum @ Drexel" "MAA" "The Open University" "Wolfram Research"]

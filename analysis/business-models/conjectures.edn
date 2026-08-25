@@ -2,7 +2,14 @@
 ;; with batch G (first-hand cases: xtdb-text-index, ukrn-services-simulation).
 ;; Only counts moved. all-terminals-interest and no-external-obligation both
 ;; still HOLD at n=32 -- the survey's central finding survived first-hand data
-;; rather than being an artefact of desk research. corpus grew
+;; rather than being an artefact of desk research.
+;;
+;; Rebased again 2026-08-25 when batch H landed 32 DEMAND-SIDE records. The
+;; :n values on the v3 conjectures move off their pre-registered zero baseline
+;; for the first time; the supply-side conjectures do not move at all, which is
+;; the point of the :cases/:demand-cases domain split. every-case-has-demand-
+;; side moved :refuted -> :holds, which is the batch's whole purpose and is
+;; recorded here rather than quietly matched.
 [{:id :every-unverified-has-discharge
   :kind :lint
   :statement "Every unverified claim has a non-empty discharge condition."
@@ -80,9 +87,9 @@
   :over :cases
   :where [:= [:get :acceptance-event] :none]
   :pred [:not= [:get :capture-outcome] :scaled]
-  :established "PlanetMath and Emacs; 2026-08-20"
-  :expected {:verdict :refuted :counterexamples [:redis-labs-redis-inc] :n 10}
-  :note "REFUTED, and the diagnosis is a field defect not a world fact: :acceptance-event was extracted off the ARTIFACT rather than the CAPTURE VEHICLE. All four open-core cases (docker, juxt-xtdb, lightbend, redis) read :none because the free OSS artifact has no payment event, while the enterprise subscription plainly does. This is defect 1 recurring a third time (after :outcome and :oracle): :acceptance-event needs the same artifact/capture split. When that split lands this conjecture will mismatch again, which is correct."}
+  :established "PlanetMath and Emacs; 2026-08-20. PlanetMath left this domain 2026-08-25 -- see below."
+  :expected {:verdict :refuted :counterexamples [:redis-labs-redis-inc] :n 9}
+  :note "n moved 10 -> 9 on 2026-08-25 when batch H found that PlanetMath's :acceptance-event was wrong: Corneli's 2011 paper records a Springer contract for work on the software, so the value is :aggregate, not :none, and PlanetMath no longer satisfies the :where. One of the two cases this conjecture was ESTABLISHED on has left its domain, which leaves Emacs. That is defect 1 a fourth time and in the same direction every time -- :none read off a free artifact while a paid vehicle sat beside it. REFUTED, and the diagnosis is a field defect not a world fact: :acceptance-event was extracted off the ARTIFACT rather than the CAPTURE VEHICLE. All four open-core cases (docker, juxt-xtdb, lightbend, redis) read :none because the free OSS artifact has no payment event, while the enterprise subscription plainly does. This is defect 1 recurring a third time (after :outcome and :oracle): :acceptance-event needs the same artifact/capture split. When that split lands this conjecture will mismatch again, which is correct."}
 
  {:id :operating-seat-rare
   :kind :world
@@ -93,6 +100,107 @@
   :threshold 3
   :established "HackerOne, Gitcoin, and Kaggle; 2026-08-20"
   :expected {:holds? true :counterexamples []}}
+
+ ;; ---- v3, demand-side batch. Expectations stated BEFORE the batch runs. ----
+
+ {:id :for-case-resolves
+  :kind :lint
+  :statement "Every demand-side record's :for-case names an existing case-id."
+  :quantifier :forall
+  :over :demand-cases
+  :where [:present? [:get :for-case]]
+  :pred [:joined [:for-case] [:present? [:get :case-id]]]
+  :established "RESEARCH-SPEC-demand-side D1 pairing invariant"
+  :expected {:verdict :holds :n 32 :counterexamples []}
+  :note "n=0 until the batch lands. A demand record may legitimately have NO pair (:for-case :unknown, the D2 population); what it may not do is name a pair that is not there."}
+
+ {:id :every-unverified-field-has-discharge
+  :kind :lint
+  :statement "Every field-level unverified assertion has a non-empty discharge condition."
+  :quantifier :forall
+  :over :unverified-fields
+  :pred [:non-empty? [:get :discharge]]
+  :established "RESEARCH-SPEC-demand-side, discipline 2, extended to v3 nested :provenance"
+  :expected {:verdict :holds :n 75 :counterexamples []}
+  :note "The :claims lint does not reach these. v3 puts :provenance inside :capacity, :management-depth, :failing-phase, and :transition-slots, and no v1/v2 record has a nested :provenance at all -- so this domain is empty today and the lint is inert until it is not."}
+
+ {:id :problem-class-vocabulary
+  :kind :lint
+  :statement "Every :problem-class value is on the closed list."
+  :quantifier :forall
+  :over :demand-cases
+  :pred [:all-in [:get :problem-class]
+         #{:capacity :knowledge-concentration :integration :modernization
+           :code-quality :adoption-mess :business-model :evidence-gap}]
+  :established "RESEARCH-SPEC-demand-side controlled vocabulary"
+  :expected {:verdict :holds :n 32 :counterexamples []}
+  :note "The spec calls this list closed and says a case needing a new class adds it here with the case that forced it. Nothing enforced that. An empty vector passes -- no class assigned is a legitimate answer, and is not the same as a class off the list. :evidence-gap was added 2026-08-25 with the case that forced it (xtdb#5637's unmeasured divergence estimate), by the rule the spec states."}
+
+ {:id :failing-phase-vocabulary
+  :kind :lint
+  :statement "Every :failing-phase is one of the five control-map stages."
+  :quantifier :forall
+  :over :demand-cases
+  :where [:present? [:get-in [:failing-phase :phase]]]
+  :pred [:in [:get-in [:failing-phase :phase]]
+         #{"PERCEIVE" "BELIEVE" "EVALUATE" "SELECT" "ACT"}]
+  :established "p4ng/empirics-futon/control-stages.edn, the same five the grid columns come from"
+  :expected {:verdict :holds :n 15 :counterexamples []}
+  :note "These columns and the loop in the paper cannot drift, which is the whole reason the grid reads them off the drawn control map rather than restating them. A demand-side record naming a sixth phase would break that silently."}
+
+ {:id :capacity-admits-vocabulary
+  :kind :lint
+  :statement "Every :capacity :admits value is on the closed list."
+  :quantifier :forall
+  :over :demand-cases
+  :where [:present? [:get-in [:capacity :admits]]]
+  :pred [:in [:get-in [:capacity :admits]]
+         #{:immediate-revenue-only :funded-work-only :maintenance-only
+           :discretionary-capacity :none}]
+  :established "RESEARCH-SPEC-demand-side, :capacity field"
+  :expected {:verdict :holds :n 10 :counterexamples []}
+  :note "UKRN's :immediate-revenue-only is the seed. :unknown is absent from the set deliberately -- the checker reads it as indeterminate and the :where excludes it, so an unknown admits is not a vocabulary violation."}
+
+ {:id :response-signal-vocabulary
+  :kind :lint
+  :statement "Every :response-signal class, including per-buyer ones, is on the closed list."
+  :quantifier :forall
+  :over :demand-cases
+  :pred [:and
+         [:or
+          [:not [:present? [:get-in [:response-signal :class]]]]
+          [:in [:get-in [:response-signal :class]]
+           #{:engaged :declined-on-capacity :declined-on-merit
+             :forked-after-engagement :declined-ground-unknown :silent}]]
+         [:or
+          [:not [:present? [:get-in [:response-signal :by-buyer-classes]]]]
+          [:all-in [:get-in [:response-signal :by-buyer-classes]]
+           #{:engaged :declined-on-capacity :declined-on-merit
+             :forked-after-engagement :declined-ground-unknown :silent :unknown}]]]
+  :established "RESEARCH-SPEC-demand-side, extended 2026-08-25 with the cases that forced it"
+  :expected {:verdict :holds :n 32 :counterexamples []}
+  :note ":forked-after-engagement (Lucid against Emacs) and :declined-ground-unknown (Andela) were added with their forcing cases. :by-buyer-classes is a flat denormalisation of the :by-buyer entries' classes, carried so the closed list can be checked without a predicate that walks maps inside vectors -- the checker's vocabulary reads values, not structures. Absent means the record has one buyer and the field does not apply, so the predicate admits absence explicitly rather than reading it as indeterminate; what it will not admit is a PRESENT list carrying a class off the vocabulary. The same admission covers :class :unknown, which the checker reads as the third truth value: an unknown response is a finding this batch expects to record 6 times, not a record the vocabulary cannot decide."}
+
+ {:id :every-case-has-demand-side
+  :kind :world
+  :statement "Every supply-side case has a demand-side record pointing at it."
+  :quantifier :forall
+  :over :cases
+  :pred [:exists-record [:for-case] [:get :case-id]]
+  :established "RESEARCH-SPEC-demand-side D1; pre-registered 2026-08-25 before the batch ran"
+  :expected {:verdict :holds :n 32 :counterexamples []}
+  :note "CLOSED 2026-08-25 by batch H. Pre-registered the same day as :refuted at n=32 with all 32 as counterexamples -- the corpus had zero demand-side rows, and the blind spot was stated as something the checker re-derives rather than something the prose asserts. D1 paired all 32. What the pairing does NOT establish is that the buyers are legible: 11 of 32 carry no :problem-class at all and 17 carry :failing-phase :unknown, because no source names a step in the buyer's own loop. The conjecture asks whether a record exists, not whether it says anything."}
+
+ {:id :capacity-not-business-model
+  :kind :world
+  :statement "No demand-side record classes a problem as both :capacity and :business-model."
+  :quantifier :forall
+  :over :demand-cases
+  :where [:some= :capacity [:get :problem-class]]
+  :pred [:not [:some= :business-model [:get :problem-class]]]
+  :established "The Tonic hypothesis; pre-registered 2026-08-25"
+  :expected {:verdict :holds :n 7 :counterexamples []}
+  :note "HOLDS non-vacuously from 2026-08-25: 7 of the 32 demand-side records class a problem as :capacity and not one of them also classes it :business-model. Before batch H the domain was empty and the conjecture said nothing. The spec's first form -- 'the paired supply-side record's :chain :terminal is :interest' -- cannot be wrong: all-terminals-interest already holds 32/32, so the join returns :interest by construction and the conjecture tests nothing. This is the same claim put where a record can refute it. Tonic's head of research retiring is a CAPACITY problem in the clothes of a strategy one; if a researched case genuinely needs both classes, the separation this spec exists to enforce is the thing that was wrong, and that is a finding."}
 
  {:id :market-exchange-convergence
   :kind :world

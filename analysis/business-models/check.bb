@@ -9,17 +9,46 @@
 ;;   values:     literals, [:get k], [:get-in [k ...]]
 ;;   predicates: [:= a b], [:not= a b], [:in value #{...}], [:not p],
 ;;               [:and p ...], [:or p ...], [:non-empty? value],
-;;               [:present? value], [:contains-node-type? node-type]
+;;               [:present? value], [:contains-node-type? node-type],
+;;               [:some= value seq-value], [:all-in seq-value #{...}],
+;;               [:exists-record other-path value], [:joined path pred]
 ;;
-;; Missing keys and the literal :unknown evaluate to a third truth value,
-;; :indeterminate. Boolean operators use strong Kleene three-valued logic.
-;; Conjecture domains are :cases, :predicted-cases, and :unverified-claims.
+;; Missing keys, an explicit nil, and the literal :unknown evaluate to a third
+;; truth value, :indeterminate. Boolean operators use strong Kleene
+;; three-valued logic.
+;;
+;; :all-in checks every element of a sequential value against a closed list --
+;; the shape a controlled vocabulary actually has. An EMPTY sequence passes:
+;; [] means "no class assigned", which the v3 spec treats as a legitimate
+;; answer, distinct from "a class not on the list".
+;;
+;; :some= tests membership in a SEQUENTIAL value. [:in ...] cannot: it compiles
+;; to (contains? coll v), and on a vector contains? tests indices, so
+;; (contains? [:capacity] :capacity) is false. :problem-class is a vector.
+;;
+;; :exists-record and :joined read across records, which the v3 demand-side
+;; batch needs: a pairing claim is about two records at once. Both see the
+;; whole corpus via *records*, not the conjecture's own filtered domain, so a
+;; supply-side case can find the demand-side record that points at it.
+;;
+;; Conjecture domains are :cases (supply-side only), :demand-cases,
+;; :predicted-cases, :unverified-claims, and :unverified-fields.
 ;; Quantifiers are :forall and :count-at-least. A :where predicate restricts
 ;; the domain; an indeterminate :where result is itself reported indeterminate.
 
 (def unknown ::unknown)
 (def truth-values #{true false :indeterminate})
 (def ^:dynamic *item* nil)
+;; The whole corpus, for the cross-record predicates. Bound once in -main so
+;; that a conjecture whose DOMAIN is filtered can still join against records
+;; outside it.
+(def ^:dynamic *records* [])
+
+(defn demand-record?
+  "A v3 demand-side record: written from the customer's seat, so it carries
+   none of the supply-side chain fields the world conjectures quantify over."
+  [r]
+  (= :customer (:entity-type r)))
 
 (defn unknown? [x]
   (or (= x unknown) (= x :unknown)))
@@ -27,7 +56,9 @@
 (defn lookup [m path]
   (let [missing (Object.)
         value (get-in m path missing)]
-    (if (or (identical? missing value) (= :unknown value)) unknown value)))
+    (if (or (identical? missing value) (nil? value) (= :unknown value))
+      unknown
+      value)))
 
 (declare eval-pred)
 
@@ -75,6 +106,34 @@
                             (coll? v) (boolean (seq v))
                             (nil? v) false
                             :else true))
+        :some=
+        (let [needle (eval-value (first args) item)
+              hay (eval-value (second args) item)]
+          (cond (or (unknown? needle) (unknown? hay)) :indeterminate
+                (set? hay) (boolean (contains? hay needle))
+                (coll? hay) (boolean (some #(= needle %) hay))
+                :else false))
+        :all-in
+        (let [v (eval-value (first args) item)
+              allowed (second args)]
+          (cond (unknown? v) :indeterminate
+                (coll? v) (boolean (every? #(contains? allowed %) v))
+                :else false))
+        :exists-record
+        (let [other-path (first args)
+              wanted (eval-value (second args) item)]
+          (if (unknown? wanted)
+            :indeterminate
+            (boolean (some (fn [r] (and (not (identical? r item))
+                                        (= wanted (lookup r other-path))))
+                           *records*))))
+        :joined
+        (let [wanted (lookup item (first args))]
+          (if (unknown? wanted)
+            :indeterminate
+            (if-let [target (first (filter #(= wanted (:case-id %)) *records*))]
+              (eval-pred (second args) target)
+              false)))
         :contains-node-type?
         (let [wanted (first args)
               primary (lookup item [:node-types :primary])
@@ -121,7 +180,17 @@
 
 (defn domain-items [over records]
   (case over
-    :cases (mapv (fn [r] {:case-id (:case-id r) :value r}) records)
+    ;; :cases is the SUPPLY side and always was -- all 32 rows are written from
+    ;; the seat of someone travelling the node. Naming that here rather than
+    ;; leaving it implicit is what lets demand-side records share the directory
+    ;; without turning every supply-side universal :undecided. A customer row
+    ;; has no :chain and no :acceptance-event, so it would arrive as an
+    ;; indeterminate, and :forall reads one indeterminate as "not decidable" --
+    ;; which would report absence of scope as absence of a verdict.
+    :cases (->> records (remove demand-record?)
+                (mapv (fn [r] {:case-id (:case-id r) :value r})))
+    :demand-cases (->> records (filter demand-record?)
+                       (mapv (fn [r] {:case-id (:case-id r) :value r})))
     :predicted-cases
     (->> records
          ;; RECORDS-SPEC freezes batches E/F specifically. Other batches may
@@ -136,6 +205,20 @@
                    (for [claim (:claims r)
                          :when (= :unverified (:provenance claim))]
                      {:case-id (:case-id r) :value claim})))
+         vec)
+    ;; v3 puts :provenance inside FIELDS (:capacity, :management-depth,
+    ;; :failing-phase, :transition-slots), not only inside :claims. The
+    ;; discharge lint walked :claims alone, so a v3 record could be unverified
+    ;; in every field, carry no discharge anywhere, and pass clean. No v1/v2
+    ;; record has a nested :provenance, so this domain is empty until the
+    ;; demand-side batch lands.
+    :unverified-fields
+    (->> records
+         (mapcat (fn [r]
+                   (for [[k v] r
+                         :when (and (map? v) (= :unverified (:provenance v)))]
+                     {:case-id (keyword (str (name (:case-id r)) "/" (name k)))
+                      :value v})))
          vec)
     (throw (ex-info (str "Unknown conjecture domain " over) {:over over}))))
 
@@ -231,7 +314,8 @@
         ;; would bite if the corpus scored FUTON leniently; it does not (both
         ;; land on :interest, as 30/30 others do). :provenance-class stays so
         ;; first-hand and desk-researched remain distinguishable.
-        survey records
+        survey (remove demand-record? records)
+        demand (filter demand-record? records)
         self-cases (filter #(= :first-hand (:provenance-class %)) records)
         conjectures (edn/read-string (slurp conjectures-file))
         duplicate-ids (duplicate-case-ids records)
@@ -243,6 +327,11 @@
              "| survey:" (count survey) "expected:" 32
              "missing:" (max 0 (- 32 (count survey)))
              "| of which first-hand:" (count self-cases))
+    (println "demand-side records:" (count demand)
+             "| paired:" (count (filter #(not (unknown? (lookup % [:for-case]))) demand))
+             "| supply cases with a pair:"
+             (count (filter (fn [c] (some #(= (:case-id c) (:for-case %)) demand))
+                            survey)))
     (when (empty? files)
       (println "NOTE: records directory is absent or contains no .edn files."))
     (doseq [{:keys [file message]} errors]
@@ -250,15 +339,19 @@
     (when (seq duplicate-ids)
       (println "DUPLICATE CASE IDS:" (str/join ", " (map name duplicate-ids))))
     (println "\nLINT CONJECTURES  (shape discipline -- ALL records, self-cases included)")
-    (let [lint-diffs (mapv (fn [c] (print-result! c (check-conjecture c records))) lints)]
+    (binding [*records* records]
+     (let [lint-diffs (mapv (fn [c] (print-result! c (check-conjecture c records))) lints)]
       (println "\nWORLD CONJECTURES  (empirical -- all 32, first-hand included)")
-      (let [world-diffs (mapv (fn [c] (print-result! c (check-conjecture c survey))) world)
+      ;; Every conjecture now gets the FULL record set; domain-items does the
+      ;; supply/demand split, so the filtering lives in one place and the
+      ;; cross-record predicates can still see everything.
+      (let [world-diffs (mapv (fn [c] (print-result! c (check-conjecture c records))) world)
             mismatches (+ (count (filter seq lint-diffs))
                           (count (filter seq world-diffs)))
             structural-errors (+ (count errors) (count duplicate-ids))]
         (println (str "\nsummary: " mismatches " expectation mismatch(es), "
                       structural-errors " load/identity error(s)"))
         (when (pos? (+ mismatches structural-errors))
-          (System/exit 1))))))
+          (System/exit 1)))))))
 
 (apply -main *command-line-args*)

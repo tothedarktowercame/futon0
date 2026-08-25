@@ -69,11 +69,23 @@
       (= :sustained-noncommercially cap) :ncom
       :else                              :open)))
 
-(defn cases []
+(defn all-records []
   (->> (file-seq records-dir)
        (filter #(str/ends-with? (.getName %) ".edn"))
        sort
        (mapcat read-edn)
+       vec))
+
+(defn demand-record? [r] (= :customer (:entity-type r)))
+
+(defn cases []
+  ;; Supply side only. The grid is 32 x 5 by construction -- one row per case
+  ;; the simulation could be run FROM. Demand-side records (v3, :entity-type
+  ;; :customer) share this directory but are not rows: letting them in would
+  ;; grow the grid silently, and 160 unrun cells becoming 480 unrun cells reads
+  ;; as progress in the cell count while nothing has been simulated.
+  (->> (all-records)
+       (remove demand-record?)
        (map (fn [c]
               {:case (:case-id c) :org (:org c)
                :target (target c)
@@ -159,6 +171,12 @@
       (println (format "  response recorded: %-30s %s" (name (:case c)) (name (:response c)))))
     (println (format "  fixture: %d of %d publicly attemptable without permission"
                      (count (filter #(= :y (get-in % [:fixture :public])) cs)) (count cs)))
+    (let [demand (filter demand-record? (all-records))
+          paired (set (keep :for-case demand))]
+      (println (format "  demand-side records: %d (not grid rows); %d of %d cases paired"
+                       (count demand)
+                       (count (filter #(paired (:case %)) cs))
+                       (count cs))))
     (println)
     (doseq [k [:green :deferred :amber :red :unknown]]
       (when-let [n (get tally k)]
