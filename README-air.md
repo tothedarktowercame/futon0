@@ -128,3 +128,39 @@ curl -s -X DELETE http://<peer>:7070/api/alpha/agents/ams-${AGENT}
   serve two models on two ports and register two agents. The Agency treats
   them as distinct agents, which is exactly right for A/B comparisons
   (e.g. air vs cloud on the same prompts).
+
+## Operational cost of leaving it running (measured 2026-08-26)
+
+An air seat is cheap to *use* and not cheap to *leave on*. Measured on `zone`
+after **18 days 4 hours** of uptime, serving GLM-4.5-Air `UD-Q4_K_XL` at
+`-c 65536`:
+
+| | |
+|---|---|
+| resident | **51 GB RSS** (19.5% of 249 GB) |
+| virtual | 122 GB VSZ |
+| **swap** | **4.19 GB — the entire 4,095 MB swap partition** |
+| CPU at idle | ~8.5% of one core, doing no work |
+
+**The swap figure is the one that matters.** `/proc/<pid>/status` gave
+`VmSwap: 4185600 kB`, against a total swap of 4,095 MB. So a long-lived air
+server does not merely use swap, it *occupies all of it*: pages age out over
+weeks and are never faulted back, because nothing asks the model for anything.
+The box then has **no swap cushion at all** for any other process, while `free`
+still shows plenty of RAM available and looks healthy.
+
+This is invisible from the usual instruments. Load average was 2.10 on 32 cores
+and 177 GB showed available; only `VmSwap` on the process named the cost.
+
+**Practical rules.**
+
+- **Stop it when the air seat is not in the workflow.** `systemctl --user stop
+  llama-glm.service`. Restarting is cheap relative to holding 51 GB and the
+  whole swap partition for weeks.
+- **Check `VmSwap`, not `free`.** `awk '/^VmSwap/{print $2}' /proc/$(pgrep -f
+  llama-server)/status`. A machine with full swap and idle RAM reads as fine
+  everywhere else.
+- **The unit and the running process can drift.** On 2026-08-26 the running
+  process carried `-t 20` while `llama-glm.service` specified `-t 30`, so the
+  live instance predated an edit to the unit. A restart silently changes thread
+  count — worth knowing before attributing a throughput change to anything else.
