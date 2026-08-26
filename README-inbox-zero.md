@@ -605,3 +605,45 @@ Turned off on Dionysus `futon3c` (1.1M), Dionysus `futon0`, and zone `futon3c`
   `futon3c` and `futon6` synced and their deletions restored. Mesh-wide compile
   break closed upstream (`ed00baf0`). Evidence corpus relocation to root
   `data/` in flight.
+
+## Checkpoint — 2026-08-26
+
+The inbox-zero machinery is active, but it was deliberately made quiet after
+the initial feedback loop.
+
+Initial activation generated 3,263 `:nothing-promotable` plans over about 30
+hours, including 84 followups for one seat. Repeated turn-end checks, unstable
+dedupe keys, and routing diagnostic/no-op plans as actionable work caused the
+flood. Repairs landed on 2026-08-26: one promotion pass per completed turn;
+exact agent/session identity required; no messages for plans with zero
+promotable files; stable per-seat/repo deduplication; stale followups rejected
+at delivery; and propose mode writing only to the ledger.
+
+Live state on Dionysus at this checkpoint:
+
+- `FUTON3C_INBOX_ZERO_ENABLED=true`, promotion mode `execute`, attribution
+  sweeper enabled every 30 minutes;
+- durable `state.edn` was actively updating (last write 18:46 UTC);
+- 64 immutable edit witnesses, 59 file claims, 43 session→commit links, and
+  305 commit observations;
+- three automatic promotion commits on 2026-08-26: five paths for `claude-12`,
+  then one path and one path for `claude-19`.
+
+Successful ordinary work is therefore intentionally silent. A seat is
+contacted only when it has actionable work that could not be promoted
+automatically. The absence of messages is not evidence that the mechanism is
+off.
+
+The remaining blind spots explain why it can still appear inert. Codex edits
+do not reach the exact-success witness boundary; neither do direct Emacs edits.
+Unattributed files correctly produce no guessed-author notification. At this
+checkpoint `futon3c` had nine dirty/untracked paths which the watcher could
+observe but generally could not assign to a proven seat.
+
+The separate sync monitor is genuinely absent on this host: neither
+`futon-sync.timer` nor `futon-sync.service` is installed, despite mechanism #3
+above saying the timer landed. Consequently the fetch/ahead/behind check is not
+running here; `futon3c` was three commits ahead of `origin/master` at the
+checkpoint. The automatic exact-seat Claude path is operating, while Codex,
+direct Emacs, unattributed dirt, and the missing sync timer remain the concrete
+gaps.
