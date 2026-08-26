@@ -64,28 +64,63 @@ The n=3 pattern in the red set is *price-on-adoption → substitution*, which is
 about the move itself. Sequencing is n=1. Worth keeping separate so the
 hypothesis is not read as better supported than it is.
 
-## "BV by hand" is exact, and the stack has already registered the hole
+## "BV by hand" is exact — and BV is already built, 0-sorry
 
 Joe, noticing himself sequencing several work streams mid-turn: *"I'm basically
 doing BV by hand."*
 
-BV — Guglielmi's calculus of structures — is precisely the system whose
-non-commutative `seq` sits beside commutative `par`, i.e. the algebra of *this
-before that* against *these together*. The stack has already recorded its
-absence as a typed hole (`M-typed-holes-mathlib-audit.edn`): *"No BV/deep-
-inference syntax, seq/par/copar connectives, medial rule, or calculus-of-
-structures API found in mathlib."*
+BV — Guglielmi's calculus of structures — is the system whose non-commutative
+`seq` sits beside commutative `par`: the algebra of *this before that* against
+*these together*.
 
-And it is registered as live work. `M-diagramprover/capability-proof-futon.edn`,
-F4: *"D1 (Pearl/DAG) oracle-triangulated …; **D2 (Caus[-]/BV)** and D3
-(Markov-cat) registered"*, with the certificate *"first-application contract
-written (BV-type the emission loop)"* — and F4 is `:constrained-by [:WR-27]`,
-**the same ruling that reddens R8 and R14.**
+**Correction (Joe, 2026-08-26).** An earlier draft of this note said the stack
+had "recorded its absence as a typed hole". That was an as-of finding about
+**mathlib**, not about this stack: `M-typed-holes-mathlib-audit.edn` ran
+`rg BV/…` under `Mathlib/Logic`, `Mathlib/CategoryTheory`, `Mathlib/Order`. The
+stack then built it. `mathlib4/DarkTower/BV.lean` is **147 lines with zero
+`sorry`**:
 
-So three things that arrived separately are the same thing: the operator
-sequencing streams by hand, an undischarged BV contract in the prover, and the
-ring that says a loop should be born instrumented for its gain. The convergence
-is in the records, not imposed on them.
+    inductive BV      -- atoms, self-dual unit, seq / copar / par
+    inductive Cong
+    inductive Step
+    theorem seq_assoc_cong · par_comm_cong · atom_medial · seq_assoc_step
+
+and its header reads `seq S T` as *"sequential fill or a path through typed
+holes"*. So the operator's hand-sequencing has a machine-checked counterpart,
+with the medial rule proven — not a gap.
+
+## The F4 constraint, which surprised its own author
+
+`M-diagramprover/capability-proof-futon.edn` F4 is `:constrained-by [:WR-27]`,
+committed by Joe on 2026-08-14 and a surprise to him on 2026-08-26. It is not
+incidental. F4 claims *"a prover whose logic ladder grows **by demand**"* —
+a consumption-to-acquisition loop — and WR-27 says:
+
+> *Ship every new consumption-to-acquisition loop with an instrument that
+> measures how much returned demand changes what the loop does next.*
+
+F4's certificate, *"five typed refusals from F3's claims demanded D2"*, is the
+first reading of exactly that instrument: five demand signals, one acquisition.
+
+Two things follow. First, WR-27 carries `@holds-open R8 R14`, so those rings are
+red **by the ruling's design** rather than by neglect. Second, WR-27's own
+example is the same shape as the business cases: *"a judge/formalizer
+disagreement log that never alters the formalization pipeline is the
+uninstrumented-loop smell."*
+
+### And that makes the Docker transfer computable
+
+WR-27 prescribes a specific metric: **the fraction of returned signals that
+change subsequent acquisition or action.** Docker made three price-on-adoption
+moves (2020, 2021, 2023). Substitution was returned after the first and after
+the second. Both subsequent moves proceeded on the same shape.
+
+    returned signals that changed the next action:  0 of 2
+
+That is not an analogy to R8 — it is R8's prescribed instrument, computed on a
+business case from the corpus's own record. The three cases supply the
+calibration for the *observable* (1, 9, 10 days to substitution); Docker alone
+supplies a reading of the *gain*.
 
 ## What this does not license
 
