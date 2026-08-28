@@ -59,6 +59,33 @@
           (when (re-find match filename) suggest))
         noise-patterns))
 
+(def ^:private bulk-dir-threshold
+  "Untracked files under one directory before it is called generated.
+
+   noise-patterns above is a list of fifteen names somebody thought of, so it
+   can only ever catch noise that is already known -- which is the same noise
+   already in .gitignore. It is the very defect it exists to find, one level up.
+   Measured 2026-08-19: the Linodes each carried 1,006 untracked .binpb/.arrow
+   files under chicago-store/, and nothing here matched any of it.
+
+   So detect by SHAPE instead of by name: a directory nobody has committed
+   anything from, holding this many untracked files, is generated. That rule
+   needs no list and catches kinds nobody has met yet."
+  50)
+
+(defn bulk-untracked-dirs
+  "Top-level dirs holding >= bulk-dir-threshold untracked files.
+
+   Reported, never auto-fixed: 200 uncommitted source files is the same shape
+   as 200 generated ones, and the remedy is the opposite. This says look here,
+   not ignore this."
+  [untracked]
+  (->> untracked
+       (keep #(first (str/split % #"/")))
+       frequencies
+       (filter (fn [[d n]] (and (>= n bulk-dir-threshold) (not (str/blank? d)))))
+       (sort-by (comp - second))))
+
 ;; ── ANSI helpers ─────────────────────────────────────────────────────────────
 
 (def ^:private ansi-reset  "\033[0m")
@@ -122,7 +149,8 @@
                     (filterv #(not (str/starts-with? % "??")) entries))
         dirty-files (mapv :path dirty)
         untracked (mapv #(subs % 3) (filterv #(str/starts-with? % "??") entries))
-        noisy-files (filterv noisy? untracked)]
+        noisy-files (filterv noisy? untracked)
+        bulk-dirs (bulk-untracked-dirs untracked)]
     (assoc repo
            :branch (or branch "?")
            :ahead ahead :behind behind :no-remote no-remote?
@@ -133,6 +161,7 @@
            :untracked-count (count untracked)
            :noisy-files noisy-files
            :noisy-suggestions (into #{} (keep noisy?) noisy-files)
+           :bulk-dirs bulk-dirs
            :clean? (and (zero? (count dirty))
                         (zero? (count untracked))
                         (zero? ahead) (zero? behind)))))
@@ -227,6 +256,11 @@
       (when (pos? n-dirty)  (printf "  |  %s dirty" (c ansi-yellow (str n-dirty))))
       (when (pos? n-noisy)  (printf "  |  %s noisy" (c ansi-red (str n-noisy))))
       (println)
+      (doseq [st (mapv repo-status repos)
+              [d n] (:bulk-dirs st)]
+        (println (c ansi-yellow
+                    (format "bulk: %s/%s holds %d untracked files - generated? add a .gitignore rule"
+                            (:label st) d n))))
       (shelf-report))))
 
 ;; ── Review command ───────────────────────────────────────────────────────────
@@ -356,28 +390,32 @@
 
 ;; ── Push command ─────────────────────────────────────────────────────────────
 
-(def ^:private max-auto-ahead
-  "Above this, a repo is not pushed automatically -- it is escalated.
+(def ^:private notable-ahead
+  "Piles at or above this are NOTED in the output. They are still pushed.
 
-   Ordinary work is small. An unusual pile is a SIGNAL (a long offline stretch,
-   a divergent branch, a box nobody has looked at), and quietly tidying it away
-   destroys the evidence. Zone held 110 commits diverged for two days on
-   2026-08-19; nothing was watching the number, so nothing said so."
+   An earlier version withheld them for a human to approve. That was wrong:
+   the action attached to the alert was 'push them', which is exactly what the
+   system can do unaided, so it was an interrupt with no decision behind it.
+   The target is that nothing routes to a person unless a person is genuinely
+   required, and a large pile does not require one -- it is the same mechanical
+   push, more of it.
+
+   Note also that under continuous pushing the pile cannot form. Zone reached
+   110 commits because nothing pushed for two days, not because 110 needed
+   deciding."
   (let [args (vec *command-line-args*)
-        i (.indexOf args "--max-ahead")]
+        i (.indexOf args "--notable-ahead")]
     (if (neg? i) 10 (parse-long (or (get args (inc i)) "10")))))
 
 (defn cmd-push [repos]
   (let [assume-yes? (contains? (set *command-line-args*) "--yes")
         interactive? (some? (System/console))
         statuses (mapv repo-status repos)
-        pushable* (filterv #(and (pos? (:ahead %)) (not (:no-remote %))) statuses)
-        held (filterv #(> (:ahead %) max-auto-ahead) pushable*)
-        pushable (filterv #(<= (:ahead %) max-auto-ahead) pushable*)]
-    (doseq [h held]
-      (println (str (c ansi-red "HELD  ") (:label h)
-                    (format " %d commits ahead - over the %d threshold; push it deliberately"
-                            (:ahead h) max-auto-ahead))))
+        pushable (filterv #(and (pos? (:ahead %)) (not (:no-remote %))) statuses)
+        notable (filterv #(>= (:ahead %) notable-ahead) pushable)]
+    (doseq [n notable]
+      (println (c ansi-dim (format "note: %s is %d commits ahead - pushing, not asking"
+                                   (:label n) (:ahead n)))))
     (if (empty? pushable)
       (println (c ansi-green "All repos up to date with origin."))
       (do
