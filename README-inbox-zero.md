@@ -647,3 +647,71 @@ running here; `futon3c` was three commits ahead of `origin/master` at the
 checkpoint. The automatic exact-seat Claude path is operating, while Codex,
 direct Emacs, unattributed dirt, and the missing sync timer remain the concrete
 gaps.
+
+## Checkpoint — 2026-08-28
+
+`futon3c` had nine dirty/untracked paths at the 2026-08-26 checkpoint. It has
+**seventeen** now. The count nearly doubled in two days, and the reason is not
+that the machinery stopped: it is that three of the paths are not dirt, and no
+sweeper will ever clear them.
+
+Counted across the three dirty repos, twenty-two items in **three** categories —
+one more than the taxonomy above admits.
+
+**Live run-products in tracked paths — three items, and no remedy above applies.**
+
+    holes/labs/M-diagramprover/apm-driver/axiom-audit.jsonl         last written 73 minutes ago
+    holes/labs/M-diagramprover/apm-driver/campaign-ledger.jsonl     git diff: +1 −0, a pure append
+    holes/labs/M-diagramprover/apm-driver/statements-manifest.jsonl
+
+The running machine appends to these. Committing them clears the tree until the
+next frame writes a line. This is *generated noise* in the sense of the section
+above, with one difference that changes the remedy completely: **those 2,012
+files were untracked and a `.gitignore` pattern fixed them; these are tracked, and
+an ignore rule does nothing to a tracked file.** They need `git rm --cached` and a
+rule, or relocation out of the tree — and until then the goal *"no repo carries
+uncommitted work older than a day"* is not merely unmet, it is unreachable, and
+the watcher is correct to have nothing to promote.
+
+This is the document's own general form once more, from the other side: the
+remedy list enumerated two kinds of dirt and fails silently on the third kind in
+front of it.
+
+**Finished work sitting unstaged — thirteen items.** Eleven pattern-library
+scribe outputs for frames f37–f49 (codex and zai seats), a hole-review
+resolution-witness `.edn`, and two `.flexiarg` files in `futon3`. Cost #1 of this
+document, verbatim, two weeks after it was written. These are frame outputs, and
+frame outputs are already known to strand when a frame closes badly. The
+attribution blind spot named at the 08-26 checkpoint is exactly why they sit
+here: they are Codex and Zai seat products, and the exact-success witness
+boundary does not reach either.
+
+**Source edits and one stray — six items.** `apm-coordinator-enabled.py`,
+`substrate/client.clj`, `live-map-pca3-v1.json`, `README-termux.md`,
+`patterns-index.tsv`, and a file in `futon3` named `li` — almost certainly a
+mistyped `ls`. A genuine inbox, clearable by a person in an afternoon.
+
+### Why this matters beyond tidiness now
+
+A dirty tree has no sha. On 2026-08-28 the serving `futon3c` JVM was measured to
+be built from **nine repositories**, of which three had uncommitted trees and one
+(`futon5`) was on a feature branch rather than a mainline. **The state that JVM is
+running cannot be named**, so it cannot be pinned, reproduced, or compared with
+another JVM's state — which is the prerequisite for running more than one.
+
+That gives the third cost of this document — *a dirty tree is an unreliable
+narrator* — a harder consequence than misleading an agent. It blocks the
+heredity pin outright. `futon2` is clean in that measurement precisely because
+its run-products live under `data/`, which is gitignored; `futon3c` is not,
+because its equivalent products are tracked.
+
+### Order of work, and it is not the obvious one
+
+Move the run-products out of tracked paths **first**. Clearing the thirteen
+unstaged items first would look like progress and be undone by the next frame,
+which is the shape of every sweep in the *"why fifty sweeps did not hold"*
+section. With the products gone, the remaining nineteen are a real inbox, the
+count stops regenerating, and the pin becomes takeable.
+
+Recorded by claude-13 at Joe's direction; the thirteen unstaged items are other
+seats' outputs and are flagged rather than staged.
