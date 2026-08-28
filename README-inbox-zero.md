@@ -715,3 +715,44 @@ count stops regenerating, and the pin becomes takeable.
 
 Recorded by claude-13 at Joe's direction; the thirteen unstaged items are other
 seats' outputs and are flagged rather than staged.
+
+### Swept to zero the same day
+
+All nine repositories on the serving JVM's classpath are clean as of 2026-08-28.
+Nineteen items were cleared after the run-products were untracked; none of them
+was contentious once looked at, which is this document's oldest observation.
+
+| what | count | disposition |
+|---|---|---|
+| pattern-library scribe outputs, frames f37–f49 | 10 | committed — 576 lines of mined pattern content, declaring themselves inputs to `apm-ingest-coined-pattern-files.sh` |
+| review-dispatch resolution-witness hole | 1 | committed — see below |
+| finished source fixes | 2 | committed — brace-matched registry parsing; page size re-derived after the 115→971 edge repair |
+| regenerated tracked resources | 2 | committed — the PCA live map (311→372 missions) and `patterns-index.tsv` |
+| second-phone documentation | 1 | committed |
+| unstaged library flexiargs | 2 | committed — 22 of 23 siblings were already tracked |
+| a 1-byte file named `li` containing a tab | 1 | deleted |
+
+**Cost #2 was paid again, in this sweep, by the agent doing the sweeping.**
+`hole-review-dispatch-resolution-witness-v1.edn` was written by `claude-12` on
+2026-08-25. It records that `ValidReviewDispatch`'s resolution witnesses —
+`candidatePersisted`, `candidateFetchable` and four others — are self-reported
+booleans, so the model proves only *"if the controller says everything resolves,
+then the enumerated failures do not occur"*. On 2026-08-28 I re-derived exactly
+that finding from scratch while mining the APM git log, wrote it up as the L0 gap
+in `M-formal-war-machine` §3.1i, and found the earlier record only when sweeping
+the tree that had been holding it for three days. It also named a closure I did
+not have — content-addressed witnesses, as `TraceReviewSnapshot` already does
+with `snapshotDigest`/`contentDigest`.
+
+Three days, one morning's work, and the evidence was on disk the whole time. The
+document's second cost is not hypothetical and does not spare the person reading
+the document.
+
+### One thing that is clean and still not coherent
+
+`futon5` is checked out on `M-propagators-2026-07-15`, not a mainline branch,
+while the serving JVM loads it. Nothing is dirty; the vector is nameable. But
+*"one JVM per repo, running master"* is true of `futon3c` and was never checked
+for the other eight, and this is the component where it is false. Left as it is —
+switching a branch under a running JVM is not a sweep — and recorded so the pin,
+when taken, pins a state someone chose rather than one nobody noticed.
