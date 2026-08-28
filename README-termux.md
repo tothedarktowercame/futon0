@@ -454,3 +454,70 @@ screen from shrinking the desktop's windows.
 
 That also makes the handover a non-event — when Dionysus goes back, one client
 stops attaching and nothing else changes.
+
+## 9. A second phone (2026-08-27)
+
+Same four layers as the first phone — ssh, mosh/tmux, reverse tunnel, `pass` —
+but each phone needs its **own** ssh key, its **own** tunnel port and its
+**own** GPG key. The scripts on Zone take these as parameters now; the first
+phone's values are the defaults, so re-running them there changes nothing.
+
+| | first phone | second phone |
+|---|---|---|
+| ssh key comment | `dexphone` | `phone2` |
+| tunnel port on Zone | 2222 | **2223** (`PORT=2223`) |
+| GPG uid | `Joe (phone)` | `Joe (phone2)` (`LABEL=phone2`) |
+| public key lands at | `~/phone.pub` | `~/phone2.pub` |
+
+**Bootstrap — the new phone has no key on Zone, so it cannot pull the scripts
+yet.** Zone's sshd accepts passwords, so this is one round-trip:
+
+```sh
+pkg update && pkg install openssh mosh
+ssh-keygen -t ed25519 -C phone2           # accept the default path
+printf 'Host zone\n    HostName <zone-address>\n    User joe\n    IdentityFile ~/.ssh/id_ed25519\n    ServerAliveInterval 30\n' >> ~/.ssh/config
+ssh-copy-id zone                          # Zone password prompt, once
+```
+
+Two things that cost an hour on 2026-08-27, second phone:
+
+- **You need `joe`'s password on Zone for that one prompt, and it is probably
+  not known** (keys have done all the work since Aug 03). Set it on Zone with
+  `sudo passwd joe` — *with the username*. Plain `passwd` demands the old
+  password first, and `sudo passwd` with no name changes **root's** password,
+  which is what happened three times that evening while Zone kept refusing
+  `joe`. `sudo chpasswd` then `joe:<pw>` + Ctrl-D shows the text unmasked.
+- **Never transcribe a public key from the phone screen.** Termux's font
+  renders `0`/`O` alike; the typed line was not within four look-alike
+  substitutions of the real key (checked by brute force against the phone's
+  fingerprint). Move it with `ssh-copy-id`, or at worst copy-paste into an
+  email — never by eye. To see what key a phone is *actually* offering, set
+  `LogLevel VERBOSE` in an `sshd_config.d` drop-in on Zone and read
+  `Failed publickey for joe … SHA256:…` from `journalctl -u ssh`.
+
+On that first connect, check the fingerprint shown against the ED25519 line in
+§2 — the phone has nothing to cross-check it against on its own.
+
+Then §2's staged test (`ssh zone` → `mosh zone` → the tmux one-liner), the
+locale lines if mosh complains, and the extra-keys row from §5. After that:
+
+```sh
+PORT=2223  sh -c 'ssh zone cat phone-setup.sh  > s.sh && less s.sh && sh s.sh'
+PORT=2223  sh -c 'ssh zone cat phone-tunnel.sh > t.sh && sh t.sh'      # leave running
+LABEL=phone2 sh -c 'ssh zone cat phone-pass-1.sh > p1.sh && sh p1.sh'
+#   on Zone:   sh ~/zone-pass-add.sh ~/phone2.pub
+ssh zone cat phone-pass-2.sh > p2.sh && sh p2.sh
+```
+
+`zone-pass-add.sh` now keeps every recipient already in `.gpg-id` (it used to
+read that file as a single fingerprint, which broke once there were two), exits
+early if the offered key is already a recipient, and checks every entry carries
+*all* recipients. `phone-pass-2.sh` imports every recipient's public key, which
+`pass insert` on the phone needs before it can encrypt a new entry to the others.
+
+From Zone the second phone is `ssh -p 2223 u0_aNNN@localhost`; its host-key
+fingerprint is recorded in Zone's `known_hosts` under `[localhost]:2223` on first
+connect — verify it against the phone's own
+`$PREFIX/etc/ssh/ssh_host_ed25519_key.pub` as §3 did for the first.
+
+Losing this phone: `pass init` on Zone with the two remaining fingerprints.
