@@ -18,7 +18,7 @@
             [cheshire.core :as json]
             [clojure.java.shell :as shell]
             [clojure.string :as str])
-  (:import (java.time Duration Instant LocalDate ZoneId ZonedDateTime)
+  (:import (java.time Instant LocalDate ZoneId ZonedDateTime)
            (java.time.format DateTimeFormatter)))
 
 ;; ---------------------------------------------------------------------------
@@ -330,16 +330,20 @@
        :note "No recording index found (expected zoomr4/meta/zoom_sync_index.json)."})))
 
 ;; ---------------------------------------------------------------------------
-;; Operator: sorry topology + pocketwatch ticks (reads futon5a when present)
+;; Operator: observable signals only
 ;; ---------------------------------------------------------------------------
 
-(def ^:private futon5a-root (str home "/code/futon5a"))
-
-(defn- read-edn-file [path]
+(defn- parse-edn-string [path text]
   (try
-    (when (.exists (java.io.File. path))
-      (read-string (slurp path)))
-    (catch Exception _ nil)))
+    (read-string text)
+    (catch Exception e
+      {:unreadable path
+       :cause (ex-message e)})))
+
+(defn- ^{:clj-kondo/ignore [:unused-private-var]} read-edn-file [path]
+  (if (.exists (java.io.File. path))
+    (parse-edn-string path (slurp path))
+    {:missing path}))
 
 (def ^:private workstream-repos
   "Repo paths classified by workstream. Used to compute commit ratios."
@@ -408,7 +412,6 @@
         stack-pct (/ (double (:stack ratios 0)) total)
         portfolio-pct (/ (double (:portfolio ratios 0)) total)
         consulting-pct (/ (double (:consulting ratios 0)) total)
-        math-pct (/ (double (:mathematics ratios 0)) total)
         prospectus-exists? (.exists (java.io.File. (str home "/vsat.wiki/prospectus.md")))
         wp-exists? (.exists (java.io.File. (str home "/vsat.wiki/ukrn-demo/UKRN_WP_draft_v2.md")))
         topic-counts (or (evidence-topic-counts) {})]
@@ -422,33 +425,11 @@
      :topic-counts topic-counts}))
 
 (defn scan-operator
-  "Read sorry topology and logic model from futon5a. Gracefully absent."
+  "Return operator-facing signals derived from observable state."
   []
-  (let [alignment (read-edn-file (str futon5a-root "/data/alignment.edn"))
-        logic-model (read-edn-file (str futon5a-root "/data/stack-logic-model.edn"))
-        snapshot (read-edn-file (str futon5a-root "/data/jsdq-terminal-vocabulary.edn"))
-        signals (sorry-signals 14)]
-    (when (or alignment logic-model)
-      (let [sorrys (when alignment
-                     (->> (:sorry-topology alignment)
-                          (filter #(#{:critical :warning} (:severity %)))
-                          (sort-by #(case (:severity %) :critical 0 :warning 1 2))))
-            constraints (when snapshot
-                          (->> (:a/constraints snapshot)
-                               (filter :violated-by)))
-            workstreams (when logic-model
-                          (:workstreams logic-model))
-            pocketwatch (when logic-model
-                          (:pocketwatch logic-model))
-            ticks (when pocketwatch
-                    (:ticks pocketwatch))]
-        {:available true
-         :sorrys (vec sorrys)
-         :constraints (vec (or constraints []))
-         :workstreams (vec (or workstreams []))
-         :pocketwatch-allocation (:target-allocation pocketwatch)
-         :ticks (vec (or ticks []))
-         :signals signals}))))
+  ;; superseded — see holes/problems/P-supersede-stack-logic-model.md
+  {:available true
+   :signals (sorry-signals 14)})
 
 ;; ---------------------------------------------------------------------------
 ;; Render
@@ -497,7 +478,7 @@
 
 (defn render-hud
   "Render the Joe HUD as readable markdown."
-  [{:keys [schedule evidence breadth creative operator now days] :as data}]
+  [{:keys [schedule evidence breadth creative now days] :as data}]
   (let [sb (StringBuilder.)]
     (.append sb (str "# Joe HUD\n\n"))
     (.append sb (str "**" now "** | " days "-day window\n\n"))
@@ -550,8 +531,7 @@
     (.append sb "## Evidence Discipline\n\n")
     (when evidence
       (let [{:keys [total-entries joe-turns agent-turns delegation-ratio
-                    forum-posts coordinations psrs purs pars
-                    sessions par-coverage]} evidence]
+                    psrs purs pars sessions par-coverage]} evidence]
         (.append sb (render-table
                      ["Metric" "Value"]
                      [:left :left]
@@ -644,56 +624,11 @@
     (when-let [op (:operator data)]
       (when (:available op)
         (.append sb "## Operator\n\n")
-        ;; Sorry topology
-        (when (seq (:sorrys op))
-          (.append sb "**Active sorrys:**\n\n")
-          (.append sb (render-table
-                       ["Severity" "Sorry" "Status" "Closes by"]
-                       [:left :left :left :left]
-                       (mapv (fn [s]
-                               [(name (or (:severity s) :unknown))
-                                (name (or (:id s) :unknown))
-                                (name (or (:status s) :unknown))
-                                (or (:closes-by s) "-")])
-                             (:sorrys op))))
-          (.append sb "\n"))
-        ;; Pocketwatch allocation
-        (when (:pocketwatch-allocation op)
-          (.append sb "**Pocketwatch target:**\n\n")
-          (.append sb (render-table
-                       ["Workstream" "Target h" "Signal" "Note"]
-                       [:left :right :left :left]
-                       (mapv (fn [[k v]]
-                               [(name k)
-                                (if (:hours v) (format "%.1f" (double (:hours v))) "-")
-                                (name (or (:signal v) :none))
-                                (or (:note v) "-")])
-                             (:pocketwatch-allocation op))))
-          (.append sb "\n"))
-        ;; Constraint ticks
-        (when (seq (:ticks op))
-          (.append sb "**Pocketwatch ticks:**\n\n")
-          (doseq [t (:ticks op)]
-            (.append sb (str "- **" (:id t) ":** " (:condition t) "\n")))
-          (.append sb "\n"))
-        ;; Workstreams
-        (when (seq (:workstreams op))
-          (.append sb "**Workstreams:**\n\n")
-          (.append sb (render-table
-                       ["Stream" "JSDQ mode" "Target h" "Constraint"]
-                       [:left :left :right :left]
-                       (mapv (fn [w]
-                               [(:label w)
-                                (name (or (:jsdq-mode w) :unknown))
-                                (format "%.1f" (double (get-in w [:pocketwatch-hours :target] 0)))
-                                (or (:constraint w) "-")])
-                             (:workstreams op))))
-          (.append sb "\n"))
+        ;; superseded — see holes/problems/P-supersede-stack-logic-model.md
         ;; Signals from existing data
         (when-let [signals (:signals op)]
           (.append sb "**Signals (14-day window, from git commits):**\n\n")
-          (let [{:keys [commit-ratios stack-pct depositing-pct
-                        foraging-signal cargo-signal
+          (let [{:keys [commit-ratios foraging-signal cargo-signal
                         prospectus-exists? wp-exists?]} signals]
             (.append sb (render-table
                          ["Workstream" "Commits" "%"]
