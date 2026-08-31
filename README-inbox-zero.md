@@ -824,3 +824,62 @@ while the serving JVM loads it. Nothing is dirty; the vector is nameable. But
 for the other eight, and this is the component where it is false. Left as it is —
 switching a branch under a running JVM is not a sweep — and recorded so the pin,
 when taken, pins a state someone chose rather than one nobody noticed.
+
+## Checkpoint — 2026-08-31 — the facility is broken
+
+**Joe's call, and the evidence supports it.** On 2026-08-31, taking over the
+War Machine build after `claude-15`'s session was poisoned, `futon2` held **five
+modified tracked files and ten untracked paths** — roughly 1,500 lines plus a
+75-file transcript archive, written 08-29 and 08-30. It was cleared this morning
+in eight packets (`d16056e`…`f39ef13`).
+
+### What was actually broken, stated precisely
+
+Not the 08-28 sweep. I nearly wrote that it was: the archive directory is named
+`claude-13-repl-turns-2026-08-27`, and I began drafting a finding that a 74-file
+directory predating the sweep had been missed. **Its files are dated 08-29.** The
+directory name records when the *turns* happened, not when the archive was
+written. The 08-28 claim — "all nine repositories clean" — stands unrefuted.
+
+What is broken is that **the sweep is an event, not a facility.** It happens when
+someone chooses to do it. Nothing notices when it stops. Three days after a sweep
+that cleared nineteen items and paid cost #2 out loud, the same repository had
+accumulated fifteen dirty paths and nobody was alerted — because the person who
+swept was a session, and the session died.
+
+### Cost #2, paid a third time, and now at repository scale
+
+The 08-28 checkpoint records cost #2 as three days of a finding sitting on disk
+while someone re-derived it. This morning's version is worse in kind:
+
+**Eight committed records cited untracked files by exact line number.**
+`R2-D1-findings.md:108` cites `R2-glossary-formalisation.md:69-84`;
+`R8-D1-findings.md:21` cites `R8-glossary-formalisation.md:52`. Both citation and
+target were real — on one machine. On any clone, eight committed records pointed
+at nothing. The build's citation discipline had been rigorous for weeks *within
+the checkout*, and broke at the one boundary nobody checked: the repository edge.
+
+The build had even noticed the pattern and not generalised it. Uncommitted text
+in `P-control-map-lint.md` reads: *"`P-R16.md` — cited by exact line in a
+committed note — was untracked until this gate, the fourth unanchored artefact
+found today."* Four instances, named, in a file that was itself untracked.
+
+### Why this is the same disease as the rest of the day
+
+The War Machine build spent 08-30 finding representations that cannot distinguish
+"nothing happened" from "something happened whose value was nought", and finding
+gates that pass without examining the thing they grade. Inbox-zero-as-an-event is
+both: a clean tree and an unswept tree look identical from inside, and a sweep
+that never runs reports nothing rather than reporting failure.
+
+The same shape appeared twice more this morning: 80 contract declarations naming
+one dead session as `holder`, and a roster whose `status` field says whether an
+agent is mid-invoke but not whether anyone owns it.
+
+### What would make it a facility
+
+A check that fails, on a schedule, without anyone choosing to run it — and one
+that reads the *citations*, not just `git status`: every `path:line` reference in
+a committed record must resolve to a committed file. That is the check that would
+have caught this on 08-29 instead of 08-31, and it is cheap. Not built here;
+recorded as the shape of the fix, and as this document's own next item.
