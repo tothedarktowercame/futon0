@@ -1,0 +1,11 @@
+[Unit]
+Description=Schedule the FUTON inbox-zero cleanliness gate
+
+[Timer]
+OnCalendar=hourly
+AccuracySec=5m
+Persistent=true
+Unit=futon-sync-check-clean.service
+
+[Install]
+WantedBy=timers.target

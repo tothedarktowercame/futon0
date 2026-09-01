@@ -1,0 +1,8 @@
+[Unit]
+Description=FUTON inbox-zero cleanliness gate (futon-sync check-clean)
+ConditionPathExists=%h/code/futon0/scripts/futon-sync.clj
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/code/futon0
+ExecStart=/usr/local/bin/bb %h/code/futon0/scripts/futon-sync.clj check-clean
