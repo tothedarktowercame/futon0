@@ -191,15 +191,33 @@
               (is (:clean verdict))
               (is (= "detached" (get-in info [:worktree :branch]))))))
 
-        (testing "n: worktree outside sibling tree fails clause 5"
+        (testing "n: durable off-sibling worktree with unmerged work is INFO, not failure"
+          ;; Revised 2026-09-01 during review. The original assertion demanded a
+          ;; FAIL for any non-sibling path. Against the real stack that condemned
+          ;; ~157 apm-lean frame checkouts under apm-frames/, which is a
+          ;; deliberate layout, not a defect -- the same over-reach clause 4 made
+          ;; when it failed a repo for having an agent's branch checked out.
+          ;; Only an EPHEMERAL path fails now; a durable one is reported.
           (let [repo (init-repo! root "off-tree" true)
                 container (fs/path root "not-a-sibling")
                 wt (fs/path container "off-tree-agent")]
             (fs/create-dirs container)
             (git! repo "worktree" "add" "-b" "off-tree-agent" (str wt) "main")
-            (let [failures (:failures (clean-verdict (status repo "off-tree") now))]
+            (commit! wt "unmerged off-tree work")
+            (let [verdict (clean-verdict (status repo "off-tree") now)]
+              (is (:clean verdict))
+              (is (some #(= "worktree-off-sibling-tree" (:reason %))
+                        (:info verdict))))))
+
+        (testing "n2: off-sibling worktree at the default branch still fails as dead"
+          (let [repo (init-repo! root "off-tree-dead" true)
+                container (fs/path root "not-a-sibling-dead")
+                wt (fs/path container "off-tree-dead-agent")]
+            (fs/create-dirs container)
+            (git! repo "worktree" "add" "-b" "off-tree-dead-agent" (str wt) "main")
+            (let [failures (:failures (clean-verdict (status repo "off-tree-dead") now))]
               (is (some #(and (= 5 (:clause %))
-                              (= "worktree-off-sibling-tree" (:reason %)))
+                              (= "dead-worktree" (:reason %)))
                         failures)))))
 
         (testing "o: no extra worktrees leaves the verdict unchanged"

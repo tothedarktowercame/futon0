@@ -329,7 +329,29 @@
          oldest (oldest-unpushed status now-ms)
          worktrees (:worktrees status)
          dead-worktrees (filterv :dead worktrees)
-         off-tree-worktrees (filterv (complement :sibling) worktrees)
+         ;; Only an EPHEMERAL path is a failure. /tmp does not survive a reboot,
+         ;; so a checkout there is work that exists in one place and is scheduled
+         ;; for deletion -- the same cost clause 3 is about. A worktree merely
+         ;; off the sibling tree but under a durable path is an organisational
+         ;; choice: apm-lean keeps ~157 frame checkouts under apm-frames/ and
+         ;; failing all of them would condemn ordinary practice, which is the
+         ;; mistake clause 4 already made once.
+         tmp-root (str (fs/path (System/getProperty "java.io.tmpdir")))
+         ;; ...unless the main checkout is ITSELF under the temp dir, which is
+         ;; what a test fixture looks like. Without this guard the rule fires on
+         ;; every scaffolded repo and the check can only be exercised against the
+         ;; real stack.
+         ephemeral-applies? (not (str/starts-with? (str (:abs-path status))
+                                                   (str tmp-root "/")))
+         ephemeral? (fn [w] (and ephemeral-applies?
+                                 (not (:sibling w))
+                                 (str/starts-with? (str (:path w))
+                                                   (str tmp-root "/"))))
+         ephemeral-worktrees (filterv ephemeral? worktrees)
+         off-tree-info (filterv #(and (not (:sibling %))
+                                      (not (:dead %))
+                                      (not (ephemeral? %)))
+                                worktrees)
          live-worktrees (filterv #(and (:default-branch status)
                                       (not (:dead %)) (:sibling %))
                                  worktrees)
@@ -358,9 +380,9 @@
                     (conj {:clause 5 :reason "dead-worktree"
                            :worktrees dead-worktrees})
 
-                    (seq off-tree-worktrees)
-                    (conj {:clause 5 :reason "worktree-off-sibling-tree"
-                           :worktrees off-tree-worktrees}))]
+                    (seq ephemeral-worktrees)
+                    (conj {:clause 5 :reason "worktree-on-ephemeral-path"
+                           :worktrees ephemeral-worktrees}))]
      {:repo (:label status)
       :path (:abs-path status)
       :clean (empty? failures)
@@ -382,7 +404,15 @@
                                           (or (:dirty-count worktree) "unknown")
                                           " dirty files)")
                             :worktree worktree})
-                         live-worktrees)))
+                         live-worktrees))
+              true
+              (into (map (fn [worktree]
+                           {:reason "worktree-off-sibling-tree"
+                            :message (str "worktree off the sibling tree "
+                                          (:path worktree)
+                                          " (" (or (:branch worktree) "detached") ")")
+                            :worktree worktree})
+                         off-tree-info)))
       :comparison (if (and fetch? (nil? (:fetch-error status)))
                     "fetched-remote-ref"
                     "last-known-remote-ref")
@@ -406,10 +436,20 @@
     4 (if (= reason "no-default-branch")
         "clause 4: no default branch"
         "clause 4: no upstream configured for default branch")
-    5 (str "clause 5: "
-           (if (= reason "dead-worktree") "dead worktree: "
-               "worktree off the sibling tree: ")
-           (str/join ", " (map worktree-id worktrees)))))
+    5 (let [n (count worktrees)
+            ;; Cap the inline list. This check runs hourly into journald and
+            ;; apm-lean alone has 88 dead worktrees -- printing them all put a
+            ;; four-thousand-character line in the log, which is a report nobody
+            ;; can read. The full set stays in --json.
+            shown (take 6 worktrees)]
+        (str "clause 5: "
+             (if (= reason "dead-worktree")
+               "dead worktree"
+               "worktree on an ephemeral path")
+             " (" n "): "
+             (str/join ", " (map worktree-id shown))
+             (when (> n (count shown))
+               (str ", +" (- n (count shown)) " more (--json for the full list)"))))))
 
 (defn cmd-check-clean [repos {:keys [json? now-ms]
                               :or {now-ms (System/currentTimeMillis)}}]
