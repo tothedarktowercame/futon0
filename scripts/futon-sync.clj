@@ -4,6 +4,7 @@
 ;; Reads the repo manifest from futon0/data/git_sources.json and provides:
 ;;   futon-sync          — status dashboard (default)
 ;;   futon-sync status   — same as above
+;;   futon-sync check-clean — gate the four-clause inbox-zero definition
 ;;   futon-sync review   — show dirty/untracked file details for cleanup triage
 ;;   futon-sync pull     — bulk pull --rebase --autostash
 ;;   futon-sync push     — push all repos ahead of origin (with confirmation)
@@ -130,20 +131,46 @@
   (when fetch?
     (git (:abs-path repo) "fetch" "--quiet" "--all" "--prune")))
 
+(defn- local-branch-exists? [path branch]
+  (zero? (:exit (git path "show-ref" "--verify" "--quiet"
+                     (str "refs/heads/" branch)))))
+
+(defn- default-branch
+  "Resolve the local default branch without consulting the checked-out HEAD."
+  [path]
+  (let [origin-head (git path "symbolic-ref" "--quiet" "--short"
+                         "refs/remotes/origin/HEAD")
+        from-origin (when (zero? (:exit origin-head))
+                      (second (str/split (:out origin-head) #"/" 2)))]
+    (cond
+      (and from-origin (local-branch-exists? path from-origin)) from-origin
+      (local-branch-exists? path "main") "main"
+      (local-branch-exists? path "master") "master"
+      :else nil)))
+
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
-        _ (refresh-remote! repo)
-        st (git path "status" "--porcelain=v1" "-b")
+        fetch-result (refresh-remote! repo)
+        st (git path "status" "--porcelain=v1" "-b" "-uall")
         lines (str/split-lines (:out st))
         header (first lines)
         entries (rest lines)
         branch (parse-branch header)
+        default (default-branch path)
+        upstream (when default
+                   (git path "rev-parse" "--abbrev-ref" "--symbolic-full-name"
+                        (str default "@{upstream}")))
+        no-default? (nil? default)
+        no-upstream? (or no-default? (not (zero? (:exit upstream))))
         ;; ahead/behind from rev-list
-        ab (git path "rev-list" "--left-right" "--count" "HEAD...@{u}")
-        [ahead behind] (if (zero? (:exit ab))
+        ab (when-not no-upstream?
+             (git path "rev-list" "--left-right" "--count"
+                  (str default "..." (:out upstream))))
+        [ahead behind] (if (and ab (zero? (:exit ab)))
                          (mapv #(Integer/parseInt %) (str/split (str/trim (:out ab)) #"\t"))
                          [0 0])
-        no-remote? (not (zero? (:exit ab)))
+        sync-error (when (and ab (not (zero? (:exit ab))))
+                     (or (:err ab) "rev-list failed"))
         ;; classify entries
         dirty (mapv parse-status-entry
                     (filterv #(not (str/starts-with? % "??")) entries))
@@ -153,7 +180,16 @@
         bulk-dirs (bulk-untracked-dirs untracked)]
     (assoc repo
            :branch (or branch "?")
-           :ahead ahead :behind behind :no-remote no-remote?
+           :default-branch default
+           :head-not-default (and default (not= branch default))
+           :ahead ahead :behind behind
+           :no-default no-default?
+           :no-upstream no-upstream? :no-remote no-upstream?
+           :upstream (when-not no-upstream? (:out upstream))
+           :sync-error sync-error
+           :fetch-attempted fetch?
+           :fetch-error (when (and fetch-result (not (zero? (:exit fetch-result))))
+                          (or (:err fetch-result) "fetch failed"))
            :dirty-count (count dirty)
            :dirty-files dirty-files
            :dirty-entries dirty
@@ -165,6 +201,138 @@
            :clean? (and (zero? (count dirty))
                         (zero? (count untracked))
                         (zero? ahead) (zero? behind)))))
+
+;; ── Inbox-zero gate ─────────────────────────────────────────────────────────
+
+(def ^:private clean-window-hours 24)
+(def ^:private clean-window-ms (* clean-window-hours 60 60 1000))
+
+(defn- status-path
+  "Filesystem path represented by a porcelain-v1 entry.
+
+   For a rename, the destination is the path whose current mtime is relevant."
+  [path]
+  (last (str/split path #" -> ")))
+
+(defn- file-age
+  [repo-path relative-path now-ms]
+  (let [path (fs/path repo-path (status-path relative-path))]
+    (if (fs/exists? path)
+      (let [modified-ms (.toMillis (fs/last-modified-time path))]
+        {:path relative-path
+         :age-ms (max 0 (- now-ms modified-ms))
+         :age-hours (/ (double (max 0 (- now-ms modified-ms))) 3600000.0)})
+      {:path relative-path :age-unknown true})))
+
+(defn- oldest-unpushed
+  [{:keys [abs-path ahead no-upstream sync-error default-branch upstream]} now-ms]
+  (when (and (pos? ahead) (not no-upstream) (nil? sync-error))
+    (let [r (git abs-path "log" "--format=%H%x09%ct"
+                 (str upstream ".." default-branch))
+          commits (when (zero? (:exit r))
+                    (for [line (str/split-lines (:out r))
+                          :let [[sha epoch] (str/split line #"\t")]
+                          :when (and sha epoch)]
+                      {:sha sha :committed-ms (* 1000 (parse-long epoch))}))
+          oldest (when (seq commits) (apply min-key :committed-ms commits))]
+      (if oldest
+        (assoc oldest
+               :count ahead
+               :age-ms (max 0 (- now-ms (:committed-ms oldest)))
+               :age-hours (/ (double (max 0 (- now-ms (:committed-ms oldest))))
+                             3600000.0))
+        {:count ahead :age-unknown true
+         :error (or (:err r) "no unpushed commit timestamps returned")}))))
+
+(defn clean-verdict
+  "Four-clause inbox-zero verdict for one result from repo-status."
+  ([status] (clean-verdict status (System/currentTimeMillis)))
+  ([status now-ms]
+   (let [paths (concat (:dirty-files status) (:untracked status))
+         aged (mapv #(file-age (:abs-path status) % now-ms) paths)
+         old-files (filterv #(or (:age-unknown %)
+                                 (> (:age-ms %) clean-window-ms))
+                            aged)
+         oldest (oldest-unpushed status now-ms)
+         failures (cond-> []
+                    (seq old-files)
+                    (conj {:clause 1 :reason "stale-working-tree"
+                           :files old-files})
+
+                    (or (pos? (:behind status)) (:sync-error status))
+                    (conj {:clause 2 :reason "behind-upstream"
+                           :behind (:behind status)
+                           :error (:sync-error status)})
+
+                    (and oldest (or (:age-unknown oldest)
+                                    (>= (:age-ms oldest) clean-window-ms)))
+                    (conj {:clause 3 :reason "stale-unpushed-commits"
+                           :oldest oldest})
+
+                    (:no-upstream status)
+                    (conj {:clause 4
+                           :reason (if (:no-default status)
+                                     "no-default-branch"
+                                     "no-upstream")}))]
+     {:repo (:label status)
+      :path (:abs-path status)
+      :clean (empty? failures)
+      :ahead (:ahead status)
+      :behind (:behind status)
+      :head (:branch status)
+      :default-branch (:default-branch status)
+      :info (when (:head-not-default status)
+              (str "HEAD is not the default branch (" (:default-branch status) ")"))
+      :comparison (if (and fetch? (nil? (:fetch-error status)))
+                    "fetched-remote-ref"
+                    "last-known-remote-ref")
+      :fetch-error (:fetch-error status)
+      :failures failures})))
+
+(defn- age-str [{:keys [age-hours age-unknown]}]
+  (if age-unknown "age unknown" (format "%.1fh old" age-hours)))
+
+(defn- failure-str [{:keys [clause reason files behind error oldest]}]
+  (case clause
+    1 (str "clause 1: "
+           (str/join ", " (map #(str (:path %) " (" (age-str %) ")") files)))
+    2 (if error
+        (str "clause 2: upstream comparison failed: " error)
+        (format "clause 2: %d commit%s behind upstream"
+                behind (if (= behind 1) "" "s")))
+    3 (str "clause 3: " (:count oldest) " unpushed commit"
+           (if (= 1 (:count oldest)) "" "s") ", oldest " (age-str oldest)
+           (when-let [sha (:sha oldest)] (str " (" (subs sha 0 12) ")")))
+    4 (if (= reason "no-default-branch")
+        "clause 4: no default branch"
+        "clause 4: no upstream configured for default branch")))
+
+(defn cmd-check-clean [repos {:keys [json? now-ms]
+                              :or {now-ms (System/currentTimeMillis)}}]
+  (let [verdicts (mapv #(clean-verdict (repo-status %) now-ms) repos)
+        clean? (every? :clean verdicts)
+        basis (if fetch?
+                "freshly fetched refs (fetch failures are marked per repo)"
+                "last-known remote refs (--no-fetch)")]
+    (if json?
+      (println (json/generate-string
+                 {:clean clean? :comparison basis :repos verdicts}))
+      (do
+        (println (str "futon-sync check-clean — comparisons use " basis))
+        (doseq [{:keys [repo clean failures fetch-error info]} verdicts]
+          (if clean
+            (printf " %-14s PASS%n" repo)
+            (do
+              (printf " %-14s FAIL%n" repo)
+              (doseq [failure failures]
+                (println (str "   " (failure-str failure))))))
+          (when info
+            (println (str "   INFO: " info)))
+          (when fetch-error
+            (println (str "   fetch failed; comparison used last-known remote ref: "
+                          fetch-error))))
+        (println (if clean? "PASS: all repos clean" "FAIL: stack is not clean"))))
+    clean?))
 
 ;; ── Status command ───────────────────────────────────────────────────────────
 
@@ -464,7 +632,7 @@
       (do
         (println (str ansi-bold "futon-sync hygiene" ansi-reset))
         (println)
-        (doseq [[s suggs] suggestions]
+        (doseq [[s _] suggestions]
           (doseq [f (:noisy-files s)]
             (let [sug (noisy? f)]
               (printf " %-14s %-40s → suggest: %s%n"
@@ -493,18 +661,22 @@
 
 ;; ── Main ─────────────────────────────────────────────────────────────────────
 
-(let [args *command-line-args*
-      cmd (or (first args) "status")
-      repos (load-repos)]
-  (case cmd
-    ("status" "st") (cmd-status repos)
-    ("review" "rv") (cmd-review repos)
-    "pull"          (cmd-pull repos)
-    "push"          (cmd-push repos)
-    "park"          (cmd-park repos {:dry-run? (some #{"--dry-run"} args)
-                                     :yes? (some #{"--yes"} args)
-                                     :message (parse-park-message args)})
-    "hygiene"       (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
-    (do (println (str "Unknown command: " cmd))
-        (println "Usage: futon-sync [status|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix]]")
-        (System/exit 1))))
+(when-not (= "true" (System/getProperty "futon.sync.library"))
+  (let [args *command-line-args*
+        cmd (or (first args) "status")
+        repos (load-repos)]
+    (case cmd
+      ("status" "st") (cmd-status repos)
+      "check-clean" (when-not (cmd-check-clean repos
+                                                {:json? (some #{"--json"} args)})
+                      (System/exit 1))
+      ("review" "rv") (cmd-review repos)
+      "pull"          (cmd-pull repos)
+      "push"          (cmd-push repos)
+      "park"          (cmd-park repos {:dry-run? (some #{"--dry-run"} args)
+                                       :yes? (some #{"--yes"} args)
+                                       :message (parse-park-message args)})
+      "hygiene"       (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
+      (do (println (str "Unknown command: " cmd))
+          (println "Usage: futon-sync [status|check-clean [--json] [--no-fetch]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix]]")
+          (System/exit 1)))))
