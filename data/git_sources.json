@@ -18,6 +18,8 @@
     {"label": "futon7a", "path": "../../futon7a", "sphere": "shopfront"},
     {"label": "graph-memory-seed", "path": "../../graph-memory-seed", "sphere": "research"},
     {"label": "apm-lean", "path": "../../apm-lean", "sphere": "research"},
-    {"label": "mathlib4", "path": "../../mathlib4", "sphere": "upstream"}
+    {"label": "mathlib4", "path": "../../mathlib4", "sphere": "upstream"},
+    {"label": "p4ng", "path": "../../p4ng", "sphere": "research"},
+    {"label": "voxterm", "path": "../../voxterm", "sphere": "infra"}
   ]
 }
