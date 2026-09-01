@@ -141,7 +141,73 @@
             (let [verdict (clean-verdict (status repo "no-default") now)
                   failure (first (:failures verdict))]
               (is (= 4 (:clause failure)))
-              (is (= "no-default-branch" (:reason failure)))))))
+              (is (= "no-default-branch" (:reason failure))))))
+
+        (testing "j: merged worktree fails clause 5 as dead"
+          (let [repo (init-repo! root "dead-worktree" true)
+                wt (fs/path root "dead-worktree-agent")]
+            (git! repo "worktree" "add" "-b" "already-done" (str wt) "main")
+            (let [repos [{:label "dead-worktree" :abs-path (str repo)}]
+                  failures (:failures (clean-verdict (status repo "dead-worktree") now))
+                  human (with-out-str (cmd-check-clean repos {:now-ms now}))
+                  json-out (with-out-str
+                             (cmd-check-clean repos {:now-ms now :json? true}))
+                  json-reasons (mapv :reason
+                                     (get-in (json/parse-string json-out true)
+                                             [:repos 0 :failures]))]
+              (is (some #(and (= 5 (:clause %))
+                              (= "dead-worktree" (:reason %))) failures))
+              (is (re-find #"clause 5: dead worktree" human))
+              (is (some #{"dead-worktree"} json-reasons)))))
+
+        (testing "k: worktree with unmerged commit is INFO, not failure"
+          (let [repo (init-repo! root "live-worktree" true)
+                wt (fs/path root "live-worktree-agent")]
+            (git! repo "worktree" "add" "-b" "agent-live" (str wt) "main")
+            (commit! wt "unmerged")
+            (let [verdict (clean-verdict (status repo "live-worktree") now)]
+              (is (:clean verdict))
+              (is (some #(= "unmerged-worktree" (:reason %)) (:info verdict))))))
+
+        (testing "l: detached ancestor worktree fails clause 5 as dead"
+          (let [repo (init-repo! root "detached-dead" true)
+                wt (fs/path root "detached-dead-agent")]
+            (git! repo "worktree" "add" "--detach" (str wt) "main")
+            (let [failure (some #(when (= "dead-worktree" (:reason %)) %)
+                                (:failures (clean-verdict
+                                             (status repo "detached-dead") now)))
+                  worktree (first (:worktrees failure))]
+              (is (= 5 (:clause failure)))
+              (is (= "detached" (:branch worktree))))))
+
+        (testing "m: detached worktree with unmerged commit is INFO"
+          (let [repo (init-repo! root "detached-live" true)
+                wt (fs/path root "detached-live-agent")]
+            (git! repo "worktree" "add" "--detach" (str wt) "main")
+            (commit! wt "detached unmerged")
+            (let [verdict (clean-verdict (status repo "detached-live") now)
+                  info (some #(when (= "unmerged-worktree" (:reason %)) %)
+                             (:info verdict))]
+              (is (:clean verdict))
+              (is (= "detached" (get-in info [:worktree :branch]))))))
+
+        (testing "n: worktree outside sibling tree fails clause 5"
+          (let [repo (init-repo! root "off-tree" true)
+                container (fs/path root "not-a-sibling")
+                wt (fs/path container "off-tree-agent")]
+            (fs/create-dirs container)
+            (git! repo "worktree" "add" "-b" "off-tree-agent" (str wt) "main")
+            (let [failures (:failures (clean-verdict (status repo "off-tree") now))]
+              (is (some #(and (= 5 (:clause %))
+                              (= "worktree-off-sibling-tree" (:reason %)))
+                        failures)))))
+
+        (testing "o: no extra worktrees leaves the verdict unchanged"
+          (let [repo (init-repo! root "no-extra-worktrees" true)
+                verdict (clean-verdict (status repo "no-extra-worktrees") now)]
+            (is (:clean verdict))
+            (is (empty? (:info verdict)))
+            (is (not-any? #(= 5 (:clause %)) (:failures verdict))))))
       (finally (fs/delete-tree root)))))
 
 (let [{:keys [fail error]} (run-tests)]

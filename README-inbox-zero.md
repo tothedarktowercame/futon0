@@ -48,7 +48,9 @@ and everyone involved treated it as though it were.
 > **Clean** = at a daily check, `git status --porcelain -uall` contains nothing
 > older than 24 hours that is not ignored by design, **and the repo is not
 > behind its upstream, and the oldest unpushed commit is less than 24 hours
-> old, and an upstream is configured**.
+> old, an upstream is configured, and it has no linked worktree whose HEAD is
+> already contained in the default branch or whose checkout is outside the
+> repository's sibling tree**.
 
 This permits a turn's work in progress and forbids accumulation. It is the bar
 the week is measured against.
@@ -71,6 +73,20 @@ absent from the repository manifest despite being worked in daily, making its
 manifest rather than treated as outside the definition.
 The manifest audit also found `p4ng` absent even though its default branch held
 hundreds of unpushed commits; it was added for the same reason.
+
+The fifth clause was added 2026-09-01 after the same audit found 20 extra
+`futon3c` worktrees and 182 extra `apm-lean` worktrees consuming 8.1 GB. It
+classifies by commit content, not branch attachment: a worktree is dead when
+its HEAD is an ancestor of the default branch, including a detached HEAD. A
+worktree with commits not in the default branch is reported as information,
+with its newest-commit age and dirt count, because it may be active work. A
+checkout outside the repository's sibling tree fails separately: sibling
+relative dependencies cannot resolve there. This is operationally consequential,
+not merely disk hygiene. On 2026-08-22, loading a namespace from a worktree 56
+commits behind `master` replaced the shared JVM's current namespaces and made
+every master-only route answer `Unknown endpoint` until the canonical checkout
+was reloaded. The check reports these worktrees but never removes them or their
+branches.
 
 ## Baseline and the run to zero (2026-08-14)
 

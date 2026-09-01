@@ -4,7 +4,7 @@
 ;; Reads the repo manifest from futon0/data/git_sources.json and provides:
 ;;   futon-sync          — status dashboard (default)
 ;;   futon-sync status   — same as above
-;;   futon-sync check-clean — gate the four-clause inbox-zero definition
+;;   futon-sync check-clean — gate the five-clause inbox-zero definition
 ;;   futon-sync review   — show dirty/untracked file details for cleanup triage
 ;;   futon-sync pull     — bulk pull --rebase --autostash
 ;;   futon-sync push     — push all repos ahead of origin (with confirmation)
@@ -148,6 +148,74 @@
       (local-branch-exists? path "master") "master"
       :else nil)))
 
+(defn- parse-worktree-record [lines]
+  (reduce (fn [record line]
+            (cond
+              (str/starts-with? line "worktree ")
+              (assoc record :path (subs line 9))
+
+              (str/starts-with? line "HEAD ")
+              (assoc record :head (subs line 5))
+
+              (str/starts-with? line "branch refs/heads/")
+              (assoc record :branch (subs line 18))
+
+              (= line "detached")
+              (assoc record :branch "detached")
+
+              :else record))
+          {}
+          lines))
+
+(defn- worktree-records [repo-path]
+  (let [r (git repo-path "worktree" "list" "--porcelain")]
+    (if (zero? (:exit r))
+      (->> (str/split (:out r) #"\n\s*\n")
+           (remove str/blank?)
+           (mapv #(parse-worktree-record (str/split-lines %))))
+      [])))
+
+(defn- worktree-dirty-count [path]
+  (let [r (git path "status" "--porcelain=v1" "-uall")]
+    (when (zero? (:exit r))
+      (count (remove str/blank? (str/split-lines (:out r)))))))
+
+(defn- worktree-newest-commit [path now-ms]
+  (let [r (git path "show" "-s" "--format=%ct" "HEAD")]
+    (if (zero? (:exit r))
+      (let [committed-ms (* 1000 (parse-long (:out r)))
+            age-ms (max 0 (- now-ms committed-ms))]
+        {:committed-ms committed-ms
+         :age-ms age-ms
+         :age-hours (/ (double age-ms) 3600000.0)})
+      {:age-unknown true :error (or (:err r) "commit timestamp unavailable")})))
+
+(defn- extra-worktrees
+  "Classify every linked checkout except the repository's main checkout.
+
+   A sibling has the same parent directory as the main checkout. Content is
+   dead exactly when its HEAD is already an ancestor of the default branch;
+   branch attachment is deliberately irrelevant."
+  [repo-path default now-ms]
+  (let [root (str (fs/normalize (fs/real-path repo-path)))
+        sibling-parent (str (fs/parent root))]
+    (->> (worktree-records repo-path)
+         (remove #(= root (str (fs/normalize (fs/path (:path %))))))
+         (mapv (fn [{:keys [path head branch]}]
+                 (let [normalized (str (fs/normalize (fs/path path)))
+                       sibling? (= sibling-parent (str (fs/parent normalized)))
+                       ancestor (when (and default head)
+                                  (git repo-path "merge-base" "--is-ancestor"
+                                       head default))]
+                   {:path normalized
+                    :branch (or branch "detached")
+                    :head head
+                    :head-short (when head (subs head 0 (min 12 (count head))))
+                    :sibling sibling?
+                    :dead (and ancestor (zero? (:exit ancestor)))
+                    :newest (worktree-newest-commit normalized now-ms)
+                    :dirty-count (worktree-dirty-count normalized)}))))))
+
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
         fetch-result (refresh-remote! repo)
@@ -177,7 +245,8 @@
         dirty-files (mapv :path dirty)
         untracked (mapv #(subs % 3) (filterv #(str/starts-with? % "??") entries))
         noisy-files (filterv noisy? untracked)
-        bulk-dirs (bulk-untracked-dirs untracked)]
+        bulk-dirs (bulk-untracked-dirs untracked)
+        worktrees (extra-worktrees path default (System/currentTimeMillis))]
     (assoc repo
            :branch (or branch "?")
            :default-branch default
@@ -198,6 +267,7 @@
            :noisy-files noisy-files
            :noisy-suggestions (into #{} (keep noisy?) noisy-files)
            :bulk-dirs bulk-dirs
+           :worktrees worktrees
            :clean? (and (zero? (count dirty))
                         (zero? (count untracked))
                         (zero? ahead) (zero? behind)))))
@@ -244,8 +314,11 @@
         {:count ahead :age-unknown true
          :error (or (:err r) "no unpushed commit timestamps returned")}))))
 
+(defn- age-str [{:keys [age-hours age-unknown]}]
+  (if age-unknown "age unknown" (format "%.1fh old" age-hours)))
+
 (defn clean-verdict
-  "Four-clause inbox-zero verdict for one result from repo-status."
+  "Five-clause inbox-zero verdict for one result from repo-status."
   ([status] (clean-verdict status (System/currentTimeMillis)))
   ([status now-ms]
    (let [paths (concat (:dirty-files status) (:untracked status))
@@ -254,6 +327,12 @@
                                  (> (:age-ms %) clean-window-ms))
                             aged)
          oldest (oldest-unpushed status now-ms)
+         worktrees (:worktrees status)
+         dead-worktrees (filterv :dead worktrees)
+         off-tree-worktrees (filterv (complement :sibling) worktrees)
+         live-worktrees (filterv #(and (:default-branch status)
+                                      (not (:dead %)) (:sibling %))
+                                 worktrees)
          failures (cond-> []
                     (seq old-files)
                     (conj {:clause 1 :reason "stale-working-tree"
@@ -273,7 +352,15 @@
                     (conj {:clause 4
                            :reason (if (:no-default status)
                                      "no-default-branch"
-                                     "no-upstream")}))]
+                                     "no-upstream")})
+
+                    (seq dead-worktrees)
+                    (conj {:clause 5 :reason "dead-worktree"
+                           :worktrees dead-worktrees})
+
+                    (seq off-tree-worktrees)
+                    (conj {:clause 5 :reason "worktree-off-sibling-tree"
+                           :worktrees off-tree-worktrees}))]
      {:repo (:label status)
       :path (:abs-path status)
       :clean (empty? failures)
@@ -281,18 +368,31 @@
       :behind (:behind status)
       :head (:branch status)
       :default-branch (:default-branch status)
-      :info (when (:head-not-default status)
-              (str "HEAD is not the default branch (" (:default-branch status) ")"))
+      :info (cond-> []
+              (:head-not-default status)
+              (conj {:reason "head-not-default"
+                     :message (str "HEAD is not the default branch ("
+                                   (:default-branch status) ")")})
+              true
+              (into (map (fn [worktree]
+                           {:reason "unmerged-worktree"
+                            :message (str "unmerged worktree " (:path worktree)
+                                          " (" (:branch worktree) ", newest "
+                                          (age-str (:newest worktree)) ", "
+                                          (or (:dirty-count worktree) "unknown")
+                                          " dirty files)")
+                            :worktree worktree})
+                         live-worktrees)))
       :comparison (if (and fetch? (nil? (:fetch-error status)))
                     "fetched-remote-ref"
                     "last-known-remote-ref")
       :fetch-error (:fetch-error status)
       :failures failures})))
 
-(defn- age-str [{:keys [age-hours age-unknown]}]
-  (if age-unknown "age unknown" (format "%.1fh old" age-hours)))
+(defn- worktree-id [{:keys [path branch head-short]}]
+  (str path " (" branch ", " (or head-short "HEAD unknown") ")"))
 
-(defn- failure-str [{:keys [clause reason files behind error oldest]}]
+(defn- failure-str [{:keys [clause reason files behind error oldest worktrees]}]
   (case clause
     1 (str "clause 1: "
            (str/join ", " (map #(str (:path %) " (" (age-str %) ")") files)))
@@ -305,7 +405,11 @@
            (when-let [sha (:sha oldest)] (str " (" (subs sha 0 12) ")")))
     4 (if (= reason "no-default-branch")
         "clause 4: no default branch"
-        "clause 4: no upstream configured for default branch")))
+        "clause 4: no upstream configured for default branch")
+    5 (str "clause 5: "
+           (if (= reason "dead-worktree") "dead worktree: "
+               "worktree off the sibling tree: ")
+           (str/join ", " (map worktree-id worktrees)))))
 
 (defn cmd-check-clean [repos {:keys [json? now-ms]
                               :or {now-ms (System/currentTimeMillis)}}]
@@ -326,8 +430,8 @@
               (printf " %-14s FAIL%n" repo)
               (doseq [failure failures]
                 (println (str "   " (failure-str failure))))))
-          (when info
-            (println (str "   INFO: " info)))
+          (doseq [{:keys [message]} info]
+            (println (str "   INFO: " message)))
           (when fetch-error
             (println (str "   fetch failed; comparison used last-known remote ref: "
                           fetch-error))))
