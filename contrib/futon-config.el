@@ -26,6 +26,15 @@
 
 (setq stack-hud-services-detail 'names)
 
+;; APM proof-recovery counts without the HUD render: M-x stack-hud-apm-report.
+;; `stack-hud-1' collects the numbers AND renders them into a HUD window, so
+;; when the render half misbehaves (window/frame handling differs between GUI,
+;; TTY and daemon Emacs) the counts become unreachable even though collecting
+;; them still works.  This is the collector half alone.  It lived only in a
+;; running Emacs until 2026-09-07 and went away with the restart, which is what
+;; this `require' is here to prevent.
+(require 'stack-hud-apm-report)
+
 ;; Per-session Claude + Codex token burndown (Stack HUD `usage' block + Arxana
 ;; Browser Sessions headline). See ~/code/algorithms/current-usage-report.md.
 (require 'usage-report)
@@ -118,6 +127,7 @@
         "../futon0/contrib/stack-entry.el"
         "../futon0/contrib/stack-hud.el"
         "../futon0/contrib/stack-hud-2.el"
+        "../futon0/contrib/stack-hud-apm-report.el"
         "../futon0/contrib/stack-render.el"
         "../futon0/contrib/usage-report.el"
         "../futon0/emacs/joe-hud.el"
