@@ -41,6 +41,10 @@ The decisive one: a `emacs -nw --with-profile graph` started **Aug 25 was still
 running** on 2026-08-30, parked under a `mosh-server` with no client attached.
 **[verified]** A process that crashed five days ago is not still in `ps`.
 
+> **Correction, 2026-09-07.** Two of those four bullets do not survive re-checking,
+> and Emacs *does* die on its own. The stranding in this section was real; the
+> conclusion "Emacs was not crashing" was over-drawn from it. See §7.2 and §7.3.
+
 So the buffers were never lost to a crash. They were *stranded* — alive, running,
 and unreachable.
 
@@ -173,9 +177,218 @@ tmux session wants a unit rather than trust.
 
 ---
 
-## 7. See also
+## 7. The recurrence, 2026-09-07 — this one really was Emacs
+
+Emacs died again at ~15:17 today. It does not fit §3 at all, and re-running §2's
+checks shows two of them never proved what they were read as proving.
+
+### 7.1 The §5 fix is not actually in use
+
+**[verified]**, all three:
+
+- `tmux ls` → `no server running on /tmp/tmux-1000/default`. There is no tmux on
+  Zone at all.
+- Both live `mosh-server` processes (425567 from Sep 3, 1873476 from Sep 6) have a
+  bare `-bash` as their only child, exactly as on Aug 30.
+- The Emacs running now is `782310 → 1873477 (-bash) → 1873476 (mosh-server)`. A
+  bare grandchild of `mosh-server`, which is precisely what §1 forbids.
+
+`~/bin/tm` exists and is correct; `.bashrc` still delegates to it. It is simply not
+being called. So §1 is still an open finding, not a closed one — the count of
+abandoned sessions came down from 23 to 2, but the habit did not change.
+
+### 7.2 This death was not a mosh-client abort
+
+The dead Emacs was **426252**, a child of the `-bash` under `mosh-server` 425567
+(Sep 3 20:54). That `-bash`, 425568, **is still alive** — **[verified]**, and so is
+its `mosh-server`.
+
+That is the whole distinction. A mosh-client abort (§3/§4) leaves the entire
+server-side tree running and merely unreachable; nothing under it dies. Here the
+parent shell and the mosh-server both survived and *only Emacs* went. Whatever
+happened, it happened to the Emacs process specifically.
+
+### 7.3 Two of §2's four bullets were not evidence
+
+- **Coredumps.** `ulimit -c` is `0` and `kernel.core_pattern` is the literal `core`
+  — **[verified]**. Nothing was ever going to appear in
+  `/var/lib/systemd/coredump/`, crashing or not. That bullet had no information in
+  it either way.
+- **Unclean-exit markers.** There are seven in `~/.emacs.d/auto-save-list/`, and
+  **every one of their pids is dead** — **[verified]**:
+
+  ```
+  2026-08-26 07:01  .saves-2330092-reliablesite~
+  2026-08-26 08:57  .saves-2683496-reliablesite~
+  2026-08-28 15:11  .saves-3694405-zone~          <- the "stranded" Emacs of §6
+  2026-08-30 09:38  .saves-1591180-zone~          <- the morning §2 says had none
+  2026-08-30 09:56  .saves-1060028-zone~          <- likewise
+  2026-09-03 17:41  .saves-1089042-zone~
+  2026-09-07 15:17  .saves-426252-zone~           <- today
+  ```
+
+  Two traps in reading these, both of which §2 fell into. The mtime is the *last
+  auto-save*, not the moment of death — 3694405's marker says Aug 28 while the
+  process was demonstrably alive on Aug 30. And a marker for a *running* pid is
+  normal, so the file must be joined against `ps` before it means anything. Done
+  properly, it says seven unclean exits in thirteen days.
+
+- **What does still hold.** The kernel logs segfaults independently of `ulimit`,
+  and there is no `emacs` segfault in `dmesg` — only the unrelated `latexml_oxide`
+  ones. No OOM kill, `systemd-oomd` is `inactive`, and the box had 233 Gi
+  available. **[verified]** So: not a segfault, not memory pressure.
+
+**Inferred, not observed:** it was a `SIGKILL`, or something else that bypasses
+Emacs's own fatal-signal handler. The reasoning: there is no `emacs_backtrace*`
+anywhere under `$HOME` or `/tmp` and the process's cwd was the writable
+`/home/joe`, so the handler never ran; and `SIGTERM`/`SIGHUP` are poor candidates
+because Emacs handles those through `kill-emacs`, which would have deleted the
+marker file. Nothing in `~/bin` kills Emacs. The sender is genuinely unidentified.
+
+### 7.4 The blast radius is bigger than it was in August
+
+Emacs is now the agent bus. `~/bin/cr`, `~/bin/cz` and `~/bin/agent-recall` all
+reach it through `/run/user/1000/emacs/server`, and so does the `dev-zone-env`
+invoke path. Sixty seconds after the death, in the journal — **[verified]**:
+
+```
+15:18:24 dev-zone-env: [invoke-delivery] failed for f188-solver
+  output=emacsclient: can't connect to /run/user/1000/emacs/server: Connection refused
+```
+
+An agent invocation was lost, not just a buffer. And the replacement Emacs started
+at 15:21 took the socket name over again (socket mtime is 15:21, **[verified]**) —
+§6's orphaning trap firing once more, three weeks after it was written down.
+
+### 7.5 What was done, 2026-09-07
+
+All three items below were built and verified the same afternoon. The one thing
+deliberately **not** done is the cutover itself — see the end of this section.
+
+**a. `~/bin/emacs-graph`, a launcher that leaves evidence.** Replaces
+`alias emacs-graph='emacs -nw --with-profile graph'`; the alias is now a comment
+in `.bashrc`, because an alias would shadow the script on `PATH`. It sets
+`ulimit -c unlimited`, keeps cwd at `$HOME` (where `core` and
+`emacs_backtrace.txt` both land, given `kernel.core_pattern` is the bare string
+`core`), and appends stderr plus a start/exit/status line to
+`~/.emacs-graph/logs/emacs-<timestamp>.log`. Display is unaffected: `-nw` writes
+to the tty through stdout, only stderr is redirected. **[verified]** end to end
+on a pty — a deliberate `(kill-emacs 7)` was recorded as `status=7`.
+
+The first test run demonstrated the point by accident. It failed, and the log
+said why: `Please set the environment variable TERM; see 'tset'.` — §5's last
+trap, caught in writing instead of guessed at. **[verified]**
+
+The Emacs pid is not knowable before exec, so join a log to an auto-save marker
+by timestamp rather than expecting the pid in both.
+
+**b. A warning when a shell is bare under `mosh-server`.** In `.bashrc`, printed
+when `$TMUX` is empty and `$PPID`'s comm is `mosh-server`. Deliberately a
+warning and not an auto-attach — §5's "call it by hand" decision stands; this
+only makes forgetting visible rather than silent, which is what §7.1 showed was
+needed. The phone-side half of §5 could not be touched from Zone.
+
+**c. `~/.config/systemd/user/emacs-graph.service`**, `enabled`, currently
+stopped. `Type=notify` (the 32.0.50 build links `libsystemd`, **[verified]**
+with `ldd`), `ExecStart=emacs --fg-daemon --with-profile graph`,
+`LimitCORE=infinity`, `LANG`/`LC_ALL` pinned to `en_GB.UTF-8` to match the
+interactive shell. Two decisions worth keeping:
+
+- **No daemon *name*.** `~/.emacs-graph/init.el:3-5` runs `(server-start)` during
+  init, which creates the socket called `server`. `--fg-daemon=NAME` would add a
+  *second* socket under a different name and leave two doors into one process.
+  Unnamed, init.el and the daemon agree on `server`, which is the name every
+  client already uses.
+- **`Restart=on-abnormal`, not `on-failure`.** It restarts on a signal death, a
+  timeout or a watchdog trip, and not on a plain non-zero exit. That is the
+  split this box wants: the 2026-09-07 death looks like SIGKILL (§7.3) and gets
+  restarted, while a broken `init.el` or the guard below are *decisions* and
+  must not be retried. `on-failure` was tried first and retried the guard five
+  times; `RestartPreventExitStatus=` does not help, as it is not consulted for
+  an `ExecStartPre` exit. **[verified]** both ways.
+
+An `ExecStartPre` single-owner guard, in the spirit of futon1b's `store-guard`,
+refuses to start (exit 78, `EX_CONFIG`) when another Emacs already answers on
+`/run/user/1000/emacs/server`. Without it, starting the unit next to a
+hand-started Emacs would clobber that session's door — the §6 failure this unit
+exists to end. **[verified]**: attempted against the live Emacs, the unit
+refused once, `ExecStart` never ran, and the socket's mtime never moved.
+
+**d. `~/bin/eg`, one command for the whole stack.** Knowing the right nesting
+is not the same as getting it every time by hand, and §7.1 is the evidence that
+by hand loses. `eg` builds `mosh -> tmux -> emacsclient -t -> daemon` in order:
+
+```
+eg           the DeX view          eg phone    the phone-screen view
+eg main      the ungrouped session
+```
+
+It asks the *socket* whether an Emacs is answering rather than asking systemd,
+because a hand-started Emacs is a perfectly good server to attach to and the
+service would refuse to start beside it anyway. Only when nothing answers does
+it start the daemon — which also covers a stale socket file, since Emacs's own
+`server-start` clears a dead one on the way up. Then it ensures `main` exists,
+ensures a single window named `emacs` running `emacsclient -t`, points the
+requested view at that window, and attaches. Being a script rather than an
+alias, it is usable as a remote command, so from the phone the whole stack is:
+
+```
+mosh zone -- /home/joe/bin/eg dex
+```
+
+**[verified]** on a scratch tmux socket (`-L probe`) with stubbed binaries, so
+neither the live Emacs nor the real tmux server was involved: builds everything
+from nothing and lands on the Emacs window; run again after moving the view
+away, it re-selects Emacs without creating a second window or a duplicate
+session; run from inside tmux it selects rather than nesting a client in a
+client; and `eg phone` gets its own grouped session onto the same window.
+
+### The daemon, actually exercised
+
+`Type=notify` and the restart path were tested through a throwaway
+`emacs-graph-selftest.service` — mechanically identical, its own socket name,
+no guard — so the live socket was never at risk. **[verified]**: systemd got
+`READY=1` and the unit went active in 0.77s, and the journal captured Emacs's
+init stderr, which is the diagnosability the whole exercise was for.
+
+Then the actual failure mode, reproduced deliberately: `SIGKILL` to the main
+pid. **[verified]** —
+
+```
+15:42:43 emacs-graph-selftest.service: Main process exited, code=killed, status=9/KILL
+15:42:44 emacs-graph-selftest.service: Failed with result 'signal'.
+15:42:49 emacs-graph-selftest.service: Scheduled restart job, restart counter is at 1.
+15:42:49 Started emacs-graph-selftest.service
+```
+
+That is the September 7 death, this time named in the journal and recovered in
+six seconds. Compare §7.3, where the same event left only absences to argue
+from. The selftest unit was removed afterwards.
+
+**The cutover was left to a human, on purpose.** The daemon cannot take the
+socket while another Emacs holds it — that is the guard working as designed —
+so switching over means stopping the current Emacs first, and the current Emacs
+is the one carrying the `emacs-repl` agent bus. Once it is gone:
+
+```
+eg
+```
+
+That is the whole cutover: nothing answers on the socket, so `eg` starts the
+service and lands you in `emacsclient -t` inside tmux. The one link never
+exercised end to end is `systemctl --user start emacs-graph.service` against
+the *real* socket name, because doing so requires killing the Emacs this was
+written from. Every part of it was verified separately.
+
+Nothing here prevents another SIGKILL. What it changes is that the next one
+leaves a journal entry, an exit code, a core and a backtrace instead of a set
+of absences to argue from — and that the bus comes back on its own.
+
+## 8. See also
 
 - `README-termux.md` §1 — the one command, and why tmux sits under mosh
 - `README-termux.md` §5 — `aggressive-resize on`, which is what makes the grouped
   views behave when phone and monitor differ in size
 - `README-kinesis.md` — the other half of the phone-as-workstation input story
+
+---
