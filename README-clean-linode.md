@@ -5,6 +5,11 @@ existing Linode after an initial Apollo trial. This document authorizes no
 shutdown, rebuild, DNS change or deletion. No Linode was modified during the
 SSH survey.
 
+The expanded [archive and OS migration survey](README-linode-migration-survey.md)
+now records Ubuntu support status, database/container inventories, backup evidence
+and Zone storage constraints. Hyperreal is the oldest OS; Metameso is the first
+general-purpose archive/rebuild candidate; Lucy remains supported through 2029.
+
 ## Candidate hosts
 
 | Host | Observed state | What must be preserved or retired explicitly |
