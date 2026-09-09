@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "candidate-unqualified",
+  "scope": "futon3c dev-serve conservative local-root inventory; non-classpath features still under audit",
+  "repositories": [
+    {
+      "name": "futon0",
+      "url": "https://github.com/tothedarktowercame/futon0.git",
+      "commit": "7a568e873ed5828d56b6bdc0b7c4c9979fa42488",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:40.112329+00:00"
+    },
+    {
+      "name": "futon1",
+      "url": "https://github.com/tothedarktowercame/futon1.git",
+      "commit": "26ab382e6721342483403e37d4e2ab59cea47e06",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:40.126535+00:00"
+    },
+    {
+      "name": "futon1b",
+      "url": "https://github.com/tothedarktowercame/futon1b.git",
+      "commit": "d5a071e94c62c4ac1e8978d2369c974c7bfb0cdb",
+      "branch_at_selection": "master",
+      "public_checked_at": "2026-09-09T18:40:40.073598+00:00"
+    },
+    {
+      "name": "futon2",
+      "url": "https://github.com/tothedarktowercame/futon2.git",
+      "commit": "5af75e695409fff7be1aa09c1d55a50e6735ebc4",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:40.164114+00:00"
+    },
+    {
+      "name": "futon3",
+      "url": "https://github.com/tothedarktowercame/futon3.git",
+      "commit": "bfa8a9c45ef2989114de4f35ecfe748b5eeb761f",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:40.725615+00:00"
+    },
+    {
+      "name": "futon3a",
+      "url": "https://github.com/tothedarktowercame/futon3a.git",
+      "commit": "58ea67a4f3f5614faa1144aa786c33c2ee17bea8",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:40.759949+00:00"
+    },
+    {
+      "name": "futon3b",
+      "url": "https://github.com/tothedarktowercame/futon3b.git",
+      "commit": "9795feb546c2ca563797f2ed85614a7b94f73a12",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:40.735153+00:00"
+    },
+    {
+      "name": "futon3c",
+      "url": "https://github.com/tothedarktowercame/futon3c.git",
+      "commit": "683908c782486a978db89b9fafee105c9b272e3c",
+      "branch_at_selection": "master",
+      "public_checked_at": "2026-09-09T18:40:41.152667+00:00"
+    },
+    {
+      "name": "futon4",
+      "url": "https://github.com/tothedarktowercame/futon4.git",
+      "commit": "e9bb43301da6ccf7bc13b3be6c87f1faa48461a5",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:41.626232+00:00",
+      "submodules": [
+        {
+          "path": "dev/vendor/reazon",
+          "url": "https://github.com/nickdrozd/reazon",
+          "commit": "377e879202943eba10b812f372d6cb00aa344fe9"
+        }
+      ]
+    },
+    {
+      "name": "futon5",
+      "url": "https://github.com/tothedarktowercame/futon5.git",
+      "commit": "4adbc49d331d4bd5855f0ea3e698af6812148089",
+      "branch_at_selection": "main",
+      "public_checked_at": "2026-09-09T18:40:41.638885+00:00"
+    }
+  ]
+}

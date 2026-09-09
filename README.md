@@ -93,6 +93,11 @@ flowchart TB
 
 Each futon has a main README plus specialized docs. Use this to find what you need:
 
+For a new collaborator's installation, start with
+[Public installation readiness](README-public-install.md): the current public
+repository inventory, Ubuntu prerequisites, Apollo isolation constraints, and
+remaining installer work.
+
 ```mermaid
 flowchart LR
     subgraph F0["futon0"]

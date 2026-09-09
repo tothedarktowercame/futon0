@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "qualification-pending",
+  "profiles": {
+    "agency-4g": {
+      "description": "Agency on a small host with a separately provisioned substrate; not a complete local stack.",
+      "services": {"futon3c": {"heap_mib": 1536, "direct_mib": 640}},
+      "overhead_reserve_mib": 1536,
+      "requires_external_substrate": true,
+      "workload": "One agent at a time; no local frontend compilation or Lean builds."
+    },
+    "compact-8g": {
+      "description": "First qualification candidate for a complete headless two-JVM installation.",
+      "services": {
+        "futon3c": {"heap_mib": 1536, "direct_mib": 640},
+        "futon1b": {"heap_mib": 1536, "direct_mib": 768}
+      },
+      "overhead_reserve_mib": 2048,
+      "requires_external_substrate": false,
+      "workload": "One agent at a time, fresh/small store; full-corpus rebuilds require separate qualification."
+    },
+    "rebuild-16g": {
+      "description": "Compact Agency with the current substrate rebuild memory ceilings.",
+      "services": {
+        "futon3c": {"heap_mib": 1536, "direct_mib": 640},
+        "futon1b": {"heap_mib": 4096, "direct_mib": 3072}
+      },
+      "overhead_reserve_mib": 3072,
+      "requires_external_substrate": false,
+      "workload": "Substrate rebuild qualification; agent and compiler concurrency must be bounded."
+    },
+    "zone-32g": {
+      "description": "Existing Zone JVM ceilings, retained as a large-host option.",
+      "services": {
+        "futon3c": {"heap_mib": 12288, "direct_mib": 4096},
+        "futon1b": {"heap_mib": 4096, "direct_mib": 3072}
+      },
+      "overhead_reserve_mib": 6144,
+      "requires_external_substrate": false,
+      "workload": "Large-host trial; this does not certify unrestricted concurrent agents or proof builds."
+    }
+  }
+}
