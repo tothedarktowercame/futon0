@@ -84,6 +84,7 @@
         "../futon3c/emacs/agent-mission-control.el"
         "../futon3c/emacs/claude-repl.el"
         "../futon3c/emacs/codex-repl.el"
+        "../futon3c/emacs/zai-repl.el"
         "../futon3c/emacs/futon3c-code-blocks.el"
         "../futon3c/emacs/smart-cursor.el"
         "../futon3c/emacs/futon-agency-ws.el"
@@ -185,6 +186,7 @@
 (require 'agent-mission-control)
 (require 'claude-repl)
 (require 'codex-repl)
+(require 'zai-repl) ; M-x zai-repl-attach-agent for existing Agency agents.
 (require 'futon3c-code-blocks)
 (require 'smart-cursor)
 (require 'futon-branches)
