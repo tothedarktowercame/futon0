@@ -916,3 +916,45 @@ that reads the *citations*, not just `git status`: every `path:line` reference i
 a committed record must resolve to a committed file. That is the check that would
 have caught this on 08-29 instead of 08-31, and it is cheap. Not built here;
 recorded as the shape of the fix, and as this document's own next item.
+
+## Checkpoint 2026-09-12 — audit and repair (IMPROVEMENTS STILL REQUIRED)
+
+Audited on 2026-09-12 while both Claude and Codex usage were exhausted. The
+mechanism was in better shape than feared (wired hourly since 2026-09-01,
+fetches before comparing, five clauses implemented), but it had become its own
+warning realized in inverted form: **248 consecutive hourly failures into
+journald with `OnFailure=` empty** — a permanently red lamp nobody watched.
+Repairs made same day:
+
+- **Wired a consumer.** New `scripts/inbox-zero-delta.bb` + systemd
+  `futon-sync-delta.service`, fired by `OnSuccess=`/`OnFailure=` on the gate.
+  It reports only status *changes* (new failure, recovery, signature change),
+  logs them to `data/inbox-zero-delta.log`, and notifies via `notify-send`
+  when present. Steady-state red is silent, which is what makes a change
+  visible. Bring-up caught two real bugs worth keeping: JSON keys must stay
+  strings when comparing against the gate's repo labels, and a `cond` whose
+  first branch closed early makes the later "clauses" top-level forms that run
+  unconditionally — paren balance alone does not catch that.
+- **futon0**: pushed 15 unpushed commits (oldest 295 h); removed three stale
+  `.bak` files.
+- **futon5**: local `main` fast-forwarded 326 commits to `origin/main`.
+- **futon3c**: committed 48 finished scribe pattern-library documents (29–95 h
+  unstaged) and the durable-coordinator watchdog/compact-session fixes
+  (clj-kondo 0/0, 33 tests / 237 assertions green); pushed.
+- **Dead review worktrees**: 74 removed cleanly across futon2/futon3/futon3c/
+  futon5a. 17 kept because they hold uncommitted modifications — they stay
+  visible to the gate on purpose until reviewed.
+
+### Still open
+
+- **apm-lean: 272 dead frame worktrees.** Deliberately not bulk-removed:
+  APM workspaces retire through the lease+audit path
+  (`futon3c.apm.workspace-lifecycle/retire!`); raw `git worktree remove` would
+  bypass the retirement-audit invariant. Needs a campaign retirement sweep.
+- **voxterm**: no remote exists at all and no upstream (clause 4). Creating
+  the GitHub repo is Joe's call; the three stale stray files (up to 631 h)
+  are untouched.
+- **p4ng**: 12 unpushed commits and `wm-status.pdf` — unexamined, left as is.
+- **17 dirty review worktrees** kept above.
+- The "facility" item from the previous section — citation resolution on a
+  schedule — is still not built.

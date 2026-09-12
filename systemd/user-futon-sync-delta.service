@@ -1,0 +1,8 @@
+[Unit]
+Description=FUTON inbox-zero status-change notifier (futon-sync delta)
+ConditionPathExists=%h/code/futon0/scripts/inbox-zero-delta.bb
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/code/futon0
+ExecStart=/usr/local/bin/bb %h/code/futon0/scripts/inbox-zero-delta.bb

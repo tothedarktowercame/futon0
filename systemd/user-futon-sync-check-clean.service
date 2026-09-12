@@ -1,6 +1,12 @@
 [Unit]
 Description=FUTON inbox-zero cleanliness gate (futon-sync check-clean)
 ConditionPathExists=%h/code/futon0/scripts/futon-sync.clj
+# Audit 2026-09-12: the gate had failed 248 consecutive hours into journald
+# with OnFailure empty -- a permanently red lamp nobody watched. The delta
+# notifier runs after EVERY gate outcome (clean or dirty) and reports only
+# status CHANGES, so steady-state red is silent and a change is visible.
+OnSuccess=futon-sync-delta.service
+OnFailure=futon-sync-delta.service
 
 [Service]
 Type=oneshot
