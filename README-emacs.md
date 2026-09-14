@@ -384,7 +384,211 @@ Nothing here prevents another SIGKILL. What it changes is that the next one
 leaves a journal entry, an exit code, a core and a backtrace instead of a set
 of absences to argue from — and that the bus comes back on its own.
 
-## 8. See also
+## 8. The real recurring crash, 2026-09-07 to 2026-09-08 — `cm.c:122`
+
+§7 ended with "nothing here prevents another SIGKILL". What actually came next
+was not a SIGKILL. The daemon has now aborted **three times** in its own display
+code, and because §7.5's logging was in place it is the best-documented failure
+on this box:
+
+| # | when | pid | frame split? | outcome |
+|---|------|-----|--------------|---------|
+| 1 | 2026-09-07 22:10:01 | 881949 | yes | `SIGABRT`, restarted |
+| 2 | 2026-09-08 03:01:32 | 2434199 | yes | `SIGABRT`, restarted |
+| 3 | 2026-09-08 13:59:14 | 3503878 | yes | `SIGABRT`, restarted in 6 s |
+
+All three: `emacs-graph.service: Main process exited, code=dumped, status=6/ABRT`
+— **[verified]** in the journal, which is precisely the diagnosability §7.5 was
+built for. Compare §7.3, where the same class of event left only absences to
+argue from. Full write-ups with the gdb probes are in
+`~/.emacs-graph/crashes/`; this section is the summary and the conclusion.
+
+### 8.1 The defect
+
+A shrink the window tree is allowed to refuse, which nobody checks.
+
+When the tty collapses, `adjust_frame_size` calls `resize_frame_windows`, which
+returns `void`. For a **leaf** root window (`window.c:5062`) it assigns the new
+size and always succeeds. For a **split** root (`window.c:5082`) it tries a
+normal resize, retries with the safe minimums, and if both fail it falls off the
+end having changed nothing — two stacked windows need 2 lines each and a 4-line
+frame leaves the root 3. `adjust_frame_size` cannot tell, and commits the new
+height to `FRAME_LINES` and to `FrameRows` anyway. `adjust_frame_glyphs` then
+derives its dimensions from the *window tree*, sees they disagree with
+`FRAME_TOTAL_LINES`, and returns early without touching the matrices. So the
+frame and the terminal say 4 rows while the tree still occupies 21 and the
+matrices are still 21 rows tall. Redisplay walks the stale matrix, writes a
+full-width row past the terminal's last line, and `cmcheckmagic` aborts.
+
+`cm.c:122` is the symptom. The invariant break is upstream of it.
+
+### 8.2 What made #3 definitive
+
+The instrumentation from the 03:01 write-up (`frame-size-logging.el` on
+`pre-redisplay-functions`, `~/bin/tmux-size-log` on tmux's resize hooks) was
+running. Two questions that were open on 09-08 03:19 are now closed —
+**[verified]** from the logs and from the core, which agree number for number.
+
+**a. What collapses the terminal to 4 rows: the mosh client itself reports it.**
+
+```
+13:59:13.802  client-resized  /dev/pts/2  112x21     (from 50x29)
+13:59:13.876  client-resized  /dev/pts/2  112x4      <- 74 ms later
+```
+
+Not a pane split, not `resize-window`. A 50x29 → 112x21 → 112x4 walk in 74 ms is
+a DeX display switch handing the app a transient degenerate viewport — the same
+class of event as the height-0 that aborts mosh-client in §3, one notch less
+degenerate. §3's rotation hypothesis was right about the mechanism and wrong
+only about which program it kills.
+
+**b. The split precondition, previously derived from the source, is now observed.**
+
+The 03:01 write-up called "this needs a SPLIT root at the moment of collapse" a
+testable claim. It got tested by accident six hours before crash #3, by the same
+client doing the same thing:
+
+```
+07:44:37.486  frame=112x21 root=20 mini=1 sum=21 OK        split=NO   wins=1
+07:44:37.644  client-resized 112x4
+07:44:37.737  frame=112x4  root=3  mini=1 sum=4  OK        split=NO   wins=1   -> survived 6h15m
+
+13:59:13.799  frame=112x21 root=20 mini=1 sum=21 OK        split=YES  wins=2
+13:59:13.876  client-resized 112x4
+13:59:14.050  frame=112x4  root=20 mini=1 sum=21 MISMATCH  split=YES  wins=2   -> SIGABRT
+```
+
+Same client, same pty, same collapse, same day; the split is the only variable
+that differs, and it decides whether the root shrinks cleanly or silently
+declines to. That `MISMATCH` is the **only one in the whole log**, and the core
+confirms it independently: frame `total_lines = 4`, tree `20 + 1`, matrices 21.
+A controlled comparison instead of an inference. **[verified]**
+
+> **Settled the same afternoon, 14:39.** This stopped being a two-instance
+> comparison — see §8.3, where the split was toggled deliberately in both
+> directions against a throwaway daemon.
+
+### 8.3 The reproduction, fired — the split is causal
+
+Run against a **throwaway** `emacs -Q --fg-daemon=repro` on its own socket, with
+the probe's log redirected, so the bus was never at risk: afterwards
+`emacs-graph.service` was still `active`, `NRestarts` still 3, and
+`/home/joe/core` still the 13:59 crash. **[verified]** The whole thing took
+about 90 seconds. Artifacts in `~/.emacs-graph/repro/`, write-up in
+`~/.emacs-graph/crashes/20260908T144002-reproduction.txt`.
+
+Same frame, same terminal, same collapse, one variable toggled:
+
+```
+CONTROL  delete-other-windows,   then resize-window -y 5
+  14:39:49  frame=112x4 root=3  mini=1 sum=4  OK        split=no  wins=1   -> ALIVE
+
+TEST     split-window-vertically, then resize-window -y 5
+  14:40:02  frame=112x4 root=19 mini=1 sum=20 MISMATCH  split=yes wins=2   -> SIGABRT
+```
+
+The backtrace matches the 03:01 crash frame for frame, down to the two call
+sites that distinguish it from the other two (`write_matrix` at dispnew.c:5783,
+`redisplay_preserve_echo_area` at xdisp.c:18216). The core's window tree carries
+the *same numbers* as the 03:01 core: root 19, children 10 and 9, minibuffer 1.
+**[verified]**
+
+Two practical notes for anyone re-running it, both about the harness rather than
+the bug. A fresh `tmux -L repro` server has its status bar **on**, so a 21-row
+window is a 20-row pane and `resize-window -y 5` is what gives a 4-row frame —
+`~/.tmux.conf` sets `status off` (line 49), which is why the live numbers match
+1:1 and the scratch server's do not. Set `status off` on the scratch server too
+and the arithmetic stops being a trap. And `-Q` leaves the tty menu bar on, so
+the core reads `total_lines = 5` (menu bar plus four) where the graph profile
+read 4.
+
+**One caveat this turned up:** a `MISMATCH` is not always fatal. The first line
+of the repro log is a transient on the daemon's initial non-tty frame during
+startup, resolved two seconds later with no crash. So `MISMATCH` looks
+necessary but is not sufficient, and a guard hung on it must tolerate the benign
+ones. On a tty frame mid-collapse it has been fatal every time observed.
+
+### 8.4 A mitigation that was proposed and does not work
+
+The 03:01 write-up suggested `set -g window-size largest`, so a short client
+could not shrink the shared window. Today's client roster refutes it:
+there is exactly **one** client attached — `/dev/pts/2`, with `dex` and `main`
+grouped and both fed by it — **[verified]**. `largest` over one client is that
+client, i.e. still 112x4. It would have changed nothing. It only helps when a
+tall client is attached *alongside* the collapsing one, which is not this setup.
+
+### 8.5 The guard — it survives now
+
+`~/.emacs-graph/frame-size-guard.el`, loaded from `init.el` beside the probe and
+hot-loaded into the running daemon at 14:48 so it protects the bus without
+waiting for a restart. Record:
+`~/.emacs-graph/crashes/20260908T1447-guard.txt`.
+
+It hangs on `pre-redisplay-functions` — *appended*, so the probe logs the
+provoking state before it is repaired — and acts only on the fatal shape: a tty
+frame, shorter than the tree filling it, with a split root. It re-measures
+afterwards and logs `REPAIRED` or `INCOMPLETE`, so it cannot claim a success it
+did not achieve.
+
+**The first version did not work, and the reason is worth keeping.** Collapsing
+the split is necessary and not sufficient:
+
+```
+14:44:58.688  GUARD repair #1 ... -> root is now a leaf
+14:44:58.688  frame=112x4 root=19 mini=1 sum=20 MISMATCH split=no
+              -> SIGABRT anyway
+```
+
+`delete-other-windows` gives the survivor the size of the **root**, and the root
+is still at its pre-collapse 19. Nothing re-runs `resize_frame_windows` with the
+frame's new height: `frame.c:1077` only calls it when the height *changes*, and
+by the time this hook runs the height has already been committed — so even an
+explicit `set-frame-height` to the value it already holds is a no-op. The leaf
+branch never got its chance. The fix is to nudge: drop a line and put it back.
+Both values are inside the real terminal, so neither can overflow it, and with
+the root now a leaf both assignments succeed.
+
+Verified against the §8.3 harness — **[verified]**, every row:
+
+| | |
+|---|---|
+| two-window split collapsed to 4 rows | `REPAIRED`, survived |
+| grown back to 21 | layout restored |
+| three more collapse/grow cycles | `REPAIRED` ×3 |
+| three-window split collapsed | `REPAIRED`, survived |
+| buffers across collapse+restore | `TOP`/`MID`/`BOT` all back |
+| benign shrink 21 → 12, 3-way split | guard did **not** fire |
+| `fsg--errors`, cores produced | 0, none |
+
+The last two rows matter as much as the first: a guard that fires on a shrink the
+tree can absorb would be its own bug.
+
+**What is not proven:** it has not fired on the real socket. Same binary, same
+code path, same terminal type, but not the graph profile's init and its frames.
+The next DeX display switch settles it — a `GUARD repair … REPAIRED` line in
+`frame-sizes.log` with `NRestarts` still at **3** is the proof.
+
+### 8.6 Where this stands
+
+Crash #3 cost 6 seconds (13:59:15 death → 13:59:21 active) and **no lost agent
+invocation** — **[verified]**, nothing in the journal window matches §7.4's
+`invoke-delivery failed`. With §8.5 installed, the next one should cost a
+redrawn frame and a log line.
+
+Not done, in rough order of value:
+
+1. **The upstream bug report.** `resize_frame_windows` declining a shrink while
+   `adjust_frame_size` commits it regardless is a genuine invariant break, and
+   §8.3's recipe is small enough to paste into the report as-is.
+2. **`set -g window-size manual`** plus a fixed `resize-window`, so client size
+   stops driving window size at all. Costs the phone/DeX auto-fit that
+   `README-termux.md` §5 exists for, and with §8.5 in place there is now little
+   reason to pay that.
+
+Also still open from §7.1: nothing forces the `eg` path to be used, and a bare
+shell under `mosh-server` is still only *warned* about.
+
+## 9. See also
 
 - `README-termux.md` §1 — the one command, and why tmux sits under mosh
 - `README-termux.md` §5 — `aggressive-resize on`, which is what makes the grouped
