@@ -958,3 +958,47 @@ Repairs made same day:
 - **17 dirty review worktrees** kept above.
 - The "facility" item from the previous section — citation resolution on a
   schedule — is still not built.
+
+## Checkpoint 2026-09-16 — the patterns, interpreted against the gate
+
+The requirements above were distilled into eight library patterns
+(`futon3/library/inbox-zero/`, futon3 `dc7b821`, `56ccd8f`) and interpreted as
+guards and effects over facts read from the 21:01 `check-clean` run
+(`futon2/holes/labs/wm-contract/WORKED-INSTANCES-pattern-interpretation-2026-09-16.md`,
+futon2 `2f16128a`). For p4ng (291 unpushed, oldest 151 h; nine tracked
+generated files 40.7 h) the patterns as written would classify the dirt,
+escalate the outlier to its responsible seat and route the change to someone
+who can act. The implementation does none of these; it writes a log line. The
+difference names three repairs.
+
+### Repairs
+
+1. **Escalation is wired to the wrong trigger.** Outlier escalation runs only
+   inside turn-end promotion, and the turn-end hook is agent-chat's, so a repo
+   written by Claude Code or Zai sessions (p4ng) never escalates however far
+   ahead it gets. The gate already knows the ahead count; outlier escalation
+   should be driven from the gate's reading (via `inbox-zero-delta`), not from a
+   turn ending.
+2. **Tracked generated output has no remedy.** None of the three dirt classes
+   covers a tracked file a build rewrites. Remedy by declared role, not by
+   extension (`inbox-zero/generated-by-role`; Joe, 2026-09-16: ".aux we should
+   probably never commit; .pdf sometimes we should"):
+   intermediate (never commit), rebuildable view (commit with its source and
+   generator run, or generate at build time), deliverable (commit at release
+   with its source sha), evidence (commit as produced, never regenerate).
+   Census the same day: p4ng tracks 40 build byproducts (7 `.aux`, 4 `.bbl`,
+   4 `.blg`, 3 `.fdb_latexmk`, 4 `.fls`, 12 `.log`, 6 `.out`) and 19 PDFs;
+   futon2's 268 tracked `.log` files are run cassettes, i.e. evidence — an
+   extension rule would have ignored them. **Needs Joe:** the role manifest for
+   p4ng (which PDFs are deliverables; whether generated sections are committed
+   with their build or generated at build time). No file was untracked.
+3. **The in-flight exemption never lifts on a busy repo.** p4ng is committed to
+   every few minutes, so "exempt other seats' live edits" is permanently true
+   and exempt dirt ages past 24 h without being reported as a failure of the
+   exemption. An exemption older than 24 h should itself fail.
+
+And one gap consistent with the model: futon3's 9 unpushed commits (under the
+ahead threshold of 10, 32 h old) have no sensitivity-screen record, so the
+automatic push path has nothing to act on — matching the gate, where they are
+still unpushed. Whether ordinary repos get screened and pushed outside a
+turn-end boundary is the same question as repair 1.
