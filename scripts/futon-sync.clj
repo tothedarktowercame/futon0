@@ -136,7 +136,17 @@
                      (str "refs/heads/" branch)))))
 
 (defn- default-branch
-  "Resolve the local default branch without consulting the checked-out HEAD."
+  "Resolve the local default branch without consulting the checked-out HEAD.
+
+  Every clause measures THIS branch, not HEAD, and that is deliberate: work in
+  progress on a feature branch is not something the gate should nag about.
+  The cost is that a repo whose real work lives somewhere other than
+  main/master is invisible to clauses 2 and 3 -- which is what happened to
+  mathlib4, checked out on `darktower` while origin/HEAD says `master`. It
+  passed the hourly gate clean for a week with 216 commits unpushed, because
+  `origin/master..master` is genuinely empty and that is all anything looked
+  at. A repo like that needs to DECLARE the branch it pushes; see
+  push-branch."
   [path]
   (let [origin-head (git path "symbolic-ref" "--quiet" "--short"
                          "refs/remotes/origin/HEAD")
@@ -147,6 +157,28 @@
       (local-branch-exists? path "main") "main"
       (local-branch-exists? path "master") "master"
       :else nil)))
+
+(defn- push-branch
+  "The branch this repo is supposed to keep pushed.
+
+  `push-branch` in data/git_sources.json overrides the resolved default, for
+  the repo whose work does not live on main/master. mathlib4 is the only one
+  (Joe, 2026-09-18): it is a fork carrying `darktower`, and origin/HEAD points
+  at the upstream `master` it will never push to.
+
+  A declared branch that does not exist locally is NOT silently ignored --
+  falling back to the default here would restore the exact blindness the
+  declaration exists to remove, and it would do it quietly. It returns nil,
+  which raises clause 4 rather than reporting a clean repo."
+  [repo path]
+  (if-let [declared (:push-branch repo)]
+    (if (local-branch-exists? path declared)
+      declared
+      (binding [*out* *err*]
+        (println (format "futon-sync: %s declares push-branch %s, which does not exist locally"
+                         (:label repo) declared))
+        nil))
+    (default-branch path)))
 
 (defn- parse-worktree-record [lines]
   (reduce (fn [record line]
@@ -224,7 +256,7 @@
         header (first lines)
         entries (rest lines)
         branch (parse-branch header)
-        default (default-branch path)
+        default (push-branch repo path)
         upstream (when default
                    (git path "rev-parse" "--abbrev-ref" "--symbolic-full-name"
                         (str default "@{upstream}")))

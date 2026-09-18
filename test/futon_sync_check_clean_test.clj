@@ -99,6 +99,44 @@
             (is (= [3] (mapv :clause (:failures
                                       (clean-verdict (status repo "stale-ahead") now)))))))
 
+        ;; The mathlib4 case, 2026-09-18. Work lives on a branch that is not
+        ;; the resolved default, so every clause measured an empty
+        ;; origin/main..main and reported clean while the real branch carried
+        ;; 216 commits unpushed for seven days. d1 pins the blind spot so it
+        ;; cannot be called a regression later; d2 pins the declaration that
+        ;; closes it.
+        (testing "d1: stale commits on a non-default branch are invisible undeclared"
+          (let [repo (init-repo! root "offbranch-blind" true)
+                old-sec (quot (- now (* 72 60 60 1000)) 1000)]
+            (git! repo "checkout" "-b" "darktower")
+            (git! repo "push" "-u" "origin" "darktower")
+            (commit! repo "stale off-branch" old-sec)
+            (is (:clean (clean-verdict (status repo "offbranch-blind") now))
+                "undeclared: the gate still only sees main, which is clean")))
+
+        (testing "d2: declaring push-branch makes those same commits fail clause 3"
+          (let [repo (init-repo! root "offbranch-declared" true)
+                old-sec (quot (- now (* 72 60 60 1000)) 1000)
+                _ (git! repo "checkout" "-b" "darktower")
+                _ (git! repo "push" "-u" "origin" "darktower")
+                _ (commit! repo "stale off-branch" old-sec)
+                verdict (clean-verdict
+                         (repo-status {:label "offbranch-declared"
+                                       :abs-path (str repo)
+                                       :push-branch "darktower"})
+                         now)]
+            (is (= [3] (mapv :clause (:failures verdict))))))
+
+        (testing "d3: a push-branch that does not exist raises clause 4, never a pass"
+          (let [repo (init-repo! root "offbranch-missing" true)
+                verdict (clean-verdict
+                         (repo-status {:label "offbranch-missing"
+                                       :abs-path (str repo)
+                                       :push-branch "no-such-branch"})
+                         now)]
+            (is (= [4] (mapv :clause (:failures verdict)))
+                "a wrong declaration must not fall back to the default and report clean")))
+
         (testing "e: no upstream fails clause 4"
           (let [repo (init-repo! root "no-upstream" false)]
             (is (= [4] (mapv :clause (:failures
