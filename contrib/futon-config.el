@@ -47,6 +47,12 @@
 ;; Human nicknames for agent REPL buffers: M-x agent-nick-set, jump with C-c b.
 (require 'agent-nick)
 
+;; LaTeXML WYSIWYG (M-latex-wysiwyg, futon5 paper demo, Caddy /wysiwyg/):
+;; M-x latex-wysiwyg-start (reads scopes.json) starts the read/edit WS server
+;; on 7079 that the browser page's wss proxy terminates into.  websocket.el is
+;; loaded lazily by latex-wysiwyg-start itself.
+(require 'latex-wysiwyg)
+
 ;; `stack-hud-blocks' is a defcustom whose default already includes `usage'.
 ;; If a previously-saved value pre-dates that addition, splice the block in
 ;; after `services' so the HUD picks it up without a customize roundtrip.
