@@ -118,7 +118,7 @@ def main():
     stem = f'commit-timeseries-{args.end}'
     csv_path = args.output_dir / (stem + '.csv')
     with csv_path.open('w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=['date', *REPOS, *(s[0] for s in SERIES)])
+        writer = csv.DictWriter(file, lineterminator='\n', fieldnames=['date', *REPOS, *(s[0] for s in SERIES)])
         writer.writeheader()
         writer.writerows(rows)
     (args.output_dir / (stem + '.svg')).write_text(render_svg(rows, missing))
