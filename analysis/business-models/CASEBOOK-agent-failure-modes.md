@@ -263,8 +263,14 @@ stage vocabulary).
   series against an independent denominator before reading a drop as real.
 - **Skip when.** The series is never read as a count of anything.
 - **Node.** R7 (precision): a channel that went quiet was read as a quiet world.
-- **Status.** Server fix dispatched (codex-15); the downloader now refuses
-  unordered pages; corrected figure after the fix.
+- **Status: repaired 2026-09-21.** Cause was XTDB 2.1.0's external descending
+  sort corrupting order once it spills past 102,400 rows; futon1b 5d9938c
+  selects the global top-K before pagination (real-store regression: parent
+  fails, fix passes). After the restart the same page has 0 violations. The
+  guarded re-extraction (48ff95d) raised Claude-transcript coverage after
+  2026-09-13 to 91% (92% before), and the figure no longer pinches. Stage shares
+  moved by under 1.1 points each — the missing records changed the picture of
+  *when* Joe worked much more than the picture of *what* he did.
 
 ---
 
