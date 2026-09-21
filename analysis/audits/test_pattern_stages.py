@@ -11,6 +11,18 @@ import pattern_stage_review as review
 
 
 class EvidenceJoinTests(unittest.TestCase):
+    def test_refuse_observed_page_order_inversion(self):
+        # Adjacent entries from the real whole-window HTTP response, 2026-09-21.
+        rows = [
+            {"evidence/at": "2026-09-21T16:25:08.380610343Z", "evidence/id": "e-ea86f757-8130-492f-91cf-63d9ecec3324"},
+            {"evidence/at": "2026-09-21T17:18:15.930813301Z", "evidence/id": "e-5c5e96ca-2082-4c25-bebc-13473514f8dc"},
+        ]
+        with self.assertRaisesRegex(ValueError, "not strictly newest-first"):
+            evidence.validate_evidence_page({"entries": rows})
+        evidence.validate_evidence_page({"entries": list(reversed(rows))})
+        with self.assertRaisesRegex(ValueError, "no continuation cursor"):
+            evidence.validate_evidence_page({"entries": [], "incomplete": True})
+
     def test_real_join_excludes_resume_ambiguity_and_nonunique_rank(self):
         # These are actual serialized inputs to the production join, not mocked classification.
         def turn(identifier, text):

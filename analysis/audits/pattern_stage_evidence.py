@@ -36,12 +36,36 @@ def exclusion(t):
  if re.match(r'\s*(?:WAKE(?: CHECKLIST)?\s*:|WAKE CHECKLIST\b|ON WAKE\b|STOOD DOWN FOR THE NIGHT\b)',t,re.I):return 'wake-payload'
  return None
 
+def validate_evidence_page(response, incoming_cursor=None):
+ """Refuse a page violating the server's newest-first keyset contract.
+
+ Sorting an already limited page cannot recover newer identities skipped by
+ its cursor. Do not repair this locally or silently deduplicate the symptom.
+ """
+ entries=response['entries']
+ keys=[(r['evidence/at'],r['evidence/id']) for r in entries]
+ for previous,current in zip(keys,keys[1:]):
+  if previous <= current:
+   raise ValueError(f'Evidence page is not strictly newest-first: {previous} then {current}; source pagination must be repaired before rebuilding the corpus')
+ if incoming_cursor and keys and keys[0] >= incoming_cursor:
+  raise ValueError('Evidence page crosses its incoming cursor or repeats an identity')
+ cursor=response.get('next-cursor')
+ if cursor:
+  key=(cursor['at'],cursor['id'])
+  if incoming_cursor and key >= incoming_cursor:
+   raise ValueError('Evidence cursor did not move strictly backwards')
+  if keys and key > keys[-1]:
+   raise ValueError('Evidence cursor precedes the last returned row in scan order')
+ elif response.get('incomplete'):
+  raise ValueError('Incomplete evidence page has no continuation cursor')
+
 def fetch_snapshot(out, window, endpoint):
  for name,filters in [('retrieval',{'tags':'context-retrieval'}),('joe',{'author':'joe'})]:
   rows=[];cursor={};seen=set();pages=[]
   while True:
    url=endpoint+'/api/alpha/evidence?'+urllib.parse.urlencode({**window,**filters,'limit':1000,**cursor})
    with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json'}),timeout=60) as r:d=json.load(r)
+   validate_evidence_page(d,(cursor['cursor-at'],cursor['cursor-id']) if cursor else None)
    rows.extend(d['entries']); pages.append({k:v for k,v in d.items() if k!='entries'})
    print(name,len(pages),len(rows),'incomplete',d.get('incomplete'),flush=True)
    c=d.get('next-cursor')
