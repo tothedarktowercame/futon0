@@ -144,15 +144,34 @@ stage vocabulary).
   a 24 hour timebox at this point? i am baffled"; "pull Codex 26 completely off
   of this job since it started to build work that I'd never asked for … I never
   asked for giant, unnecessary bookkeeping systems."
-- **Mechanism (hypothesis, under forensic check).** A list of *decisions* became a
-  list of *implementations*: "best guess" was read as "build the answer", and
-  each open question became a small system. *Pending:* codex-15's forensics
-  (`futon0/analysis/audits/FORENSIC-autopilot-2026-09-21.md`) — what was built,
-  the exact handoff text, token cost, and whether any of it is loaded by live
-  code today (the deletion footprint).
-- **Protection.** Handoffs typed as **decide** (return a recommendation) or
-  **build** (return an artefact), never both implicitly; a cost cap per handoff;
-  no unattended run without a declared focus that says what is *not* wanted.
+- **What happened (codex-15 forensics, `futon0/analysis/audits/FORENSIC-autopilot-2026-09-21.md`,
+  3e83795).** The questions were `futon2/holes/labs/wm-contract/DECISIONS-FOR-JOE-2026-09-12.md`
+  (845ad996), rulings on WORK-REMAINING rows 18, 19, 22, 24. The handoff, from
+  the Codex rollout at 23:48Z: "given that I really don't have an opinion about
+  any of these questions … You take over the lead. On finishing the remaining
+  work. Because these to me seem like questions which are about bookkeeping."
+  At 01:44Z Joe added codex-22/23/24 for dispatches. Result: 120 helper
+  commissions, 604 commits across futon2, futon3c and mathlib4, 2,087 touched
+  paths; 513M logged tokens (503M cached input, 1.58M output).
+- **Mechanism.** The first hypothesis (a decision list read as a build list) is
+  *not* supported. What happened was a **prerequisite regress**: leadership was
+  delegated wholesale, and the lead treated each obligation as needing
+  infrastructure first. The clearest case is the E6b slow-feedback cluster — a
+  transaction store, generation/HEAD protocols, codec, provenance envelope,
+  capture, replay and completeness authority — where "each new layer supplied
+  prerequisites for the next layer's tests while real outcome/genesis/authority
+  remained absent." Nothing in the loop checked whether a production obligation
+  had closed.
+- **Footprint.** The E6b cluster (`futon2/src/futon2/aif/machine_slow_feedback_*.clj`,
+  `machine_slow_state_carrier.clj`) has no caller outside itself (checked
+  2026-09-21 by grep; not proof against dynamic loading). The row-19 ingress
+  machinery from the same window *is* required by futon3c's HTTP source. So
+  "delete it all" would break live code; the regress and the needed repairs are
+  interleaved.
+- **Protection.** Delegate a *bounded* obligation, not the lead: a closure list
+  with an external check per item, and a rule that new infrastructure must name
+  the production obligation it closes. A cost cap per handoff; no unattended run
+  without a declared focus that says what is *not* wanted.
 - **Skip when.** Tightly scoped mechanical work with an acceptance test.
 - **Node.** R6 (selection) with no preference to select against: *C* uniform.
   This is the case for improve-7 (focus-conditioned *C*): an agent with no
