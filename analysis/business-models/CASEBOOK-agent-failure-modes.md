@@ -1,7 +1,8 @@
 # Casebook — failure modes of agentic work, as lived in FUTON
 
-**Date:** 2026-09-21 · claude-5, with Joe. **Status:** first draft; two entries
-wait on running pilots (marked *pending*).
+**Date:** 2026-09-21 · claude-5, with Joe. **Status:** first draft; all
+entries now carry evidence (B1 and E1 filled from the forensics and park-cost
+pilots, C3 repaired).
 
 Companion to `NOTE-red-cells-as-consulting-targets.md` (which offers *criteria*
 to buyers already paying without a scoring rule) and `NOTE-consultancy-shape.md`
@@ -94,8 +95,9 @@ stage vocabulary).
   in-memory atom, not the durable store. Live endpoint: 23 edges, all since the
   last restart; futon1b `evidence/count?tags=mesh-edge` = 0, all time.
   (`futon3c/holes/NOTE-agency-accounting-gaps-2026-09-21.md`, cfa2e00c;
-  `coordination_ledger.clj:81,128` fall back to `estore/!store`.) Fix in
-  progress (codex-17, handoff 1).
+  `coordination_ledger.clj:81,128` fall back to `estore/!store`.) Fixed the
+  same day (futon3c eca529f7): writes and reads resolve the durable backend and
+  refuse the atom; after reload the futon1b count went 0 → 3 on two probe bells.
 - **Mechanism.** The write path had a default that worked in tests; nothing in
   production refused it.
 - **Protection.** Test the exact bad case (no store passed) against the real
