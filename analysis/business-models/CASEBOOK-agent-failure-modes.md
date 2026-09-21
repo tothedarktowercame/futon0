@@ -273,16 +273,38 @@ stage vocabulary).
 
 ## E. Coordination cost
 
-### E1. Park/wake overhead — *pending*
+### E1. Park/wake overhead
 
 - **Question (Joe, 2026-09-21).** "I absolutely love working that way. But if it's
   taking a quarter of my usage to do parks and wakes, maybe I need to be more
   selective."
-- **Suspected mechanism.** A wake in a long session re-reads the whole context,
-  so wake cost scales with session length, not with what the wake does.
-- **Evidence.** *Pending:* codex-14's park-cost pilot (token share by trigger
-  class; wake cost vs context size). Turn-count share already known: ~32% of
-  Joe-authored turn rows are resumes.
+- **Evidence (codex-14 pilot, futon0 b6609dd; notebook
+  `chat-park-wake-pilot-20260921.py`).** Claude sessions 2026-09-07..21: 829
+  wakes among 3,013 turns in 112 sessions. Share of tokens by what triggered the
+  turn:
+
+  | component | wake | bell-in | operator | other |
+  |---|---:|---:|---:|---:|
+  | uncached input | 22.7% | 11.6% | 41.8% | 23.9% |
+  | cache read | 27.8% | 14.5% | 37.5% | 20.2% |
+  | cache write | 13.0% | 23.4% | 46.6% | 17.0% |
+  | output | 21.4% | 14.5% | 40.4% | 23.7% |
+
+  Joe's "a quarter" is close: wakes take 21–28% of tokens on every component
+  except cache writes. Per session the share runs from about 25% to 80%
+  (claude-3 `355a71b9`, 80.5%). Usage is deduplicated by UUID and API message id;
+  the same usage object repeats across content blocks, so literal-row counts
+  inflate.
+- **Mechanism, partly confirmed.** Starting cached context correlates with wake
+  cache reads (Spearman 0.45, partly mechanical) but not with wake output
+  (−0.08). Long sessions make wakes expensive to *read*, not more productive.
+- **What wakes did.** 398 of 829 dispatched further work; 807 produced final
+  text. A strict detector for "checked a job and stopped" found none, which is a
+  lower bound from an incomplete detector, not evidence that such wakes are rare.
+- **Reviewer check.** claude-5 recounted its own session (`de4c2047`): wake
+  cache-read share 45.7% against the pilot's 39.8%, same window and dedupe. The
+  difference is unexplained (classification of operator-enveloped wakes is the
+  likely place); direction and scale agree.
 - **Candidate protection.** Batch parks (one wake for several jobs — used
   2026-09-21, `park-0456dffa…`); poll instead of parking for results that need
   no decision; park from short-context seats.
