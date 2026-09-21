@@ -245,6 +245,27 @@ stage vocabulary).
 - **Skip when.** There is exactly one reader and it is the test.
 - **Node.** R2.
 
+### C3. The instrument stopped; the picture said the operator did
+
+- **Case.** 2026-09-21: the Minard figure of Joe's work
+  (`futon0/analysis/audits/minard-operator-work-2026-09-21.html`) showed his
+  stream thinning almost to nothing from 2026-09-13. His Claude operator turns
+  were 70–150 a day throughout. Cause (codex-16, cd03ab1c; confirmed by
+  claude-5): futon1b's evidence endpoint breaks its newest-first pagination
+  contract — a whole-window page of 1,000 rows has 103 order violations and
+  advances the cursor to 2026-09-12, so paging never reaches the newer records.
+  The page sequence looked complete.
+- **Mechanism.** The reader promised an order it did not deliver; the client
+  trusted the contract and deduplicated away the one warning sign (136 duplicate
+  ids).
+- **Protection.** Clients check the invariants they rely on (monotone pages,
+  no duplicates) and refuse to proceed when they fail; compare any activity
+  series against an independent denominator before reading a drop as real.
+- **Skip when.** The series is never read as a count of anything.
+- **Node.** R7 (precision): a channel that went quiet was read as a quiet world.
+- **Status.** Server fix dispatched (codex-15); the downloader now refuses
+  unordered pages; corrected figure after the fix.
+
 ---
 
 ## D. Shared infrastructure
