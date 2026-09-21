@@ -9,6 +9,45 @@ a week is the open experiment. Jujutsu was tried as a mechanism the same day
 and parked; that is recorded at the end as a concluded sub-experiment, not as
 the plan.
 
+## Directory inventory and worktree review (2026-09-21)
+
+Run from `futon0`:
+
+```sh
+bb scripts/futon-sync.clj inventory
+bb scripts/futon-sync.clj inventory --all
+bb scripts/futon-sync.clj inventory --root /home/joe --root /home/joe/code --json
+```
+
+This is a read-only census of the immediate directories in home and the code
+workspace by default. It also enumerates every linked worktree of manifest
+repositories, including checkouts outside those roots. It does not fetch.
+Human output shows six paths per category; `--all` and `--json` retain every
+path. Repeat `--root` to inspect other directories without crawling the whole
+home directory. Symlinks are listed, not traversed. Ordinary files and nested
+unregistered repositories are outside this one-level directory census.
+
+Directories are grouped into manifest repositories, registered worktrees,
+unlisted Git checkouts, symlinks, and unclassified directories. The last group
+is deliberately not called disposable: `futon3c-index-check`, for example, has
+no `.git` and would otherwise disappear from a Git-only inventory. Missing
+manifest repositories and unreadable roots are reported and give a nonzero exit.
+An inability to enumerate worktrees fails the command rather than reporting zero.
+
+Worktrees carry their comparison HEAD, integration evidence, dirt count, lock
+and prunable markers, and a next review action. `check-clean` now also fails
+clause 5 for **patch-equivalent worktrees** and **failed worktree comparisons**.
+Patch equivalence uses real `git cherry` results; unique merge commits prevent
+that classification. This detects cherry-picked branches that ancestry alone
+leaves classified as unfinished indefinitely.
+
+Neither command deletes anything. Patch equivalence does not prove later edits
+or reverts on mainline retained the feature. Before retirement, resolve the
+branch's disposition, active ownership, uncommitted and ignored files. Retain
+branch history until disposition is recorded. APM worktrees must retire through
+`futon3c.apm.workspace-lifecycle/retire!`, preserving lease and audit invariants;
+this inventory does not substitute raw Git removal for that lifecycle.
+
 ## Why — three costs, all measured on one day
 
 **1. Finished work sits unstaged and is forgotten.** Dionysus `futon3c` held 29

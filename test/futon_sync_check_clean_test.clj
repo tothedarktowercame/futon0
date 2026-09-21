@@ -9,7 +9,7 @@
 ;; runtime load-file -- and a linter that is permanently red on a file stops
 ;; being read. The order matters: load-file's defs replace these unbound vars,
 ;; so declaring after it would leave them unbound.
-(declare repo-status fetch? clean-verdict cmd-check-clean)
+(declare repo-status fetch? clean-verdict cmd-check-clean inventory-report)
 
 ;; Resolve the script relative to THIS file rather than by absolute path, so
 ;; the test travels with the repo instead of only working on one box. The
@@ -264,6 +264,55 @@
             (is (:clean verdict))
             (is (empty? (:info verdict)))
             (is (not-any? #(= 5 (:clause %)) (:failures verdict))))))
+      (finally (fs/delete-tree root)))))
+
+(deftest cherry-picked-worktree-and-directory-census
+  (let [root (fs/create-temp-dir {:prefix "inbox-inventory-"})]
+    (try
+      (with-redefs [fetch? false]
+        (let [repo (init-repo! root "main-repo" true)
+              wt (fs/path root "agent-copy")
+              orphan (fs/path root "main-repo-index-check")
+              missing (fs/path root "missing-repo")
+              repos [{:label "main-repo" :abs-path (str repo)}
+                     {:label "missing" :abs-path (str missing)}]]
+          (git! repo "worktree" "add" "-b" "feature" (str wt) "main")
+          (commit! wt "feature change")
+          ;; Force a different parent so cherry-pick cannot preserve the SHA.
+          (spit (str (fs/path repo "other.txt")) "mainline")
+          (git! repo "add" "other.txt")
+          (git! repo "commit" "-m" "mainline change")
+          (git! repo "cherry-pick" "feature")
+          (fs/create-dirs orphan)
+          (init-repo! root "unlisted" false)
+          (testing "real cherry-picked work is visible as retirement debt"
+            (let [s (status repo "main-repo")
+                  w (first (:worktrees s))]
+              (is (false? (:dead w)))
+              (is (= "patch-equivalent" (:integration w)))
+              (is (= 1 (:equivalent-commits w)))
+              (is (some #(= "patch-equivalent-worktree" (:reason %))
+                        (:failures (clean-verdict s))))))
+          (testing "census finds non-Git copies, unlisted repos and missing manifest entries"
+            (let [report (inventory-report repos [(str root)])
+                  kinds (into {} (map (juxt :path :kind) (:directories report)))]
+              (is (= "unclassified-directory" (get kinds (str orphan))))
+              (is (= "linked-worktree" (get kinds (str wt))))
+              (is (= "unlisted-git-checkout" (get kinds (str (fs/path root "unlisted")))))
+              (is (= ["missing"] (mapv :label (:missing-repositories report))))
+              (is (= 1 (get-in report [:worktree-counts "patch-equivalent"])))
+              (is (seq (:scan-errors (inventory-report repos [(str missing)]))))))
+          (testing "dirty files remain a retirement blocker even when patches landed"
+            (spit (str (fs/path wt "unfinished.txt")) "unfinished")
+            (is (= "review uncommitted files before retirement"
+                   (get-in (inventory-report repos [(str root)]) [:worktrees 0 :next-action]))))
+          (testing "new unmatched work is not a redundant checkout"
+            (commit! wt "new work")
+            (is (= "unmerged" (:integration (first (:worktrees (status repo "main-repo")))))))
+          (testing "unique merge commits prevent patch-equivalence classification"
+            (git! wt "reset" "--hard" "HEAD~1")
+            (git! wt "merge" "--no-ff" "main" "-m" "unique merge")
+            (is (= "unmerged" (:integration (first (:worktrees (status repo "main-repo")))))))))
       (finally (fs/delete-tree root)))))
 
 (let [{:keys [fail error]} (run-tests)]

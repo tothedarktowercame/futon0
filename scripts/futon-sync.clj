@@ -4,6 +4,9 @@
 ;; Reads the repo manifest from futon0/data/git_sources.json and provides:
 ;;   futon-sync          — status dashboard (default)
 ;;   futon-sync status   — same as above
+;;   futon-sync inventory — directory census and worktree retirement review
+;;     --root PATH       — repeat to select roots (default: home and code)
+;;     --all / --json    — include every path (human output otherwise capped)
 ;;   futon-sync check-clean — gate the five-clause inbox-zero definition
 ;;   futon-sync review   — show dirty/untracked file details for cleanup triage
 ;;   futon-sync pull     — bulk pull --rebase --autostash
@@ -26,15 +29,14 @@
   (str (fs/path (fs/parent (fs/parent (fs/real-path *file*)))
                 "data" "git_sources.json")))
 
-(defn load-repos []
+(defn manifest-repos []
   (let [base (fs/parent manifest-path)
         data (json/parse-string (slurp manifest-path) true)]
-    (->> (:repos data)
-         (map (fn [r]
-                (let [abs (str (fs/normalize (fs/path base (:path r))))]
-                  (assoc r :abs-path abs))))
-         (filter #(fs/exists? (str (fs/path (:abs-path %) ".git"))))
-         vec)))
+    (mapv #(assoc % :abs-path (str (fs/normalize (fs/path base (:path %)))))
+          (:repos data))))
+
+(defn load-repos []
+  (filterv #(fs/exists? (fs/path (:abs-path %) ".git")) (manifest-repos)))
 
 ;; ── Noise patterns ───────────────────────────────────────────────────────────
 
@@ -192,6 +194,12 @@
               (str/starts-with? line "branch refs/heads/")
               (assoc record :branch (subs line 18))
 
+              (str/starts-with? line "locked")
+              (assoc record :locked line)
+
+              (str/starts-with? line "prunable")
+              (assoc record :prunable line)
+
               (= line "detached")
               (assoc record :branch "detached")
 
@@ -205,7 +213,7 @@
       (->> (str/split (:out r) #"\n\s*\n")
            (remove str/blank?)
            (mapv #(parse-worktree-record (str/split-lines %))))
-      [])))
+      (throw (ex-info "Cannot enumerate worktrees" {:path repo-path :error (:err r)})))))
 
 (defn- worktree-dirty-count [path]
   (let [r (git path "status" "--porcelain=v1" "-uall")]
@@ -222,31 +230,59 @@
          :age-hours (/ (double age-ms) 3600000.0)})
       {:age-unknown true :error (or (:err r) "commit timestamp unavailable")})))
 
+(defn- worktree-integration [repo-path default head]
+  ;; Pin both refs for this comparison. Patch equivalence is evidence for
+  ;; review, not proof that later mainline edits retained the change.
+  (if-not (and default head)
+    {:integration "unknown" :integration-error "missing comparison ref"}
+    (let [target (git repo-path "rev-parse" "--verify" default)
+          ancestor (when (zero? (:exit target))
+                     (git repo-path "merge-base" "--is-ancestor" head (:out target)))]
+      (cond
+        (or (not (zero? (:exit target))) (not (#{0 1} (:exit ancestor))))
+        {:integration "unknown" :integration-error (or (:err ancestor) (:err target))}
+
+        (zero? (:exit ancestor))
+        {:integration "ancestor" :comparison-head (:out target)}
+
+        :else
+        (let [cherry (git repo-path "cherry" (:out target) head)
+              merges (git repo-path "rev-list" "--merges" (str (:out target) ".." head))
+              lines (remove str/blank? (str/split-lines (:out cherry)))]
+          (if (or (not (zero? (:exit cherry))) (not (zero? (:exit merges))))
+            {:integration "unknown" :integration-error (str (:err cherry) " " (:err merges))}
+            {:integration (if (and (seq lines) (every? #(str/starts-with? % "- ") lines)
+                                   (str/blank? (:out merges)))
+                            "patch-equivalent" "unmerged")
+             :comparison-head (:out target)
+             :equivalent-commits (count (filter #(str/starts-with? % "- ") lines))
+             :unmatched-commits (count (filter #(str/starts-with? % "+ ") lines))
+             :merge-commits (count (remove str/blank? (str/split-lines (:out merges))))}))))))
+
 (defn- extra-worktrees
   "Classify every linked checkout except the repository's main checkout.
 
-   A sibling has the same parent directory as the main checkout. Content is
-   dead exactly when its HEAD is already an ancestor of the default branch;
-   branch attachment is deliberately irrelevant."
+   An ancestor is already merged. Patch-equivalent branches are separate
+   retirement review candidates, never labelled merged. Branch attachment
+   is irrelevant; unique merges and failed comparisons cannot prove redundancy."
   [repo-path default now-ms]
   (let [root (str (fs/normalize (fs/real-path repo-path)))
         sibling-parent (str (fs/parent root))]
     (->> (worktree-records repo-path)
          (remove #(= root (str (fs/normalize (fs/path (:path %))))))
-         (mapv (fn [{:keys [path head branch]}]
+         (mapv (fn [{:keys [path head branch locked prunable]}]
                  (let [normalized (str (fs/normalize (fs/path path)))
                        sibling? (= sibling-parent (str (fs/parent normalized)))
-                       ancestor (when (and default head)
-                                  (git repo-path "merge-base" "--is-ancestor"
-                                       head default))]
-                   {:path normalized
+                       integration (worktree-integration repo-path default head)]
+                   (merge integration {:path normalized
                     :branch (or branch "detached")
+                    :locked locked :prunable prunable
                     :head head
                     :head-short (when head (subs head 0 (min 12 (count head))))
                     :sibling sibling?
-                    :dead (and ancestor (zero? (:exit ancestor)))
+                    :dead (= "ancestor" (:integration integration))
                     :newest (worktree-newest-commit normalized now-ms)
-                    :dirty-count (worktree-dirty-count normalized)}))))))
+                    :dirty-count (worktree-dirty-count normalized)})))))))
 
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
@@ -361,6 +397,8 @@
          oldest (oldest-unpushed status now-ms)
          worktrees (:worktrees status)
          dead-worktrees (filterv :dead worktrees)
+         equivalent-worktrees (filterv #(= "patch-equivalent" (:integration %)) worktrees)
+         unknown-worktrees (filterv #(= "unknown" (:integration %)) worktrees)
          ;; Only an EPHEMERAL path is a failure. /tmp does not survive a reboot,
          ;; so a checkout there is work that exists in one place and is scheduled
          ;; for deletion -- the same cost clause 3 is about. A worktree merely
@@ -385,7 +423,8 @@
                                       (not (ephemeral? %)))
                                 worktrees)
          live-worktrees (filterv #(and (:default-branch status)
-                                      (not (:dead %)) (:sibling %))
+                                      (not (:dead %)) (:sibling %)
+                                      (not (#{"patch-equivalent" "unknown"} (:integration %))))
                                  worktrees)
          failures (cond-> []
                     (seq old-files)
@@ -411,6 +450,14 @@
                     (seq dead-worktrees)
                     (conj {:clause 5 :reason "dead-worktree"
                            :worktrees dead-worktrees})
+
+                    (seq equivalent-worktrees)
+                    (conj {:clause 5 :reason "patch-equivalent-worktree"
+                           :worktrees equivalent-worktrees})
+
+                    (seq unknown-worktrees)
+                    (conj {:clause 5 :reason "worktree-comparison-failed"
+                           :worktrees unknown-worktrees})
 
                     (seq ephemeral-worktrees)
                     (conj {:clause 5 :reason "worktree-on-ephemeral-path"
@@ -475,8 +522,10 @@
             ;; can read. The full set stays in --json.
             shown (take 6 worktrees)]
         (str "clause 5: "
-             (if (= reason "dead-worktree")
-               "dead worktree"
+             (case reason
+               "dead-worktree" "dead worktree"
+               "patch-equivalent-worktree" "patch-equivalent worktree (review retirement)"
+               "worktree-comparison-failed" "worktree comparison failed"
                "worktree on an ephemeral path")
              " (" n "): "
              (str/join ", " (map worktree-id shown))
@@ -835,6 +884,80 @@
           ;; Just report
           (println (c ansi-dim "Run with --fix to apply suggestions.")))))))
 
+(defn inventory-report
+  "Read-only, one-level directory census plus all registered linked worktrees.
+  Roots are explicit; no recursive home traversal or symlink traversal."
+  [repos roots]
+  (let [present (filterv #(fs/exists? (fs/path (:abs-path %) ".git")) repos)
+        canonical (set (map :abs-path repos))
+        worktrees (vec (mapcat (fn [repo]
+                               (map #(assoc % :repo (:label repo))
+                                    (extra-worktrees (:abs-path repo)
+                                                     (push-branch repo (:abs-path repo))
+                                                     (System/currentTimeMillis)))) present))
+        linked (set (map :path worktrees))
+        scans (mapv (fn [root]
+                      (try
+                        {:root root
+                         :directories (->> (fs/list-dir root)
+                                           (filter fs/directory?)
+                                           (map str) sort vec)}
+                        (catch Exception e {:root root :error (ex-message e)}))) roots)
+        directories (->> scans (mapcat :directories) distinct sort
+                         (mapv (fn [path]
+                                 {:path path
+                                  :kind (cond
+                                          (fs/sym-link? path) "symlink"
+                                          (canonical path) "manifest-repository"
+                                          (linked path) "linked-worktree"
+                                          (fs/exists? (fs/path path ".git")) "unlisted-git-checkout"
+                                          :else "unclassified-directory")})))
+        rows (mapv (fn [w]
+                     (assoc w :next-action
+                            (cond
+                              (:locked w) "resolve worktree lock with owner"
+                              (:prunable w) "inspect missing checkout and registration"
+                              (nil? (:dirty-count w)) "inspect unreadable checkout"
+                              (pos? (:dirty-count w)) "review uncommitted files before retirement"
+                              (= "unknown" (:integration w)) "resolve comparison error"
+                              (= "ancestor" (:integration w)) "review ownership and ignored files; retire through workspace lifecycle"
+                              (= "patch-equivalent" (:integration w)) "confirm mainline disposition, ownership and ignored files; retire through workspace lifecycle"
+                              :else "review unmatched commits for consolidation"))) worktrees)]
+    {:roots roots :scan-errors (filterv :error scans)
+     :missing-repositories (filterv #(not (fs/exists? (fs/path (:abs-path %) ".git"))) repos)
+     :directory-counts (frequencies (map :kind directories))
+     :worktree-counts (frequencies (map :integration rows))
+     :worktrees rows :directories directories}))
+
+(defn cmd-inventory [repos args]
+  (let [explicit (map second (filter #(= "--root" (first %)) (partition 2 1 args)))
+        roots (mapv #(str (fs/normalize (fs/absolutize %)))
+                    (if (seq explicit) explicit
+                        [(System/getProperty "user.home")
+                         (str (fs/parent (fs/parent (fs/parent manifest-path))))]))
+        report (inventory-report repos roots)
+        visible (if (some #{"--all"} args) identity #(take 6 %))]
+    (if (some #{"--json"} args)
+      (println (json/generate-string report))
+      (do
+        (println "Inbox Zero directory inventory (read-only)")
+        (println "Roots:" (str/join ", " roots))
+        (println "Linked worktrees:" (pr-str (:worktree-counts report)))
+        (doseq [[kind rows] (sort-by key (group-by :integration (:worktrees report)))]
+          (println (str "\n" kind " (" (count rows) ")"))
+          (doseq [w (visible rows)]
+            (println " " (:path w) "—" (:branch w))
+            (println "   " (:next-action w))))
+        (doseq [[kind rows] (sort-by key (group-by :kind (:directories report)))]
+          (println (str "\n" kind " (" (count rows) ")"))
+          (doseq [row (visible rows)] (println " " (:path row))))
+        (println "\nUse --all for every path, or --json for the complete machine-readable inventory.")
+        (doseq [r (:missing-repositories report)]
+          (println "MISSING manifest repository:" (:abs-path r)))
+        (doseq [r (:scan-errors report)]
+          (println "SCAN FAILED:" (:root r) (:error r)))))
+    (and (empty? (:scan-errors report)) (empty? (:missing-repositories report)))))
+
 ;; ── Main ─────────────────────────────────────────────────────────────────────
 
 (when-not (= "true" (System/getProperty "futon.sync.library"))
@@ -843,6 +966,7 @@
         repos (load-repos)]
     (case cmd
       ("status" "st") (cmd-status repos)
+      "inventory" (when-not (cmd-inventory (manifest-repos) args) (System/exit 1))
       "check-clean" (when-not (cmd-check-clean repos
                                                 {:json? (some #{"--json"} args)})
                       (System/exit 1))
@@ -854,5 +978,5 @@
                                        :message (parse-park-message args)})
       "hygiene"       (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
       (do (println (str "Unknown command: " cmd))
-          (println "Usage: futon-sync [status|check-clean [--json] [--no-fetch]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix]]")
+          (println "Usage: futon-sync [inventory [--root PATH] [--json]|status|check-clean [--json] [--no-fetch]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix]]")
           (System/exit 1)))))
