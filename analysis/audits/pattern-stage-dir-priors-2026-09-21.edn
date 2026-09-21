@@ -1,0 +1,3493 @@
+{
+  :schema :pattern-stage-directory-priors/v1
+  :scope :directory-only
+  :source-head-at-read "7fc6a05004aa3e601e53eba633d62213da0af4b2"
+  :directories [
+    {
+      :directory "agency"
+      :path "futon3/library/agency"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "agency/bounded-lifecycle"
+          :path "futon3/library/agency/bounded-lifecycle.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Every atom entry must have: 1. Created-at timestamp: when the entry was created. 2. TTL or expiry: maximum lifetime, after which the entry is invalid. 3. Cleanup mechanism: either (a) lazy cleanup on read (check TTL"
+          :sha256 "52fb3e776a871f3316e2f191a05ac8a705cbf59e14166aefe76ccd6e4da29c60"
+        }
+        {
+          :id "agency/state-atomicity"
+          :path "futon3/library/agency/state-atomicity.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Apply all-or-nothing semantics to every state transition: 1. Rollover: summarize → create new session → update state atomically. If any step fails, restore previous state and emit error. 2. Registration: register in"
+          :sha256 "309e174ff808a3c64068c00cd7b65b7bef4e00dabd17b238ffdde14b5d8e1d7d"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "agent"
+      :path "futon3/library/agent"
+      :kind :practice
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 17
+      :remaining-flexiarg-files 10
+      :parsed-pattern-sections 17
+      :representatives [
+        {
+          :id "agent/budget-bounds-exploration"
+          :path "futon3/library/agent/budget-bounds-exploration.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Assign explicit budgets (time, steps, tokens, reads) to exploratory phases and define reset rules. When budget nears exhaustion, force a decision: commit to best-so-far, escalate to a supervisor, or explicitly expand"
+          :sha256 "6bf16405983beb0f33a9bb645d0b1ea05c071fd04efacb895ea6d25bd09996ba"
+        }
+        {
+          :id "agent/trail-enables-return"
+          :path "futon3/library/agent/trail-enables-return.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Record a trail of moves, decisions, and state transitions with minimal fields (time, state snapshot, decision, action, evidence, reversibility). Make the trail queryable so the agent (or its successors) can backtrack,"
+          :sha256 "cc15153c1d597e3cc4c5ea2afab473289440e27939880debd6b2efe8d551898e"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "ai4ci"
+      :path "futon3/library/ai4ci"
+      :kind :mixed
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 13
+      :remaining-flexiarg-files 8
+      :parsed-pattern-sections 13
+      :representatives [
+        {
+          :id "ai4ci/ai-core-function"
+          :path "futon3/library/ai4ci/ai-core-function.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use existing AI models strictly to propose candidate cue–step links and outline-plus-informal alignments, attach provenance to each proposal, and pass them to human reviewers for acceptance, editing, or rejection before"
+          :sha256 "a1738acff0b4a7b870542e19e89c95b348d4f4377c7a3d08b9c14ef5eb3100ea"
+        }
+        {
+          :id "ai4ci/umbrella"
+          :path "futon3/library/ai4ci/umbrella.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat expository traces as candidates for an underlying reasoning layer and design a principled way to surface, examine, and test them, combining AI proposals, human validation, and collective evaluation."
+          :sha256 "f7c1e86e3343f71b07344a51eb581b9fe8892f49d9376d653bc1eab7d27d79b0"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "aif"
+      :path "futon3/library/aif"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 33
+      :remaining-flexiarg-files 18
+      :parsed-pattern-sections 33
+      :representatives [
+        {
+          :id "aif/admissibility"
+          :path "futon3/library/aif/admissibility.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Define a per-class admissibility predicate and apply it BEFORE expected-free-energy ranking. Un-registered `:pursue`, goal-extending `:decompose`, and unagreed operator-exit advances are **inadmissible** — refused (or"
+          :sha256 "2390984f09dcb78feb11e1be787b70b6747016fdaab107b147d1e5ceefbe9ebd"
+        }
+        {
+          :id "aif/valuation-reads-the-paperwork"
+          :path "futon3/library/aif/valuation-reads-the-paperwork.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Persist, next to every score, the identity of the text it conditioned on (content hash or verbatim snapshot + date). Treat cross-edit comparisons as cross-version comparisons. Do not \"fix\" the sensitivity by freezing"
+          :sha256 "d3db4b3c7616da597ce87cc71f68ba35b3b227f96503075a8932ea5d869379d2"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "ants"
+      :path "futon3/library/ants"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "ants/baseline-cyber-ant"
+          :path "futon3/library/ants/baseline-cyber-ant.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Canonically describe the loop from `g-observe` → `perceive/perceive` → `affect/update-tau` → `policy/choose-action`, referencing the single-tick trace (`doc/trace/single_tick.*`) and policy harness goldens so Futon5 has"
+          :sha256 "7f65024c6e11139c3cc9442b4ce54c466ddfc4570279d1d39d17fd1fdae79728"
+        }
+        {
+          :id "ants/white-space-scout"
+          :path "futon3/library/ants/white-space-scout.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Encode the heuristics currently embedded in `policy/choose-action` as a pattern operator: raise G-adjustments for :forage, lower them for :return and :pheromone, and stretch tau when the scout sits on empty nest tiles."
+          :sha256 "b1567505e0c86667e86765b6f031670e576fd75772c945a7456ca3989f1919a9"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "apparatus"
+      :path "futon3/library/apparatus"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 14
+      :remaining-flexiarg-files 10
+      :parsed-pattern-sections 14
+      :representatives [
+        {
+          :id "apparatus/default-to-the-cheap-error"
+          :path "futon3/library/apparatus/default-to-the-cheap-error.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Build the asymmetry into the default. Unclassifiable faults default to :apparatus, because wrongly blaming apparatus costs a re-check while wrongly charging a role spends an unrepairable budget and contaminates the"
+          :sha256 "27a516cad02e639983d1408f2a4619b48d13e0dfff90542340bf0018a8465345"
+        }
+        {
+          :id "apparatus/the-system-stops-on-schedule"
+          :path "futon3/library/apparatus/the-system-stops-on-schedule.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Put the halt on the schedule so it needs no one's courage: between waves, stop cleanly, re-read the register, and convert \"guarantee: none\" rows into mechanisms — the register defines done as \"recurrence requires a"
+          :sha256 "12822aa4403b2fd63f8d545271ad2d2b82fb5a71ec811b2dbd40d5c328f6a8c2"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "baldwin"
+      :path "futon3/library/baldwin"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 9
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "baldwin/mechanism"
+          :path "futon3/library/baldwin/ARGUMENT.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Separate two claims and test them in order. First test guidance: does lifetime rewriting create selection for inherited fields or update biases that improve learning speed, early performance, or held-out post-learning"
+          :sha256 "3ce7727ae9ae8549353d9c296de3c290274373514464866347c52c5def473b3d"
+        }
+        {
+          :id "baldwin/two-claims-not-one"
+          :path "futon3/library/baldwin/two-claims-not-one.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Require a between-generation counterfactual for guidance: comparable evolution with versus without lifetime adaptation. Require an additional dependence decline and inherited-function test for assimilation. Label"
+          :sha256 "71f8d92443023e320438504b6db83b4d5509b62d6d474eba6063a9efbb0cbc10"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "budgeted-action-selection"
+      :path "futon3/library/budgeted-action-selection"
+      :kind :subject
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "budgeted-action-selection/mana-gated-work"
+          :path "futon3/library/budgeted-action-selection/mana-gated-work.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Gate the selector: a candidate action runs if and only if the session's current mana balance can afford its expected cost. Define cost in terms of the channels of `mana-allostasis`: working-tree pressure increment,"
+          :sha256 "135101574e77c68cd5691f9a2399893434daf562bfc8c6b6c13b0137eca24620"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "buffer-cleaner"
+      :path "futon3/library/buffer-cleaner"
+      :kind :mixed
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "buffer-cleaner/classify-staleness"
+          :path "futon3/library/buffer-cleaner/classify-staleness.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Classify each candidate {decisiveness, prior-needed-later, revisit-cost} from the declared table; resolve file-staleness from age and the wiring's threshold; label every value :constructed and carry the label into G;"
+          :sha256 "3422be8e2d242d488b20f10879367542a2c0e23311b0e2dee9d976548876cdfe"
+        }
+        {
+          :id "buffer-cleaner/yield-settled"
+          :path "futon3/library/buffer-cleaner/yield-settled.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Emit the meters, the declared threshold with its source label, and revisit-truth :unavailable; let the consumer decide admissibility against the declared rule — the terminal never asserts success."
+          :sha256 "b5b0081b6106d003bad4927834d0abc3d2e5a4dd5dd04d53ed24d07393d70a45"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "campaign-coherence"
+      :path "futon3/library/campaign-coherence"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "campaign-coherence/campaign-as-temporary-institution"
+          :path "futon3/library/campaign-coherence/campaign-as-temporary-institution.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Charter a **Temporary Autonomous Institution** with the 7-phase Campaign spine: CHARTER (joint goal, often from a War Bulletin) → CONSTITUTION (survey dependents + governance) → ESCROW (register held dependencies) →"
+          :sha256 "5a134c9aa25b87ccaca12864ad2912d3c1740cc95ee5adbb1a0101ac54bf7d29"
+        }
+        {
+          :id "campaign-coherence/shared-standard-has-no-single-owner"
+          :path "futon3/library/campaign-coherence/shared-standard-has-no-single-owner.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Make the standard's **cross-mission adequacy** a first-class deliverable owned by a Campaign. STANDARD-ARGUE argues *why this standard, fit for all consumers*; STANDARD-VERIFY verifies it **as a design, before any"
+          :sha256 "69daf6a3bbc252201f1771149bee9e3d945892fd71aea2b2203d49be5c3a7ccd"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "capability"
+      :path "futon3/library/capability"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "capability/capability-signature-vector"
+          :path "futon3/library/capability/capability-signature-vector.flexiarg"
+          :line 1
+          :quote-field "CONCLUSION"
+          :quote "A mission's capability signature is a typed feature map — {capability-dimension × {channel × confidence}} — not a narrative description. Cross-mission scoring is comparable because the dimensions and confidence levels"
+          :sha256 "d26a035861da9b2dbab4395b9e92ac436586a61c60e541eed41db0d74c60402f"
+        }
+        {
+          :id "capability/hinge-capability-extraction"
+          :path "futon3/library/capability/hinge-capability-extraction.flexiarg"
+          :line 1
+          :quote-field "CONCLUSION"
+          :quote "At a hinge, extract capability tags per attributed voice (agent-view vs operator-turn), not per block. Agent commentary and operator turns are different evidence types: an agent noting \"we designed a pipeline\" is not"
+          :sha256 "3b3b82494671dae09b271b3f400fc0406b2228d34ebc45334c4290d6f1628e11"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "career-coherence"
+      :path "futon3/library/career-coherence"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "career-coherence/free-solo-vs-rope"
+          :path "futon3/library/career-coherence/free-solo-vs-rope.flexiarg"
+          :line 1
+          :quote-field "CONCLUSION"
+          :quote "A career-mode tension that does NOT resolve by picking a side. The mode with the most autonomy and the highest upside — **C** (consulting / \"free solo\") — is also the mode with **unbounded downside**: a single failure"
+          :sha256 "7ce8d586a4e5c004c27370eb05eb05f3b38bf40c90b100110a4b6706766b0c1e"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "cascade-construction"
+      :path "futon3/library/cascade-construction"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 10
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 10
+      :representatives [
+        {
+          :id "cascade-construction/add-a-pattern-when-an-item-fits-no-class"
+          :path "futon3/library/cascade-construction/add-a-pattern-when-an-item-fits-no-class.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Name the gap, ask about the distinction, census the real items, and add the pattern."
+          :sha256 "c4368e24e4f2d1a04303e3f6f43cd09dcb12531966c8b40a391416ed249538e1"
+        }
+        {
+          :id "cascade-construction/separate-construction-from-meaning-review"
+          :path "futon3/library/cascade-construction/separate-construction-from-meaning-review.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Name the claims, send them to the meaning owner, apply and record corrections."
+          :sha256 "7d7a60e1f116f259221c7f6bf8718e22a8058cccf3e41f6f34571ce90c72c867"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "cascades"
+      :path "futon3/library/cascades"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "cascades/declared-skeleton"
+          :path "futon3/library/cascades/declared-skeleton.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Author an upstreams field in the pattern file (the same place the because-clause lives), one line of justification per edge; let the ingest watcher create the store edges; keep the declared layer sparse enough that"
+          :sha256 "d5dae482ff0e4edafbdce645b79a16949cd3a5a41ced3d62b4e034a7b54eb491"
+        }
+        {
+          :id "cascades/the-slice-is-the-unit-of-use"
+          :path "futon3/library/cascades/the-slice-is-the-unit-of-use.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Make the queryable object always a slice with labeled edge classes (the same idiom as eligible = snapshot ∪ cycle-promoted with sources labeled); measure the skeleton and the accumulated receipted edges; act on the"
+          :sha256 "69e28e31f10fbdef153ab42e0339e126328b5291db02c4cc34c3c5c7738121c3"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "code-coherence"
+      :path "futon3/library/code-coherence"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "code-coherence/dead-code-hygiene"
+          :path "futon3/library/code-coherence/dead-code-hygiene.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Schedule periodic dead-code sweeps: identify unreferenced namespaces, obsolete protocol handlers, and one-off experiments; delete or archive them; and ensure devmaps point only at active code paths."
+          :sha256 "c56fd87281ac8ee8e897ff23fc5b8fc6b6345918d6484fbe689e19e05c76976a"
+        }
+        {
+          :id "code-coherence/subsumption-claim-discipline"
+          :path "futon3/library/code-coherence/subsumption-claim-discipline.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Gate the claim with a TWO-SIDED live-check. Is the subsumer X implemented and verified? Is the subsumed Y implemented and verified? If BOTH live → the claim is checkable; proceed and cite the evidence. If EITHER is"
+          :sha256 "95273d50a94f0b873889e521d10f1efcfd993c8a8356cc5c575b85f842aa6f5c"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "collaboration-coherence"
+      :path "futon3/library/collaboration-coherence"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "collaboration-coherence/determined-fork-proto-psr"
+          :path "futon3/library/collaboration-coherence/determined-fork-proto-psr.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Run the test: *is the warrant findable?* If YES → name it explicitly (a proto-PSR: \"choosing X because the contract/doc/method/coaching says so\") and proceed. If NO — genuinely undetermined: competing legitimate values,"
+          :sha256 "87f800fccf0810d9686fd1bf2ed7cc36dc0f7b254c2b3d4c3dbe1aefac57dca3"
+        }
+        {
+          :id "collaboration-coherence/weak-tie-conflation"
+          :path "futon3/library/collaboration-coherence/weak-tie-conflation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ COMPOSITIONS: (1) Honest naming: in the project's self-description, distinguish layers: audience (read-only, weak ties), participants (occasional, weak-to-medium), contributors (engaged, medium-to-strong), team"
+          :sha256 "197bcac52bc9fa107b74944db8d0e6363626d512a2e0ab6f233bf0edb77aa9b9"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "contracts"
+      :path "futon3/library/contracts"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "contracts/declare-the-reductions"
+          :path "futon3/library/contracts/declare-the-reductions.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Declare them; the claim is the declaration plus the rest."
+          :sha256 "8019bfff35602ff2481fcd2779d7048be8f6762c2c05795d3d42fed3cbccbf55"
+        }
+        {
+          :id "contracts/resolve-pointers-at-head"
+          :path "futon3/library/contracts/resolve-pointers-at-head.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Read both sides at HEAD and check named forms."
+          :sha256 "3479d74730b53dd67dfb0076811f346fbfca03d865a461f1dfcf87e5cfc1365d"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "contributing"
+      :path "futon3/library/contributing"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "contributing/devmap-contribution-protocol"
+          :path "futon3/library/contributing/devmap-contribution-protocol.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "follow the devmap contribution protocol 1. Clock in on one futon + prototype before writing code: update the clause’s `+ next[...]` with `doing[...] owner[...] evidence[...]` (or `blocked-by[...]`), and ensure the"
+          :sha256 "6e745940adb428a8d7183f631d914f05b4d7d5aac3dbac58b50c3ffb2e2a0646"
+        }
+        {
+          :id "contributing/stack-scan-logging-protocol"
+          :path "futon3/library/contributing/stack-scan-logging-protocol.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "follow this protocol for every scan session 1. Declare scope (futons/patterns) and timestamp in the log (Tatami trail, repo note, or AGENTS entry). 2. Record the stack-coherence patterns applied (e.g."
+          :sha256 "3d30d2fd5b0d3a9cdb292b45dd698dc3734c3f77e7811142e829f8b019b54b82"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "control"
+      :path "futon3/library/control"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 4
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 4
+      :representatives [
+        {
+          :id "control/agential-efficiency-measurement"
+          :path "futon3/library/control/agential-efficiency-measurement.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Instrument all agent operations to measure: tokens consumed (input + output), wall-clock time, retries/failures. Log these metrics per mission/session. Compare agent-assisted work against human-only baseline where"
+          :sha256 "5f06a683e899b6735ac6e923177f91d2bab376b51dcb2039e8ebf67b29a11566"
+        }
+        {
+          :id "control/effort-estimation"
+          :path "futon3/library/control/effort-estimation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use effort schema: {:tokens {:context Nk :implementation Nk :review Nk} :hours {:joe N :codex N} :confidence :high|:medium|:low}"
+          :sha256 "90c9c53dee128ae97906be32c1ba7a5a547569cb16392899b884637a332e85e9"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "coordination"
+      :path "futon3/library/coordination"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 14
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 14
+      :representatives [
+        {
+          :id "coordination/ARGUMENT"
+          :path "futon3/library/coordination/ARGUMENT.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "compose the existing implementations through a gate pipeline: - G5 defines TaskSpec and binds intent to mission + success criteria - G4 authorizes an agent and records an Assignment - G3 requires PSR (or gap"
+          :sha256 "1d12fec7ac50501c627b4dc748d13d1edeabbe8baf50dba46b0ce439838f18e1"
+        }
+        {
+          :id "coordination/task-shape-validation"
+          :path "futon3/library/coordination/task-shape-validation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "validate the task shape at the boundary (G5) and reject with structured errors carrying `:gate/id` and `:error/key`"
+          :sha256 "4cde9bb9f58c15d8010f2ee4893c97388fcae863245d83c77893e1b5788d14bf"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "corps"
+      :path "futon3/library/corps"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 6
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "corps/carrying-ones-own-question"
+          :path "futon3/library/corps/carrying-ones-own-question.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Support them in naming that question explicitly—write a brief rationale for why it matters, revisit and document how it evolves, and surface it inside presentations, draft sections, and supervisory dialogue so ownership"
+          :sha256 "628e9d99b0b6fa7cc701857aa9e28eb55a4c98e19db0d3c9a72b2dad396d4fc2"
+        }
+        {
+          :id "corps/working-where-others-can-see"
+          :path "futon3/library/corps/working-where-others-can-see.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Move key elements of the workflow into shared spaces—open notes, reproducible scripts, transparent task boards—and annotate decision points so colleagues can interpret and respond without extra meetings."
+          :sha256 "8f3703f6d93a8dda565f34e511e30104daf30282ce7216d60d5cff04565b24e0"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "correspondence-coherence"
+      :path "futon3/library/correspondence-coherence"
+      :kind :practice
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "correspondence-coherence/mission-unlocks-eoi"
+          :path "futon3/library/correspondence-coherence/mission-unlocks-eoi.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Record the EoI as DEFERRED with an explicit gate that names the mission and its done-condition — the (Mission → EoI) edge as a first-class object. The mission is the warming precondition: when it yields the showable"
+          :sha256 "df763cc2fa7bf2e0d54c6bd799203ebe5b0d03853f6ae7c9daf1d4b63eb12271"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "cycle-machine"
+      :path "futon3/library/cycle-machine"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "cycle-machine/authority-port"
+          :path "futon3/library/cycle-machine/authority-port.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "implement one function (resolve authority root-kind path-kind) -> absolute Path where authority = {:control-root :campaign-root :qualification-root :workspace}, root-kind ∈ those keys, path-kind is an enumerated set"
+          :sha256 "ef11b2bd11753b9e2d6bbea565aa14d04c9029cd8ad275a016c016e0a6fbb6c6"
+        }
+        {
+          :id "cycle-machine/toolchain-port"
+          :path "futon3/library/cycle-machine/toolchain-port.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "implement one function (elaborate authority problem-id) -> {:exit n :errors n :sorry-warnings n :other-warnings [{:kind :linter|:deprecation|... :msg}]} that runs lake env lean via the authority-port's resolved paths"
+          :sha256 "b61d1a0857eb7732825ec7c5d6fcbf8211cb45272bf525539f955e6e29db04f5"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "data-mining"
+      :path "futon3/library/data-mining"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 10
+      :remaining-flexiarg-files 3
+      :parsed-pattern-sections 10
+      :representatives [
+        {
+          :id "data-mining/checkpoint-the-long-run"
+          :path "futon3/library/data-mining/checkpoint-the-long-run.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "(1) Normalize every nullable model field to its empty form before any `len`/iterate (`r[\"x\"] = r.get(\"x\") or []`). (2) Build the output record INSIDE the per-item try, so a bad record hits the existing \"skip and"
+          :sha256 "4457c4d9f580aa12b6055b5cb36e72f6992084300c8a7dd0be869f5eee82000b"
+        }
+        {
+          :id "data-mining/the-first-checkpoint-is-a-quality-probe"
+          :path "futon3/library/data-mining/the-first-checkpoint-is-a-quality-probe.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Launch the full corpus (LIMIT=0) with checkpointing on. When the first checkpoint lands (~200-400 records), run the gate on it and read the ratios. If it PASSES, let the run ride to completion — one clean pass, no"
+          :sha256 "994b08bb36e5eba7b4fefc4fbf490374a7193daf22de3a335073547d7af1acdb"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "depositing"
+      :path "futon3/library/depositing"
+      :kind :mixed
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "depositing/grant-to-pitch"
+          :path "futon3/library/depositing/grant-to-pitch.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "For each capability demonstration (working paper, tool, methodology), ask: \"who would pay for this as a service rather than fund it as research?\" Reframe the grant narrative as a consulting proposal. The Bayesian logic"
+          :sha256 "962d3306f26196c7338da0b4f7f2f804f3b180e87be22d6f4d86ee826ef161f6"
+        }
+        {
+          :id "depositing/upstream-patch-signal"
+          :path "futon3/library/depositing/upstream-patch-signal.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Systematically identify patch opportunities in the upstream dependency network. Prioritise patches to projects with commercial ecosystems (XTDB, Datahike, Logseq) or active communities (Reagent, Malli). Each merged"
+          :sha256 "d91d3c1eab16f387da09c7a0ba9cf51fcaa9db5d42b1730848197f5726ed63c4"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "devmap-coherence"
+      :path "futon3/library/devmap-coherence"
+      :kind :practice
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 20
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 20
+      :representatives [
+        {
+          :id "devmap-coherence/baseline-freeze"
+          :path "futon3/library/devmap-coherence/baseline-freeze.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "declare a baseline freeze window, capture canonical transcripts/configs/seed graphs, and wire audit hooks (`check!`, graph exports, viriya deltas) so every new change proves it still matches the frozen reference"
+          :sha256 "657cd321990484fd8dd75aa88890f47a253942c62aaf5108f713a9b9bd6d7c00"
+        }
+        {
+          :id "devmap-coherence/status-keywords"
+          :path "futon3/library/devmap-coherence/status-keywords.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "assign a status keyword using the table below and store it in the clause; use the litany/system/worldview/myth mapping to communicate how stable the clause is and how much interpretation remains. + INTERPRETATION:"
+          :sha256 "fd585734556e1eb10f0e429136ff7d796d96137e29aa3500071aa5177641186d"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "dsc"
+      :path "futon3/library/dsc"
+      :kind :practice
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "dsc/traversal-first-chaptering"
+          :path "futon3/library/dsc/thesis-traversal.multiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Organise chapters as terrain traversals (for example, FUTON-0 through FUTON-7), where each chapter documents a coherent region of practice, its constraints, tools, and discoveries."
+          :sha256 "b9427d5bc7d28a42417eaaa509b0458c5c72969abfd4fb33ac45c92250b4a3b4"
+        }
+        {
+          :id "dsc/evidence-situated-log"
+          :path "futon3/library/dsc/thesis-traversal.multiarg"
+          :line 41
+          :quote-field "THEN"
+          :quote "Treat evidence as situated logs that are first stored locally to their FUTON chapter and only later cited or elevated."
+          :sha256 "b9427d5bc7d28a42417eaaa509b0458c5c72969abfd4fb33ac45c92250b4a3b4"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "eight-gates"
+      :path "futon3/library/eight-gates"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 16
+      :remaining-flexiarg-files 13
+      :parsed-pattern-sections 16
+      :representatives [
+        {
+          :id "eight-gates/an-push"
+          :path "futon3/library/eight-gates/an-push.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Align your entire structure behind the push. Àn uses both hands but the thrust originates from the body's integrated frame—feet rooted, core engaged, intent unified. The push is not aggression; it's aligned forward"
+          :sha256 "2e21928c3631567458d85455d4da3b97e2f1b1d42be6f8abc95f74f9ee38ca0f"
+        }
+        {
+          :id "eight-gates/zhou-elbow"
+          :path "futon3/library/eight-gates/zhou-elbow.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "When you're too close for extended moves, engage from your center. Zhǒu is short-range energy that travels from feet through waist to elbow—a direct line from ground through core to contact point. It can strike, block,"
+          :sha256 "a854c3af8521f20808565e47a18f81d962d8e586b94491e1c8b930f63216fad3"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "enrichment"
+      :path "futon3/library/enrichment"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "enrichment/ARGUMENT"
+          :path "futon3/library/enrichment/ARGUMENT.flexiarg"
+          :line 1
+          :quote-field "THEN (embedded)"
+          :quote "Replay enrichment as layered rational reconstruction, where each layer is a timestamped snapshot with its own evidence trail."
+          :sha256 "3638eaaeb21c2f893016c64b6705d63b112d9186732e86f3d6e37c712d941992"
+        }
+        {
+          :id "enrichment/rational-reconstruction"
+          :path "futon3/library/enrichment/rational-reconstruction.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Structure enrichment as numbered layers (L0-L5), each a timestamped batch of hyperedges with its own evidence entry. XTDB bitemporality makes each layer queryable as-of its ingestion time. Corrections in later layers"
+          :sha256 "e47ed570e8a4239b69eb56777eb08dac3ce5632772ffb285b789349573314f8b"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "eoi-engine"
+      :path "futon3/library/eoi-engine"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "eoi-engine/tension-cv-shape"
+          :path "futon3/library/eoi-engine/tension-cv-shape.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Author drafts a short CV-shape-honesty paragraph that names the substantive relevant experience (counted concretely where possible) in its actual shape, without forcing it into the conventional shape the posting implied."
+          :sha256 "a0cefeda0797ce14acfb1b774ae0f48087dcfc8adde8eb19e57d26be62b8e116"
+        }
+        {
+          :id "eoi-engine/tension-free-solo-rule"
+          :path "futon3/library/eoi-engine/tension-free-solo-rule.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Author chooses one of routes (a) / (b) / (c) and writes a short rule-honesty paragraph in their own register."
+          :sha256 "b387902dc9bb0ee62f5b606ca9a434a37adbe58122972db53aedeafb088232b8"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "equity"
+      :path "futon3/library/equity"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 16
+      :remaining-flexiarg-files 14
+      :parsed-pattern-sections 16
+      :representatives [
+        {
+          :id "equity/ARGUMENT"
+          :path "futon3/library/equity/ARGUMENT.flexiarg"
+          :line 1
+          :quote-field "CONCLUSION"
+          :quote "== PART I: The Equity Loop == E1. [Evidence: equity.tex, theoretical synthesis] Three inputs — Sen's capability approach, Ostrom's commons governance, and Alexander's pattern-language method — reduce to a single design"
+          :sha256 "7737fda3a77436ad561cb3c34cf50028f71b7393bb0e214c817b4111f075e2dc"
+        }
+        {
+          :id "equity/visible-impact"
+          :path "futon3/library/equity/visible-impact.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "The evaluation chain is designed before the first delivery event. Roles are assigned explicitly at each link: who designs instruments, who collects data, who analyses cross-institutional patterns, who reports back to"
+          :sha256 "cbd3618287800c717d370df20e951cd516930cd2499c33c6bf9291252c7008db"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "exotic"
+      :path "futon3/library/exotic"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 8
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "exotic/construction-discipline"
+          :path "futon3/library/exotic/construction-discipline.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use construction discipline: smart constructors that validate laws on creation, preventing invalid structures from existing. Reserve property-based testing (e.g., test.check) for offline verification of constructor"
+          :sha256 "f7aa1734be251c7806c091d685e148c76bd98064a5a501b7e006dc118da529c4"
+        }
+        {
+          :id "exotic/tri-store-lineage"
+          :path "futon3/library/exotic/tri-store-lineage.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use three layers: (1) Facts = append-only event log as single source of truth (every mutation, every score, every adaptation). (2) Memes = derived lineage graph and summaries, rebuilt from facts. (3) Notions = optional"
+          :sha256 "4a6a28b2423f9899f92b598ff1d5f2f3ecbb2832a4f624fac4960462a1b8e862"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "f6"
+      :path "futon3/library/f6"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 10
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 10
+      :representatives [
+        {
+          :id "f6/bootstrap-loop"
+          :path "futon3/library/f6/bootstrap-loop.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Bootstrap: PlanetMath seeds the kernel (high precision, limited recall) → apply to SE (discover gaps) → absorb SE tags and body-extracted terms (expand recall) → filter and merge → re-apply to SE (measure improvement) →"
+          :sha256 "3a316f4cc8a203db4201079193189417bd053ee64ee228d0f7a481e3c765f735"
+        }
+        {
+          :id "f6/stratum-bridge"
+          :path "futon3/library/f6/stratum-bridge.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Define bridge concepts as entities that appear in both corpora with (a) shared NER terms from the kernel, (b) shared pattern tags, AND (c) embedding similarity above a threshold. Rank bridges by information gain: a"
+          :sha256 "f473399c3c28271101590a536368999e686291f23101ac8f13a41d69113302da"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "features"
+      :path "futon3/library/features"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "features/emit-per-tick-mismatch"
+          :path "futon3/library/features/emit-per-tick-mismatch.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Emit the mismatch as a field on the attempt's own checkpoints, carrying its provenance the way `:selection-source` already distinguishes an operator pick from the selector's (full_loop_runner.clj). Route it into the"
+          :sha256 "36086f68671e3434f7b99ccd805f394cb56eeb6452ac55f677edc3340ca64cff"
+        }
+        {
+          :id "features/operator-turns-enter-the-observation-vector"
+          :path "futon3/library/features/operator-turns-enter-the-observation-vector.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Three steps, and only the third one closes the ring. Keep them separately reviewable, because the first is cheap and reads like progress. 0. Wire acknowledgement. Persist `newly-acknowledged` at bulletin pull and feed"
+          :sha256 "43bcf868e30e714fd129050aef2829e05ceb04cf40acce31d8644d864a3e779f"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "forward-model"
+      :path "futon3/library/forward-model"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 6
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "forward-model/flow-toward-controlled-vocabulary"
+          :path "futon3/library/forward-model/flow-toward-controlled-vocabulary.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Census the terms actually used per slot, induce a controlled vocabulary from the corpus, and rewrite the prose slots toward canonical terms while keeping the sentences natural. A controlled vocabulary is the finite"
+          :sha256 "29c16dcb00f57df13e8e125b94350e707be7c84a52ffcdd9a32cd26910186fd0"
+        }
+        {
+          :id "forward-model/the-forward-model-is-a-pattern-cascade"
+          :path "futon3/library/forward-model/the-forward-model-is-a-pattern-cascade.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Model the next half-million lines as a cascade whose boxes are patterns and whose holes are the patterns that would have to be authored to reach the terminals, composed live from the indexed corpus rather than"
+          :sha256 "35531b4ad529fdfbe7e8df81710f1d1cd22315b7af93c42413f39231348f5534"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "fulab"
+      :path "futon3/library/fulab"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "fulab/clock-in"
+          :path "futon3/library/fulab/fulab-patterns.multiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Before substantive work starts, the agent emits a clock-in event that includes the primary pattern ID, intent description, and session context, declaring the design-authorization source for the session."
+          :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
+        }
+        {
+          :id "fulab/tradeoff-record"
+          :path "futon3/library/fulab/fulab-patterns.multiarg"
+          :line 176
+          :quote-field "THEN"
+          :quote "Capture a tradeoff record listing options considered, assumptions, chosen rationale, and reversal triggers; enforcement is pending."
+          :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "futon-theory"
+      :path "futon3/library/futon-theory"
+      :kind :subject
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 37
+      :remaining-flexiarg-files 17
+      :parsed-pattern-sections 37
+      :representatives [
+        {
+          :id "futon-theory/agent-contract"
+          :path "futon3/library/futon-theory/agent-contract.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ ENFORCEMENT: - Session middleware rejects unclocked changes - Commit hooks verify agent attribution - Invariant checks block non-compliant commits - Audit logs flag contract violations"
+          :sha256 "c01d3f375c07c2cce72ef0f90fa6aa053abee982f1daff83a738826889f60adb"
+        }
+        {
+          :id "futon-theory/xenotype-portability"
+          :path "futon3/library/futon-theory/xenotype-portability.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ EXAMPLE-XENOTYPE: VariationalSearch xenotype: - Generator: Sample from prior, apply variation operator - Selector: Score against loss function + invariant checks - Compressor: Gradient-based or symbolic simplification"
+          :sha256 "6c76529504064f841b86037462e639324a8b0a278f3b5c0eb835d635e37192a4"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "gauntlet"
+      :path "futon3/library/gauntlet"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 3
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "gauntlet/ARGUMENT"
+          :path "futon3/library/gauntlet/ARGUMENT.flexiarg"
+          :line 1
+          :quote-field "CONCLUSION"
+          :quote "This is a flexiformal argument for the gauntlet pattern language — the phenomenological complement to the social coordination argument (social/ARGUMENT.flexiarg). Where the social argument establishes invariants for"
+          :sha256 "779efeda800b35ae6182824bd91097b0e455bceba36a2c9fcaa182af85a5301e"
+        }
+        {
+          :id "gauntlet/world-is-hypergraph"
+          :path "futon3/library/gauntlet/world-is-hypergraph.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Recognize that the futon stack IS the game world. futon1 (XTDB) is the persistent map. futon2 (ant hill) is the ecology. futon3 (Agency, Drawbridge, IRC, peripherals) is the coordination layer. futon4 (Arxana) is the"
+          :sha256 "7a16f822bbdd129e3ebf2e2810663044d0d1fa29df1dc08c48865e031fd6c6d4"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "hdm"
+      :path "futon3/library/hdm"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "hdm/bootstrap-kernel"
+          :path "futon3/library/hdm/bootstrap-kernel.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Design FUTON6+FUTON3 as a bootstrapping kernel: pick a coherent seed domain, define import contracts, pattern-matching rules, and scholium conventions, and add new entries incrementally. Accept that the kernel evolves"
+          :sha256 "ba8970eb88d785df383e00d635cb1cbb33a021b8e0f1ac40eb856ccf3e9532ed"
+        }
+        {
+          :id "hdm/simulation-beats-reality"
+          :path "futon3/library/hdm/simulation-beats-reality.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat FUTON6/HDM as a deliberate simulation space that aims to surpass \"real\" practice in navigability and recombinability. Design entries, scholia, and agent protocols for active exploration and transformation rather"
+          :sha256 "f0e9f6b9a8a4f42c7657cb671585ed16e02c861894e9f1378eb90e93b76f3f67"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "hygiene"
+      :path "futon3/library/hygiene"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 6
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "hygiene/classify-by-remedy-judgement"
+          :path "futon3/library/hygiene/classify-by-remedy-judgement.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Classify by remedy judgement with recorded evidence, declared uncertainty and an unclassifiable class."
+          :sha256 "e6a1534aa24b5ced2d4d74d23cfe620dd18d4e16daf27b97c0af9cfe6bcc7959"
+        }
+        {
+          :id "hygiene/settle-with-meters"
+          :path "futon3/library/hygiene/settle-with-meters.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Emit meters, thresholds with sources, explicit unavailable values, change-only alerts and measured benefit."
+          :sha256 "9d3806237acce35014c6cf1c0c25e7b91cbbd3b1a0e8920213823226dc01b97c"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "iching"
+      :path "futon3/library/iching"
+      :kind :mixed
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 64
+      :remaining-flexiarg-files 36
+      :parsed-pattern-sections 64
+      :representatives [
+        {
+          :id "iching/hexagram-01-qian"
+          :path "futon3/library/iching/hexagram-01-qian.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Initiate with full commitment but encode the exit condition. The creative that knows when to yield is truly strong. Watch for the Line 6 moment when receptivity becomes necessary."
+          :sha256 "518dc9c935f5d2a3043bae7f651d3f09ce2b0ae3c95830418324e324f08dcdbb"
+        }
+        {
+          :id "iching/hexagram-64-weiji"
+          :path "futon3/library/iching/hexagram-64-weiji.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Move in small steps. Preserve optionality and sequence the final transitions."
+          :sha256 "cfc2fcec2e5e55ea45ceb591099dc55184beb87e0e101500732625d2b0e5a5dd"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "iiching"
+      :path "futon3/library/iiching"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 256
+      :remaining-flexiarg-files 237
+      :parsed-pattern-sections 256
+      :representatives [
+        {
+          :id "iiching/exotype-000"
+          :path "futon3/library/iiching/exotype-000.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use the encoding fields for identification, the manifest for program/params, and the lift registry for pattern evidence."
+          :sha256 "42f9c9e5219e6b655e694685daa3c76a8a417abe94c74e8fdd2bf1b1dcf515fb"
+        }
+        {
+          :id "iiching/exotype-255"
+          :path "futon3/library/iiching/exotype-255.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use the encoding fields for identification and the futon5 manifest for program/params until lift mappings land."
+          :sha256 "bc623743c92a2c91c4c70f35f6f1420672c77fbe36f6714f92e5ae025ff49301"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "inbox-zero"
+      :path "futon3/library/inbox-zero"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "inbox-zero/classify-the-dirt"
+          :path "futon3/library/inbox-zero/classify-the-dirt.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Assign every item one class with recorded evidence, route each class to its own remedy, and keep an explicit unclassifiable class."
+          :sha256 "9cb3ee8618f3cfd598ef7739ab22b1f1f4a4508a4fcd5c546244873f8a017ee7"
+        }
+        {
+          :id "inbox-zero/push-the-declared"
+          :path "futon3/library/inbox-zero/push-the-declared.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Push ordinary accumulation automatically after the compile gate and sensitivity screen; send outliers to escalation; hold sensitive hits with a question."
+          :sha256 "b95f17af1a957c7ea8229f7f3b1a6d6b6891859b776f31f26299a17e8d650321"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "invariant-coherence"
+      :path "futon3/library/invariant-coherence"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "invariant-coherence/bounded-disposition"
+          :path "futon3/library/invariant-coherence/bounded-disposition.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Build sibling invariants under the relevant family (typically `archaeology-control` for stash/branch/mission-doc, but the shape generalizes) with namespace IDs of the form `bounded-disposition/<artifact-class>`. Each"
+          :sha256 "041b3532e7e8dd4b79b25367606d816ce5804cf0b38c95d32f465cb5ac356d1a"
+        }
+        {
+          :id "invariant-coherence/subsumption-witness"
+          :path "futon3/library/invariant-coherence/subsumption-witness.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Build sibling invariants under family `archaeology-control` with namespace IDs of the form `obsolescence-recognition/<artifact-class>`. Each sibling implements three components: 1. **Enumerate-A**: produce the current"
+          :sha256 "3c5972c589f7f1d2595b49e5302512205a8c921530dcb0a8d9541b5b6d70843e"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "liberation"
+      :path "futon3/library/liberation"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 0
+      :representatives [
+      ]
+      :rationale "No directly contained parsed .flexiarg/.multiarg pattern; structural or scratch directory, so no stage prior."
+    }
+    {
+      :directory "liberation/mundane"
+      :path "futon3/library/liberation/mundane"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "liberation/mundane/right-action"
+          :path "futon3/library/liberation/mundane/right-action.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Practice the three refrainings: from killing (harming living beings), from stealing (taking what isn't freely given), from sexual misconduct (violating relational boundaries and trust). This is the content of mundane"
+          :sha256 "aac77194ce4546d5a2782afc82957f3641bc520fadaaf62755f7bb50360f2222"
+        }
+        {
+          :id "liberation/mundane/right-view"
+          :path "futon3/library/liberation/mundane/right-view.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Hold working frames: there IS meaning in action, there ARE consequences of conduct, there IS something to learn from feedback. But hold these as instruments, not as certainties that resist revision."
+          :sha256 "2101dce2ca5f50a5f1ac87f12bb5ff8e3574756d504a2d5a8fa89ada0a80b504"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "liberation/noble"
+      :path "futon3/library/liberation/noble"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "liberation/noble/right-action"
+          :path "futon3/library/liberation/noble/right-action.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Noble right action is the abstaining faculty operating in context of the path — desisting, abstaining, abstinence, refraining — as the natural expression of one oriented toward liberation. Not \"I don't harm\" but"
+          :sha256 "015ced08ef9e20737b516830ed53dcfe2ce274d3bd2844333c2fe9e9d89715cc"
+        }
+        {
+          :id "liberation/noble/right-view"
+          :path "futon3/library/liberation/noble/right-view.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Noble right view is not another (better) explanation but the wisdom faculty functioning free of defilement: the faculty of wisdom, the power of wisdom, the awakening factor of investigation of principles, right view as"
+          :sha256 "15499458d3474c9824f2bda7a7e5507609ad1ff2e99dd8686d0326ccb2088b34"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "library-coherence"
+      :path "futon3/library/library-coherence"
+      :kind :practice
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "library-coherence/from-argument-to-pilot"
+          :path "futon3/library/library-coherence/from-argument-to-pilot.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Design a pilot that exercises the argument’s main claims end-to-end and capture evidence for each constituent pattern so the argument can be confirmed, revised, or narrowed."
+          :sha256 "94c10eb9b49f4337fc1b9c94d7bbc9be395f37344790249f45f81b5ad5bbba38"
+        }
+        {
+          :id "library-coherence/pattern-differentiation-alarms"
+          :path "futon3/library/library-coherence/pattern-differentiation-alarms.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "treat duplicated sigils as alarms: inspect the overlapping clauses, decide whether to merge them, split out a sharper pattern, or introduce a new check canon; document the decision and rerun the embedding cycle"
+          :sha256 "6d8d57c721713208900a0e9873d3b8d11c54149530254989a633d564d40ac96f"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization"
+      :path "futon3/library/math-formalization"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 31
+      :remaining-flexiarg-files 23
+      :parsed-pattern-sections 31
+      :representatives [
+        {
+          :id "math-formalization/additive-principal-parts-from-order-germs"
+          :path "futon3/library/math-formalization/additive-principal-parts-from-order-germs.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "(1) At a pole, `(meromorphicOrderAt_eq_int_iff hF).1 horder` gives `q` analytic with `q ζ ≠ 0` and `F =ᶠ (z - ζ)^(-1) • q`; shift with `comp_sub` and apply `AnalyticAt.exists_eq_sum_add_pow_mul 1` to write `q z = q ζ +"
+          :sha256 "d589b7f18ba75fe1adbb9cb31f19958268adb89ff1515b0506e0880c371bfedb"
+        }
+        {
+          :id "math-formalization/weld-range-lemmas-at-representation-seams"
+          :path "futon3/library/math-formalization/weld-range-lemmas-at-representation-seams.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Establish the desired range on the strict pre-end interval; isolate the seam point; unfold or simplify its decoder/closed value; combine the two cases."
+          :sha256 "e8a8061d17a16d16bc56fc4fd88c69dabd841cfa0e870d717bab30f2d0c4815a"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization-CA"
+      :path "futon3/library/math-formalization-CA"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 23
+      :remaining-flexiarg-files 18
+      :parsed-pattern-sections 23
+      :representatives [
+        {
+          :id "math-formalization-CA/ae-integral-zero"
+          :path "futon3/library/math-formalization-CA/ae-integral-zero.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use integral_eq_zero_of_ae with ae_restrict_mem and filter_upwards for the witness. + LEAN: api[integral_eq_zero_of_ae] api[ae_restrict_mem] api[filter_upwards] tactic[exact integral_eq_zero_of_ae → filter_upwards [...]"
+          :sha256 "813384c5807c7c6d3efcb1288b0d2768b90eb92fa6bbaa2ee5039792ba0c22e5"
+        }
+        {
+          :id "math-formalization-CA/uniform-continuity-boundedness"
+          :path "futon3/library/math-formalization-CA/uniform-continuity-boundedness.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "State and prove the boundedness of the image as its own lemma, via the uniform-continuity-to-bounded-image chain. Only then estimate the quotient, using that bound for the denominator and the modulus for the variation,"
+          :sha256 "a24aa6c9c4b485e27a5d5c2144f6f901bc71e46b90ec5599b351dbcba9c7272c"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization-CV"
+      :path "futon3/library/math-formalization-CV"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "math-formalization-CV/complex-liouville-periodicity"
+          :path "futon3/library/math-formalization-CV/complex-liouville-periodicity.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Choose the fundamental domain and prove it compact. Prove that every point is a lattice translate of one of its points. Bound the function on the domain by continuity, transport the bound by periodicity, then apply the"
+          :sha256 "bf0aaf1e3402d26d47cc800f55237686c44673f33927751a88f7b74cfc2fc92b"
+        }
+        {
+          :id "math-formalization-CV/holomorphic-disk-api"
+          :path "futon3/library/math-formalization-CV/holomorphic-disk-api.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Write the target as a composition of library interfaces before searching for it by name, and state each interface as its own lemma with its own hypotheses. Adapt hypotheses explicitly — split a closed-ball assumption"
+          :sha256 "a11f90dde085a037929b7462f931c4d6f9156e1ee028684228d308b5815434f5"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization-FA"
+      :path "futon3/library/math-formalization-FA"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 3
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "math-formalization-FA/inner-product-space-api"
+          :path "futon3/library/math-formalization-FA/inner-product-space-api.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Establish the uniform norm bound by Banach–Steinhaus as the first step, and use it for both the extension and the `liminf` side conditions. Extend in the stated order: generators, finite linear combinations, closed span"
+          :sha256 "9f47077f5752c9c4fb073521b69380d1da6c13e1f9442040263492c5c20fcf76"
+        }
+        {
+          :id "math-formalization-FA/weak-convergence-hilbert"
+          :path "futon3/library/math-formalization-FA/weak-convergence-hilbert.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Write the chain out as named steps before proving any of them — `norm_sub_sq` expansion, weak limit of the inner product, cancellation, square root — and treat each side condition as its own obligation with its own"
+          :sha256 "9712cded92858e5bf6dd2cdb6da6348964f42f81e37eb8271f91bc0c8fc55aa8"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization-GN"
+      :path "futon3/library/math-formalization-GN"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "math-formalization-GN/connected-union-via-common-point"
+          :path "futon3/library/math-formalization-GN/connected-union-via-common-point.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use isPreconnected_sUnion from Mathlib. The key step: rewrite the indexed union as a set-indexed union via sUnion_range, then apply the combinator with the common point and individual connectedness. + LEAN:"
+          :sha256 "8010202f2f48809fd82bf2f4c656682315ab1205961ef86917223e8456b80d1a"
+        }
+        {
+          :id "math-formalization-GN/connectedness-component-api"
+          :path "futon3/library/math-formalization-GN/connectedness-component-api.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Prove component openness first, as its own step, and use `interior_eq` to move membership into the frontier-ready form. Relate the component's frontier to the ambient frontier of `U` explicitly, rather than reasoning"
+          :sha256 "3f596e3c788c34aa899eafc5daf47663401d427bde8ae00b8f6deb6c54886c99"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization-GR"
+      :path "futon3/library/math-formalization-GR"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "math-formalization-GR/alternating-generation-via-preprimitive-three-cycle"
+          :path "futon3/library/math-formalization-GR/alternating-generation-via-preprimitive-three-cycle.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Map the closure into the full permutation group; prove its action pretransitive, upgrade to preprimitive when the degree is prime, prove that a generator is a three-cycle, and apply"
+          :sha256 "239e933ff0c88424bff4ab0688a49f2b5ab17fcf2bb4339129ea3b1a328545e7"
+        }
+        {
+          :id "math-formalization-GR/finite-group-classification"
+          :path "futon3/library/math-formalization-GR/finite-group-classification.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use Fintype.card_perm, ZMod.card, IsCyclic.isCommutative, decide tactic. + LEAN: api[Fintype.card] api[ZMod.card] api[IsCyclic.isCommutative] api[Equiv.swap] tactic[decide → exact → classical]"
+          :sha256 "a7175c190af1051aca6feb224536112a7215b0859662ede16e20f8b6b6311d83"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-formalization-MG"
+      :path "futon3/library/math-formalization-MG"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "math-formalization-MG/chart-a-polytope-sphere-by-perimeter-walk"
+          :path "futon3/library/math-formalization-MG/chart-a-polytope-sphere-by-perimeter-walk.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Enumerate oriented faces or edges, parameterize each affinely, weld the endpoints, and rotate the parameter cut when a miss-a-point argument requires the excluded point to lie at the seam."
+          :sha256 "6f9a0e84146d27084de8366e8eabeb2c74018860286ae4f99ea5e64af9baa80c"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal"
+      :path "futon3/library/math-informal"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 24
+      :remaining-flexiarg-files 24
+      :parsed-pattern-sections 24
+      :representatives [
+        {
+          :id "math-informal/argue-by-contradiction"
+          :path "futon3/library/math-informal/argue-by-contradiction.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Assume not-P. Use the assumed structure to build or derive objects, then show these objects violate a known fact. The contradiction forces P."
+          :sha256 "f9fd06b9294e0333aa8e8eed4ab5b3d92d03a02739035ee501798ccd4d792c3c"
+        }
+        {
+          :id "math-informal/work-examples-first"
+          :path "futon3/library/math-informal/work-examples-first.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Compute several concrete instances. Choose examples that are generic (not too symmetric), that test boundary conditions, and that span different regimes of the parameters. Record what each example teaches you about the"
+          :sha256 "599cfcdf4e24bbd7ba6e25c7324ed82ad482c6fe300017900e95f759f78c62be"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal-CA"
+      :path "futon3/library/math-informal-CA"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 6
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "math-informal-CA/epsilon-of-room"
+          :path "futon3/library/math-informal-CA/epsilon-of-room.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Fix an arbitrary ε > 0. Cash in the ε–δ budget from the relevant definition to prove the slack statement. Since ε was arbitrary, take ε → 0 (or inf over ε) to collapse the slack and conclude the sharp statement."
+          :sha256 "536614e3e38bf1dd27993ec237cd40514bed0f404895a84d89fd5329739e4308"
+        }
+        {
+          :id "math-informal-CA/show-both-inequalities"
+          :path "futon3/library/math-informal-CA/show-both-inequalities.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Prove A <= B and B <= A separately (or A is a subset of B and B is a subset of A). Combine to conclude A = B. For the squeeze/sandwich variant: bound A from above and below by quantities that both converge to the same"
+          :sha256 "1ce0b137b42d28d3a42735c48a05455ff7f655448b9ef78a158b969b3aaf3b26"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal-CO"
+      :path "futon3/library/math-informal-CO"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "math-informal-CO/count-over-a-decomposition"
+          :path "futon3/library/math-informal-CO/count-over-a-decomposition.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Choose the decomposition that isolates the term you want (the center as the singleton classes; the fixed points as the size-1 orbits). Establish the uniform constraint on the other parts. Subtract / take congruences to"
+          :sha256 "b9c43ef3b1d7d8a37bfc3c1e4f44b4050399c11afa763e082f6cdc88452c2db6"
+        }
+        {
+          :id "math-informal-CO/use-probabilistic-method"
+          :path "futon3/library/math-informal-CO/use-probabilistic-method.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Define a probability distribution on candidate objects. Show that the probability of having the desired property is positive (by union bound, expectation argument, Lovász local lemma, or second moment method). Conclude"
+          :sha256 "dbeba326a16480bc8a55b97756db18994cb8641bce2b1c76d2a52ab1bdc86d8b"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal-CT"
+      :path "futon3/library/math-informal-CT"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 6
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "math-informal-CT/chase-the-diagram"
+          :path "futon3/library/math-informal-CT/chase-the-diagram.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Name every cell you paste and say why each commutes — hypothesis, naturality, a previous lemma, or a universal property. Give the two routes around the boundary explicitly. If the argument is element-style, state the"
+          :sha256 "50968510599d65b0ee04b96339576d53b558707e1b1edfba7e0899bedd515cb7"
+        }
+        {
+          :id "math-informal-CT/verify-universal-property"
+          :path "futon3/library/math-informal-CT/verify-universal-property.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "State the universal property precisely. For existence: given an arbitrary test object and compatible data, construct the required morphism. For uniqueness: assume two morphisms work and show they are equal, typically by"
+          :sha256 "31666511ae87423b6a9261414627a5ab853b2ffb08554f3a0ace76e38bbe570e"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal-LO"
+      :path "futon3/library/math-informal-LO"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "math-informal-LO/complexity-classification"
+          :path "futon3/library/math-informal-LO/complexity-classification.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. Construct the reduction (typically polynomial-time many-one or Turing) from a complexity-class-complete problem to P (for hardness) or from P to a problem already in C (for membership). 2. Verify the reduction is"
+          :sha256 "86baa7a90e0255e13bfdbfc21d996be04215be66cf2c3ffdede332762b0182ff"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal-NA"
+      :path "futon3/library/math-informal-NA"
+      :kind :subject
+      :stage :perceive
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "math-informal-NA/hybrid-certification"
+          :path "futon3/library/math-informal-NA/hybrid-certification.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. Use fast numerical computation (numpy, LAPACK, floating-point) to compute approximate answers: root locations, eigenvalues, sign patterns. 2. Design an exact verification step that checks the numerical answer:"
+          :sha256 "ce070a9f45f28bafd47bde128b10d01f51180556cbb109e1ccddc6003208d4a5"
+        }
+        {
+          :id "math-informal-NA/numerical-scout"
+          :path "futon3/library/math-informal-NA/numerical-scout.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. Grid evaluation: compute the function on a uniform grid over the domain. Record the minimum, maximum, and any near-zero values. 2. Critical point search: run multiple independent local optimization searches (L-BFGS,"
+          :sha256 "f67cb6a6c93a16d6090daa36a7e1daeb73191840d90fb093921254bb5481d721"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-informal-RA"
+      :path "futon3/library/math-informal-RA"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 2
+      :representatives [
+        {
+          :id "math-informal-RA/construct-through-a-finite-correspondence"
+          :path "futon3/library/math-informal-RA/construct-through-a-finite-correspondence.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "(1) realize the ambient object concretely; (2) state and prove every lattice fact on the finite side as standalone lemmas — meet, join, orders, indices; (3) transport through the correspondence one named lemma at a"
+          :sha256 "d9228e5de3761f953b4d9480db94a3f1bceeeaeadd889159e660138cca63a863"
+        }
+        {
+          :id "math-informal-RA/encode-as-algebra"
+          :path "futon3/library/math-informal-RA/encode-as-algebra.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Assign algebraic objects to your problem's ingredients: groups to symmetries, rings to coordinate systems, modules to representations, homology groups to topological spaces. Reformulate the problem as an algebraic"
+          :sha256 "eaf63466fd7d9bb61bd4d66d8ed0f3386a635fa72248845788bf13da96fbe81e"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "math-strategy"
+      :path "futon3/library/math-strategy"
+      :kind :mixed
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 20
+      :remaining-flexiarg-files 11
+      :parsed-pattern-sections 20
+      :representatives [
+        {
+          :id "math-strategy/characterization-result"
+          :path "futon3/library/math-strategy/characterization-result.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. Decide whether the paper aims at full description, partial / failure description, an enumeration of cases, or a binary regime split. 2. Pick the matching leaf member-pattern. 3. Identify the *witness* of the"
+          :sha256 "b5b95d60f8813bbe4a5418fd248674533ff33d810a3d41dc606afd3e6ac14926"
+        }
+        {
+          :id "math-strategy/technique-landscape-map"
+          :path "futon3/library/math-strategy/technique-landscape-map.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. For each related method, construct a typed wiring diagram with nodes: Q (objective), D (decomposition), M (mechanism), C (certificate), O (output). 2. Add a bridge node B assessing the match to your target: direct,"
+          :sha256 "4facf90bd4b18a9e70cadaa83338ac11e9aeab05edd01eb559469cd16a592842"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "measurement"
+      :path "futon3/library/measurement"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "measurement/error-needs-structure-to-teach"
+          :path "futon3/library/measurement/error-needs-structure-to-teach.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Store the derivation alongside the judgment: the inputs and rule the prediction came from, the provenance of the realised reading, and an interpretation field (what this error licenses: model wrong / world moved /"
+          :sha256 "64ef6a39b265091746ba4ed4ebfbf8c1d56df95742239ad62eef636a6dadd9e8"
+        }
+        {
+          :id "measurement/warrant-travels-with-the-number"
+          :path "futon3/library/measurement/warrant-travels-with-the-number.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Attach the warrant to the number where it is stored: the rule (or its id/sha), the inputs (or pointers to them), and the exclusions/assumptions. The test: a skeptical reader can recompute the number from the record"
+          :sha256 "415a41bc2fc385ebc02e7cae2dc20d0b484790afa9b14a7958fc66853652e7e3"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "memory"
+      :path "futon3/library/memory"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "memory/licence-to-fail"
+          :path "futon3/library/memory/licence-to-fail.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. State the licence in the brief, in words: \"I could not determine the fix\" is a valid and more useful answer than a guess that happened to work. 2. Forbid consulting source, schema files, or asking the dispatcher. 3."
+          :sha256 "03494f011a7259969b522bdecaab26d94f7a44237f150d7dd95041aadba80c4a"
+        }
+        {
+          :id "memory/verify-in-the-serving-process"
+          :path "futon3/library/memory/verify-in-the-serving-process.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "1. Hot-swap explicitly, through the documented channel (Drawbridge `/eval` with `:reload`), never by restart. 2. Verify by RESOLVING the changed var in the serving process and reading back a value that only the new code"
+          :sha256 "82d594e5058d998425f2a4c114197d62cf3cc646c29953d07665a086d146d63f"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "meta"
+      :path "futon3/library/meta"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "meta/baldwin-ratchet-defeats-darkroom"
+          :path "futon3/library/meta/baldwin-ratchet-defeats-darkroom.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Apply the Baldwin ratchet: upgrade the agent's exotype (mission document, evidence gate, mandatory observation channels, completion criteria) and require the same agent to demonstrate correct behaviour under the"
+          :sha256 "49b7ba126a859fe15770ef57bc77093a69b1d2d6164cc92304e0a5c83b5d616f"
+        }
+        {
+          :id "meta/sigil-differentiation"
+          :path "futon3/library/meta/sigil-differentiation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "For each collision, decide whether to (a) retag one pattern, (b) refine the overlapping patterns so their scope edges are explicit, or (c) introduce a new pattern that captures the differentiating concept while linking"
+          :sha256 "29084ff9783f2de9338be701dee269891054ee6d7f33987da7f9db39b65f4bb3"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "mission-coherence"
+      :path "futon3/library/mission-coherence"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "mission-coherence/logic-model-before-code"
+          :path "futon3/library/mission-coherence/logic-model-before-code.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Express the invariants as goal-queries (query-violations) over a pldb fact-database built from an ABSTRACT trace (snapshot → build-db → goals → query-violations, the house idiom of agency/logic.clj +"
+          :sha256 "49d1775bffd48740cd643bd6c71fd21952bd1a4f83c9066c5911af4c18f9adf2"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "mmca"
+      :path "futon3/library/mmca"
+      :kind :practice
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "mmca/eye-before-metric"
+          :path "futon3/library/mmca/eye-before-metric.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Ask for the labels first, as a sampler sheet: every candidate rendered identically, the collaborator marking instances. Then screen candidate measures by whether they recover the labelling. Report agreement with the"
+          :sha256 "daae656cfc53d173e619382459ba7f5e1e26c4c1650b5a70c297503fa3229710"
+        }
+        {
+          :id "mmca/verified-but-idle-link"
+          :path "futon3/library/mmca/verified-but-idle-link.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "State it as a remark where it belongs, and reserve the structural claim for connections whose failure would propagate. If you believe the connection SHOULD be load-bearing, name the measurement that would make it so and"
+          :sha256 "81a02a12d9cfca72cc4cc70bf82047b1809239a105f5e870a473f9cae6af0bd6"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "mojo"
+      :path "futon3/library/mojo"
+      :kind :mixed
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "mojo/center"
+          :path "futon3/library/mojo/mojo.multiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Pause long enough to sense which possibilities carry genuine energy. Attend to what feels alive, welcome difference, and allow multiple options to coexist before you act."
+          :sha256 "695b44cc11a318f8b86d47c6ed3db0cd94b5950205607a0cbabae62449b363e9"
+        }
+        {
+          :id "mojo/down"
+          :path "futon3/library/mojo/mojo.multiarg"
+          :line 109
+          :quote-field "THEN"
+          :quote "Turn gently toward what feels off. Name the change, reflect on what it has taught you, and create small rituals of release or reconfiguration so that the experience can be integrated rather than buried."
+          :sha256 "695b44cc11a318f8b86d47c6ed3db0cd94b5950205607a0cbabae62449b363e9"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "musn"
+      :path "futon3/library/musn"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 17
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 17
+      :representatives [
+        {
+          :id "musn/aif-live-scores"
+          :path "futon3/library/musn/aif-live-scores.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Include {:aif {:G? :tau? :e? :dE? :o?}} in action responses; print succinctly in the raw stream."
+          :sha256 "d4d50ddf6413a93e296f50a6ad9fd94855fdfc800cfc1513b1b5f3da3b2f3469"
+        }
+        {
+          :id "musn/use-requires-evidence"
+          :path "futon3/library/musn/use-requires-evidence.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "On turn/end, enforce pause-or-reject if no writes/evidence; require a `turn/use` PUR and `evidence/add` with files."
+          :sha256 "118f05e2843effed8cdee9cc997590879efe8b4af84599b45b0c3cfdf91a1832"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "nomad"
+      :path "futon3/library/nomad"
+      :kind :mixed
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "nomad/author-the-yardstick"
+          :path "futon3/library/nomad/author-the-yardstick.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Build the measure as a public, checkable artifact: the benchmark, the readiness scale, the typed failure taxonomy. Run it on real systems including your own, publish honest negatives. The measure then routes the field's"
+          :sha256 "31a997306fbaa2a4b7cd1e2c4eaff637bd05c8e12fdb21e63b3683b509c3db0d"
+        }
+        {
+          :id "nomad/skip-the-flood"
+          :path "futon3/library/nomad/skip-the-flood.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Map the stack; mark where the money landed; occupy a skipped layer you can hold. Verify vacancy empirically (job postings, shipped artifacts), not by intuition — some adjacent layers turn out crowded on inspection."
+          :sha256 "037fd1cbab3d92d06fddcea18807fff4285b2715bbbac4ae9a42d420a86fbaae"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "or"
+      :path "futon3/library/or"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 26
+      :representatives [
+        {
+          :id "or/license-laddering"
+          :path "futon3/library/or/or.multiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Begin from a permissive default (e.g., CC BY) and step downward only when a written, reviewable harm model requires it. Assign each restriction a steward, rationale, and review date. Publish a short License Story beside"
+          :sha256 "8db817b2985bd79ae0b9324d10afa6cf7e4560fd2faa9f297d10195ea1bec9f6"
+        }
+        {
+          :id "or/feedback-activation-loop"
+          :path "futon3/library/or/or.multiarg"
+          :line 631
+          :quote-field "THEN"
+          :quote "Establish a lightweight feedback loop: short post-session pulse, 3-6 month follow-up, and a visible impact log. Pair this with a rotation of “impact stories” that travel across cohorts."
+          :sha256 "8db817b2985bd79ae0b9324d10afa6cf7e4560fd2faa9f297d10195ea1bec9f6"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "or2"
+      :path "futon3/library/or2"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "or2/bioliteracy-open-value"
+          :path "futon3/library/or2/bioliteracy-open-value.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat BMS as the north-node chariot bridging teaching and research. Use Fit-for-Use Stars to calibrate openness, bring Quality-by-Design Crowd techniques into labs, and add a Citizen Co-Learning track so students and"
+          :sha256 "e4a20237e10613c25f75c35fe3c3cab1abae486cdcebcdb58289a31111057d54"
+        }
+        {
+          :id "or2/xiangqi-decorators"
+          :path "futon3/library/or2/xiangqi-decorators.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Borrow symbolic Xiangqi cues—Cannon for UKRN (UP), General + Advisor for the Two Joes (CENTER), Elephant for Library (DOWN), Chariots for Schools—and render them as minimal icons that sit beside each pattern header."
+          :sha256 "26e4bf7d8d7155dd9336127ecae6471f36ea04b4d3cd25adadfe13de2d8aec50"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "or3"
+      :path "futon3/library/or3"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 17
+      :remaining-flexiarg-files 14
+      :parsed-pattern-sections 17
+      :representatives [
+        {
+          :id "or3/ask-first-then-bring-the-expert"
+          :path "futon3/library/or3/ask-first-then-bring-the-expert.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Survey the department for expressed needs first, then commission speakers against those needs specifically, addressing the details of real projects rather than the principles. Where a subgroup believes openness cannot"
+          :sha256 "7ebe8d3fef5fb6db27c0d5ff2ac460456fc2966db7a1b7fcd47d5d4db89fa82c"
+        }
+        {
+          :id "or3/teach-the-process-not-the-facility"
+          :path "futon3/library/or3/teach-the-process-not-the-facility.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Separate the facility from the method, and teach the method. Run short faculty-training courses on the underlying process — how to design an activity, how to run it safely, and above all how to debrief it — and mentor"
+          :sha256 "198a117bafb378b74a9fca22fe04f68121239a17e934e1436246ca0889e54aa0"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "orchestration"
+      :path "futon3/library/orchestration"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "orchestration/consent-gate"
+          :path "futon3/library/orchestration/consent-gate.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Put a consent-gate at the action's locus. The agent acts autonomously on everything reversible and in-scope; for outward/irreversible acts it NAGs **with warrant** (per pattern-warranted-choice-point) and waits. The"
+          :sha256 "479420b4d1f7673f36610fe5f8e69fed5109fee6b141625144c8d9f311dcee71"
+        }
+        {
+          :id "orchestration/state-in-substrate-deltas-in-messages"
+          :path "futon3/library/orchestration/state-in-substrate-deltas-in-messages.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Designate a shared substrate (a markdown scratch file, a key-value store, a typed-event log) as the single locus of state for the coordination. Each message carries only the delta — a Q, an A, a sha, a \"proceed\" signal."
+          :sha256 "3b3a791f6cf8c9a04479b82ffa9c8b14a26170348cd299aace191efd914ed06f"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "p4ng"
+      :path "futon3/library/p4ng"
+      :kind :subject
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 54
+      :representatives [
+        {
+          :id "p4ng/agent-as-mana-unit-was-the-wrong-unit"
+          :path "futon3/library/p4ng/agent-as-mana-unit-was-the-wrong-unit.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ DIAGNOSTIC: Whenever discussing budget/license/mana around agents, check the unit. If \"agent X is over budget\" is the claim, ask: what would the analogous claim about the *session* containing agent X look like? If it"
+          :sha256 "8aa3066cab25739f3fd1b067d7ecb4a9b97ed9a699d271ef9e688ec2a1542ab9"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "pacspine"
+      :path "futon3/library/pacspine"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 12
+      :representatives [
+        {
+          :id "pacspine/quick-intro"
+          :path "futon3/library/pacspine/pacspine.multiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Lead with an elegant alignment hook that proves you understand their mission."
+          :sha256 "9843465c6ba2c780b43a64065bc1e96fb5a84c9facc74e640bf76c428871e7c1"
+        }
+        {
+          :id "pacspine/obligations-checker"
+          :path "futon3/library/pacspine/pacspine.multiarg"
+          :line 155
+          :quote-field "THEN"
+          :quote "Commit to obligations (preserve voice, no invention, honour paramitā hinge) that keep the art-book frame intact."
+          :sha256 "9843465c6ba2c780b43a64065bc1e96fb5a84c9facc74e640bf76c428871e7c1"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "paramitas"
+      :path "futon3/library/paramitas"
+      :kind :mixed
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 10
+      :remaining-flexiarg-files 10
+      :parsed-pattern-sections 10
+      :representatives [
+        {
+          :id "paramitas/discernment"
+          :path "futon3/library/paramitas/discernment.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat diagnostics as a gating instrument that classifies takes into a small number of mechanically defined states and triggers at most one or two bounded, deterministic corrections."
+          :sha256 "b623748ee9202ec794735fb55e76d2f5a9179259478950ec094cc493c15507a1"
+        }
+        {
+          :id "paramitas/truth"
+          :path "futon3/library/paramitas/truth.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Anchor the story in a concrete governance gap in LLM-assisted reasoning, route it through formal-methods-aligned interlocutors using proof-adjacent language (assumptions, traceability, failure modes, audit trails), and"
+          :sha256 "bdfe247b1fd6ea6766cce193f8d259cc9bc962d98f8321e68cb4555df46c249f"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "pattern-coherence"
+      :path "futon3/library/pattern-coherence"
+      :kind :practice
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "pattern-coherence/applicability-signals"
+          :path "futon3/library/pattern-coherence/applicability-signals.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Provide lightweight decision criteria (signals, thresholds, or checks) that indicate the pattern is appropriate. Prefer observable cues over internal states, and include at least one “do not apply yet” signal."
+          :sha256 "1ad2993a295fdca76b339bab16ac20c501eb5bb397f045bb087acf4d551f54bc"
+        }
+        {
+          :id "pattern-coherence/scope-boundaries"
+          :path "futon3/library/pattern-coherence/scope-boundaries.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "State at least one inclusion boundary (when it applies) and one exclusion boundary (when it does not). Name the assumptions the pattern relies on (constraints, environment, actors, or scale)."
+          :sha256 "74784720dfed658ea892db87e6c09f5c5dc04861cbfd0663b2bceeaa9fd6be8a"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "pattern-discipline"
+      :path "futon3/library/pattern-discipline"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 4
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 4
+      :representatives [
+        {
+          :id "pattern-discipline/conclusion-required-others-recommended"
+          :path "futon3/library/pattern-discipline/conclusion-required-others-recommended.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Require the conclusion (any alias). Recommend the other six with a soft-warn discipline that surfaces \"this pattern would benefit from explicit IF/HOWEVER\" as advisory feedback, not refusal. For operational patterns the"
+          :sha256 "778bc06285d440a76a02f9a15b6b2c11d66a5434d16f7961a8ec6ba43d85ac18"
+        }
+        {
+          :id "pattern-discipline/peripheral-as-sokoban"
+          :path "futon3/library/pattern-discipline/peripheral-as-sokoban.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Provide a peripheral that exposes only a single bound action — submit-draft. Inside the peripheral, Edit/Write are constrained for the typed-artifact paths. The submit action validates against the canonical shape, runs"
+          :sha256 "912449f5a0b20c871ad12490ccba98b8e30acc86f7d15a477f010d1024158d69"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "pattern-interpretation"
+      :path "futon3/library/pattern-interpretation"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "pattern-interpretation/cite-the-source-bytes"
+          :path "futon3/library/pattern-interpretation/cite-the-source-bytes.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Bind each clause of the interpretation to quoted, sha-pinned source bytes and make that record the single reading."
+          :sha256 "dfaa2e87552c6fde152cc9f54a9a5377cce4246f690932b1e0c1bc98c8c4b285"
+        }
+        {
+          :id "pattern-interpretation/route-the-untranslatable"
+          :path "futon3/library/pattern-interpretation/route-the-untranslatable.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Refuse typedly, route with the failing clause, and count refusals by cause."
+          :sha256 "596532b64e8587e35425767eb6c1165e8a1bae47aad3a16c92b00b120ef7c4d7"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "pattern-mining"
+      :path "futon3/library/pattern-mining"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "pattern-mining/probe-the-claimed-property-not-the-acceptance-proxy"
+          :path "futon3/library/pattern-mining/probe-the-claimed-property-not-the-acceptance-proxy.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Write the promised property as a checkable question; identify its trust closure; run the strongest available direct probe on every member of that closure; test the probe against known-good, known-bad, and multi-defect"
+          :sha256 "eaa5f4b9e104fea25100f23a959b84682df8ee8e5b153b2c17436f97d3c35c99"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "peeragogy"
+      :path "futon3/library/peeragogy"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 18
+      :remaining-flexiarg-files 15
+      :parsed-pattern-sections 18
+      :representatives [
+        {
+          :id "peeragogy/calling-in-not-out"
+          :path "futon3/library/peeragogy/calling-in-not-out.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Call them in: engage the person directly and privately, with genuine curiosity about what produced the behavior. Name the impact without diagnosing the intent. Assume the person is a learner, not an adversary. This"
+          :sha256 "413b0c4d5f933b87744ab822d4720f5c766139e9ecbd130da962962c14d1879d"
+        }
+        {
+          :id "peeragogy/wrapper"
+          :path "futon3/library/peeragogy/wrapper.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ COMPOSITIONS: (1) Periodic roundup: a named person publishes a recurring summary (weekly digest, monthly report) that names what happened, who did what, and what is open. The roundup is itself the wrapper artefact."
+          :sha256 "4379aac00b66a1868960fb303d63eb0b04a6ef7184080a90740de1e554d0b4e7"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "peripherals"
+      :path "futon3/library/peripherals"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "peripherals/canonical-typed-event-vs-side-channel"
+          :path "futon3/library/peripherals/canonical-typed-event-vs-side-channel.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "When the peripheral needs a new event, extend the taxonomy: 1. **Author the event schema as a first-class type** in the canonical taxonomy. Give it a name, a payload shape, semantics, and a producer/consumer note. The"
+          :sha256 "020b272ec5b4d9aedf8142ccaf7f60ed539d7c8041a5a854c235c7ad8dbc355c"
+        }
+        {
+          :id "peripherals/surface-earns-inhabitation"
+          :path "futon3/library/peripherals/surface-earns-inhabitation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat surface usability as load-bearing infrastructure, not cosmetic polish. Close every friction gap between the surface and the primitive alternative before adding new capabilities. The surface must be strictly better"
+          :sha256 "8aa42b1b946896c826311fec4abe68603c4648b9f09e2d22465ff690bb8830f7"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "peripherals/head-flash"
+      :path "futon3/library/peripherals/head-flash"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 0
+      :representatives [
+      ]
+      :rationale "No directly contained parsed .flexiarg/.multiarg pattern; structural or scratch directory, so no stage prior."
+    }
+    {
+      :directory "plos-npt-with-small-n"
+      :path "futon3/library/plos-npt-with-small-n"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 22
+      :remaining-flexiarg-files 14
+      :parsed-pattern-sections 22
+      :representatives [
+        {
+          :id "plos-npt-with-small-n/absence-as-evidence"
+          :path "futon3/library/plos-npt-with-small-n/absence-as-evidence.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Foreground the absence and warrant it. + COMPOSITIONS: (1) Null-as-thesis. Schema: {:observed-absence <no difference / no effect> :reframed-claim <what the convergence means> :scope <process | transferability, not"
+          :sha256 "b1ca0cd28f2171fd1965cc6837a5bdb68d7f10069935c239908ff28ad63234d2"
+        }
+        {
+          :id "plos-npt-with-small-n/venue-register-boundary"
+          :path "futon3/library/plos-npt-with-small-n/venue-register-boundary.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Assign each exemplar a job. + COMPOSITIONS: (1) Source-role table. Columns: paper, venue, content role, register role, use in draft. Effect: prevents accidental imitation of the wrong model. (2) PLOS-primary structure"
+          :sha256 "1992b0e939c85cf011547087c39f0fdb351b1beb121f5b2e6687bf9d41215abb"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "portal"
+      :path "futon3/library/portal"
+      :kind :subject
+      :stage :perceive
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 3
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "portal/first-class-query-interface"
+          :path "futon3/library/portal/first-class-query-interface.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use Drawbridge and portal helpers so queries can compose lex, ANN, and chain steps."
+          :sha256 "a755daf83a305869a5548e29dd15f62c51b4622ba4ac1ed45fea1ee95a03ca91"
+        }
+        {
+          :id "portal/portal-sidecar-interop"
+          :path "futon3/library/portal/portal-sidecar-interop.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Fetch patterns and intent through portal, perform work, and record selections, actions, and evidence in sidecar as append-only events."
+          :sha256 "aa90c8dd71625b8af3f8f68c182016f6467f4325a660a2b0b65403cf5ac0a78a"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "problems"
+      :path "futon3/library/problems"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 60
+      :remaining-flexiarg-files 21
+      :parsed-pattern-sections 60
+      :representatives [
+        {
+          :id "problems/agent-discoveries-do-not-teach-humans"
+          :path "futon3/library/problems/agent-discoveries-do-not-teach-humans.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat this node as the landing point for agent-to-human teaching mechanisms."
+          :sha256 "90d2a12c04d3a683c15dee4799e5eeed0665d75eb891fca28d9b249a36788cf9"
+        }
+        {
+          :id "problems/unqueryable-trails-block-recovery"
+          :path "futon3/library/problems/unqueryable-trails-block-recovery.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat this node as the landing point for @why edges from patterns that answer the unqueryable-trail recovery problem"
+          :sha256 "c1b1651a3ab73e0bab190ea19ae2aee4073c4f6f0e85c5bfe8a84750505b9260"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "process"
+      :path "futon3/library/process"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "process/built-but-not-wired-invisibility"
+          :path "futon3/library/process/built-but-not-wired-invisibility.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Treat consumption as a checked rung (the conventions note's rung grammar: constructed then wired, never skipping); wire the acceptance authority to failure paths as well as success; keep an inventory of unwired"
+          :sha256 "c5eb3aafa23d07670d9ef1a56ac3f3746cc585ebfd515796bacc8e4630beac48"
+        }
+        {
+          :id "process/watcher-that-observes-and-defers"
+          :path "futon3/library/process/watcher-that-observes-and-defers.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Give every deferral a count and a deadline; when the budget is spent the watcher escalates on its own channel rather than re-narrating; a watcher with no escalation route is listed as non-supervision, not deployed as"
+          :sha256 "53d007cf5b7f95e30b29b7968a9b735eddbd0ee716c58aaf7e0fb6043f3f55ed"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "process-coherence"
+      :path "futon3/library/process-coherence"
+      :kind :practice
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 5
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 5
+      :representatives [
+        {
+          :id "process-coherence/author-the-missing-pattern"
+          :path "futon3/library/process-coherence/author-the-missing-pattern.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Author the missing patterns — from real, built, working practice (the system's actual functionality, real cases with real numbers as canonical instances), not from speculation. Ingest them through the standard pipeline"
+          :sha256 "4b841fabf3b3971dae2314ce725bab6c187e7d7877798c227369adff9c7f7469"
+        }
+        {
+          :id "process-coherence/stuck-means-signal"
+          :path "futon3/library/process-coherence/stuck-means-signal.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Alert someone who might be able to help you get unstuck — bell your reviewer, raise the operator lane, surface a loud marker in your record — stating WHAT you repeated, HOW many times, and what stayed unchanged. Then"
+          :sha256 "894f28e369941ee44edf310aa51ab7572a1bdb8eb8fdf4644f0414e80b66e0d0"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "proof-search"
+      :path "futon3/library/proof-search"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "proof-search/extend-library-not-proof"
+          :path "futon3/library/proof-search/extend-library-not-proof.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Check the gap against the corpus (the sorry-boundary atlas, or a search over other partials): if the missing piece would unblock more than this proof, promote it — state it at library generality, close it there, and let"
+          :sha256 "e5f3e84640a9831afb1d969916ae13a67f620a29cd55b1110064f68a5ae663eb"
+        }
+        {
+          :id "proof-search/typed-hole-as-frontier"
+          :path "futon3/library/proof-search/typed-hole-as-frontier.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Write the hole with its type: WANT (the signature or codomain of what's missing — what would have to be true/constructed), HAVE (the endpoints in hand), and the discharge condition. Store holes where they can be"
+          :sha256 "5f342980b21e8043d5cb186050bc66e108292e6e2edcd61bfdb02ff3f63e18d7"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "realtime"
+      :path "futon3/library/realtime"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 13
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 13
+      :representatives [
+        {
+          :id "realtime/authoritative-transcript"
+          :path "futon3/library/realtime/authoritative-transcript.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Designate an append-only event log (F1 or JSONL if that is the backing store) as authority; require clients (IRC bridge, WS clients) to be projections of that log; on join, clients replay from a checkpoint; during"
+          :sha256 "fd0fcc8d7473ec007fdf7b09235792735611b4fd1d189b45f4ffd6a00ee5146b"
+        }
+        {
+          :id "realtime/transport-pivot"
+          :path "futon3/library/realtime/transport-pivot.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Introduce a Transport Pivot: announce the target transport, freeze new tasks, replay the last N messages into the new channel, optionally dual-write for T seconds, and only then declare the new channel authoritative and"
+          :sha256 "88f3f7253d5767009f0af4084e3b3b0055e45cb55a4dbfbe46b2edc8efe9364f"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "relationship-coherence"
+      :path "futon3/library/relationship-coherence"
+      :kind :mixed
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 19
+      :remaining-flexiarg-files 12
+      :parsed-pattern-sections 19
+      :representatives [
+        {
+          :id "relationship-coherence/absence-as-spaciousness"
+          :path "futon3/library/relationship-coherence/absence-as-spaciousness.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "name the absence honestly and also read it as negative space: breathing room that lets each thrive and lets the shared world be seen from a distance."
+          :sha256 "89812bb58ccf31333863683835b4eb889b899eea3ed3e22765818ee238af9baf"
+        }
+        {
+          :id "relationship-coherence/rupture-repair"
+          :path "futon3/library/relationship-coherence/rupture-repair.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "spiller: name the mechanism ('I'll regulate my nervous system', 'please don't take it personally'). Receiver: absorb it without scorekeeping and re-frame as shared ('all part of today's journey'). Close the loop; do not"
+          :sha256 "d9da87826533cac344e2725b5bd2327e3e6637a0cc0bbff34559c91d9967711b"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "repository-transition"
+      :path "futon3/library/repository-transition"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "repository-transition/counterstrawman-indicators"
+          :path "futon3/library/repository-transition/counterstrawman-indicators.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ indicator: Footfall — volume and diversity of external visitors, not raw downloads. + indicator: Portfolio views — depth of exploration across interdisciplinary areas. + indicator: Exposure outside the university —"
+          :sha256 "8e8ea07ad0941f351b6f12ce96fb7d51a0bb44cea2b36e2c50c9740babe8dd65"
+        }
+        {
+          :id "repository-transition/transformation-engine"
+          :path "futon3/library/repository-transition/transformation-engine.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Leadership must match connection mode to context and collaborator. The transformation cycle is not just procedural (tensions → requirements → transparency → feedback → iteration). It is relational, adjusting"
+          :sha256 "2337ba848bb371fefd9332006ceb1ac4c2abb5f6513671cac540a31d7951ee33"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "scan-coherence"
+      :path "futon3/library/scan-coherence"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "scan-coherence/mission-anchored-scan"
+          :path "futon3/library/scan-coherence/mission-anchored-scan.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Anchor the scan to one mission's question, stated as a hypothesis whose YES and NO are both informative (\"do the GLAIVE roster's recent repos show learning-efficiency work?\"). Split instruments: run AUDIENCE-FIRST"
+          :sha256 "9fe4d196f2a6eb29c1aa92b3d782a5c2fcf51cf78cf7be4f8f47a02dd7c59033"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "sidecar"
+      :path "futon3/library/sidecar"
+      :kind :subject
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 12
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 12
+      :representatives [
+        {
+          :id "sidecar/append-only-semantic-audit"
+          :path "futon3/library/sidecar/append-only-semantic-audit.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Persist every semantic write (proposal, promotion, evidence, action, fact, chain) as append-only records with identifiers and audit metadata, and reject duplicate ids at the store boundary."
+          :sha256 "20b4c6ea725c9636f768742d372d0862eb3a872bb21b42ba14724c96be892f4e"
+        }
+        {
+          :id "sidecar/validation-enforcement-gate"
+          :path "futon3/library/sidecar/validation-enforcement-gate.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Define a validation gate that checks required fields, enum constraints, and store boundaries before any write."
+          :sha256 "7ebd8343c687aa6cb6ba24728499fe3b9fb46737fd15b6348e37f02f61091fa6"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "snatch"
+      :path "futon3/library/snatch"
+      :kind :mixed
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 24
+      :remaining-flexiarg-files 17
+      :parsed-pattern-sections 24
+      :representatives [
+        {
+          :id "snatch/a-free-mark-is-always-worth-assigning"
+          :path "futon3/library/snatch/a-free-mark-is-always-worth-assigning.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Assign it, and treat declining as the decision it is — one that must be justified, not a default."
+          :sha256 "90245f0c725bd1486dee752c4f9fccfb8f42b452c85654da35ba0f65fe25edb0"
+        }
+        {
+          :id "snatch/widen-the-cascade-only-on-evidence"
+          :path "futon3/library/snatch/widen-the-cascade-only-on-evidence.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Admit patterns one at a time, ordered by what the previous admission bought, and stop on a rule stated in advance — a marginal-gain floor, a budget, or saturation. Record the rule and where it stopped on the cascade"
+          :sha256 "2e879dd5b43db450d97fed2c0dfff0f8710196cb60b76e238e4516b6c15f8fd6"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "social"
+      :path "futon3/library/social"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 2
+      :parsed-pattern-sections 7
+      :representatives [
+        {
+          :id "social/ARGUMENT"
+          :path "futon3/library/social/ARGUMENT.flexiarg"
+          :line 1
+          :quote-field "CONCLUSION"
+          :quote "This is a flexiformal argument for the futon3c social coordination layer — the third AIF loop in the futon stack, operating at the social/real-time timescale. It builds on the completed coordination argument"
+          :sha256 "92b88e1d9209af8bf96e2495bdc628b556dc3ea9f1b3f0e2a0bc86cfd4569fc3"
+        }
+        {
+          :id "social/verify-before-compose"
+          :path "futon3/library/social/verify-before-compose.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Require each namespace to compile and load before adding the next dependency. Write a minimal smoke test (can I call each public function without exception?) before composing namespaces. Treat a forward-declaration fix"
+          :sha256 "b702e1c5a199eb4c910c018fdc42857ef3d00a98c80881b05cc7f12c6320a891"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "software-design"
+      :path "futon3/library/software-design"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 9
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 9
+      :representatives [
+        {
+          :id "software-design/adapter-pattern"
+          :path "futon3/library/software-design/adapter-pattern.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Create a dedicated adapter that translates between the expected interface and the dependency’s interface, and keep the adapter as the only integration boundary."
+          :sha256 "9cd1c225c5ad3f5eb25f7cc238b6880c05fb48d84da18cc7e2dc97b6f67c4200"
+        }
+        {
+          :id "software-design/state-pattern"
+          :path "futon3/library/software-design/state-pattern.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Represent each state as its own object and delegate behavior to the active state."
+          :sha256 "4fcb7423efd130edba5aabffcd87836aa7d4d24cdfffce0ae08cec820caa844b"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "stack-coherence"
+      :path "futon3/library/stack-coherence"
+      :kind :practice
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 10
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 10
+      :representatives [
+        {
+          :id "stack-coherence/commit-intent-alignment"
+          :path "futon3/library/stack-coherence/commit-intent-alignment.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "correlate commit messages/PRs with devmap IDs; for each match, update the clause status + evidence ledger; if a clause stays marked “planned” despite recent commits, flag it as `drift` and prompt someone to reconcile"
+          :sha256 "e1257816164c35402f7ab49e6b39878a90d61e784959715b01862422be854e95"
+        }
+        {
+          :id "stack-coherence/staleness-scan"
+          :path "futon3/library/stack-coherence/staleness-scan.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "compare timestamps (git log, last edited dates) to linked clauses; flag anything older than the freshness window and prompt a refresh with pointers to the newest artifacts"
+          :sha256 "c3bdf9b9c3256d7a65f587cd2202dd385af6c56e4f7031e59f21d5ff07f4a963"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "storage"
+      :path "futon3/library/storage"
+      :kind :subject
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 21
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 21
+      :representatives [
+        {
+          :id "storage/all-or-nothing-startup"
+          :path "futon3/library/storage/all-or-nothing-startup.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "gate startup on full rehydration success and emit precise diagnostics on failure"
+          :sha256 "74df39644ab9c77890d39b66b97783d286e0ce589c22304fa7d19afc61d1bcbb"
+        }
+        {
+          :id "storage/startup-integrity-gate"
+          :path "futon3/library/storage/startup-integrity-gate.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "block startup until rehydration and invariant checks pass, and emit precise diagnostics on failure"
+          :sha256 "8bf825369b4bef8ae98c2ae65faa12b81bd38da434dba4ffd2ccbe11dfba636a"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "structure"
+      :path "futon3/library/structure"
+      :kind :mixed
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "structure/backwards-induction"
+          :path "futon3/library/structure/backwards-induction.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ HOW-TO-APPLY: **Backwards:** 1. List what the artefact actually contains — techniques, vocabulary, argumentative moves, what it rejects, what it emphasises. Evidence loci, not summary. 2. Induce the problem these"
+          :sha256 "ae78bf13a3297569dd5d345d947f1feedf48de791948fdfdb64a745a4fb61085"
+        }
+        {
+          :id "structure/whose-question-is-this"
+          :path "futon3/library/structure/whose-question-is-this.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ HOW-TO-ANSWER: 1. Notice whose voice is composing the proposed answer. Yours? An imagined reader's? A previous consultant's? A template's? 2. If not yours: discard the proposed answer and sit with the question again."
+          :sha256 "ec1657a0a2995da11b18e3ee847b4915725486a8f25685b68ed4961a80519de9"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "system-coherence"
+      :path "futon3/library/system-coherence"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 16
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 16
+      :representatives [
+        {
+          :id "system-coherence/argue-empirically-not-persuasively"
+          :path "futon3/library/system-coherence/argue-empirically-not-persuasively.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Delete or restrict the claim; replace with what must follow; or demote to open question. + COMPOSITIONS: (1) Delete and stop: the simplest move. If the claim does not follow from what the action does, remove it. The"
+          :sha256 "650c8de2aa9551be84c5102e9d599edbc96672d649745bfcebd8bb1c28e8f43a"
+        }
+        {
+          :id "system-coherence/verified-rewrite-from-diagnostic-annotation"
+          :path "futon3/library/system-coherence/verified-rewrite-from-diagnostic-annotation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Structure each rewrite as f:(A, B) → C with explicit type signature. + COMPOSITIONS: (1) Type the diagnostic at survey time: every `:annotation/comment` cites a pattern. If no pattern fits, either find one in the"
+          :sha256 "35e7b7bc505228e03c72bde97f88f885a3e45b698fc925bfd14e49b96dc4023a"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "t3"
+      :path "futon3/library/t3"
+      :kind :mixed
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 12
+      :remaining-flexiarg-files 12
+      :parsed-pattern-sections 12
+      :representatives [
+        {
+          :id "t3/adaptive-delivery-spine"
+          :path "futon3/library/t3/adaptive-delivery-spine.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Define a delivery spine: a minimal core (two to three modules) plus named elective modules and a required co-working block for local adaptation. Provide time budgets and \"drop-in\" variants for short sessions."
+          :sha256 "2831441e47d1dea36ca4aad4ec0326d0914d2f0e4e095fdb69f5f1dd6638b250"
+        }
+        {
+          :id "t3/transformation-space"
+          :path "futon3/library/t3/transformation-space.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Analyse the transformation space: the institutional structures, incentive systems, workload models, and feedback mechanisms that determine whether any training input — however well-designed — produces lasting collective"
+          :sha256 "6b2e243eab64d23aec49b41fec1c43e7657886532be1a1bd8c7cc413f02c7854"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "t4r"
+      :path "futon3/library/t4r"
+      :kind :mixed
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 8
+      :representatives [
+        {
+          :id "t4r/dtp-fit"
+          :path "futon3/library/t4r/dtp-fit.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Embed the REPL method inside the programme so it scales across cohorts."
+          :sha256 "e64b0ce9c04525c4d5450f087a329c1ac7e5c7019e341d42babc491b8e5f6134"
+        }
+        {
+          :id "t4r/value"
+          :path "futon3/library/t4r/value.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Emphasise the commons outputs and the governance method they enable."
+          :sha256 "387505077efc4cf04f5f49af87610695076b9bfc29be22fd2c6e85945cdcc1c4"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "test-registry"
+      :path "futon3/library/test-registry"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 8
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "test-registry/bind-the-subject"
+          :path "futon3/library/test-registry/bind-the-subject.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Enqueue the incident, keep the binding, report :revalidation-open, and accept only a fresher currently-bound warrant as closure."
+          :sha256 "d5e28840a5b872ca9234e8cdb5891e6eff83bf25e20307b8e5b05bb814565924"
+        }
+        {
+          :id "test-registry/warrant-rides-the-handoff"
+          :path "futon3/library/test-registry/warrant-rides-the-handoff.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Put base sha and warrant entry ids into the handoff's structured fields; type the handoff :warranted or :unwarranted; have the reviewer's reply return its review entry id."
+          :sha256 "4ea0872fd824982c0b83ae94e52577b890c111dc1bdc4fcc72dd6f498095cc5a"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "transition"
+      :path "futon3/library/transition"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "transition/f0-f4-boundary"
+          :path "futon3/library/transition/prototype1-transition.multiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Enforce the boundary: FUTON0 only tracks signals that answer \"is continued ascent safe and worthwhile?\", while FUTON4 only records structures that answer \"what movements are possible from here?\""
+          :sha256 "b046439cd7bd7e0cc6ed5b68e7a98e68dd9205598da3e95fb398cd9bea3a30e3"
+        }
+        {
+          :id "transition/persistence-conditions"
+          :path "futon3/library/transition/prototype1-transition.multiarg"
+          :line 42
+          :quote-field "THEN"
+          :quote "Treat prototype 1A as the construction of conditions under which persistence later becomes possible and sane."
+          :sha256 "b046439cd7bd7e0cc6ed5b68e7a98e68dd9205598da3e95fb398cd9bea3a30e3"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "translation"
+      :path "futon3/library/translation"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 6
+      :remaining-flexiarg-files 5
+      :parsed-pattern-sections 6
+      :representatives [
+        {
+          :id "translation/bind-to-the-source"
+          :path "futon3/library/translation/bind-to-the-source.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Bind by content hash and named form, and refuse on drift."
+          :sha256 "090b884ab2dd93380696d7d2eb7347d313ae05a19c4d348417de34fc5e8f4617"
+        }
+        {
+          :id "translation/test-by-reproducing-behaviour"
+          :path "futon3/library/translation/test-by-reproducing-behaviour.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Test on known behaviour with falsifiers and attribute disagreements."
+          :sha256 "072d3badc121847eb997bc33e5c879f3539e34f05b1b09db7abf6882010b0c01"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "ukrns"
+      :path "futon3/library/ukrns"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 26
+      :remaining-flexiarg-files 11
+      :parsed-pattern-sections 26
+      :representatives [
+        {
+          :id "ukrns/anchor-case-maintenance"
+          :path "futon3/library/ukrns/anchor-case-maintenance.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "The service operates an explicit composition on the axis between stable and evolving anchors, declares it, and stewards the pair against that declaration. + COMPOSITIONS: (1) Fixed pair: FG2A-P1 + FG3-A remain canonical"
+          :sha256 "ef07e45ab31d3eb45aebac7112fbe43fae285f4c9f96b5952ff7cf460f8f0649"
+        }
+        {
+          :id "ukrns/worked-contrast"
+          :path "futon3/library/ukrns/worked-contrast.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ COMPOSITIONS: (1) Paired contrast: two worked cases positioned to show the model biting differently (FG2A-P1 delivery-gated + FG3-A multiply-constrained). Gives up the depth of a single-case deep dive; gains"
+          :sha256 "2f56df8730be1bdcbe4222baa97b058f28d2783d679766c08cec9d5ead175071"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "vsatelier"
+      :path "futon3/library/vsatelier"
+      :kind :mixed
+      :stage :coordination
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 7
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 14
+      :representatives [
+        {
+          :id "vsatelier/annotation-as-commitment"
+          :path "futon3/library/vsatelier/annotation-as-commitment.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Allow any interpretive note to be promoted to a commitment: an action item with an owner, a deadline, a success criterion, and a link back to the note and its source stories. Commitments appear in a steward-visible"
+          :sha256 "9f4365d5b96bd8929d2962d40cfa7107344edbc97e53773e2d7106390cccde81"
+        }
+        {
+          :id "vsatelier/session-as-rehearsal"
+          :path "futon3/library/vsatelier/session-as-rehearsal.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Structure early sessions as rehearsals: use a small anthology, set a low-stakes question, walk through the full cycle (explore the constellation → flag a pattern → discuss → decide → record the decision). Debrief the"
+          :sha256 "77e09196202223de796ea981609b860263d31a382b65d0c00fc8d481b7f99474"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "vsatlas"
+      :path "futon3/library/vsatlas"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 23
+      :remaining-flexiarg-files 18
+      :parsed-pattern-sections 41
+      :representatives [
+        {
+          :id "vsatlas/accountable-poc"
+          :path "futon3/library/vsatlas/accountable-poc.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Allocate funds to build the minimal feature, run pilots, and extract concrete offerings so the phase ends with documented value."
+          :sha256 "fde656c9af7b3f542028ce9b82851131eb2f3648c22945678ff966499d25cf8c"
+        }
+        {
+          :id "vsatlas/value-flow-constellation"
+          :path "futon3/library/vsatlas/value-flow-constellation.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use VSATLAS to build a joint story space where each actor retains autonomy yet contributes to a collective map of challenges and responses, making overlaps and dependencies visible."
+          :sha256 "3e29ed392a28830fac45abdeb5fdedf96efead212acafeee8df084241d95f042"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "vsatlatarium"
+      :path "futon3/library/vsatlatarium"
+      :kind :subject
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 8
+      :remaining-flexiarg-files 4
+      :parsed-pattern-sections 16
+      :representatives [
+        {
+          :id "vsatlatarium/anthology-as-filter"
+          :path "futon3/library/vsatlatarium/anthology-as-filter.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Reuse the pilot (anthology) model to filter stories at query time (?pilot=N). The dome re-projects around fewer clusters, vertical spread is clamped for small collections, and all navigation (planetarium, geomview, VR)"
+          :sha256 "0da774a2f83a4df0348fd38756a1e7048251fd3567eb1501d8c45fe7b4d2fa81"
+        }
+        {
+          :id "vsatlatarium/vapor-as-affect"
+          :path "futon3/library/vsatlatarium/vapor-as-affect.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Provide a single slider that continuously blends from minimal (dark, precise, subtle arcs) to maximal (pink glow, bloom on arcs, particle dust, background colour shift, hover halos). The underlying data stays identical."
+          :sha256 "4c3730e56ea632454dd5e70e801007727bd71efb7b4d7d0ad79a2be97148170b"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "war-machine"
+      :path "futon3/library/war-machine"
+      :kind :subject
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 10
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 10
+      :representatives [
+        {
+          :id "war-machine/advanceability"
+          :path "futon3/library/war-machine/advanceability.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Gate `:open-mission` actions with `open-mission-with-holes?` (`open?` AND `open-hole-count ≥ 1`). A 0-hole open mission is inadmissible for autonomous advancement → NAG: *\"nothing concrete to advance here; articulate"
+          :sha256 "250684c49db812dee46a9e08bbba0c3e02682fe3f0784b1325436a955fbfe43d"
+        }
+        {
+          :id "war-machine/state-capture"
+          :path "futon3/library/war-machine/state-capture.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Use pocketwatch-style constraints and explicit external-sorry checks: every stack work item must answer which outside obligation it closes, and stack hours must stay bounded relative to portfolio and consulting hours."
+          :sha256 "b45598fb80725dfb4b7deadf520355feaca633dc9d1238c037c7fad654b6d363"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "war-room"
+      :path "futon3/library/war-room"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 28
+      :remaining-flexiarg-files 7
+      :parsed-pattern-sections 28
+      :representatives [
+        {
+          :id "war-room/wr-0-organise-without-apparatus"
+          :path "futon3/library/war-room/wr-0-organise-without-apparatus.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Build the organising apparatus, and build into it the three properties that keep it from closing: (a) An OPEN MODEL. Active inference is chosen here for a structural reason rather than a fashionable one: the generative"
+          :sha256 "ca96db63db8356ea35c610a3e96cf362556949bf25db45f3ac151c299c4f3196"
+        }
+        {
+          :id "war-room/wr-9-bites-empirical-or-logical"
+          :path "futon3/library/war-room/wr-9-bites-empirical-or-logical.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "The empirical join walks session steps to repos to devmap leaves to spine ids, and renders conflict-to-spine bite edges as solid red, scaled by hit count, when the bitten spine has empirical activity in the visible"
+          :sha256 "2ce704319dac174cac502eaeda34c2d9850f0dc6c9d3833a9a487f1e64db72b8"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "watcher-scratch"
+      :path "futon3/library/watcher-scratch"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 0
+      :representatives [
+      ]
+      :rationale "No directly contained parsed .flexiarg/.multiarg pattern; structural or scratch directory, so no stage prior."
+    }
+    {
+      :directory "watcher-scratch-moved"
+      :path "futon3/library/watcher-scratch-moved"
+      :kind :subject
+      :stage :none
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 0
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 0
+      :representatives [
+      ]
+      :rationale "No directly contained parsed .flexiarg/.multiarg pattern; structural or scratch directory, so no stage prior."
+    }
+    {
+      :directory "workday"
+      :path "futon3/library/workday"
+      :kind :practice
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 2
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 4
+      :representatives [
+        {
+          :id "workday/sign-off-affordance"
+          :path "futon3/library/workday/clock-hygiene.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Persistence requires an explicit sign-off affordance at the FUTON-0 level: a mechanism that helps you recognize when continuation has stopped being beneficial before exhaustion, distortion, or resentment appear."
+          :sha256 "e0c500f99e90f00c682c9a1ae88f43f7eca46bbcdf845f264003232585895093"
+        }
+        {
+          :id "workday/external-project-index"
+          :path "futon3/library/workday/external-project-index.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Maintain a minimal registry that maps project-id or name to entry URL + short intent + last-touched date, and add a periodic link-audit micro-loop that refreshes broken pointers and promotes better entry chats when"
+          :sha256 "fce9d4288753aa3366d6c408cf073473aa100fcf0c39a26a72077e74bab65f77"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "workflow-coherence"
+      :path "futon3/library/workflow-coherence"
+      :kind :practice
+      :stage :select
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 3
+      :remaining-flexiarg-files 1
+      :parsed-pattern-sections 3
+      :representatives [
+        {
+          :id "workflow-coherence/sphere-equilibrium"
+          :path "futon3/library/workflow-coherence/sphere-equilibrium.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "during weekly review, check that each sphere received some attention (even minimal); flag spheres with no recent activity + CHECK: each sphere has at least one touched item (commit, session, or note) in the past 14 days"
+          :sha256 "6bc12efda63879d7a9235922698e796a13d64e2c251f4ed34c5a0b56dc0106f1"
+        }
+        {
+          :id "workflow-coherence/wip-cap"
+          :path "futon3/library/workflow-coherence/wip-cap.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "block new work initiation until one active thread is paused or completed; surface the constraint in Stack HUD + CHECK: count of items with status=active in futon1 or Org <= 3"
+          :sha256 "52a97bd547b98bbf398c64e75d2b618075fbe0727a5add4aac1429cd96b91936"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "workshop"
+      :path "futon3/library/workshop"
+      :kind :mixed
+      :stage :assurance
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 11
+      :remaining-flexiarg-files 9
+      :parsed-pattern-sections 11
+      :representatives [
+        {
+          :id "workshop/accountable-next-action-choice"
+          :path "futon3/library/workshop/accountable-next-action-choice.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "The selector emits its account with the choice: candidates, ranked-actions with reasons, the received preference's provenance (operator pin or rehydrated posterior), the uncertainty typed, and the shared-budget"
+          :sha256 "b66d0944e798356cfe3052fe4dd3863a904ae02d076c1b52d2fe48c981d91b3c"
+        }
+        {
+          :id "workshop/violation-signature-before-work"
+          :path "futon3/library/workshop/violation-signature-before-work.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "Before work starts: name the observable a monitor or lint SEES when the rule is broken; wire it into a gate that can refuse; commission it with an induced violation (feed it a known breach and require the refusal)"
+          :sha256 "488b8f66ac27a89d9c0ba12f1d5d71ce59a11abfa0e4193389d00d6294c50f57"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "writing-coherence"
+      :path "futon3/library/writing-coherence"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 23
+      :remaining-flexiarg-files 12
+      :parsed-pattern-sections 23
+      :representatives [
+        {
+          :id "writing-coherence/balanced-pair-padding"
+          :path "futon3/library/writing-coherence/balanced-pair-padding.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ COMPOSITIONS: (1) Lead with Z: state the claim directly. If the reader accepts it without confusion, X and Y were unnecessary. (2) Reintroduce the pair only for a live misreading: if a reader plausibly would have"
+          :sha256 "f72c657daadf75577382701e2944a687262d72ae6772b8f96e9260cc757f4c20"
+        }
+        {
+          :id "writing-coherence/unearned-essentially"
+          :path "futon3/library/writing-coherence/unearned-essentially.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "+ COMPOSITIONS: (1) Replace with the structural reason: if the adverb is load-bearing, state the reason it compresses. \"Essentially multiplicative\" becomes \"multiplicative because D and A combine as a product, so either"
+          :sha256 "6f59ad341f0348e8f9e3de1cf826e6cfc9b0679bebfa0c0e8f89db8fe56c57c4"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+    {
+      :directory "xed-roads"
+      :path "futon3/library/xed-roads"
+      :kind :practice
+      :stage :act
+      :stage-mode :directory-prior
+      :confidence :low
+      :flexiarg-files 1
+      :remaining-flexiarg-files 0
+      :parsed-pattern-sections 1
+      :representatives [
+        {
+          :id "xed-roads/live-recording-bridge"
+          :path "futon3/library/xed-roads/live-recording-bridge.flexiarg"
+          :line 1
+          :quote-field "THEN"
+          :quote "The artifact-oriented collaborator can support live performances by equipping themselves to capture those performances as live recordings."
+          :sha256 "12451842a52d4cec95e0fc504d210a47d1b68c546aa0d9b402966642865c3e21"
+        }
+      ]
+      :rationale "Weak directory prior from the cited representative texts; members are heterogeneous and were not individually assigned this stage."
+    }
+  ]
+}

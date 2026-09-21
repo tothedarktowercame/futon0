@@ -1,0 +1,294 @@
+{
+  "window": {
+    "since": "2026-08-22",
+    "before": "2026-09-21T17:19:12.718167Z"
+  },
+  "statistics": {
+    "user-turns": 5605,
+    "eligible-user-turns": 3398,
+    "exact-resume-marker-turns": 2205,
+    "park-resume-marker-turns": 2085,
+    "joe-not-user-turn": 181,
+    "wake-payload-turns": 2,
+    "continuation-payload-turns": 120,
+    "matched": 2147,
+    "unmatched": 13523,
+    "excluded-all-prefix-candidates-automatic": 955,
+    "ambiguous-text-prefix": 323,
+    "park-resume-marker": 687,
+    "continuation-payload": 2,
+    "duplicate-retrieval-evidence": 136
+  },
+  "retrieval-pages": [
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-09-12T18:41:31.672414246Z",
+        "id": "e-9f058c82-3135-4596-a8ed-c41d0e32c12c"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 9000,
+      "next-cursor": {
+        "at": "2026-09-10T20:59:35.530107837Z",
+        "id": "e-74d66b1a-2c0d-48b1-89ab-5762a36e77da"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 5000,
+      "next-cursor": {
+        "at": "2026-09-10T08:37:32.891587103Z",
+        "id": "e-7b01e08b-0b9d-4a93-bdde-0d67f1600e69"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 4000,
+      "next-cursor": {
+        "at": "2026-09-09T21:53:38.571319234Z",
+        "id": "e-1e8de03e-fca5-4c26-9eb3-3ace4025ddee"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 4000,
+      "next-cursor": {
+        "at": "2026-09-09T11:38:45.690898949Z",
+        "id": "e-30516415-103a-42d8-ac9f-debc75bbdb41"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-09-08T13:50:42.306658947Z",
+        "id": "e-189e67c8-83af-4404-b752-5af56a2058c6"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-09-07T20:00:00.078729837Z",
+        "id": "e-499a299a-5b61-45f0-9c88-b9c3ea90cdfa"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 8000,
+      "next-cursor": {
+        "at": "2026-09-06T10:01:24.929115258Z",
+        "id": "e-236c0f81-07f1-4920-9ff6-7574280ac860"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 9000,
+      "next-cursor": {
+        "at": "2026-09-02T17:25:35.481779200Z",
+        "id": "e-45883299-4e48-4d93-add8-207b8d365a9c"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 9000,
+      "next-cursor": {
+        "at": "2026-09-01T02:26:58.532506404Z",
+        "id": "e-bf16ea78-3bbf-427c-b06b-7ae097843e25"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-08-31T10:02:05.898586989Z",
+        "id": "e-d7a807e4-7691-4826-865d-cde79bb2b8d5"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-08-30T15:14:38.468927430Z",
+        "id": "e-9a0de245-fbb5-4cd7-be7f-d00e08f63bfc"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-08-28T18:16:58.617510260Z",
+        "id": "e-5f79d892-727a-4819-8e69-8e731672542b"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 4000,
+      "next-cursor": {
+        "at": "2026-08-27T16:46:52.734788886Z",
+        "id": "e-209e8143-b8c6-4b02-8d58-5209a3c21f37"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 5000,
+      "next-cursor": {
+        "at": "2026-08-26T18:00:17.156310709Z",
+        "id": "e-23002270-cf5c-49fe-9bef-c74b57132afe"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 8000,
+      "next-cursor": {
+        "at": "2026-08-25T04:08:53.603458197Z",
+        "id": "e-23f4b283-5a43-4af9-89f4-c8c5a52c5711"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-08-23T20:02:38.142682736Z",
+        "id": "e-733fb274-30f5-4689-82f9-2fabec7127c3"
+      }
+    },
+    {
+      "count": 773,
+      "limit": 1000,
+      "scanned": 4621
+    }
+  ],
+  "joe-pages": [
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-17T14:51:47.509929711Z",
+        "id": "emacs-dd5f23dc7a304a9913cd5977b924cadf"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-11T10:05:31.253639139Z",
+        "id": "emacs-909c664046b28ae2800ac700f66edba5"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-01T18:56:22.962733125Z",
+        "id": "emacs-4b914d63b077209bd6e4db786ec1a038"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-08-27T16:28:07.038146736Z",
+        "id": "emacs-40db59be6f8da4fcb2d962853e975276"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-08-24T11:30:09.693572629Z",
+        "id": "emacs-fbb4128a473723cf0ddeac6082558cc7"
+      }
+    },
+    {
+      "count": 786,
+      "limit": 1000,
+      "scanned": 786
+    }
+  ],
+  "snapshot-sha256": {
+    "retrieval.json": "c3cf67c0a87db5fcf9ceaa0b0ba6fee888a5ad1beca9deeb4361af7fcfcfab56",
+    "joe.json": "b52b3c0b37a1e27f0171589826c75ac58f1afe91b1a49253002fb033f297c22f"
+  },
+  "unique-matched-turns": 2144,
+  "matched-retrievals": 2147,
+  "labelled-patterns": 595,
+  "top50-hits": 801,
+  "unmatched-origin": {
+    "agent": 10759,
+    "no-origin": 208,
+    "a": 182,
+    "harness": 2330,
+    "operator": 44
+  },
+  "directory-count": 121,
+  "flexiarg-files": 1404,
+  "remaining-flexiarg-files": 866,
+  "kind-stage": {
+    "practice": {
+      "perceive": 24,
+      "believe": 56,
+      "evaluate": 11,
+      "select": 29,
+      "act": 20,
+      "assurance": 74,
+      "coordination": 35,
+      "none": 0
+    },
+    "subject": {
+      "perceive": 29,
+      "believe": 54,
+      "evaluate": 22,
+      "select": 30,
+      "act": 38,
+      "assurance": 43,
+      "coordination": 22,
+      "none": 30
+    },
+    "mixed": {
+      "perceive": 6,
+      "believe": 14,
+      "evaluate": 9,
+      "select": 12,
+      "act": 17,
+      "assurance": 9,
+      "coordination": 10,
+      "none": 1
+    }
+  },
+  "stage-hits": {
+    "perceive": 224,
+    "believe": 409,
+    "evaluate": 128,
+    "select": 234,
+    "act": 307,
+    "assurance": 491,
+    "coordination": 289,
+    "none": 65
+  }
+}

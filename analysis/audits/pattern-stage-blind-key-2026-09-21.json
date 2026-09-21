@@ -1,0 +1,125 @@
+{
+  "seed": 20260921,
+  "labels": {
+    "iching/hexagram-36-mingyi": {
+      "kind": "mixed",
+      "stage": "select"
+    },
+    "coordination/mandatory-psr": {
+      "kind": "subject",
+      "stage": "assurance"
+    },
+    "code-coherence/dead-code-hygiene": {
+      "kind": "practice",
+      "stage": "act"
+    },
+    "problems/unqueryable-trails-block-recovery": {
+      "kind": "subject",
+      "stage": "believe"
+    },
+    "problems/fundamentals-drowned-by-backlog": {
+      "kind": "subject",
+      "stage": "select"
+    },
+    "realtime/loop-success-signals": {
+      "kind": "practice",
+      "stage": "select"
+    },
+    "devmap-coherence/next-steps-to-done": {
+      "kind": "practice",
+      "stage": "believe"
+    },
+    "baldwin/ablation-axes-must-not-disable-the-instrument": {
+      "kind": "mixed",
+      "stage": "assurance"
+    },
+    "math-strategy/route-exploration-and-pivot": {
+      "kind": "mixed",
+      "stage": "evaluate"
+    },
+    "problems/snatch-play-theory-gaps": {
+      "kind": "subject",
+      "stage": "none"
+    },
+    "ukrns/calibrate-impact-promises-to-current-indicator-capacity": {
+      "kind": "practice",
+      "stage": "believe"
+    },
+    "stack-coherence/futon1-storage-coherence": {
+      "kind": "mixed",
+      "stage": "assurance"
+    },
+    "aif/term-to-channel-traceability": {
+      "kind": "practice",
+      "stage": "assurance"
+    },
+    "iiching/exotype-248": {
+      "kind": "subject",
+      "stage": "none"
+    },
+    "mission-coherence/logic-model-before-code": {
+      "kind": "practice",
+      "stage": "assurance"
+    },
+    "system-coherence/name-the-decision-before-the-framework": {
+      "kind": "practice",
+      "stage": "select"
+    },
+    "iching/hexagram-06-song": {
+      "kind": "mixed",
+      "stage": "coordination"
+    },
+    "repository-transition/diagnostics": {
+      "kind": "subject",
+      "stage": "perceive"
+    },
+    "relationship-coherence/capacity-honoring": {
+      "kind": "mixed",
+      "stage": "evaluate"
+    },
+    "relationship-coherence/body-attunement": {
+      "kind": "mixed",
+      "stage": "coordination"
+    },
+    "coordination/intent-to-mission-binding": {
+      "kind": "subject",
+      "stage": "select"
+    },
+    "p4ng/fit-for-use": {
+      "kind": "mixed",
+      "stage": "evaluate"
+    },
+    "storage/invariants-vs-repair": {
+      "kind": "subject",
+      "stage": "assurance"
+    },
+    "apparatus/new-failure-class-is-a-design-defect": {
+      "kind": "practice",
+      "stage": "evaluate"
+    },
+    "devmap-coherence/ifr-f2-viriya": {
+      "kind": "practice",
+      "stage": "assurance"
+    },
+    "futon-theory/agent-contract": {
+      "kind": "mixed",
+      "stage": "assurance"
+    },
+    "problems/refusal-prediction-error-v1--source-field-missing": {
+      "kind": "subject",
+      "stage": "believe"
+    },
+    "invariant-coherence/state-snapshot-witness": {
+      "kind": "subject",
+      "stage": "assurance"
+    },
+    "snatch/play-the-authored-order-first": {
+      "kind": "mixed",
+      "stage": "assurance"
+    },
+    "fulab/devmap-xref": {
+      "kind": "practice",
+      "stage": "believe"
+    }
+  }
+}
