@@ -1,0 +1,5 @@
+{
+  "wake": "(?im)^--- resumed:\\s*parked dependenc|\\A\\s*(?:WAKE(?: CHECKLIST)?\\b|ON WAKE\\b|STOOD DOWN FOR THE NIGHT\\b|park (?:deadline|timeout) (?:reached|expired)|deadline (?:wake|expired))",
+  "bell-in": "(?im)^Origin: agent\\s*$",
+  "operator": "(?im)^Origin: operator\\s*$|^From: joe\\s*$"
+}

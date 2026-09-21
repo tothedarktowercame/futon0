@@ -1,0 +1,16 @@
+{
+  "cutoff": "2026-09-21T17:40:06.024923Z",
+  "window": [
+    "2026-09-07",
+    "2026-09-21"
+  ],
+  "sha256": {
+    "extract.py": "a231bcc96214b556aec6deafa03f19d950e549f25ea5bb0d727d48a0e065fba5",
+    "analyze.py": "3541a4030ab691e0dcc7693b9ef0ce3847f2c1bc61c19bddcfd44ca9b2772d8d",
+    "turns.jsonl.gz": "76eff920477918b5f51d37ef44f0ecb4c337306ea4c76bd529c35b9361da9eec",
+    "usage-events.jsonl.gz": "97e200fef8e7874b9d964f0cad26af4aecfd5efb5d39e09adcce2b66dc3901d0",
+    "manifest.json": "2c88828aaba8f465c60570bec8d5245e916a3d9fecdddcc0b474bff7edfd8933",
+    "rules.json": "a55d627e09bebb1ba5023538c4cd937fe54fc8686738ef1ce4f2820c763a774a",
+    "summary.json": "237d95b36aa7a1ffc9415bdd8773edc7d9e0231e3b9caf22a22513e8d812e8b1"
+  }
+}
