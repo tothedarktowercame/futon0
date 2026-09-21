@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title description">
+<title id="title">FUTON commit activity: War Machine and other repositories</title>
+<desc id="description">Faint dots are daily counts; lines are trailing seven-day means within the plotted window. Missing repositories are disclosed below.</desc>
+<rect width="1200" height="650" fill="#fff"/>
+<g font-family="system-ui, sans-serif" fill="#243343">
+<text x="88" y="40" font-size="26" font-weight="650">FUTON commit activity</text>
+<text x="88" y="68" font-size="16">2026-07-21 – 2026-09-21 · UTC committer dates · inclusive</text>
+<text x="88" y="94" font-size="14">Lines: trailing 7-day mean · Faint dots: daily counts · First 6 means use available days</text>
+<line x1="88" y1="128" x2="114" y2="128" stroke="#2463a6" stroke-width="3"/>
+<text x="122" y="133" font-size="15">War Machine · futon2</text>
+<line x1="453" y1="128" x2="479" y2="128" stroke="#b44d19" stroke-width="3"/>
+<text x="487" y="133" font-size="15">War Machine Lean · mathlib4 path</text>
+<line x1="818" y1="128" x2="844" y2="128" stroke="#32764c" stroke-width="3"/>
+<text x="852" y="133" font-size="15">Other repositories</text>
+<line x1="88" y1="532.00" x2="1160" y2="532.00" stroke="#e1e6eb"/>
+<text x="74" y="537.00" text-anchor="end" font-size="13">0</text>
+<line x1="88" y1="458.60" x2="1160" y2="458.60" stroke="#e1e6eb"/>
+<text x="74" y="463.60" text-anchor="end" font-size="13">120</text>
+<line x1="88" y1="385.20" x2="1160" y2="385.20" stroke="#e1e6eb"/>
+<text x="74" y="390.20" text-anchor="end" font-size="13">240</text>
+<line x1="88" y1="311.80" x2="1160" y2="311.80" stroke="#e1e6eb"/>
+<text x="74" y="316.80" text-anchor="end" font-size="13">360</text>
+<line x1="88" y1="238.40" x2="1160" y2="238.40" stroke="#e1e6eb"/>
+<text x="74" y="243.40" text-anchor="end" font-size="13">480</text>
+<line x1="88" y1="165.00" x2="1160" y2="165.00" stroke="#e1e6eb"/>
+<text x="74" y="170.00" text-anchor="end" font-size="13">600</text>
+<text x="88.00" y="557" text-anchor="middle" font-size="13">07-21</text>
+<text x="209.03" y="557" text-anchor="middle" font-size="13">07-28</text>
+<text x="330.06" y="557" text-anchor="middle" font-size="13">08-04</text>
+<text x="451.10" y="557" text-anchor="middle" font-size="13">08-11</text>
+<text x="572.13" y="557" text-anchor="middle" font-size="13">08-18</text>
+<text x="693.16" y="557" text-anchor="middle" font-size="13">08-25</text>
+<text x="814.19" y="557" text-anchor="middle" font-size="13">09-01</text>
+<text x="935.23" y="557" text-anchor="middle" font-size="13">09-08</text>
+<text x="1056.26" y="557" text-anchor="middle" font-size="13">09-15</text>
+<circle cx="88.00" cy="522.83" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-21: 15 commits</title></circle>
+<circle cx="105.29" cy="522.21" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-22: 16 commits</title></circle>
+<circle cx="122.58" cy="528.94" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-23: 5 commits</title></circle>
+<circle cx="139.87" cy="530.16" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-24: 3 commits</title></circle>
+<circle cx="157.16" cy="521.60" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-25: 17 commits</title></circle>
+<circle cx="174.45" cy="530.16" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-26: 3 commits</title></circle>
+<circle cx="191.74" cy="522.21" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-27: 16 commits</title></circle>
+<circle cx="209.03" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-28: 0 commits</title></circle>
+<circle cx="226.32" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-29: 0 commits</title></circle>
+<circle cx="243.61" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-30: 0 commits</title></circle>
+<circle cx="260.90" cy="530.78" r="3" fill="#2463a6" opacity="0.25"><title>2026-07-31: 2 commits</title></circle>
+<circle cx="278.19" cy="514.26" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-01: 29 commits</title></circle>
+<circle cx="295.48" cy="516.10" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-02: 26 commits</title></circle>
+<circle cx="312.77" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-03: 0 commits</title></circle>
+<circle cx="330.06" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-04: 0 commits</title></circle>
+<circle cx="347.35" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-05: 0 commits</title></circle>
+<circle cx="364.65" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-06: 0 commits</title></circle>
+<circle cx="381.94" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-07: 0 commits</title></circle>
+<circle cx="399.23" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-08: 0 commits</title></circle>
+<circle cx="416.52" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-09: 0 commits</title></circle>
+<circle cx="433.81" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-10: 0 commits</title></circle>
+<circle cx="451.10" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-11: 0 commits</title></circle>
+<circle cx="468.39" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-12: 0 commits</title></circle>
+<circle cx="485.68" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-13: 0 commits</title></circle>
+<circle cx="502.97" cy="530.78" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-14: 2 commits</title></circle>
+<circle cx="520.26" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-15: 0 commits</title></circle>
+<circle cx="537.55" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-16: 0 commits</title></circle>
+<circle cx="554.84" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-17: 0 commits</title></circle>
+<circle cx="572.13" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-18: 0 commits</title></circle>
+<circle cx="589.42" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-19: 0 commits</title></circle>
+<circle cx="606.71" cy="525.88" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-20: 10 commits</title></circle>
+<circle cx="624.00" cy="528.33" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-21: 6 commits</title></circle>
+<circle cx="641.29" cy="531.39" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-22: 1 commits</title></circle>
+<circle cx="658.58" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-23: 0 commits</title></circle>
+<circle cx="675.87" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-24: 0 commits</title></circle>
+<circle cx="693.16" cy="528.33" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-25: 6 commits</title></circle>
+<circle cx="710.45" cy="524.05" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-26: 13 commits</title></circle>
+<circle cx="727.74" cy="519.15" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-27: 21 commits</title></circle>
+<circle cx="745.03" cy="520.38" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-28: 19 commits</title></circle>
+<circle cx="762.32" cy="532.00" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-29: 0 commits</title></circle>
+<circle cx="779.61" cy="380.31" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-30: 248 commits</title></circle>
+<circle cx="796.90" cy="188.86" r="3" fill="#2463a6" opacity="0.25"><title>2026-08-31: 561 commits</title></circle>
+<circle cx="814.19" cy="194.97" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-01: 551 commits</title></circle>
+<circle cx="831.48" cy="286.11" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-02: 402 commits</title></circle>
+<circle cx="848.77" cy="374.80" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-03: 257 commits</title></circle>
+<circle cx="866.06" cy="426.18" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-04: 173 commits</title></circle>
+<circle cx="883.35" cy="320.36" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-05: 346 commits</title></circle>
+<circle cx="900.65" cy="460.44" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-06: 117 commits</title></circle>
+<circle cx="917.94" cy="404.16" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-07: 209 commits</title></circle>
+<circle cx="935.23" cy="327.09" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-08: 335 commits</title></circle>
+<circle cx="952.52" cy="445.75" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-09: 141 commits</title></circle>
+<circle cx="969.81" cy="503.25" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-10: 47 commits</title></circle>
+<circle cx="987.10" cy="491.63" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-11: 66 commits</title></circle>
+<circle cx="1004.39" cy="271.43" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-12: 426 commits</title></circle>
+<circle cx="1021.68" cy="179.68" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-13: 576 commits</title></circle>
+<circle cx="1038.97" cy="413.95" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-14: 193 commits</title></circle>
+<circle cx="1056.26" cy="432.30" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-15: 163 commits</title></circle>
+<circle cx="1073.55" cy="457.99" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-16: 121 commits</title></circle>
+<circle cx="1090.84" cy="472.67" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-17: 97 commits</title></circle>
+<circle cx="1108.13" cy="465.33" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-18: 109 commits</title></circle>
+<circle cx="1125.42" cy="421.29" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-19: 181 commits</title></circle>
+<circle cx="1142.71" cy="439.64" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-20: 151 commits</title></circle>
+<circle cx="1160.00" cy="427.40" r="3" fill="#2463a6" opacity="0.25"><title>2026-09-21: 171 commits</title></circle>
+<polyline points="88.00,522.83 105.29,522.52 122.58,524.66 139.87,526.04 157.16,525.15 174.45,525.99 191.74,525.45 209.03,526.76 226.32,528.16 243.61,528.59 260.90,528.68 278.19,527.63 295.48,525.62 312.77,527.02 330.06,527.02 347.35,527.02 364.65,527.02 381.94,527.19 399.23,529.73 416.52,532.00 433.81,532.00 451.10,532.00 468.39,532.00 485.68,532.00 502.97,531.83 520.26,531.83 537.55,531.83 554.84,531.83 572.13,531.83 589.42,531.83 606.71,530.95 624.00,530.60 641.29,530.51 658.58,530.51 675.87,530.51 693.16,529.99 710.45,528.85 727.74,527.89 745.03,526.76 762.32,526.84 779.61,505.17 796.90,456.15 814.19,408.53 831.48,374.54 848.77,353.92 866.06,340.46 883.35,310.23 900.65,321.67 917.94,352.43 935.23,371.31 952.52,394.11 969.81,412.46 987.10,421.81 1004.39,414.82 1021.68,374.71 1038.97,376.11 1056.26,391.14 1073.55,392.89 1090.84,388.52 1108.13,384.76 1125.42,406.17 1142.71,443.31 1160.00,445.23" fill="none" stroke="#2463a6" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="88.00" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-21: 0 commits</title></circle>
+<circle cx="105.29" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-22: 0 commits</title></circle>
+<circle cx="122.58" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-23: 0 commits</title></circle>
+<circle cx="139.87" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-24: 0 commits</title></circle>
+<circle cx="157.16" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-25: 0 commits</title></circle>
+<circle cx="174.45" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-26: 0 commits</title></circle>
+<circle cx="191.74" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-27: 0 commits</title></circle>
+<circle cx="209.03" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-28: 0 commits</title></circle>
+<circle cx="226.32" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-29: 0 commits</title></circle>
+<circle cx="243.61" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-30: 0 commits</title></circle>
+<circle cx="260.90" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-07-31: 0 commits</title></circle>
+<circle cx="278.19" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-01: 0 commits</title></circle>
+<circle cx="295.48" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-02: 0 commits</title></circle>
+<circle cx="312.77" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-03: 0 commits</title></circle>
+<circle cx="330.06" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-04: 0 commits</title></circle>
+<circle cx="347.35" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-05: 0 commits</title></circle>
+<circle cx="364.65" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-06: 0 commits</title></circle>
+<circle cx="381.94" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-07: 0 commits</title></circle>
+<circle cx="399.23" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-08: 0 commits</title></circle>
+<circle cx="416.52" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-09: 0 commits</title></circle>
+<circle cx="433.81" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-10: 0 commits</title></circle>
+<circle cx="451.10" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-11: 0 commits</title></circle>
+<circle cx="468.39" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-12: 0 commits</title></circle>
+<circle cx="485.68" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-13: 0 commits</title></circle>
+<circle cx="502.97" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-14: 0 commits</title></circle>
+<circle cx="520.26" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-15: 0 commits</title></circle>
+<circle cx="537.55" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-16: 0 commits</title></circle>
+<circle cx="554.84" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-17: 0 commits</title></circle>
+<circle cx="572.13" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-18: 0 commits</title></circle>
+<circle cx="589.42" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-19: 0 commits</title></circle>
+<circle cx="606.71" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-20: 0 commits</title></circle>
+<circle cx="624.00" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-21: 0 commits</title></circle>
+<circle cx="641.29" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-22: 0 commits</title></circle>
+<circle cx="658.58" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-23: 0 commits</title></circle>
+<circle cx="675.87" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-24: 0 commits</title></circle>
+<circle cx="693.16" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-25: 0 commits</title></circle>
+<circle cx="710.45" cy="529.55" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-26: 4 commits</title></circle>
+<circle cx="727.74" cy="525.27" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-27: 11 commits</title></circle>
+<circle cx="745.03" cy="531.39" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-28: 1 commits</title></circle>
+<circle cx="762.32" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-29: 0 commits</title></circle>
+<circle cx="779.61" cy="508.76" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-30: 38 commits</title></circle>
+<circle cx="796.90" cy="469.61" r="3" fill="#b44d19" opacity="0.25"><title>2026-08-31: 102 commits</title></circle>
+<circle cx="814.19" cy="516.10" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-01: 26 commits</title></circle>
+<circle cx="831.48" cy="530.78" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-02: 2 commits</title></circle>
+<circle cx="848.77" cy="524.66" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-03: 12 commits</title></circle>
+<circle cx="866.06" cy="525.88" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-04: 10 commits</title></circle>
+<circle cx="883.35" cy="519.15" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-05: 21 commits</title></circle>
+<circle cx="900.65" cy="529.55" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-06: 4 commits</title></circle>
+<circle cx="917.94" cy="508.14" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-07: 39 commits</title></circle>
+<circle cx="935.23" cy="524.05" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-08: 13 commits</title></circle>
+<circle cx="952.52" cy="523.44" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-09: 14 commits</title></circle>
+<circle cx="969.81" cy="532.00" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-10: 0 commits</title></circle>
+<circle cx="987.10" cy="531.39" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-11: 1 commits</title></circle>
+<circle cx="1004.39" cy="493.47" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-12: 63 commits</title></circle>
+<circle cx="1021.68" cy="509.37" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-13: 37 commits</title></circle>
+<circle cx="1038.97" cy="530.78" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-14: 2 commits</title></circle>
+<circle cx="1056.26" cy="528.94" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-15: 5 commits</title></circle>
+<circle cx="1073.55" cy="487.96" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-16: 72 commits</title></circle>
+<circle cx="1090.84" cy="528.94" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-17: 5 commits</title></circle>
+<circle cx="1108.13" cy="527.11" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-18: 8 commits</title></circle>
+<circle cx="1125.42" cy="530.78" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-19: 2 commits</title></circle>
+<circle cx="1142.71" cy="526.50" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-20: 9 commits</title></circle>
+<circle cx="1160.00" cy="529.55" r="3" fill="#b44d19" opacity="0.25"><title>2026-09-21: 4 commits</title></circle>
+<polyline points="88.00,532.00 105.29,532.00 122.58,532.00 139.87,532.00 157.16,532.00 174.45,532.00 191.74,532.00 209.03,532.00 226.32,532.00 243.61,532.00 260.90,532.00 278.19,532.00 295.48,532.00 312.77,532.00 330.06,532.00 347.35,532.00 364.65,532.00 381.94,532.00 399.23,532.00 416.52,532.00 433.81,532.00 451.10,532.00 468.39,532.00 485.68,532.00 502.97,532.00 520.26,532.00 537.55,532.00 554.84,532.00 572.13,532.00 589.42,532.00 606.71,532.00 624.00,532.00 641.29,532.00 658.58,532.00 675.87,532.00 693.16,532.00 710.45,531.65 727.74,530.69 745.03,530.60 762.32,530.60 779.61,527.28 796.90,518.37 814.19,516.10 831.48,516.27 848.77,516.18 866.06,515.40 883.35,513.56 900.65,516.53 917.94,522.04 935.23,523.17 952.52,522.13 969.81,523.17 987.10,523.96 1004.39,520.29 1021.68,517.41 1038.97,520.64 1056.26,521.34 1073.55,516.27 1090.84,515.83 1108.13,515.22 1125.42,520.55 1142.71,523.00 1160.00,522.83" fill="none" stroke="#b44d19" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="88.00" cy="510.59" r="3" fill="#32764c" opacity="0.25"><title>2026-07-21: 35 commits</title></circle>
+<circle cx="105.29" cy="491.63" r="3" fill="#32764c" opacity="0.25"><title>2026-07-22: 66 commits</title></circle>
+<circle cx="122.58" cy="506.31" r="3" fill="#32764c" opacity="0.25"><title>2026-07-23: 42 commits</title></circle>
+<circle cx="139.87" cy="524.66" r="3" fill="#32764c" opacity="0.25"><title>2026-07-24: 12 commits</title></circle>
+<circle cx="157.16" cy="519.77" r="3" fill="#32764c" opacity="0.25"><title>2026-07-25: 20 commits</title></circle>
+<circle cx="174.45" cy="507.53" r="3" fill="#32764c" opacity="0.25"><title>2026-07-26: 40 commits</title></circle>
+<circle cx="191.74" cy="505.70" r="3" fill="#32764c" opacity="0.25"><title>2026-07-27: 43 commits</title></circle>
+<circle cx="209.03" cy="516.10" r="3" fill="#32764c" opacity="0.25"><title>2026-07-28: 26 commits</title></circle>
+<circle cx="226.32" cy="516.71" r="3" fill="#32764c" opacity="0.25"><title>2026-07-29: 25 commits</title></circle>
+<circle cx="243.61" cy="450.04" r="3" fill="#32764c" opacity="0.25"><title>2026-07-30: 134 commits</title></circle>
+<circle cx="260.90" cy="513.04" r="3" fill="#32764c" opacity="0.25"><title>2026-07-31: 31 commits</title></circle>
+<circle cx="278.19" cy="495.30" r="3" fill="#32764c" opacity="0.25"><title>2026-08-01: 60 commits</title></circle>
+<circle cx="295.48" cy="489.18" r="3" fill="#32764c" opacity="0.25"><title>2026-08-02: 70 commits</title></circle>
+<circle cx="312.77" cy="445.75" r="3" fill="#32764c" opacity="0.25"><title>2026-08-03: 141 commits</title></circle>
+<circle cx="330.06" cy="486.74" r="3" fill="#32764c" opacity="0.25"><title>2026-08-04: 74 commits</title></circle>
+<circle cx="347.35" cy="523.44" r="3" fill="#32764c" opacity="0.25"><title>2026-08-05: 14 commits</title></circle>
+<circle cx="364.65" cy="519.15" r="3" fill="#32764c" opacity="0.25"><title>2026-08-06: 21 commits</title></circle>
+<circle cx="381.94" cy="502.64" r="3" fill="#32764c" opacity="0.25"><title>2026-08-07: 48 commits</title></circle>
+<circle cx="399.23" cy="513.65" r="3" fill="#32764c" opacity="0.25"><title>2026-08-08: 30 commits</title></circle>
+<circle cx="416.52" cy="527.11" r="3" fill="#32764c" opacity="0.25"><title>2026-08-09: 8 commits</title></circle>
+<circle cx="433.81" cy="496.52" r="3" fill="#32764c" opacity="0.25"><title>2026-08-10: 58 commits</title></circle>
+<circle cx="451.10" cy="509.98" r="3" fill="#32764c" opacity="0.25"><title>2026-08-11: 36 commits</title></circle>
+<circle cx="468.39" cy="508.76" r="3" fill="#32764c" opacity="0.25"><title>2026-08-12: 38 commits</title></circle>
+<circle cx="485.68" cy="509.98" r="3" fill="#32764c" opacity="0.25"><title>2026-08-13: 36 commits</title></circle>
+<circle cx="502.97" cy="434.75" r="3" fill="#32764c" opacity="0.25"><title>2026-08-14: 159 commits</title></circle>
+<circle cx="520.26" cy="430.46" r="3" fill="#32764c" opacity="0.25"><title>2026-08-15: 166 commits</title></circle>
+<circle cx="537.55" cy="447.59" r="3" fill="#32764c" opacity="0.25"><title>2026-08-16: 138 commits</title></circle>
+<circle cx="554.84" cy="455.54" r="3" fill="#32764c" opacity="0.25"><title>2026-08-17: 125 commits</title></circle>
+<circle cx="572.13" cy="484.90" r="3" fill="#32764c" opacity="0.25"><title>2026-08-18: 77 commits</title></circle>
+<circle cx="589.42" cy="455.54" r="3" fill="#32764c" opacity="0.25"><title>2026-08-19: 125 commits</title></circle>
+<circle cx="606.71" cy="461.05" r="3" fill="#32764c" opacity="0.25"><title>2026-08-20: 116 commits</title></circle>
+<circle cx="624.00" cy="491.63" r="3" fill="#32764c" opacity="0.25"><title>2026-08-21: 66 commits</title></circle>
+<circle cx="641.29" cy="429.24" r="3" fill="#32764c" opacity="0.25"><title>2026-08-22: 168 commits</title></circle>
+<circle cx="658.58" cy="386.42" r="3" fill="#32764c" opacity="0.25"><title>2026-08-23: 238 commits</title></circle>
+<circle cx="675.87" cy="458.60" r="3" fill="#32764c" opacity="0.25"><title>2026-08-24: 120 commits</title></circle>
+<circle cx="693.16" cy="451.26" r="3" fill="#32764c" opacity="0.25"><title>2026-08-25: 132 commits</title></circle>
+<circle cx="710.45" cy="412.73" r="3" fill="#32764c" opacity="0.25"><title>2026-08-26: 195 commits</title></circle>
+<circle cx="727.74" cy="439.03" r="3" fill="#32764c" opacity="0.25"><title>2026-08-27: 152 commits</title></circle>
+<circle cx="745.03" cy="475.73" r="3" fill="#32764c" opacity="0.25"><title>2026-08-28: 92 commits</title></circle>
+<circle cx="762.32" cy="511.20" r="3" fill="#32764c" opacity="0.25"><title>2026-08-29: 34 commits</title></circle>
+<circle cx="779.61" cy="438.42" r="3" fill="#32764c" opacity="0.25"><title>2026-08-30: 153 commits</title></circle>
+<circle cx="796.90" cy="325.87" r="3" fill="#32764c" opacity="0.25"><title>2026-08-31: 337 commits</title></circle>
+<circle cx="814.19" cy="395.60" r="3" fill="#32764c" opacity="0.25"><title>2026-09-01: 223 commits</title></circle>
+<circle cx="831.48" cy="302.01" r="3" fill="#32764c" opacity="0.25"><title>2026-09-02: 376 commits</title></circle>
+<circle cx="848.77" cy="469.00" r="3" fill="#32764c" opacity="0.25"><title>2026-09-03: 103 commits</title></circle>
+<circle cx="866.06" cy="460.44" r="3" fill="#32764c" opacity="0.25"><title>2026-09-04: 117 commits</title></circle>
+<circle cx="883.35" cy="450.65" r="3" fill="#32764c" opacity="0.25"><title>2026-09-05: 133 commits</title></circle>
+<circle cx="900.65" cy="453.71" r="3" fill="#32764c" opacity="0.25"><title>2026-09-06: 128 commits</title></circle>
+<circle cx="917.94" cy="473.28" r="3" fill="#32764c" opacity="0.25"><title>2026-09-07: 96 commits</title></circle>
+<circle cx="935.23" cy="462.27" r="3" fill="#32764c" opacity="0.25"><title>2026-09-08: 114 commits</title></circle>
+<circle cx="952.52" cy="495.30" r="3" fill="#32764c" opacity="0.25"><title>2026-09-09: 60 commits</title></circle>
+<circle cx="969.81" cy="458.60" r="3" fill="#32764c" opacity="0.25"><title>2026-09-10: 120 commits</title></circle>
+<circle cx="987.10" cy="384.59" r="3" fill="#32764c" opacity="0.25"><title>2026-09-11: 241 commits</title></circle>
+<circle cx="1004.39" cy="475.73" r="3" fill="#32764c" opacity="0.25"><title>2026-09-12: 92 commits</title></circle>
+<circle cx="1021.68" cy="481.23" r="3" fill="#32764c" opacity="0.25"><title>2026-09-13: 83 commits</title></circle>
+<circle cx="1038.97" cy="504.48" r="3" fill="#32764c" opacity="0.25"><title>2026-09-14: 45 commits</title></circle>
+<circle cx="1056.26" cy="486.74" r="3" fill="#32764c" opacity="0.25"><title>2026-09-15: 74 commits</title></circle>
+<circle cx="1073.55" cy="401.72" r="3" fill="#32764c" opacity="0.25"><title>2026-09-16: 213 commits</title></circle>
+<circle cx="1090.84" cy="462.27" r="3" fill="#32764c" opacity="0.25"><title>2026-09-17: 114 commits</title></circle>
+<circle cx="1108.13" cy="472.06" r="3" fill="#32764c" opacity="0.25"><title>2026-09-18: 98 commits</title></circle>
+<circle cx="1125.42" cy="445.14" r="3" fill="#32764c" opacity="0.25"><title>2026-09-19: 142 commits</title></circle>
+<circle cx="1142.71" cy="508.76" r="3" fill="#32764c" opacity="0.25"><title>2026-09-20: 38 commits</title></circle>
+<circle cx="1160.00" cy="524.05" r="3" fill="#32764c" opacity="0.25"><title>2026-09-21: 13 commits</title></circle>
+<polyline points="88.00,510.59 105.29,501.11 122.58,502.84 139.87,508.30 157.16,510.59 174.45,510.08 191.74,509.46 209.03,510.24 226.32,513.82 243.61,505.79 260.90,504.13 278.19,500.63 295.48,498.01 312.77,489.45 330.06,485.25 347.35,486.21 364.65,496.09 381.94,494.60 399.23,497.22 416.52,502.64 433.81,509.89 451.10,513.21 468.39,511.12 485.68,509.81 502.97,500.11 520.26,488.22 537.55,476.86 554.84,471.01 572.13,467.43 589.42,459.82 606.71,452.83 624.00,460.96 641.29,460.78 658.58,452.05 675.87,452.48 693.16,447.68 710.45,441.56 727.74,438.42 745.03,436.14 762.32,447.85 779.61,455.28 796.90,436.32 814.19,428.37 831.48,412.55 848.77,416.83 866.06,414.65 883.35,406.00 900.65,408.18 917.94,429.24 935.23,438.76 952.52,466.38 969.81,464.89 987.10,454.06 1004.39,457.64 1021.68,461.57 1038.97,466.03 1056.26,469.52 1073.55,456.15 1090.84,456.68 1108.13,469.17 1125.42,464.80 1142.71,468.74 1160.00,471.53" fill="none" stroke="#32764c" stroke-width="3" stroke-linejoin="round"/>
+<text x="624" y="589" text-anchor="middle" font-size="15">Commit date (UTC, month-day)</text>
+<text transform="translate(26 348) rotate(-90)" text-anchor="middle" font-size="15">Commits per day</text>
+<text x="88" y="625" font-size="13">Unavailable: futonY (not included in totals). Window end may be a partial day; counts reflect refs at generation.</text>
+</g></svg>
