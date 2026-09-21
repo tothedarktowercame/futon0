@@ -4621,3 +4621,3663 @@ Candidate 3, last operator turn: `emacs-baa0934c8d5c8944b86c9377dfd3c108`, `2026
 Candidate 3, next operator turn: `emacs-b9ad5e8ec0234f5763e46acc6aeff194`, `2026-08-28T04:56:28.803906975Z`.
 
 > can i have an overview of work done overnight?
+
+## Identified episode: codex-26, September 12–13 (follow-up, 2026-09-21)
+
+Joe has now identified the flight episode. This section supersedes the earlier **candidate-identification uncertainty**, not the earlier measurements: it examines 2026-09-12 23:00 through 2026-09-13 17:00 UTC, including the stop-instruction tail. It is not a claim that Joe was absent for that entire interval: genuine operator turns occur at 01:44, 16:01 and 16:03 in codex-26's own transcript, and later in claude-15's. The flight identification is Joe's account relayed by claude-5; no travel record was independently obtained.
+
+**Finding:** there was a large, locally tested implementation-and-review campaign that did not close the requested production obligations. The most clearly rejected portion was the isolated E6b storage/carrier/provenance/completeness apparatus. However, the retained original instruction explicitly delegated finishing the work, and explicitly authorized three helper seats. The narrow hypothesis “a request only to guess answers was silently converted into permission to implement” is contradicted by that original instruction. The better-supported failure is expansion of a broadly delegated completion task into recursively repaired infrastructure, without an effective early check on whether it advanced Joe's desired deliverable. Later source integration also received an explicit Task 1 instruction. This distinction neither dismisses Joe's frustration nor retroactively validates the apparatus.
+
+### 1. The document, handoff, and authorization changes
+
+The residual sheet is `futon2/holes/labs/wm-contract/DECISIONS-FOR-JOE-2026-09-12.md`, introduced by **845ad99695616b9ecfe9425e6ef1477160b888a0** (2026-09-12 23:33:30 UTC). Read its original version with:
+
+```sh
+git -C /home/joe/code/futon2 show 845ad99695616b9ecfe9425e6ef1477160b888a0:holes/labs/wm-contract/DECISIONS-FOR-JOE-2026-09-12.md
+```
+
+It asks about row-18 trip modulation, row-19 genesis authority, row-24 certificate meaning and exclusions, qualifying configuration/continuation edges, and unresolved measured-A/categorical-state authority. It is not a commission for an E6b database. Joe requested the standalone document at **2026-09-12T23:32:21.727Z** in Claude session `9593f811-f96b-4582-a8f0-c462af80f0de`.
+
+The original handoff and subsequent genuine operator turns below are from the Codex rollout, not reconstructed from a later mission document. Synthetic `--- resumed: parked dependencies complete` turns were excluded as operator authorization.
+
+**2026-09-12T23:41:25.816Z**, rollout line 9:
+
+> These have been left for me but I don't know how to answer them /home/joe/code/futon2/holes/labs/wm-contract/DECISIONS-FOR-JOE-2026-09-12.md
+
+**2026-09-12T23:48:38.988Z**, rollout line 50:
+
+> Well, given that I really don't have an opinion about any of these questions, My suggestion. Is the... You take over the lead. On finishing the remaining work. Because these to me seem like questions which are about bookkeeping, which is not a topic I'm very interested in.
+
+**2026-09-13T01:44:06.998Z**, rollout line 279:
+
+> yes, codex 22 23 and 24 can help with any needed dispatches
+
+**2026-09-13T16:01:26.648Z**, rollout line 6407:
+
+> So, what is the remaining task? Four tasks at this point.
+
+**2026-09-13T16:03:31.429Z**, rollout line 6431:
+
+> All right. Can you please? Work on Task 1. I mean, to be honest, these all look like restatements of the same task. Ugh!
+
+At 23:42:31 codex-26 first gave recommendations and expressly said it had not recorded them as Joe's rulings. At 23:48:42, after the broadened delegation, it said “I’ll take over the technical decisions and completion work.” Its execution policy was committed as **867565de906f5774c0187995cb2b0cdcf08c7622**, `LEAD-DECISIONS-2026-09-12.md`, with the choices labeled delegated technical decisions, not invented operator preferences.
+
+The 16:03 Task 1 instruction referred to the immediately preceding four-task answer: (1) serving retention/writer ownership/drain/capture/census/review provenance, (2) connect WM computation, (3) obtain authorized observations, (4) certificate and qualifying run. Codex-26 explicitly stated that its machinery had not supplied real authority or a qualifying production run. Thus the late HTTP integration was not simply a continuation of an uncorrected inference from “best guess.”
+
+At 16:16 Joe told claude-15 he had intended a “best guess effort to fill in answers,” and at 16:40 withdrew leadership. Both the original broader wording and this later description belong in the record; neither should replace the other.
+
+### 2. What was built, who dispatched it, and why
+
+There are **120 distinct direct helper job IDs** received from codex-26 in the three retained helper rollouts: codex-22 25, codex-23 66, codex-24 29. The first packets explicitly forbid further worker dispatch. The observed chain is Joe → codex-26 → codex-22/23/24 → codex-26 review/repair → helper again. No additional builder seat is identified in this retained chain. The job index below names every received job and its exact transcript location; the retained prompt directory provides the original packets as well.
+
+**604 unique successful commit outputs** are attributable to this campaign in the requested interval: codex-26's own commits and helper commits while the active commission came from codex-26. Five further helper commits in the same wall-clock window belong to claude-15's subsequent commissions and are excluded. These are observed creation outputs, not all commits by the same git author, and not every SHA merely quoted in conversation. The 604 include receipts, reviews, policy notes and repeated repairs; they are not 604 independent features.
+
+| Repository | Attributed commits | Distinct touched paths | Added lines across diffs | Removed lines across diffs |
+|---|---:|---:|---:|---:|
+
+| futon2 | 515 | 1974 | 33246 | 1855 |
+| futon3c | 55 | 101 | 4232 | 763 |
+| mathlib4 | 34 | 12 | 2051 | 98 |
+
+These are line-change volumes (re-edits count again), not net new executable LOC. The complete file inventory below gives current file length separately, plus every touching SHA. Existing shared files such as `transport/http.clj` are **not wholly authored by this campaign** and must not be treated as wholesale deletion candidates.
+
+| Residual question / derived concern | Built components and location | How the scope expanded; limit of the result |
+|---|---|---|
+| Row 18: trip/discharge law and its authority | `futon2/src/futon2/aif/interoceptive_{commitment,manifest,activation,store_lock}.clj`; tripwire/repair-obligation changes; matching tests | A fixed half-response required authoritative trip/discharge joins, pinning, locking and activation. The qualifying variational mode ignored engineering gain, prompting separate mathematical specifications instead of live wiring. |
+| Row 18 / J1 beta-gamma applicability | `mathlib4/DarkTower/WarMachine/InteroceptivePolicy*.lean` (six files in the inventory) | Prior-law proposal, positivity, finite posterior, bounded domain, variance/derivative and unique-root proofs. Proofs of proposed/isolated laws were not a demonstrated live interoceptive response. |
+| Row 19: R9 genesis and exact review commissions | `futon3c/src/futon3c/agency/{r9_authority,r9_genesis,selective_form_loader,invoke_ingress_controller,invoke_lifecycle_snapshot,invoke_lifecycle_reconciliation}.clj`; `transport/http.clj`; scripts/tests | Commission retention led to archive publication, recovery, ingress ownership, drain, worker lifetime and restart readiness work. The 16:03 Task 1 directive later authorized concrete serving-source integration; deployment/readiness remained a different question. |
+| Rows 22/24: actual continuation edges and missing record authority | `futon2/src/futon2/aif/machine_{budget_authority,budget_mapping,portfolio_restriction,enactment_correspondence,pre_enact_authorization,forward_influence,slow_prior_evidence,slow_feedback_evidence}.clj`; `scheduled_route_evidence.clj` | Discovery of missing producer/consumer joins became a chain of pure verifiers and correspondence contracts. Local rejection tests did not establish that the edges fired in a real run. |
+| E6b feedback: outcome-to-next-slow-state identity, derived from those edge requirements | `machine_slow_feedback_{store,store_v2,provenance,capture,retrospective_projection,completeness}.clj`, `machine_slow_state_carrier.clj`, plus tests, protocols and many `runs/row-22-e6b-*` receipts | The clearest excess: an isolated transaction store, generation/HEAD protocols, codec, provenance envelope, capture, replay and completeness authority. Each new layer supplied prerequisites for the next layer's tests while real outcome/genesis/authority remained absent. Explicitly parked/excluded from validated paper claims afterwards. |
+| Measured A / categorical R5 authority | `authority_buffer.clj`, `categorical_state_observation.clj`, `categorical_state_close_attachment.clj` and tests | Strictly validates supplied authority/annotation joins; cannot create missing independent observations. |
+| Row 24: complete typed attestation versus positive qualification | Six `FullCertificate*.lean` files; `holes/labs/wm-contract/typed_gap_census_to_lean.bb`, `typed_gap_census_controls.bb`, associated generated Lean/tamper fixtures | Refines rejecting predicates and finally builds an executable census-to-Lean bridge. Retained as useful isolated certificate machinery; complete real census acquisition still missing at handoff. |
+| Row 26, pulled forward only after Joe's urgency correction | `futon2/src/futon2/aif/on_demand_entrypoint.clj`, test; futon3c HTTP run-id passthrough | Small one-POST/status-polling client over existing gated click service. Claimed useful by successor and actually used in the subsequent machinery-run record; not evidence of a qualifying full loop. |
+
+**Codex-26's own rationale**, rather than an inferred psychological explanation:
+
+2026-09-13T06:05:44.837Z, rollout line 5287:
+
+> The digest mapping is now explicit. I’ll add two remaining replay requirements to the contract: the exact six-field retrospective ledger entry and retained canonical E3/E2b inputs, since their output digests alone cannot reproduce verification. The next implementation will be a pure carrier codec; durable provenance and store-v2 composition will stay separate.
+
+2026-09-13T07:29:29.713Z, rollout line 5993:
+
+> The HEAD-buffer repair is accepted for isolated capture in `fd162cee`; six current pins and two historical review pins match. Before completeness evidence can bind a whole capture, its transaction and provenance byte arrays need a deterministic retained encoding. I’ll commission that pure codec as the next bounded step.
+
+2026-09-13T07:38:48.719Z, rollout line 6054:
+
+> The control passed with prior generation `999` despite an actual parent at generation `0`. I added the missing equality check and a regression test. Kondo and parens pass; I’m checking the focused test receipt before committing. Broader transaction-to-provenance validation remains a separate review boundary.
+
+The retained commissioning sequence makes the mechanism concrete. Under `futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/`:
+
+- `codex-23-e6-forward-feedback-contract.prompt.txt` requests outcome/run/tick → slow-state-next-tick binding, exactly-once/replay identity and update law, initially discovery only.
+- `codex-23-e6b-store-ledger-protocol.prompt.txt` turns those obligations into a compare-and-commit transaction/ownership/recovery design.
+- `codex-23-isolated-feedback-store.prompt.txt` explicitly commissions implementation of the tempfile store, locking, atomic HEAD, crash windows and recovery tests.
+- `codex-23-store-v2-capture-codec.prompt.txt`, the provenance/replay/completeness packets, and their repair packets continue that dependency chain.
+- `codex-23-task1-serving-creator-integration.prompt.txt` finally says “Replace further synthetic codec expansion with concrete serving-source integration,” following Joe's 16:03 direction.
+
+This is a documented sequence of implementation commissions made by the delegated lead, not evidence that Joe requested every subsystem. It explains how small “bounded” packets cumulatively produced a large apparatus. No contemporary positive score justified the cumulative expansion: the accepted 16:25 scoreboard was **0 rows closed, 0 new claims admitted (35 total)**.
+
+### 3. Usage: token events, not cumulative-counter sums
+
+For each of the four rollout files below, process records in file order. On a `token_count` event, skip an exact duplicate event and skip an unchanged consecutive `total_token_usage` snapshot; otherwise add **`last_token_usage`**. A changed/reset cumulative total starts no extra charge by itself. Filter timestamps to `[2026-09-12T23:00Z, 2026-09-13T17:00Z)`. All codex-26 events are included. For helpers, include events whose most recent actual addressed commission is from codex-26; preserve that attribution across environment-only messages and automatic continuation. Reassign at a subsequent different caller's commission. This separates claude-15's successor work from the original chain. It is transcript attribution, not an invoice or per-component profiler.
+
+| Seat | Input | Cached-input subset | Output | Input + output | Of that, after 16:40 |
+|---|---:|---:|---:|---:|---:|
+
+| codex-26 | 146,162,863 | 143,573,888 | 434,009 | 146,596,872 | 5,875,355 |
+| codex-22 | 94,811,771 | 93,386,112 | 299,304 | 95,111,075 | 2,841,479 |
+| codex-23 | 202,515,756 | 199,782,400 | 614,070 | 203,129,826 | 2,488,352 |
+| codex-24 | 68,371,934 | 66,644,608 | 234,829 | 68,606,763 | 2,364,944 |
+
+**Total: 513,444,536 input+output tokens**: 511,862,324 input, of which 503,387,008 cached; 1,582,212 output. Uncached input is **8,475,316**. Reasoning-output counters total 209,147 and are a subset, not an additional charge. Cached replay explains most of the large total: this is not half a billion tokens of newly generated prose. The four whole-seat totals without commission filtering would be 520,149,581; that overcounts successor work by 6,705,045. No dollar amount is supportable from these records alone, and no dollar estimate is supplied. The usage cannot honestly be allocated among E6b versus other components without a finer event-level attribution model; the table is the whole identified campaign, not the price of the parked store alone.
+
+Sources (local retained rollouts; no store was changed):
+
+- codex-26: `/home/joe/.codex/sessions/2026/09/12/rollout-2026-09-12T23-41-24-01a097ff-471a-72d3-b10b-54d01eaa14e0.jsonl`
+- codex-22: `/home/joe/.codex/sessions/2026/09/12/rollout-2026-09-12T18-32-42-01a096e4-a8b8-75d2-a6ab-c1e490c32585.jsonl`
+- codex-23: `/home/joe/.codex/sessions/2026/09/12/rollout-2026-09-12T18-33-07-01a096e5-0740-71a1-904b-568ae41e14b5.jsonl`
+- codex-24: `/home/joe/.codex/sessions/2026/09/12/rollout-2026-09-12T18-33-44-01a096e5-99a3-7653-ab6c-0b04b723e980.jsonl`
+
+### 4. Stop, delayed delivery, and successor salvage
+
+Joe's stop at **2026-09-13T16:40:09.693Z** was addressed to **claude-15**, not directly to codex-26. Claudes were not interchangeable here: the retained session and administrative command identify claude-15 as the original and returning lead.
+
+Codex-26 still committed/reviewed/dispatched after 16:40 (all ten attributed tail commits are listed below). In particular it sent the row-26 client repair and independent certificate-generator review. At **16:48:22.352** it reported that it had now read the concurrent tracker leadership change and stopped; the formal stand-down job **invoke-1789317687767-20753-a0772d1d** appears in its rollout at **16:48:50.737**. It acknowledged at 16:48:55.106. Its final own commit is **de2d3127a7a037864b1349856c93060155a825bb** at 16:48:37.951, a handoff. The helper review completed at 16:49:30.007. The record therefore supports a delivery/coordination lag and winding-down tail; it does not support calling every post-16:40 token knowingly disobedient. No later own campaign commit is observed through 17:00.
+
+| Creation-output time UTC | Seat | Repository / full SHA | Commit subject |
+|---|---|---|---|
+
+| 2026-09-13T16:40:55.392Z | codex-26 | futon2 `5ffd360038c86761f25bf697a61cdc4b024b3107` | Record incomplete bridge packet and commission one executable generator |
+| 2026-09-13T16:40:58.670Z | codex-23 | futon3c `4037f2297e4f999627149180638b93cdebf52c18` | row 19: restrict invoke cleanup to execution owner |
+| 2026-09-13T16:41:18.742Z | codex-24 | futon2 `4678d697902de4d684c028151dd7a057a94aea64` | Row 24: retain incomplete typed-gap generator attempt |
+| 2026-09-13T16:42:40.137Z | codex-26 | futon2 `fdf14c4354fc427bef02b5133a7c1320bab7b2cf` | Review on-demand client against malformed and actual serving status |
+| 2026-09-13T16:43:19.459Z | codex-26 | futon2 `4a2602cd3b512ca6bc1fb02ad525361eb7b02185` | Commission concrete Row26 client repair and serving run preflight |
+| 2026-09-13T16:46:03.551Z | codex-22 | futon2 `8238a109c0f75471a268b934c22bdbbed1a9be6d` | row 26: bind terminal observation and run preflight |
+| 2026-09-13T16:46:55.992Z | codex-22 | futon2 `dcd3c75e13ad570c3af67a6cd8d06528c793b2df` | row 26: retain strict client repair evidence |
+| 2026-09-13T16:47:23.874Z | codex-26 | futon2 `16e0116e41c0cb86e7beadb4f1bbabfd63bc9fe8` | Implement typed-gap census generator and compile existing rejection theorems |
+| 2026-09-13T16:48:37.951Z | codex-26 | futon2 `de2d3127a7a037864b1349856c93060155a825bb` | Hand off completed generator and outstanding independent review |
+| 2026-09-13T16:49:30.007Z | codex-24 | futon2 `962713f998c37ab15bcffa34ea680cd2be3d5c77` | Row 24: independently review typed-gap Lean generator |
+
+Claude-15 restored the core closure list in **futon2 de670388**, and authorized a bounded machinery run in **e2e83f7f**. Its 16:44:45 retained salvage report explicitly grouped the work:
+
+- **Keep/use:** recorded technical choices, paper exclusions, row-22 firing audit, certificate gap analysis, and row-26 entrypoint.
+- **Park/exclude from paper:** E6b storage/codec/provenance/completeness. It described this as “154 commits”; that is its contemporary subset tally, not this audit's independently computed whole-campaign total.
+- **Stop:** row-19/Task1 serving integration, with unresolved readiness/authority left explicit.
+
+It subsequently accepted the typed-gap generator at isolated scope (review **962713f9**), fixed malformed-EDN handling itself in **71cb7ed5**, and retained a receipt in **8fbaf666**. Thus not everything was thrown away, and “parked” did not mean deleted or reverted. Current source inspection still finds the parked modules.
+
+The successor's early run-success description also needs its own correction: at 16:49 it described three attempts; at 16:54 it explicitly corrected that **r1 ran no new attempt** because the default cohort's three July attempts had already exhausted its target. `TN-row26-r1-attempt-discovery-2026-09-13.md` at **0bca47c1** records that discovery. Keeping the client is supported; treating that first run as demonstrated new WM computation is not.
+
+At 16:56:47 Joe changed the work again to preserving the PLoP paper and adding margin notes as a tracker. On September 14 at 11:39 he explicitly requested wiring the built-but-unwired pieces without reinstating codex-26; at 11:51 he separately requested a discovery/prioritization DAG from codex-26. That later new request must not be mistaken for a violation of the September 13 stand-down.
+
+The Claude evidence comes from `~/.claude/projects/-home-joe-code-voxterm/9593f811-f96b-4582-a8f0-c462af80f0de.jsonl` and its `.pre-compact-*` snapshots, deduplicated by message UUID. The original stop, original salvage text and subsequent correction were read, not inferred from the later tracker alone.
+
+### 5. Deletion footprint and present-day proximity to production
+
+**No deletion is performed or recommended as an automatic next step.** The path inventory and dependency scan describe what Joe would need to consider. Current file length is not original authored length; later contributors have modified some files. A namespace reference is not proof that a serving process has loaded it.
+
+Current tracked-source search across the 45 canonical top-level repositories with a real `.git` directory (worktree replicas excluded), with exact namespace/module boundaries, finds:
+
+- The E6b store/carrier/provenance/capture/projection/completeness components reference one another and have tests, receipts and documentation. No external production `src/` or `scripts/` caller of that cluster is observed in this search. `full_loop_runner.clj` does not directly require it. This supports “parked isolated source” rather than “the WM needs this store”; it is not a proof against dynamic loading or an unseen deployment configuration.
+- **Do not delete the whole HTTP file.** `futon3c/src/futon3c/transport/http.clj:72` still requires `futon3c.agency.invoke-ingress-controller`. It has configuration and invoke creation/worker lifecycle calls (e.g. lines 267, 1636, 1873 onward at inspection). It is a real serving-source dependency, although the optional controller can be inactive. Other ordinary application modules require HTTP. Its live heap/configuration was not inspected, so actual activation now remains **not observed**.
+- `on_demand_entrypoint.clj` has its test and retained use from the successor campaign; no ordinary source caller was found by exact namespace search. A CLI explicitly requiring it can still use it. Its absence from static production callers does not undo the recorded use.
+- Lean certificate and interoceptive modules have imported dependents/test witnesses documented below. Removing proof files can break later proofs even when no runtime loads them.
+- Shared `tripwire.clj`, `repair_obligation.clj`, `transport/http.clj`, plus source modules with later changes, require **hunk-level provenance review**, not path deletion. The inventory is a touch list, not an ownership grant.
+
+Search scope: tracked text, `git grep -n -I -F`, excluding `data/`, JSONL, logs and SVG; matching namespace/module boundaries; code, tests and documentation distinguished by path below. Generated files, untracked content, dynamic symbol construction, external deployed copies and live registry state are not exhaustively covered. No test or server was launched. The heads recorded below identify the static source snapshots; working-file lengths were read during this investigation.
+
+<details><summary>Static inspection repository heads</summary>
+
+```text
+18_Category_theory_homological_algebra 78c4f9a0f92555449fce0ab67f7434f5c0939da2
+18_Category_theory_homological_algebra.upstream a73cdf5ad79c8813596ea0d7c888e87c305d6340
+FloWrTester 864257b9837ed252e5d7358287ba232d359535e7
+apm-lean 92a094413008f86d908e26c8c05ab9f2d4832f8d
+chatgpt-tui 3547d0cc9446c3f045bec1028b82f58516b4e9f4
+chipwits-forth 4b63990dcb9468553f48ae70a69e7172680aeac6
+codex 0e82c62a449c484edc053fa3ff82410870df0145
+easyeffects 959d0fa3d15e5818b05e6c53614dccf856791a65
+expenses-hel fbf86d9e7fea755d053f6b700f5ff7b4b0862c61
+expenses-jac 0318093fa280cbaa07403023595f6cfdae367614
+filings dd511dcb5ae330c03171107699704b6c2597e792
+futon0 c61128b65b2a66d2679a77c45a8b4a8bfb37924f
+futon1 26ab382e6721342483403e37d4e2ab59cea47e06
+futon1a 9748a7d2d31d6ff22ad1171d4a247f2339bead1e
+futon1b 14621cf328f0c8f439fd6f0c240e8a13b691b625
+futon1bi 61cf8f88f5652fbe2a41c53e9cf712085dd48282
+futon2 fddf7881e1084678f9859790a2a9a4064591ad0c
+futon2a 0b9a7b0a5eea7fe5bb766761e60e7d3629082b62
+futon3 7fc6a05004aa3e601e53eba633d62213da0af4b2
+futon3a 58ea67a4f3f5614faa1144aa786c33c2ee17bea8
+futon3b 9795feb546c2ca563797f2ed85614a7b94f73a12
+futon3c eca529f7b908d0bba7bb1d7b3ca7a4408c0eed2c
+futon4 5e4501fdf79d0229bb7ab528cf31d76e738f9db3
+futon5 96531a31df33de9334f9aaaa1327fd0bdefbfc57
+futon5a 1e4ab8d74364dda325ef8aafb7f14696899ac5d9
+futon6 e10347810d5ad2c4343da50e244bc7de68d42dfd
+futon7 c5b72885e99ef4a08a90b875ba7b6fe8e03bd934
+futon7a 1a1e7ef513ddeda25bbc063d0cf02af047bf6b89
+gflownet 0da19d061a911cc95a8090c91d03d01efa2e4279
+kissat 8af8e56f174b778aef3aa45af9f739b2a5f492c2
+marimo-zone 498740fd1b451dc977ad75ecd9766be036939398
+mathlib4 77fdbda5b5629b3c8f6c7f9bbb027da0436ba1b3
+mathse-xtdb-benchmark 0c15324e0ec8b0f6e63229fbccf8e35a70a5886e
+mfuton-share 1d528c287a7a1c17b891e55b15c21d81569ff3c2
+mmca 82332a1c9f1cbd93a16b34d2099e4741d4e48df2
+mmca-clj d379f09cbd1743fbe5b4215ab250a274db1bfa73
+nlab-content bd06e1b8b7bfcec92086bbe6161e0d2730d11d73
+nnexus 6747263bb015cd7130c6916511ccc5a3b30faa4d
+orbook.github.io e8afc4f4bd701b5f90e62bf7a0fcda5b7d78596d
+p4ng d493134b0daa6b72815b364074ebb849cde6fc14
+powerbi-tui 283608da58ec27c365b98150833d50c7dc4086e9
+storage 8e76131a5a8f30dbac57ec66c028cabe94a62a49
+ukrn-services-simulation ba27028f9847dba4978caf14d43408a80a1d8545
+voxterm 761a94065f6c4bdb3e25e21999152f3a3242aae4
+xtdb 651a9df51af1abb853ef356172a759d35ee54a8c
+```
+
+</details>
+
+<details><summary>Executable/proof component deletion footprint: paths and inbound references</summary>
+
+Exact references exclude the defining file itself. Internal cluster dependencies, tests and documents remain listed; none is silently promoted into evidence of production execution.
+
+**`futon2/holes/labs/wm-contract/runs/row-18-lead-audit-2026-09-12/gain_probe.bb`** — `gain_probe.bb`; current lines 90.
+
+- `futon2/holes/labs/wm-contract/runs/lead-decisions-independent-review-2026-09-13/correction.md` lines 22, 30.
+- `futon2/holes/labs/wm-contract/runs/lead-decisions-independent-review-2026-09-13/review.md` lines 26.
+- `futon2/holes/labs/wm-contract/runs/row-18-lead-audit-2026-09-12/execution-receipt.json` lines 8, 19, 25, 32.
+
+**`futon2/holes/labs/wm-contract/typed_gap_census_controls.bb`** — `typed_gap_census_controls.bb`; current lines 42.
+
+- `futon2/holes/labs/wm-contract/runs/outstanding-dag-2026-09-14/sources/generator-fix.json` lines 10, 17, 45.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/f1-refusal-normalization/receipt.json` lines 10, 17, 45.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/receipt.json` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/source-pins.json` lines 7.
+
+**`futon2/holes/labs/wm-contract/typed_gap_census_to_lean.bb`** — `typed_gap_census_to_lean.bb`; current lines 115.
+
+- `futon2/holes/labs/wm-contract/runs/outstanding-dag-2026-09-14/sources/generator-fix.json` lines 17, 28, 41.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/README.md` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/f1-refusal-normalization/receipt.json` lines 17, 28, 41.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/independent-control-20757.edn` lines 4.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/source-pins.json` lines 3.
+- `futon2/holes/labs/wm-contract/typed_gap_census_controls.bb` lines 1.
+
+**`futon2/src/futon2/aif/authority_buffer.clj`** — `futon2.aif.authority-buffer`; current lines 127.
+
+- `futon2/holes/labs/wm-contract/SPEC-row24-authority-buffer-2026-09-13.md` lines 8.
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 271.
+- `futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/lead-controls.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/lead-date-control.clj` lines 1.
+- `futon2/test/futon2/aif/authority_buffer_test.clj` lines 3, 54, 59.
+
+**`futon2/src/futon2/aif/categorical_state_close_attachment.clj`** — `futon2.aif.categorical-state-close-attachment`; current lines 142.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 287.
+- `futon2/holes/labs/wm-contract/row14_f11_close_context_discovery.clj` lines 1.
+- `futon2/test/futon2/aif/categorical_state_close_attachment_test.clj` lines 3.
+
+**`futon2/src/futon2/aif/categorical_state_observation.clj`** — `futon2.aif.categorical-state-observation`; current lines 343.
+
+- `futon2/holes/labs/wm-contract/row14_f11_close_context_discovery.clj` lines 2.
+- `futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-counterexamples.clj` lines 1.
+- `futon2/src/futon2/aif/categorical_state_close_attachment.clj` lines 7.
+- `futon2/src/futon2/aif/observation_authority_resolver.clj` lines 6.
+- `futon2/test/futon2/aif/categorical_state_close_attachment_test.clj` lines 4.
+- `futon2/test/futon2/aif/categorical_state_observation_test.clj` lines 3.
+- `futon2/test/futon2/aif/observation_authority_resolver_test.clj` lines 3.
+
+**`futon2/src/futon2/aif/interoceptive_activation.clj`** — `futon2.aif.interoceptive-activation`; current lines 404.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 339.
+- `futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/controller_readback.clj` lines 1.
+- `futon2/src/futon2/aif/interoceptive_manifest.clj` lines 11.
+- `futon2/test/futon2/aif/interoceptive_activation_test.clj` lines 3.
+
+**`futon2/src/futon2/aif/interoceptive_commitment.clj`** — `futon2.aif.interoceptive-commitment`; current lines 169.
+
+- `futon2/holes/labs/wm-contract/TN-row18-discovery-2026-09-12.md` lines 107.
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 343.
+- `futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual_reader_readback.clj` lines 3.
+- `futon2/src/futon2/aif/interoceptive_manifest.clj` lines 12.
+- `futon2/test/futon2/aif/interoceptive_commitment_test.clj` lines 3.
+- `futon2/test/futon2/aif/interoceptive_manifest_test.clj` lines 3.
+
+**`futon2/src/futon2/aif/interoceptive_manifest.clj`** — `futon2.aif.interoceptive-manifest`; current lines 179.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 347.
+- `futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production_participation_readback.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/production_manifest_readback.clj` lines 1.
+- `futon2/test/futon2/aif/interoceptive_manifest_test.clj` lines 4.
+
+**`futon2/src/futon2/aif/interoceptive_store_lock.clj`** — `futon2.aif.interoceptive-store-lock`; current lines 120.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 75.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-2026-09-20/warrant-checks.json` lines 308, 2357, 3439.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-closure-2026-09-20/warrant-check.json` lines 305.
+- `futon2/holes/labs/wm-contract/runs/condition-cleared-2026-09-21/7bcfa3c8-0857-4453-98f5-f995fba980c7.closure.edn` lines 1.
+- `futon2/holes/labs/wm-contract/runs/condition-cleared-2026-09-21/81d1e325-d63b-48c1-b4b9-05e3025f53a7.closure.edn` lines 1.
+- `futon2/holes/labs/wm-contract/runs/history-admission-closing-2026-09-21/warrant-checks.json` lines 869, 1950.
+- `futon2/holes/labs/wm-contract/runs/history-admission-split-2026-09-21/warrant-checks.json` lines 869, 1950.
+- `futon2/holes/labs/wm-contract/runs/nonempty-cascades-2026-09-21/canonical-reregistration/checks.json` lines 3537.
+- `futon2/holes/labs/wm-contract/runs/nonempty-cascades-2026-09-21/warrant-checks.json` lines 3526.
+- `futon2/holes/labs/wm-contract/runs/runner-discharge-stage-2026-09-21/warrant-checks.json` lines 76, 728, 1410, 2317.
+- `futon2/holes/labs/wm-contract/runs/wontfix-transition-2026-09-21/77b40abc-1697-4cf3-a15d-4150f7f2441e.closure.edn` lines 1.
+- `futon2/holes/labs/wm-contract/runs/wontfix-transition-2026-09-21/9ed229b2-b2ca-41cd-9512-a385e9297da1.closure.edn` lines 1.
+- `futon2/src/futon2/aif/interoceptive_activation.clj` lines 9.
+- `futon2/src/futon2/aif/interoceptive_manifest.clj` lines 13.
+- `futon2/src/futon2/aif/repair_obligation.clj` lines 14.
+- `futon2/src/futon2/aif/tripwire.clj` lines 16.
+- `futon2/test/futon2/aif/interoceptive_activation_test.clj` lines 4.
+- `futon2/test/futon2/aif/interoceptive_manifest_test.clj` lines 5, 176.
+
+**`futon2/src/futon2/aif/machine_budget_authority.clj`** — `futon2.aif.machine-budget-authority`; current lines 191.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 355.
+- `futon2/holes/labs/wm-contract/runs/d-enactment-2c-authority-2026-09-20/authority_probe.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback.clj` lines 2.
+- `futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback.clj` lines 2.
+- `futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback.clj` lines 2.
+- `futon2/src/futon2/aif/machine_budget_mapping.clj` lines 6.
+- `futon2/src/futon2/aif/machine_portfolio_restriction.clj` lines 7.
+- `futon2/test/futon2/aif/machine_budget_authority_test.clj` lines 6.
+- `futon2/test/futon2/aif/machine_enactment_correspondence_test.clj` lines 5.
+- `futon2/test/futon2/aif/machine_portfolio_restriction_test.clj` lines 4.
+- `futon2/test/futon2/aif/machine_pre_enact_authorization_test.clj` lines 5.
+
+**`futon2/src/futon2/aif/machine_budget_mapping.clj`** — `futon2.aif.machine-budget-mapping`; current lines 224.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 359.
+- `futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback.clj` lines 2.
+- `futon2/src/futon2/aif/machine_budget_authority.clj` lines 9.
+- `futon2/test/futon2/aif/machine_budget_authority_test.clj` lines 65.
+- `futon2/test/futon2/aif/machine_budget_mapping_test.clj` lines 5.
+
+**`futon2/src/futon2/aif/machine_enactment_correspondence.clj`** — `futon2.aif.machine-enactment-correspondence`; current lines 196.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 363.
+- `futon2/holes/labs/wm-contract/runs/d-enactment-2c-authority-2026-09-20/authority_probe.clj` lines 6.
+- `futon2/holes/labs/wm-contract/runs/d-task-authority-2c-2026-09-20/draft.patch` lines 418, 455, 520.
+- `futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-missing-cohort-control.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/replay.clj` lines 3.
+- `futon2/src/futon2/aif/machine_slow_feedback_evidence.clj` lines 8.
+- `futon2/src/futon2/aif/token_belief_predecessor.clj` lines 137.
+- `futon2/test/futon2/aif/machine_enactment_correspondence_test.clj` lines 6.
+- `futon2/test/futon2/aif/machine_slow_feedback_evidence_test.clj` lines 5.
+
+**`futon2/src/futon2/aif/machine_forward_influence.clj`** — `futon2.aif.machine-forward-influence`; current lines 108.
+
+- `futon2/test/futon2/aif/machine_forward_influence_test.clj` lines 4.
+
+**`futon2/src/futon2/aif/machine_portfolio_restriction.clj`** — `futon2.aif.machine-portfolio-restriction`; current lines 129.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 367.
+- `futon2/holes/labs/wm-contract/runs/d-enactment-2c-authority-2026-09-20/authority_probe.clj` lines 5.
+- `futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback.clj` lines 3.
+- `futon2/src/futon2/aif/machine_enactment_correspondence.clj` lines 8.
+- `futon2/src/futon2/aif/machine_pre_enact_authorization.clj` lines 8.
+- `futon2/test/futon2/aif/machine_enactment_correspondence_test.clj` lines 7.
+- `futon2/test/futon2/aif/machine_portfolio_restriction_test.clj` lines 5.
+
+**`futon2/src/futon2/aif/machine_pre_enact_authorization.clj`** — `futon2.aif.machine-pre-enact-authorization`; current lines 179.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 371.
+- `futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-join-controls.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-invalid-subject-controls.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/replay.clj` lines 4.
+- `futon2/src/futon2/aif/machine_slow_feedback_evidence.clj` lines 9.
+- `futon2/test/futon2/aif/machine_pre_enact_authorization_test.clj` lines 4.
+- `futon2/test/futon2/aif/machine_slow_feedback_evidence_test.clj` lines 6.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_capture.clj`** — `futon2.aif.machine-slow-feedback-capture`; current lines 283.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 375.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/prior-generation-control.clj` lines 2.
+- `futon2/src/futon2/aif/machine_slow_feedback_completeness.clj` lines 6.
+- `futon2/src/futon2/aif/machine_slow_feedback_retrospective_projection.clj` lines 5.
+- `futon2/test/futon2/aif/machine_slow_feedback_capture_test.clj` lines 4.
+- `futon2/test/futon2/aif/machine_slow_feedback_completeness_test.clj` lines 3.
+- `futon2/test/futon2/aif/machine_slow_feedback_retrospective_projection_test.clj` lines 4.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_completeness.clj`** — `futon2.aif.machine-slow-feedback-completeness`; current lines 272.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 379.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/attempt1.stderr` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/audit-controls.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/subject-control.clj` lines 1.
+- `futon2/test/futon2/aif/machine_slow_feedback_completeness_test.clj` lines 4.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_evidence.clj`** — `futon2.aif.machine-slow-feedback-evidence`; current lines 429.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 383.
+- `futon2/holes/labs/wm-contract/e6b-canonical-replay-closure-2026-09-13.edn` lines 9.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-canonical-context.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-controls.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-preauthorization-control.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-time.clj` lines 1.
+- `futon2/test/futon2/aif/machine_slow_feedback_evidence_test.clj` lines 4.
+- `futon2/test/futon2/aif/machine_slow_state_carrier_test.clj` lines 5.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_provenance.clj`** — `futon2.aif.machine-slow-feedback-provenance`; current lines 300.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 387.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-order-control.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/lead-control.clj` lines 1.
+- `futon2/src/futon2/aif/machine_slow_feedback_capture.clj` lines 7.
+- `futon2/src/futon2/aif/machine_slow_feedback_retrospective_projection.clj` lines 6.
+- `futon2/src/futon2/aif/machine_slow_feedback_store_v2.clj` lines 6.
+- `futon2/test/futon2/aif/machine_slow_feedback_capture_test.clj` lines 5.
+- `futon2/test/futon2/aif/machine_slow_feedback_provenance_test.clj` lines 6.
+- `futon2/test/futon2/aif/machine_slow_feedback_store_v2_test.clj` lines 4.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_retrospective_projection.clj`** — `futon2.aif.machine-slow-feedback-retrospective-projection`; current lines 148.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 391.
+- `futon2/src/futon2/aif/machine_slow_feedback_completeness.clj` lines 7.
+- `futon2/test/futon2/aif/machine_slow_feedback_completeness_test.clj` lines 5.
+- `futon2/test/futon2/aif/machine_slow_feedback_retrospective_projection_test.clj` lines 6.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_store.clj`** — `futon2.aif.machine-slow-feedback-store`; current lines 317.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 395.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final.stderr` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test.stderr` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test2.stderr` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-controls/control.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-revision-control.clj` lines 1.
+- `futon2/src/futon2/aif/machine_slow_feedback_store_v2.clj` lines 7.
+- `futon2/test/futon2/aif/machine_slow_feedback_store_test.clj` lines 5, 62.
+- `futon2/test/futon2/aif/machine_slow_feedback_store_v2_test.clj` lines 7.
+
+**`futon2/src/futon2/aif/machine_slow_feedback_store_v2.clj`** — `futon2.aif.machine-slow-feedback-store-v2`; current lines 382.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 399.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/prior-generation-control.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/audit-controls.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/subject-control.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-1-tests.stdout` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/head-control.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/genesis-controls.clj` lines 2.
+- `futon2/src/futon2/aif/machine_slow_feedback_capture.clj` lines 8.
+- `futon2/test/futon2/aif/machine_slow_feedback_capture_test.clj` lines 6.
+- `futon2/test/futon2/aif/machine_slow_feedback_completeness_test.clj` lines 6.
+- `futon2/test/futon2/aif/machine_slow_feedback_retrospective_projection_test.clj` lines 7.
+- `futon2/test/futon2/aif/machine_slow_feedback_store_v2_test.clj` lines 6.
+
+**`futon2/src/futon2/aif/machine_slow_prior_evidence.clj`** — `futon2.aif.machine-slow-prior-evidence`; current lines 156.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 403.
+- `futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-controls.clj` lines 1.
+- `futon2/src/futon2/aif/machine_forward_influence.clj` lines 7.
+- `futon2/test/futon2/aif/machine_forward_influence_test.clj` lines 5.
+- `futon2/test/futon2/aif/machine_slow_prior_evidence_test.clj` lines 3.
+
+**`futon2/src/futon2/aif/machine_slow_state_carrier.clj`** — `futon2.aif.machine-slow-state-carrier`; current lines 361.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 407.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/lead-control.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-source-identity-control.clj` lines 2.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-control.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-order-control.clj` lines 1.
+- `futon2/src/futon2/aif/machine_slow_feedback_provenance.clj` lines 9.
+- `futon2/test/futon2/aif/machine_slow_feedback_provenance_test.clj` lines 7.
+- `futon2/test/futon2/aif/machine_slow_state_carrier_test.clj` lines 7.
+
+**`futon2/src/futon2/aif/on_demand_entrypoint.clj`** — `futon2.aif.on-demand-entrypoint`; current lines 180.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 487.
+- `futon2/holes/labs/wm-contract/clojure-census/T7-claude4.edn` lines 31.
+- `futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/README.md` lines 14.
+- `futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-status-control.clj` lines 1.
+- `futon2/test/futon2/aif/on_demand_entrypoint_test.clj` lines 5.
+
+**`futon2/src/futon2/aif/repair_obligation.clj`** — `futon2.aif.repair-obligation`; current lines 1657.
+
+- `futon2/holes/TN-War-Machine-Restart.md` lines 27.
+- `futon2/holes/labs/wm-contract/C509-inter-tick-state-census.edn` lines 54.
+- `futon2/holes/labs/wm-contract/RECEIPT-dismiss-dispatcher-artifacts-2026-09-19.md` lines 6.
+- `futon2/holes/labs/wm-contract/RECEIPT-dismiss-echoes-2026-09-19.md` lines 12.
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 155.
+- `futon2/holes/labs/wm-contract/runs/RUN4-repair057-revalidation-2026-09-11/historical-linked-service-review.clj` lines 6.
+- `futon2/holes/labs/wm-contract/runs/RUN4-repair057-revalidation-2026-09-11/historical-reconcile-race-review.clj` lines 6.
+- `futon2/holes/labs/wm-contract/runs/RUN4-repair057-revalidation-2026-09-11/store-directory-repro.clj` lines 2.
+- `futon2/holes/labs/wm-contract/runs/RUN4-repair057-revalidation-2026-09-11/store-read-repro.clj` lines 2.
+- `futon2/holes/labs/wm-contract/runs/a-labels-exercise5-2026-09-14/observer-view/evidence-runner.after` lines 28.
+- `futon2/holes/labs/wm-contract/runs/a-labels-exercise5-2026-09-14/observer-view/evidence-runner.before` lines 28.
+- `futon2/holes/labs/wm-contract/runs/cascade-fold-repair-2026-09-20/close-reviewed-group.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-2026-09-20/warrant-checks.json` lines 478, 2527, 3609.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-closure-2026-09-20/close.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-closure-2026-09-20/warrant-check.json` lines 475.
+- `futon2/holes/labs/wm-contract/runs/condition-cleared-2026-09-21/7bcfa3c8-0857-4453-98f5-f995fba980c7.closure.edn` lines 1.
+- `futon2/holes/labs/wm-contract/runs/condition-cleared-2026-09-21/81d1e325-d63b-48c1-b4b9-05e3025f53a7.closure.edn` lines 1.
+- `futon2/holes/labs/wm-contract/runs/decision-guard-locators-2026-09-21/closing/close.clj` lines 3.
+- `futon2/holes/labs/wm-contract/runs/fix-19-2026-09-21/probe.edn` lines 830.
+- `futon2/holes/labs/wm-contract/runs/fix-19-2026-09-21/since-jvm-start/probe.edn` lines 193, 396, 522, 1810, 1848.
+- `futon2/holes/labs/wm-contract/runs/hermetic-fixtures-2026-09-19/record-implementation.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/history-admission-closing-2026-09-21/close.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/history-admission-closing-2026-09-21/warrant-checks.json` lines 1039, 2120.
+- `futon2/holes/labs/wm-contract/runs/history-admission-split-2026-09-21/warrant-checks.json` lines 1039, 2120.
+- `futon2/holes/labs/wm-contract/runs/nonempty-cascades-2026-09-21/canonical-reregistration/checks.json` lines 3707.
+- `futon2/holes/labs/wm-contract/runs/nonempty-cascades-2026-09-21/warrant-checks.json` lines 3696.
+- `futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/writer-census-commands.txt` lines 13.
+- `futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/writer-census.md` lines 8.
+- `futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual_reader_readback.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/runner-discharge-stage-2026-09-21/warrant-checks.json` lines 116, 768, 1455, 2532.
+- `futon2/holes/labs/wm-contract/runs/t-discharge-2026-09-15/RECORD.md` lines 24.
+- `futon2/holes/labs/wm-contract/runs/t-discharge-2026-09-15/discharge-T.clj` lines 1.
+- `futon2/holes/labs/wm-contract/runs/wontfix-transition-2026-09-21/77b40abc-1697-4cf3-a15d-4150f7f2441e.closure.edn` lines 1.
+- `futon2/holes/labs/wm-contract/runs/wontfix-transition-2026-09-21/9ed229b2-b2ca-41cd-9512-a385e9297da1.closure.edn` lines 1.
+- `futon2/scripts/wm_click.sh` lines 131, 135, 167.
+- `futon2/src/futon2/aif/cascade_proposals.clj` lines 12.
+- `futon2/src/futon2/aif/full_loop_cli.clj` lines 12.
+- `futon2/src/futon2/aif/full_loop_runner.clj` lines 51.
+- `futon2/src/futon2/aif/interoceptive_manifest.clj` lines 14.
+- `futon2/src/futon2/aif/repair_discharge.clj` lines 8.
+- `futon2/src/futon2/aif/repair_discharge_receipt.clj` lines 9.
+- `futon2/src/futon2/aif/repair_proposals.clj` lines 9.
+- `futon2/src/futon2/aif/tripwire.clj` lines 18, 42.
+- `futon2/src/futon2/aif/tripwire_calibration.clj` lines 6.
+- `futon2/test/futon2/aif/dismiss_echo_test.clj` lines 4.
+- `futon2/test/futon2/aif/full_loop_runner_test.clj` lines 27.
+- `futon2/test/futon2/aif/hermetic_repair_fixture.clj` lines 5.
+- `futon2/test/futon2/aif/hermetic_retention_test.clj` lines 7.
+- `futon2/test/futon2/aif/historical_repair_revalidation_test.clj` lines 6, 49, 97.
+- `futon2/test/futon2/aif/interoceptive_manifest_test.clj` lines 6.
+- `futon2/test/futon2/aif/repair_discharge_test.clj` lines 10.
+- `futon2/test/futon2/aif/repair_history_replay_test.clj` lines 11.
+- `futon2/test/futon2/aif/repair_obligation_test.clj` lines 8.
+- `futon2/test/futon2/aif/repair_proposals_test.clj` lines 6.
+- `futon2/test/futon2/aif/repair_wontfix_test.clj` lines 4.
+- `futon2/test/futon2/aif/tripwire_test.clj` lines 9, 368, 373.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-U88-successor-deployment-2026-09-11/review-reproductions/qualified-tripwire.clj` lines 1.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-initialization-close-admission-2026-09-11/run_init_close_packet_gate.clj` lines 16.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-qualified-execution-collision-2026-09-11/authority-reader-corrected-repro.clj` lines 1.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-qualified-execution-collision-2026-09-11/authority-reader-review-repro.clj` lines 1.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-qualified-execution-collision-2026-09-11/packet-identity-length-review.clj` lines 1.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-qualified-execution-collision-2026-09-11/repro.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-repair-pinned-selection-admission-2026-09-11/run_first_repair_packet_gate.clj` lines 16.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-repair-successor-v2-selection-admission-2026-09-11/ZAI-STAFFING-TRANSITION-2026-09-11.md` lines 23.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-repair-successor-v2-selection-zai-admission-2026-09-11/run_zai_packet_gate.clj` lines 15.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-repair057-admission-2026-09-11/review-qualified-identity.clj` lines 3.
+- `futon3c/src/futon3c/wm/run4_historical_action.clj` lines 4.
+- `futon3c/src/futon3c/wm/run4_historical_projection.clj` lines 9.
+- `futon3c/src/futon3c/wm/run4_historical_successor.clj` lines 5.
+- `futon3c/test/futon3c/wm/run4_historical_packet_roundtrip_test.clj` lines 7.
+- `futon3c/test/futon3c/wm/run4_historical_roundtrip_test.clj` lines 7.
+- `futon3c/test/futon3c/wm/run4_historical_verification_test.clj` lines 6.
+- `futon3c/test/futon3c/wm/run4_initialization38690_packet_roundtrip_test.clj` lines 8.
+- `futon3c/test/futon3c/wm/run4_initialization_collision_packet_roundtrip_test.clj` lines 7.
+- `futon3c/test/futon3c/wm/run4_real_paired_test.clj` lines 12.
+- `futon3c/test/futon3c/wm/run4_repair058_packet_roundtrip_test.clj` lines 7.
+- `futon3c/test/futon3c/wm/run4_series_service_test.clj` lines 8.
+- `futon3c/test/futon3c/wm/run4_successor_v2_selection_packet_roundtrip_test.clj` lines 8.
+- `futon3c/test/futon3c/wm/run4_terminal_evidence_test.clj` lines 7.
+
+**`futon2/src/futon2/aif/scheduled_route_evidence.clj`** — `futon2.aif.scheduled-route-evidence`; current lines 249.
+
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 459.
+- `futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-controls.clj` lines 1.
+- `futon2/test/futon2/aif/scheduled_route_evidence_test.clj` lines 4.
+
+**`futon2/src/futon2/aif/tripwire.clj`** — `futon2.aif.tripwire`; current lines 1150.
+
+- `futon2/holes/labs/wm-contract/AUD-D2-findings.md` lines 50.
+- `futon2/holes/labs/wm-contract/C509-inter-tick-state-census.edn` lines 54.
+- `futon2/holes/labs/wm-contract/clojure-census/D7-remainder.edn` lines 179.
+- `futon2/holes/labs/wm-contract/runs/a-labels-exercise5-2026-09-14/observer-view/evidence-runner.after` lines 32.
+- `futon2/holes/labs/wm-contract/runs/a-labels-exercise5-2026-09-14/observer-view/evidence-runner.before` lines 32.
+- `futon2/holes/labs/wm-contract/runs/cascade-fold-repair-2026-09-20/close-reviewed-group.clj` lines 6.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-2026-09-20/warrant-checks.json` lines 558, 2607, 3694.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-closure-2026-09-20/close.clj` lines 6.
+- `futon2/holes/labs/wm-contract/runs/cascade-realizer-closure-2026-09-20/warrant-check.json` lines 555.
+- `futon2/holes/labs/wm-contract/runs/decision-guard-locators-2026-09-21/closing/close.clj` lines 4.
+- `futon2/holes/labs/wm-contract/runs/fix-19-2026-09-21/since-jvm-start/probe.edn` lines 305, 412, 1139, 1864.
+- `futon2/holes/labs/wm-contract/runs/history-admission-closing-2026-09-21/close.clj` lines 6.
+- `futon2/holes/labs/wm-contract/runs/history-admission-closing-2026-09-21/warrant-checks.json` lines 1119, 2205.
+- `futon2/holes/labs/wm-contract/runs/history-admission-split-2026-09-21/warrant-checks.json` lines 1119, 2205.
+- `futon2/holes/labs/wm-contract/runs/nonempty-cascades-2026-09-21/canonical-reregistration/checks.json` lines 3792.
+- `futon2/holes/labs/wm-contract/runs/nonempty-cascades-2026-09-21/warrant-checks.json` lines 3781.
+- `futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/writer-census-commands.txt` lines 12.
+- `futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/writer-census.md` lines 5.
+- `futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual-reader-readback.edn` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual_reader_readback.clj` lines 5.
+- `futon2/holes/labs/wm-contract/runs/runner-discharge-stage-2026-09-21/warrant-checks.json` lines 1480, 2622.
+- `futon2/holes/labs/wm-contract/runs/runner-waits-2026-09-21/RECEIPT.md` lines 76.
+- `futon2/holes/labs/wm-contract/runs/wm-build-loop-2026-09-15/wm-08-09-review-1/test-thread-dump.txt` lines 87, 88, 95, 96, 97, 98, 99, 100, 101, 102.
+- `futon2/holes/missions/M-wm-tripwires.md` lines 98.
+- `futon2/holes/tickets/T-wm-excessive-guardrails-19092026.md` lines 121.
+- `futon2/scripts/wm_click.sh` lines 131, 132, 133, 134.
+- `futon2/scripts/wm_loaded_code_probe.clj` lines 74.
+- `futon2/src/futon2/aif/full_loop_runner.clj` lines 57.
+- `futon2/src/futon2/aif/interoceptive_commitment.clj` lines 6.
+- `futon2/src/futon2/aif/interoceptive_manifest.clj` lines 15.
+- `futon2/src/futon2/aif/tripwire_calibration.clj` lines 7.
+- `futon2/test/futon2/aif/dismiss_echo_test.clj` lines 5.
+- `futon2/test/futon2/aif/full_loop_runner_test.clj` lines 28.
+- `futon2/test/futon2/aif/hermetic_repair_fixture.clj` lines 6.
+- `futon2/test/futon2/aif/interoceptive_manifest_test.clj` lines 7.
+- `futon2/test/futon2/aif/repair_obligation_test.clj` lines 9.
+- `futon2/test/futon2/aif/tripwire_dismissal_test.clj` lines 4.
+- `futon2/test/futon2/aif/tripwire_test.clj` lines 10.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-U88-successor-deployment-2026-09-11/review-reproductions/qualified-tripwire.clj` lines 2.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-repair-successor-v2-selection-admission-2026-09-11/paired-review-2026-09-11/run4-paired-review-jstack.txt` lines 333, 334, 335, 336, 337, 338, 339, 340, 341.
+- `futon3c/test/futon3c/wm/run4_series_service_test.clj` lines 9.
+- `p4ng/wm-walkthroughs/build-loop/closure/closure-dag.json` lines 2432.
+- `p4ng/wm-walkthroughs/build-loop/closure/enact-realness-r97.py` lines 112.
+
+**`futon3c/src/futon3c/agency/invoke_ingress_controller.clj`** — `futon3c.agency.invoke-ingress-controller`; current lines 362.
+
+- `futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-recovery-counterexamples.clj` lines 1.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-control.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-duplicate-control.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-worker-control.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-reused-worker.clj` lines 1.
+- `futon3c/src/futon3c/transport/http.clj` lines 72.
+- `futon3c/test/futon3c/agency/invoke_ingress_controller_test.clj` lines 3, 163.
+- `futon3c/test/futon3c/agency/invoke_lifecycle_snapshot_test.clj` lines 3.
+- `futon3c/test/futon3c/transport/invoke_ingress_integration_test.clj` lines 6.
+
+**`futon3c/src/futon3c/agency/invoke_lifecycle_reconciliation.clj`** — `futon3c.agency.invoke-lifecycle-reconciliation`; current lines 212.
+
+- `futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-empty-census-control.clj` lines 1.
+- `futon3c/test/futon3c/agency/invoke_lifecycle_reconciliation_test.clj` lines 3.
+- `futon3c/test/futon3c/agency/invoke_lifecycle_snapshot_test.clj` lines 4.
+
+**`futon3c/src/futon3c/agency/invoke_lifecycle_snapshot.clj`** — `futon3c.agency.invoke-lifecycle-snapshot`; current lines 142.
+
+- `futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-boundary-controls.clj` lines 1.
+- `futon3c/test/futon3c/agency/invoke_lifecycle_snapshot_test.clj` lines 5.
+
+**`futon3c/src/futon3c/agency/r9_authority.clj`** — `futon3c.agency.r9-authority`; current lines 142.
+
+- `futon3c/test/futon3c/agency/r9_genesis_test.clj` lines 5.
+
+**`futon3c/src/futon3c/agency/r9_genesis.clj`** — `futon3c.agency.r9-genesis`; current lines 191.
+
+- `futon3c/test/futon3c/agency/r9_genesis_test.clj` lines 6.
+
+**`futon3c/src/futon3c/agency/selective_form_loader.clj`** — `futon3c.agency.selective-form-loader`; current lines 108.
+
+- `futon3c/test/futon3c/agency/selective_form_loader_test.clj` lines 3.
+
+**`futon3c/src/futon3c/transport/http.clj`** — `futon3c.transport.http`; current lines 9669.
+
+- `futon2/holes/labs/A-next-codex-agent-behaviour/codex-agent-behaviour-sorry-EMPIRICAL.edn` lines 79, 80.
+- `futon2/holes/labs/A-next-typed-bells/typed-bells-sorry-EMPIRICAL.edn` lines 52, 56, 60, 63, 67, 71, 84.
+- `futon2/holes/labs/wm-contract/C301-agency-snapshot-revision-design.md` lines 10.
+- `futon2/holes/labs/wm-contract/TN-row19-serving-retention-deployment-2026-09-13.md` lines 29.
+- `futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/implementation-note.md` lines 4, 20.
+- `futon2/holes/labs/wm-contract/runs/wm-build-loop-2026-09-15/join-6/probe-cause-lib.clj` lines 7.
+- `futon2/holes/labs/wm-contract/runs/wm-build-loop-2026-09-15/join-6/probe-cause.clj` lines 7.
+- `futon2/holes/labs/wm-contract/runs/wm-build-loop-2026-09-15/join-6/run4_http_boundary_test.layer1-removed.clj` lines 6.
+- `futon2/web/war-machine/src/war_machine/client/hex.cljs` lines 567.
+- `futon3/library/cycle-machine/job-port.flexiarg` lines 28, 33.
+- `futon3/library/cycle-machine/runtime-restoration.flexiarg` lines 26.
+- `futon3c/dev/futon3c/dev/bootstrap.clj` lines 24.
+- `futon3c/holes/C243-invoke-ledger-publication-cost.md` lines 95.
+- `futon3c/holes/NOTE-agency-mesh-backend-handoff-1-2026-09-21.md` lines 18.
+- `futon3c/holes/excursions/E-APM-f10-defects.md` lines 390.
+- `futon3c/holes/labs/M-apm-demonstration/analysis/HANDOFF-analyst-1-to-analyst-2.md` lines 41.
+- `futon3c/holes/labs/M-apm-demonstration/analysis/series.edn` lines 253.
+- `futon3c/holes/labs/M-apm-demonstration/analysis/v3-decommission-2026-09-12/verify.clj` lines 3, 17.
+- `futon3c/holes/labs/RUN4-serving-trust-gap-2026-09-10.md` lines 16.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-F11-production-successor-2026-09-12-v2/install-live.clj` lines 4.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-F11-production-successor-2026-09-12-v3/install-and-launch.clj` lines 4.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-F11-production-successor-2026-09-12/diagnose-live-refusal.clj` lines 2, 4.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-F11-production-successor-2026-09-12/install-live.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-F11-production-successor-2026-09-12/live-runner-discovery.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-U88-deployment-2026-09-10/ACTIVATION-PROCEDURE.md` lines 53.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-U88-successor-deployment-2026-09-11/review-reproductions/lifecycle-marker.clj` lines 3.
+- `futon3c/holes/labs/wm-contract/runs/RUN4-repair-successor-v2-selection-admission-2026-09-11/paired-review-2026-09-11/run4-paired-review-jstack.txt` lines 184, 185.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/INTEGRATION.md` lines 5.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-control.clj` lines 2.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-duplicate-control.clj` lines 2.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-worker-control.clj` lines 2.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/test-attempt1.stdout` lines 10, 11.
+- `futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-reused-worker.clj` lines 1.
+- `futon3c/holes/technotes/TN-fable-F27-review.md` lines 45.
+- `futon3c/scripts/codex_ws_alleycat_smoke.clj` lines 16.
+- `futon3c/scripts/discipline_live_gate.clj` lines 18.
+- `futon3c/scripts/dual_agent_ws_alleycat_smoke.clj` lines 17.
+- `futon3c/scripts/encyclopedia_demo.clj` lines 3.
+- `futon3c/scripts/proof-eval.sh` lines 107.
+- `futon3c/scripts/restore-apm-runtime.sh` lines 41.
+- `futon3c/scripts/restore-http-routes.sh` lines 2, 15.
+- `futon3c/scripts/smart-cursor-e2e-cycle-ws.sh` lines 17.
+- `futon3c/scripts/tri_agent_ws_alleycat_smoke.clj` lines 18.
+- `futon3c/src/futon3c/agency/mesh_qa.clj` lines 298.
+- `futon3c/src/futon3c/agency/r9_authority.clj` lines 5, 122.
+- `futon3c/src/futon3c/agency/registry.clj` lines 57, 60, 1342, 1343, 1344.
+- `futon3c/src/futon3c/aif/emacs_bridge.clj` lines 11.
+- `futon3c/src/futon3c/clock/turn_trigger.clj` lines 30.
+- `futon3c/src/futon3c/peripheral/memory_backend.clj` lines 489, 492, 646.
+- `futon3c/src/futon3c/runtime/agents.clj` lines 11.
+- `futon3c/src/futon3c/transport/bootstrap_handler_migration.clj` lines 6, 9, 37, 41, 48.
+- `futon3c/src/futon3c/wm/scheduler.clj` lines 12.
+- `futon3c/test/futon3c/agency/federation_registration_test.clj` lines 7.
+- `futon3c/test/futon3c/agency/frame_seats_test.clj` lines 6, 329, 330, 347, 359, 361, 383.
+- `futon3c/test/futon3c/agency/inbox_test.clj` lines 8.
+- `futon3c/test/futon3c/agency/mesh_qa_test.clj` lines 5.
+- `futon3c/test/futon3c/agency/r9_genesis_test.clj` lines 7.
+- `futon3c/test/futon3c/agency/roster_store_test.clj` lines 7.
+- `futon3c/test/futon3c/agency/status_leak_test.clj` lines 7.
+- `futon3c/test/futon3c/agents/pull_receipt_integration_test.clj` lines 9.
+- `futon3c/test/futon3c/apm/conductor_open_test.clj` lines 10.
+- `futon3c/test/futon3c/apm/conductor_test.clj` lines 12.
+- `futon3c/test/futon3c/apm/incident_regression_fixtures_test.clj` lines 15.
+- `futon3c/test/futon3c/apm/job_port_contract_test.clj` lines 7.
+- `futon3c/test/futon3c/apm/typed_role_submission_http_test.clj` lines 7, 36.
+- `futon3c/test/futon3c/enrichment/query_test.clj` lines 9.
+- `futon3c/test/futon3c/inbox_zero/followup_http_test.clj` lines 7.
+- `futon3c/test/futon3c/social/coordination_ledger_test.clj` lines 7.
+- `futon3c/test/futon3c/social/mesh_backend_test.clj` lines 10.
+- `futon3c/test/futon3c/transport/active_invoke_index_test.clj` lines 4.
+- `futon3c/test/futon3c/transport/auto_bellback_test.clj` lines 11.
+- `futon3c/test/futon3c/transport/bootstrap_handler_migration_test.clj` lines 4, 23, 30, 48.
+- `futon3c/test/futon3c/transport/delivery_protocol_conformance_test.clj` lines 18.
+- `futon3c/test/futon3c/transport/execution_evidence_test.clj` lines 19.
+- `futon3c/test/futon3c/transport/handler_reconfiguration_test.clj` lines 4, 8.
+- `futon3c/test/futon3c/transport/http_test.clj` lines 11, 53, 80, 1118, 1129, 1469, 1480, 1491, 1502, 1521, 1543, 1553, 1557, 1575, 1597, 1875, 1927, 2510, 2539, 3101, 3321.
+- `futon3c/test/futon3c/transport/incidents_http_test.clj` lines 4.
+- `futon3c/test/futon3c/transport/integration_test.clj` lines 14.
+- `futon3c/test/futon3c/transport/invoke_ingress_integration_test.clj` lines 10.
+- `futon3c/test/futon3c/transport/invoke_ledger_atomicity_test.clj` lines 6.
+- `futon3c/test/futon3c/transport/job_timeout_test.clj` lines 6.
+- `futon3c/test/futon3c/transport/morning_brief_http_test.clj` lines 4.
+- `futon3c/test/futon3c/transport/test_registry_http_test.clj` lines 8, 143, 151.
+- `futon3c/test/futon3c/transport/warrant_handoff_test.clj` lines 13.
+- `futon3c/test/futon3c/wm/chain_rehearsal_test.clj` lines 14.
+- `futon3c/test/futon3c/wm/ordinary_click_budget_test.clj` lines 6.
+- `futon3c/test/futon3c/wm/run4_http_boundary_test.clj` lines 6.
+- `futon3c/test/futon3c/wm/run4_lifecycle_inspection_test.clj` lines 6.
+- `futon3c/test/futon3c/wm/run4_series_service_test.clj` lines 12.
+- `futon3c/test/futon3c/wm/run4_u88_roundtrip_test.clj` lines 17.
+- `futon3c/test/futon3c/wm/run_participants_boundary_test.clj` lines 6.
+- `futon3c/test/futon3c/wm/runner_service_test.clj` lines 9.
+- `futon4/holes/missions/M-futon-enrichment.md` lines 176.
+
+**`mathlib4/DarkTower/WarMachine/FullCertificateCrossLayerBinding.lean`** — `DarkTower.WarMachine.FullCertificateCrossLayerBinding`; current lines None.
+
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/GeneratedTypedGap.lean` lines 1.
+- `futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/TamperedTypedGap.lean` lines 1.
+- `futon2/holes/labs/wm-contract/typed_gap_census_to_lean.bb` lines 58.
+
+**`mathlib4/DarkTower/WarMachine/FullCertificateEventBinding.lean`** — `DarkTower.WarMachine.FullCertificateEventBinding`; current lines None.
+
+- `futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/LeadOccurrenceMismatch.lean` lines 1, 4.
+
+**`mathlib4/DarkTower/WarMachine/FullCertificatePredicate.lean`** — `DarkTower.WarMachine.FullCertificatePredicate`; current lines None.
+
+- `futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/LeadOccurrenceMismatch.lean` lines 2.
+
+**`mathlib4/DarkTower/WarMachine/FullCertificateRecordConnectionBinding.lean`** — `DarkTower.WarMachine.FullCertificateRecordConnectionBinding`; current lines None.
+
+- `futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/LeadCausalReferences.lean` lines 1, 3.
+
+**`mathlib4/DarkTower/WarMachine/FullCertificateResolvedEvidence.lean`** — `DarkTower.WarMachine.FullCertificateResolvedEvidence`; current lines None.
+
+No exact inbound reference found within the stated static-search scope.
+
+**`mathlib4/DarkTower/WarMachine/FullCertificateRunBinding.lean`** — `DarkTower.WarMachine.FullCertificateRunBinding`; current lines None.
+
+- `futon2/holes/labs/wm-contract/SPEC-row24-run-binding-refinement-2026-09-13.md` lines 8.
+- `futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/LeadOccurrenceMismatch.lean` lines 3.
+- `futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/LeadCausalReferences.lean` lines 2.
+
+**`mathlib4/DarkTower/WarMachine/InteroceptivePolicyPosteriorFinite.lean`** — `DarkTower.WarMachine.InteroceptivePolicyPosteriorFinite`; current lines 202.
+
+- `futon2/holes/labs/wm-contract/runs/U35-lean-state/lean-state-report.edn` lines 1313.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-after.edn` lines 1288.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-before.edn` lines 1288.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census.diff` lines 1419.
+- `futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-unique-root-attempts.txt` lines 8.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionUniqueRoot.lean` lines 2, 14.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionVariance.lean` lines 12.
+- `p4ng/empirics-futon/issue-board.edn` lines 5662.
+
+**`mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionBounded.lean`** — `DarkTower.WarMachine.InteroceptivePolicyPrecisionBounded`; current lines 124.
+
+- `futon2/holes/labs/wm-contract/runs/U35-lean-state/lean-state-report.edn` lines 1330.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-after.edn` lines 1304.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-before.edn` lines 1304.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census.diff` lines 1435.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPosteriorFinite.lean` lines 4.
+- `p4ng/empirics-futon/issue-board.edn` lines 5680.
+
+**`mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionPositiveDomain.lean`** — `DarkTower.WarMachine.InteroceptivePolicyPrecisionPositiveDomain`; current lines 91.
+
+- `futon2/holes/labs/wm-contract/runs/U35-lean-state/lean-state-report.edn` lines 1348.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-after.edn` lines 1321.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-before.edn` lines 1321.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPosteriorFinite.lean` lines 5.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionUniqueRoot.lean` lines 15.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionVariance.lean` lines 13.
+- `p4ng/empirics-futon/issue-board.edn` lines 5698.
+
+**`mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionProposal.lean`** — `DarkTower.WarMachine.InteroceptivePolicyPrecisionProposal`; current lines 85.
+
+- `futon2/holes/labs/wm-contract/runs/U35-lean-state/lean-state-report.edn` lines 1365.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-after.edn` lines 1337.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-before.edn` lines 1337.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census.diff` lines 1467.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPosteriorFinite.lean` lines 3.
+- `p4ng/empirics-futon/issue-board.edn` lines 5716.
+
+**`mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionUniqueRoot.lean`** — `DarkTower.WarMachine.InteroceptivePolicyPrecisionUniqueRoot`; current lines 162.
+
+- `futon2/holes/labs/wm-contract/runs/U35-lean-state/lean-state-report.edn` lines 1383.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-after.edn` lines 1354.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-before.edn` lines 1354.
+- `mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionVariance.lean` lines 2, 14.
+- `p4ng/empirics-futon/issue-board.edn` lines 5734.
+
+**`mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionVariance.lean`** — `DarkTower.WarMachine.InteroceptivePolicyPrecisionVariance`; current lines 252.
+
+- `futon2/holes/labs/wm-contract/runs/U35-lean-state/lean-state-report.edn` lines 1400.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-after.edn` lines 1370.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census-before.edn` lines 1370.
+- `futon2/holes/labs/wm-contract/runs/fix-21-2026-09-21/census.diff` lines 1499.
+- `p4ng/empirics-futon/issue-board.edn` lines 5752.
+
+</details>
+
+### 6. Complete observed campaign indexes and limits
+
+The indexes below allow checking the attribution without accepting a narrative verdict. Commit creation is identified from successful Codex `event_msg/item_completed/CommandExecution` output containing `[branch SHA]`, then resolved in the named canonical repository. A commit mentioned only in a review or git-log output is not counted. The record is comprehensive for these retained successful commit outputs and the received direct-helper commissions, not a claim of exhaustive process/network history or all discarded uncommitted scratch work. Unretained drafts, model-internal reasoning and invoice charges cannot be reconstructed. Per-file current line counts include later edits; added/removed counts sum only the attributed commits. Binary numstat entries are not converted into invented line counts.
+
+<details><summary>120 helper commissions, with exact rollout locations</summary>
+
+Rollout paths are given in the usage section. Each row points at its seat's original user-message line, not a reconstructed public job summary.
+
+| Received UTC | Seat | Job | Rollout line | Beginning of commission body |
+|---|---|---|---:|---|
+
+| 2026-09-13T01:45:31.926Z | codex-22 | `invoke-1789263928413-20558-55de9dfa` | 4277 | Joe has delegated completion leadership to codex-26 and explicitly authorized codex-22/23/24 to help with dispatches (emacs-repl 2026-09-13). Read /home/joe/code/AGENTS.md, futon2/AGENTS.md and applicable repo instructions. WORK-REMAINING.md remains the task authority; LEAD-DECISIONS-2026-09-12.md (commit 867565de) resolves the former Joe decision queue. Preserve Item 5: required nodes actually work with evidence; no scope shortcuts. If you still own unfinished work, report its exact state first and avoid conflicting edits. Shared tree has unre |
+| 2026-09-13T01:45:32.928Z | codex-23 | `invoke-1789263929596-20559-97130a74` | 3781 | Joe has delegated completion leadership to codex-26 and explicitly authorized codex-22/23/24 to help with dispatches (emacs-repl 2026-09-13). Read /home/joe/code/AGENTS.md, futon2/AGENTS.md and applicable repo instructions. WORK-REMAINING.md remains the task authority; LEAD-DECISIONS-2026-09-12.md (commit 867565de) resolves the former Joe decision queue. Preserve Item 5: required nodes actually work with evidence; no scope shortcuts. If you still own unfinished work, report its exact state first and avoid conflicting edits. Shared tree has unre |
+| 2026-09-13T01:45:33.660Z | codex-24 | `invoke-1789263930890-20560-81e207dc` | 4443 | Joe has delegated completion leadership to codex-26 and explicitly authorized codex-22/23/24 to help with dispatches (emacs-repl 2026-09-13). Read /home/joe/code/AGENTS.md, futon2/AGENTS.md and applicable repo instructions. WORK-REMAINING.md remains the task authority; LEAD-DECISIONS-2026-09-12.md (commit 867565de) resolves the former Joe decision queue. Preserve Item 5: required nodes actually work with evidence; no scope shortcuts. If you still own unfinished work, report its exact state first and avoid conflicting edits. Shared tree has unre |
+| 2026-09-13T01:51:59.466Z | codex-24 | `invoke-1789264316656-20563-debad6ea` | 4557 | Rows 18/19/22/24 follow-up to your completed independent review 90fefed4. Lead accepted F1-F4 and recorded repairs at 9f37f503. First correct a concrete defect in your review receipt: the three hashes you print for CertificateStates.lean, its .olean, and lean-toolchain differ from BOTH the execution receipt and actual bytes. See runs/lead-decisions-independent-review-2026-09-13/lead-pin-discrepancies.json. Independently recompute from files using a mechanical command, retain the exact command/output and compare every pinned digest in your revie |
+| 2026-09-13T01:54:09.463Z | codex-23 | `invoke-1789264446621-20564-4ca99bf6` | 4009 | ROW 19 implementation review returned changes requested, commit b74f64be: read futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/lead-review.md. R1: your retained commission still expires with the hot job after seven days; durable future admission evidence must survive that expiry without weakening D13 or protecting all jobs forever. Establish existing immutable archive/evidence facility or specify/build the smallest durable archive with clear consumer/lifetime. Commission after >7 days and restart with multiple jobs so  |
+| 2026-09-13T01:56:08.097Z | codex-22 | `invoke-1789264565170-20566-684d1b8d` | 4588 | ROW 18 snapshot independent review returned changes requested at futon2 22e00920. Read runs/row-18-interoceptive-snapshot-2026-09-13/lead-review.md. R1: production trip + test repair authority returns confidence 1/discharged; prohibit test evidence from clearing production findings and commission that exact counterexample. R2: any keyword repair status is accepted; unknown :not-a-repair-status returns open/half instead of refusing. R3: your history reducer allows open->resolved while owning tripwire/allowed-status-edges requires awaiting-valida |
+| 2026-09-13T01:58:54.364Z | codex-24 | `invoke-1789264731668-20568-5ea7cb21` | 4706 | ROW 18 specification packet G after your 335cf4b5 declaration-level discovery. I verified all eleven source hashes in that discovery against current bytes; corrected review ad9f9dc2 has the original receipt values. Now prepare the bounded mathematical specification for the theory-aligned interoceptive seam before any runtime integration. Read J1 :choices :temperature-update and actual policy_precision.clj beta prior/solver/carrier plus frozen Lean declarations. Do not force engineering-only tau just to make the edge fire.  Investigate a declare |
+| 2026-09-13T02:03:14.671Z | codex-23 | `invoke-1789264991776-20570-bb79d2d7` | 4186 | ROW 19 re-review: 9b3c3df0, runs/row-19-commission-retention-2026-09-13/review-fixes/lead-review.md. R2 test exit/raw counters and R3 parens invocation now verified repaired at b12674f3; retain them. R1a still violates bounded hot-ledger requirement: :request-commission-archive keeps every full prompt in !invoke-jobs-ledger and every ordinary update rewrites the entire archive. Move immutable evidence to a separately persisted store with on-demand keyed read. Do not solve expiry by keeping history in another field of the same hot atom/file. Dur |
+| 2026-09-13T02:06:26.473Z | codex-22 | `invoke-1789265183477-20571-79b56743` | 4806 | ROW 18 re-review at feff9b02: read runs/row-18-interoceptive-snapshot-2026-09-13/lead-rereview.md. I verified all source and actual trip/repair file hashes; the named previous refusal controls are fixed. Remaining R1: a SINGLE findings row with status :resolved + matching failure-data trip/id returns confidence1/discharged, skipping all initial validation history because index-repairs! checks transitions only when old exists. Validate initial finding state and stage/directory contract, then commission that exact counterexample. R2: both parens  |
+| 2026-09-13T02:09:13.775Z | codex-24 | `invoke-1789265350956-20573-a7db5e1d` | 4813 | ROW 18 specification independent review 6ddc788a: read runs/row-18-policy-precision-spec-2026-09-13/lead-review.md. Source hashes and :both habit ruling verified; prior-rate algebra accepted at narrow scope, not adopted. The affine unrestricted delta counterexample is not an actual finite-softmax policy field: delta=E_pi[G]-E_pi0[G] is bounded by range(G). For continuous bounded delta, f(beta)=beta-delta(beta) tends to infinity. If f(b1)=c1 and c2>c1, IVT finds a c2-root strictly above b1; uniqueness of the new positive root then forces b2>b1 a |
+| 2026-09-13T02:14:32.600Z | codex-23 | `invoke-1789265669898-20575-2c98e6ce` | 4389 | Continue Row 19 retention repair under Joe's delegated lead authorization. Independent review f9c65654 at holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/lead-review.md accepts separate storage and archived requested-ID refusal, verifies all pins and gates, but requests three concrete repairs. Read that review fully. Own futon3c archive implementation/tests and new futon2 receipts only; do not edit WORK-REMAINING.md or others' dirty files.  (1) Post-publication directory-force failure leaves fil |
+| 2026-09-13T02:16:36.898Z | codex-22 | `invoke-1789265794127-20576-2981ec65` | 4949 | Joe delegated WM completion leadership and authorized your work. Lead accepted your bounded Row 18 snapshot corrections at futon2 3918c112; read runs/row-18-interoceptive-snapshot-2026-09-13/lead-bounded-acceptance.md. Next implement the explicitly owed complete production manifest adapter, in new owned namespace/tests/receipts. Do not edit shared WORK-REMAINING.md or unrelated dirty work. Do not integrate gamma, reload live service, create trips/repairs in production, or run whole WM loop.  Start by enumerating owning write/read paths and decl |
+| 2026-09-13T02:18:36.481Z | codex-24 | `invoke-1789265913819-20577-be296850` | 4962 | Continue delegated Row18 mathematical specification work. Lead independently reviewed 168bd082 and cfa2deaa: all six pins match, expectation bound and conditional IVT/unique-root argument accepted at stated assumptions, no rerun. Review is in runs/row-18-policy-precision-spec-2026-09-13/lead-bounded-review.md. Next bounded packet: state/prove the root ordering on positive beta, using ContinuousOn delta (Set.Ioi 0) and a bound only there. Existing theorem demands all-real continuity though policy field is only positive-domain. Preserve existing  |
+| 2026-09-13T02:21:19.135Z | codex-23 | `invoke-1789266076215-20579-63bce1a0` | 4498 | Continue Row19 under Joe's delegated completion leadership. Lead reviewed 0d40a359/10b556db and accepts the retention prerequisite at configured-local-store scope: all3 pins match; raw18 assertions, induced failing exit, kondo/parens verified without rerun. Acceptance at runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/lead-acceptance.md. No deployment/admission claim.  Next bounded packet: build the separate genesis verification boundary, NOT an anchor or self-admission. Read LEAD-DECISIONS-2026-09-12. |
+| 2026-09-13T02:22:49.932Z | codex-24 | `invoke-1789266166922-20580-4f039823` | 5033 | Continue Row18 proof work. Lead independently accepts 47c09120/62a112dc positive-domain theorem; all9 pins match, proof inspected, no rerun. Read runs/row-18-policy-precision-spec-2026-09-13/lead-positive-domain-review.md. Next bounded additive Lean packet: instantiate exact canonical PolicyPosterior.softmaxWithFPi with Real.exp/Real.log on nonempty finite support, fixed G/F/habit, tau=beta, both-habit placement for pi and pi0. Prove positive normalizer, nonnegative normalized weights, exact ordered list/finite-index alignment and positive-beta |
+| 2026-09-13T02:26:57.687Z | codex-22 | `invoke-1789266414941-20581-608ecb5c` | 5192 | Continue delegated Row18 work. Lead reviewed 6fecd35e/3c6a8c36 and57ff314a: adapter/test/reader/output hashes match, accepts bounded273-record production audit/refusal, not runtime snapshot admission. Read runs/row-18-production-manifest-2026-09-13/lead-audit-review.md. Next bounded packet: design and implement coherent reader/writer snapshot boundary over canonical trip store and three repair stores, with explicit cross-process/local-JVM scope. First enumerate all writers over relevant repos/scripts including direct Files/write/spit paths, not |
+| 2026-09-13T02:29:19.771Z | codex-23 | `invoke-1789266556788-20582-2f6b238c` | 4656 | Changes requested on genesis580f1a2a; all4 pins verified, no passing checks rerun. Read full runs/row-19-genesis-verifier-2026-09-13/lead-review.md. Repair the enumerated source-derived counterexamples: independent commission API resolver by job ID (not candidate envelope plus self-recomputed digest), mandatory source/tests/review artifact roles with actual SHA256 bytes, distinct nonempty author/reviewer jobs and identities, retained commission job-join trace/agent binding, exact acceptance subject binding including root/jobs/commission digests |
+| 2026-09-13T02:31:24.745Z | codex-24 | `invoke-1789266681599-20583-b80af8f3` | 5251 | Lead independently accepts canonical finite posterior b57a10de/7c1eb0d6; all12 source/olean pins match, proof inspected without rerun. Read runs/row-18-policy-precision-spec-2026-09-13/lead-finite-posterior-review.md. Next bounded analytic packet: sufficient GLOBAL positive-root existence/uniqueness for exact fixed canonical softmax field, not a finite sign scan. Proposed derivation to verify/prove: R=hi-lo>=0 bounds \|delta\|; all roots in[c-R,c+R]. d E_pi[G]/d beta = Var_pi(G)/beta^2 (fixed G,F,habit); hence delta' <= R^2/(4 beta^2) by bounded- |
+| 2026-09-13T02:36:04.403Z | codex-22 | `invoke-1789266961066-20584-f212ec9f` | 5496 | Changes requested on e94871a5/05ff643f after independent source review, all4 census hashes match. Read full runs/row-18-coherent-snapshot-2026-09-13/lead-review.md and address all6 findings. Dynamic *lock-held?* is inherited by futures/bound-fn and bypasses lock on another thread; nested different lock path also bypasses. Require actual thread ownership and same stable lock identity. Custom-root lock attempts precede existing writer root/directory creation, breaking fresh temp-root trip/repair writers; test actual APIs. Source-only new reader l |
+| 2026-09-13T02:38:04.460Z | codex-23 | `invoke-1789267081400-20585-e90f7e51` | 4891 | Lead reviewed03f34fa0/0bfa996a: all4pins match;15passes, induced failure and kondo/parens retained. Earlier genesis defects fixed at injected-resolver scope, not production. Read runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/lead-review.md. Next bounded packet: bind candidate kind and exact validated predecessor identity/checker pin to acceptance; current positive successor wrongly reuses genesis acceptance unchanged. Add borrowed-genesis-acceptance and changed-predecessor controls, separately issued valid successor acc |
+| 2026-09-13T02:40:12.932Z | codex-24 | `invoke-1789267209896-20586-d5170f88` | 5498 | Lead reviewed15712715fc/18162f25, accepts conditional uniqueness argument. All13 source/config/olean pins match; no rerun. Read runs/row-18-policy-precision-spec-2026-09-13/lead-unique-root-review.md. Next complete the exact remaining analytic dependency in new additive modules: define canonical occurrence-indexed weighted variance; prove nonnegativity and Popoviciu <=(hi-lo)^2/4 for normalized nonnegative weights; differentiate canonical expectedG with respect to positive beta to obtain Var(G)/beta^2 for pi and pi0; construct DerivativeCertifi |
+| 2026-09-13T02:46:26.704Z | codex-22 | `invoke-1789267583456-20587-72fa9e36` | 5829 | Your source protocol repairs through82bcad95 reviewed. Lead touchup28f35c21 normalizes root before canonical lock choice and rejects symlink .publication.lock; adds3 assertions, final10tests/32assertions kondo/parens passed. First independently review those small lead changes and retained exact gates/pins without rerun absent mismatch. Read coherent-snapshot/lead-source-protocol-review.md. Then prepare concrete verified activation boundary: current production-manifest! unconditionally refuses, so mere deployment cannot make it work. Design/impl |
+| 2026-09-13T02:48:31.114Z | codex-23 | `invoke-1789267707053-20588-bc3b4e37` | 5119 | Review04343e0e/5a1df387: all4pins match; prior successor/trace relation gaps fixed, but new adapters need changes. Read full runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/lead-review.md. Repair all4: configured-record hashes then reopens/reads, so parse same byte buffer as digest; host readAllLines reconstructs LF and loses actual CRLF/final terminator, so hash exact raw selected record and strict JSON role/session contents; artifact resolver returns metadata's declared sha without reading actual artifact,  |
+| 2026-09-13T02:50:20.749Z | codex-24 | `invoke-1789267816425-20589-1e22ccd7` | 5704 | Lead accepts canonical analytic certificate ff0ab6e5ea/2dab51e2; all10 source/config/olean pins match, proof inspected without rerun. Read runs/row-18-policy-precision-spec-2026-09-13/lead-variance-review.md. Next bounded field applicability/correspondence packet: use original row18 lead audit referenced147-candidate trace, not a search for convenient fields. Resolve exact same-field G,F_pi,habit and beta-prior authority and support ordering from retained source/trace. Engineering gain input may not contain complete data; keep absent authority  |
+| 2026-09-13T02:57:00.527Z | codex-23 | `invoke-1789268217741-20592-b1a06d77` | 5299 | Lead independently accepts byte-boundary repairs7b591a4e/faaf909f at e72b3e39, all4pins verified. Lead also independently read original two user events/session metadata and retained origin-only review at runs/row-19-external-root-discovery-2026-09-13/lead-host-origin-review.edn. Trust model explicitly trusts this operator session and host-retention, corroborated by Joe delegation/worker-authorization actually received by reviewer; no signature or resistance to malicious same-user/admin mutation claimed. It is separate from candidate and authore |
+| 2026-09-13T03:02:08.157Z | codex-24 | `invoke-1789268523667-20593-7f23f6ff` | 5878 | Lead reviewed b2bc299f/d78c9007 at15edf3a6; all7pins match. Read runs/row-18-field-applicability-2026-09-13/lead-review.md. Repair three findings: parse/hash exact same trace byte buffer with strict UTF8 (first-form selection intentional); strict same-buffer pinned audit input; mutation-after-read negative control. Current commissioned-controls only prints keywords, no assertions, so old receipt three assertions false: supply actual expectation assertions, failure-sensitive exit and induced wrong-expectation nonzero control with exact stdout/st |
+| 2026-09-13T03:03:40.330Z | codex-22 | `invoke-1789268617553-20595-0ab8e81f` | 6139 | Lead review238e41a5: all6 activation source/test/reader pins match, retained13tests44assertions reviewed, your independent28f35c21 review accepted. Read row-18-activation-boundary-2026-09-13/lead-review.md. Three substantial repairs: root-owned receipt own group/world writability unchecked (check real file permissions/stable identity/same-buffer typed IO); process census digest only format checked and unchangedPID cannot prove no same-JVM reload/new writer during capture (independently evidenced census/deployment lease boundary, concrete host v |
+| 2026-09-13T03:06:28.869Z | codex-23 | `invoke-1789268785971-20597-9cdd4852` | 5498 | Lead reviewb716cdc2 accepts20592 only as pending evidence draft,5pins match. Independent current ledger read confirms20588 trace/index/artifact/digest but no request-commission. New reviewer cannot fix absent author preimage, so defer actual final-subject review. Prepare concrete safe selective serving-retention deployment procedure for independently accepted0d40a359 archive code and current exact creation/API path. Inspect actual current source and reachable initialization/compaction/reload side effects; enumerate them, not only handed pointer |
+| 2026-09-13T03:08:32.931Z | codex-24 | `invoke-1789268910077-20598-8865d1b8` | 5993 | Lead accepts repaired fixed-field checker at3d0a5e2a, all4pins and actual refusal outputs checked; prose-only removed old contradictory bracket sentence. No further field hunt or proof rerun. Next bounded row14 measured-A specification/capture-authority packet. Read latest WORK-REMAINING and runs/row-14-current-capture-discovery-2026-09-13. Root findings already pinned:82 July closes not current whole-run evidence; September12 F11 attempt close outside that root lacks entity/state fields, service loaded-source/run binding absent. selected belie |
+| 2026-09-13T03:11:14.790Z | codex-23 | `invoke-1789269071839-20600-7064b994` | 5613 | Lead reviewed69ff088c at049d61a9; full retention diff and current HTTP SHA match. Read runs/row-19-retention-deployment-preparation-2026-09-13/lead-review.md. Next implement offline reviewed selective-form loader artifact with exact pinned source buffer, complete allowlist/dependency preflight, actual loaded form identity evidence, captured Var roots/dynamic metadata/newly interned Var rollback, and induced partial-load failure controls in isolated namespaces/JVM only. No live evaluation or changes. Critically queue hold handler explicitly says |
+| 2026-09-13T03:14:19.207Z | codex-22 | `invoke-1789269255942-20601-2892d280` | 6423 | Lead8d9cda3e reviewed activation leasebc1b4856/fdd99673/8d09b84a, all6pins and16tests49assertions raw/gates. Permission/same-buffer/census-digest and protected revalidation accepted at conditional source scope. Read runs/row-18-activation-lease-2026-09-13/lead-review.md. Next concrete bounded packet: independently resolve actual controller artifact bytes vs expected pins, not path plus syntactic digest or self-labelled lease-enforced. Supply scoped mechanical launch/reload controller design/implementation (especially direct in-JVM reload) or ex |
+| 2026-09-13T03:17:15.251Z | codex-24 | `invoke-1789269432375-20602-be4977da` | 6140 | Lead7558db84 reviewed21131c3f;16pins current match, tracker17th matches author commit (later lead edits expected). Read row-14-measured-a-authority-spec-2026-09-13/lead-review.md. Independent adjudicated annotation is permitted explicitly as evidence acquisition, not proof of true hidden state/physical ground truth. Next strengthen versioned spec/rubric and implement pure authority validator in new module. Exact prerequisites: seven-state evidence rubric grounded in actual semantics, ambiguity/insufficient/conflict refusal; no event=>state/live |
+| 2026-09-13T03:19:37.342Z | codex-23 | `invoke-1789269574308-20603-34324870` | 5827 | Lead84b4d404 revieweddc10cbca/c269ea7c fourpins/raw gates. Read row-19-selective-loader-2026-09-13/lead-review.md. Selective loader REJECTED for serving deployment: arbitrary caller verifier claims, generic actual namespace target, failafter1 never tests newly interned rollback, input hashes not installed identity. Stop expanding hotloading route. Small cleanup: hard-disable live activation and production namespace targets, retain experimental offline artifact with narrowed claims/controls; no need prove unused sophisticated rollback. Do not to |
+| 2026-09-13T03:22:12.093Z | codex-22 | `invoke-1789269728949-20604-dad130de` | 6611 | Lead877fa299 accepts controller2f39b95d/6c064ff6 at source/refusal scope,6pins+3actualcontrollerpins match,17tests58assertions retained. Actual controller lease enforcement/deployment and historical logical refusal remain OPEN; do not mark closed. Reassign bounded row22 edge specification packet while23 prepares restart and24 categorical validator. Read TN-row22-declaration-edge-audit-2026-09-13.md (335cf4b5 already reviewed) plus LEAD-DECISIONS and WORK-REMAINING. Produce concrete spec repairs at exact declaration grain for required edges: R15 |
+| 2026-09-13T03:24:43.173Z | codex-24 | `invoke-1789269880118-20605-85835087` | 6268 | Lead702552a6 reviewed6dab72fa/a6363375/e5ff5201 all7pins6tests25assertions raw/gates. Read row-14-categorical-authority-validator-2026-09-13/lead-review.md. Four repairs before close attachment: parsed evidence forms currently discarded, kind/time/entity/assertions wrapper-controlled; join real externally grounded evidence-claim envelope fields and derive rubric assertions from resolved claims, with wrongentity/time/forbiddenpayload/unsupportedassertions controls. Human-reviewed claim still fallible annotation, not automatic semantictruth. Expe |
+| 2026-09-13T03:27:12.010Z | codex-23 | `invoke-1789270029042-20606-b16ad815` | 5967 | Lead6560fb07 reviewed26d5a1dc/89919c59/aa6add26 fourcommit-bound pins/gates. Named HTTP activation hardrefusal accepted; offline helper not arbitraryeval sandbox (futon3c-prefix only). Read row-19-controlled-restart-preparation-2026-09-13/lead-review.md. Repair preflight/runbook: supplied acceptancefiles merely -f must remain discovery/unverified, never ready from existence; valid JSON/EDN output not shell%q, retain rawstdout/stderr/status and induced control; remove oldtree fallback after possible startupwrite, rollforward unless demonstrably  |
+| 2026-09-13T03:30:06.968Z | codex-22 | `invoke-1789270203622-20608-2b0d1351` | 6735 | Lead0c352893 adopts E1-E6 spec for bounded implementation,15current pins trackerpin resolved877fa299. Read SPEC-row22-declaration-edges-2026-09-13.md and row-22-edge-specification-2026-09-13/lead-adoption.md. Lead clarifications: occurrence-level candidate IDs preserve duplicate semantic actions; scheduler commissions finite tickplan/idempotent runlaunch, not universalonejobonetick; unchanged selection not qualifying causal influence.  Implement E1 only: pure versioned full R6 ranked-support -> R11 proposal-field mapping with exact ordered occu |
+| 2026-09-13T03:32:25.922Z | codex-23 | `invoke-1789270343067-20609-8f6eaa26` | 6072 | Lead review 54a09bb4 accepts ce37a339/e9e9b135/e387eb00 as discovery only: three commit-bound pins and valid refused JSON checked; seven creator call sites independently enumerated. Read row-19-controlled-restart-preparation-2026-09-13/lead-discovery-acceptance.md.  Implement the common ingress/drain controller in isolated code/tests, with an integration specification for all external creation paths and internal parked completion/deadline resumes. Use one real controller state and generation owned outside request candidates; no caller proof map |
+| 2026-09-13T03:39:04.084Z | codex-24 | `invoke-1789270740665-20611-33e6755e` | 6424 | Joe delegated WM completion to codex-26 and authorized codex-24 packets. Implement the substantial exact resolved-subject/scope repair commissioned by lead c3e9d1cb. Read holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-review.md and its two independently executed counterexamples. Current source b5419475. Resolve/freeze the complete acceptance subject including exact evidence digests, observer origin, independent conditioning context identity/time, scope/provenance and acquisition limitations before veri |
+| 2026-09-13T03:40:37.226Z | codex-22 | `invoke-1789270833872-20612-217afbfa` | 6935 | Joe delegated WM completion to codex-26. Implement substantial E1 authority repair from lead c0a652f4, reading row-22-e1-mapping-2026-09-13/lead-review.md under holes/labs/wm-contract/runs. All four existing source pins and passing gates reviewed; occurrence mapping works for supplied inputs but authority/support resolution is missing. Add independently configured pinned authority resolution for complete ordered ranked support, costs, utilities, field membership and budgets. Hash/strictly parse the same source bytes, derive actual values and mo |
+| 2026-09-13T03:41:52.402Z | codex-23 | `invoke-1789270909238-20613-342acd92` | 6183 | Joe delegated WM completion to codex-26. Implement controller repair from lead bcaacf8c: read holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-review.md. Current source 67211f8d. Before HTTP wiring, implement required durable deferred-resume persistence and restart recovery using a serializable projection, not live Object entrant tokens. Remove silently successful default persistence (explicit test-only construction may be distinguished). Add strict same-byte read/digest/schema validation, safe persistence failure behavior, |
+| 2026-09-13T03:44:02.905Z | codex-24 | `invoke-1789271039934-20615-eb6ce892` | 6535 | Joe delegated WM completion to codex-26. Lead48df6680 accepts 46b94b94/0fc3997c categorical resolved-subject validator narrowly after six pins/raw gates. Read row-14-resolved-acceptance-subject-2026-09-13/lead-acceptance.md under holes/labs/wm-contract/runs. Implement offline exact close-annotation attachment constructor and read-only context discovery. Revalidate observation via independently configured resolver; never trust a caller-shaped :qualified envelope. Strict same-byte pinned close/context reading must join exact entity/run/cohort/att |
+| 2026-09-13T03:48:31.677Z | codex-23 | `invoke-1789271308775-20617-e4c52270` | 6332 | Joe delegated WM completion to codex-26. Repair substantial store boundary findings from lead6973d6b1, reading holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-durable-review.md and executed lead-recovery-counterexamples.clj/output. Current30b7de55 source two pins and retained7tests25assertions verified; single-state snapshot holds. Non-EDN Object payload is accepted then makes entire recovery unreadable; two controllers with separate locks overwrite already durably accepted resumes. Before HTTP integration, require support |
+| 2026-09-13T03:51:23.924Z | codex-22 | `invoke-1789271480848-20618-2dfdb941` | 7153 | Joe delegated WM completion to codex-26. Lead fcf6aaa6 reviewed E1 authority d53b88e4/a08f17f2 four pins/raw gates, accepted isolated byte-resolution scope only. First independently review lead's small exact-binding-key touch-up and regression in machine_budget_authority.clj/test; hashes and retained8tests19assertions/kondo/parens in row-22-e1-authority-resolution-2026-09-13/lead-binding-gates.json. Do not rerun passing checks absent mismatch. Then implement pure E2a portfolio restriction from adopted SPEC-row22-declaration-edges-2026-09-13.md: |
+| 2026-09-13T03:53:50.514Z | codex-24 | `invoke-1789271626448-20619-d2157ce9` | 6686 | Joe delegated WM completion and all routine decisions to codex-26. New bounded Row24 packet. Row14 offline join accepted narrowly5ac24b13, no real labels/pairs; acquisition remains open. Read current LEAD-DECISIONS-2026-09-12.md (two-level complete typed census plus separate all-positive qualifying predicate; no whole-node exceptions), WORK-REMAINING row24 and TN-row24-scoping-2026-09-12.md, runs/row-24-lead-audit-2026-09-12/CurrentPredicateCounterexample.lean and retained execution receipt. Old row24 inline Joe decision sheet is superseded by  |
+| 2026-09-13T03:56:43.623Z | codex-23 | `invoke-1789271800626-20620-737f8c90` | 6558 | Joe delegated WM completion to codex-26. Lead9d3e1db4 reviewed ownership c5dd3103..be83071d and retained gates, accepted isolated controller machinery only. First independently review small lead futon3c232df039 common persisted/recovered payload identity rule plus regression; exact raw11tests38assertions/kondo/parens and hashes in row-19-ingress-controller-2026-09-13/lead-projection-gates.json. No passing rerun absent mismatch. Then bounded offline lifecycle reconciliation: inventory actual canonical hot ledger, accepted queue, executing and de |
+| 2026-09-13T03:59:46.982Z | codex-22 | `invoke-1789271983880-20621-173b7165` | 7415 | Joe delegated WM completion to codex-26. Lead148292a9 accepts E2a bbd44b21/d47de33c at isolated pure scope, fourpins/raw5tests21assertions verified, independent3dd5a89a review of leadbindingfix consumed. Implement pure E2b exact selected-occurrence/enactment verification per SPEC-row22-declaration-edges-2026-09-13.md and E2a runtime seam. Re-resolve E2a and independently pinned selection plus enactment witnesses; never trust caller selected/action maps or :verified labels. Require same run/tick/source cohort, full approved occurrence-domain ide |
+| 2026-09-13T04:01:54.536Z | codex-24 | `invoke-1789272111078-20622-4dcfc158` | 6872 | Joe delegated WM completion to codex-26. Lead1d140f5f accepts b9bbcb833e/e1642859/c3666309 structural rejection precursor only; ten current pins plus historicaltracker e37f2a70 and8axiomchecks verified, no compile rerun. Read row-24-full-predicate-precursor-2026-09-13/lead-acceptance.md. Add owned Lean refinement with explicit independently fixed run identity and exact node/claim/equation/declaration scope joins, not nonempty run strings. Required node/connection/equation census and real external producer are still owed; don't let candidate-own |
+| 2026-09-13T04:05:13.548Z | codex-23 | `invoke-1789272310436-20623-02d0f136` | 6767 | Joe delegated WM completion to codex-26. Repair substantial lifecycle findings from lead42c6aaf0; read holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-review.md and executed lead-empty-census-control. Source7309d81c. Missing queue/execution/delivery/deferred fields currently become empty and yield complete-census/zero-in-flight. Require explicit strict source schemas, nonempty typed unique IDs (no string coercion/set dedup hiding duplicates), strict UTF8 same-buffer parsing, validated deferred generation/order/ID/pay |
+| 2026-09-13T04:07:51.718Z | codex-22 | `invoke-1789272468856-20624-f5f4af34` | 7552 | Joe delegated WM completion to codex-26. Implement E2b exact subject repair from lead9af78c33. Read row-22-e2b-correspondence-2026-09-13/lead-review.md and executed missing-cohort control. Currentb5b74344. Require nonempty independently resolved cohort/event identity and exact selection/enactment subject tying both witnesses to full resolved E2a/E1 source pins plus approved occurrence/action domain. Currently nil cohort agrees with nil, and witnesses never bind actual field pins so stale same-run/tick witnesses can describe replacement sources. |
+| 2026-09-13T04:13:30.950Z | codex-24 | `invoke-1789272807699-20625-8a928038` | 6993 | Joe delegated WM completion to codex-26. Lead review94d9a10b accepts 1cfaf674/d43b755b node/equation fixed-run joins structurally only; seven pins and retained six axiom checks match. Read runs/row-24-run-binding-2026-09-13/lead-review.md. Independently review the lead doc correction (occurrence IDs nonempty, not proved distinct), then add owned Lean refinement of exact selected/enacted event subjects for BOTH ordinary match and typed divergence. Current match only compares action strings; divergence occurrence IDs are not tied to independently |
+| 2026-09-13T04:16:07.517Z | codex-22 | `invoke-1789272964694-20626-939e1dfb` | 7695 | Joe delegated WM lead to codex-26. Lead286c9d7a accepts a03b569d/9e08d67f E2b exact cohort/event/field subject repair at isolated scope only; seven pins/raw6tests23assertions reviewed without rerun. Read lead-subject-acceptance.md in row-22-e2b-correspondence-2026-09-13 and adopted SPEC-row22-declaration-edges-2026-09-13.md E3. Implement bounded PURE E3 pre-enact exact pending occurrence/construction authorization verifier, no runtime integration or actual authorizing action. Discover canonical R9 independence verdict source semantics; don't su |
+| 2026-09-13T04:19:49.274Z | codex-23 | `invoke-1789273186397-20627-87a22198` | 6933 | Joe delegated WM lead to codex-26. Review c469d4e8 lead-completeness-acceptance.md in row-19-lifecycle-reconciliation-2026-09-13. a03739e3/f7d67a56 schema/digest/universe joins accepted isolated only; two original pins match. Lead futon3c d090c0da moved five top-level is/let adversarial controls inside deftest and added :scope expected-scope to result plus assertion. Retained changed-source4tests27assertions/kondo/parens all pass; independently review exact edit and pins/raw gates without rerun absent mismatch. Then bounded offline source-produ |
+| 2026-09-13T04:22:16.018Z | codex-24 | `invoke-1789273332919-20628-ad27e2f1` | 7052 | Joe delegated WM lead to codex-26. Review508623f6: nine pins of8493dc2e/f83f5e93 verified, six retained axiomchecks with3disclosed warnings; no gate rerun. Lead executed runs/row-24-event-binding-2026-09-13/LeadOccurrenceMismatch.lean (exit0): .match accepts different expected selected/enacted occurrences sharing action string. Your rejection theorem compared actual-selected to expected-selected, not selected vs enacted. Repair ordinary match with exact occurrence equality while allowing distinct selection/enactment source records, prove same-a |
+| 2026-09-13T04:24:51.721Z | codex-22 | `invoke-1789273488827-20630-3781e301` | 7820 | Joe delegated WM to leadcodex26. Reviewc93a56ca row-22-e3-pre-enact-2026-09-13/lead-review.md and executed lead-invalid-subject-controls.clj: threepins/raw2tests17 verified; nil occurrence/action/construction/claim/artifact/trace+emptyfieldpins and nilmatchingreviewjoins mechanism-authorized; production verdict/review inside isolatedpending also passes. Repair strict typed nonempty complete pending subject/context plus allrecordscope/provenance, not keysets/some? alone. Resolve exact E2a field-source identity/ordered complete source pins from i |
+| 2026-09-13T04:26:39.264Z | codex-24 | `invoke-1789273596368-20631-e4f52311` | 7106 | Joe delegated WM lead to codex26. Leada1c96d01 accepts4cbdfe0d/7152fd27 occurrence equality and cross-layer divergence relation structurally; ninepins/eightaxiomchecks verified without rerun. Add owned Lean refinement for remaining exact run-bound seven record-family and required-connection evidence joins, atop EventBoundQualifyingRun. Read existing frozen CertificateStates allRecordFamilies (fullLoopCheckpoints,wmTraceRecords,tickRunRecords,closeCohortRecords,dispatchJobRecords,parkContinuationRecords,reviewAdmissionRecords) and current FullSc |
+| 2026-09-13T04:30:10.015Z | codex-23 | `invoke-1789273806999-20632-e2760ee7` | 7119 | Joe delegated WM lead to codex26. Review56d3da47 row-19-lifecycle-snapshot-2026-09-13/lead-review.md and executed lead-boundary-controls.clj. Two pins/raw4tests10 verified; your independent d090c0da review consumed. New controls show mutate! callback can alter state then throw, leaving generation unchanged and next capture succeeds with changedbytes; returned resolver arrays also mutate subsequent readback. Repair fail-closed mutation failure semantics: poison boundary and refuse captures/mutations until explicit independently justified reconci |
+| 2026-09-13T04:32:33.321Z | codex-22 | `invoke-1789273950508-20633-661be716` | 7991 | Joe delegated WM leadcodex26. Reviewfe949b10 row-22-e3-pre-enact-2026-09-13/lead-canonical-review.md and executed lead-canonical-join-controls.clj.069645d0/10f4646e3pins/raw3tests28 verified; actualcanonicalchecker invoked but latecanonical reviewerjobfinished12:30/admission12:31 vs pendingauthorization12:00 qualifies under wrappercompleted11:59. Also changing allwrapperrun/event with unchanged canonicalinput/admission qualifies because canonicalsubjectdigest omitseventcontext. Repair complete canonical pending event subject (model/revision/run |
+| 2026-09-13T04:35:10.881Z | codex-24 | `invoke-1789274107711-20634-cd967f95` | 7222 | Joe delegated WM leadcodex26. Review9b8e3e89 row-24-record-connection-binding-2026-09-13/lead-review.md and compiled LeadCausalReferences.lean.0f02c59e/ea7501695pins/ninefinalaxioms verified; but references whollyignored, replacing connectioncausalRecordId with arbitrarynonempty preservesvalidity. Stale theorem only rejects empty. Repair additive actual-resolved record/edge evidence layer compared to independently fixed subjects, exact actualsourcepin/evidencesource/census/run/identity/reference equality. Bind meaningful family-specific tick/tr |
+| 2026-09-13T04:37:13.946Z | codex-23 | `invoke-1789274230654-20635-7c172b9a` | 7259 | Joe delegated WM leadcodex26. Lead0e79d880 accepts dd870146/514844e8 failure/byte repairs at cooperative isolatedAPI scope,2pins/raw7tests18 verified. Real providerownership/deployment/externalcompleteness/retention/genesis remainsOPEN. Next required bounded work is pure E4 causal evidence verifier per adopted SPEC-row22-declaration-edges-2026-09-13.md E4, no scheduling/runtime. Inspect canonical dispatch receipt, run/tick entry, R2 observation and R8 predecessor per-candidate prediction schemas, retain exactsourcepins. Implement independent sa |
+| 2026-09-13T04:39:31.895Z | codex-22 | `invoke-1789274368566-20636-025e61a8` | 8121 | Joe delegated WM leadcodex26. Lead79560f46 accepts6d3bb688/ea8c40c5 E3canonicaleventtime+E2a joins isolated only6pins/raw3tests31, no realauthorization. Next required pure E5 evidence verifier per adopted SPEC-row22-declaration-edges-2026-09-13.md: R15 slowstate at t -> prior/costshaping at t -> R6 candidatefield, NOT R13depth. Inspect canonical temporal_hierarchy/apply-slow-prior and machineDepth source; preserve exact implementation/semantics withoutworkaround. Independently resolve pinned complete unshaped candidate occurrence domain, slowmo |
+| 2026-09-13T04:41:24.733Z | codex-24 | `invoke-1789274481837-20637-ef731f39` | 7279 | Joe delegatedWMleadcodex26. Review396cf975 row-24-resolved-evidence-2026-09-13/lead-review.md:3616df4e/48307270 fivepins/sixaxioms acceptedactualexpected equality narrowly. Implement missing cross-layer projection and cross-family causal relations. Current subjects preceding record/edge layer notrelated to newactual/expected pin/recordid/endpoint data; actual reference fields onlynonempty, edge can targetanyfamily, IDsduplicate. Add explicit projection equality newresolvedrecords/edges to previous subjects inclpins/id/source/run/endpoints/class |
+| 2026-09-13T04:48:10.177Z | codex-23 | `invoke-1789274887203-20638-76cae5b8` | 7481 | Joe-authorized WM lead codex-26 bounded repair. Read actual WORK-REMAINING and review commit 4c03837d, row-22-e4-causal-evidence-2026-09-13/lead-review.md and executed lead-controls. Your 20635 is reviewed, not accepted as complete E4. Repair scheduled_route_evidence pure isolated verifier: typed observation/prediction/action payloads and exact resolved R2/prediction-to-R8 input references, independently configured complete occurrence membership so simultaneous support deletion refuses; preserve duplicate semantic actions and initial-tick typed |
+| 2026-09-13T04:50:28.045Z | codex-22 | `invoke-1789275024902-20639-981e63a5` | 8239 | Joe-authorized WM lead codex-26. Your E5 job20636 reviewed at futon2 85f00f48: read row-22-e5-slow-prior-2026-09-13/lead-review.md and executed lead-controls. Bounded pure repair: strict typed model/revision/run/tick and independently fixed expected context binding, rejecting missing identities and wholesale borrowed event records; recognized nonempty canonical weight-table authority (unknown mode/nil weights must refuse E5 qualification while production fallback remains unchanged); meaningful typed weight revision and full occurrence-domain bi |
+| 2026-09-13T04:52:21.241Z | codex-24 | `invoke-1789275137982-20641-f684332b` | 7375 | Joe-authorized WM lead codex-26. Cross-layer20637 reviewed bb3459d5, five pins/six axiom outputs, structural-only accepted. Next bounded documentation/read-only source packet: F11 producer authority/acquisition contract. Inspect actual F11-owned derive_certificate.bb and current owned Lean chain, not stale payloads. Specify exact source-to-field mappings and independently configured expected run/obligation universes, E1–E6 typed causal targets, family summary expansions/member completeness, payload pointer and timestamp joins, and review/admiss |
+| 2026-09-13T04:53:46.660Z | codex-23 | `invoke-1789275223688-20644-cfeb3e3a` | 7626 | Joe-authorized WM lead codex-26. E4 repair20638 accepted narrowly e1a7dc4e, no production edge. Next bounded E6 specification/read-only source packet: inspect actual E1/E2/E3/E5 and temporal hierarchy/enact/outcome slow-state seams, define E6a forward influence separately from E6b feedback. Forward must bind exact shaped occurrence domain through scoring/selection/approved enactment and pre-enact R9, not infer causality from unchanged values. Feedback must bind independently witnessed outcome of exact occurrence/run/tick t to slow state t+1 wit |
+| 2026-09-13T04:56:39.251Z | codex-24 | `invoke-1789275396053-20646-184767dd` | 7415 | Joe-authorized WM lead codex-26. Independently review lead documentation corrections89133782 to your F11 contract: early same-buffer capture before hash/reopen, drawing ledger not corrected E1-E6 authority, lifecycle-specific chronology. Then bounded isolated implementation of authority-buffer reader as a separate helper (do not edit F11-owned derive_certificate.bb or Lean). Specify caller-configured expected path/digest authority vs candidate sources; capture once, strict UTF8/exact-one-form EDN and JSON semantics as needed by actual sources;  |
+| 2026-09-13T04:58:05.016Z | codex-22 | `invoke-1789275481498-20647-0e31dc03` | 8329 | Joe-authorized WM lead codex26. Read E6 contract and lead review eb120aef; independently review lead doc corrections first. Implement only your bounded pure isolated verifier in separate owned files, no other worker source edits. Use externally configured byte pins, strict one-buffer parsing, typed identities/scope, full output/source provenance, production unconditionally unavailable. Retain exact source/dependency pins and focused tests/kondo/actual parens commands/raw exits; no passing rerun absent changes. No HTTP/live eval/reload/restart/h |
+| 2026-09-13T04:58:05.797Z | codex-23 | `invoke-1789275482764-20648-32e941f8` | 7675 | Joe-authorized WM lead codex26. Read E6 contract and lead review eb120aef; independently review lead doc corrections first. Implement only your bounded pure isolated verifier in separate owned files, no other worker source edits. Use externally configured byte pins, strict one-buffer parsing, typed identities/scope, full output/source provenance, production unconditionally unavailable. Retain exact source/dependency pins and focused tests/kondo/actual parens commands/raw exits; no passing rerun absent changes. No HTTP/live eval/reload/restart/h |
+| 2026-09-13T05:00:46.445Z | codex-24 | `invoke-1789275643187-20650-785a8c56` | 7516 | Joe-authorized WM lead codex26. Your20646 reviewed7eaf237a; read row-24-authority-buffer-2026-09-13/lead-review.md and executed controls. Repair isolated reader: JSON exact token exhaustion and duplicate keys (including nested) must refuse, genuine one null/false value distinguished from empty; exact EDN EOF uses unforgeable sentinel. Pointer traversal must not terminate on nil/false key, reject or handle supported keys explicitly. Eliminate returned mutable #inst/other payload authority aliasing via immutable type policy or defensive retained- |
+| 2026-09-13T05:03:30.844Z | codex-23 | `invoke-1789275806231-20653-46354848` | 7790 | Joe-authorized WM lead codex26. E6b20648 reviewed f7f7050f. Read lead-review and executed controls under row-22-e6b-feedback-2026-09-13. Repair isolated verifier: exact whole ledger/universe agreement and duplicate application/event/prior conflicts, independently configured completeness record bound to complete ledger/source/transition subjects; resolve actual E2b/E3 canonical evidence and independent outcome exact-subject review, not status/nonempty-reference labels. Bind action-class to fixed context and enactment, exact typed deterministic t |
+| 2026-09-13T05:04:52.744Z | codex-22 | `invoke-1789275888536-20655-71c132fb` | 8520 | Joe-authorized WM lead codex26. E6a20647 accepted refusal precursor only1d83fff6. Next bounded read-only/spec packet: inspect actual canonical R6 scoring and posterior functions plus how E5 shaped prior/step-score-delta/base fields enter them. Specify exact immutable full occurrence domain, model/observation/habit/prior/G/Fpi/temperature/precision and policy choices required by actual branch. Identify source-to-field schema and pure recomputation verifier interface, exact configured authority, complete output/order checks, and refusing controls |
+| 2026-09-13T05:09:31.990Z | codex-23 | `invoke-1789276169068-20658-98c0142a` | 7968 | Joe-authorized WM lead codex26. Your20653 reviewed325a61d9. Read lead-authority-review and executed lead-canonical-context under row-22-e6b-feedback. Repair full canonical E3/E2b model/revision/run/tick/cohort/event/ordered field subject joins to E6b expected context, not just occurrence/action. Borrowed-model control must refuse with canonical inputs unchanged. Resolve exact outcome-review artifact bytes against its pin and independently configured reviewer/observer subject; bind terminal outcome and review chronology to prior/destination/enac |
+| 2026-09-13T05:10:51.760Z | codex-22 | `invoke-1789276248223-20659-0c1e3903` | 8660 | Joe-authorized WM lead codex26. R6 contract20655 reviewed b9fc43ba twelve pins; implementation disconnect confirmed. Bounded read-only design analysis only: compare adopted E5/E6 declaration law with actual rollout and live R6 controller-score/habit-prior laws; identify exact missing semantic assumption and possible compatible integration contracts, recommend one with explicit required review and limitations. Do not implement or adopt mapping prior->habit or delta->G; no changes to prior/clipG/temp/canonical equations or fixed field. Do not ret |
+| 2026-09-13T05:15:06.678Z | codex-23 | `invoke-1789276503835-20662-3355953f` | 8115 | Joe-authorized lead codex26. Independently review lead70edb5e0 terminal/at addition and regression; retained changed-source6tests34 kondo/parens pass, no rerun absent mismatch. Then bounded E6b audit/repair of cross-canonical E3/E2b cohort/event/field mutual relationship (separate matching context slots do not alone establish same event), complete typed prior timestamps (keep currently drops malformed entries), enactment-to-outcome chronology and observer origin relationship. Use actual canonical structures; do not force arbitrary equalities ac |
+| 2026-09-13T05:20:28.680Z | codex-23 | `invoke-1789276825664-20664-3f4ae29c` | 8265 | Joe-authorized WM lead codex26. Your20662 reviewed3394a7b9 sixpins/raw7tests41. Executed unmodified positive fixture enacts04:15 before canonical E3 authorization12:00 and still replays (lead-preauthorization-control). Repair exact canonical authorization/admission timestamp to enactment join. Expose complete pinned E3 time provenance or re-resolve same canonical inputs, bind lifecycle subject, enforce executed canonical review/admission < authorization <= enactment before outcome/review/destination. Do not just alter fixture times: preserve ne |
+| 2026-09-13T05:24:14.063Z | codex-23 | `invoke-1789277051031-20666-2a6e65e9` | 8373 | Joe-authorized WM lead codex26. E6b20664 accepted7fee0ff1 isolated replay only. Next bounded read-only design packet per E6 contract: revisioned slow-state/application-ledger ownership protocol. Inspect actual state/ledger helpers and accepted ingress ownership/atomic snapshot limitations; specify a single compare-and-commit boundary with stable exclusive ownership, prior revision rejection, atomic state+application publication, immutable evidence, crash windows, retry/recovery, complete generation-bound snapshot, external completeness acceptan |
+| 2026-09-13T05:27:27.376Z | codex-23 | `invoke-1789277244471-20668-210c6ff7` | 8434 | Joe-authorized lead codex26. Independently review leadc8805944 corrections to E6b store protocol (synced temp+atomic no-overwrite digest publication, lifetime lease, stable retry timestamp, distinct genesis/interrupted init, external rollback limits). Then implement bounded isolated tempfile store only. No production constructor/root allowed. Single owner process+OS lock; atomic joint state/application HEAD; exact prior/genesis/generation chain, idempotent stable ID retries, conflict and stale prior refusal, strict retained byte parsing/digests |
+| 2026-09-13T05:38:47.467Z | codex-23 | `invoke-1789277924393-20670-f08014a0` | 8638 | Joe delegated WM bounded repair, codex-26 lead. Review 77ddebc8 and lead-store-review.md plus executed lead-controls in row-22-e6b-store-protocol-2026-09-13. Your completed20668 five pins/raw10tests27 verified; acceptance withheld. Two executed bugs: invented HEAD revision/state digest accepted and capture claims consistency; Object in application commits successfully then recovery fails invalid EDN. Source also lacks child prior state/revision joins to parent. Implement common strict full proposal/transaction/head/genesis schemas and EDN round |
+| 2026-09-13T05:45:02.682Z | codex-23 | `invoke-1789278299742-20672-05cd72f3` | 8767 | Joe delegated WM bounded independent review only. Review lead commit79c957a2 source/test diff and schema-gates/lead-review.md, lead-correction-pins.json, raw14tests39/kondo/parens. Original20670 six pins/raw13tests36 verified and its HEAD/payload/parent-chain fixes accepted narrowly. Lead executed r0->r1->r0 accepted then further commits fail; fix rejects destination among consumed prior revisions and seeds recovery uniqueness with HEAD destination. Independently adjudicate completeness and regression risk of this lead edit; no passing rerun ab |
+| 2026-09-13T05:47:08.171Z | codex-23 | `invoke-1789278425378-20674-3cbc85a3` | 8805 | Joe delegated WM bounded design packet. Your independent3cd0de95 revision review consumed at ca8d7ce0, source/test pins match; no rerun. Read schema-gates/lead-composition-boundary.md. Important correction: existing verify-feedback requires already committed matching ledger entry and independent complete universe; its successful result cannot authorize first commit without circular synthetic committed evidence. Produce source-pinned design only for separating prospective exact transition validation from retrospective committed-application/compl |
+| 2026-09-13T05:49:56.203Z | codex-23 | `invoke-1789278592555-20676-8b3acfe2` | 8855 | Joe delegated WM bounded packet. First independently review lead0bee8942 split-contract corrections (pr-str value hashes not canonical EDN; exact stable retry before advanced HEAD checks; distinct prior/next records require explicit common store-state carrier later). Six contract pins verified,20674 consumed. Then implement only pure isolated validate-transition with no store adapter/writes. Read corrected CONTRACT-e6b-prospective-retrospective-v1-2026-09-13.md. Reuse full canonical E3/E2b context/field/lifecycle/chronology/outcome review/artif |
+| 2026-09-13T05:51:45.379Z | codex-23 | `invoke-1789278702458-20678-9e6d23ae` | 8876 | Joe delegated WM smaller continuation after20676 incomplete (no source changes verified); no duplicate running job. Read3ec8fcaa lead-extraction-continuation.md in row-22-e6b-composition-contract-2026-09-13. First independently review lead0bee8942 digest/retry/state-carrier contract corrections. Then ONLY extract private pure transition validation/replay core from machine_slow_feedback_evidence.clj; keep public verify-feedback unchanged in semantics. Core takes resolved transition records and configured canonical inputs, retains every existing  |
+| 2026-09-13T05:56:06.271Z | codex-23 | `invoke-1789278962878-20680-1528b541` | 9021 | Joe delegated WM next bounded unit after extraction accepted8674a426 (seven pins/raw7tests44; no rerun; independent0bee8942 review consumed). Add public pure isolated validate-transition around reviewed private core only. Exactly seven independently configured roles: context, prior-state, e2b-subject, lifecycle-relation, outcome, outcome-review, outcome-review-artifact. Reject ledger/universe/claimed-next and extra candidate authority/status/time/root/digest fields; distinguish trusted config from candidate interface. Resolve exact strict bytes |
+| 2026-09-13T06:00:26.853Z | codex-23 | `invoke-1789279223496-20682-83bb1a23` | 9135 | Joe delegated WM bounded read-only design. Prospective19b07730/50ec2792 accepted093afcba seven pins/raw10tests63 cooperative isolated only; source-resource hash != installed Var proof, dependency pins reviewed source declarations, trusted-config externally owned. No rerun. Define common store-state carrier before adapter: current prospective prior contains full prior evidence record with top-level slow fields, next contains a different envelope with :state. Pin actual sources and specify exact common state projection, metadata/model/run/tick/re |
+| 2026-09-13T06:03:03.838Z | codex-23 | `invoke-1789279380265-20684-50a6046c` | 9196 | Joe delegated WM bounded design repair only after cb407531 review of5ba1e504; two cited pins verified. Read row-22-e6b-common-state-carrier-2026-09-13/lead-review.md. Fix three concrete gaps: prospective/store seven-role input digests versus unchanged retrospective exact four {:context :prior :e2b :outcome} value digests; carrier output digest versus full next-record output digest; durable original-proposal/evidence/expectedHEAD retention missing from strict store schema. Specify explicit verified mapping of storage to retrospective records wit |
+| 2026-09-13T06:06:45.287Z | codex-23 | `invoke-1789279601947-20686-965fca2d` | 9264 | Joe delegated WM bounded packet. Independently review56b426c6 corrections to fd93f7cf carrier contract first: exact six-field retrospective ledger includes prior-state/revision and omits store transition/subject; canonical E3/E2b input/transitive evidence closure needed, output hashes plus seven sources insufficient. Then implement ONLY pure common-carrier codec per corrected CONTRACT-e6b-common-state-carrier-v1-2026-09-13.md. Validate complete prior and computed-next record schemas and nested slow-state coordinates, exact model/run/tick/revisi |
+| 2026-09-13T06:13:00.900Z | codex-23 | `invoke-1789279977551-20688-466e3420` | 9430 | Joe delegated WM focused codec repair after067e5631. Seven pins/raw14tests81 verified. Executed codec-gates/lead-control.clj shows nil proposal identity and borrowed subject occurrence still structurally-project with original context unchanged. Read lead-review.md. Repair typed proposal submaps and exact decoded-context joins for full identity/subject/application/event/time, wrapper prior/next revisions, and complete digest shapes. Validate successor metadata/reference types and structural joins promised by complete schema, without claiming tra |
+| 2026-09-13T06:17:59.025Z | codex-23 | `invoke-1789280274907-20690-e17c8ed6` | 9558 | Joe delegated WM bounded independent review only. Review lead6b35706e restoring prior model/revision/run/tick join to decoded context. Your c102aafc replacement dropped old comparison; retained lead-control proves coherently borrowed prior+next run still projected under original context. Read codec-join-repair/lead-review.md, lead-correction-pins.json, raw16tests91/kondo/parens. Independently assess correction and remaining structural identity regressions, no passing rerun absent mismatch/source change. Retain pins/review and targeted controls  |
+| 2026-09-13T06:20:38.940Z | codex-23 | `invoke-1789280435715-20692-6244fa95` | 9619 | Joe delegated WM bounded codec repair. Independent34fd00cd review consumed8181f175, six source/gate pins verified, lead6b35706e prior/context fix accepted narrow. Retained independent-source-identity-control shows borrowed E2b/outcome runs still structurally project under original context. Repair exact model/revision/run/tick/schema/scope joins for every identity-bearing decoded source and lifecycle/review/artifact subjects. Preserve explicit relation between distinct E3/E2b lifecycle IDs; do not force equality. Check complete typed nested subj |
+| 2026-09-13T06:24:09.955Z | codex-23 | `invoke-1789280646953-20694-20d1d504` | 9709 | Joe delegated WM bounded read-only dependency packet. codeccbbee14e/02b8e8a3 acceptedec82e594 four pins/raw18tests98 structural only, no rerun. Enumerate complete canonical E3/E2b transitive resolver input closure needed for immutable E6b restart replay, not merely output digests or seven transition source bytes. Trace actual E3/E2b/E2a/E1/R9 source/config/anchor dependencies; pin relevant current code and exact isolated fixture input artifacts where available. Produce concrete machine-readable role/path/pin/config-owner acquisition manifest an |
+| 2026-09-13T06:27:55.266Z | codex-23 | `invoke-1789280872156-20696-86f49279` | 9763 | Joe delegated WM bounded packet after d11d2917 closure review. 18 listed pin occurrences verified; lead added R11 adapter and hierarchical arbiter source/call edges. Independently review dependency correction first. Then retain exact newly generated isolated E3 fixture pending/verdict/review and canonical nested config/input bytes, using existing test construction, with explicit test-source ownership and exact source pins. No tests rerun merely to regenerate passing evidence; a dedicated bounded fixture capture/strict parse/readback is appropri |
+| 2026-09-13T06:34:00.052Z | codex-23 | `invoke-1789281236714-20698-46a2e0ef` | 9938 | Joe delegated WM bounded read-only replay after a8655062 fixture capture review: six receipt/eight artifact hashes verified, synthetic test-source ownership explicit. Execute canonical E3/E2b from pinned captured config and existing pinned dependency files in a fresh isolated process, without importing test constructors or deriving pins from current defaults. First verify closure bytes/config pins. Retain exact outputs/refusals, commands, raw exits, source/dependency pins. This is a new semantic replay check, not rerun of passing suite. Do not  |
+| 2026-09-13T06:37:54.506Z | codex-23 | `invoke-1789281469455-20700-93a54cb7` | 10030 | Joe delegated WM bounded implementation after canonical replay accepted50f4afa9 (5 receipt/output+8 sourcepins, actual E3/E2bsuccesses and exact refusals; no rerun). Implement pure provenance-envelope constructor/validator only per corrected carrier contract, no storage. Inputs: explicit isolated prospective proposal, exact seven original byte descriptors, canonical retained config/input closure and outputs, carrier projection, owner-supplied expected HEAD as structural input. Verify all exact bytes/strictEDN/hash/value relationships, invoke re |
+| 2026-09-13T06:45:41.689Z | codex-23 | `invoke-1789281937826-20702-a2c1b591` | 10262 | Joe delegated WM bounded provenance repair after87178f94 review, seven pins/raw21tests111 verified. Retained lead-control coherently changes E3 pending run and config hashes while canonical outputs unchanged; construct still structural-artifact. Join exact pending/context/identity/subject and source pin manifests to canonical E3/E2b outputs, transitive E1/E2a source identities and R9 admission subjects. Output source digests must match retained input descriptors, not just each independent config. Audit equivalent E2b witness and E1 mutation und |
+| 2026-09-13T06:51:55.707Z | codex-23 | `invoke-1789282312552-20704-e8a2cdc3` | 10437 | Joe delegated WM bounded repair after714131bb. Seven pins/raw22tests115 verified, stale-output fixes hold. Executed closure-repair/lead-order-control reverses E3 output source manifest, coherently updates output/proposal/E2b/lifecycle digests, still constructs. labelled-pins map conversion loses order and duplicates. Replace lossy comparisons with strict ordered unique typed role/digest vectors at canonical E3 source, E2b witness, E1/E2a source, subject E1-source-pins and pending field-pins boundaries. Derive exact expected role order from pinn |
+| 2026-09-13T06:56:48.377Z | codex-23 | `invoke-1789282605353-20706-38f6bf6a` | 10586 | Joe delegated WM bounded next pure unit after72c2579f accepts e5d6a92a/88c719d9 seven pins/raw23tests120 order/uniqueness structural only. Implement strict serialized provenance readback/decoder with explicit external expected raw SHA, exact input byte capture, strict UTF8 exactly one EDN form, full envelope schema and all duplicate fields checked. Revalidate through existing construct/carrier/closure logic without trusting status labels or parsed cached records. Preserve original encoded bytes and raw/value/carrier distinctions; tolerate no st |
+| 2026-09-13T07:00:47.555Z | codex-23 | `invoke-1789282844646-20708-9df3173a` | 10718 | Joe delegated WM bounded implementation after f7465246 readback acceptance (7pins/raw24tests132). Implement isolated store-v2 provenance publication/recovery per corrected common-state contract. Only fresh temporary test stores, no production constructor/root or implicit v1 migration. Reuse reviewed lifetime lease, strict chain/revision checks, no-overwrite synced temporary publication, atomic joint HEAD and poisoning. Mandatory exact provenance digest: readback from bytes first; join expected HEAD store/generation/transaction/prior revision/ca |
+| 2026-09-13T07:10:28.912Z | codex-23 | `invoke-1789283425654-20710-5c128522` | 10879 | Joe delegated WM lead codex-26 commissions a bounded isolated store-v2 repair. Review bb1e15f1 and holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/review.md first. Job20708 is done and reviewed, not accepted. Five pins and retained25tests95 verified, no passing rerun. Executed head-control.clj demonstrates invented HEAD revision/digest still recover and capture against current tx slow-5. Repair store-v2 common strict publication/recovery invariants: exact HEAD/genesis/transaction schemas and state digests; HEAD-current jo |
+| 2026-09-13T07:15:51.756Z | codex-23 | `invoke-1789283747939-20712-ca2da13c` | 11020 | Joe delegated WM lead codex-26 commissions bounded isolated store-v2 genesis repair after independent review 3d428e9d. Read holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/review.md and executed genesis-controls.clj. Job20710 done, five pins/raw28tests100 verified without rerun. HEAD join repair holds, but self-consistently rehashed genesis authority/time nil still captures, and Object authority publishes transaction+HEAD then refuses invalid EDN. Implement shared complete genesis validation at initializatio |
+| 2026-09-13T07:20:21.255Z | codex-23 | `invoke-1789284017934-20714-528ac8c1` | 11141 | Joe delegated WM lead codex-26 commissions a bounded source-pinned read-only storage-to-retrospective reconstruction contract. Review f9ad8a21: job20712 genesis accepted narrowly, five pins and raw30tests113 verified without rerun. Existing common-state-carrier contract already specifies storage-to-retrospective mapping; refine against actual v2/provenance APIs rather than duplicate it. Inspect exact capture, HEAD, transaction, genesis and provenance byte availability; specify deterministic mapping into unchanged verify-feedback, including exac |
+| 2026-09-13T07:23:12.498Z | codex-23 | `invoke-1789284189362-20716-a2ca39b4` | 11180 | Joe delegated WM lead codex-26 commissions bounded isolated store-v2 HEAD-buffer retention, after independent review of lead correction ba69fe7ad19eecf570c2f8cb1fa3ead85fdbc974. Read retrospective-contract-review/lead-review.md under holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13 and corrected common-state-carrier contract step5. Capture index has only3identity+2digest fields; exact six-field ledger requires resolving transaction application, never inventing status/input/output. Independently review this small documentation correcti |
+| 2026-09-13T07:30:01.633Z | codex-23 | `invoke-1789284598571-20718-c8c93b62` | 11404 | Joe delegated WM lead codex-26 commissions a bounded PURE complete-capture codec before the full retrospective adapter. Read fd162cee acceptance under row-22-e6b-store-v2-2026-09-13/head-buffer/lead-acceptance.md. Job20716 consumed, six source pins/raw11tests54 plus two historical review pins checked without rerun. HEAD immutable descriptor now exists, but capture includes Java transaction/provenance byte arrays; external completeness cannot bind pr-str object identities. Implement isolated deterministic capture encoding/readback in a separate  |
+| 2026-09-13T07:39:53.946Z | codex-23 | `invoke-1789285190755-20720-23df28ec` | 11640 | Joe delegated WM lead codex-26 commissions bounded capture structural repair. Independently review lead5a65e880 first: prior-generation999 accepted under coherent tx/HEAD rehash, lead one equality+regression fixes it, raw17tests77/kondo/parens pass. Read row-22-e6b-complete-capture-codec-2026-09-13/lead-review/review.md and pins/raw controls. No passing rerun just for review. Then repair exact decoded capture structure before any adapter: resolved provenance readback must join tx prior/expected HEAD, next complete carrier and actual state diges |
+| 2026-09-13T07:46:43.181Z | codex-23 | `invoke-1789285599845-20722-edaabab7` | 11900 | Joe delegated WM lead codex-26 commissions bounded PURE capture-to-retrospective projection. Review2934b5d5 accepts represented structural capture repair1efc1611/65474cfa, five current/five historical pins and raw26tests116, no passing rerun. All authority remains none. Read corrected common-state-carrier storage mapping and complete-capture codec contracts. Implement separate pure module taking externally pinned serialized capture (exact bytes+raw SHA) and exact target application ID. Revalidate through capture/readback; resolve every ordered  |
+| 2026-09-13T07:53:14.067Z | codex-23 | `invoke-1789285990764-20724-4517441a` | 12069 | Joe delegated WM lead codex-26 commissions bounded pure ledger-source envelope addition. Independently review lead b47f2b1f clarification first; review artifact row-22-e6b-retrospective-projection-2026-09-13/lead-review.md. Six pins/raw12tests45 verified without rerun. Existing projection returns ordered six-field rows encoded as VECTOR; unchanged verify-feedback source resolver requires map schema/version :wm/e6b-application-ledger-v1, scope :isolated-test, entries rows. Its universe ledger/sha256 binds full source raw bytes, not vector bytes. |
+| 2026-09-13T07:59:01.148Z | codex-23 | `invoke-1789286337517-20726-dbd42b39` | 12248 | Joe delegated WM lead codex-26 commissions bounded read-only external completeness acquisition/validation CONTRACT. Latest68dfeff4 accepts ledger envelope1e84a4a9/043f192e isolated only, five pins/raw13tests54 no rerun. Read review including historical contract-pin qualification. Complete capture, row vector and full source envelope now distinct; subject draft authority none. Do NOT manufacture acceptance or invoke verifier. Ground a concrete versioned completeness subject and separately owned acceptance/configuration protocol in current source |
+| 2026-09-13T08:02:55.069Z | codex-23 | `invoke-1789286571614-20728-0d746a9a` | 12340 | Joe delegated WM lead codex-26 commissions bounded PURE external completeness schema/join validator. Read96e63b49 review and CONTRACT-e6b-external-completeness-v1-2026-09-13.md. Nine pins verified, design only; real acquisition/acceptance still absent. First freeze exact typed schemas/role list in contract (projection DERIVED, never trusted input), then implement offline validator of externally configured immutable buffers/pins. Resolve acquisition, separately pinned writer inventory and complete ordered census, capture, completeness subject, r |
+| 2026-09-13T08:12:17.006Z | codex-23 | `invoke-1789287133511-20730-975351f2` | 12538 | Joe delegated WM lead codex-26 commissions bounded INDEPENDENT REVIEW first, then acquisition/review-origin chronology audit. Read lead14999ca7 and row-22-e6b-completeness-validator-2026-09-13/lead-review/review.md. Original6pins/raw9tests49 verified. Executed coherent subject capture borrowed store/generation accepted under actual unchanged capture; lead adds exact subject store/generation to existing actual/inventory/census/boundary joins. New coherent independent field controls, changed-source10tests51/kondo/parens passed. Verify exact edite |
+| 2026-09-13T08:16:23.116Z | codex-23 | `invoke-1789287380095-20732-7117cccc` | 12654 | Joe delegated WM lead codex-26 commissions bounded tenth-role origin and chronology repair after90224bab audit review. Four audit pins+two lead pins verified, both retained counterexamples confirmed without rerun; independent35981f16 acceptance of14999ca7 consumed. Read row-22-e6b-completeness-authority-audit-2026-09-13/lead-review.md. Freeze exact review-origin schema and external configured origin binding, then implement pure byte/pin/subject joins: origin kind/id, scope/root/owner provenance, reviewer, commission ID AND raw commission digest |
+| 2026-09-13T16:04:41.772Z | codex-23 | `invoke-1789315476118-20734-4279de32` | 12918 | Joe explicitly directs work on Task1 real execution evidence now. Replace further synthetic codec expansion with concrete serving-source integration. Bounded implementation: integrate reviewed invoke_ingress_controller into the common create-invoke-job! path in futon3c transport/http.clj, covering all seven lexical callers/eight surfaces through central wrapper. Before waiting on invoke-jobs writer lock begin-creation!, then exactly-once finally creation-finished! only with actual durably accepted ID; failures and reuse/idempotency correctly ac |
+| 2026-09-13T16:17:30.557Z | codex-23 | `invoke-1789316247471-20736-2e78bff9` | 13200 | Joe Task 1: continue actual serving integration. Job20734 is reviewed; all five pins/raw6tests21 match. Read futon3c row-19-http-creator-integration-2026-09-13/lead-review.md and executed lead-committed-control.clj/stdout: actual :renamed persistence failure retains job on disk/memory yet snapshot falsely drained. Repair committed/uncertain creation accounting (including exceptions between persistence and return); preserve error and evidence, never erase or pretend zero work. Add meaningful before/after-rename controls. Then implement actual HT |
+| 2026-09-13T16:27:36.520Z | codex-23 | `invoke-1789316853314-20739-fdf67bfd` | 13492 | Task1 actual serving Row19 repair. Read futon3c b8ab084d review and two executed controls in row-19-http-creator-integration-2026-09-13/lifecycle. All4pins/raw8tests54+11tests38 reviewed. Post-rename creation repair accepted narrowly; remaining defects: repeated CREATE of running requested ID yields queued1/executing1; actual HTTP timeout finalization+delivery reports drained while isolated worker remains alive. Source finalize-job-at-ceiling! finalizes before interrupt without exit confirmation. Fix serving worker lifetime accounting: terminal |
+| 2026-09-13T16:32:08.958Z | codex-22 | `invoke-1789317125316-20741-fbc2431e` | 8703 | Joe convergence priority via claude15 job20740, delegated lead codex26: pull Row26 build forward. Produce the minimal executable on-demand whole-loop entrypoint over existing gated click path, reusing actual runner APIs. First inspect existing implementation and AGENTS; do not build a parallel framework. Offline implementation and hermetic tests only: no real full-loop run, live HTTP/eval/reload/restart, cron, action, production mutation or deployment. Existing explicit full-loop readiness prohibition is unresolved; prepare a concrete reviewabl |
+| 2026-09-13T16:32:09.701Z | codex-24 | `invoke-1789317126596-20742-9b6be75c` | 7632 | Convergence priority from Joe via claude15 job20740. Bounded read-only F11 review: identify exact existing derive-certificate -> emitter -> Lean path for complete typed FullAttestation plus honestly false QualifyingRun. Reuse accepted predicate refinements, no new authority layer. Deliver concrete minimal implementation diff plan, exact source/API pins, currently executable false-result path versus missing checks, and tamper-test cases. Do not modify emitter/frozen Lean/runtime, generate real certificate, run full-loop or claim completeness fro |
+| 2026-09-13T16:35:08.675Z | codex-24 | `invoke-1789317305541-20746-c7f7105b` | 7679 | Implement bounded Row24/25 acquisition-to-Lean negative certificate bridge. Read lead-review.md in row-24-f11-false-certificate-path-2026-09-13: six pins verified. Important simplification: complete typed census permits explicit gaps; a missing record-family typedGap proves NOT FullQualifyingRun for arbitrary req/ev using existing rejects_missing_record_family; crossLayer_implies_full transports rejection. Do not require positive record payloads to report an explicitly acquired negative state, nor invent a gap when the status/universe source is |
+| 2026-09-13T16:39:28.873Z | codex-23 | `invoke-1789317564390-20750-04477de9` | 13739 | Row19 bounded actual serving ownership repair. Read futon3c d4f11a85 review/control in worker-lifetime/final. Five historicalpins and raw11tests72/controller11tests38 checked; current HTTP includes codex22 run-id forwarding51269db9, preserve it. Executed actual run-invoke-job! on already-running ID changes original ledger to failed and unregisters original worker, because reuse exception hits catch/finally. Fix both actual direct and queued wrappers: only execution owner may finalize/unregister/mark idle/release execution; reused running or ter |
+| 2026-09-13T16:40:51.015Z | codex-24 | `invoke-1789317645010-20751-e5949e94` | 7700 | Implement ONE executable behavior now, not another design note: strict structural typed-gap census -> generated Lean rejection theorem. Previous20746 produced no implementation; do not repeat acquisition-adapter scope. New additive module/script only, no existing emitter or authority modules changed. Input is explicitly isolated/untrusted structural data (authority none), containing exact ordered declared node/connection lists, matching typed entries and exactly seven family states in canonical order. Support a strict negative subset (unvalidat |
+| 2026-09-13T16:43:15.298Z | codex-22 | `invoke-1789317792036-20755-10d84dd0` | 8904 | Row26 actual run-preparation repair, read lead fdf14c43. Current malformed-status control returns nil terminal with invented requested run/id. Fix strict accepted/status/terminal response shapes, same click and server-observed run identity (request identity distinct from observed; old deployed endpoint need not echo requested ID). Never fabricate observation. Bounded whole client budget includes POST/GET transport timeouts; timeout reports observation stopped, not worker cancelled. One POST only, no retry of ambiguous acceptance. Preserve termi |
+| 2026-09-13T16:47:55.208Z | codex-24 | `invoke-1789318071986-20757-f1be996f` | 7726 | Independent review only of lead16e0116e executable typed-gap generator, following your partial4678d697. Read source/tests/README/receipt/sourcepins in row-24-typed-gap-generator-2026-09-13. Actual2tests18, generator result, three Lean axioms no sorryAx, family-removal tamper exits1; final code reproduces compiled bytes. Verify source/input pins and exact generated declarations against input and accepted Lean theorem; validate honest isolated/noauthority scope, strict schema/order/encoding and CLI. Do not rerun passing gates absent mismatch; exe |
+</details>
+
+<details><summary>604 attributed commits, in creation-output order</summary>
+
+| UTC | Seat | Repository / full SHA | Rollout line | Subject |
+|---|---|---|---:|---|
+| 2026-09-12T23:57:40.220Z | codex-26 | futon2 `867565de906f5774c0187995cb2b0cdcf08c7622` | 262 | wm-contract: take delegated execution lead and commission gap probes |
+| 2026-09-13T01:46:53.704Z | codex-23 | futon3c `5fcf9912b750a3dc9620f91252c4ebed6fcffc1b` | 3857 | row 19: retain invoke request digest preimages |
+| 2026-09-13T01:47:25.533Z | codex-23 | futon3c `ff03ea32a52c1436d480082caa77a3bebb2a52cb` | 3887 | row 19: pin commission compaction fixture clock |
+| 2026-09-13T01:48:09.825Z | codex-26 | futon2 `4b0b3a2be31d6a3bf08bee94aa1645f42205e764` | 359 | wm-contract: dispatch delegated snapshot, retention, and review wave |
+| 2026-09-13T01:49:15.734Z | codex-24 | futon2 `90fefed462a082eaf685fe7f921846b6b28413d3` | 4539 | row 18/19/22/24: independently review lead decisions |
+| 2026-09-13T01:49:38.354Z | codex-22 | futon2 `13491e5afdea4e4fb45ea0c08945f094a471d377` | 4422 | Row 18: build interoceptive confidence snapshot |
+| 2026-09-13T01:49:57.918Z | codex-22 | futon2 `8f2f4f18c3dfad499750d68e0629ab03cbe8e269` | 4457 | Row 18: repair commissioned test form |
+| 2026-09-13T01:50:13.912Z | codex-22 | futon2 `18ef28877c3440b45a0af468b4005a5100eb42c6` | 4478 | Row 18: type contradictory discharge state |
+| 2026-09-13T01:50:48.138Z | codex-23 | futon2 `d96e7139b778da2f4b4cfc74b832f22d72199c08` | 3995 | row 19: retain commission join execution receipts |
+| 2026-09-13T01:51:21.005Z | codex-26 | futon2 `9f37f503edc2d0ef6e4297bb1c69a461aac3a135` | 415 | wm-contract: apply review constraints and flag incorrect review pins |
+| 2026-09-13T01:51:27.264Z | codex-22 | futon2 `73667630396f6e6a405e8b2713c39a8bf9fb23bd` | 4528 | Row 18: retain snapshot commissioning receipts |
+| 2026-09-13T01:51:47.054Z | codex-22 | futon2 `cfac956474ff6e11b7648327dc55f6dc1335d3dd` | 4542 | Row 18: refuse orphaned trip findings |
+| 2026-09-13T01:52:18.935Z | codex-22 | futon2 `2999f32d2a7feb04171b98747ec77289813bd060` | 4574 | Row 18: bind receipts to orphan-join control |
+| 2026-09-13T01:53:42.793Z | codex-26 | futon2 `b74f64bea308aa6a6c0b345bccba8e8c2071da2a` | 464 | row 19: reject expiry gap and non-executing validation receipts |
+| 2026-09-13T01:55:40.542Z | codex-24 | futon2 `ad9f9dc2e073d66f051802f70e078c7847fa3ac0` | 4679 | rows 18/19/22/24: correct independent review pins |
+| 2026-09-13T01:55:40.586Z | codex-24 | futon2 `335cf4b55a960ad0820ca2f2e34005812f40ad7e` | 4681 | row 22: audit class-c edges at declaration grain |
+| 2026-09-13T01:55:44.298Z | codex-26 | futon2 `22e009206027880c40b6633bb6f3c2ddfdb683d3` | 496 | row 18: require authority separation and valid discharge history |
+| 2026-09-13T01:56:03.723Z | codex-23 | futon3c `002c6d27b174530f4fa0a2bf07abcb85776c2744` | 4071 | row 19: archive expired R9 commission joins |
+| 2026-09-13T01:56:20.955Z | codex-23 | futon3c `4aa9f2e4492d2880fffcd61f3423cf3027796c67` | 4086 | row 19: add failure-sensitive retention runner |
+| 2026-09-13T01:56:59.415Z | codex-23 | futon3c `b12674f3f6f032a4e7b9221bc3b8b561d9d39c11` | 4127 | row 19: clear focused runner lint |
+| 2026-09-13T01:57:41.300Z | codex-22 | futon2 `917986cc2ce3c6c85c80bedf1fa2db983939fe40` | 4638 | Row 18: enforce repair authority and discharge lattice |
+| 2026-09-13T01:57:56.455Z | codex-22 | futon2 `36e798c5fd9845c9d1f550174ab5fdd4404ba008` | 4657 | Row 18: align test authority fixture classes |
+| 2026-09-13T01:58:13.155Z | codex-23 | futon2 `5712367eac684c95e951bcd8367ffebca9ca8c3a` | 4172 | row 19: supersede commission retention receipts |
+| 2026-09-13T02:00:11.137Z | codex-26 | futon2 `74091f56406fae77ce6180f2b772e11be801558e` | 559 | wm-contract: retain review repair dispatches and external-root discovery |
+| 2026-09-13T02:00:46.012Z | codex-24 | mathlib4 `ebee489190df7f9aad64dca200007168786a618c` | 4741 | row 18: state interoceptive prior-rate proposal |
+| 2026-09-13T02:00:49.395Z | codex-22 | futon2 `4c65f354a9508cfa6e8d3fd654bbb0a953ee4b9b` | 4760 | Row 18: retain authority review controls and readback |
+| 2026-09-13T02:00:51.405Z | codex-24 | futon2 `d48d6843c884d25c922e50fa5ebdfe1bb667c1c4` | 4745 | row 18: specify theory-aligned interoceptive seam |
+| 2026-09-13T02:01:12.864Z | codex-24 | mathlib4 `5aafacb7b1d2d3ea115bd4d24fc5d1744085fc3d` | 4766 | row 18: discharge prior mean scaling |
+| 2026-09-13T02:01:40.521Z | codex-22 | futon2 `9997e39db75f4b06250788d1ec0a667b6a038317` | 4792 | Row 18: bind actual reader execution evidence |
+| 2026-09-13T02:01:53.476Z | codex-24 | futon2 `e6f7ae8b1e2c4f432020e3d55900fa8aaa42adef` | 4792 | row 18: retain policy-precision proposal receipt |
+| 2026-09-13T02:02:49.814Z | codex-26 | futon2 `9b3c3df09ffe1c289828cae0285446550083b955` | 614 | row 19: require bounded hot ledger and lifetime job identity |
+| 2026-09-13T02:03:45.866Z | codex-26 | futon2 `d8c536540f64764639326aebcbce44a398b1ee77` | 628 | row 19: record repaired checks and dispatch archive separation |
+| 2026-09-13T02:05:20.527Z | codex-23 | futon3c `009cb3fbe99a06809d2171db9a85ae3a7e35baf4` | 4264 | row 19: separate immutable commission archive |
+| 2026-09-13T02:05:43.703Z | codex-23 | futon3c `98b94d20fe5fc2bc9cf9b154f401b2ab6dc7815d` | 4299 | row 19: repair archive control delimiter |
+| 2026-09-13T02:06:03.566Z | codex-26 | futon2 `feff9b02681cf31836437541240d1f48f0b27bc9` | 699 | row 18: review initial history and reader receipt fidelity |
+| 2026-09-13T02:06:16.552Z | codex-23 | futon3c `2e4ed7efecc547897345517396de5d0bc246bbd7` | 4321 | row 19: stage expiry controls atomically |
+| 2026-09-13T02:07:14.960Z | codex-22 | futon2 `7253ab33b18059c353636c942b37722391d2e484` | 4834 | Row 18: validate initial repair history and strict readback |
+| 2026-09-13T02:07:28.943Z | codex-22 | futon2 `34d63e01817edc9b33d07d99eb99bf01c899696a` | 4853 | Row 18: align invalid resolution-stage control |
+| 2026-09-13T02:07:32.678Z | codex-23 | futon2 `c5829fb498452fb6c827afb3e0cc43e04bc1d148` | 4374 | row 19: retain separate archive review receipts |
+| 2026-09-13T02:08:48.347Z | codex-26 | futon2 `6ddc788af83ac96652da105709a32f036c6b2d29` | 741 | row 18: distinguish arbitrary delta from bounded policy evidence |
+| 2026-09-13T02:09:38.509Z | codex-26 | futon2 `8be12ee93c78562988bbcdbf18952d9a1a29c067` | 753 | wm-contract: sequence snapshot receipt repair and bounded beta proof |
+| 2026-09-13T02:10:05.186Z | codex-22 | futon2 `efd79b498c58c6b152ff5f7c0a3295eee95ff148` | 4924 | Row 18: retain exact reader and checker receipts |
+| 2026-09-13T02:10:16.362Z | codex-22 | futon2 `6a07caac2f39a59c5beb9da45a704bec38c2d4e8` | 4936 | Row 18: record complete-manifest adapter debt |
+| 2026-09-13T02:10:58.188Z | codex-24 | mathlib4 `6fb6a2f0fb84313a64beaa00a32c661311ac583d` | 4860 | row 18: prove bounded policy precision condition |
+| 2026-09-13T02:11:03.221Z | codex-24 | futon2 `25e5e9af0445bd73759cdd687c4feeb0299166dd` | 4865 | row 18: refine finite-policy proposal scope |
+| 2026-09-13T02:11:19.960Z | codex-24 | mathlib4 `272d3e2cb9be4c296bdeebe0ce78cf24fa27c867` | 4884 | row 18: keep bounded proof dependency-local |
+| 2026-09-13T02:11:36.866Z | codex-24 | mathlib4 `1b9cca9a3f05a933429122581e901e2f8da7eea3` | 4901 | row 18: discharge bounded root equations |
+| 2026-09-13T02:11:56.792Z | codex-24 | mathlib4 `168bd082c572ed6014bc741d0a8b66f580a8c3fc` | 4920 | row 18: expose unique-root branch conclusion |
+| 2026-09-13T02:12:41.292Z | codex-24 | futon2 `cfa2deaacbf1f51ba1992561ea8a33b810fc9b82` | 4948 | row 18: retain bounded policy proof receipt |
+| 2026-09-13T02:14:08.140Z | codex-26 | futon2 `f9c65654eca96de09b0318389543f2e44869d98e` | 826 | Review row 19 archive retry durability and join consistency |
+| 2026-09-13T02:14:54.282Z | codex-26 | futon2 `91d7351a84580b56ca7d7eabe791fbc666f2c8e0` | 836 | Dispatch archive publication retry corrections with continuation |
+| 2026-09-13T02:15:57.687Z | codex-23 | futon3c `0d40a3594592b555bbcfe5a742d2af2860b74691` | 4431 | row 19: validate archive retry durability |
+| 2026-09-13T02:16:05.608Z | codex-26 | futon2 `3918c112fab048dacf901e75e85cb082a4758970` | 882 | Accept bounded row 18 snapshot corrections and commission manifest boundary |
+| 2026-09-13T02:16:51.792Z | codex-26 | futon2 `4b60892b2360782f698b4504c5cb4a62cfd1e63c` | 892 | Dispatch complete production manifest adapter after bounded acceptance |
+| 2026-09-13T02:17:07.650Z | codex-23 | futon2 `10b556dbfe55e1f9586aa65d718fc7be8a381451` | 4484 | row 19: retain archive retry hardening receipts |
+| 2026-09-13T02:19:20.783Z | codex-22 | futon2 `6fecd35ec7fca92bb6b148af4d8377b4602fa051` | 5021 | Row 18: add complete interoceptive store manifest adapter |
+| 2026-09-13T02:19:23.853Z | codex-26 | futon2 `4352ad26dcd0a7a3ddd03b4ce4482fc03a69ed94` | 967 | Review bounded beta proof and retain current measured A capture discovery |
+| 2026-09-13T02:19:50.871Z | codex-24 | mathlib4 `47c09120ddde972bf52c1b8a4e7ddd54716d5a2a` | 4990 | row 18: prove positive-domain root ordering |
+| 2026-09-13T02:19:54.836Z | codex-24 | futon2 `3e2310a50352d84933233a06625f287dda8c7f5e` | 4995 | row 18: state positive-domain softmax boundary |
+| 2026-09-13T02:20:05.334Z | codex-22 | futon2 `6f827de739ed503d6b5aada7e526995602139410` | 5051 | Row 18: add production manifest readback |
+| 2026-09-13T02:20:36.169Z | codex-24 | futon2 `62a112dcd2bc05c0f5f6811e4abde746120b1adb` | 5019 | row 18: retain positive-domain proof receipt |
+| 2026-09-13T02:21:16.871Z | codex-26 | futon2 `f339216effd4400e14bbd19d2a44d3dbbdffcaac` | 1013 | Accept reviewed retention prerequisite and dispatch separate genesis verifier |
+| 2026-09-13T02:21:18.263Z | codex-22 | futon2 `e06b6ae085f22732b740a555c80cd08bf7664f99` | 5080 | Row 18: retain complete production manifest output |
+| 2026-09-13T02:22:47.532Z | codex-26 | futon2 `dcfddce38db458250ec7bcb68276524fe22b77b8` | 1052 | Accept positive-domain proof and dispatch canonical softmax specialization |
+| 2026-09-13T02:23:03.306Z | codex-22 | futon2 `867d48d104bf929e5a8ab82a3ee850df7eb9b553` | 5130 | Row 18: retain complete manifest refusal and receipts |
+| 2026-09-13T02:23:40.768Z | codex-23 | futon3c `580f1a2a97e914ca6724b7abea53de114a633144` | 4549 | row 19: add external genesis verification boundary |
+| 2026-09-13T02:24:48.793Z | codex-26 | futon2 `7f6c785eb1f153f55a6f94e3e51d4a028fa34380` | 1125 | Locate September measured A close through read-only service status |
+| 2026-09-13T02:24:55.016Z | codex-22 | futon2 `57ff314a9ad0c84fe3bb9b82042e4646b7cacbbe` | 5180 | Row 18: bind production audit manifest receipts |
+| 2026-09-13T02:24:56.983Z | codex-24 | mathlib4 `0a2a5e63bcd2332b23503f2a650ae66b47a77919` | 5090 | row 18: specialize finite canonical posterior |
+| 2026-09-13T02:25:40.941Z | codex-24 | mathlib4 `b6635ea0ef711b8b74764684c24245376cb72b52` | 5111 | row 18: close canonical list alignment |
+| 2026-09-13T02:25:48.053Z | codex-23 | futon2 `63500397e50923ae26102cda76d57cbe5cbf6061` | 4643 | row 19: retain genesis verifier evidence |
+| 2026-09-13T02:26:04.778Z | codex-24 | mathlib4 `3670a9e50679dbe0b3574793e568e80bc21b5302` | 5127 | row 18: identify list and finite sums |
+| 2026-09-13T02:26:20.357Z | codex-24 | mathlib4 `8aab413f814a36a730df77bd56a682b8ab26790a` | 5144 | row 18: normalize canonical composition |
+| 2026-09-13T02:26:47.136Z | codex-24 | mathlib4 `5d3bff3257d9126f3937f0e70981540473c2d93a` | 5161 | row 18: connect finite posterior root theorem |
+| 2026-09-13T02:26:55.554Z | codex-26 | futon2 `92b441841fc735503f3bc742439267fe18b0564c` | 1183 | Accept bounded production manifest audit and dispatch snapshot coordination |
+| 2026-09-13T02:27:01.908Z | codex-24 | mathlib4 `3068112c2060fe011e64e1c1a64d8675ff87a877` | 5178 | row 18: qualify positive-domain theorem |
+| 2026-09-13T02:27:37.245Z | codex-24 | mathlib4 `b57a10dee59f6008e9668c484c8f49315cb77e6d` | 5197 | row 18: bind proposal carrier definitions |
+| 2026-09-13T02:27:42.649Z | codex-24 | futon2 `0825dd163ecc23dd32de5dfa7251e26d2627a966` | 5202 | row 18: record finite posterior discharge |
+| 2026-09-13T02:28:50.959Z | codex-24 | futon2 `7c1eb0d66f6db4b9756025e4acc7790606edb80e` | 5237 | row 18: retain finite posterior proof receipt |
+| 2026-09-13T02:29:17.412Z | codex-26 | futon2 `c0809d9e897f2f01a0ec97d3ac62cb77db2b0c59` | 1243 | Review genesis authority gaps and dispatch exact subject binding repairs |
+| 2026-09-13T02:30:13.493Z | codex-22 | futon2 `e94871a5aa5a2898ce4247b7607967efd3dca762` | 5313 | Row 18: coordinate canonical trip and repair snapshots |
+| 2026-09-13T02:31:22.210Z | codex-26 | futon2 `ed7a60859dc23e6fb3c0a3c398014f4822dee1bf` | 1297 | Accept canonical posterior proof and commission sufficient root uniqueness |
+| 2026-09-13T02:31:27.621Z | codex-22 | futon2 `05ff643f256c3c3ab979c29faf003d481a9a8879` | 5364 | Row 18: keep coordination lock outside evidence stores |
+| 2026-09-13T02:32:47.965Z | codex-22 | futon2 `6a649e188dfa9a3c39e76ecb34362f4d1372d72f` | 5443 | Row 18: retain coherent snapshot census and gates |
+| 2026-09-13T02:32:51.828Z | codex-26 | futon2 `4835118491c6726019cc22ea4c7cfe5b2ed80e5a` | 1349 | Trace categorical event producer and retain measured A authority gaps |
+| 2026-09-13T02:34:03.331Z | codex-26 | futon2 `36bdb66ac9d1c0ef17ff2e06debc0e8fa20399f9` | 1392 | Locate vocabulary authority and record event versus standing mismatch |
+| 2026-09-13T02:34:03.819Z | codex-23 | futon3c `03f34fa0b252a127581b380892024847b0ae6298` | 4841 | row 19: bind genesis proof to independent authorities |
+| 2026-09-13T02:34:09.684Z | codex-22 | futon2 `e9cc611df359ca79654c0730c58044ff5b121dba` | 5484 | Row 18: retain coordinated production snapshot refusal |
+| 2026-09-13T02:34:14.194Z | codex-24 | mathlib4 `bb31e951d7df205458f4ba47caf1cdf2d2b44631` | 5322 | Row 18: state canonical global root criterion |
+| 2026-09-13T02:35:00.000Z | codex-24 | mathlib4 `9c9b1f719d2a53aed25e7c329447517cf6819ea5` | 5355 | Row 18: repair global root proof obligations |
+| 2026-09-13T02:35:16.233Z | codex-23 | futon2 `0bfa996a39f8aee5b3fa70f91615bf2731a1ae97` | 4879 | row 19: retain authority-binding repair receipts |
+| 2026-09-13T02:36:02.032Z | codex-26 | futon2 `f90210e626b50bca0fa08936e954b31711bf4bae` | 1438 | Review snapshot lock safety and dispatch concrete coordination repairs |
+| 2026-09-13T02:37:17.516Z | codex-24 | futon2 `9447bde33930d4148c283123b4e273ac10e2ac61` | 5423 | Row 18: retain global unique-root specification |
+| 2026-09-13T02:37:55.208Z | codex-24 | mathlib4 `15712715fc1f1f531b9fc3cb4cbefcf0eb7be70d` | 5450 | Row 18: connect uniqueness to prior-rate ordering |
+| 2026-09-13T02:38:02.047Z | codex-26 | futon2 `d12e812bdacc6e646bdb014b2ec9df6e4a626310` | 1483 | Review authority binding and commission concrete resolver boundary |
+| 2026-09-13T02:38:37.295Z | codex-24 | futon2 `18162f25e7435a8b4cf4ae57fb46b4e7384aa0a4` | 5476 | Row 18: connect unique root receipt to ordering |
+| 2026-09-13T02:40:03.000Z | codex-22 | futon2 `6d016f4ab57c0c2023874144ea9e752473bb91eb` | 5650 | Row 18: enforce thread-owned snapshot coordination boundary |
+| 2026-09-13T02:40:10.555Z | codex-26 | futon2 `373179482ca7758acdc342df354cdc98d02e6161` | 1522 | Review conditional uniqueness and commission canonical derivative proof |
+| 2026-09-13T02:41:40.718Z | codex-22 | futon2 `856eae7d8eb45655ff14330bda81ba253afea9fd` | 5711 | Row 18: exercise constructor through actual writer joins |
+| 2026-09-13T02:41:53.995Z | codex-23 | futon3c `04343e0ebfcd3d49431ab392d992d4090d126e5b` | 5032 | row 19: bind successor and configured authority readers |
+| 2026-09-13T02:41:56.552Z | codex-22 | futon2 `430441a3f3905e7c020fe2363ffc05a004e6c297` | 5732 | Row 18: join writer fixture by retained trip identity |
+| 2026-09-13T02:42:03.477Z | codex-24 | mathlib4 `deb422925a2484901fc6e128e60aec137c410f3b` | 5536 | Row 18: state canonical variance certificate |
+| 2026-09-13T02:42:18.862Z | codex-23 | futon3c `5a1df387208631f5ca8ef6ec915428d69035242a` | 5055 | row 19: clear authority reader lint |
+| 2026-09-13T02:42:46.909Z | codex-22 | futon2 `19979cf55b29e44b50fe42f33bb72e70b711fa33` | 5772 | Row 18: retain snapshot coordination review evidence |
+| 2026-09-13T02:42:51.634Z | codex-24 | mathlib4 `7269edad777a5b69b312ef94a4d47c0c625382d6` | 5558 | Row 18: discharge finite variance algebra |
+| 2026-09-13T02:43:39.718Z | codex-22 | futon2 `82bcad9573a4aae28c18c086782d2c3923a3bb88` | 5814 | Row 18: bind final coordination receipts |
+| 2026-09-13T02:43:42.427Z | codex-24 | mathlib4 `2904594248d80e3428e65c4e273f1ece588f1e73` | 5585 | Row 18: repair canonical derivative calculation |
+| 2026-09-13T02:44:08.027Z | codex-23 | futon2 `3dbf960c0785f90cbbcd045d1dd35f7e6eff9aa9` | 5107 | row 19: retain configured authority receipts |
+| 2026-09-13T02:44:10.497Z | codex-24 | mathlib4 `112aced8bfe019d39da1b2417f2386cb36359284` | 5610 | Row 18: clean exact analytic proof |
+| 2026-09-13T02:44:30.419Z | codex-24 | mathlib4 `412f43d3f9889666ed15723faf77bef52449e0cb` | 5628 | Row 18: preserve exponential composition form |
+| 2026-09-13T02:44:45.369Z | codex-24 | mathlib4 `ff0ab6e5ea2093af0919716eb271d803baf805ec` | 5647 | Row 18: normalize exponential derivative coefficient |
+| 2026-09-13T02:45:47.657Z | codex-26 | futon2 `28f35c21c0092702e22689139448bc7db9a17b8a` | 1582 | Review snapshot repairs and fix canonical lock aliases |
+| 2026-09-13T02:46:14.959Z | codex-24 | futon2 `2dab51e259bf48a412abd0e18baae7ba9f94dfdc` | 5683 | Row 18: retain discharged analytic certificate |
+| 2026-09-13T02:46:24.237Z | codex-26 | futon2 `d22e353e6a3086de94dd39829c4f4e8faa9e56aa` | 1592 | Dispatch independent lock touchup review and activation boundary |
+| 2026-09-13T02:48:27.815Z | codex-26 | futon2 `e6faf338b88d3e190c2a2b29b3ef92085b4d7c71` | 1635 | Review configured authority readers and dispatch byte-boundary repairs |
+| 2026-09-13T02:50:17.072Z | codex-26 | futon2 `526f70be3f81b7337a2ba4b142e6f3e29f68bf27` | 1672 | Accept canonical analytic certificate and dispatch retained-field correspondence |
+| 2026-09-13T02:51:20.308Z | codex-23 | futon3c `7b591a4e71e54dcb2abdf88a4989d8a9481264fc` | 5208 | row 19: harden configured authority byte joins |
+| 2026-09-13T02:52:45.350Z | codex-22 | futon2 `09752ed715c78a546bb2930c198435e4eefd08ec` | 6023 | Row 18: require independent writer participation activation |
+| 2026-09-13T02:53:26.628Z | codex-24 | futon2 `b2bc299f4d91922b30c275cc6afb89104502f49c` | 5815 | Row 18: check retained field applicability |
+| 2026-09-13T02:53:48.925Z | codex-22 | futon2 `2f171ccb5841589e139259d887983c589c2b9c58` | 6066 | Row 18: retain activation boundary evidence |
+| 2026-09-13T02:54:30.968Z | codex-23 | futon2 `faaf909f28bf2fcd10784936945ead9ecb500236` | 5287 | row 19: retain authority byte-hardening receipts |
+| 2026-09-13T02:54:45.549Z | codex-24 | futon2 `d78c90072b7d9d7c17ee717b3756ac0e8b75d4cc` | 5864 | Row 18: retain fixed-field applicability result |
+| 2026-09-13T02:54:52.085Z | codex-22 | futon2 `20f9d7c577dcfc78fcd12e7d389eb0e8fc3775e6` | 6106 | Row 18: bind activation gates to boot-aware source |
+| 2026-09-13T02:55:14.123Z | codex-22 | futon2 `d06e21f2d805f521f180ca568b8734d3c872bfb2` | 6127 | Row 18: correct activation receipt observation time |
+| 2026-09-13T02:56:17.013Z | codex-26 | futon2 `e72b3e390025eebb7801c13d46aab3f59a3726d1` | 1710 | Accept byte-reader repairs and retain independent delegation origin review |
+| 2026-09-13T02:56:58.372Z | codex-26 | futon2 `c060300d3cd5b6cdbb776d17185186a09d7cb88d` | 1718 | Dispatch actual genesis evidence assembly under independently reviewed origin |
+| 2026-09-13T03:00:23.399Z | codex-23 | futon2 `7ca8e617a140d7adbc96a87d36454b0566e1508e` | 5418 | row 19: retain real genesis evidence draft |
+| 2026-09-13T03:01:32.092Z | codex-26 | futon2 `15edf3a64a630beb5d5839c3397348d9c83e9a62` | 1793 | Review retained-field checker and require byte and runner repairs |
+| 2026-09-13T03:01:33.799Z | codex-23 | futon2 `10bcf63681eec177321d48a00088ab919e6c6a93` | 5460 | row 19: add reproducible genesis draft checker |
+| 2026-09-13T03:01:56.066Z | codex-23 | futon2 `77a04049962ce624abb5d4ae4f7ea2b2ffb871ce` | 5486 | row 19: retain reproducible draft check receipt |
+| 2026-09-13T03:02:04.369Z | codex-26 | futon2 `81bc187e4497e41a46987bceb10490b139c17137` | 1802 | Dispatch bounded field checker and correspondence repairs |
+| 2026-09-13T03:03:11.832Z | codex-26 | futon2 `238e41a5179141b705840c265ef04a95298a18f2` | 1834 | Review activation trust and capture interval gaps |
+| 2026-09-13T03:03:12.115Z | codex-24 | futon2 `19c34cc96d80091883cd3ecb27fa552a6a0024dc` | 5899 | Row 18: bind checker parsing to pinned bytes |
+| 2026-09-13T03:03:38.234Z | codex-26 | futon2 `b6f01eb8b87c713800208407340710e925777d81` | 1841 | Dispatch activation receipt and protected interval repairs |
+| 2026-09-13T03:03:44.815Z | codex-24 | futon2 `3a6f56da5d69c9c3889a567c5a03b162fffda460` | 5935 | Row 18: retain compact asserted checker output |
+| 2026-09-13T03:04:56.755Z | codex-24 | futon2 `15f441b33261e864e92cd0613848cc6e13c8d008` | 5974 | Row 18: retain asserted byte-pinned checker receipts |
+| 2026-09-13T03:05:54.487Z | codex-26 | futon2 `b716cdc246543a13436d24d2b4c63f0b2f59013b` | 1905 | Review real genesis absence and require serving retention before new commissions |
+| 2026-09-13T03:06:26.656Z | codex-26 | futon2 `171f5abe2c334018298157524921d43e08249885` | 1914 | Dispatch serving retention deployment preparation |
+| 2026-09-13T03:07:57.950Z | codex-26 | futon2 `3d0a5e2a3a8bf1c02567a49b46bc828146dadc97` | 1965 | Accept fixed-field checker repair at nonqualifying evidence scope |
+| 2026-09-13T03:08:30.770Z | codex-26 | futon2 `0477502ffa078e53b84729f887cd7dc6a6264fb4` | 1974 | Dispatch measured-A categorical authority specification packet |
+| 2026-09-13T03:09:17.764Z | codex-23 | futon2 `69ff088c880342fac6d41a199a12c013ff4a4941` | 5601 | row 19: specify selective retention deployment |
+| 2026-09-13T03:09:50.336Z | codex-22 | futon2 `bc1b4856184c116700150483a1975bfbfb15fa3d` | 6320 | Row 18: bind activation lease through capture completion |
+| 2026-09-13T03:10:27.435Z | codex-26 | futon2 `049d61a9823f577446d96b70f7754c81e761946b` | 2039 | Review retention deployment ingress and loader gaps |
+| 2026-09-13T03:10:53.957Z | codex-22 | futon2 `2b75d7f9f5095801ed69d1acd496152aea16021e` | 6353 | Row 18: retain activation lease boundary evidence |
+| 2026-09-13T03:11:12.596Z | codex-26 | futon2 `e92a114031ff8b33251a527bbf2c044fb9a9bb4d` | 2048 | Dispatch offline retention loader and ingress preparation |
+| 2026-09-13T03:11:31.421Z | codex-22 | futon2 `fdd9967302b470bea6cc1190f86273a0d96e8d79` | 6374 | Row 18: join census digest to retained process bytes |
+| 2026-09-13T03:12:22.875Z | codex-22 | futon2 `8d09b84af74bf88b533fb3d4e55697ce095fd81c` | 6409 | Row 18: bind lease gates to census-byte join |
+| 2026-09-13T03:13:33.178Z | codex-24 | futon2 `21131c3f3c7c05e80121cedc7627eaeeaaa93aea` | 6127 | row 14: specify categorical authority for measured A |
+| 2026-09-13T03:13:45.955Z | codex-26 | futon2 `8d9cda3e4826c50285dd58d93269a483203ad018` | 2148 | Review activation lease source and bound controller obligations |
+| 2026-09-13T03:14:04.339Z | codex-23 | futon3c `2de72ab8ac5fdd8c39bbc935362edf06bfacabc2` | 5736 | row 19: add offline selective retention loader |
+| 2026-09-13T03:14:16.627Z | codex-26 | futon2 `4894ffc96f18132bdbb4b32d08977a4009e95fdc` | 2155 | Dispatch controller authority and protected capture completion |
+| 2026-09-13T03:14:31.425Z | codex-23 | futon3c `9cd966676544cdfeca7aea246475e8490451dfd1` | 5762 | row 19: make loader lock identity explicit |
+| 2026-09-13T03:14:58.869Z | codex-23 | futon3c `dc10cbca832b7ff3c408e250a9fbc1d0382ec71b` | 5786 | row 19: retain isolated loaded-form identities |
+| 2026-09-13T03:15:44.962Z | codex-23 | futon2 `c269aa0d13645dd750f1bfb75d75a8694fe84332` | 5815 | row 19: retain selective loader evidence |
+| 2026-09-13T03:16:25.737Z | codex-26 | futon2 `7558db844feafdcaab7fb0132adbe2e643b4aa89` | 2207 | Review measured-A annotation method and require authenticated rubric-bound labels |
+| 2026-09-13T03:17:13.071Z | codex-26 | futon2 `6983450daf6719ad59ed79251849a30cbac9d678` | 2216 | Dispatch rubric-bound categorical authority validator |
+| 2026-09-13T03:17:23.720Z | codex-22 | futon2 `2f39b95dacad11bd4d70ce906c5e513977cd2122` | 6540 | Row 18: resolve controller bytes and forbid production lock creation |
+| 2026-09-13T03:18:50.665Z | codex-26 | futon2 `84b4d4047aafa7de721ab7a44056f0328ba96b92` | 2264 | Reject selective live loader and choose controlled restart preparation |
+| 2026-09-13T03:18:55.656Z | codex-22 | futon2 `6c064ff653b0d969e09ec49b96777f25c008df78` | 6597 | Row 18: retain controller resolution and no-create evidence |
+| 2026-09-13T03:19:35.013Z | codex-26 | futon2 `6f8cc80d152cffe20f81ebbdf8294feb292a2422` | 2273 | Dispatch controlled restart preparation and disable selective live loader |
+| 2026-09-13T03:20:48.478Z | codex-24 | futon2 `6dab72fa32980081438fdb3dc5f5b79b66e2d730` | 6179 | row 14: validate adjudicated categorical observations |
+| 2026-09-13T03:21:23.457Z | codex-26 | futon2 `877fa299d05072fc1590ef6e287b47ad8240b37b` | 2324 | Accept controller refusal evidence and retain deployment obligation |
+| 2026-09-13T03:21:25.557Z | codex-24 | futon2 `a6363375e86471cfa722a8f2652795a845874510` | 6216 | row 14: clear categorical validator lint findings |
+| 2026-09-13T03:22:09.774Z | codex-26 | futon2 `c192fb6528b1f0bd61fe0920995152055e0353b6` | 2333 | Dispatch required declaration-level edge specification repairs |
+| 2026-09-13T03:22:19.056Z | codex-23 | futon3c `26d5a1dc1c972ba0326fe219ea8a7e3db9e61d3e` | 5904 | row 19: disable selective serving activation |
+| 2026-09-13T03:22:21.724Z | codex-24 | futon2 `e5ff5201e25684d4bbc2f3b2bbebcc9d2e945a23` | 6255 | row 14: retain categorical authority validation receipts |
+| 2026-09-13T03:22:23.024Z | codex-23 | futon2 `89919c5980b98380fa4fcfdd53c7c888a65f9f20` | 5908 | row 19: prepare controlled restart preflight |
+| 2026-09-13T03:23:05.494Z | codex-23 | futon2 `aa6add269b756015d36589917e600c0ea6a1b5c7` | 5953 | row 19: retain restart preparation receipts |
+| 2026-09-13T03:23:56.323Z | codex-26 | futon2 `702552a6822d00e986599bdafdc8932837073e73` | 2396 | Review categorical validator evidence and temporal authority gaps |
+| 2026-09-13T03:24:40.847Z | codex-26 | futon2 `f3d4a465b243e25c27fbfc445c1e21d610734eab` | 2403 | Dispatch categorical evidence payload and temporal authority repairs |
+| 2026-09-13T03:25:43.808Z | codex-22 | futon2 `f19e346fe57460704d544e082a8e454e8f30408d` | 6691 | row 22: specify declaration-grain edge repairs |
+| 2026-09-13T03:26:06.439Z | codex-22 | futon2 `4356b6f6af6f953ced0fc06b27b558083961046c` | 6712 | row 22: retain edge specification check receipt |
+| 2026-09-13T03:26:15.457Z | codex-22 | futon2 `bdd8e65731ad166217194aa0b8948c5b080e9fd1` | 6724 | row 22: correct gate execution timestamp |
+| 2026-09-13T03:26:24.099Z | codex-26 | futon2 `6560fb07560cb1d57e1f2f73ec9a43ae5139e065` | 2435 | Review restart discovery and block unchecked acceptance and rollback |
+| 2026-09-13T03:27:09.895Z | codex-26 | futon2 `d6b1f863cb8794d0a3deb8583813d5ddf9675cbb` | 2444 | Dispatch restart discovery and preflight corrections |
+| 2026-09-13T03:28:41.104Z | codex-23 | futon2 `ce37a3393f70c4b55dc0e8e57d47248f058d44d5` | 6016 | row 19: make restart discovery fail closed |
+| 2026-09-13T03:29:11.855Z | codex-26 | futon2 `0c352893799c59bdae85255b3a913cafde807424` | 2495 | Adopt declaration edge contracts preserving required behavior |
+| 2026-09-13T03:29:23.964Z | codex-23 | futon2 `e9e9b135f2e7e442e0649fe5de8ae0967474e147` | 6047 | row 19: retain restart discovery controls |
+| 2026-09-13T03:29:33.135Z | codex-23 | futon2 `e387eb00e6a2dd0902804c9615680b213c0982d8` | 6060 | row 19: correct discovery checkout identity |
+| 2026-09-13T03:30:04.363Z | codex-26 | futon2 `9f3cd1032016634ef8c9dc94f4a691f3408f9ff7` | 2504 | Dispatch full-support ranked candidate budget mapping |
+| 2026-09-13T03:30:47.961Z | codex-24 | futon2 `97955fb1fecc7437412c068736e1127e5bae8f8f` | 6323 | row 14: ground categorical evidence in resolved claims |
+| 2026-09-13T03:31:35.021Z | codex-26 | futon2 `54a09bb4acb40b662ee53f2a165ceb01a5af0705` | 2542 | Accept restart discovery and commission real ingress control boundary |
+| 2026-09-13T03:31:53.614Z | codex-24 | futon2 `b5419475caaee625ed0d181d13e1d338a906ccc9` | 6368 | row 14: retain resolved categorical authority pins |
+| 2026-09-13T03:32:23.744Z | codex-26 | futon2 `87ec5caae86a85065c3d10b38e7af848ce05ad83` | 2551 | Dispatch isolated ingress drain controller implementation |
+| 2026-09-13T03:33:12.151Z | codex-24 | futon2 `3b4bf1eed0c9d8124f3c4dd2cbc12019c795b82a` | 6410 | row 14: retain grounded authority repair receipts |
+| 2026-09-13T03:33:23.693Z | codex-22 | futon2 `64899007e88405346b134a3c55ad9e91e51e6339` | 6795 | row 22 E1: map ranked support into R11 arbitration |
+| 2026-09-13T03:33:49.565Z | codex-22 | futon2 `df32a9cffb9dfe5666e3894ee26aeb07e9b00c85` | 6831 | row 22 E1: remove test namespace binding shadow |
+| 2026-09-13T03:33:57.340Z | codex-23 | futon3c `1f742f6fd2bff7c4106f29d527983769ef18258e` | 6101 | row 19: add prospective invoke ingress controller |
+| 2026-09-13T03:34:19.470Z | codex-22 | futon2 `d1dc12cdfb05a8469232fd240db48b7896ccd235` | 6862 | row 22 E1: add retained production-shape readback |
+| 2026-09-13T03:34:41.199Z | codex-23 | futon2 `ee2c495ccc79b7f0da592b00924da648d9cd6f70` | 6125 | row 19: specify ingress controller integration |
+| 2026-09-13T03:35:06.734Z | codex-23 | futon3c `67211f8d45e93d1a568e1e1aefb0676f59788421` | 6151 | row 19: make controller lock identity explicit |
+| 2026-09-13T03:35:33.047Z | codex-23 | futon2 `f1372c9c5db42003e6555307068519679eca50d3` | 6171 | row 19: retain ingress controller gates |
+| 2026-09-13T03:36:01.311Z | codex-22 | futon2 `4b4161ecef7dbd1330483f657f5d7009e87e346c` | 6914 | row 22 E1: retain mapping controls and receipts |
+| 2026-09-13T03:38:42.109Z | codex-26 | futon2 `c3e9d1cb6a8955a60180a9ebd7ed1abdc876b7e2` | 2623 | Review categorical grounding: require resolved evidence acceptance and scope |
+| 2026-09-13T03:39:16.912Z | codex-26 | futon2 `974b74168e44143aad6822123f5d2665a746dfd3` | 2635 | Commission exact resolved categorical acceptance repair |
+| 2026-09-13T03:40:08.315Z | codex-26 | futon2 `c0a652f49cff1dabc4edade99d8838568e62f746` | 2665 | Review E1 mapping and require independent support authority |
+| 2026-09-13T03:40:34.553Z | codex-26 | futon2 `16d3e71ff21729559f6cf4f1d757ae1ee042b44a` | 2672 | Commission E1 independent byte authority boundary |
+| 2026-09-13T03:41:22.923Z | codex-26 | futon2 `bcaacf8cc00f0b8b1ac21c48026cfb5220f6c5e1` | 2699 | Review ingress controller recovery and consistent snapshot boundary |
+| 2026-09-13T03:41:35.683Z | codex-24 | futon2 `46b94b94c244827f631fdf2e11e3e38db09b938f` | 6481 | row 14: bind reviews to resolved authority subjects |
+| 2026-09-13T03:41:50.012Z | codex-26 | futon2 `7b197029af0d7fc32ebcd1913cbdbee63bfbb280` | 2706 | Commission isolated durable ingress recovery repair |
+| 2026-09-13T03:42:24.660Z | codex-24 | futon2 `0fc3997cbf875ed902e720b0e660a0df0ad17fd0` | 6521 | row 14: retain resolved subject repair receipts |
+| 2026-09-13T03:43:30.635Z | codex-26 | futon2 `48df668095864ee9a9a94b23c00303553af7bed5` | 2761 | Accept resolved categorical review binding at pure resolver boundary |
+| 2026-09-13T03:43:44.853Z | codex-22 | futon2 `63719e6765e5ea5410fe5d9b12dbe02a8b4d99d5` | 6987 | row 22 E1: resolve mapping authority from pinned bytes |
+| 2026-09-13T03:44:00.605Z | codex-26 | futon2 `270d63f2d8e6384812b7cfcc907ba685c84ff9e8` | 2766 | Commission offline exact close annotation join |
+| 2026-09-13T03:44:01.404Z | codex-23 | futon3c `30b7de55375d539b287b224b27b7c25c92c922be` | 6256 | row 19: persist deferred resumes durably |
+| 2026-09-13T03:44:04.562Z | codex-23 | futon2 `8501fa028cecb8a7acd581819270a295e584a157` | 6261 | row 19: specify deferred recovery boundary |
+| 2026-09-13T03:44:04.694Z | codex-22 | futon2 `a6da8bc013a4ae68283d8e76ae0f1854cffa4838` | 7006 | row 22 E1: avoid digest function shadowing |
+| 2026-09-13T03:44:35.786Z | codex-22 | futon2 `1bb00c286124aff7bd0774f51bfd3728e10a3ac4` | 7037 | row 22 E1: add verified authority readback |
+| 2026-09-13T03:45:09.989Z | codex-23 | futon2 `13f64ac15be312373cae830fe74bc2c1693e7813` | 6318 | row 19: retain durable recovery raw gates |
+| 2026-09-13T03:45:45.330Z | codex-26 | futon2 `9b276256e0da293cdc4a946a80fb5709d2d46b73` | 2821 | Retain executed verification of consumed categorical repair reply |
+| 2026-09-13T03:45:53.293Z | codex-26 | futon2 `764b639a6e77f94af016cc1b76d6087059a06762` | 2828 | Match delayed-reply note to recorded completion state |
+| 2026-09-13T03:45:58.446Z | codex-22 | futon2 `a250351db7db2097414fab76b426f4dda9552da8` | 7087 | row 22 E1: retain authority resolution evidence |
+| 2026-09-13T03:46:22.290Z | codex-22 | futon2 `d53b88e4fdd4f6f2b438d8aec4139438f58aee24` | 7103 | row 22 E1: refuse unconfigured production authority |
+| 2026-09-13T03:46:39.794Z | codex-24 | futon2 `787ce2d139b88ff7db743faf9adc17b583e6842f` | 6579 | row 14: construct offline exact close annotation joins |
+| 2026-09-13T03:46:53.047Z | codex-24 | futon2 `31fa78a87f13e9c145a422fd67451c9df164987a` | 6598 | row 14: clear close attachment lint finding |
+| 2026-09-13T03:47:10.887Z | codex-22 | futon2 `a08f17f241c7072f7e3625d53a1d5d82672b3ba3` | 7139 | row 22 E1: retain production authority refusal gates |
+| 2026-09-13T03:47:34.624Z | codex-24 | futon2 `35e5b8ef239fcdffa2510ff6923f8cc12a69911f` | 6629 | row 14: commission context mutation controls |
+| 2026-09-13T03:47:47.211Z | codex-26 | futon2 `6973d6b13382609a1ea87b8b883513011ca8a3d6` | 2871 | Review deferred recovery with executed payload and ownership counterexamples |
+| 2026-09-13T03:48:30.242Z | codex-26 | futon2 `34e5c46f81aa1a2ab22a9d70288d738aa466f0d4` | 2878 | Commission exclusive deferred store and payload validation repair |
+| 2026-09-13T03:48:52.403Z | codex-24 | futon2 `2a071ff89891bfcdc179ab2c996c9eb6b1a65d87` | 6674 | row 14: retain offline close attachment receipts |
+| 2026-09-13T03:50:26.136Z | codex-23 | futon3c `c5dd31031d0b3f6d584dd111fa9705cdb74c56a2` | 6381 | row 19: enforce deferred store ownership |
+| 2026-09-13T03:50:39.268Z | codex-26 | futon2 `fcf6aaa614ba6c384f2c987032bc7fdfb7a402d8` | 2929 | Review E1 authority and reject identity fields overriding resolved input |
+| 2026-09-13T03:50:52.109Z | codex-23 | futon3c `d2e362fbb7f4b19175f886543bfa24b127f1f11f` | 6404 | row 19: test cross-process store exclusion |
+| 2026-09-13T03:51:09.551Z | codex-23 | futon2 `d3895397671e9edbff18187a8f75632df3c0d40f` | 6424 | row 19: specify exclusive deferred ownership |
+| 2026-09-13T03:51:22.273Z | codex-26 | futon2 `f1c80590d276ffd2ed3cf97273b383c0e04e689b` | 2936 | Commission independent E1 touch-up review and pure portfolio restriction |
+| 2026-09-13T03:51:55.453Z | codex-23 | futon2 `2fd94b21c70764b36929ff5aaa72aff4b1ffc823` | 6464 | row 19: retain store ownership gates |
+| 2026-09-13T03:52:13.966Z | codex-23 | futon3c `3fac43f6b9bfc8470e6ed2ac5be36becec971db1` | 6478 | row 19: refuse released controller reuse |
+| 2026-09-13T03:52:50.221Z | codex-23 | futon2 `d935042fcff8e7d7165cfd79bbe3f29eda1aec9d` | 6506 | row 19: retain released-controller gates |
+| 2026-09-13T03:53:04.234Z | codex-23 | futon3c `be83071d1884a4311e7ff509455ce92d59b20d8a` | 6520 | row 19: prove persistence retry safety |
+| 2026-09-13T03:53:04.515Z | codex-26 | futon2 `5ac24b13a5d4f32aeaa7ee6e99dd2c3a538fc7f6` | 2992 | Accept offline close join mechanism with real authority absences preserved |
+| 2026-09-13T03:53:36.921Z | codex-23 | futon2 `5fbc62cb41cf66a14e431a3c38e303d6ae39a2b5` | 6546 | row 19: retain persistence retry gates |
+| 2026-09-13T03:53:41.588Z | codex-22 | futon2 `3dd5a89a56cd52fe43e790f0ce70555a6d81408e` | 7212 | row 22 E1: independently review binding-key repair |
+| 2026-09-13T03:53:49.266Z | codex-26 | futon2 `a7894b423b20486e237c2d56e457888f0e1673fc` | 2998 | Commission full-predicate rejection precursor under delegated policy |
+| 2026-09-13T03:54:00.064Z | codex-22 | futon2 `68ae41e86934d6fec739dcd18a41f5d6fbbe7ab5` | 7225 | row 22 E2a: restrict R6 support by verified R11 portfolio |
+| 2026-09-13T03:54:19.316Z | codex-22 | futon2 `ac386260fbd5a9c594beecbe082ed0eddb5edd55` | 7253 | row 22 E2a: capture induced refusal values |
+| 2026-09-13T03:54:53.358Z | codex-22 | futon2 `0b4af1d8c8ce6ab3ca165573eddd151c0f62ce20` | 7291 | row 22 E2a: add exact restriction readback |
+| 2026-09-13T03:55:21.085Z | codex-26 | futon3c `232df03997281027d4c291cbc39913c6ae8e088a` | 3052 | Require deferred projection payload identity on both persistence and recovery |
+| 2026-09-13T03:55:58.145Z | codex-26 | futon2 `9d3e1db45db6fc87de1df812ebb37f36372987ae` | 3066 | Retain store ownership review and common payload validation gates |
+| 2026-09-13T03:56:07.759Z | codex-24 | mathlib4 `1a566fdb9a7ec63f5717a91845bcd64eb4d37d29` | 6734 | Row 24: reject incomplete full certificates |
+| 2026-09-13T03:56:10.630Z | codex-22 | futon2 `3d003622377c91d24fe00ee514f3cd6416f67bed` | 7334 | row 22 E2a: retain restriction evidence and gates |
+| 2026-09-13T03:56:11.822Z | codex-24 | futon2 `e16428597a92199a13f25e0c287193cd162cc724` | 6739 | row 24: specify full predicate rejection precursor |
+| 2026-09-13T03:56:28.930Z | codex-22 | futon2 `22179585bbfa08ef0e6e7cf778ba81e7a967c41c` | 7348 | row 22 E2a: cross-check canonical selected index |
+| 2026-09-13T03:56:42.124Z | codex-26 | futon2 `88a72bf521421f45e1a525756b334dc18c8e1c6c` | 3073 | Commission independent payload review and offline lifecycle reconciliation |
+| 2026-09-13T03:56:43.072Z | codex-24 | mathlib4 `d1586d9a2febe5317544c8882aedb7bf524b2ad8` | 6760 | Row 24: discharge rejection theorem projections |
+| 2026-09-13T03:56:43.756Z | codex-22 | futon2 `bbd44b21b64161f73e14916b026d50b7289ee7b8` | 7365 | row 22 E2a: align unknown-id negative fixture |
+| 2026-09-13T03:57:03.936Z | codex-24 | mathlib4 `cea8a83769376885be0b6b2e6e2734016bec58ef` | 6781 | Row 24: select positive node conjunct |
+| 2026-09-13T03:57:36.238Z | codex-22 | futon2 `d47de33c6b127fa4b640805c85ae5cb60f0eb23a` | 7401 | row 22 E2a: retain selected-index control gates |
+| 2026-09-13T03:57:50.494Z | codex-26 | futon2 `e37f2a7057abcae8070aec61a156d3f7a006edee` | 3110 | Replace stale row24 operator decision blocker with actual remaining work |
+| 2026-09-13T03:57:54.549Z | codex-24 | mathlib4 `b9bbcb833e7d3b729e2abc36f2c6f1d728ebda6b` | 6818 | Row 24: pin sole legacy retirement authorities |
+| 2026-09-13T03:58:42.923Z | codex-23 | futon3c `6795b1a566f06a587fe90cafd3ef2188a97ac70f` | 6602 | row 19: add offline lifecycle reconciliation |
+| 2026-09-13T03:58:46.642Z | codex-23 | futon2 `8ac40e7a753ae592df4f1837ab1078f74a4658b2` | 6607 | row 19: specify offline lifecycle census |
+| 2026-09-13T03:59:04.183Z | codex-26 | futon2 `148292a97e858839f2335a1c28e4f21703c3cd65` | 3157 | Accept isolated E2a occurrence restriction and preserve runtime obligations |
+| 2026-09-13T03:59:04.855Z | codex-24 | futon2 `c36663092f1095d64b49b56dba8da5049111b76d` | 6858 | row 24: retain full predicate Lean receipts |
+| 2026-09-13T03:59:26.991Z | codex-23 | futon3c `5449e75d061a25a4e3cb0560b767e85814e6782e` | 6640 | row 19: repair lifecycle control reader forms |
+| 2026-09-13T03:59:45.491Z | codex-26 | futon2 `7e73d1913428de74f0d11a313749d318ceb90b84` | 3163 | Commission isolated exact enactment witness verifier |
+| 2026-09-13T04:00:11.178Z | codex-23 | futon3c `5586f30221e9997d05210f7dfa510d587678d397` | 6660 | row 19: normalize lifecycle negative controls |
+| 2026-09-13T04:00:49.532Z | codex-23 | futon3c `7309d81c7b2d818a599abab1b63cb22bfca8ff90` | 6688 | row 19: join controller lifecycle counts |
+| 2026-09-13T04:01:10.211Z | codex-26 | futon2 `1d140f5f115addfaa285566737d8fa25a9c6e5be` | 3204 | Accept structural certificate rejections and identify missing run joins |
+| 2026-09-13T04:01:51.046Z | codex-23 | futon2 `416e9b207501d90ab4f6a7b1dff42b4ca3706da8` | 6730 | row 19: retain lifecycle reconciliation gates |
+| 2026-09-13T04:01:52.485Z | codex-26 | futon2 `2688d7b1fa6a49499293bd45b3f7b16aec851205` | 3211 | Commission explicit certificate run and divergence subject joins |
+| 2026-09-13T04:02:22.198Z | codex-23 | futon2 `6cf0d38308d28d096170291508e9cb92cc03fec0` | 6753 | row 19: retain real lifecycle source census |
+| 2026-09-13T04:02:22.346Z | codex-22 | futon2 `b5b743442125cb8f8a5fb033321c6e4c7fbaabbf` | 7464 | row 22 E2b: verify exact selected enactment correspondence |
+| 2026-09-13T04:02:51.920Z | codex-26 | futon2 `d7f3d1b295c1e50ac0bb82d96ca1995f9a24762c` | 3239 | Record resumed replies consumed against reviewed commits and current jobs |
+| 2026-09-13T04:03:10.373Z | codex-22 | futon2 `bbb4ba87c768ed47046d9a01c1b52c7ccfa5d743` | 7497 | row 22 E2b: add exact correspondence readback |
+| 2026-09-13T04:04:19.997Z | codex-22 | futon2 `3a9eedbe5a78debb678c7aba5dd4f9c484825f15` | 7540 | row 22 E2b: retain correspondence evidence and gates |
+| 2026-09-13T04:04:22.046Z | codex-24 | mathlib4 `1cfaf67474c27fc8ed81132a1953c19c231a323f` | 6922 | Row 24: bind full predicate evidence to exact run subjects |
+| 2026-09-13T04:04:31.643Z | codex-26 | futon2 `42c6aaf0faf1682c58e53831bcef67478161e4a0` | 3278 | Reject incomplete lifecycle census with executed missing-field control |
+| 2026-09-13T04:05:12.013Z | codex-26 | futon2 `98f4d9e99e561f961c03ec0deda48e27d601cd41` | 3286 | Commission strict lifecycle completeness authority repair |
+| 2026-09-13T04:05:56.084Z | codex-24 | futon2 `d43b755b5e4b089e5533af0a2e51cc10e36bb8c6` | 6979 | Row 24: retain exact run-binding specification and proof receipts |
+| 2026-09-13T04:07:00.923Z | codex-23 | futon3c `718d370d611913f29306c7d13438ae6258367d66` | 6816 | row 19: require complete lifecycle authority |
+| 2026-09-13T04:07:12.400Z | codex-26 | futon2 `9af78c33eb52827b15ca3fb4a60a0ff5dec00134` | 3332 | Review E2b cohort and exact field-subject binding gaps |
+| 2026-09-13T04:07:22.305Z | codex-23 | futon3c `01ec41dd7c02994394ee1b2b6296d677da3e0232` | 6846 | row 19: repair malformed-byte controls |
+| 2026-09-13T04:07:37.239Z | codex-23 | futon3c `a03739e321dd1f54948a30c9dc13146b23cba266` | 6865 | row 19: align unknown delivery refusal |
+| 2026-09-13T04:07:50.179Z | codex-26 | futon2 `b86239a08befe4295d78fb4a2af445f5d9f10c2a` | 3340 | Commission E2b exact event and field-subject repair |
+| 2026-09-13T04:07:55.841Z | codex-23 | futon2 `2509b7158912801e5d4ab0be7e439852da417624` | 6886 | row 19: specify lifecycle completeness authority |
+| 2026-09-13T04:08:46.980Z | codex-23 | futon2 `f7d67a562a9d9685995beaa992bfb4a9b6a0c1e8` | 6919 | row 19: retain completeness authority gates |
+| 2026-09-13T04:10:08.722Z | codex-22 | futon2 `a03b569da7d9b969777e26f973013bafa5c8c54e` | 7629 | row 22 E2b: bind witnesses to exact event subject |
+| 2026-09-13T04:11:27.504Z | codex-22 | futon2 `9e08d67f30ebd8937242d58287c7bc786d73d1c8` | 7676 | row 22 E2b: retain exact subject binding gates |
+| 2026-09-13T04:13:06.240Z | codex-26 | futon2 `94d9a10b12ff10b73fea6313b8f7c76ede74f835` | 3396 | Review Row24 run binding and retain exact occurrence subject gap |
+| 2026-09-13T04:14:02.736Z | codex-26 | futon2 `00ba5bbb4765c315c5c275d2d655c3f4121b4715` | 3406 | Commission exact certificate occurrence subjects after independent review |
+| 2026-09-13T04:14:18.277Z | codex-24 | mathlib4 `8493dc2ef7725ce353da032a0afa6cf8829cd6ea` | 7012 | Row 24: bind selected and enacted event subjects |
+| 2026-09-13T04:15:17.230Z | codex-24 | futon2 `f83f5e9384092ee292d8290424f67abfe87ac410` | 7040 | Row 24: retain exact event-subject binding evidence |
+| 2026-09-13T04:15:32.267Z | codex-26 | futon2 `286c9d7aa4319a512e50965c855ba8624f527477` | 3449 | Accept isolated E2b subject joins with retained source and gate evidence |
+| 2026-09-13T04:16:05.355Z | codex-26 | futon2 `47e1445bee686fd73fef09fe30f3796bd1e84e0a` | 3456 | Commission pure E3 exact-subject pre-enact verifier |
+| 2026-09-13T04:18:07.129Z | codex-22 | futon2 `1842c900ca436bbccfe6c8844038e85ee3290152` | 7752 | row 22: add pure E3 pre-enact verifier |
+| 2026-09-13T04:18:55.519Z | codex-26 | futon3c `d090c0da447ddc8cc0ca33b8b727c9fcd429ce27` | 3537 | Retain reconciliation scope and count adversarial controls inside test |
+| 2026-09-13T04:18:55.575Z | codex-26 | futon2 `c469d4e866a37c8b00bddeb1d085a635bd27abb4` | 3538 | Review lifecycle completeness and retain corrected runner scope gates |
+| 2026-09-13T04:19:13.995Z | codex-22 | futon2 `31a4083429ae6b89d5211a1e3f331ba52aba2fd6` | 7808 | row 22: retain E3 pre-enact verification receipts |
+| 2026-09-13T04:19:47.684Z | codex-26 | futon2 `dccc40f1e84c3fe12a3f5816ffefbf3a0164413a` | 3547 | Commission independent reconciliation touch-up review and isolated snapshot source |
+| 2026-09-13T04:21:24.279Z | codex-26 | futon2 `508623f683c3b4c6688ea7dd4ea292253bf7aab1` | 3592 | Witness same-action occurrence mismatch in certificate match branch |
+| 2026-09-13T04:21:33.595Z | codex-23 | futon3c `4ef2dcf12b80335f3b67fb8d4e0b34f15b5db4e8` | 6969 | row 19: add atomic lifecycle snapshot boundary |
+| 2026-09-13T04:21:33.638Z | codex-23 | futon2 `802ab3cd910b72102aa3c2c1263cb062f9d14098` | 6970 | row 19: specify atomic lifecycle capture |
+| 2026-09-13T04:22:14.256Z | codex-26 | futon2 `fbbfd6efa2b3851109b8c6f247ce5fc12e419e0a` | 3602 | Commission occurrence relation and divergence authority repair |
+| 2026-09-13T04:22:23.983Z | codex-23 | futon2 `8d1146cd0d2fba3fc7e106bbe025d622f8013c62` | 7007 | row 19: retain atomic snapshot gates |
+| 2026-09-13T04:22:45.137Z | codex-23 | futon3c `b8e02796a09b4d1d289a06bab467fa587015539d` | 7028 | row 19: preserve controller generation authority |
+| 2026-09-13T04:22:50.224Z | codex-24 | mathlib4 `4cbdfe0d0d0e7a6464399df88de639bf7b4d5ca3` | 7066 | Row 24: require exact match occurrence and shared divergence authority |
+| 2026-09-13T04:23:07.986Z | codex-23 | futon3c `5dad9ab63650f89aeae645b3b2bbe320692a9917` | 7056 | row 19: repair generation control form |
+| 2026-09-13T04:23:23.974Z | codex-23 | futon3c `eda31d97b194f73f927b4a72e2f8e4d053701eda` | 7077 | row 19: unwrap concurrent capture refusal |
+| 2026-09-13T04:23:47.339Z | codex-24 | futon2 `7152fd273a57ccc857772c024b50dcf689210aa9` | 7094 | Row 24: retain occurrence-match and shared-authority repair evidence |
+| 2026-09-13T04:23:59.453Z | codex-26 | futon2 `c93a56ca4c6ded18f7f702b269530e92bcc54fd8` | 3663 | Witness incomplete and mixed-scope subjects accepted by E3 verifier |
+| 2026-09-13T04:24:02.335Z | codex-23 | futon2 `57b6fe2134653a895e16b8e7e16f80317a4e0cea` | 7105 | row 19: retain controller-authority snapshot gates |
+| 2026-09-13T04:24:50.171Z | codex-26 | futon2 `da5c2af5179ff1bb3f7d524f90eedf17e3a47f6b` | 3669 | Commission strict E3 subject and canonical evidence repair |
+| 2026-09-13T04:25:47.540Z | codex-26 | futon2 `a1c96d0102688835697e4a554ad38ca4359aa5f2` | 3703 | Accept structural occurrence relation and shared divergence authority repair |
+| 2026-09-13T04:26:25.183Z | codex-22 | futon2 `174c4e8a8b04bf6cbf6eacc799e05679f47fd5dd` | 7855 | row 22: bind E3 to canonical R9 evidence |
+| 2026-09-13T04:26:37.619Z | codex-26 | futon2 `5dd562f7d196c9da7ddb35da8920760d383356a9` | 3708 | Commission exact run-bound record and connection refinement |
+| 2026-09-13T04:27:35.120Z | codex-24 | mathlib4 `3b4a828755b6a3e0a1d0c3d10e7d40857e7f906a` | 7134 | Row 24: bind record families and connections to exact run subjects |
+| 2026-09-13T04:28:05.294Z | codex-24 | mathlib4 `ce681f0c6984e116f4adf207e167dfd7ac771b5f` | 7160 | Row 24: repair record and connection rejection projections |
+| 2026-09-13T04:28:33.590Z | codex-22 | futon2 `10f4646e5d089cc0850a142699ae44280b431e5a` | 7979 | row 22: retain canonical E3 repair evidence |
+| 2026-09-13T04:29:16.520Z | codex-26 | futon2 `56d3da474c4afab1bece3db1e889f229190ca3ce` | 3785 | Witness failed mutation and exposed mutable snapshot buffer boundaries |
+| 2026-09-13T04:29:23.953Z | codex-24 | futon2 `ea75016910c291471fae8aadb980c88fe6c889f8` | 7211 | Row 24: retain record and connection binding evidence |
+| 2026-09-13T04:30:08.402Z | codex-26 | futon2 `590e35f5e3929cf5923a90bf7596eb581f4d9fa5` | 3791 | Commission snapshot failure and byte ownership repair |
+| 2026-09-13T04:31:29.837Z | codex-23 | futon3c `e1cf716e2022569b4ec60ff594cac1ea2d65d99d` | 7163 | row 19: poison failed snapshot mutations |
+| 2026-09-13T04:31:32.864Z | codex-26 | futon2 `fe949b1080d393e483aaa4df7737695695588abf` | 3836 | Witness disconnected canonical E3 event and chronology joins |
+| 2026-09-13T04:31:39.339Z | codex-23 | futon2 `e24d1599ccf3a1a6ef39d733ece1d996a86ecfca` | 7175 | row 19: specify poisoned snapshot recovery |
+| 2026-09-13T04:31:58.826Z | codex-23 | futon3c `dd870146e87b339cb3346aa5ad96204be57a9755` | 7205 | row 19: repair snapshot EDN guard form |
+| 2026-09-13T04:32:31.791Z | codex-26 | futon2 `0f35fdaeeb9b7fa9748fd0b88cbc772a9da74f10` | 3841 | Commission canonical E3 event chronology and field resolution repair |
+| 2026-09-13T04:33:18.134Z | codex-23 | futon2 `514844e8259827d663a0678eba09dd1b3473de9a` | 7246 | row 19: retain poisoned-boundary gates |
+| 2026-09-13T04:34:22.569Z | codex-26 | futon2 `9b8e3e89f2b05498f6f0e869029a8b8b8c3094fa` | 3890 | Witness unbound causal references in record and connection predicate |
+| 2026-09-13T04:34:26.962Z | codex-22 | futon2 `6d3bb688a178ae0e5d649efccc5ab44b992cad0e` | 8079 | row 22: specify E3 canonical event chronology |
+| 2026-09-13T04:35:09.350Z | codex-26 | futon2 `f44e209bc9a0d6a60cb33cfcae6981c790d3aa95` | 3895 | Commission exact actual causal record and source-pin joins |
+| 2026-09-13T04:35:09.599Z | codex-22 | futon2 `ea8c40c528d1e20c53d636c64a55a22379ff1397` | 8109 | row 22: retain canonical event E3 evidence |
+| 2026-09-13T04:36:07.178Z | codex-24 | mathlib4 `3616df4e28d7b0d5ff4a0902606d170fbb1915b6` | 7243 | Row 24: bind resolved record and edge evidence exactly |
+| 2026-09-13T04:36:23.440Z | codex-26 | futon2 `0e79d88039805ebd8e518e1c1e09a601f1c49098` | 3932 | Accept isolated snapshot failure refusal and defensive byte replay |
+| 2026-09-13T04:36:51.428Z | codex-24 | futon2 `483072709f31b7d01781cf1a280f07acd9c0335d` | 7267 | Row 24: retain resolved evidence binding proof |
+| 2026-09-13T04:37:12.365Z | codex-26 | futon2 `7b31b6e784506279b9013eace805372e99b36621` | 3938 | Commission bounded E4 dispatch to tick evidence route |
+| 2026-09-13T04:38:42.272Z | codex-26 | futon2 `79560f468abad9061cf3d487c55d3a32ddd8b918` | 3975 | Accept isolated canonical E3 event chronology and E2a field joins |
+| 2026-09-13T04:39:30.354Z | codex-26 | futon2 `7f11522bce40173c5bd6adb821eb3490b387e50a` | 3981 | Commission E5 slow prior shaping evidence boundary |
+| 2026-09-13T04:39:39.028Z | codex-23 | futon2 `88d89491ce7cc7cd7e60334ca7684abb823c24e1` | 7318 | row 22 E4: verify scheduled causal route evidence |
+| 2026-09-13T04:39:59.844Z | codex-23 | futon2 `2fe25a457d5ff9c2a274876490b697d91a631960` | 7353 | row 22 E4: preserve digest function binding |
+| 2026-09-13T04:40:36.487Z | codex-26 | futon2 `396cf97592f5fbe3b683191468a42eba22e8f7c2` | 4012 | Review resolved evidence equality and retain missing cross-family joins |
+| 2026-09-13T04:40:37.905Z | codex-23 | futon2 `cf2fc8d4a20f4b263a64a514c15c8733a20d3615` | 7386 | row 22 E4: retain verifier authority specification |
+| 2026-09-13T04:41:23.220Z | codex-26 | futon2 `dbd7d6c02eee41ad055673dfbfb23ab6df0c4213` | 4018 | Commission cross-layer and cross-family evidence relations |
+| 2026-09-13T04:41:36.023Z | codex-23 | futon2 `fc91881a4531c7cbe05f86ead143af05d86a7463` | 7427 | row 22 E4: retain causal verifier gates |
+| 2026-09-13T04:41:52.885Z | codex-26 | futon2 `f20f8d159159d4750221db526076de4ded287dd1` | 4035 | Record delayed reviewed batch against current job authority |
+| 2026-09-13T04:41:53.191Z | codex-22 | futon2 `ee37b50642d020ec1bdcdae2b5a07185160afc29` | 8179 | row 22: add pure E5 slow-prior verifier |
+| 2026-09-13T04:42:01.329Z | codex-23 | futon2 `0c0aa613d2185d0287aadab5159a26bb8fd34a25` | 7443 | row 22 E4: refuse unowned production authority |
+| 2026-09-13T04:42:35.162Z | codex-26 | futon2 `398c0477eaece3cfbf30540ea44dac9dd274aa73` | 4061 | Consume delayed 20631 through 20633 against verified review artifacts |
+| 2026-09-13T04:42:41.290Z | codex-23 | futon2 `a91c4dd90d64d90c72079273893ea78dadddaeeb` | 7469 | row 22 E4: retain final causal verifier gates |
+| 2026-09-13T04:42:57.526Z | codex-24 | mathlib4 `ec9952a070e0f1fd89e57e5f4fffd3e4bc32fb73` | 7313 | Row 24: bind cross-layer causal evidence |
+| 2026-09-13T04:42:57.928Z | codex-22 | futon2 `7c1c7c453acbbaf86240f7defc755ea7ce235723` | 8227 | row 22: retain E5 slow-prior evidence |
+| 2026-09-13T04:44:05.669Z | codex-24 | futon2 `1382479703b46208912c135d9990a59df1bc330c` | 7363 | Row 24: retain cross-layer causal binding evidence |
+| 2026-09-13T04:47:45.968Z | codex-26 | futon2 `4c03837d9ae586e37d5dcdd25d866bd3c17d6e64` | 4116 | Review E4 with executed missing payload and support controls |
+| 2026-09-13T04:48:18.998Z | codex-26 | futon2 `0984c79561abb356c8b826b592c2417600996834` | 4130 | Dispatch bounded E4 payload and completeness repair |
+| 2026-09-13T04:49:57.409Z | codex-26 | futon2 `85f00f4891845ac141a9b045b6dc95ac57405e4b` | 4187 | Review E5 with executed missing identity and unknown mode controls |
+| 2026-09-13T04:50:14.623Z | codex-23 | futon2 `213bf3299d3950c65305e2c5c41dbadfcbf1f774` | 7551 | row 22 E4: bind typed inputs and occurrence universe |
+| 2026-09-13T04:50:25.604Z | codex-26 | futon2 `6c860f067ac3a51f09904bea80fc56ffaab9784b` | 4196 | Dispatch E5 fixed context and mode authority repair |
+| 2026-09-13T04:50:29.379Z | codex-23 | futon2 `6b6a03e2578eb90a335a943b82f2ea61113d6ed6` | 7572 | row 22 E4: construct malformed UTF-8 control bytes |
+| 2026-09-13T04:51:20.508Z | codex-23 | futon2 `8e0936c7f69a2f5b8b67b5982bd1d1f63a9c407f` | 7613 | row 22 E4: retain semantic join repair gates |
+| 2026-09-13T04:51:41.809Z | codex-22 | futon2 `86b66bcc41c4b60d46ba1ecde02b74472fec3caf` | 8274 | row 22: bind E5 to fixed typed context |
+| 2026-09-13T04:51:53.992Z | codex-26 | futon2 `bb3459d561b0cb35b33b56d6377ccb1eb6fb3f77` | 4241 | Review Row24 cross-layer constraints and preserve producer authority obligations |
+| 2026-09-13T04:52:18.777Z | codex-26 | futon2 `2446caa50d0375aef9b4dd1a802629ea056cd15d` | 4246 | Dispatch bounded F11 producer authority contract |
+| 2026-09-13T04:52:39.417Z | codex-22 | futon2 `06c11b652b165aebdc393b0bf78061f0b304802e` | 8317 | row 22: retain strict E5 context evidence |
+| 2026-09-13T04:53:19.967Z | codex-26 | futon2 `e1a7dc4eecbd2488a5635576567ceaf4832afe7e` | 4286 | Accept E4 repaired joins at isolated scope |
+| 2026-09-13T04:53:26.689Z | codex-24 | futon2 `6f0a5982ec64f4476b810fba5c1e46e97005e798` | 7404 | Row 24: specify F11 producer authority and acquisition |
+| 2026-09-13T04:53:44.357Z | codex-26 | futon2 `cc5ae96929f0e1865b60d5545d82206dc92923de` | 4291 | Dispatch bounded E6 forward and feedback contract |
+| 2026-09-13T04:54:59.988Z | codex-26 | futon2 `7ec1e99ac49b7c9acfaec83d788327ac4d97884a` | 4329 | Accept isolated E5 fixed context and retain E6 dependency |
+| 2026-09-13T04:55:14.681Z | codex-23 | futon2 `42f2a9bdab07435a357cbe611cc71a4a135b19e1` | 7663 | row 22 E6: specify forward influence and feedback |
+| 2026-09-13T04:56:12.308Z | codex-26 | futon2 `891337823ac7c11f1adae34d99a0a45dbab76949` | 4368 | Review F11 authority contract and correct acquisition boundary |
+| 2026-09-13T04:56:36.709Z | codex-26 | futon2 `653f8281cfef8d395239b8c6d16584f43b2984ae` | 4376 | Dispatch isolated authority buffer reader and independent doc review |
+| 2026-09-13T04:57:31.905Z | codex-26 | futon2 `eb120aefbc5af941e6accfaec10a649bc74e4e7f` | 4408 | Adopt bounded E6 contracts with explicit comparison and feedback limits |
+| 2026-09-13T04:57:35.164Z | codex-24 | futon2 `2d2918eab138c0956cf9a3a9ca5eb671e81bdf14` | 7436 | Row 24: add immutable authority buffer reader |
+| 2026-09-13T04:58:03.468Z | codex-26 | futon2 `33181ada9c971cf17b610f19c4b646b37d30fafe` | 4414 | Dispatch separate pure E6 forward and feedback verifiers |
+| 2026-09-13T04:58:37.389Z | codex-26 | futon2 `a8db956eee31f58fa4fac6335f946f9d7797113c` | 4431 | Consume superseded E4 E5 and cross-layer delayed results |
+| 2026-09-13T04:59:01.329Z | codex-24 | futon2 `169ec4cac6adc5ced515d5fadd9fcca9cda35e39` | 7504 | Row 24: retain authority buffer validation evidence |
+| 2026-09-13T05:00:20.941Z | codex-26 | futon2 `7eaf237aa0a552831c5d0cf26c3004d638ea53b4` | 4464 | Reject authority reader with executed parsing pointer and mutability controls |
+| 2026-09-13T05:00:34.240Z | codex-23 | futon2 `0d0ea33b9a428ad256c919212a9681827482b7d7` | 7731 | row 22 E6b: verify isolated slow feedback evidence |
+| 2026-09-13T05:00:43.965Z | codex-26 | futon2 `4e0e6190298b96a1407935e0a8a5bc26916afb0e` | 4469 | Dispatch authority reader strictness repair |
+| 2026-09-13T05:00:53.662Z | codex-23 | futon2 `763b8ef31b3b42d686834bb37fdee9be81194613` | 7752 | row 22 E6b: add failure-sensitive gate fixture |
+| 2026-09-13T05:00:54.442Z | codex-22 | futon2 `26372561a9c0a148755714bbbb749410021e9db4` | 8389 | row 22: add bounded E6a forward verifier |
+| 2026-09-13T05:01:39.831Z | codex-23 | futon2 `197d78ebdc757fa1829d40bee602bfe7245ce289` | 7778 | row 22 E6b: retain isolated feedback gates |
+| 2026-09-13T05:02:07.661Z | codex-24 | futon2 `d3ff4aea7a179977649f4e4af8533f1ba732ac97` | 7558 | Row 24: harden authority parsing and immutable replay |
+| 2026-09-13T05:02:24.637Z | codex-22 | futon2 `1fddc5a743f06de7611f83f0289a571c9960dbe3` | 8467 | row 22: retain bounded E6a evidence |
+| 2026-09-13T05:03:02.577Z | codex-26 | futon2 `f7f7050f096342b45214e924bc6a4729a525ece2` | 4511 | Review E6b with executed ledger and authority counterexamples |
+| 2026-09-13T05:03:15.688Z | codex-22 | futon2 `9184b16406b80657ec901d536cc887818de487c9` | 8508 | row 22: retain complete E6a arm provenance receipts |
+| 2026-09-13T05:03:26.937Z | codex-26 | futon2 `61213f18a69e7a0f853b546b3bd9df74a601c0a3` | 4517 | Dispatch E6b resolved authority and ledger repair |
+| 2026-09-13T05:03:35.358Z | codex-24 | futon2 `c5f1ab84280e37ccb6eb438de2d03fa77b83c83f` | 7620 | Row 24: retain strict authority-buffer repair evidence |
+| 2026-09-13T05:04:24.665Z | codex-26 | futon2 `1d83fff64e0030f70fd779c82cba349eeeba3a11` | 4545 | Accept E6a refusal precursor and retain R6 correspondence dependency |
+| 2026-09-13T05:04:49.223Z | codex-26 | futon2 `ab79adf75bdd67944b51ae1ea654cd3b3ca71c68` | 4553 | Dispatch canonical R6 correspondence source contract |
+| 2026-09-13T05:06:12.487Z | codex-26 | futon2 `d00168d0dcb1f672d426d8e5afb266b91b6d50a4` | 4593 | Accept isolated reader repair with executed Date replay control |
+| 2026-09-13T05:06:26.790Z | codex-23 | futon2 `8959251f9111c6f4a616ac3afceb6adc6fe99273` | 7897 | row 22 E6b: resolve canonical and complete ledger authority |
+| 2026-09-13T05:06:46.684Z | codex-23 | futon2 `9e26253716e18083cccbbb172b6d36e7e2bd2c1a` | 7920 | row 22 E6b: classify absent application before completeness |
+| 2026-09-13T05:07:38.276Z | codex-23 | futon2 `b6281dda9a960b1d30df165c4dc5ffba7a2a6820` | 7956 | row 22 E6b: retain canonical authority repair gates |
+| 2026-09-13T05:08:54.665Z | codex-22 | futon2 `dba62e40e8694bc8ce0875b6ef39d282c4465ad0` | 8646 | row 22: specify canonical R6 scoring correspondence |
+| 2026-09-13T05:09:07.606Z | codex-26 | futon2 `325a61d9dea0ac7424cc0d3edc99a2633e5c9322` | 4635 | Review E6b canonical authority with executed borrowed model control |
+| 2026-09-13T05:09:29.744Z | codex-26 | futon2 `e574002870149587587202ab54baa4f1892a60ca` | 4640 | Dispatch full E6b canonical context repair |
+| 2026-09-13T05:10:26.704Z | codex-26 | futon2 `b9fc43bae713f309545d6030dc5c48ef36b4701a` | 4672 | Review R6 source disconnect and preserve semantic adoption boundary |
+| 2026-09-13T05:10:48.890Z | codex-26 | futon2 `43a377b1b00c46ac9763b4b4f6dc26dde2468478` | 4678 | Dispatch bounded E5 R6 semantic design assessment |
+| 2026-09-13T05:11:26.364Z | codex-23 | futon2 `77e983fdd25020f8c3f213d46688ed141fc141d9` | 8045 | row 22 E6b: bind full canonical context and review artifact |
+| 2026-09-13T05:12:00.736Z | codex-23 | futon2 `70027ede66a10524742ef5cbf8d0fa7e307fa10d` | 8073 | row 22 E6b: reject borrowed canonical identity first |
+| 2026-09-13T05:12:44.941Z | codex-23 | futon2 `6707c78a542472fcb6eb9bb5c1e2fed1f15a5801` | 8103 | row 22 E6b: retain canonical context repair gates |
+| 2026-09-13T05:12:53.859Z | codex-22 | futon2 `5af92246d80285416452851d0ae8b374ae069ab8` | 8691 | row 22: analyze E5 E6 semantic integration |
+| 2026-09-13T05:14:42.503Z | codex-26 | futon2 `70edb5e04c5649932dc88f5ea452f35bf6f294de` | 4733 | Bind terminal outcome time to exact E6b review subject |
+| 2026-09-13T05:15:04.547Z | codex-26 | futon2 `6c1d32aca744c2b66c5fd1142514c8f65df515ee` | 4741 | Dispatch independent E6b terminal fix review and relation audit |
+| 2026-09-13T05:16:10.605Z | codex-26 | futon2 `439bb734be41b2651a9b891236fd33cbea6a3a25` | 4773 | Review semantic alternatives without adopting a policy prior change |
+| 2026-09-13T05:17:18.869Z | codex-23 | futon2 `078b8be9bb9c95c0691ef73812d537849ae4b33f` | 8186 | Row 22: bind E6b lifecycle relation and chronology |
+| 2026-09-13T05:18:41.273Z | codex-23 | futon2 `39e0f51b6233e18091c18b44a22c4f7c8ec32e75` | 8251 | Row 22: retain E6b relation gate receipts |
+| 2026-09-13T05:20:02.077Z | codex-26 | futon2 `3394a7b9184690895130b1da7171ac179e317b37` | 4818 | Review E6b with witnessed enactment before authorization counterexample |
+| 2026-09-13T05:20:26.360Z | codex-26 | futon2 `cef8c340f3f6c70aeaf95bd5ee704e2bfad1ff23` | 4824 | Dispatch exact E6b authorization to enactment chronology repair |
+| 2026-09-13T05:21:41.429Z | codex-23 | futon2 `17e85c05661c0b27098aa017d2a2dfd21c816099` | 8309 | Row 22: join E3 authorization time to E6b enactment |
+| 2026-09-13T05:22:12.450Z | codex-23 | futon2 `61db346f993e42cbb7e3bf065823c34f5c6df5b9` | 8335 | Row 22: align enactment chronology control |
+| 2026-09-13T05:22:53.796Z | codex-23 | futon2 `8d5c15508c57b883e9828597cefc23208d7130ac` | 8362 | Row 22: retain E3 authorization chronology receipts |
+| 2026-09-13T05:23:49.615Z | codex-26 | futon2 `7fee0ff1efe58de16892f8e0a8b205899fe9b76f` | 4857 | Accept isolated E6b authorization chronology repair |
+| 2026-09-13T05:24:11.704Z | codex-26 | futon2 `fc33b3a555b83139302cf3ba545099a68577892b` | 4862 | Dispatch bounded E6b store and ledger ownership protocol |
+| 2026-09-13T05:25:48.714Z | codex-23 | futon2 `c65b241f6e86e9ed02b847b180bb0764849a9b87` | 8422 | Row 22: specify revisioned E6b state store protocol |
+| 2026-09-13T05:27:00.727Z | codex-26 | futon2 `c8805944735e3c3ede4e83213e90ab546c6ca07b` | 4894 | Review slow feedback store design and repair crash publication protocol |
+| 2026-09-13T05:27:25.134Z | codex-26 | futon2 `f21ea551fe957f2ae9d996a624b4b91b2fd88b54` | 4900 | Dispatch isolated feedback store with crash and ownership controls |
+| 2026-09-13T05:30:37.619Z | codex-23 | futon2 `4c27e17afbd520151c25eac021e051cd57b99ec1` | 8503 | Row 22: implement isolated E6b state transaction store |
+| 2026-09-13T05:31:09.242Z | codex-23 | futon2 `5669f297f1a52ef62f88b636c0c486792d6a998b` | 8536 | Row 22: repair isolated store retry branch and head transaction |
+| 2026-09-13T05:31:42.768Z | codex-23 | futon2 `f8f9da129ebceb31ef2406cad83b699b69b59047` | 8557 | Row 22: commission store byte and ownership controls |
+| 2026-09-13T05:31:50.823Z | codex-23 | futon2 `018836ea4db5d9983b8949a36df4a696897f96e3` | 8569 | Row 22: add store gate sensitivity control |
+| 2026-09-13T05:32:32.944Z | codex-23 | futon2 `b97186c04db8efbbabf6b4f81e42250cacc8a969` | 8601 | Row 22: repair store byte controls and lint findings |
+| 2026-09-13T05:33:17.721Z | codex-23 | futon2 `6e526b66225b0fe14d448ba5a6cc76f0b5bfc702` | 8626 | Row 22: retain isolated E6b store gate receipts |
+| 2026-09-13T05:38:24.427Z | codex-26 | futon2 `77ddebc851d19356ee81b8c5824f9cf9a35afcb8` | 4964 | Review isolated feedback store: retain publication and chain counterexamples |
+| 2026-09-13T05:38:58.278Z | codex-26 | futon2 `12bb730b393bc125bbcefddcec46b3c9c00596db` | 4974 | Dispatch bounded feedback store publication and chain repair |
+| 2026-09-13T05:40:40.907Z | codex-23 | futon2 `51da6697ea39aee8ddf431aec78bc7a2c7b41aeb` | 8696 | Row 22: enforce complete E6b store chain schemas |
+| 2026-09-13T05:41:16.705Z | codex-23 | futon2 `77adef59e0edd0093091ee2c1471c42fad023f55` | 8722 | Row 22: add adversarial E6b parent-chain control |
+| 2026-09-13T05:42:04.335Z | codex-23 | futon2 `7566bb7963af47fcb82d907a4e81945947b151e6` | 8755 | Row 22: retain E6b store schema gate receipts |
+| 2026-09-13T05:44:33.755Z | codex-26 | futon2 `79c957a2f1998c8b6948b07a04087fb81d4f610e` | 5032 | Reject reused feedback state revisions and retain independent schema review |
+| 2026-09-13T05:45:00.501Z | codex-26 | futon2 `d057deb286f6eca7ec87666204fc19246399ce64` | 5037 | Commission independent feedback revision correction review |
+| 2026-09-13T05:45:39.802Z | codex-23 | futon2 `3cd0de959bf0630ae7259ae8a04708da4a3faa94` | 8793 | Row 22: independently review store revision identity fix |
+| 2026-09-13T05:46:37.901Z | codex-26 | futon2 `ca8d7ce076d15d703b191248fe4d868c699e5b27` | 5068 | Consume independent revision review and distinguish precommit from retrospective evidence |
+| 2026-09-13T05:47:06.097Z | codex-26 | futon2 `5ed03bf24b9d9ad8f39dbc18016f72bb14a8f0c8` | 5073 | Commission noncircular feedback precommit and postcommit contract |
+| 2026-09-13T05:48:10.392Z | codex-23 | futon2 `6aa72c489fe1f7e3d5ed40826f73b39d6003b73f` | 8826 | Row 22: specify prospective and retrospective E6b boundary |
+| 2026-09-13T05:48:21.486Z | codex-23 | futon2 `6b3eea819bf00f43940a6b63f04593df447606d3` | 8843 | Row 22: correct composition source tree pin |
+| 2026-09-13T05:49:23.416Z | codex-26 | futon2 `0bee89422edace4e7f582ef66efe497fe14ef688` | 5106 | Review feedback split contract and fix digest retry and state-carrier boundaries |
+| 2026-09-13T05:49:53.242Z | codex-26 | futon2 `b752b5ef39320cbe33e42cd61f449b596ce297e6` | 5111 | Commission isolated prospective feedback validator without store composition |
+| 2026-09-13T05:51:12.917Z | codex-26 | futon2 `3ec8fcaa5202d7960c8b092860a7e53714a856bb` | 5134 | Record incomplete prospective packet and bound transition-core continuation |
+| 2026-09-13T05:51:43.198Z | codex-26 | futon2 `6c79a0e960f26593c2317544de81823788109d07` | 5140 | Dispatch smaller private feedback core extraction continuation |
+| 2026-09-13T05:52:45.545Z | codex-23 | futon2 `47490433c1c91e956c793bc4901a9bda3eca8496` | 8918 | Row 22: extract private E6b transition replay core |
+| 2026-09-13T05:53:17.958Z | codex-23 | futon2 `8a613ac129089c6e5d3e5410f741346e0a5d8d7e` | 8953 | Row 22: remove extracted core wrapper lint finding |
+| 2026-09-13T05:54:40.372Z | codex-23 | futon2 `4a70d651fb66f737ce8800f970d7fc428d868aa1` | 9010 | Row 22: retain private E6b core extraction receipts |
+| 2026-09-13T05:55:33.866Z | codex-26 | futon2 `8674a426a3ce579311c554773e70d4e7708337e5` | 5170 | Review private feedback transition extraction and retain seven source pins |
+| 2026-09-13T05:56:03.648Z | codex-26 | futon2 `639fd9d0e8e8ff7d257b596306c4cbafa740e23e` | 5176 | Dispatch bounded public prospective feedback validator |
+| 2026-09-13T05:57:39.747Z | codex-23 | futon2 `19b0773004e791b69d99986aae3798c6925a5301` | 9066 | Row 22: expose pure prospective E6b validator |
+| 2026-09-13T05:58:45.526Z | codex-23 | futon2 `50ec27924be566e73323c5db89478366b238438c` | 9122 | Row 22: retain prospective E6b validator gates |
+| 2026-09-13T05:59:55.962Z | codex-26 | futon2 `093afcbafa09bb49a77e1cfa70788c3f7c8f0162` | 5214 | Review prospective feedback API within isolated source and config trust boundary |
+| 2026-09-13T06:00:24.258Z | codex-26 | futon2 `101abeb677a4331f329fa01f6660de15bbf8be84` | 5219 | Commission feedback common state carrier design before adapter implementation |
+| 2026-09-13T06:01:34.130Z | codex-23 | futon2 `5ba1e50460025af691eeb2eded24cc925345ded9` | 9185 | Row 22: define E6b common state carrier contract |
+| 2026-09-13T06:02:33.567Z | codex-26 | futon2 `cb407531a5c58f40a636f0c425baa76ca5bab59b` | 5251 | Review carrier contract: require retrospective digest joins and durable provenance |
+| 2026-09-13T06:03:01.080Z | codex-26 | futon2 `790bbc19198409bf681f5c632f960d3464745397` | 5257 | Dispatch bounded carrier provenance contract repair |
+| 2026-09-13T06:05:06.881Z | codex-23 | futon2 `fd93f7cfa1b393adec5b9b6a473e3669612de4b9` | 9252 | Row 22: bind E6b carrier provenance and replay digests |
+| 2026-09-13T06:06:13.309Z | codex-26 | futon2 `56b426c631ccace98bbc0050d1e57fd9ec8b75c0` | 5289 | Review repaired carrier contract and require exact canonical replay closure |
+| 2026-09-13T06:06:42.740Z | codex-26 | futon2 `40dfe4b8d58e95725d600c9547a9b9bb9ab7be23` | 5295 | Dispatch pure carrier codec with storage composition deferred |
+| 2026-09-13T06:09:28.001Z | codex-23 | futon2 `800166a3129a4e003d2953fa27e3666da37a65ab` | 9329 | Row 22: add pure E6b common state carrier codec |
+| 2026-09-13T06:09:44.712Z | codex-23 | futon2 `8b620840c3ead26f676a567ba70e77159ac56f1a` | 9360 | Row 22: repair carrier codec test form |
+| 2026-09-13T06:09:58.583Z | codex-23 | futon2 `6097cad0db5e806849031ad6d18a0e6f078a5e47` | 9378 | Row 22: correct carrier adversarial expectations |
+| 2026-09-13T06:11:08.227Z | codex-23 | futon2 `0cd37be8b3aed6ae23a2c82164683421de43af0b` | 9419 | Row 22: retain E6b carrier codec gates |
+| 2026-09-13T06:12:29.082Z | codex-26 | futon2 `067e56313a981c0e55d2df5b04b1e82278d77124` | 5339 | Review carrier codec and retain missing context join counterexamples |
+| 2026-09-13T06:12:58.596Z | codex-26 | futon2 `f623342d58b4c2c419694aed458055d1ba442cd8` | 5345 | Dispatch focused carrier context and schema join repair |
+| 2026-09-13T06:14:14.842Z | codex-23 | futon2 `c102aafc7da60e5d011defb4f26eb5f383032d78` | 9459 | Row 22: enforce carrier proposal context joins |
+| 2026-09-13T06:15:48.445Z | codex-23 | futon2 `cd2ea001c27f90f95cc256c8e3cb346f752736a8` | 9547 | Row 22: retain carrier join repair gates |
+| 2026-09-13T06:17:30.982Z | codex-26 | futon2 `6b35706e96106bbe67f2cb026c7799b5a5817cb1` | 5389 | Restore exact carrier prior identity join to decoded transition context |
+| 2026-09-13T06:17:55.653Z | codex-26 | futon2 `120ce8001e19ca8b32e2e622b0b6479f03c17d44` | 5394 | Commission independent carrier prior identity correction review |
+| 2026-09-13T06:19:16.977Z | codex-23 | futon2 `34fd00cd076f9adea991a7b002301ecc2ff39398` | 9607 | Row 22: independently review carrier identity correction |
+| 2026-09-13T06:20:09.134Z | codex-26 | futon2 `8181f1751e4f4313589f8f04373bc36b304d7960` | 5422 | Consume independent carrier correction review and retain remaining source identity gap |
+| 2026-09-13T06:20:36.548Z | codex-26 | futon2 `48a7081c3aacb64f71bcb72afe622be4162afda1` | 5428 | Dispatch bounded decoded source identity repair for carrier codec |
+| 2026-09-13T06:21:43.163Z | codex-23 | futon2 `cbbee14e782fc13e1bc70ae202c0f1f440c1c983` | 9647 | Row 22: join all carrier evidence subjects |
+| 2026-09-13T06:22:44.677Z | codex-23 | futon2 `02b8e8a3e8cc27444966c4e324c5c15a2b2502c3` | 9698 | Row 22: retain complete carrier subject join gates |
+| 2026-09-13T06:23:41.445Z | codex-26 | futon2 `ec82e594602a27b5344aee5078d622df30d554be` | 5457 | Accept carrier subject joins as isolated structural projection only |
+| 2026-09-13T06:24:07.647Z | codex-26 | futon2 `2ee6a0c5db8e65edeae0ae3d288de67297356561` | 5462 | Commission bounded canonical replay input closure inventory |
+| 2026-09-13T06:25:46.967Z | codex-23 | futon2 `b00e6d35253f03cc0f5690e2a2453c7043d114f7` | 9752 | Row 22: inventory canonical E6b replay closure |
+| 2026-09-13T06:27:04.203Z | codex-26 | futon2 `d11d291793793dc06be68001949687413c038b15` | 5502 | Review replay closure and include R11 adapter and arbiter dependencies |
+| 2026-09-13T06:27:52.895Z | codex-26 | futon2 `17203c4838749907567b4e7cd87fa62e619ffcf5` | 5514 | Retain corrected parse receipt and commission isolated fixture closure capture |
+| 2026-09-13T06:28:48.471Z | codex-23 | futon2 `2d0b46c48d06a6e0426e516d8030b501a4771fd6` | 9798 | Row 22: add isolated canonical closure capture |
+| 2026-09-13T06:29:04.035Z | codex-23 | futon2 `5da70a27ccaeb2ae8b8aef5553aac624acc3346c` | 9819 | Row 22: avoid capture helper name collision |
+| 2026-09-13T06:30:01.413Z | codex-23 | futon2 `c60ec244ce1f087856dcbc434b099b7159861d69` | 9852 | Row 22: retain isolated canonical replay fixture |
+| 2026-09-13T06:30:31.576Z | codex-23 | futon2 `2146be99e08f432a01f1471ea986891ac2371aee` | 9881 | Row 22: isolate canonical fixture capture namespaces |
+| 2026-09-13T06:31:51.613Z | codex-23 | futon2 `9cc5fac065aa32b848fd338f77be25f2653fd723` | 9926 | Row 22: retain canonical fixture capture receipts |
+| 2026-09-13T06:33:31.198Z | codex-26 | futon2 `a8655062888dd01fa37c5e10cc1eb6b383adb115` | 5549 | Review retained canonical fixture bytes with explicit unauthenticated scope |
+| 2026-09-13T06:33:57.515Z | codex-26 | futon2 `570842e690d8724242b4a50c997ca4bc873618d0` | 5555 | Commission retained-config canonical replay without fixture constructors |
+| 2026-09-13T06:34:49.760Z | codex-23 | futon2 `7f9edd989117dafd4b5cfb975c34928e05e9d515` | 9954 | Row 22: add pinned canonical fixture replay harness |
+| 2026-09-13T06:35:13.348Z | codex-23 | futon2 `73ad4deb29d394abe07902f64b8ad5bdec17ee15` | 9982 | Row 22: repair canonical replay harness form |
+| 2026-09-13T06:36:22.795Z | codex-23 | futon2 `ed9e811116bfadf676542bf461ae6ada98c9a6f9` | 10019 | Row 22: retain pinned canonical semantic replay |
+| 2026-09-13T06:37:19.289Z | codex-26 | futon2 `50f4afa9e675a3a0d750156d0c91534d8ee7c042` | 5579 | Accept retained canonical replay within unauthenticated isolated scope |
+| 2026-09-13T06:37:50.331Z | codex-26 | futon2 `56bef7fdcce88872ae6e23d8a8c04229029ddb47` | 5584 | Commission pure provenance envelope after retained canonical replay review |
+| 2026-09-13T06:40:31.329Z | codex-23 | futon2 `60eefbf6595134596d98b58461fe3df71791bf5d` | 10094 | Row 22: construct pure E6b provenance envelope |
+| 2026-09-13T06:41:22.194Z | codex-23 | futon2 `8c948beb3ba724c851f134b8fad45cefc4abe3d3` | 10139 | Row 22: repair provenance test form |
+| 2026-09-13T06:42:10.031Z | codex-23 | futon2 `18a35e0e93a99e4130d7d8354f03d5dd157d4549` | 10189 | Row 22: join namespaced E1 closure roles exactly |
+| 2026-09-13T06:43:39.779Z | codex-23 | futon2 `5c29c9e449c4af03d14dcc0e4d4ff61c53e25d89` | 10248 | Row 22: retain E6b provenance gates |
+| 2026-09-13T06:45:11.102Z | codex-26 | futon2 `87178f94e07b58a4933cfa41fbeeca4b5a7ef8a9` | 5629 | Review provenance and retain incompatible canonical input output counterexample |
+| 2026-09-13T06:45:38.548Z | codex-26 | futon2 `5c48dca5183c6e7c9ca6348816929e48b33956b1` | 5634 | Dispatch pure provenance input output closure repair |
+| 2026-09-13T06:48:29.853Z | codex-23 | futon2 `f142cf3d7cd45b8811c1d6b84e3681557d6e9ad7` | 10382 | Row 22: close canonical provenance input-output joins |
+| 2026-09-13T06:49:35.836Z | codex-23 | futon2 `cb09cbd8c5589fb0e66179f815c0fd2596b23262` | 10426 | Row 22: retain provenance closure repair gates |
+| 2026-09-13T06:51:24.802Z | codex-26 | futon2 `714131bb67d7edd48c968fac6cb1103ce1d426e3` | 5673 | Review closure repair and retain ordered manifest counterexample |
+| 2026-09-13T06:51:53.263Z | codex-26 | futon2 `13393e997ca8d93fa138238e516ff97a4c000918` | 5679 | Dispatch exact ordered canonical manifest repair |
+| 2026-09-13T06:52:58.026Z | codex-23 | futon2 `2a54d606331fa37be06e131cea904fc40deeba27` | 10472 | Row 22: preserve canonical manifest order and uniqueness |
+| 2026-09-13T06:53:27.539Z | codex-23 | futon2 `2703f03b2ea80fae45c1ec768dc01529d0f7c7b5` | 10500 | Row 22: preserve typed canonical manifest metadata |
+| 2026-09-13T06:54:00.652Z | codex-23 | futon2 `e5d6a92a1bcab5df48f0f31484c513a63b69c7be` | 10526 | Row 22: validate all ordered manifests before joins |
+| 2026-09-13T06:55:30.417Z | codex-23 | futon2 `88c719d90ad009a8673adda46e3ef8b4c56d8671` | 10575 | Row 22: retain ordered provenance manifest gates |
+| 2026-09-13T06:56:19.221Z | codex-26 | futon2 `72c2579f2825bf5e8bf8453bd84bef4415905858` | 5702 | Accept ordered structural provenance manifests with explicit trust limits |
+| 2026-09-13T06:56:46.071Z | codex-26 | futon2 `56f424bac3382e9f0a304508459fbfa236ba82cb` | 5708 | Commission pure strict provenance readback boundary |
+| 2026-09-13T06:57:57.050Z | codex-23 | futon2 `aa425840496cbeac0630af1c3d9b14a0e0fc0560` | 10628 | Row 22: add strict provenance artifact readback |
+| 2026-09-13T06:58:13.366Z | codex-23 | futon2 `b204d9097a622e9d611f44134bddc06ec9854139` | 10649 | Row 22: replay provenance from raw source descriptors |
+| 2026-09-13T06:59:25.270Z | codex-23 | futon2 `95b87dd0915a0362e4f3a8138951027b65a76e62` | 10707 | Row 22: retain strict provenance readback gates |
+| 2026-09-13T07:00:16.582Z | codex-26 | futon2 `f74652469475f7a8804c1d1084cddfe58b612acc` | 5732 | Accept strict structural provenance readback for exact serialized artifacts |
+| 2026-09-13T07:00:45.395Z | codex-26 | futon2 `9f939c5f2b53d421366af704c6224faf01ae508e` | 5737 | Commission isolated store-v2 provenance publication and recovery |
+| 2026-09-13T07:03:05.117Z | codex-23 | futon2 `eb92f4c3ad494e6d058b51bcc8880b79176ebb9e` | 10755 | Row 22: publish provenance-bound isolated store v2 |
+| 2026-09-13T07:03:32.565Z | codex-23 | futon2 `6e81468b263e4b5fac5379b3b991a35c3959d7ab` | 10783 | Row 22: avoid digest function shadowing in v2 recovery |
+| 2026-09-13T07:03:57.988Z | codex-23 | futon2 `5e78192a692c052ad1c95819501e173b314964fc` | 10808 | Row 22: remove unused v2 store imports |
+| 2026-09-13T07:05:05.351Z | codex-23 | futon2 `c9b50fe18337cc79e721b226229e05cf9e13ecd4` | 10868 | Row 22: retain isolated store-v2 execution evidence |
+| 2026-09-13T07:10:02.260Z | codex-26 | futon2 `bb1e15f1ea99d2da5b8981da0b51e71d15ae3b3a` | 5803 | Review isolated store-v2 and retain HEAD mismatch counterexample |
+| 2026-09-13T07:10:41.004Z | codex-26 | futon2 `45c1e232046fd44d119b427388919722838ec509` | 5818 | Commission isolated store-v2 invariant repair after witnessed regression |
+| 2026-09-13T07:11:44.621Z | codex-23 | futon2 `09db2adfa3db4b96c21f8fb1f48bfb038d563c90` | 10902 | Row 22: enforce strict v2 head parent and format joins |
+| 2026-09-13T07:12:04.066Z | codex-23 | futon2 `db496e433a8d650fdb147a3b793cad7cc02e916c` | 10930 | Row 22: repair v2 recovery form closure |
+| 2026-09-13T07:12:34.884Z | codex-23 | futon2 `6550f39ce5865bf6f83703c7f2e5020520b2d3b4` | 10949 | Row 22: commission strict v2 boundary counterexamples |
+| 2026-09-13T07:13:41.174Z | codex-23 | futon2 `19523ff32681a19b9c69a8d8564e7bc555d95ad7` | 11009 | Row 22: retain strict store-v2 repair gates |
+| 2026-09-13T07:15:20.736Z | codex-26 | futon2 `3d428e9d7ceabd91879b32bafa5b190953794d55` | 5862 | Retain store-v2 genesis validation counterexamples |
+| 2026-09-13T07:15:48.674Z | codex-26 | futon2 `a927ad97ddc2290427d787c6c10c630d853ede40` | 5868 | Commission bounded store-v2 genesis validation repair |
+| 2026-09-13T07:17:15.737Z | codex-23 | futon2 `4f69ad660a879377a811dd6a4ff19fbc236134dd` | 11062 | Row 22: validate complete v2 genesis before publication |
+| 2026-09-13T07:17:36.946Z | codex-23 | futon2 `76a9c56fdb0d4d9f362683d008e1ce4eee8a8e85` | 11079 | Row 22: state isolated store-v2 genesis contract |
+| 2026-09-13T07:18:35.331Z | codex-23 | futon2 `dcb80e5315a87401449a7a4fee757f0e0954ee10` | 11130 | Row 22: retain store-v2 genesis validation evidence |
+| 2026-09-13T07:19:47.673Z | codex-26 | futon2 `f9ad8a213364b2d4959f2a0981f8e8330576f1e3` | 5899 | Accept shared isolated genesis validation with explicit evidence limits |
+| 2026-09-13T07:20:18.736Z | codex-26 | futon2 `66b66cc6f16afc16d87010662c0e4da93964df55` | 5908 | Commission storage-to-retrospective contract against actual v2 inputs |
+| 2026-09-13T07:21:32.534Z | codex-23 | futon2 `ecf7fcd94a8e5351e84419a1b56b0b239ad76530` | 11169 | Row 22: refine store-v2 retrospective reconstruction contract |
+| 2026-09-13T07:23:18.650Z | codex-26 | futon2 `819fde1a1be3a334d5f2ade6c58fbb6429587879` | 5952 | Commission exact validated HEAD capture retention |
+| 2026-09-13T07:24:18.853Z | codex-23 | futon2 `7301f6d7f23ad3ff3a5216487b1cd56862902c77` | 11213 | row 22: independently review retrospective mapping correction |
+| 2026-09-13T07:25:20.222Z | codex-23 | futon2 `fbcc9721a7b3e1b6dc8ac0c649fd6b9862911085` | 11267 | row 22: retain validated store v2 head bytes |
+| 2026-09-13T07:27:58.661Z | codex-23 | futon2 `2aa0b5e3f95002a5a3e96b773e70c9b4c9acf96b` | 11390 | row 22: retain store v2 head buffer gates |
+| 2026-09-13T07:29:20.984Z | codex-26 | futon2 `fd162cee72f34727116660d340c1ddab5d18ddb3` | 5987 | Accept isolated same-buffer HEAD capture and record serialization boundary |
+| 2026-09-13T07:29:59.274Z | codex-26 | futon2 `4dd92205198247cfc97b1578d40d048164d0a9e3` | 5996 | Commission pure deterministic store capture codec |
+| 2026-09-13T07:32:40.085Z | codex-23 | futon2 `7d44b7c6ba273ddf8c4e0f59377c6c0c2f87815a` | 11449 | row 22: encode isolated complete captures |
+| 2026-09-13T07:32:58.362Z | codex-23 | futon2 `6f251358a71e82ade1f607cd247a3d235232e532` | 11468 | row 22: correct malformed utf8 control |
+| 2026-09-13T07:35:17.597Z | codex-23 | futon2 `8eb1261eafa393ac8e068ad2fe85fee0a74c08a2` | 11560 | row 22: enforce complete capture chain joins |
+| 2026-09-13T07:36:23.636Z | codex-23 | futon2 `532b9dfe80986da7507d3c770de2f2be5bbf5076` | 11627 | row 22: retain complete capture codec evidence |
+| 2026-09-13T07:39:18.981Z | codex-26 | futon2 `5a65e8809cb1c53b2c24e55b11ab1423a827d935` | 6063 | Bind capture prior generation to actual parent and retain review evidence |
+| 2026-09-13T07:39:51.539Z | codex-26 | futon2 `f0650c6ee0f1d19be4ffbaebbc46996adac9a343` | 6069 | Commission capture provenance and state structural validation |
+| 2026-09-13T07:40:19.842Z | codex-23 | futon2 `e6d70feb5dd430eb1e6b05408467384be0003a9b` | 11666 | row 22: review capture generation correction |
+| 2026-09-13T07:42:12.250Z | codex-23 | futon2 `3914e9068b160c62f2f6e87f94a4ca2444f54577` | 11715 | row 22: replay complete capture structural laws |
+| 2026-09-13T07:42:33.896Z | codex-23 | futon2 `3abf1dcb844e8862722ff511de26ec14adfb46ae` | 11743 | row 22: close capture validation form |
+| 2026-09-13T07:42:56.419Z | codex-23 | futon2 `b129248be54d6f887764a8adc5aacdf4b5301546` | 11765 | row 22: preserve capture validation scope |
+| 2026-09-13T07:43:10.860Z | codex-23 | futon2 `b3a30783fd865578acd302536248066107f962e9` | 11781 | row 22: load provenance helper in capture controls |
+| 2026-09-13T07:43:29.755Z | codex-23 | futon2 `1efc1611ce60c4c81c02a98386c57831d8c546ae` | 11802 | row 22: keep forged provenance index coherent |
+| 2026-09-13T07:44:53.510Z | codex-23 | futon2 `65474cfa6ce1046ec60fe3c9076e00f173c26d13` | 11889 | row 22: retain capture structural repair evidence |
+| 2026-09-13T07:46:04.447Z | codex-26 | futon2 `2934b5d5d468b01b0feddf5b92fbb23fe0969b9b` | 6100 | Accept represented capture structural joins and scope pure projection packet |
+| 2026-09-13T07:46:40.622Z | codex-26 | futon2 `8562e09b6cd66c669168baaa6a4880701f8a7bde` | 6107 | Commission pure retrospective ledger and source projection |
+| 2026-09-13T07:48:52.690Z | codex-23 | futon2 `2a6f9cf3bb7b49b3c7723dc735b2028913814d7d` | 11947 | row 22: project complete captures for retrospective review |
+| 2026-09-13T07:49:26.975Z | codex-23 | futon2 `c3acc2d8da9d75131afe9748b864b49059df968b` | 11978 | row 22: project complete next state record |
+| 2026-09-13T07:51:08.005Z | codex-23 | futon2 `089e9d8ec5fb47f49ab1a966e8f08a34691ffb2f` | 12058 | row 22: retain retrospective projection evidence |
+| 2026-09-13T07:52:41.063Z | codex-26 | futon2 `b47f2b1fded92bd110a419766e53313fd8c5aeab` | 6152 | Review retrospective draft and distinguish full ledger source digest |
+| 2026-09-13T07:53:11.606Z | codex-26 | futon2 `a0606b4ef75de8e462671ef10a820ce3b42c0f5e` | 6159 | Commission exact retrospective ledger source envelope |
+| 2026-09-13T07:53:35.413Z | codex-23 | futon2 `8db133b8cc570b804cb7bad692c38478f68653c4` | 12093 | row 22: review ledger source clarification |
+| 2026-09-13T07:54:35.671Z | codex-23 | futon2 `1fbd9d5bd0b7f2469a6edc60f3a07d9653df781f` | 12135 | row 22: retain full ledger source envelope |
+| 2026-09-13T07:55:02.727Z | codex-23 | futon2 `1e84a4a9b91b9f33bc1df8ce11c51fb7bab713de` | 12162 | row 22: require edn in ledger envelope controls |
+| 2026-09-13T07:56:36.721Z | codex-23 | futon2 `043f192e180f42fd908d1e9429d8ae4d685114aa` | 12237 | row 22: retain ledger source envelope evidence |
+| 2026-09-13T07:58:25.613Z | codex-26 | futon2 `68dfeff4362044d7869ad7471efda4958e7d76b7` | 6198 | Accept ledger envelope with qualified historical pin review |
+| 2026-09-13T07:58:58.328Z | codex-26 | futon2 `07b3da832e74175b4a7b4f731dffd510d17814a6` | 6208 | Commission externally owned completeness acquisition contract |
+| 2026-09-13T08:00:38.819Z | codex-23 | futon2 `4e433fe9e829c7618f981d9a8cd906c1be72a8e4` | 12293 | row 22: specify external completeness acquisition |
+| 2026-09-13T08:01:13.896Z | codex-23 | futon2 `c37d0ec8f21ae4a54871cf13b2fcd78a0f3d8feb` | 12328 | row 22: retain completeness contract parse receipt |
+| 2026-09-13T08:02:16.947Z | codex-26 | futon2 `96e63b494ba631476564299d2fa61a014383eee0` | 6240 | Review external completeness design and constrain independent census validation |
+| 2026-09-13T08:02:52.403Z | codex-26 | futon2 `6e9cd9a5ae74a56ee628a901b7e42cffd8520f61` | 6250 | Commission pure completeness schema and independent census validator |
+| 2026-09-13T08:03:34.140Z | codex-23 | futon2 `96d540c685b476ff634724e739012b1b6daec272` | 12361 | row 22: freeze external completeness schemas |
+| 2026-09-13T08:06:40.456Z | codex-23 | futon2 `be23be6e5850c0d562b0e1c3a3c900f0aa104af0` | 12403 | row 22: validate external completeness joins |
+| 2026-09-13T08:07:01.956Z | codex-23 | futon2 `7f8ca853bc23f4e26fbcad1d61134fa7948db329` | 12431 | row 22: correct nested completeness controls |
+| 2026-09-13T08:07:39.881Z | codex-23 | futon2 `d2b45b0cfaef47d8e9cafa93d1f29585a423d7f7` | 12450 | row 22: cover completeness census adversaries |
+| 2026-09-13T08:09:13.511Z | codex-23 | futon2 `ad16a57c12dd51a379f084b29974212fdf9a1f85` | 12527 | row 22: retain completeness validator evidence |
+| 2026-09-13T08:11:39.361Z | codex-26 | futon2 `14999ca7e35b74c292dd8298183788ec608b6836` | 6309 | Bind completeness subject store and generation to captured evidence |
+| 2026-09-13T08:12:14.263Z | codex-26 | futon2 `51bfc7e06403710f1572ae64c6a32b641cbd3bd4` | 6319 | Commission independent completeness correction and origin audit |
+| 2026-09-13T08:12:52.552Z | codex-23 | futon2 `35981f169926110a1e4e0d91e5bbea25680e370c` | 12564 | row 22: review completeness subject correction |
+| 2026-09-13T08:13:17.697Z | codex-23 | futon2 `2f27e397a4aacadb4d62b4fdbededfd2dd95192a` | 12585 | row 22: commission completeness authority audit controls |
+| 2026-09-13T08:13:46.058Z | codex-23 | futon2 `a92540b6c4d020942770a170a9126066b1577cc6` | 12606 | row 22: keep fake origin audit hashes coherent |
+| 2026-09-13T08:14:46.319Z | codex-23 | futon2 `1a7aa8948455a17675a3139694d7675c19917da0` | 12643 | row 22: retain completeness authority audit |
+| 2026-09-13T08:15:46.230Z | codex-26 | futon2 `90224bab0f71cc1e37c74a8c60cac2fc5a220d86` | 6349 | Review retained completeness origin and chronology counterexamples |
+| 2026-09-13T08:16:20.857Z | codex-26 | futon2 `21f8238a2dee9c3b77f5648c661443a3848cf5d7` | 6357 | Commission completeness origin and retained-artifact chronology repair |
+| 2026-09-13T08:17:10.584Z | codex-23 | futon2 `79f3285fea5415f4abd2892e8146c4daebe758ba` | 12681 | row 22: freeze completeness review origin role |
+| 2026-09-13T08:19:35.740Z | codex-23 | futon2 `9aa7459721f768c5b791009e300819f3986f5d01` | 12771 | row 22: bind completeness review origin chronology |
+| 2026-09-13T08:22:42.513Z | codex-23 | futon2 `cbc5f6a9e60b1311fe0b3a278d1d232716076cb5` | 12899 | row 22: retain review origin repair gates |
+| 2026-09-13T08:24:15.404Z | codex-26 | futon2 `c56f4cf5c723edb748903b35224049680396d465` | 6396 | Accept isolated origin chronology joins and retain real authority blocker |
+| 2026-09-13T16:06:05.111Z | codex-26 | futon2 `5f183d56127146c0ce454afdb8eaa73be43a30d6` | 6497 | Start Task1 serving integration and retain live missing-commission baseline |
+| 2026-09-13T16:08:53.952Z | codex-23 | futon3c `4138319fab1e52de70f11faca719e8bbbe645d05` | 13045 | row 19: integrate ingress accounting at invoke creation |
+| 2026-09-13T16:09:16.207Z | codex-23 | futon3c `7e99b6da6624ce759019bbd2deb0859b6c12717a` | 13068 | row 19: accept durable non-test ingress controllers |
+| 2026-09-13T16:11:46.354Z | codex-23 | futon3c `b884120f8d1c4e48b2d4d2685da206b077d7eb3d` | 13181 | row 19: retain HTTP ingress integration gates |
+| 2026-09-13T16:17:11.520Z | codex-26 | futon3c `64108e1cd03612034b5529daa175366b2ac4122b` | 6611 | Review serving creator integration and reproduce committed-job drain loss |
+| 2026-09-13T16:17:51.470Z | codex-26 | futon2 `51cc849707dc3167684dd033c0cd4b04d837424c` | 6631 | Continue Task1 serving lifecycle after committed-creation review |
+| 2026-09-13T16:20:13.499Z | codex-23 | futon3c `835c39cd023f12bdef40ad0f444460338b86f3f4` | 13281 | row 19: account invoke execution and delivery lifecycle |
+| 2026-09-13T16:20:54.838Z | codex-23 | futon3c `9972aa5ea539d56e80e79808a0f8446be9faf53d` | 13330 | row 19: repair lifecycle test form |
+| 2026-09-13T16:21:21.285Z | codex-23 | futon3c `129c73b1c139d6bbe7e8ea39b94af09a6f9b1a1f` | 13358 | row 19: close lifecycle fixture boundary |
+| 2026-09-13T16:24:00.361Z | codex-23 | futon3c `236ab773c9c795bac7616ad9c797fe5a153d30a1` | 13478 | row 19: retain HTTP lifecycle integration gates |
+| 2026-09-13T16:24:47.843Z | codex-26 | futon2 `1b5f24c3732b60d0d05f3a5061c2b1bc133fc93b` | 6693 | Report delegation outcomes and archive packet history |
+| 2026-09-13T16:25:00.242Z | codex-26 | futon2 `8c425aa97ba85b443afacff9be56eaf644f16d94` | 6704 | Remove trailing blank line from status board |
+| 2026-09-13T16:27:07.088Z | codex-26 | futon3c `b8ab084d868dce2c6fc9d1ebd7dc3fb080d8adad` | 6766 | Review HTTP lifecycle with duplicate and live-worker drain controls |
+| 2026-09-13T16:28:01.405Z | codex-26 | futon2 `318ec3000c1bbb4fcc7a5b570da52ebbf551a778` | 6785 | Continue Row19 serving repair with actual worker lifetime requirement |
+| 2026-09-13T16:29:59.697Z | codex-23 | futon3c `8c06e0edc1ab68f3ff69d4480bc92d134049795a` | 13570 | row 19: retain execution until worker unwind |
+| 2026-09-13T16:32:18.943Z | codex-23 | futon3c `55e4cfe55fbc646f271fdac5b802493f13bd1799` | 13666 | row 19: retain worker lifetime integration gates |
+| 2026-09-13T16:32:36.107Z | codex-26 | futon2 `35fcc84e99972cc5cc8fe02e457207f8048a0f62` | 6840 | Prioritize on-demand build and truthful certificate with paper exclusions |
+| 2026-09-13T16:33:30.929Z | codex-24 | futon2 `ba98e3f8bd60420495379460793487f81717b82c` | 7667 | Row 24: scope truthful false certificate producer path |
+| 2026-09-13T16:33:49.793Z | codex-23 | futon3c `6a2d4637e74def27b548c266e5ee40590d87b1e2` | 13728 | row 19: retain final worker lifetime gates |
+| 2026-09-13T16:34:57.090Z | codex-26 | futon2 `cf5a5a810f1a9d82e2e8a6ba70e77cdafe2b19ad` | 6886 | Review F11 plan and simplify negative certificate bridge |
+| 2026-09-13T16:35:30.993Z | codex-26 | futon2 `82d8ec4101b23f48ee34bceb47e1eba1216dc94a` | 6900 | Commission minimal executable negative certificate bridge |
+| 2026-09-13T16:35:39.300Z | codex-22 | futon3c `51269db9daaec17d86988eaaead4de7139cd0288` | 8831 | row 26: pass bounded run identity through click |
+| 2026-09-13T16:35:39.411Z | codex-22 | futon2 `402632e6cf81a6f111a376c5a1bd4ff93fcadf27` | 8832 | row 26: add bounded on-demand click client |
+| 2026-09-13T16:36:32.304Z | codex-26 | futon2 `1d84fd66a715031328546304d12c9dab42a87889` | 6929 | Resolve bounded machinery-test scope from standing ruling |
+| 2026-09-13T16:37:02.590Z | codex-22 | futon2 `9133afbed37082787ca1fe9f53894728db249c9f` | 8890 | row 26: retain bounded entrypoint gates |
+| 2026-09-13T16:38:53.772Z | codex-26 | futon3c `d4f11a85bda31e7abdfd20632c4063cc3d730af7` | 7000 | Review worker lifetime and reproduce duplicate non-owner cleanup |
+| 2026-09-13T16:39:36.461Z | codex-26 | futon2 `795d907f5ab8bdcffcbfacce85dde1a78e9f97fb` | 7011 | Commission bounded serving wrapper ownership repair |
+| 2026-09-13T16:40:55.392Z | codex-26 | futon2 `5ffd360038c86761f25bf697a61cdc4b024b3107` | 7039 | Record incomplete bridge packet and commission one executable generator |
+| 2026-09-13T16:40:58.670Z | codex-23 | futon3c `4037f2297e4f999627149180638b93cdebf52c18` | 13800 | row 19: restrict invoke cleanup to execution owner |
+| 2026-09-13T16:41:18.742Z | codex-24 | futon2 `4678d697902de4d684c028151dd7a057a94aea64` | 7714 | Row 24: retain incomplete typed-gap generator attempt |
+| 2026-09-13T16:42:40.137Z | codex-26 | futon2 `fdf14c4354fc427bef02b5133a7c1320bab7b2cf` | 7093 | Review on-demand client against malformed and actual serving status |
+| 2026-09-13T16:43:19.459Z | codex-26 | futon2 `4a2602cd3b512ca6bc1fb02ad525361eb7b02185` | 7103 | Commission concrete Row26 client repair and serving run preflight |
+| 2026-09-13T16:46:03.551Z | codex-22 | futon2 `8238a109c0f75471a268b934c22bdbbed1a9be6d` | 8981 | row 26: bind terminal observation and run preflight |
+| 2026-09-13T16:46:55.992Z | codex-22 | futon2 `dcd3c75e13ad570c3af67a6cd8d06528c793b2df` | 9012 | row 26: retain strict client repair evidence |
+| 2026-09-13T16:47:23.874Z | codex-26 | futon2 `16e0116e41c0cb86e7beadb4f1bbabfd63bc9fe8` | 7187 | Implement typed-gap census generator and compile existing rejection theorems |
+| 2026-09-13T16:48:37.951Z | codex-26 | futon2 `de2d3127a7a037864b1349856c93060155a825bb` | 7220 | Hand off completed generator and outstanding independent review |
+| 2026-09-13T16:49:30.007Z | codex-24 | futon2 `962713f998c37ab15bcffa34ea680cd2be3d5c77` | 7787 | Row 24: independently review typed-gap Lean generator |
+</details>
+
+<details><summary>Complete touched-file tree (2,087 paths), line counts and touching commits</summary>
+
+Paths are relative to `/home/joe/code`. `+/-` counts are campaign diff volume; `now` is file line count at inspection (null means absent). The commit index resolves every abbreviated SHA. This includes receipts and documentation, not just runtime code.
+
+```text
+futon2/holes/labs/wm-contract/CONTRACT-e6b-canonical-replay-closure-v1-2026-09-13.md | +62 -6 | now=56 | b00e6d35253f,d11d29179379,c60ec244ce1f
+futon2/holes/labs/wm-contract/CONTRACT-e6b-common-state-carrier-v1-2026-09-13.md | +351 -32 | now=324 | 5ba1e5046002,fd93f7cfa1b3,56b426c631cc,ecf7fcd94a8e,fbcc9721a7b3
+futon2/holes/labs/wm-contract/CONTRACT-e6b-complete-capture-codec-v1-2026-09-13.md | +50 -3 | now=47 | 7d44b7c6ba27,3914e9068b16
+futon2/holes/labs/wm-contract/CONTRACT-e6b-external-completeness-v1-2026-09-13.md | +211 -2 | now=209 | 4e433fe9e829,96d540c685b4,79f3285fea54
+futon2/holes/labs/wm-contract/CONTRACT-e6b-prospective-retrospective-v1-2026-09-13.md | +167 -4 | now=163 | 6aa72c489fe1,0bee89422eda
+futon2/holes/labs/wm-contract/CONTRACT-e6b-retrospective-projection-v1-2026-09-13.md | +52 -1 | now=51 | 2a6f9cf3bb7b,c3acc2d8da9d,b47f2b1fded9,1fbd9d5bd0b7
+futon2/holes/labs/wm-contract/CONTRACT-e6b-store-v2-genesis-v1-2026-09-13.md | +30 -0 | now=30 | 76a9c56fdb0d
+futon2/holes/labs/wm-contract/CONVERGENCE-PLAN-2026-09-13.md | +28 -2 | now=26 | 35fcc84e9997,1d84fd66a715
+futon2/holes/labs/wm-contract/DECISIONS-FOR-JOE-2026-09-12.md | +7 -0 | now=163 | 867565de906f
+futon2/holes/labs/wm-contract/LEAD-DECISIONS-2026-09-12.md | +246 -10 | now=236 | 867565de906f,9f37f503edc2,74091f56406f
+futon2/holes/labs/wm-contract/LEAD-PACKET-LOG-2026-09-13.md | +480 -0 | now=480 | 1b5f24c3732b,318ec3000c1b,35fcc84e9997,82d8ec4101b2,1d84fd66a715,795d907f5ab8,5ffd360038c8,4a2602cd3b51,de2d3127a7a0
+futon2/holes/labs/wm-contract/SPEC-row14-categorical-state-observation-v1.md | +78 -0 | now=78 | 6dab72fa3298,97955fb1fecc,46b94b94c244
+futon2/holes/labs/wm-contract/SPEC-row14-offline-close-attachment-v1.md | +30 -0 | now=30 | 787ce2d139b8
+futon2/holes/labs/wm-contract/SPEC-row18-interoceptive-policy-precision-proposal-v1.md | +190 -23 | now=167 | d48d6843c884,25e5e9af0445,3e2310a50352,0825dd163ecc
+futon2/holes/labs/wm-contract/SPEC-row18-interoceptive-policy-precision-unique-root-v1.md | +74 -1 | now=73 | 9447bde33930,18162f25e743
+futon2/holes/labs/wm-contract/SPEC-row18-interoceptive-policy-precision-variance-v1.md | +54 -0 | now=54 | 2dab51e259bf
+futon2/holes/labs/wm-contract/SPEC-row22-declaration-edges-2026-09-13.md | +246 -6 | now=240 | f19e346fe574,0c352893799c
+futon2/holes/labs/wm-contract/SPEC-row22-e2a-runtime-seam-2026-09-13.md | +29 -0 | now=29 | 68ae41e86934
+futon2/holes/labs/wm-contract/SPEC-row22-e2b-runtime-dependencies-2026-09-13.md | +32 -0 | now=32 | b5b743442125,a03b569da7d9
+futon2/holes/labs/wm-contract/SPEC-row22-e3-pre-enact-2026-09-13.md | +40 -8 | now=32 | 1842c900ca43,174c4e8a8b04,6d3bb688a178
+futon2/holes/labs/wm-contract/SPEC-row22-e5-slow-prior-2026-09-13.md | +41 -8 | now=33 | ee37b50642d0,86b66bcc41c4
+futon2/holes/labs/wm-contract/SPEC-row22-e6a-forward-influence-2026-09-13.md | +29 -0 | now=29 | 26372561a9c0
+futon2/holes/labs/wm-contract/SPEC-row22-r6-scoring-correspondence-2026-09-13.md | +146 -0 | now=146 | dba62e40e869
+futon2/holes/labs/wm-contract/SPEC-row24-authority-buffer-2026-09-13.md | +24 -0 | now=24 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/SPEC-row24-authority-buffer-repair-2026-09-13.md | +24 -0 | now=24 | c5f1ab84280e
+futon2/holes/labs/wm-contract/SPEC-row24-cross-layer-binding-2026-09-13.md | +30 -0 | now=30 | 1382479703b4
+futon2/holes/labs/wm-contract/SPEC-row24-event-subject-binding-2026-09-13.md | +53 -0 | now=53 | f83f5e938409
+futon2/holes/labs/wm-contract/SPEC-row24-event-subject-binding-repair-2026-09-13.md | +42 -0 | now=42 | 7152fd273a57
+futon2/holes/labs/wm-contract/SPEC-row24-f11-producer-authority-2026-09-13.md | +116 -5 | now=111 | 6f0a5982ec64,891337823ac7
+futon2/holes/labs/wm-contract/SPEC-row24-full-predicate-precursor-2026-09-13.md | +56 -0 | now=56 | e16428597a92
+futon2/holes/labs/wm-contract/SPEC-row24-record-connection-binding-2026-09-13.md | +53 -0 | now=53 | ea75016910c2
+futon2/holes/labs/wm-contract/SPEC-row24-resolved-evidence-2026-09-13.md | +39 -0 | now=39 | 483072709f31
+futon2/holes/labs/wm-contract/SPEC-row24-run-binding-refinement-2026-09-13.md | +64 -1 | now=63 | d43b755b5e4b,94d9a10b12ff
+futon2/holes/labs/wm-contract/TN-row14-measured-a-authority-2026-09-13.md | +194 -0 | now=194 | 21131c3f3c7c
+futon2/holes/labs/wm-contract/TN-row18-field-applicability-2026-09-13.md | +83 -4 | now=79 | b2bc299f4d91,19c34cc96d80,3d0a5e2a3a8b
+futon2/holes/labs/wm-contract/TN-row19-serving-retention-deployment-2026-09-13.md | +56 -0 | now=56 | 69ff088c8803
+futon2/holes/labs/wm-contract/TN-row22-declaration-edge-audit-2026-09-13.md | +116 -0 | now=116 | 335cf4b55a96
+futon2/holes/labs/wm-contract/TN-row22-e5-e6-semantic-integration-2026-09-13.md | +170 -2 | now=168 | 5af92246d802,439bb734be41
+futon2/holes/labs/wm-contract/TN-row22-e6-spec-2026-09-13.md | +206 -3 | now=203 | 42f2a9bdab07,eb120aefbc5a
+futon2/holes/labs/wm-contract/TN-row22-e6b-store-protocol-2026-09-13.md | +202 -7 | now=195 | c65b241f6e86,c8805944735e
+futon2/holes/labs/wm-contract/TN-row24-f11-false-certificate-path-2026-09-13.md | +110 -0 | now=110 | ba98e3f8bd60
+futon2/holes/labs/wm-contract/WORK-REMAINING.md | +471 -430 | now=1292 | 867565de906f,4b0b3a2be31d,9f37f503edc2,74091f56406f,d8c536540f64,8be12ee93c78,f9c65654eca9,3918c112fab0,4352ad26dcd0,f339216effd4,dcfddce38db4,7f6c785eb1f1,92b441841fc7,c0809d9e897f,ed7a60859dc2,4835118491c6,36bdb66ac9d1,f90210e626b5,d12e812bdacc,373179482ca7,28f35c21c009,e6faf338b88d,526f70be3f81,e72b3e390025,15edf3a64a63,238e41a51791,b716cdc24654,3d0a5e2a3a8b,049d61a9823f,8d9cda3e4826,7558db844fea,84b4d4047aaf,877fa299d050,702552a6822d,6560fb07560c,0c352893799c,54a09bb4acb4,c3e9d1cb6a89,c0a652f49cff,bcaacf8cc00f,48df66809586,6973d6b13382,fcf6aaa614ba,5ac24b13a5d4,9d3e1db45db6,e37f2a7057ab,148292a97e85,1d140f5f115a,42c6aaf0faf1,9af78c33eb52,94d9a10b12ff,286c9d7aa431,c469d4e866a3,508623f683c3,c93a56ca4c6d,a1c96d010268,56d3da474c4a,fe949b1080d3,9b8e3e89f2b0,0e79d8803980,79560f468aba,396cf97592f5,4c03837d9ae5,85f00f489184,bb3459d561b0,e1a7dc4eecbd,7ec1e99ac49b,891337823ac7,eb120aefbc5a,7eaf237aa0a5,f7f7050f0963,1d83fff64e00,d00168d0dcb1,325a61d9dea0,b9fc43bae713,70edb5e04c56,439bb734be41,3394a7b91846,7fee0ff1efe5,c8805944735e,77ddebc851d1,79c957a2f199,ca8d7ce076d1,0bee89422eda,3ec8fcaa5202,8674a426a3ce,093afcbafa09,cb407531a5c5,56b426c631cc,067e56313a98,6b35706e9610,8181f1751e4f,ec82e594602a,d11d29179379,a8655062888d,50f4afa9e675,87178f94e07b,714131bb67d7,72c2579f2825,f74652469475,bb1e15f1ea99,3d428e9d7cea,f9ad8a213364,fd162cee72f3,5a65e8809cb1,2934b5d5d468,b47f2b1fded9,68dfeff43620,96e63b494ba6,14999ca7e35b,90224bab0f71,c56f4cf5c723,5f183d561271,51cc849707dc,1b5f24c3732b,8c425aa97ba8,318ec3000c1b,35fcc84e9997,82d8ec4101b2,1d84fd66a715,795d907f5ab8,5ffd360038c8
+futon2/holes/labs/wm-contract/e6b-canonical-replay-closure-2026-09-13.edn | +110 -11 | now=99 | b00e6d35253f,d11d29179379,c60ec244ce1f
+futon2/holes/labs/wm-contract/row14_f11_close_context_discovery.clj | +11 -0 | now=11 | 787ce2d139b8
+futon2/holes/labs/wm-contract/row18_field_applicability.clj | +222 -20 | now=202 | b2bc299f4d91,19c34cc96d80,3a6f56da5d69
+futon2/holes/labs/wm-contract/runs/lead-decisions-independent-review-2026-09-13/correction.md | +60 -0 | now=60 | ad9f9dc2e073
+futon2/holes/labs/wm-contract/runs/lead-decisions-independent-review-2026-09-13/lead-pin-discrepancies.json | +25 -0 | now=25 | 9f37f503edc2
+futon2/holes/labs/wm-contract/runs/lead-decisions-independent-review-2026-09-13/review.md | +165 -0 | now=165 | 90fefed462a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/activity-after-20625.json | +14 -0 | now=14 | 00ba5bbb4765
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-activation-boundary.prompt.txt | +3 -0 | now=3 | d22e353e6a30
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-activation-boundary.request.json | +1 -0 | now=1 | d22e353e6a30
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-activation-boundary.response.json | +1 -0 | now=1 | d22e353e6a30
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-activation-lease-repair.prompt.txt | +1 -0 | now=1 | b6f01eb8b87c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-activation-lease-repair.request.json | +1 -0 | now=1 | b6f01eb8b87c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-activation-lease-repair.response.json | +1 -0 | now=1 | b6f01eb8b87c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-controller-byte-and-interval.prompt.txt | +3 -0 | now=3 | 4894ffc96f18
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-controller-byte-and-interval.request.json | +1 -0 | now=1 | 4894ffc96f18
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-controller-byte-and-interval.response.json | +1 -0 | now=1 | 4894ffc96f18
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-coordination-review-repair.prompt.txt | +5 -0 | now=5 | f90210e626b5
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-coordination-review-repair.request.json | +1 -0 | now=1 | f90210e626b5
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-coordination-review-repair.response.json | +1 -0 | now=1 | f90210e626b5
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-declaration-edge-specifications.prompt.txt | +3 -0 | now=3 | c192fb6528b1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-declaration-edge-specifications.request.json | +1 -0 | now=1 | c192fb6528b1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-declaration-edge-specifications.response.json | +1 -0 | now=1 | c192fb6528b1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e1-independent-byte-authority.prompt.txt | +1 -0 | now=1 | 16d3e71ff217
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e1-independent-byte-authority.request.json | +1 -0 | now=1 | 16d3e71ff217
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e1-independent-byte-authority.response.json | +1 -0 | now=1 | 16d3e71ff217
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2a-portfolio-restriction.prompt.txt | +1 -0 | now=1 | f1c80590d276
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2a-portfolio-restriction.request.json | +1 -0 | now=1 | f1c80590d276
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2a-portfolio-restriction.response.json | +1 -0 | now=1 | f1c80590d276
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2b-event-field-subject.prompt.txt | +1 -0 | now=1 | b86239a08bef
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2b-event-field-subject.request.json | +1 -0 | now=1 | b86239a08bef
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2b-event-field-subject.response.json | +1 -0 | now=1 | b86239a08bef
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2b-exact-enactment-verifier.prompt.txt | +1 -0 | now=1 | 7e73d1913428
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2b-exact-enactment-verifier.request.json | +1 -0 | now=1 | 7e73d1913428
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e2b-exact-enactment-verifier.response.json | +1 -0 | now=1 | 7e73d1913428
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-canonical-event-time.prompt.txt | +1 -0 | now=1 | 0f35fdaeeb9b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-canonical-event-time.request.json | +1 -0 | now=1 | 0f35fdaeeb9b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-canonical-event-time.response.json | +1 -0 | now=1 | 0f35fdaeeb9b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-pre-enact-subject.prompt.txt | +1 -0 | now=1 | 47e1445bee68
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-pre-enact-subject.request.json | +1 -0 | now=1 | 47e1445bee68
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-pre-enact-subject.response.json | +1 -0 | now=1 | 47e1445bee68
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-strict-canonical-evidence.prompt.txt | +1 -0 | now=1 | da5c2af5179f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-strict-canonical-evidence.request.json | +1 -0 | now=1 | da5c2af5179f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e3-strict-canonical-evidence.response.json | +1 -0 | now=1 | da5c2af5179f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-fixed-context-and-mode.prompt.txt | +1 -0 | now=1 | 6c860f067ac3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-fixed-context-and-mode.request.json | +1 -0 | now=1 | 6c860f067ac3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-fixed-context-and-mode.response.json | +1 -0 | now=1 | 6c860f067ac3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-r6-semantic-contract.prompt.txt | +1 -0 | now=1 | 43a377b1b00c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-r6-semantic-contract.request.json | +1 -0 | now=1 | 43a377b1b00c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-r6-semantic-contract.response.json | +1 -0 | now=1 | 43a377b1b00c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-slow-prior-evidence.prompt.txt | +1 -0 | now=1 | 7f11522bce40
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-slow-prior-evidence.request.json | +1 -0 | now=1 | 7f11522bce40
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e5-slow-prior-evidence.response.json | +1 -0 | now=1 | 7f11522bce40
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e6a-forward-verifier.prompt.txt | +1 -0 | now=1 | 33181ada9c97
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e6a-forward-verifier.request.json | +1 -0 | now=1 | 33181ada9c97
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-e6a-forward-verifier.response.json | +1 -0 | now=1 | 33181ada9c97
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-initial-history-and-raw-receipts.prompt.txt | +1 -0 | now=1 | 8be12ee93c78
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-initial-history-and-raw-receipts.request.json | +7 -0 | now=7 | 8be12ee93c78
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-initial-history-and-raw-receipts.response.txt | +1 -0 | now=1 | 8be12ee93c78
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-production-manifest-adapter.prompt.txt | +5 -0 | now=5 | 4b60892b2360
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-production-manifest-adapter.request.json | +1 -0 | now=1 | 4b60892b2360
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-production-manifest-adapter.response.json | +1 -0 | now=1 | 4b60892b2360
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-r6-scoring-correspondence-contract.prompt.txt | +1 -0 | now=1 | ab79adf75bdd
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-r6-scoring-correspondence-contract.request.json | +1 -0 | now=1 | ab79adf75bdd
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-r6-scoring-correspondence-contract.response.json | +1 -0 | now=1 | ab79adf75bdd
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-ranked-budget-mapping.prompt.txt | +5 -0 | now=5 | 9f3cd1032016
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-ranked-budget-mapping.request.json | +1 -0 | now=1 | 9f3cd1032016
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-ranked-budget-mapping.response.json | +1 -0 | now=1 | 9f3cd1032016
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-row26-on-demand-packet.prompt.txt | +1 -0 | now=1 | 35fcc84e9997
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-row26-on-demand-packet.request.json | +1 -0 | now=1 | 35fcc84e9997
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-row26-on-demand-packet.response.json | +1 -0 | now=1 | 35fcc84e9997
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-row26-status-and-run-preflight.prompt.txt | +1 -0 | now=1 | 4a2602cd3b51
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-row26-status-and-run-preflight.request.json | +1 -0 | now=1 | 4a2602cd3b51
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-row26-status-and-run-preflight.response.json | +1 -0 | now=1 | 4a2602cd3b51
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-snapshot-coordination.prompt.txt | +5 -0 | now=5 | 92b441841fc7
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-snapshot-coordination.request.json | +1 -0 | now=1 | 92b441841fc7
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-snapshot-coordination.response.json | +1 -0 | now=1 | 92b441841fc7
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-snapshot-review-repair.prompt.txt | +1 -0 | now=1 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-snapshot-review-repair.request.json | +7 -0 | now=7 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22-snapshot-review-repair.response.txt | +1 -0 | now=1 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22.prompt.txt | +3 -0 | now=3 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22.request.json | +7 -0 | now=7 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-22.response.txt | +1 -0 | now=1 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-archive-publication-retry.prompt.txt | +5 -0 | now=5 | 91d7351a8458
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-archive-publication-retry.request.json | +1 -0 | now=1 | 91d7351a8458
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-archive-publication-retry.response.json | +1 -0 | now=1 | 91d7351a8458
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-authority-byte-boundary.prompt.txt | +3 -0 | now=3 | e6faf338b88d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-authority-byte-boundary.request.json | +1 -0 | now=1 | e6faf338b88d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-authority-byte-boundary.response.json | +1 -0 | now=1 | e6faf338b88d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-capture-resolved-structure.prompt.txt | +2 -0 | now=2 | f0650c6ee0f1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-capture-resolved-structure.request.json | +1 -0 | now=1 | f0650c6ee0f1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-capture-resolved-structure.response.json | +1 -0 | now=1 | f0650c6ee0f1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-context-joins-repair.prompt.txt | +1 -0 | now=1 | f623342d58b4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-context-joins-repair.request.json | +1 -0 | now=1 | f623342d58b4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-context-joins-repair.response.json | +1 -0 | now=1 | f623342d58b4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-decoded-source-identity-repair.prompt.txt | +1 -0 | now=1 | 48a7081c3aac
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-decoded-source-identity-repair.request.json | +1 -0 | now=1 | 48a7081c3aac
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-decoded-source-identity-repair.response.json | +1 -0 | now=1 | 48a7081c3aac
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-lead-identity-review.prompt.txt | +1 -0 | now=1 | 120ce8001e19
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-lead-identity-review.request.json | +1 -0 | now=1 | 120ce8001e19
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-carrier-lead-identity-review.response.json | +1 -0 | now=1 | 120ce8001e19
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-complete-lifecycle-authority.prompt.txt | +1 -0 | now=1 | 98f4d9e99e56
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-complete-lifecycle-authority.request.json | +1 -0 | now=1 | 98f4d9e99e56
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-complete-lifecycle-authority.response.json | +1 -0 | now=1 | 98f4d9e99e56
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-completeness-lead-origin-review.prompt.txt | +2 -0 | now=2 | 51bfc7e06403
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-completeness-lead-origin-review.request.json | +1 -0 | now=1 | 51bfc7e06403
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-completeness-lead-origin-review.response.json | +1 -0 | now=1 | 51bfc7e06403
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-completeness-origin-chronology.prompt.txt | +3 -0 | now=3 | 21f8238a2dee
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-completeness-origin-chronology.request.json | +1 -0 | now=1 | 21f8238a2dee
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-completeness-origin-chronology.response.json | +1 -0 | now=1 | 21f8238a2dee
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-controlled-restart-preparation.prompt.txt | +3 -0 | now=3 | 6f8cc80d152c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-controlled-restart-preparation.request.json | +1 -0 | now=1 | 6f8cc80d152c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-controlled-restart-preparation.response.json | +1 -0 | now=1 | 6f8cc80d152c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-deferred-store-ownership.prompt.txt | +1 -0 | now=1 | 34e5c46f81aa
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-deferred-store-ownership.request.json | +1 -0 | now=1 | 34e5c46f81aa
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-deferred-store-ownership.response.json | +1 -0 | now=1 | 34e5c46f81aa
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e4-dispatch-tick-evidence.prompt.txt | +1 -0 | now=1 | 7b31b6e78450
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e4-dispatch-tick-evidence.request.json | +1 -0 | now=1 | 7b31b6e78450
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e4-dispatch-tick-evidence.response.json | +1 -0 | now=1 | 7b31b6e78450
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e4-payload-and-completeness.prompt.txt | +1 -0 | now=1 | 0984c79561ab
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e4-payload-and-completeness.request.json | +1 -0 | now=1 | 0984c79561ab
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e4-payload-and-completeness.response.json | +1 -0 | now=1 | 0984c79561ab
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6-forward-feedback-contract.prompt.txt | +1 -0 | now=1 | cc5ae96929f0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6-forward-feedback-contract.request.json | +1 -0 | now=1 | cc5ae96929f0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6-forward-feedback-contract.response.json | +1 -0 | now=1 | cc5ae96929f0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-authorization-before-enactment.prompt.txt | +1 -0 | now=1 | cef8c340f3f6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-authorization-before-enactment.request.json | +1 -0 | now=1 | cef8c340f3f6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-authorization-before-enactment.response.json | +1 -0 | now=1 | cef8c340f3f6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-canonical-context.prompt.txt | +1 -0 | now=1 | e57400287014
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-canonical-context.request.json | +1 -0 | now=1 | e57400287014
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-canonical-context.response.json | +1 -0 | now=1 | e57400287014
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-completeness-contract.prompt.txt | +2 -0 | now=2 | 07b3da832e74
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-completeness-contract.request.json | +1 -0 | now=1 | 07b3da832e74
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-completeness-contract.response.json | +1 -0 | now=1 | 07b3da832e74
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-completeness-validator.prompt.txt | +2 -0 | now=2 | 6e9cd9a5ae74
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-completeness-validator.request.json | +1 -0 | now=1 | 6e9cd9a5ae74
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-completeness-validator.response.json | +1 -0 | now=1 | 6e9cd9a5ae74
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-feedback-verifier.prompt.txt | +1 -0 | now=1 | 33181ada9c97
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-feedback-verifier.request.json | +1 -0 | now=1 | 33181ada9c97
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-feedback-verifier.response.json | +1 -0 | now=1 | 33181ada9c97
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-resolved-authority-ledger.prompt.txt | +1 -0 | now=1 | 61213f18a69e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-resolved-authority-ledger.request.json | +1 -0 | now=1 | 61213f18a69e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-resolved-authority-ledger.response.json | +1 -0 | now=1 | 61213f18a69e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-store-ledger-protocol.prompt.txt | +1 -0 | now=1 | fc33b3a555b8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-store-ledger-protocol.request.json | +1 -0 | now=1 | fc33b3a555b8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-store-ledger-protocol.response.json | +1 -0 | now=1 | fc33b3a555b8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-terminal-review-audit.prompt.txt | +1 -0 | now=1 | 6c1d32aca744
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-terminal-review-audit.request.json | +1 -0 | now=1 | 6c1d32aca744
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-e6b-terminal-review-audit.response.json | +1 -0 | now=1 | 6c1d32aca744
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-external-archive-repair.prompt.txt | +2 -0 | now=2 | d8c536540f64
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-external-archive-repair.request.json | +7 -0 | now=7 | d8c536540f64
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-external-archive-repair.response.txt | +1 -0 | now=1 | d8c536540f64
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-canonical-input-closure.prompt.txt | +1 -0 | now=1 | 2ee6a0c5db8e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-canonical-input-closure.request.json | +1 -0 | now=1 | 2ee6a0c5db8e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-canonical-input-closure.response.json | +1 -0 | now=1 | 2ee6a0c5db8e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-carrier-provenance-contract-repair.prompt.txt | +1 -0 | now=1 | 790bbc191984
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-carrier-provenance-contract-repair.request.json | +1 -0 | now=1 | 790bbc191984
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-carrier-provenance-contract-repair.response.json | +1 -0 | now=1 | 790bbc191984
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-common-state-contract.prompt.txt | +1 -0 | now=1 | 101abeb677a4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-common-state-contract.request.json | +1 -0 | now=1 | 101abeb677a4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-common-state-contract.response.json | +1 -0 | now=1 | 101abeb677a4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pre-postcommit-contract.prompt.txt | +1 -0 | now=1 | 5ed03bf24b9d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pre-postcommit-contract.request.json | +1 -0 | now=1 | 5ed03bf24b9d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pre-postcommit-contract.response.json | +1 -0 | now=1 | 5ed03bf24b9d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-private-core-extraction.prompt.txt | +1 -0 | now=1 | 6c79a0e960f2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-private-core-extraction.request.json | +1 -0 | now=1 | 6c79a0e960f2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-private-core-extraction.response.json | +1 -0 | now=1 | 6c79a0e960f2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-prospective-validator.prompt.txt | +1 -0 | now=1 | b752b5ef3932
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-prospective-validator.request.json | +1 -0 | now=1 | b752b5ef3932
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-prospective-validator.response.json | +1 -0 | now=1 | b752b5ef3932
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-public-prospective-validator.prompt.txt | +1 -0 | now=1 | 639fd9d0e8e8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-public-prospective-validator.request.json | +1 -0 | now=1 | 639fd9d0e8e8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-public-prospective-validator.response.json | +1 -0 | now=1 | 639fd9d0e8e8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pure-carrier-codec.prompt.txt | +1 -0 | now=1 | 40dfe4b8d58e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pure-carrier-codec.request.json | +1 -0 | now=1 | 40dfe4b8d58e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pure-carrier-codec.response.json | +1 -0 | now=1 | 40dfe4b8d58e
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pure-provenance-envelope.prompt.txt | +1 -0 | now=1 | 56bef7fdcce8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pure-provenance-envelope.request.json | +1 -0 | now=1 | 56bef7fdcce8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-pure-provenance-envelope.response.json | +1 -0 | now=1 | 56bef7fdcce8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-revision-independent-review.prompt.txt | +1 -0 | now=1 | d057deb286f6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-revision-independent-review.request.json | +1 -0 | now=1 | d057deb286f6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-revision-independent-review.response.json | +1 -0 | now=1 | d057deb286f6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-store-chain-publication-repair.prompt.txt | +1 -0 | now=1 | 12bb730b393b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-store-chain-publication-repair.request.json | +1 -0 | now=1 | 12bb730b393b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-feedback-store-chain-publication-repair.response.json | +1 -0 | now=1 | 12bb730b393b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-genesis-subject-binding.prompt.txt | +5 -0 | now=5 | c0809d9e897f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-genesis-subject-binding.request.json | +1 -0 | now=1 | c0809d9e897f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-genesis-subject-binding.response.json | +1 -0 | now=1 | c0809d9e897f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-genesis-verifier.prompt.txt | +7 -0 | now=7 | f339216effd4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-genesis-verifier.request.json | +1 -0 | now=1 | f339216effd4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-genesis-verifier.response.json | +1 -0 | now=1 | f339216effd4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-ingress-drain-controller.prompt.txt | +5 -0 | now=5 | 87ec5caae86a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-ingress-drain-controller.request.json | +1 -0 | now=1 | 87ec5caae86a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-ingress-drain-controller.response.json | +1 -0 | now=1 | 87ec5caae86a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-ingress-durable-recovery.prompt.txt | +1 -0 | now=1 | 7b197029af0d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-ingress-durable-recovery.request.json | +1 -0 | now=1 | 7b197029af0d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-ingress-durable-recovery.response.json | +1 -0 | now=1 | 7b197029af0d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-atomic-lifecycle-source.prompt.txt | +1 -0 | now=1 | dccc40f1e84c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-atomic-lifecycle-source.request.json | +1 -0 | now=1 | dccc40f1e84c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-atomic-lifecycle-source.response.json | +1 -0 | now=1 | dccc40f1e84c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-canonical-fixture-retention.prompt.txt | +1 -0 | now=1 | 17203c483874
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-canonical-fixture-retention.request.json | +1 -0 | now=1 | 17203c483874
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-canonical-fixture-retention.response.json | +1 -0 | now=1 | 17203c483874
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-feedback-store.prompt.txt | +1 -0 | now=1 | f21ea551fe95
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-feedback-store.request.json | +1 -0 | now=1 | f21ea551fe95
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-feedback-store.response.json | +1 -0 | now=1 | f21ea551fe95
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-store-v2-provenance.prompt.txt | +1 -0 | now=1 | 9f939c5f2b53
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-store-v2-provenance.request.json | +1 -0 | now=1 | 9f939c5f2b53
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-isolated-store-v2-provenance.response.json | +1 -0 | now=1 | 9f939c5f2b53
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-offline-lifecycle-reconciliation.prompt.txt | +1 -0 | now=1 | 88a72bf52142
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-offline-lifecycle-reconciliation.request.json | +1 -0 | now=1 | 88a72bf52142
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-offline-lifecycle-reconciliation.response.json | +1 -0 | now=1 | 88a72bf52142
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-canonical-input-output-joins.prompt.txt | +1 -0 | now=1 | 5c48dca5183c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-canonical-input-output-joins.request.json | +1 -0 | now=1 | 5c48dca5183c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-canonical-input-output-joins.response.json | +1 -0 | now=1 | 5c48dca5183c
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-ordered-manifests.prompt.txt | +1 -0 | now=1 | 13393e997ca8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-ordered-manifests.request.json | +1 -0 | now=1 | 13393e997ca8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-ordered-manifests.response.json | +1 -0 | now=1 | 13393e997ca8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-strict-readback.prompt.txt | +1 -0 | now=1 | 56f424bac338
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-strict-readback.request.json | +1 -0 | now=1 | 56f424bac338
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-provenance-strict-readback.response.json | +1 -0 | now=1 | 56f424bac338
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-real-genesis-evidence.prompt.txt | +5 -0 | now=5 | c060300d3cd5
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-real-genesis-evidence.request.json | +1 -0 | now=1 | c060300d3cd5
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-real-genesis-evidence.response.json | +1 -0 | now=1 | c060300d3cd5
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-resolvers-and-successor.prompt.txt | +5 -0 | now=5 | d12e812bdacc
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-resolvers-and-successor.request.json | +1 -0 | now=1 | d12e812bdacc
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-resolvers-and-successor.response.json | +1 -0 | now=1 | d12e812bdacc
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-restart-discovery-repair.prompt.txt | +5 -0 | now=5 | d6b1f863cb87
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-restart-discovery-repair.request.json | +1 -0 | now=1 | d6b1f863cb87
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-restart-discovery-repair.response.json | +1 -0 | now=1 | d6b1f863cb87
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retained-canonical-replay.prompt.txt | +1 -0 | now=1 | 570842e690d8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retained-canonical-replay.request.json | +1 -0 | now=1 | 570842e690d8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retained-canonical-replay.response.json | +1 -0 | now=1 | 570842e690d8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-deployment-preparation.prompt.txt | +3 -0 | now=3 | 171f5abe2c33
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-deployment-preparation.request.json | +1 -0 | now=1 | 171f5abe2c33
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-deployment-preparation.response.json | +1 -0 | now=1 | 171f5abe2c33
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-loader-and-ingress.prompt.txt | +1 -0 | now=1 | e92a114031ff
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-loader-and-ingress.request.json | +1 -0 | now=1 | e92a114031ff
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-loader-and-ingress.response.json | +1 -0 | now=1 | e92a114031ff
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-review-repair.prompt.txt | +1 -0 | now=1 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-review-repair.request.json | +7 -0 | now=7 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retention-review-repair.response.txt | +1 -0 | now=1 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retrospective-ledger-source.prompt.txt | +3 -0 | now=3 | a0606b4ef75d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retrospective-ledger-source.request.json | +1 -0 | now=1 | a0606b4ef75d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retrospective-ledger-source.response.json | +1 -0 | now=1 | a0606b4ef75d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retrospective-pure-projection.prompt.txt | +3 -0 | now=3 | 8562e09b6cd6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retrospective-pure-projection.request.json | +1 -0 | now=1 | 8562e09b6cd6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-retrospective-pure-projection.response.json | +1 -0 | now=1 | 8562e09b6cd6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-snapshot-failure-and-byte-ownership.prompt.txt | +1 -0 | now=1 | 590e35f5e392
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-snapshot-failure-and-byte-ownership.request.json | +1 -0 | now=1 | 590e35f5e392
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-snapshot-failure-and-byte-ownership.response.json | +1 -0 | now=1 | 590e35f5e392
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-capture-codec.prompt.txt | +3 -0 | now=3 | 4dd922051982
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-capture-codec.request.json | +1 -0 | now=1 | 4dd922051982
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-capture-codec.response.json | +1 -0 | now=1 | 4dd922051982
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-chain-invariants.prompt.txt | +2 -0 | now=2 | 45c1e232046f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-chain-invariants.request.json | +1 -0 | now=1 | 45c1e232046f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-chain-invariants.response.json | +1 -0 | now=1 | 45c1e232046f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-genesis-validation.prompt.txt | +1 -0 | now=1 | a927ad97ddc2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-genesis-validation.request.json | +1 -0 | now=1 | a927ad97ddc2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-genesis-validation.response.json | +1 -0 | now=1 | a927ad97ddc2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-head-buffer.prompt.txt | +2 -0 | now=2 | 819fde1a1be3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-head-buffer.request.json | +1 -0 | now=1 | 819fde1a1be3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-head-buffer.response.json | +1 -0 | now=1 | 819fde1a1be3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-retrospective-contract.prompt.txt | +1 -0 | now=1 | 66b66cc6f16a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-retrospective-contract.request.json | +1 -0 | now=1 | 66b66cc6f16a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-store-v2-retrospective-contract.response.json | +1 -0 | now=1 | 66b66cc6f16a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-serving-creator-integration.prompt.txt | +1 -0 | now=1 | 5f183d561271
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-serving-creator-integration.request.json | +1 -0 | now=1 | 5f183d561271
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-serving-creator-integration.response.json | +1 -0 | now=1 | 5f183d561271
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-serving-lifecycle.prompt.txt | +2 -0 | now=2 | 51cc849707dc
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-serving-lifecycle.request.json | +1 -0 | now=1 | 51cc849707dc
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-serving-lifecycle.response.json | +1 -0 | now=1 | 51cc849707dc
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-worker-lifetime.prompt.txt | +1 -0 | now=1 | 318ec3000c1b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-worker-lifetime.request.json | +1 -0 | now=1 | 318ec3000c1b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-worker-lifetime.response.json | +1 -0 | now=1 | 318ec3000c1b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-wrapper-ownership.prompt.txt | +1 -0 | now=1 | 795d907f5ab8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-wrapper-ownership.request.json | +1 -0 | now=1 | 795d907f5ab8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23-task1-wrapper-ownership.response.json | +1 -0 | now=1 | 795d907f5ab8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23.prompt.txt | +3 -0 | now=3 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23.request.json | +7 -0 | now=7 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-23.response.txt | +1 -0 | now=1 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-actual-causal-record-joins.prompt.txt | +1 -0 | now=1 | f44e209bc9a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-actual-causal-record-joins.request.json | +1 -0 | now=1 | f44e209bc9a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-actual-causal-record-joins.response.json | +1 -0 | now=1 | f44e209bc9a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-authority-buffer-reader.prompt.txt | +1 -0 | now=1 | 653f8281cfef
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-authority-buffer-reader.request.json | +1 -0 | now=1 | 653f8281cfef
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-authority-buffer-reader.response.json | +1 -0 | now=1 | 653f8281cfef
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-authority-reader-strictness.prompt.txt | +1 -0 | now=1 | 4e0e6190298b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-authority-reader-strictness.request.json | +1 -0 | now=1 | 4e0e6190298b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-authority-reader-strictness.response.json | +1 -0 | now=1 | 4e0e6190298b
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-bounded-policy-root-proof.prompt.txt | +1 -0 | now=1 | 8be12ee93c78
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-bounded-policy-root-proof.request.json | +7 -0 | now=7 | 8be12ee93c78
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-bounded-policy-root-proof.response.txt | +1 -0 | now=1 | 8be12ee93c78
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-canonical-softmax-lemmas.prompt.txt | +5 -0 | now=5 | dcfddce38db4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-canonical-softmax-lemmas.request.json | +1 -0 | now=1 | dcfddce38db4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-canonical-softmax-lemmas.response.json | +1 -0 | now=1 | dcfddce38db4
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-categorical-authority-validator.prompt.txt | +3 -0 | now=3 | 6983450daf67
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-categorical-authority-validator.request.json | +1 -0 | now=1 | 6983450daf67
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-categorical-authority-validator.response.json | +1 -0 | now=1 | 6983450daf67
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-categorical-payload-and-time.prompt.txt | +1 -0 | now=1 | f3d4a465b243
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-categorical-payload-and-time.request.json | +1 -0 | now=1 | f3d4a465b243
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-categorical-payload-and-time.response.json | +1 -0 | now=1 | f3d4a465b243
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-certificate-occurrence-subjects.prompt.txt | +1 -0 | now=1 | 00ba5bbb4765
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-certificate-occurrence-subjects.request.json | +1 -0 | now=1 | 00ba5bbb4765
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-certificate-occurrence-subjects.response.json | +1 -0 | now=1 | 00ba5bbb4765
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-certificate-run-subject-joins.prompt.txt | +1 -0 | now=1 | 2688d7b1fa6a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-certificate-run-subject-joins.request.json | +1 -0 | now=1 | 2688d7b1fa6a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-certificate-run-subject-joins.response.json | +1 -0 | now=1 | 2688d7b1fa6a
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-cross-family-layer-relations.prompt.txt | +1 -0 | now=1 | dbd7d6c02eee
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-cross-family-layer-relations.request.json | +1 -0 | now=1 | dbd7d6c02eee
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-cross-family-layer-relations.response.json | +1 -0 | now=1 | dbd7d6c02eee
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-derivative-certificate.prompt.txt | +3 -0 | now=3 | 373179482ca7
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-derivative-certificate.request.json | +1 -0 | now=1 | 373179482ca7
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-derivative-certificate.response.json | +1 -0 | now=1 | 373179482ca7
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-exact-close-annotation-join.prompt.txt | +1 -0 | now=1 | 270d63f2d8e6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-exact-close-annotation-join.request.json | +1 -0 | now=1 | 270d63f2d8e6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-exact-close-annotation-join.response.json | +1 -0 | now=1 | 270d63f2d8e6
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-f11-producer-authority-contract.prompt.txt | +1 -0 | now=1 | 2446caa50d03
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-f11-producer-authority-contract.request.json | +1 -0 | now=1 | 2446caa50d03
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-f11-producer-authority-contract.response.json | +1 -0 | now=1 | 2446caa50d03
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-field-checker-review-repair.prompt.txt | +1 -0 | now=1 | 81bc187e4497
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-field-checker-review-repair.request.json | +1 -0 | now=1 | 81bc187e4497
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-field-checker-review-repair.response.json | +1 -0 | now=1 | 81bc187e4497
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-field-correspondence.prompt.txt | +3 -0 | now=3 | 526f70be3f81
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-field-correspondence.request.json | +1 -0 | now=1 | 526f70be3f81
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-field-correspondence.response.json | +1 -0 | now=1 | 526f70be3f81
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-full-predicate-rejections.prompt.txt | +1 -0 | now=1 | a7894b423b20
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-full-predicate-rejections.request.json | +1 -0 | now=1 | a7894b423b20
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-full-predicate-rejections.response.json | +1 -0 | now=1 | a7894b423b20
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-interoceptive-beta-spec.prompt.txt | +5 -0 | now=5 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-interoceptive-beta-spec.request.json | +7 -0 | now=7 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-interoceptive-beta-spec.response.txt | +1 -0 | now=1 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-measured-a-state-authority.prompt.txt | +3 -0 | now=3 | 0477502ffa07
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-measured-a-state-authority.request.json | +1 -0 | now=1 | 0477502ffa07
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-measured-a-state-authority.response.json | +1 -0 | now=1 | 0477502ffa07
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-minimal-certificate-plan.prompt.txt | +1 -0 | now=1 | 35fcc84e9997
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-minimal-certificate-plan.request.json | +1 -0 | now=1 | 35fcc84e9997
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-minimal-certificate-plan.response.json | +1 -0 | now=1 | 35fcc84e9997
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-negative-certificate-bridge.prompt.txt | +2 -0 | now=2 | 82d8ec4101b2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-negative-certificate-bridge.request.json | +1 -0 | now=1 | 82d8ec4101b2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-negative-certificate-bridge.response.json | +1 -0 | now=1 | 82d8ec4101b2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-positive-beta-domain.prompt.txt | +1 -0 | now=1 | 4352ad26dcd0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-positive-beta-domain.request.json | +1 -0 | now=1 | 4352ad26dcd0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-positive-beta-domain.response.json | +1 -0 | now=1 | 4352ad26dcd0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-record-connection-run-joins.prompt.txt | +1 -0 | now=1 | 5dd562f7d196
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-record-connection-run-joins.request.json | +1 -0 | now=1 | 5dd562f7d196
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-record-connection-run-joins.response.json | +1 -0 | now=1 | 5dd562f7d196
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-resolved-categorical-review-subject.prompt.txt | +1 -0 | now=1 | 974b74168e44
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-resolved-categorical-review-subject.request.json | +1 -0 | now=1 | 974b74168e44
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-resolved-categorical-review-subject.response.json | +1 -0 | now=1 | 974b74168e44
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-review-lead-typed-gap-generator.prompt.txt | +1 -0 | now=1 | de2d3127a7a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-review-lead-typed-gap-generator.request.json | +1 -0 | now=1 | de2d3127a7a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-review-lead-typed-gap-generator.response.json | +1 -0 | now=1 | de2d3127a7a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-review-repair-and-edges.prompt.txt | +3 -0 | now=3 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-review-repair-and-edges.request.json | +7 -0 | now=7 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-review-repair-and-edges.response.txt | +1 -0 | now=1 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-root-uniqueness.prompt.txt | +3 -0 | now=3 | ed7a60859dc2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-root-uniqueness.request.json | +1 -0 | now=1 | ed7a60859dc2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-root-uniqueness.response.json | +1 -0 | now=1 | ed7a60859dc2
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-selection-relation-and-authority.prompt.txt | +1 -0 | now=1 | fbbfd6efa2b3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-selection-relation-and-authority.request.json | +1 -0 | now=1 | fbbfd6efa2b3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-selection-relation-and-authority.response.json | +1 -0 | now=1 | fbbfd6efa2b3
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-typed-gap-generator.prompt.txt | +1 -0 | now=1 | 5ffd360038c8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-typed-gap-generator.request.json | +1 -0 | now=1 | 5ffd360038c8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24-typed-gap-generator.response.json | +1 -0 | now=1 | 5ffd360038c8
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24.prompt.txt | +3 -0 | now=3 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24.request.json | +7 -0 | now=7 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/codex-24.response.txt | +1 -0 | now=1 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/consumed-20615-20617-20618.json | +50 -0 | now=50 | d7f3d1b295c1
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/consumed-20630-20631-20632.json | +37 -0 | now=37 | f20f8d159159
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/consumed-20631-20632-20633.json | +30 -0 | now=30 | 398c0477eaec
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/consumed-20635-20636-20637.json | +39 -0 | now=39 | a8db956eee31
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/dispatches.json | +40 -0 | now=40 | 4b0b3a2be31d
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/repair-wave.json | +1134 -169 | now=965 | 74091f56406f,d8c536540f64,8be12ee93c78,91d7351a8458,4b60892b2360,4352ad26dcd0,f339216effd4,dcfddce38db4,92b441841fc7,c0809d9e897f,ed7a60859dc2,f90210e626b5,d12e812bdacc,373179482ca7,d22e353e6a30,e6faf338b88d,526f70be3f81,c060300d3cd5,81bc187e4497,b6f01eb8b87c,171f5abe2c33,0477502ffa07,e92a114031ff,4894ffc96f18,6983450daf67,6f8cc80d152c,c192fb6528b1,f3d4a465b243,d6b1f863cb87,9f3cd1032016,87ec5caae86a,974b74168e44,16d3e71ff217,7b197029af0d,270d63f2d8e6,34e5c46f81aa,f1c80590d276,a7894b423b20,88a72bf52142,7e73d1913428,2688d7b1fa6a,98f4d9e99e56,b86239a08bef,00ba5bbb4765,47e1445bee68,dccc40f1e84c,fbbfd6efa2b3,da5c2af5179f,5dd562f7d196,590e35f5e392,0f35fdaeeb9b,f44e209bc9a0,7b31b6e78450,7f11522bce40,dbd7d6c02eee,0984c79561ab,6c860f067ac3,2446caa50d03,cc5ae96929f0,7ec1e99ac49b,653f8281cfef,33181ada9c97,4e0e6190298b,61213f18a69e,ab79adf75bdd,d00168d0dcb1,e57400287014,43a377b1b00c,6c1d32aca744,439bb734be41,cef8c340f3f6,fc33b3a555b8,f21ea551fe95,12bb730b393b,d057deb286f6,5ed03bf24b9d,b752b5ef3932,6c79a0e960f2,639fd9d0e8e8,101abeb677a4,790bbc191984,40dfe4b8d58e,f623342d58b4,120ce8001e19,48a7081c3aac,2ee6a0c5db8e,17203c483874,570842e690d8,56bef7fdcce8,5c48dca5183c,13393e997ca8,56f424bac338,9f939c5f2b53,45c1e232046f,a927ad97ddc2,66b66cc6f16a,819fde1a1be3,4dd922051982,f0650c6ee0f1,8562e09b6cd6,a0606b4ef75d,07b3da832e74,6e9cd9a5ae74,51bfc7e06403,21f8238a2dee,c56f4cf5c723,5f183d561271,51cc849707dc,318ec3000c1b,35fcc84e9997,82d8ec4101b2,795d907f5ab8,5ffd360038c8,4a2602cd3b51,de2d3127a7a0
+futon2/holes/labs/wm-contract/runs/lead-dispatch-2026-09-13/row24-tracker-policy-reconciliation.json | +18 -0 | now=18 | e37f2a7057ab
+futon2/holes/labs/wm-contract/runs/lead-scoreboard-2026-09-13/machinery-scope-settlement.json | +15 -0 | now=15 | 1d84fd66a715
+futon2/holes/labs/wm-contract/runs/lead-scoreboard-2026-09-13/receipt.json | +19 -0 | now=19 | 1b5f24c3732b
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/kondo-output.txt | +1 -0 | now=1 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-counterexamples-pins.sha256 | +3 -0 | now=3 | c3e9d1cb6a89
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-counterexamples.clj | +34 -0 | now=34 | c3e9d1cb6a89
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-counterexamples.stderr.txt | +0 -0 | now=0 | c3e9d1cb6a89
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-counterexamples.stdout.edn | +2 -0 | now=2 | c3e9d1cb6a89
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/lead-review.md | +12 -0 | now=12 | c3e9d1cb6a89
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/parens-output.txt | +1 -0 | now=1 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/source-pins.sha256 | +4 -0 | now=4 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/superseded-run.edn | +5 -0 | now=5 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/test-output.txt | +7 -0 | now=7 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-grounding-repair-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 3b4bf1eed0c9
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/kondo-output.txt | +1 -0 | now=1 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/kondo-receipt.edn | +7 -0 | now=7 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/lead-pins.json | +44 -0 | now=44 | 702552a6822d
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/lead-review.md | +12 -0 | now=12 | 702552a6822d
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/parens-output.txt | +1 -0 | now=1 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/parens-receipt.edn | +6 -0 | now=6 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/source-pins.sha256 | +7 -0 | now=7 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/superseded-gate-history.edn | +10 -0 | now=10 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/test-output.txt | +7 -0 | now=7 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-categorical-authority-validator-2026-09-13/test-receipt.edn | +9 -0 | now=9 | e5ff5201e256
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/categorical-event-authority-discovery.md | +33 -0 | now=33 | 4835118491c6
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/categorical-event-source-pins.json | +7 -0 | now=7 | 4835118491c6
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/click-status-receipt.json | +7 -0 | now=7 | 7f6c785eb1f1
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/click-status.raw.json | +1 -0 | now=1 | 7f6c785eb1f1
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/current-attempt-pins.json | +5 -0 | now=5 | 7f6c785eb1f1
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/discovery.md | +58 -0 | now=58 | 4352ad26dcd0,7f6c785eb1f1
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/source-pins.json | +7 -0 | now=7 | 4352ad26dcd0
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/vocabulary-authority-pins.json | +5 -0 | now=5 | 36bdb66ac9d1
+futon2/holes/labs/wm-contract/runs/row-14-current-capture-discovery-2026-09-13/vocabulary-domain-finding.md | +34 -0 | now=34 | 36bdb66ac9d1
+futon2/holes/labs/wm-contract/runs/row-14-measured-a-authority-spec-2026-09-13/lead-pins.json | +106 -0 | now=106 | 7558db844fea
+futon2/holes/labs/wm-contract/runs/row-14-measured-a-authority-spec-2026-09-13/lead-review.md | +13 -0 | now=13 | 7558db844fea
+futon2/holes/labs/wm-contract/runs/row-14-measured-a-authority-spec-2026-09-13/pin-command.txt | +18 -0 | now=18 | 21131c3f3c7c
+futon2/holes/labs/wm-contract/runs/row-14-measured-a-authority-spec-2026-09-13/pin-verification.txt | +22 -0 | now=22 | 21131c3f3c7c
+futon2/holes/labs/wm-contract/runs/row-14-measured-a-authority-spec-2026-09-13/source-pins.sha256 | +17 -0 | now=17 | 21131c3f3c7c
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/f11-discovery-receipt.edn | +3 -0 | now=3 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/f11-discovery.edn | +1 -0 | now=1 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/kondo-output.txt | +1 -0 | now=1 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | 5ac24b13a5d4
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/parens-output.txt | +1 -0 | now=1 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/parens-receipt.edn | +3 -0 | now=3 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/source-pins.sha256 | +6 -0 | now=6 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/superseded-runs.edn | +7 -0 | now=7 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/test-output.txt | +7 -0 | now=7 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-offline-close-attachment-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 2a071ff89891
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/delayed-reply-verification.json | +63 -0 | now=63 | 9b276256e0da
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/delayed-reply-verification.md | +6 -1 | now=5 | 9b276256e0da,764b639a6e77
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/kondo-output.txt | +1 -0 | now=1 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | 48df66809586
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/parens-output.txt | +1 -0 | now=1 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/source-pins.sha256 | +6 -0 | now=6 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/test-output.txt | +7 -0 | now=7 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 0fc3997cbf87
+futon2/holes/labs/wm-contract/runs/row-14-resolved-acceptance-subject-2026-09-13/verify-delayed-reply.py | +55 -0 | now=55 | 9b276256e0da
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/ACTIVATION.md | +71 -6 | now=65 | 09752ed715c7,bc1b4856184c,fdd9967302b4,2f39b95dacad
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/current-status-receipt.edn | +9 -2 | now=7 | 2f171ccb5841,20f9d7c577dc,d06e21f2d805
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/current-status.stderr | +0 -0 | now=0 | 2f171ccb5841
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/current-status.stdout | +1 -0 | now=1 | 2f171ccb5841
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/kondo-receipt.edn | +6 -2 | now=4 | 2f171ccb5841,20f9d7c577dc,d06e21f2d805
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/lead-pins.json | +38 -0 | now=38 | 238e41a51791
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/lead-review.md | +11 -0 | now=11 | 238e41a51791
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/parens-receipt.edn | +6 -2 | now=4 | 2f171ccb5841,20f9d7c577dc,d06e21f2d805
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/source-pins.edn | +11 -3 | now=8 | 2f171ccb5841,20f9d7c577dc
+futon2/holes/labs/wm-contract/runs/row-18-activation-boundary-2026-09-13/test-receipt.edn | +7 -2 | now=5 | 2f171ccb5841,20f9d7c577dc,d06e21f2d805
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/current-status-receipt.edn | +6 -1 | now=5 | 2b75d7f9f509,8d09b84af74b
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/current-status.stderr | +0 -0 | now=0 | 2b75d7f9f509
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/current-status.stdout | +1 -0 | now=1 | 2b75d7f9f509
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/failed-insecure-fixture-permissions.edn | +4 -0 | now=4 | 2b75d7f9f509
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/failed-java-permission-set.edn | +4 -0 | now=4 | 2b75d7f9f509
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/failed-kondo-before-declarations.edn | +2 -0 | now=2 | 2b75d7f9f509
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/incomplete-one-namespace-run.edn | +3 -0 | now=3 | 8d09b84af74b
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/kondo-receipt.edn | +5 -2 | now=3 | 2b75d7f9f509,8d09b84af74b
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/lead-pins.json | +38 -0 | now=38 | 8d9cda3e4826
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/lead-review.md | +11 -0 | now=11 | 8d9cda3e4826
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/parens-receipt.edn | +5 -2 | now=3 | 2b75d7f9f509,8d09b84af74b
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/source-pins.edn | +10 -3 | now=7 | 2b75d7f9f509,8d09b84af74b
+futon2/holes/labs/wm-contract/runs/row-18-activation-lease-2026-09-13/test-receipt.edn | +12 -3 | now=9 | 2b75d7f9f509,8d09b84af74b
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 6a649e188dfa
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/lead-pins.json | +8 -0 | now=8 | f90210e626b5
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/lead-review.md | +38 -0 | now=38 | f90210e626b5
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/lead-source-protocol-pins.json | +8 -0 | now=8 | 28f35c21c009
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/lead-source-protocol-review.md | +30 -0 | now=30 | 28f35c21c009
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/lead-touchup-gates.json | +23 -0 | now=23 | 28f35c21c009
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/parens-failed-attempt.edn | +6 -0 | now=6 | 6a649e188dfa
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/parens-receipt.edn | +5 -0 | now=5 | 6a649e188dfa
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production-participation-receipt.edn | +10 -1 | now=9 | 19979cf55b29,82bcad9573a4
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production-participation-stderr.txt | +0 -0 | now=0 | 19979cf55b29
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production-participation-stdout.txt | +1 -0 | now=1 | 19979cf55b29
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production-readback-receipt.edn | +7 -0 | now=7 | e9cc611df359
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production-readback.edn | +7 -0 | now=7 | e9cc611df359
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/production_participation_readback.clj | +12 -2 | now=10 | 6d016f4ab57c,09752ed715c7,bc1b4856184c
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/review-repair-kondo-receipt.edn | +5 -1 | now=4 | 19979cf55b29,82bcad9573a4
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/review-repair-parens-receipt.edn | +5 -1 | now=4 | 19979cf55b29,82bcad9573a4
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/review-repair-test-failed-arity.edn | +4 -0 | now=4 | 19979cf55b29
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/review-repair-test-failed-join.edn | +4 -0 | now=4 | 19979cf55b29
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/review-repair-test-failed-reader.edn | +4 -0 | now=4 | 19979cf55b29
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/review-repair-test-receipt.edn | +11 -3 | now=8 | 19979cf55b29,82bcad9573a4
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/test-receipt.edn | +7 -0 | now=7 | 6a649e188dfa
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/writer-census-commands.txt | +26 -0 | now=26 | 6d016f4ab57c
+futon2/holes/labs/wm-contract/runs/row-18-coherent-snapshot-2026-09-13/writer-census.md | +32 -0 | now=32 | 6a649e188dfa
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/controller-receipt.edn | +5 -0 | now=5 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/controller.stderr | +0 -0 | now=0 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/controller.stdout | +1 -0 | now=1 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/controller_readback.clj | +10 -0 | now=10 | 2f39b95dacad
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/kondo-receipt.edn | +2 -0 | now=2 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | 877fa299d050
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/lead-controller-pins.json | +20 -0 | now=20 | 877fa299d050
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/lead-pins.json | +38 -0 | now=38 | 877fa299d050
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/parens-receipt.edn | +2 -0 | now=2 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/production-status-receipt.edn | +5 -0 | now=5 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/production-status.stderr | +0 -0 | now=0 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/production-status.stdout | +1 -0 | now=1 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/source-pins.edn | +7 -0 | now=7 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-controller-resolution-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 6c064ff653b0
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/checker-receipt.edn | +17 -0 | now=17 | d78c90072b7d
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/checker-v2-negative-stderr.txt | +6 -0 | now=6 | 15f441b33261
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/checker-v2-receipt.edn | +14 -0 | now=14 | 15f441b33261
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/checker-v2-stdout.txt | +2 -0 | now=2 | 15f441b33261
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/kondo-receipt.edn | +5 -0 | now=5 | d78c90072b7d
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/kondo-v2-receipt.edn | +5 -0 | now=5 | 15f441b33261
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/lead-pins.json | +44 -0 | now=44 | 15edf3a64a63
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/lead-review.md | +13 -0 | now=13 | 15edf3a64a63
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/lead-v2-acceptance.md | +7 -0 | now=7 | 3d0a5e2a3a8b
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/lead-v2-pins.json | +26 -0 | now=26 | 3d0a5e2a3a8b
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | d78c90072b7d
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/parens-v2-receipt.edn | +4 -0 | now=4 | 15f441b33261
+futon2/holes/labs/wm-contract/runs/row-18-field-applicability-2026-09-13/report.edn | +36 -0 | now=36 | d78c90072b7d
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual-reader-execution-receipt.edn | +19 -11 | now=8 | 9997e39db75f,efd79b498c58
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual-reader-readback.edn | +39 -3 | now=36 | 4c65f354a950,9997e39db75f,efd79b498c58
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual-reader-stdout-stderr.edn | +4 -0 | now=4 | efd79b498c58
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/actual_reader_readback.clj | +52 -3 | now=49 | 4c65f354a950,7253ab33b180
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/authority-and-readback.edn | +52 -2 | now=50 | 73667630396f,4c65f354a950,6a07caac2f39
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/check-parens-receipt.edn | +14 -9 | now=5 | 73667630396f,2999f32d2a7f,4c65f354a950,efd79b498c58
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/clj-kondo-receipt.edn | +13 -10 | now=3 | 73667630396f,2999f32d2a7f,4c65f354a950,efd79b498c58
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/clojure-test-receipt.edn | +32 -26 | now=6 | 73667630396f,2999f32d2a7f,4c65f354a950,efd79b498c58
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/lead-bounded-acceptance.md | +28 -0 | now=28 | 3918c112fab0
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/lead-final-pins.json | +5 -0 | now=5 | 3918c112fab0
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/lead-rereview.md | +53 -0 | now=53 | feff9b02681c
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/lead-review.md | +70 -0 | now=70 | 22e009206027
+futon2/holes/labs/wm-contract/runs/row-18-interoceptive-snapshot-2026-09-13/readback-script-gates.edn | +8 -0 | now=8 | 9997e39db75f
+futon2/holes/labs/wm-contract/runs/row-18-lead-audit-2026-09-12/execution-receipt.json | +49 -0 | now=49 | 867565de906f
+futon2/holes/labs/wm-contract/runs/row-18-lead-audit-2026-09-12/gain_probe.bb | +90 -0 | now=90 | 867565de906f
+futon2/holes/labs/wm-contract/runs/row-18-lead-audit-2026-09-12/input.edn | +1 -0 | now=1 | 867565de906f
+futon2/holes/labs/wm-contract/runs/row-18-lead-audit-2026-09-12/result.edn | +1 -0 | now=1 | 867565de906f
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-bounded-pins.json | +38 -0 | now=38 | 4352ad26dcd0
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-bounded-review.md | +21 -0 | now=21 | 4352ad26dcd0
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-finite-posterior-pins.json | +50 -0 | now=50 | ed7a60859dc2
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-finite-posterior-review.md | +28 -0 | now=28 | ed7a60859dc2
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-positive-domain-pins.json | +38 -0 | now=38 | dcfddce38db4
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-positive-domain-review.md | +28 -0 | now=28 | dcfddce38db4
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-review.md | +48 -0 | now=48 | 6ddc788af83a
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-unique-root-pins.json | +54 -0 | now=54 | 373179482ca7
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-unique-root-review.md | +25 -0 | now=25 | 373179482ca7
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-variance-pins.json | +42 -0 | now=42 | 526f70be3f81
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lead-variance-review.md | +27 -0 | now=27 | 526f70be3f81
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-bounded-receipt.edn | +49 -0 | now=49 | cfa2deaacbf1
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-finite-posterior-receipt.edn | +56 -0 | now=56 | 7c1eb0d66f6d
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-positive-domain-receipt.edn | +37 -0 | now=37 | 62a112dcd2bc
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-receipt.edn | +32 -0 | now=32 | e6f7ae8b1e2c
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-unique-root-attempts.txt | +53 -1 | now=52 | 9447bde33930,18162f25e743
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-unique-root-receipt.edn | +55 -6 | now=49 | 9447bde33930,18162f25e743
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-variance-final.txt | +10 -0 | now=10 | 2dab51e259bf
+futon2/holes/labs/wm-contract/runs/row-18-policy-precision-spec-2026-09-13/lean-variance-receipt.edn | +47 -0 | now=47 | 2dab51e259bf
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/NOTES.md | +24 -0 | now=24 | 6f827de739ed
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/kondo-receipt.edn | +6 -2 | now=4 | 867d48d104bf,57ff314a9ad0
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/lead-audit-review.md | +28 -0 | now=28 | 92b441841fc7
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/lead-pins.json | +6 -0 | now=6 | 92b441841fc7
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/parens-receipt.edn | +6 -2 | now=4 | 867d48d104bf,57ff314a9ad0
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/production-manifest-output.edn | +2 -1 | now=1 | 867d48d104bf,57ff314a9ad0
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/production-readback-receipt.edn | +16 -4 | now=12 | 867d48d104bf,57ff314a9ad0
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/production_manifest_readback.clj | +18 -1 | now=17 | 6f827de739ed,e06b6ae085f2
+futon2/holes/labs/wm-contract/runs/row-18-production-manifest-2026-09-13/test-receipt.edn | +5 -1 | now=4 | 867d48d104bf,57ff314a9ad0
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/check-parens.txt | +3 -0 | now=3 | d96e7139b778
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/clj-kondo.txt | +2 -0 | now=2 | d96e7139b778
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/execution-receipts.edn | +32 -0 | now=32 | d96e7139b778
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/implementation-note.md | +43 -0 | now=43 | d96e7139b778
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/lead-review.md | +57 -0 | now=57 | b74f64bea308
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/archive-scope.md | +28 -0 | now=28 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/check-parens.raw.txt | +1 -0 | now=1 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/clj-kondo.raw.txt | +2 -0 | now=2 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/execution-receipts.edn | +32 -0 | now=32 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/induced-failure.raw.txt | +6 -0 | now=6 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/lead-review.md | +46 -0 | now=46 | 9b3c3df09ffe
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/positive-test.raw.txt | +1 -0 | now=1 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/check-parens.raw.txt | +1 -0 | now=1 | c5829fb49845
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/clj-kondo.raw.txt | +2 -0 | now=2 | c5829fb49845
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/execution-receipts.edn | +41 -0 | now=41 | c5829fb49845
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/induced-failure.raw.txt | +6 -0 | now=6 | c5829fb49845
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/lead-pins.json | +5 -0 | now=5 | f9c65654eca9
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/lead-review.md | +36 -0 | now=36 | f9c65654eca9
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/positive-test.raw.txt | +1 -0 | now=1 | c5829fb49845
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/check-parens.raw.txt | +1 -0 | now=1 | 10b556dbfe55
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/clj-kondo.raw.txt | +2 -0 | now=2 | 10b556dbfe55
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/execution-receipts.edn | +37 -0 | now=37 | 10b556dbfe55
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/induced-failure.raw.txt | +6 -0 | now=6 | 10b556dbfe55
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/lead-acceptance.md | +25 -0 | now=25 | f339216effd4
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/lead-pins.json | +5 -0 | now=5 | f339216effd4
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/positive-test.raw.txt | +1 -0 | now=1 | 10b556dbfe55
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/retry-hardening/supersession.edn | +9 -0 | now=9 | 10b556dbfe55
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/r1-separate-store/supersession.edn | +8 -0 | now=8 | c5829fb49845
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/review-fixes/supersession.edn | +9 -0 | now=9 | 5712367eac68
+futon2/holes/labs/wm-contract/runs/row-19-commission-retention-2026-09-13/test.txt | +6 -0 | now=6 | d96e7139b778
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/DISCOVERY.md | +76 -1 | now=75 | ce37a3393f70,e387eb00e6a2
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/RUNBOOK.md | +104 -13 | now=91 | 89919c5980b9,ce37a3393f70
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/actual.stderr | +1 -0 | now=1 | e9e9b135f2e7
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/actual.stdout.json | +1 -0 | now=1 | e9e9b135f2e7
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/discovery-gates.edn | +15 -0 | now=15 | e9e9b135f2e7
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/existing-files-control.stderr | +1 -0 | now=1 | e9e9b135f2e7
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/existing-files-control.stdout.json | +1 -0 | now=1 | e9e9b135f2e7
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/gates.edn | +30 -0 | now=30 | aa6add269b75
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/lead-discovery-acceptance.md | +9 -0 | now=9 | 54a09bb4acb4
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/lead-discovery-pins.json | +23 -0 | now=23 | 54a09bb4acb4
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/lead-pins.json | +34 -0 | now=34 | 6560fb07560c
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/lead-review.md | +12 -0 | now=12 | 6560fb07560c
+futon2/holes/labs/wm-contract/runs/row-19-controlled-restart-preparation-2026-09-13/restart-preflight.sh | +62 -18 | now=44 | 89919c5980b9,ce37a3393f70
+futon2/holes/labs/wm-contract/runs/row-19-external-root-discovery-2026-09-13/lead-host-origin-review.edn | +27 -0 | now=27 | e72b3e390025
+futon2/holes/labs/wm-contract/runs/row-19-external-root-discovery-2026-09-13/operator-event-references.json | +37 -0 | now=37 | 74091f56406f
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/actual-candidate-root-probe.edn | +18 -0 | now=18 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/authority-assumptions.md | +5 -0 | now=5 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/check-parens.raw.txt | +1 -0 | now=1 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/clj-kondo.raw.txt | +1 -0 | now=1 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/execution-receipts.edn | +27 -0 | now=27 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/induced-failure.raw.txt | +6 -0 | now=6 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/lead-pins.json | +6 -0 | now=6 | c0809d9e897f
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/lead-review.md | +39 -0 | now=39 | c0809d9e897f
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/positive-test.raw.txt | +1 -0 | now=1 | 63500397e509
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/check-parens.raw.txt | +1 -0 | now=1 | 0bfa996a39f8
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/clj-kondo.raw.txt | +1 -0 | now=1 | 0bfa996a39f8
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/execution-receipts.edn | +16 -0 | now=16 | 0bfa996a39f8
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/failed-attempts.md | +9 -0 | now=9 | 0bfa996a39f8
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/focused-test.raw.txt | +1 -0 | now=1 | 0bfa996a39f8
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/induced-failure.raw.txt | +6 -0 | now=6 | 0bfa996a39f8
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/lead-pins.json | +6 -0 | now=6 | d12e812bdacc
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/authority-binding/lead-review.md | +36 -0 | now=36 | d12e812bdacc
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/check-parens.raw.txt | +1 -0 | now=1 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/clj-kondo.raw.txt | +1 -0 | now=1 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/execution-receipts.edn | +11 -0 | now=11 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/failed-attempts.md | +3 -0 | now=3 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/focused-test.raw.txt | +1 -0 | now=1 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/induced-failure.raw.txt | +6 -0 | now=6 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/lead-host-origin-observation.json | +36 -0 | now=36 | e72b3e390025
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/lead-pins.json | +6 -0 | now=6 | e72b3e390025
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/lead-review.md | +25 -0 | now=25 | e72b3e390025
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/byte-hardening/production-root-probe.raw.edn | +1 -0 | now=1 | faaf909f28bf
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/check-parens.raw.txt | +1 -0 | now=1 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/clj-kondo.raw.txt | +1 -0 | now=1 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/execution-receipts.edn | +12 -0 | now=12 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/failed-attempts.md | +3 -0 | now=3 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/focused-test.raw.txt | +1 -0 | now=1 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/host-trust-assumptions.md | +3 -0 | now=3 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/induced-failure.raw.txt | +6 -0 | now=6 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/lead-pins.json | +6 -0 | now=6 | e6faf338b88d
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/lead-review.md | +32 -0 | now=32 | e6faf338b88d
+futon2/holes/labs/wm-contract/runs/row-19-genesis-verifier-2026-09-13/review-fixes/successor-configured-authority/production-root-probe.raw.edn | +1 -0 | now=1 | 3dbf960c0785
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/INTEGRATION.md | +89 -7 | now=82 | ee2c495ccc79,8501fa028cec,d3895397671e
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/durable-recovery-gates.edn | +22 -0 | now=22 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/durable-recovery-test.stderr | +1 -0 | now=1 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/durable-recovery-test.stdout | +6 -0 | now=6 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/gates.edn | +22 -0 | now=22 | f1372c9c5db4
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/induced-failure.stderr | +1 -0 | now=1 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/induced-failure.stdout | +11 -0 | now=11 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/kondo.stderr | +1 -0 | now=1 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/kondo.stdout | +1 -0 | now=1 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-durable-review.md | +14 -0 | now=14 | 6973d6b13382
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-durable-source-pins.sha256 | +2 -0 | now=2 | 6973d6b13382
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-ownership-acceptance.md | +9 -0 | now=9 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-gates.json | +45 -0 | now=45 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-kondo.stderr | +0 -0 | now=0 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-kondo.stdout | +1 -0 | now=1 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-parens.stderr | +0 -0 | now=0 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-parens.stdout | +1 -0 | now=1 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-test.stderr | +1 -0 | now=1 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-projection-test.stdout | +7 -0 | now=7 | 9d3e1db45db6
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-recovery-counterexamples.clj | +24 -0 | now=24 | 6973d6b13382
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-recovery-counterexamples.stderr.txt | +0 -0 | now=0 | 6973d6b13382
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-recovery-counterexamples.stdout.edn | +2 -0 | now=2 | 6973d6b13382
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-review.md | +10 -0 | now=10 | bcaacf8cc00f
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/lead-source-pins.sha256 | +2 -0 | now=2 | bcaacf8cc00f
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-gates.edn | +25 -0 | now=25 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-induced.stderr | +1 -0 | now=1 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-induced.stdout | +11 -0 | now=11 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-kondo.stderr | +1 -0 | now=1 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-kondo.stdout | +1 -0 | now=1 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-parens.stderr | +1 -0 | now=1 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-parens.stdout | +1 -0 | now=1 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-test.stderr | +1 -0 | now=1 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/ownership-test.stdout | +6 -0 | now=6 | 2fd94b21c707
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/parens.stderr | +1 -0 | now=1 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/parens.stdout | +1 -0 | now=1 | 13f64ac15be3
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-gates.edn | +20 -0 | now=20 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-kondo.stderr | +1 -0 | now=1 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-kondo.stdout | +1 -0 | now=1 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-parens.stderr | +1 -0 | now=1 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-parens.stdout | +1 -0 | now=1 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-test.stderr | +1 -0 | now=1 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/release-test.stdout | +6 -0 | now=6 | d935042fcff8
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-gates.edn | +19 -0 | now=19 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-kondo.stderr | +1 -0 | now=1 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-kondo.stdout | +1 -0 | now=1 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-parens.stderr | +1 -0 | now=1 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-parens.stdout | +1 -0 | now=1 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-test.stderr | +1 -0 | now=1 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-ingress-controller-2026-09-13/retry-test.stdout | +6 -0 | now=6 | 5fbc62cb41cf
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/SPEC.md | +50 -0 | now=50 | 8ac40e7a753a,6cf0d38308d2,2509b7158912
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/attempt-1-test.combined | +8 -0 | now=8 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/attempt-2-test.combined | +8 -0 | now=8 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/author-review-of-232df039.md | +16 -0 | now=16 | 8ac40e7a753a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-attempt-1.combined | +8 -0 | now=8 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-attempt-2.combined | +13 -0 | now=13 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-failures.edn | +8 -0 | now=8 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-gates.edn | +19 -0 | now=19 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-induced.stderr | +1 -0 | now=1 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-induced.stdout | +11 -0 | now=11 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-kondo.stderr | +1 -0 | now=1 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-kondo.stdout | +1 -0 | now=1 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-parens.stderr | +1 -0 | now=1 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-parens.stdout | +1 -0 | now=1 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-test.stderr | +1 -0 | now=1 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/completeness-test.stdout | +6 -0 | now=6 | f7d67a562a9d
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/failed-reader-attempts.edn | +7 -0 | now=7 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/gates.edn | +17 -0 | now=17 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/induced.stderr | +1 -0 | now=1 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/induced.stdout | +11 -0 | now=11 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/kondo.stderr | +1 -0 | now=1 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/kondo.stdout | +1 -0 | now=1 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-completeness-acceptance.md | +11 -0 | now=11 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-completeness-original-pins.json | +10 -0 | now=10 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-empty-census-control.clj | +19 -0 | now=19 | 42c6aaf0faf1
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-empty-census-control.stderr | +0 -0 | now=0 | 42c6aaf0faf1
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-empty-census-control.stdout | +1 -0 | now=1 | 42c6aaf0faf1
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-review.md | +11 -0 | now=11 | 42c6aaf0faf1
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-gates.json | +39 -0 | now=39 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-kondo.stderr | +0 -0 | now=0 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-kondo.stdout | +1 -0 | now=1 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-parens.stderr | +0 -0 | now=0 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-parens.stdout | +1 -0 | now=1 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-pins.json | +10 -0 | now=10 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-test.stderr | +1 -0 | now=1 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/lead-scope-test.stdout | +7 -0 | now=7 | c469d4e866a3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/parens.stderr | +1 -0 | now=1 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/parens.stdout | +1 -0 | now=1 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/real-source-discovery.out | +6 -0 | now=6 | 6cf0d38308d2
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/test.stderr | +1 -0 | now=1 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-reconciliation-2026-09-13/test.stdout | +6 -0 | now=6 | 416e9b207501
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/SPEC.md | +31 -0 | now=31 | 802ab3cd910b,e24d1599ccf3
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/attempt1-lead-boundary-controls.stderr | +7 -0 | now=7 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/attempt1-lead-boundary-controls.stdout | +2 -0 | now=2 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/attempt1-lead-controls.json | +9 -0 | now=9 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/attempt2-lead-boundary-controls.stderr | +5 -0 | now=5 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/attempt2-lead-boundary-controls.stdout | +1 -0 | now=1 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/attempt2-lead-controls.json | +12 -0 | now=12 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-failures.edn | +9 -0 | now=9 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-gates.edn | +17 -0 | now=17 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-kondo.stderr | +1 -0 | now=1 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-kondo.stdout | +1 -0 | now=1 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-parens.stderr | +1 -0 | now=1 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-parens.stdout | +1 -0 | now=1 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-test.stderr | +1 -0 | now=1 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/final-test.stdout | +6 -0 | now=6 | 57b6fe213465
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/gates.edn | +20 -0 | now=20 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/induced.stderr | +1 -0 | now=1 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/induced.stdout | +11 -0 | now=11 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/kondo.stderr | +1 -0 | now=1 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/kondo.stdout | +1 -0 | now=1 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-boundary-controls.clj | +26 -0 | now=26 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-boundary-controls.stderr | +0 -0 | now=0 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-boundary-controls.stdout | +2 -0 | now=2 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-controls.json | +15 -0 | now=15 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-fix-review.md | +10 -0 | now=10 | 802ab3cd910b
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-pins.json | +10 -0 | now=10 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-poison-acceptance.md | +9 -0 | now=9 | 0e79d8803980
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-poison-pins.json | +10 -0 | now=10 | 0e79d8803980
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/lead-review.md | +11 -0 | now=11 | 56d3da474c4a
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/parens.stderr | +1 -0 | now=1 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/parens.stdout | +1 -0 | now=1 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-failures.edn | +3 -0 | now=3 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-gates.edn | +19 -0 | now=19 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-induced.stderr | +1 -0 | now=1 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-induced.stdout | +11 -0 | now=11 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-kondo.stderr | +1 -0 | now=1 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-kondo.stdout | +1 -0 | now=1 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-parens.stderr | +1 -0 | now=1 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-parens.stdout | +1 -0 | now=1 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-test.stderr | +1 -0 | now=1 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/poison-test.stdout | +6 -0 | now=6 | 514844e82598
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/test.stderr | +1 -0 | now=1 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-lifecycle-snapshot-2026-09-13/test.stdout | +6 -0 | now=6 | 8d1146cd0d2f
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/REVIEWER-PACKET.md | +7 -0 | now=7 | 7ca8e617a140
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/author-job-snapshot.edn | +18 -0 | now=18 | 7ca8e617a140
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/check_draft.clj | +28 -0 | now=28 | 10bcf63681ee
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/draft-checker-v2.raw.edn | +1 -0 | now=1 | 77a04049962c
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/draft-checker.raw.edn | +1 -0 | now=1 | 10bcf63681ee
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/execution-receipt-v2.edn | +8 -0 | now=8 | 77a04049962c
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/execution-receipt.edn | +13 -0 | now=13 | 10bcf63681ee
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/genesis-evidence-draft.edn | +32 -0 | now=32 | 7ca8e617a140
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/lead-current-ledger-observation.edn | +10 -0 | now=10 | b716cdc24654
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/lead-pins.json | +32 -0 | now=32 | b716cdc24654
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/lead-review.md | +9 -0 | now=9 | b716cdc24654
+futon2/holes/labs/wm-contract/runs/row-19-real-genesis-draft-2026-09-13/root-resolution.edn | +14 -0 | now=14 | 7ca8e617a140
+futon2/holes/labs/wm-contract/runs/row-19-retention-deployment-preparation-2026-09-13/lead-review.md | +9 -0 | now=9 | 049d61a9823f
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/activation-finding.edn | +18 -0 | now=18 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/check-parens.raw.txt | +1 -0 | now=1 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/clj-kondo.raw.txt | +1 -0 | now=1 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/execution-receipts.edn | +12 -0 | now=12 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/focused-test.raw.txt | +1 -0 | now=1 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/induced-failure.raw.txt | +6 -0 | now=6 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/lead-pins.json | +26 -0 | now=26 | 84b4d4047aaf
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/lead-review.md | +13 -0 | now=13 | 84b4d4047aaf
+futon2/holes/labs/wm-contract/runs/row-19-selective-loader-2026-09-13/procedure.md | +7 -0 | now=7 | c269aa0d1364
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/NOTES.md | +38 -3 | now=35 | a250351db7db,d53b88e4fdd4,a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/failed-test-attempt.edn | +8 -0 | now=8 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/fixture-pins.edn | +14 -0 | now=14 | 63719e6765e5
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/fixtures/budgets.edn | +8 -0 | now=8 | 63719e6765e5
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/fixtures/costs.edn | +10 -0 | now=10 | 63719e6765e5
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/fixtures/field-membership.edn | +10 -0 | now=10 | 63719e6765e5
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/fixtures/ranked-support.edn | +14 -0 | now=14 | 63719e6765e5
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/fixtures/utilities.edn | +10 -0 | now=10 | 63719e6765e5
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/independent-binding-review.md | +27 -0 | now=27 | 3dd5a89a56cd
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/kondo.stderr | +0 -0 | now=0 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/kondo.stdout | +1 -0 | now=1 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/lead-acceptance.md | +7 -0 | now=7 | fcf6aaa614ba
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/lead-binding-gates.json | +16 -0 | now=16 | fcf6aaa614ba
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/lead-binding-test.stderr | +0 -0 | now=0 | fcf6aaa614ba
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/lead-binding-test.stdout | +7 -0 | now=7 | fcf6aaa614ba
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/parens.stderr | +0 -0 | now=0 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/parens.stdout | +1 -0 | now=1 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-kondo-receipt.edn | +6 -0 | now=6 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-kondo.stderr | +0 -0 | now=0 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-kondo.stdout | +1 -0 | now=1 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-parens-receipt.edn | +6 -0 | now=6 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-parens.stderr | +0 -0 | now=0 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-parens.stdout | +1 -0 | now=1 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-test-receipt.edn | +6 -0 | now=6 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-test.stderr | +0 -0 | now=0 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/production-refusal-test.stdout | +7 -0 | now=7 | a08f17f241c7
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-kondo-receipt.edn | +4 -0 | now=4 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-kondo.stderr | +0 -0 | now=0 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-kondo.stdout | +1 -0 | now=1 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-parens-receipt.edn | +4 -0 | now=4 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-parens.stderr | +0 -0 | now=0 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-parens.stdout | +1 -0 | now=1 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback-receipt.edn | +4 -0 | now=4 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback.clj | +31 -0 | now=31 | 1bb00c286124
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback.stderr | +0 -0 | now=0 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/readback.stdout | +1 -0 | now=1 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/test-receipt.edn | +4 -0 | now=4 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/test.stderr | +0 -0 | now=0 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-authority-resolution-2026-09-13/test.stdout | +7 -0 | now=7 | a250351db7db
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/NOTES.md | +25 -0 | now=25 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/failed-attempt.edn | +6 -0 | now=6 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/kondo-receipt.edn | +5 -0 | now=5 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/kondo.stderr | +0 -0 | now=0 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/kondo.stdout | +1 -0 | now=1 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/lead-pin-verification.txt | +4 -0 | now=4 | c0a652f49cff
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/lead-review.md | +9 -0 | now=9 | c0a652f49cff
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/parens-receipt.edn | +5 -0 | now=5 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/parens.stderr | +0 -0 | now=0 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/parens.stdout | +1 -0 | now=1 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/production-shaped-candidate-field.edn | +25 -0 | now=25 | 64899007e884
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-kondo-receipt.edn | +5 -0 | now=5 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-kondo.stderr | +0 -0 | now=0 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-kondo.stdout | +1 -0 | now=1 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-parens-receipt.edn | +5 -0 | now=5 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-parens.stderr | +0 -0 | now=0 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-parens.stdout | +1 -0 | now=1 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback-receipt.edn | +5 -0 | now=5 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback.clj | +33 -0 | now=33 | d1dc12cdfb05
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback.stderr | +0 -0 | now=0 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/readback.stdout | +1 -0 | now=1 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/test-receipt.edn | +5 -0 | now=5 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/test.stderr | +0 -0 | now=0 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e1-mapping-2026-09-13/test.stdout | +7 -0 | now=7 | 4b4161ecef7d
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/NOTES.md | +32 -2 | now=30 | 3d003622377c,d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/failed-selected-index-attempt.edn | +8 -0 | now=8 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/failed-test-attempt.edn | +7 -0 | now=7 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-kondo-receipt.edn | +5 -0 | now=5 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-kondo.stderr | +0 -0 | now=0 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-kondo.stdout | +1 -0 | now=1 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-parens-receipt.edn | +5 -0 | now=5 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-parens.stderr | +0 -0 | now=0 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-parens.stdout | +1 -0 | now=1 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-test-receipt.edn | +5 -0 | now=5 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-test.stderr | +0 -0 | now=0 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/final-test.stdout | +7 -0 | now=7 | d47de33c6b12
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/kondo.stderr | +0 -0 | now=0 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/kondo.stdout | +1 -0 | now=1 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | 148292a97e85
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/parens.stderr | +0 -0 | now=0 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/parens.stdout | +1 -0 | now=1 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-kondo-receipt.edn | +4 -0 | now=4 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-kondo.stderr | +0 -0 | now=0 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-kondo.stdout | +1 -0 | now=1 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-parens-receipt.edn | +4 -0 | now=4 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-parens.stderr | +0 -0 | now=0 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-parens.stdout | +1 -0 | now=1 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback-receipt.edn | +4 -0 | now=4 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback.clj | +35 -0 | now=35 | 0b4af1d8c8ce
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback.stderr | +0 -0 | now=0 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/readback.stdout | +1 -0 | now=1 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/test.stderr | +0 -0 | now=0 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2a-restriction-2026-09-13/test.stdout | +7 -0 | now=7 | 3d003622377c
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/NOTES.md | +23 -4 | now=19 | 3a9eedbe5a78,9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/fixtures/context.edn | +20 -0 | now=20 | a03b569da7d9
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/fixtures/enactment.edn | +25 -0 | now=25 | b5b743442125,a03b569da7d9
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/fixtures/selection.edn | +26 -0 | now=26 | b5b743442125,a03b569da7d9
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/kondo.stderr | +0 -0 | now=0 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/kondo.stdout | +1 -0 | now=1 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-missing-cohort-control.clj | +13 -0 | now=13 | 9af78c33eb52
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-missing-cohort-control.stderr | +0 -0 | now=0 | 9af78c33eb52
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-missing-cohort-control.stdout | +1 -0 | now=1 | 9af78c33eb52
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-review.md | +11 -0 | now=11 | 9af78c33eb52
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-subject-acceptance.md | +9 -0 | now=9 | 286c9d7aa431
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/lead-subject-pin-verification.json | +36 -0 | now=36 | 286c9d7aa431
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/parens.stderr | +0 -0 | now=0 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/parens.stdout | +1 -0 | now=1 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-kondo-receipt.edn | +3 -0 | now=3 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-kondo.stderr | +0 -0 | now=0 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-kondo.stdout | +1 -0 | now=1 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-parens-receipt.edn | +3 -0 | now=3 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-parens.stderr | +0 -0 | now=0 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-parens.stdout | +1 -0 | now=1 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback-receipt.edn | +4 -0 | now=4 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback.clj | +34 -1 | now=33 | bbb4ba87c768,a03b569da7d9
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback.stderr | +0 -0 | now=0 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/readback.stdout | +1 -0 | now=1 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-kondo-receipt.edn | +4 -0 | now=4 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-kondo.stderr | +0 -0 | now=0 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-kondo.stdout | +1 -0 | now=1 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-parens-receipt.edn | +4 -0 | now=4 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-parens.stderr | +0 -0 | now=0 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-parens.stdout | +1 -0 | now=1 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-readback-receipt.edn | +4 -0 | now=4 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-readback.stderr | +0 -0 | now=0 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-readback.stdout | +1 -0 | now=1 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-test-receipt.edn | +4 -0 | now=4 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-test.stderr | +0 -0 | now=0 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/subject-binding-test.stdout | +7 -0 | now=7 | 9e08d67f30eb
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/test.stderr | +0 -0 | now=0 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/test.stdout | +7 -0 | now=7 | 3a9eedbe5a78
+futon2/holes/labs/wm-contract/runs/row-22-e2b-correspondence-2026-09-13/witness-pins.edn | +12 -3 | now=9 | b5b743442125,a03b569da7d9
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/NOTES.md | +35 -0 | now=35 | 1842c900ca43,31a4083429ae,10f4646e5d08,ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-failed-receipt.edn | +5 -0 | now=5 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-kondo-receipt.edn | +4 -0 | now=4 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-kondo.stdout | +2 -0 | now=2 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-parens-receipt.edn | +4 -0 | now=4 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-parens.stdout | +2 -0 | now=2 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-test-receipt.edn | +4 -0 | now=4 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-event-test.stdout | +8 -0 | now=8 | ea8c40c528d1
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-failed-receipt.edn | +6 -0 | now=6 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-failed.stdout | +10 -0 | now=10 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-kondo-receipt.edn | +4 -0 | now=4 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-kondo.stdout | +1 -0 | now=1 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-parens-receipt.edn | +4 -0 | now=4 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-parens.stdout | +2 -0 | now=2 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-test-receipt.edn | +4 -0 | now=4 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/canonical-repair-test.stdout | +8 -0 | now=8 | 10f4646e5d08
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/kondo-receipt.edn | +5 -0 | now=5 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/kondo.stdout | +2 -0 | now=2 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-controls.json | +9 -0 | now=9 | fe949b1080d3
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-controls.stderr | +0 -0 | now=0 | fe949b1080d3
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-controls.stdout | +2 -0 | now=2 | fe949b1080d3
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-join-controls.clj | +20 -0 | now=20 | fe949b1080d3
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-pins.json | +14 -0 | now=14 | fe949b1080d3
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-canonical-review.md | +7 -0 | now=7 | fe949b1080d3
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-control-receipt.json | +10 -0 | now=10 | c93a56ca4c6d
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-event-acceptance.md | +9 -0 | now=9 | 79560f468aba
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-event-pins.json | +26 -0 | now=26 | 79560f468aba
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-invalid-subject-controls.clj | +19 -0 | now=19 | c93a56ca4c6d
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-invalid-subject-controls.stderr | +0 -0 | now=0 | c93a56ca4c6d
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-invalid-subject-controls.stdout | +2 -0 | now=2 | c93a56ca4c6d
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-pins.json | +14 -0 | now=14 | c93a56ca4c6d
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/lead-review.md | +9 -0 | now=9 | c93a56ca4c6d
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/parens-failed-receipt.edn | +5 -0 | now=5 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/parens-failed.stdout | +2 -0 | now=2 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/parens-receipt.edn | +5 -0 | now=5 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/parens.stdout | +2 -0 | now=2 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/test-failed-receipt.edn | +5 -0 | now=5 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/test-failed.stdout | +3 -0 | now=3 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/test-receipt.edn | +5 -0 | now=5 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e3-pre-enact-2026-09-13/test.stdout | +8 -0 | now=8 | 31a4083429ae
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/SPEC.md | +55 -4 | now=51 | cf2fc8d4a20f,213bf3299d39
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/failed-history.edn | +9 -0 | now=9 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-gates.edn | +21 -0 | now=21 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-kondo.stderr | +1 -0 | now=1 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-kondo.stdout | +1 -0 | now=1 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-parens.stderr | +1 -0 | now=1 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-parens.stdout | +1 -0 | now=1 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-test.stderr | +1 -0 | now=1 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/final-test.stdout | +7 -0 | now=7 | a91c4dd90d64
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/gates.edn | +27 -0 | now=27 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/induced.stderr | +1 -0 | now=1 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/induced.stdout | +10 -0 | now=10 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/induced_failure.clj | +5 -0 | now=5 | cf2fc8d4a20f
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/kondo.stderr | +1 -0 | now=1 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/kondo.stdout | +1 -0 | now=1 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-controls-receipt.json | +20 -0 | now=20 | 4c03837d9ae5
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-controls.clj | +16 -0 | now=16 | 4c03837d9ae5
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-controls.stderr | +0 -0 | now=0 | 4c03837d9ae5
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-controls.stdout | +3 -0 | now=3 | 4c03837d9ae5
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-repair-acceptance.md | +9 -0 | now=9 | e1a7dc4eecbd
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-repair-pins.json | +17 -0 | now=17 | e1a7dc4eecbd
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/lead-review.md | +9 -0 | now=9 | 4c03837d9ae5
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/parens.stderr | +1 -0 | now=1 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/parens.stdout | +1 -0 | now=1 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-failed-history.edn | +4 -0 | now=4 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-gates.edn | +24 -0 | now=24 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-induced.stderr | +1 -0 | now=1 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-induced.stdout | +10 -0 | now=10 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-kondo.stderr | +1 -0 | now=1 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-kondo.stdout | +1 -0 | now=1 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-parens.stderr | +1 -0 | now=1 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-parens.stdout | +1 -0 | now=1 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-test.stderr | +1 -0 | now=1 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/repair-test.stdout | +7 -0 | now=7 | 8e0936c7f69a
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/test.stderr | +1 -0 | now=1 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e4-causal-evidence-2026-09-13/test.stdout | +7 -0 | now=7 | fc91881a4531
+futon2/holes/labs/wm-contract/runs/row-22-e5-e6-semantic-integration-2026-09-13/README.md | +5 -0 | now=5 | 5af92246d802
+futon2/holes/labs/wm-contract/runs/row-22-e5-e6-semantic-integration-2026-09-13/lead-pins.json | +34 -0 | now=34 | 439bb734be41
+futon2/holes/labs/wm-contract/runs/row-22-e5-e6-semantic-integration-2026-09-13/lead-review.md | +11 -0 | now=11 | 439bb734be41
+futon2/holes/labs/wm-contract/runs/row-22-e5-e6-semantic-integration-2026-09-13/source-pins.edn | +19 -0 | now=19 | 5af92246d802
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/NOTES.md | +22 -0 | now=22 | ee37b50642d0,7c1c7c453acb,06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/kondo-receipt.edn | +5 -0 | now=5 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/kondo.stdout | +2 -0 | now=2 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-controls-receipt.json | +35 -0 | now=35 | 85f00f489184
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-controls.clj | +10 -0 | now=10 | 85f00f489184
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-controls.stderr | +0 -0 | now=0 | 85f00f489184
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-controls.stdout | +2 -0 | now=2 | 85f00f489184
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-review.md | +11 -0 | now=11 | 85f00f489184
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-strict-context-acceptance.md | +9 -0 | now=9 | 7ec1e99ac49b
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/lead-strict-context-pins.json | +27 -0 | now=27 | 7ec1e99ac49b
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/parens-receipt.edn | +5 -0 | now=5 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/parens.stdout | +2 -0 | now=2 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/strict-context-kondo-receipt.edn | +5 -0 | now=5 | 06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/strict-context-kondo.stdout | +2 -0 | now=2 | 06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/strict-context-parens-receipt.edn | +4 -0 | now=4 | 06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/strict-context-parens.stdout | +2 -0 | now=2 | 06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/strict-context-test-receipt.edn | +5 -0 | now=5 | 06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/strict-context-test.stdout | +8 -0 | now=8 | 06c11b652b16
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/test-receipt.edn | +5 -0 | now=5 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/test-warning-receipt.edn | +5 -0 | now=5 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/test-warning.stdout | +8 -0 | now=8 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e5-slow-prior-2026-09-13/test.stdout | +8 -0 | now=8 | 7c1c7c453acb
+futon2/holes/labs/wm-contract/runs/row-22-e6-spec-review-2026-09-13/lead-pins.json | +50 -0 | now=50 | eb120aefbc5a
+futon2/holes/labs/wm-contract/runs/row-22-e6-spec-review-2026-09-13/lead-review.md | +9 -0 | now=9 | eb120aefbc5a
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/NOTES.md | +28 -0 | now=28 | 26372561a9c0,1fddc5a743f0,9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/kondo-receipt.edn | +4 -0 | now=4 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/kondo.stdout | +2 -0 | now=2 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/lead-pins.json | +47 -0 | now=47 | 1d83fff64e00
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/lead-review.md | +9 -0 | now=9 | 1d83fff64e00
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/parens-receipt.edn | +4 -0 | now=4 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/parens.stdout | +2 -0 | now=2 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/provenance-kondo-receipt.edn | +4 -0 | now=4 | 9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/provenance-kondo.stdout | +2 -0 | now=2 | 9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/provenance-parens-receipt.edn | +4 -0 | now=4 | 9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/provenance-parens.stdout | +2 -0 | now=2 | 9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/provenance-test-receipt.edn | +4 -0 | now=4 | 9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/provenance-test.stdout | +8 -0 | now=8 | 9184b16406b8
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/test-failed-receipt.edn | +4 -0 | now=4 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/test-failed.stdout | +4 -0 | now=4 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/test-receipt.edn | +4 -0 | now=4 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6a-forward-influence-2026-09-13/test.stdout | +8 -0 | now=8 | 1fddc5a743f0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-closure-review-2026-09-13/lead-pins.json | +74 -0 | now=74 | d11d29179379
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-closure-review-2026-09-13/lead-review.md | +7 -0 | now=7 | d11d29179379
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-closure-review-2026-09-13/parse-failed-history.txt | +1 -0 | now=1 | 17203c483874
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-closure-review-2026-09-13/parse-receipt.json | +6 -0 | now=6 | 17203c483874
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-closure-review-2026-09-13/parse.clj | +6 -0 | now=6 | 17203c483874
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/capture.clj | +74 -10 | now=64 | 2d0b46c48d06,5da70a27ccae,2146be99e08f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/capture.exit | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/capture.stderr | +0 -0 | now=0 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/capture.stdout | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/capture-manifest.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/config/canonical-config.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/config/e1-config.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/config/e2b-config.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/config/e3-config.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/config/r9-input.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/e3/pending.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/e3/review.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/captured/e3/verdict.edn | +1 -0 | now=1 | c60ec244ce1f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/independent-dependency-review.md | +7 -0 | now=7 | 2d0b46c48d06
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/kondo-failed.exit | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/kondo-failed.stderr | +0 -0 | now=0 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/kondo-failed.stdout | +3 -0 | now=3 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/kondo.exit | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/kondo.stderr | +0 -0 | now=0 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/kondo.stdout | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/lead-acceptance.md | +7 -0 | now=7 | a8655062888d
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/lead-pins.json | +66 -0 | now=66 | a8655062888d
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/parens.exit | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/parens.stderr | +0 -0 | now=0 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/parens.stdout | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/readback.exit | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/readback.stderr | +0 -0 | now=0 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/readback.stdout | +1 -0 | now=1 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/receipt.edn | +28 -0 | now=28 | 9cc5fac065aa
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-fixture-2026-09-13/verify-capture.clj | +49 -7 | now=42 | c60ec244ce1f,2146be99e08f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/attempt-1.exit | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/attempt-1.stderr | +0 -0 | now=0 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/attempt-1.stdout | +5 -0 | now=5 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/e2b-output.edn | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/e3-output.edn | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/kondo.exit | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/kondo.stderr | +0 -0 | now=0 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/kondo.stdout | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/lead-acceptance.md | +7 -0 | now=7 | 50f4afa9e675
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/lead-pins.json | +54 -0 | now=54 | 50f4afa9e675
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/parens.exit | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/parens.stderr | +0 -0 | now=0 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/parens.stdout | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/receipt.edn | +28 -0 | now=28 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/refusals.edn | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/replay.clj | +94 -1 | now=93 | 7f9edd989117,73ad4deb29d3
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/replay.exit | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/replay.stderr | +0 -0 | now=0 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-canonical-replay-2026-09-13/replay.stdout | +1 -0 | now=1 | ed9e811116bf
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/attempt-1.exit | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/attempt-1.stderr | +0 -0 | now=0 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/attempt-1.stdout | +7 -0 | now=7 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/attempt-2.exit | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/attempt-2.stderr | +0 -0 | now=0 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/attempt-2.stdout | +23 -0 | now=23 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/kondo.exit | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/kondo.stderr | +0 -0 | now=0 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/kondo.stdout | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/lead-control.clj | +7 -0 | now=7 | 067e56313a98
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/lead-control.stderr | +0 -0 | now=0 | 067e56313a98
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/lead-control.stdout | +2 -0 | now=2 | 067e56313a98
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/lead-pins.json | +44 -0 | now=44 | 067e56313a98
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/lead-review.md | +7 -0 | now=7 | 067e56313a98
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/parens.exit | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/parens.stderr | +0 -0 | now=0 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/parens.stdout | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/receipt.edn | +29 -0 | now=29 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/test.exit | +1 -0 | now=1 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/test.stderr | +0 -0 | now=0 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-gates/test.stdout | +9 -0 | now=9 | 0cd37be8b3ae
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/attempt-non-sensitive.exit | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/attempt-non-sensitive.stderr | +0 -0 | now=0 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/attempt-non-sensitive.stdout | +5 -0 | now=5 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/attempt-unresolved-var.exit | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/attempt-unresolved-var.stderr | +0 -0 | now=0 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/attempt-unresolved-var.stdout | +5 -0 | now=5 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-correction-review.md | +25 -0 | now=25 | 34fd00cd076f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-review-pins.edn | +12 -0 | now=12 | 34fd00cd076f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-source-identity-control.clj | +20 -0 | now=20 | 34fd00cd076f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-source-identity-control.exit | +1 -0 | now=1 | 34fd00cd076f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-source-identity-control.stderr | +0 -0 | now=0 | 34fd00cd076f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/independent-source-identity-control.stdout | +1 -0 | now=1 | 34fd00cd076f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/induced.exit | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/induced.stderr | +0 -0 | now=0 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/induced.stdout | +5 -0 | now=5 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/kondo.exit | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/kondo.stderr | +0 -0 | now=0 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/kondo.stdout | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-control.clj | +12 -0 | now=12 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-control.stderr | +0 -0 | now=0 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-control.stdout | +1 -0 | now=1 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-correction-pins.json | +4 -0 | now=4 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-gates.json | +39 -0 | now=39 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-independent-consumption.json | +37 -0 | now=37 | 8181f1751e4f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-kondo.stderr | +0 -0 | now=0 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-kondo.stdout | +1 -0 | now=1 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-parens.stderr | +0 -0 | now=0 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-parens.stdout | +1 -0 | now=1 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-pins.json | +22 -0 | now=22 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-review.md | +7 -0 | now=7 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-source-identity-followup.md | +5 -0 | now=5 | 8181f1751e4f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-test.stderr | +0 -0 | now=0 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/lead-test.stdout | +9 -0 | now=9 | 6b35706e9610
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/parens.exit | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/parens.stderr | +0 -0 | now=0 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/parens.stdout | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/receipt.edn | +29 -0 | now=29 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/test.exit | +1 -0 | now=1 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/test.stderr | +0 -0 | now=0 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-join-repair/test.stdout | +9 -0 | now=9 | cd2ea001c27f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/induced.exit | +1 -0 | now=1 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/induced.stderr | +0 -0 | now=0 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/induced.stdout | +5 -0 | now=5 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/kondo.exit | +1 -0 | now=1 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/kondo.stderr | +0 -0 | now=0 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/kondo.stdout | +1 -0 | now=1 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/lead-acceptance.md | +9 -0 | now=9 | ec82e594602a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/lead-pins.json | +22 -0 | now=22 | ec82e594602a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/parens.exit | +1 -0 | now=1 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/parens.stderr | +0 -0 | now=0 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/parens.stdout | +1 -0 | now=1 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/receipt.edn | +24 -0 | now=24 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/test.exit | +1 -0 | now=1 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/test.stderr | +0 -0 | now=0 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/codec-subject-joins/test.stdout | +9 -0 | now=9 | 02b8e8a3e8cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/independent-lead-review.md | +9 -0 | now=9 | 800166a3129a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/lead-pins.json | +12 -0 | now=12 | cb407531a5c5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/lead-repair-pins.json | +10 -0 | now=10 | 56b426c631cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/lead-repair-review.md | +7 -0 | now=7 | 56b426c631cc
+futon2/holes/labs/wm-contract/runs/row-22-e6b-common-state-carrier-2026-09-13/lead-review.md | +13 -0 | now=13 | cb407531a5c5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/execution-receipts.edn | +29 -0 | now=29 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/induced.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/induced.stdout | +12 -0 | now=12 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/kondo-final.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/kondo-final.stdout | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/kondo.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/kondo.stdout | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/codex23-review.md | +16 -0 | now=16 | e6d70feb5dd4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/control.exit | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/control.stderr | +0 -0 | now=0 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/control.stdout | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/kondo.exit | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/kondo.stderr | +0 -0 | now=0 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/kondo.stdout | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/parens.exit | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/parens.stderr | +0 -0 | now=0 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/parens.stdout | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/pins.json | +31 -0 | now=31 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/prior-generation-control.clj | +25 -0 | now=25 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/review.md | +9 -0 | now=9 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/tests.exit | +1 -0 | now=1 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/tests.stderr | +0 -0 | now=0 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/lead-review/tests.stdout | +9 -0 | now=9 | 5a65e8809cb1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/parens-final.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/parens-final.stdout | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/parens.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/parens.stdout | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/source-pins.edn | +12 -0 | now=12 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/test-attempt1.stderr | +5 -0 | now=5 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/test-attempt1.stdout | +64 -0 | now=64 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/test-final.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/test-final.stdout | +9 -0 | now=9 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/test-final2.stderr | +1 -0 | now=1 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-codec-2026-09-13/test-final2.stdout | +9 -0 | now=9 | 532b9dfe8098
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/execution-receipts.edn | +27 -0 | now=27 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/induced.stderr | +1 -0 | now=1 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/induced.stdout | +12 -0 | now=12 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/kondo.stderr | +1 -0 | now=1 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/kondo.stdout | +1 -0 | now=1 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/lead-acceptance.md | +13 -0 | now=13 | 2934b5d5d468
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/lead-pins.json | +32 -0 | now=32 | 2934b5d5d468
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/parens.stderr | +1 -0 | now=1 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/parens.stdout | +1 -0 | now=1 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/source-pins.edn | +12 -0 | now=12 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test-final.stderr | +1 -0 | now=1 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test-final.stdout | +11 -0 | now=11 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test1.stderr | +5 -0 | now=5 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test1.stdout | +2 -0 | now=2 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test2.stderr | +5 -0 | now=5 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test2.stdout | +2 -0 | now=2 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test3.stderr | +5 -0 | now=5 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test3.stdout | +2 -0 | now=2 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test4.stderr | +5 -0 | now=5 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-complete-capture-structural-repair-2026-09-13/test4.stdout | +15 -0 | now=15 | 65474cfa6ce1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/attempt1.stderr | +5 -0 | now=5 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/attempt1.stdout | +1 -0 | now=1 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/audit-controls.clj | +33 -2 | now=31 | 2f27e397a4aa,a92540b6c4d0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/audit.md | +52 -0 | now=52 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/audit.stderr | +1 -0 | now=1 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/audit.stdout | +2 -0 | now=2 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/execution-receipt.edn | +9 -0 | now=9 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/lead-pins.json | +27 -0 | now=27 | 90224bab0f71
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/lead-review.md | +9 -0 | now=9 | 90224bab0f71
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-authority-audit-2026-09-13/source-pins.edn | +10 -0 | now=10 | 1a7aa8948455
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/execution-receipts.edn | +23 -0 | now=23 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/induced.stderr | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/induced.stdout | +12 -0 | now=12 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/kondo.stderr | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/kondo.stdout | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/codex23-correction-review.md | +16 -0 | now=16 | 35981f169926
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/control.exit | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/control.stderr | +0 -0 | now=0 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/control.stdout | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/kondo.exit | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/kondo.stderr | +0 -0 | now=0 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/kondo.stdout | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/parens.exit | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/parens.stderr | +0 -0 | now=0 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/parens.stdout | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/pins.json | +46 -0 | now=46 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/review.md | +11 -0 | now=11 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/subject-control.clj | +23 -0 | now=23 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/tests.exit | +1 -0 | now=1 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/tests.stderr | +0 -0 | now=0 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/lead-review/tests.stdout | +9 -0 | now=9 | 14999ca7e35b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/parens.stderr | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/parens.stdout | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/source-pins.edn | +14 -0 | now=14 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/test-attempt1.stderr | +5 -0 | now=5 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/test-attempt1.stdout | +2 -0 | now=2 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/test-final.stderr | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/test-final.stdout | +9 -0 | now=9 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/test-superseded.stderr | +1 -0 | now=1 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-completeness-validator-2026-09-13/test-superseded.stdout | +9 -0 | now=9 | ad16a57c12dd
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/induced.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/induced.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/induced.stdout | +10 -0 | now=10 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/kondo.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/kondo.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/kondo.stdout | +2 -0 | now=2 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/kondo2.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/kondo2.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/kondo2.stdout | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/lead-pins.json | +44 -0 | now=44 | 8674a426a3ce
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/lead-review.md | +7 -0 | now=7 | 8674a426a3ce
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/parens.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/parens.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/parens.stdout | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/parens2.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/parens2.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/parens2.stdout | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/receipt.edn | +29 -0 | now=29 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/test.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/test.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/test.stdout | +7 -0 | now=7 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/test2.exit | +1 -0 | now=1 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/test2.stderr | +0 -0 | now=0 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/extraction-gates/test2.stdout | +7 -0 | now=7 | 4a70d651fb66
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/independent-lead-review.md | +12 -0 | now=12 | 47490433c1c9
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/lead-extraction-continuation.md | +7 -0 | now=7 | 3ec8fcaa5202
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/lead-incomplete-packet-receipt.json | +10 -0 | now=10 | 3ec8fcaa5202
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/lead-pins.json | +38 -0 | now=38 | 0bee89422eda
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/lead-review.md | +7 -0 | now=7 | 0bee89422eda
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/induced.exit | +1 -0 | now=1 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/induced.stderr | +0 -0 | now=0 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/induced.stdout | +10 -0 | now=10 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/kondo.exit | +1 -0 | now=1 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/kondo.stderr | +0 -0 | now=0 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/kondo.stdout | +1 -0 | now=1 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/lead-pins.json | +44 -0 | now=44 | 093afcbafa09
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/lead-review.md | +9 -0 | now=9 | 093afcbafa09
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/parens.exit | +1 -0 | now=1 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/parens.stderr | +0 -0 | now=0 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/parens.stdout | +1 -0 | now=1 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/receipt.edn | +28 -0 | now=28 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/test.exit | +1 -0 | now=1 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/test.stderr | +0 -0 | now=0 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/prospective-gates/test.stdout | +7 -0 | now=7 | 50ec27924be5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-composition-contract-2026-09-13/source-pins.edn | +18 -1 | now=17 | 6aa72c489fe1,6b3eea819bf0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-external-completeness-contract-2026-09-13/execution-receipt.edn | +6 -0 | now=6 | c37d0ec8f21a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-external-completeness-contract-2026-09-13/lead-pins.json | +51 -0 | now=51 | 96e63b494ba6
+futon2/holes/labs/wm-contract/runs/row-22-e6b-external-completeness-contract-2026-09-13/lead-review.md | +11 -0 | now=11 | 96e63b494ba6
+futon2/holes/labs/wm-contract/runs/row-22-e6b-external-completeness-contract-2026-09-13/parse.stderr | +1 -0 | now=1 | c37d0ec8f21a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-external-completeness-contract-2026-09-13/parse.stdout | +1 -0 | now=1 | c37d0ec8f21a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-external-completeness-contract-2026-09-13/source-pins.edn | +40 -0 | now=40 | 4e433fe9e829
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/SPEC.md | +84 -12 | now=72 | 0d0ea33b9a42,8959251f9111,77e983fdd250,078b8be9bb9c,17e85c05661c
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-failed-history.edn | +5 -0 | now=5 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-gates.edn | +17 -0 | now=17 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-induced.stderr | +1 -0 | now=1 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-induced.stdout | +10 -0 | now=10 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-kondo.stderr | +1 -0 | now=1 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-kondo.stdout | +1 -0 | now=1 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-parens.stderr | +1 -0 | now=1 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-parens.stdout | +1 -0 | now=1 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-test.stderr | +1 -0 | now=1 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authority-test.stdout | +7 -0 | now=7 | b6281dda9a96
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/induced.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/induced.stderr | +0 -0 | now=0 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/induced.stdout | +10 -0 | now=10 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/kondo.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/kondo.stderr | +0 -0 | now=0 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/kondo.stdout | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/kondo2.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/kondo2.stderr | +0 -0 | now=0 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/kondo2.stdout | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/lead-acceptance.md | +9 -0 | now=9 | 7fee0ff1efe5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/lead-pins.json | +27 -0 | now=27 | 7fee0ff1efe5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/parens.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/parens.stderr | +0 -0 | now=0 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/parens.stdout | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/parens2.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/parens2.stderr | +0 -0 | now=0 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/parens2.stdout | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/receipt.edn | +30 -0 | now=30 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/test.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/test.stderr | +5 -0 | now=5 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/test.stdout | +14 -0 | now=14 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/test2.exit | +1 -0 | now=1 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/test2.stderr | +0 -0 | now=0 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/authorization-time-gates/test2.stdout | +9 -0 | now=9 | 8d5c15508c57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-empty.stderr | +1 -0 | now=1 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-failed-history.edn | +5 -0 | now=5 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-gates.edn | +17 -0 | now=17 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-induced.stdout | +10 -0 | now=10 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-kondo.stdout | +1 -0 | now=1 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-parens.stdout | +1 -0 | now=1 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/context-test.stdout | +7 -0 | now=7 | 6707c78a5424
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/gates.edn | +28 -0 | now=28 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/independent-terminal-review.md | +17 -0 | now=17 | 078b8be9bb9c
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/induced.stderr | +1 -0 | now=1 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/induced.stdout | +10 -0 | now=10 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/induced_failure.clj | +5 -0 | now=5 | 763b8ef31b3b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/kondo.stderr | +1 -0 | now=1 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/kondo.stdout | +1 -0 | now=1 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-authority-review.md | +11 -0 | now=11 | 325a61d9dea0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-canonical-context-receipt.json | +30 -0 | now=30 | 325a61d9dea0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-canonical-context.clj | +16 -0 | now=16 | 325a61d9dea0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-canonical-context.stderr | +0 -0 | now=0 | 325a61d9dea0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-canonical-context.stdout | +1 -0 | now=1 | 325a61d9dea0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-context-review.md | +7 -0 | now=7 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-controls-receipt.json | +30 -0 | now=30 | f7f7050f0963
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-controls.clj | +19 -0 | now=19 | f7f7050f0963
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-controls.stderr | +0 -0 | now=0 | f7f7050f0963
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-controls.stdout | +2 -0 | now=2 | f7f7050f0963
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-preauthorization-control.clj | +11 -0 | now=11 | 3394a7b91846
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-preauthorization-control.stderr | +0 -0 | now=0 | 3394a7b91846
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-preauthorization-control.stdout | +1 -0 | now=1 | 3394a7b91846
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-preauthorization-receipt.json | +34 -0 | now=34 | 3394a7b91846
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-relation-review.md | +9 -0 | now=9 | 3394a7b91846
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-review.md | +9 -0 | now=9 | f7f7050f0963
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-fix-gates.json | +50 -0 | now=50 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-fix-kondo.stderr | +0 -0 | now=0 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-fix-kondo.stdout | +1 -0 | now=1 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-fix-parens.stderr | +0 -0 | now=0 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-fix-parens.stdout | +1 -0 | now=1 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-fix-test.stdout | +7 -0 | now=7 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-time-receipt.json | +30 -0 | now=30 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-time.clj | +9 -0 | now=9 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-time.stderr | +0 -0 | now=0 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/lead-terminal-time.stdout | +1 -0 | now=1 | 70edb5e04c56
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/parens.stderr | +1 -0 | now=1 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/parens.stdout | +1 -0 | now=1 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/induced.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/induced.stderr | +5 -0 | now=5 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/induced.stdout | +0 -0 | now=0 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/induced2.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/induced2.stderr | +0 -0 | now=0 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/induced2.stdout | +10 -0 | now=10 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/kondo.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/kondo.stderr | +0 -0 | now=0 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/kondo.stdout | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/parens.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/parens.stderr | +5 -0 | now=5 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/parens.stdout | +9 -0 | now=9 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/parens2.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/parens2.stderr | +0 -0 | now=0 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/parens2.stdout | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/receipt.edn | +33 -0 | now=33 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/test.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/test.stderr | +5 -0 | now=5 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/test.stdout | +0 -0 | now=0 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/test2.exit | +1 -0 | now=1 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/test2.stderr | +0 -0 | now=0 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/relation-gates/test2.stdout | +7 -0 | now=7 | 39e0f51b6233
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/test.stderr | +1 -0 | now=1 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-feedback-2026-09-13/test.stdout | +7 -0 | now=7 | 197d78ebdc75
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/execution-receipts.edn | +24 -0 | now=24 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/induced.stderr | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/induced.stdout | +12 -0 | now=12 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/kondo-attempt1.stderr | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/kondo-attempt1.stdout | +2 -0 | now=2 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/kondo-final.stderr | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/kondo-final.stdout | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/lead-acceptance.md | +11 -0 | now=11 | 68dfeff43620
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/lead-pins.json | +61 -0 | now=61 | 68dfeff43620
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/parens-final.stderr | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/parens-final.stdout | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/source-pins.edn | +12 -0 | now=12 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/test-final.stderr | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/test-final.stdout | +9 -0 | now=9 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/test-initial.stderr | +1 -0 | now=1 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-ledger-source-envelope-2026-09-13/test-initial.stdout | +9 -0 | now=9 | 043f192e180f
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/attempt-1-syntax.exit | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/attempt-1-syntax.stdout | +8 -0 | now=8 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/attempt-2-join.exit | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/attempt-2-join.stdout | +32 -0 | now=32 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/induced-failure.exit | +1 -0 | now=1 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/induced-failure.stderr | +0 -0 | now=0 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/induced-failure.stdout | +5 -0 | now=5 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/kondo.exit | +1 -0 | now=1 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/kondo.stderr | +0 -0 | now=0 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/kondo.stdout | +1 -0 | now=1 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-order-control.clj | +17 -0 | now=17 | 714131bb67d7
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-order-control.stderr | +0 -0 | now=0 | 714131bb67d7
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-order-control.stdout | +1 -0 | now=1 | 714131bb67d7
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-pins.json | +44 -0 | now=44 | 714131bb67d7
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/lead-review.md | +7 -0 | now=7 | 714131bb67d7
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/parens.exit | +1 -0 | now=1 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/parens.stderr | +0 -0 | now=0 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/parens.stdout | +1 -0 | now=1 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/receipt.edn | +33 -0 | now=33 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/tests.exit | +1 -0 | now=1 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/tests.stderr | +0 -0 | now=0 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/closure-repair/tests.stdout | +11 -0 | now=11 | cb09cbd8c558
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/induced-failure.exit | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/induced-failure.stderr | +0 -0 | now=0 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/induced-failure.stdout | +5 -0 | now=5 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/kondo.exit | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/kondo.stderr | +0 -0 | now=0 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/kondo.stdout | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/lead-control.clj | +11 -0 | now=11 | 87178f94e07b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/lead-control.stderr | +0 -0 | now=0 | 87178f94e07b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/lead-control.stdout | +1 -0 | now=1 | 87178f94e07b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/lead-pins.json | +37 -0 | now=37 | 87178f94e07b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/lead-review.md | +7 -0 | now=7 | 87178f94e07b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/attempt-1.summary.edn | +5 -0 | now=5 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/attempt-2.exit | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/attempt-2.stderr | +0 -0 | now=0 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/attempt-2.stdout | +21 -0 | now=21 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/induced-failure.exit | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/induced-failure.stderr | +0 -0 | now=0 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/induced-failure.stdout | +5 -0 | now=5 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/kondo.exit | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/kondo.stderr | +0 -0 | now=0 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/kondo.stdout | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/lead-acceptance.md | +7 -0 | now=7 | 72c2579f2825
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/lead-pins.json | +44 -0 | now=44 | 72c2579f2825
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/parens.exit | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/parens.stderr | +0 -0 | now=0 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/parens.stdout | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/receipt.edn | +34 -0 | now=34 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/tests.exit | +1 -0 | now=1 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/tests.stderr | +0 -0 | now=0 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/ordered-manifests/tests.stdout | +11 -0 | now=11 | 88c719d90ad0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/parens.exit | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/parens.stderr | +0 -0 | now=0 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/parens.stdout | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/induced-failure.exit | +1 -0 | now=1 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/induced-failure.stderr | +0 -0 | now=0 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/induced-failure.stdout | +6 -0 | now=6 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/kondo.exit | +1 -0 | now=1 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/kondo.stderr | +0 -0 | now=0 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/kondo.stdout | +2 -0 | now=2 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/lead-acceptance.md | +7 -0 | now=7 | f74652469475
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/lead-pins.json | +44 -0 | now=44 | f74652469475
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/parens.exit | +1 -0 | now=1 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/parens.stderr | +0 -0 | now=0 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/parens.stdout | +2 -0 | now=2 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/receipt.edn | +36 -0 | now=36 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/tests-final.exit | +1 -0 | now=1 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/tests-final.stderr | +0 -0 | now=0 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/tests-final.stdout | +12 -0 | now=12 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/tests.exit | +1 -0 | now=1 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/tests.stderr | +0 -0 | now=0 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/readback/tests.stdout | +177 -0 | now=177 | 95b87dd0915a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/receipt.edn | +36 -0 | now=36 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/tests.exit | +1 -0 | now=1 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/tests.stderr | +0 -0 | now=0 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-provenance-2026-09-13/tests.stdout | +11 -0 | now=11 | 5c29c9e449c4
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/codex23-lead-review.md | +12 -0 | now=12 | 8db133b8cc57
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/execution-receipts.edn | +25 -0 | now=25 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/induced.stderr | +1 -0 | now=1 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/induced.stdout | +12 -0 | now=12 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/kondo.stderr | +1 -0 | now=1 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/kondo.stdout | +1 -0 | now=1 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/lead-pins.json | +41 -0 | now=41 | b47f2b1fded9
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/lead-review.md | +9 -0 | now=9 | b47f2b1fded9
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/parens.stderr | +1 -0 | now=1 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/parens.stdout | +1 -0 | now=1 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/source-pins.edn | +14 -0 | now=14 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/test-attempt1.stderr | +5 -0 | now=5 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/test-attempt1.stdout | +127 -0 | now=127 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/test-final.stderr | +1 -0 | now=1 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-retrospective-projection-2026-09-13/test-final.stdout | +9 -0 | now=9 | 089e9d8ec5fb
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/README.md | +14 -0 | now=14 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/execution-receipts.edn | +18 -0 | now=18 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/induced-failure.clj | +5 -0 | now=5 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/induced-failure.stderr | +0 -0 | now=0 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/induced-failure.stdout | +11 -0 | now=11 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/kondo.stderr | +0 -0 | now=0 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/kondo.stdout | +0 -0 | now=0 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/lead-pins.json | +27 -0 | now=27 | c56f4cf5c723
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/lead-review.md | +11 -0 | now=11 | c56f4cf5c723
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/parens.stderr | +0 -0 | now=0 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/parens.stdout | +1 -0 | now=1 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/source-pins.edn | +11 -0 | now=11 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/test.stderr | +0 -0 | now=0 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-review-origin-2026-09-13/test.stdout | +9 -0 | now=9 | cbc5f6a9e60b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/induced.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/induced.stderr | +0 -0 | now=0 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/induced.stdout | +9 -0 | now=9 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/kondo.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/kondo.stderr | +0 -0 | now=0 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/kondo.stdout | +5 -0 | now=5 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/kondo2.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/kondo2.stderr | +0 -0 | now=0 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/kondo2.stdout | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/parens.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/parens.stderr | +0 -0 | now=0 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/parens.stdout | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/parens2.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/parens2.stderr | +0 -0 | now=0 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/parens2.stdout | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/receipt.edn | +37 -0 | now=37 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final.stderr | +6 -0 | now=6 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final.stdout | +62 -0 | now=62 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final2.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final2.stderr | +0 -0 | now=0 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test-final2.stdout | +7 -0 | now=7 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test.stderr | +6 -0 | now=6 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test.stdout | +126 -0 | now=126 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test2.exit | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test2.stderr | +1 -0 | now=1 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/gates/test2.stdout | +7 -0 | now=7 | 6e526b66225b
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/independent-lead-review.md | +12 -0 | now=12 | 4c27e17afbd5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/induced_failure.clj | +5 -0 | now=5 | 018836ea4db5
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-controls/control.clj | +21 -0 | now=21 | 77ddebc851d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-controls/pins.json | +37 -0 | now=37 | 77ddebc851d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-controls/receipt.json | +7 -0 | now=7 | 77ddebc851d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-controls/stderr.txt | +0 -0 | now=0 | 77ddebc851d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-controls/stdout.txt | +2 -0 | now=2 | 77ddebc851d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-pins.json | +30 -0 | now=30 | c8805944735e
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-review.md | +7 -0 | now=7 | c8805944735e
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/lead-store-review.md | +12 -0 | now=12 | 77ddebc851d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/independent-lead-correction-review.md | +47 -0 | now=47 | 3cd0de959bf0
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/induced.exit | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/induced.stderr | +0 -0 | now=0 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/induced.stdout | +9 -0 | now=9 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/kondo.exit | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/kondo.stderr | +0 -0 | now=0 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/kondo.stdout | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-composition-boundary.md | +7 -0 | now=7 | ca8d7ce076d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-correction-pins.json | +4 -0 | now=4 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-gates.json | +39 -0 | now=39 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-independent-review-receipt.json | +14 -0 | now=14 | ca8d7ce076d1
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-kondo.stderr | +0 -0 | now=0 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-kondo.stdout | +1 -0 | now=1 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-parens.stderr | +0 -0 | now=0 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-parens.stdout | +1 -0 | now=1 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-pins.json | +44 -0 | now=44 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-review.md | +9 -0 | now=9 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-revision-control.clj | +8 -0 | now=8 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-revision.stderr | +0 -0 | now=0 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-revision.stdout | +1 -0 | now=1 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-test.stderr | +0 -0 | now=0 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/lead-test.stdout | +7 -0 | now=7 | 79c957a2f199
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/parens.exit | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/parens.stderr | +0 -0 | now=0 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/parens.stdout | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/receipt.edn | +29 -0 | now=29 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/test.exit | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/test.stderr | +5 -0 | now=5 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/test.stdout | +12 -0 | now=12 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/test2.exit | +1 -0 | now=1 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/test2.stderr | +0 -0 | now=0 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/schema-gates/test2.stdout | +7 -0 | now=7 | 7566bb7963af
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-protocol-2026-09-13/source-pins.edn | +19 -0 | now=19 | c65b241f6e86
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-1-tests.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-1-tests.stdout | +345 -0 | now=345 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-2-tests.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-2-tests.stdout | +12 -0 | now=12 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-kondo.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/attempt-kondo.stdout | +4 -0 | now=4 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/induced-failure.exit | +1 -0 | now=1 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/induced-failure.stdout | +6 -0 | now=6 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/kondo.exit | +1 -0 | now=1 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/kondo.stdout | +2 -0 | now=2 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/lead-acceptance.md | +11 -0 | now=11 | f9ad8a213364
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/lead-pins.json | +42 -0 | now=42 | f9ad8a213364
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/parens.exit | +1 -0 | now=1 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/parens.stdout | +2 -0 | now=2 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/receipt.edn | +25 -0 | now=25 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/tests.exit | +1 -0 | now=1 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/genesis-repair/tests.stdout | +12 -0 | now=12 | dcb80e5315a8
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/execution-receipts.edn | +19 -0 | now=19 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/failed-attempts.md | +16 -0 | now=16 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/induced.stderr | +1 -0 | now=1 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/induced.stdout | +12 -0 | now=12 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/kondo.stderr | +1 -0 | now=1 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/kondo.stdout | +1 -0 | now=1 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/lead-acceptance.md | +11 -0 | now=11 | fd162cee72f3
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/lead-pins.json | +38 -0 | now=38 | fd162cee72f3
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/parens.stderr | +1 -0 | now=1 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/parens.stdout | +1 -0 | now=1 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/source-pins.edn | +14 -0 | now=14 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/test.stderr | +1 -0 | now=1 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/head-buffer/test.stdout | +7 -0 | now=7 | 2aa0b5e3f950
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/induced-failure.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/induced-failure.stdout | +6 -0 | now=6 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/kondo.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/kondo.stdout | +2 -0 | now=2 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/head-control.clj | +23 -0 | now=23 | bb1e15f1ea99
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/head-control.exit | +1 -0 | now=1 | bb1e15f1ea99
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/head-control.stderr | +0 -0 | now=0 | bb1e15f1ea99
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/head-control.stdout | +1 -0 | now=1 | bb1e15f1ea99
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/pins.json | +42 -0 | now=42 | bb1e15f1ea99
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/lead-review/review.md | +14 -0 | now=14 | bb1e15f1ea99
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/parens.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/parens.stdout | +2 -0 | now=2 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/receipt.edn | +33 -0 | now=33 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/retrospective-contract-review/codex23-review.md | +20 -0 | now=20 | 7301f6d7f23a
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/attempt-1-tests.exit | +1 -0 | now=1 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/attempt-1-tests.stdout | +8 -0 | now=8 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/attempt-2-tests.exit | +1 -0 | now=1 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/attempt-2-tests.stdout | +12 -0 | now=12 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/induced-failure.exit | +1 -0 | now=1 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/induced-failure.stdout | +6 -0 | now=6 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/kondo.exit | +1 -0 | now=1 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/kondo.stdout | +2 -0 | now=2 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/controls.exit | +1 -0 | now=1 | 3d428e9d7cea
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/controls.stderr | +0 -0 | now=0 | 3d428e9d7cea
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/controls.stdout | +2 -0 | now=2 | 3d428e9d7cea
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/genesis-controls.clj | +27 -0 | now=27 | 3d428e9d7cea
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/pins.json | +41 -0 | now=41 | 3d428e9d7cea
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/lead-review/review.md | +12 -0 | now=12 | 3d428e9d7cea
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/parens.exit | +1 -0 | now=1 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/parens.stdout | +2 -0 | now=2 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/receipt.edn | +30 -0 | now=30 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/tests.exit | +1 -0 | now=1 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/strict-repair/tests.stdout | +12 -0 | now=12 | 19523ff32681
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/tests.exit | +1 -0 | now=1 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-e6b-store-v2-2026-09-13/tests.stdout | +12 -0 | now=12 | c9b50fe18337
+futon2/holes/labs/wm-contract/runs/row-22-edge-specification-2026-09-13/check-parens-receipt.edn | +9 -1 | now=8 | 4356b6f6af6f,bdd8e65731ad
+futon2/holes/labs/wm-contract/runs/row-22-edge-specification-2026-09-13/check-parens.stderr | +0 -0 | now=0 | 4356b6f6af6f
+futon2/holes/labs/wm-contract/runs/row-22-edge-specification-2026-09-13/check-parens.stdout | +1 -0 | now=1 | 4356b6f6af6f
+futon2/holes/labs/wm-contract/runs/row-22-edge-specification-2026-09-13/lead-adoption.md | +9 -0 | now=9 | 0c352893799c
+futon2/holes/labs/wm-contract/runs/row-22-edge-specification-2026-09-13/lead-pins.json | +103 -0 | now=103 | 0c352893799c
+futon2/holes/labs/wm-contract/runs/row-22-edge-specification-2026-09-13/source-pins.edn | +36 -0 | now=36 | f19e346fe574
+futon2/holes/labs/wm-contract/runs/row-22-r6-scoring-correspondence-2026-09-13/README.md | +8 -0 | now=8 | dba62e40e869
+futon2/holes/labs/wm-contract/runs/row-22-r6-scoring-correspondence-2026-09-13/lead-pins.json | +62 -0 | now=62 | b9fc43bae713
+futon2/holes/labs/wm-contract/runs/row-22-r6-scoring-correspondence-2026-09-13/lead-review.md | +9 -0 | now=9 | b9fc43bae713
+futon2/holes/labs/wm-contract/runs/row-22-r6-scoring-correspondence-2026-09-13/source-pins.edn | +28 -0 | now=28 | dba62e40e869
+futon2/holes/labs/wm-contract/runs/row-22-r6-scoring-correspondence-2026-09-13/source-searches.edn | +19 -0 | now=19 | dba62e40e869
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/commands.txt | +5 -0 | now=5 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/kondo.exit | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/kondo.stderr | +0 -0 | now=0 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/kondo.stdout | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/lead-controls-receipt.json | +20 -0 | now=20 | 7eaf237aa0a5
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/lead-controls.clj | +14 -0 | now=14 | 7eaf237aa0a5
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/lead-controls.stderr | +0 -0 | now=0 | 7eaf237aa0a5
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/lead-controls.stdout | +5 -0 | now=5 | 7eaf237aa0a5
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/lead-review.md | +13 -0 | now=13 | 7eaf237aa0a5
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/parens.exit | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/parens.failed.exit | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/parens.failed.stderr | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/parens.failed.stdout | +0 -0 | now=0 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/parens.stderr | +0 -0 | now=0 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/parens.stdout | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/pins.edn | +2 -0 | now=2 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/receipts.edn | +6 -0 | now=6 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/test.exit | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/test.failed.exit | +1 -0 | now=1 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/test.failed.stderr | +5 -0 | now=5 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/test.failed.stdout | +0 -0 | now=0 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/test.stderr | +0 -0 | now=0 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-2026-09-13/test.stdout | +7 -0 | now=7 | 169ec4cac6ad
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/commands.txt | +3 -0 | now=3 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/kondo.exit | +1 -0 | now=1 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/kondo.stderr | +0 -0 | now=0 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/kondo.stdout | +1 -0 | now=1 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | d00168d0dcb1
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/lead-date-control.clj | +11 -0 | now=11 | d00168d0dcb1
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/lead-date-control.stderr | +0 -0 | now=0 | d00168d0dcb1
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/lead-date-control.stdout | +1 -0 | now=1 | d00168d0dcb1
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/lead-receipt.json | +18 -0 | now=18 | d00168d0dcb1
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/parens.exit | +1 -0 | now=1 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/parens.stderr | +0 -0 | now=0 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/parens.stdout | +1 -0 | now=1 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/pins.edn | +2 -0 | now=2 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/receipts.edn | +3 -0 | now=3 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/test.exit | +1 -0 | now=1 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/test.failed.exit | +1 -0 | now=1 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/test.failed.stderr | +5 -0 | now=5 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/test.failed.stdout | +2 -0 | now=2 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/test.stderr | +0 -0 | now=0 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-authority-buffer-repair-2026-09-13/test.stdout | +7 -0 | now=7 | c5f1ab84280e
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/commands.txt | +3 -0 | now=3 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lead-pins.json | +32 -0 | now=32 | bb3459d561b0
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lead-review.md | +9 -0 | now=9 | bb3459d561b0
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lean.exit | +1 -0 | now=1 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lean.failed.exit | +1 -0 | now=1 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lean.failed.stderr | +0 -0 | now=0 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lean.failed.stdout | +27 -0 | now=27 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lean.stderr | +0 -0 | now=0 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/lean.stdout | +18 -0 | now=18 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/pins.edn | +5 -0 | now=5 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-cross-layer-2026-09-13/receipt.edn | +3 -0 | now=3 | 1382479703b4
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/LeadOccurrenceMismatch.lean | +16 -0 | now=16 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/commands.txt | +5 -0 | now=5 | f83f5e938409
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-counterexample-attempt1.receipt.json | +12 -0 | now=12 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-counterexample-attempt1.stderr | +0 -0 | now=0 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-counterexample-attempt1.stdout | +7 -0 | now=7 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-counterexample-receipt.json | +12 -0 | now=12 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-counterexample.stderr | +0 -0 | now=0 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-counterexample.stdout | +0 -0 | now=0 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-pin-verification.json | +38 -0 | now=38 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lead-review.md | +9 -0 | now=9 | 508623f683c3
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lean.exit | +1 -0 | now=1 | f83f5e938409
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lean.stderr | +0 -0 | now=0 | f83f5e938409
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/lean.stdout | +33 -0 | now=33 | f83f5e938409
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/pins.edn | +13 -0 | now=13 | f83f5e938409
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-2026-09-13/receipt.edn | +8 -0 | now=8 | f83f5e938409
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/commands.txt | +5 -0 | now=5 | 7152fd273a57
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | a1c96d010268
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/lead-pin-verification.json | +44 -0 | now=44 | a1c96d010268
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/lean.exit | +1 -0 | now=1 | 7152fd273a57
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/lean.stderr | +0 -0 | now=0 | 7152fd273a57
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/lean.stdout | +34 -0 | now=34 | 7152fd273a57
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/pins.edn | +13 -0 | now=13 | 7152fd273a57
+futon2/holes/labs/wm-contract/runs/row-24-event-binding-repair-2026-09-13/receipt.edn | +7 -0 | now=7 | 7152fd273a57
+futon2/holes/labs/wm-contract/runs/row-24-f11-false-certificate-path-2026-09-13/commands.txt | +8 -0 | now=8 | ba98e3f8bd60
+futon2/holes/labs/wm-contract/runs/row-24-f11-false-certificate-path-2026-09-13/lead-incomplete-20746.json | +10 -0 | now=10 | 5ffd360038c8
+futon2/holes/labs/wm-contract/runs/row-24-f11-false-certificate-path-2026-09-13/lead-pin-check.json | +26 -0 | now=26 | cf5a5a810f1a
+futon2/holes/labs/wm-contract/runs/row-24-f11-false-certificate-path-2026-09-13/lead-review.md | +7 -0 | now=7 | cf5a5a810f1a
+futon2/holes/labs/wm-contract/runs/row-24-f11-false-certificate-path-2026-09-13/pins.edn | +9 -0 | now=9 | ba98e3f8bd60
+futon2/holes/labs/wm-contract/runs/row-24-f11-producer-authority-2026-09-13/commands.txt | +7 -0 | now=7 | 6f0a5982ec64
+futon2/holes/labs/wm-contract/runs/row-24-f11-producer-authority-2026-09-13/lead-pins.json | +62 -0 | now=62 | 891337823ac7
+futon2/holes/labs/wm-contract/runs/row-24-f11-producer-authority-2026-09-13/lead-review.md | +7 -0 | now=7 | 891337823ac7
+futon2/holes/labs/wm-contract/runs/row-24-f11-producer-authority-2026-09-13/source-pins.txt | +13 -0 | now=13 | 6f0a5982ec64
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/failed-attempts.md | +23 -0 | now=23 | c36663092f10
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/lead-acceptance.md | +9 -0 | now=9 | 1d140f5f115a
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/lead-pin-verification.json | +10 -0 | now=10 | 1d140f5f115a
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/lean-receipt.edn | +11 -0 | now=11 | c36663092f10
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/lean.stderr.txt | +0 -0 | now=0 | c36663092f10
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/lean.stdout.txt | +24 -0 | now=24 | c36663092f10
+futon2/holes/labs/wm-contract/runs/row-24-full-predicate-precursor-2026-09-13/source-pins.sha256 | +11 -0 | now=11 | c36663092f10
+futon2/holes/labs/wm-contract/runs/row-24-lead-audit-2026-09-12/CurrentPredicateCounterexample.lean | +26 -0 | now=26 | 867565de906f
+futon2/holes/labs/wm-contract/runs/row-24-lead-audit-2026-09-12/execution-receipt.json | +37 -0 | now=37 | 867565de906f
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/LeadCausalReferences.lean | +13 -0 | now=13 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/attempt1-lead-causal-receipt.json | +11 -0 | now=11 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/attempt1-lead-causal.stderr | +0 -0 | now=0 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/attempt1-lead-causal.stdout | +7 -0 | now=7 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/commands.txt | +16 -0 | now=16 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lead-causal-receipt.json | +12 -0 | now=12 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lead-causal.stderr | +0 -0 | now=0 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lead-causal.stdout | +0 -0 | now=0 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lead-pins.json | +27 -0 | now=27 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lead-review.md | +9 -0 | now=9 | 9b8e3e89f2b0
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.exit | +1 -0 | now=1 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.failed-2.exit | +1 -0 | now=1 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.failed-2.stderr | +0 -0 | now=0 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.failed-2.stdout | +36 -0 | now=36 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.failed.exit | +1 -0 | now=1 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.failed.stderr | +0 -0 | now=0 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.failed.stdout | +97 -0 | now=97 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.stderr | +0 -0 | now=0 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/lean.stdout | +27 -0 | now=27 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/pins.edn | +9 -0 | now=9 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-record-connection-binding-2026-09-13/receipt.edn | +7 -0 | now=7 | ea75016910c2
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/commands.txt | +5 -0 | now=5 | 483072709f31
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/lead-pins.json | +27 -0 | now=27 | 396cf97592f5
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/lead-review.md | +9 -0 | now=9 | 396cf97592f5
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/lean.exit | +1 -0 | now=1 | 483072709f31
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/lean.stderr | +0 -0 | now=0 | 483072709f31
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/lean.stdout | +18 -0 | now=18 | 483072709f31
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/pins.edn | +9 -0 | now=9 | 483072709f31
+futon2/holes/labs/wm-contract/runs/row-24-resolved-evidence-2026-09-13/receipt.edn | +7 -0 | now=7 | 483072709f31
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/commands.txt | +11 -0 | now=11 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/lead-pin-verification.json | +63 -0 | now=63 | 94d9a10b12ff
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/lead-review.md | +9 -0 | now=9 | 94d9a10b12ff
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/lean.exit | +1 -0 | now=1 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/lean.stderr | +0 -0 | now=0 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/lean.stdout | +18 -0 | now=18 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/olean.exit | +1 -0 | now=1 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/olean.stderr | +0 -0 | now=0 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/olean.stdout | +18 -0 | now=18 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/pins.edn | +11 -0 | now=11 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-run-binding-2026-09-13/receipt.edn | +9 -0 | now=9 | d43b755b5e4b
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/GeneratedTypedGap.lean | +24 -0 | now=24 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/README.md | +7 -0 | now=7 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/TamperedTypedGap.lean | +24 -0 | now=24 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/failed-history.edn | +1 -0 | now=1 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/final-generation.stdout | +1 -0 | now=1 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/generator.stderr | +0 -0 | now=0 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/generator.stdout | +1 -0 | now=1 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/handoff.md | +5 -0 | now=5 | de2d3127a7a0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/independent-control-20757.edn | +8 -0 | now=8 | 962713f998c3
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/independent-review-20757.md | +61 -0 | now=61 | 962713f998c3
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/input.edn | +1 -0 | now=1 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/kondo.stderr | +0 -0 | now=0 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/kondo.stdout | +1 -0 | now=1 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/lean.stderr | +0 -0 | now=0 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/lean.stdout | +3 -0 | now=3 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/parens.stderr | +0 -0 | now=0 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/parens.stdout | +1 -0 | now=1 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/receipt.json | +34 -0 | now=34 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/source-pins.json | +50 -0 | now=50 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/tamper.stderr | +0 -0 | now=0 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/tamper.stdout | +9 -0 | now=9 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/tests.stderr | +0 -0 | now=0 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-24-typed-gap-generator-2026-09-13/tests.stdout | +5 -0 | now=5 | 16e0116e41c0
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/README.md | +82 -10 | now=72 | 402632e6cf81,8238a109c0f7
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/check-parens-failed-attempt.edn | +6 -0 | now=6 | 9133afbed370
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/execution-receipts.edn | +34 -0 | now=34 | 9133afbed370
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/failed-attempt.edn | +6 -0 | now=6 | 9133afbed370
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-live-status.json | +33 -0 | now=33 | fdf14c4354fc
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-pins.json | +63 -0 | now=63 | fdf14c4354fc
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-review.md | +9 -0 | now=9 | fdf14c4354fc
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-status-control.clj | +3 -0 | now=3 | fdf14c4354fc
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-status-control.stderr | +0 -0 | now=0 | fdf14c4354fc
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/lead-status-control.stdout | +1 -0 | now=1 | fdf14c4354fc
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/preflight-readback.edn | +27 -0 | now=27 | dcd3c75e13ad
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/repair-kondo.raw.txt | +1 -0 | now=1 | dcd3c75e13ad
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/repair-parens.raw.txt | +1 -0 | now=1 | dcd3c75e13ad
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/repair-receipt.edn | +17 -0 | now=17 | dcd3c75e13ad
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/repair-test.raw.txt | +7 -0 | now=7 | dcd3c75e13ad
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/run-config.example.edn | +9 -0 | now=9 | 402632e6cf81,8238a109c0f7
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/run-config.preflight.edn | +29 -0 | now=29 | 8238a109c0f7
+futon2/holes/labs/wm-contract/runs/row-26-on-demand-entrypoint-2026-09-13/source-pins.edn | +17 -0 | now=17 | 402632e6cf81
+futon2/holes/labs/wm-contract/runs/task1-serving-evidence-2026-09-13/inspect-retention.clj | +18 -0 | now=18 | 5f183d561271
+futon2/holes/labs/wm-contract/runs/task1-serving-evidence-2026-09-13/progress.md | +9 -0 | now=9 | 5f183d561271
+futon2/holes/labs/wm-contract/runs/task1-serving-evidence-2026-09-13/retention.edn | +1 -0 | now=1 | 5f183d561271
+futon2/holes/labs/wm-contract/runs/task1-serving-evidence-2026-09-13/retention.stderr | +0 -0 | now=0 | 5f183d561271
+futon2/holes/labs/wm-contract/storage-retrospective-source-pins.edn | +31 -0 | now=31 | ecf7fcd94a8e
+futon2/holes/labs/wm-contract/typed_gap_census_controls.bb | +38 -0 | now=42 | 16e0116e41c0
+futon2/holes/labs/wm-contract/typed_gap_census_to_lean.bb | +125 -20 | now=115 | 4678d697902d,16e0116e41c0
+futon2/src/futon2/aif/authority_buffer.clj | +142 -21 | now=127 | 2d2918eab138,d3ff4aea7a17
+futon2/src/futon2/aif/categorical_state_close_attachment.clj | +142 -0 | now=142 | 787ce2d139b8
+futon2/src/futon2/aif/categorical_state_observation.clj | +416 -73 | now=343 | 6dab72fa3298,97955fb1fecc,b5419475caae,46b94b94c244
+futon2/src/futon2/aif/interoceptive_activation.clj | +430 -28 | now=404 | 09752ed715c7,bc1b4856184c,fdd9967302b4,2f39b95dacad
+futon2/src/futon2/aif/interoceptive_commitment.clj | +182 -13 | now=169 | 13491e5afdea,18ef28877c34,cfac956474ff,917986cc2ce3,7253ab33b180
+futon2/src/futon2/aif/interoceptive_manifest.clj | +239 -61 | now=179 | 6fecd35ec7fc,e94871a5aa5a,6d016f4ab57c,28f35c21c009,09752ed715c7,bc1b4856184c,2f39b95dacad
+futon2/src/futon2/aif/interoceptive_store_lock.clj | +127 -22 | now=120 | e94871a5aa5a,05ff643f256c,6d016f4ab57c,28f35c21c009,09752ed715c7,bc1b4856184c,2f39b95dacad
+futon2/src/futon2/aif/machine_budget_authority.clj | +198 -7 | now=191 | 63719e6765e5,a6da8bc013a4,d53b88e4fdd4,fcf6aaa614ba
+futon2/src/futon2/aif/machine_budget_mapping.clj | +229 -5 | now=224 | 64899007e884,63719e6765e5
+futon2/src/futon2/aif/machine_enactment_correspondence.clj | +205 -9 | now=196 | b5b743442125,a03b569da7d9
+futon2/src/futon2/aif/machine_forward_influence.clj | +104 -0 | now=108 | 26372561a9c0
+futon2/src/futon2/aif/machine_portfolio_restriction.clj | +129 -0 | now=129 | 68ae41e86934,22179585bbfa
+futon2/src/futon2/aif/machine_pre_enact_authorization.clj | +164 -10 | now=179 | 1842c900ca43,174c4e8a8b04,17e85c05661c
+futon2/src/futon2/aif/machine_slow_feedback_capture.clj | +294 -11 | now=283 | 7d44b7c6ba27,8eb1261eafa3,5a65e8809cb1,3914e9068b16,3abf1dcb844e,b129248be54d
+futon2/src/futon2/aif/machine_slow_feedback_completeness.clj | +284 -12 | now=272 | be23be6e5850,d2b45b0cfaef,14999ca7e35b,9aa7459721f7
+futon2/src/futon2/aif/machine_slow_feedback_evidence.clj | +487 -58 | now=429 | 0d0ea33b9a42,8959251f9111,9e26253716e1,77e983fdd250,70027ede66a1,70edb5e04c56,078b8be9bb9c,17e85c05661c,47490433c1c9,8a613ac12908,19b0773004e7
+futon2/src/futon2/aif/machine_slow_feedback_provenance.clj | +335 -35 | now=300 | 60eefbf65951,18a35e0e93a9,f142cf3d7cd4,2a54d606331f,2703f03b2ea8,e5d6a92a1bca,aa425840496c,b204d9097a62
+futon2/src/futon2/aif/machine_slow_feedback_retrospective_projection.clj | +152 -4 | now=148 | 2a6f9cf3bb7b,c3acc2d8da9d,1fbd9d5bd0b7
+futon2/src/futon2/aif/machine_slow_feedback_store.clj | +353 -36 | now=317 | 4c27e17afbd5,5669f297f1a5,b97186c04db8,51da6697ea39,79c957a2f199
+futon2/src/futon2/aif/machine_slow_feedback_store_v2.clj | +418 -36 | now=382 | eb92f4c3ad49,6e81468b263e,5e78192a692c,09db2adfa3db,db496e433a8d,4f69ad660a87,fbcc9721a7b3,3914e9068b16
+futon2/src/futon2/aif/machine_slow_prior_evidence.clj | +163 -7 | now=156 | ee37b50642d0,86b66bcc41c4
+futon2/src/futon2/aif/machine_slow_state_carrier.clj | +376 -15 | now=361 | 800166a3129a,c102aafc7da6,6b35706e9610,cbbee14e782f
+futon2/src/futon2/aif/on_demand_entrypoint.clj | +176 -20 | now=180 | 402632e6cf81,8238a109c0f7
+futon2/src/futon2/aif/repair_obligation.clj | +15 -8 | now=1657 | e94871a5aa5a
+futon2/src/futon2/aif/scheduled_route_evidence.clj | +266 -17 | now=249 | 88d89491ce7c,2fe25a457d5f,0c0aa613d218,213bf3299d39
+futon2/src/futon2/aif/tripwire.clj | +5 -2 | now=1150 | e94871a5aa5a
+futon2/test/futon2/aif/authority_buffer_test.clj | +70 -0 | now=70 | 2d2918eab138,d3ff4aea7a17
+futon2/test/futon2/aif/categorical_state_close_attachment_test.clj | +177 -3 | now=174 | 787ce2d139b8,31fa78a87f13,35e5b8ef239f
+futon2/test/futon2/aif/categorical_state_observation_test.clj | +472 -189 | now=322 | 6dab72fa3298,a6363375e864,97955fb1fecc,b5419475caae,46b94b94c244
+futon2/test/futon2/aif/interoceptive_activation_test.clj | +235 -26 | now=209 | 09752ed715c7,bc1b4856184c,fdd9967302b4,2f39b95dacad
+futon2/test/futon2/aif/interoceptive_commitment_test.clj | +137 -6 | now=131 | 13491e5afdea,8f2f4f18c3df,cfac956474ff,917986cc2ce3,36e798c5fd98,7253ab33b180,34d63e01817e
+futon2/test/futon2/aif/interoceptive_manifest_test.clj | +209 -7 | now=214 | 6fecd35ec7fc,e94871a5aa5a,6d016f4ab57c,856eae7d8eb4,430441a3f390,28f35c21c009,09752ed715c7,bc1b4856184c
+futon2/test/futon2/aif/machine_budget_authority_test.clj | +146 -1 | now=145 | 63719e6765e5,d53b88e4fdd4,fcf6aaa614ba
+futon2/test/futon2/aif/machine_budget_mapping_test.clj | +133 -3 | now=130 | 64899007e884,df32a9cffb9d
+futon2/test/futon2/aif/machine_enactment_correspondence_test.clj | +164 -7 | now=157 | b5b743442125,a03b569da7d9
+futon2/test/futon2/aif/machine_forward_influence_test.clj | +114 -0 | now=122 | 26372561a9c0
+futon2/test/futon2/aif/machine_portfolio_restriction_test.clj | +120 -4 | now=116 | 68ae41e86934,ac386260fbd5,22179585bbfa,bbd44b21b641
+futon2/test/futon2/aif/machine_pre_enact_authorization_test.clj | +151 -18 | now=171 | 1842c900ca43,174c4e8a8b04,17e85c05661c
+futon2/test/futon2/aif/machine_slow_feedback_capture_test.clj | +203 -1 | now=202 | 7d44b7c6ba27,6f251358a71e,5a65e8809cb1,3914e9068b16,b3a30783fd86,1efc1611ce60
+futon2/test/futon2/aif/machine_slow_feedback_completeness_test.clj | +302 -7 | now=295 | be23be6e5850,7f8ca853bc23,d2b45b0cfaef,14999ca7e35b,9aa7459721f7
+futon2/test/futon2/aif/machine_slow_feedback_evidence_test.clj | +393 -38 | now=355 | 0d0ea33b9a42,8959251f9111,9e26253716e1,77e983fdd250,70027ede66a1,70edb5e04c56,078b8be9bb9c,17e85c05661c,61db346f993e,19b0773004e7
+futon2/test/futon2/aif/machine_slow_feedback_provenance_test.clj | +242 -1 | now=241 | 60eefbf65951,8c948beb3ba7,f142cf3d7cd4,2a54d606331f,aa425840496c
+futon2/test/futon2/aif/machine_slow_feedback_retrospective_projection_test.clj | +121 -3 | now=118 | 2a6f9cf3bb7b,1fbd9d5bd0b7,1e84a4a9b91b
+futon2/test/futon2/aif/machine_slow_feedback_store_test.clj | +241 -7 | now=234 | 4c27e17afbd5,f8f9da129ebc,b97186c04db8,51da6697ea39,77adef59e0ed,79c957a2f199
+futon2/test/futon2/aif/machine_slow_feedback_store_v2_test.clj | +204 -7 | now=197 | eb92f4c3ad49,5e78192a692c,6550f39ce586,4f69ad660a87,fbcc9721a7b3
+futon2/test/futon2/aif/machine_slow_prior_evidence_test.clj | +131 -6 | now=125 | ee37b50642d0,86b66bcc41c4
+futon2/test/futon2/aif/machine_slow_state_carrier_test.clj | +188 -4 | now=184 | 800166a3129a,8b620840c3ea,6097cad0db5e,c102aafc7da6,6b35706e9610,cbbee14e782f
+futon2/test/futon2/aif/on_demand_entrypoint_test.clj | +140 -4 | now=178 | 402632e6cf81,8238a109c0f7
+futon2/test/futon2/aif/scheduled_route_evidence_test.clj | +246 -6 | now=240 | 88d89491ce7c,0c0aa613d218,213bf3299d39,6b6a03e2578e
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/INTEGRATION.md | +68 -7 | now=63 | 4138319fab1e,835c39cd023f,8c06e0edc1ab,4037f2297e4f
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/execution-receipts.edn | +29 -0 | now=29 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/induced-attempt1.stderr | +1 -0 | now=1 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/induced-attempt1.stdout | +16 -0 | now=16 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/induced-failure.clj | +5 -0 | now=5 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/induced-final.stderr | +1 -0 | now=1 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/induced-final.stdout | +11 -0 | now=11 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/kondo.stderr | +0 -0 | now=0 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/kondo.stdout | +2 -0 | now=2 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-attempt1.stderr | +5 -0 | now=5 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-attempt2.stderr | +5 -0 | now=5 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-attempt3.stderr | +5 -0 | now=5 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-attempt3.stdout | +1 -0 | now=1 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-control.clj | +30 -0 | now=30 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-control.stderr | +0 -0 | now=0 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-committed-control.stdout | +1 -0 | now=1 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lead-review.md | +7 -0 | now=7 | 64108e1cd036
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/README.md | +11 -0 | now=11 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/controller-test.stderr | +1 -0 | now=1 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/controller-test.stdout | +7 -0 | now=7 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/execution-receipts.edn | +25 -0 | now=25 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/induced-failure.clj | +5 -0 | now=5 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/induced.stderr | +0 -0 | now=0 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/induced.stdout | +11 -0 | now=11 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/kondo.stderr | +0 -0 | now=0 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/kondo.stdout | +2 -0 | now=2 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-control-receipt.json | +8 -0 | now=8 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-duplicate-control.clj | +16 -0 | now=16 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-duplicate-control.stderr | +0 -0 | now=0 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-duplicate-control.stdout | +1 -0 | now=1 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-pins.json | +18 -0 | now=18 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-review.md | +12 -0 | now=12 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-worker-control.clj | +26 -0 | now=26 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-worker-control.stderr | +0 -0 | now=0 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/lead-worker-control.stdout | +1 -0 | now=1 | b8ab084d868d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/parens.stderr | +0 -0 | now=0 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/parens.stdout | +1 -0 | now=1 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/source-pins.edn | +11 -0 | now=11 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt1.stderr | +6 -0 | now=6 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt1.stdout | +2 -0 | now=2 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt2.stderr | +6 -0 | now=6 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt2.stdout | +2 -0 | now=2 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt3.stderr | +6 -0 | now=6 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt3.stdout | +2 -0 | now=2 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt4.stderr | +1 -0 | now=1 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-attempt4.stdout | +15 -0 | now=15 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-final.stderr | +1 -0 | now=1 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/lifecycle/test-final.stdout | +7 -0 | now=7 | 236ab773c9c7
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/parens.stderr | +0 -0 | now=0 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/parens.stdout | +1 -0 | now=1 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/source-pins.edn | +18 -0 | now=18 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/test-attempt1.stderr | +1 -0 | now=1 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/test-attempt1.stdout | +64 -0 | now=64 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/test-final.stderr | +1 -0 | now=1 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/test-final.stdout | +7 -0 | now=7 | b884120f8d1c
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/README.md | +9 -0 | now=9 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/controller-test.stderr | +1 -0 | now=1 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/controller-test.stdout | +7 -0 | now=7 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/execution-receipts.edn | +20 -0 | now=20 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/execution-receipts.edn | +16 -0 | now=16 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/http-test.stderr | +1 -0 | now=1 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/http-test.stdout | +7 -0 | now=7 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/kondo.stderr | +0 -0 | now=0 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/kondo.stdout | +2 -0 | now=2 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-pins.json | +27 -0 | now=27 | d4f11a85bda3
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-reused-worker.clj | +11 -0 | now=11 | d4f11a85bda3
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-reused-worker.stderr | +0 -0 | now=0 | d4f11a85bda3
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-reused-worker.stdout | +1 -0 | now=1 | d4f11a85bda3
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/lead-review.md | +7 -0 | now=7 | d4f11a85bda3
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/parens.stderr | +0 -0 | now=0 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/parens.stdout | +1 -0 | now=1 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/final/source-pins.edn | +8 -0 | now=8 | 6a2d4637e74d
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/http-test.stderr | +1 -0 | now=1 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/http-test.stdout | +7 -0 | now=7 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/induced-failure.clj | +5 -0 | now=5 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/induced.stderr | +0 -0 | now=0 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/induced.stdout | +11 -0 | now=11 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/kondo.stderr | +0 -0 | now=0 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/kondo.stdout | +2 -0 | now=2 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/parens.stderr | +0 -0 | now=0 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/parens.stdout | +1 -0 | now=1 | 55e4cfe55fbc
+futon3c/holes/labs/wm-contract/runs/row-19-http-creator-integration-2026-09-13/worker-lifetime/source-pins.edn | +8 -0 | now=8 | 55e4cfe55fbc
+futon3c/scripts/row19_commission_retention_test.clj | +27 -1 | now=26 | 4aa9f2e4492d,b12674f3f6f0
+futon3c/scripts/row19_genesis_verifier_test.clj | +23 -1 | now=22 | 580f1a2a97e9,03f34fa0b252
+futon3c/scripts/row19_selective_loader_test.clj | +12 -0 | now=12 | 2de72ab8ac5f
+futon3c/src/futon3c/agency/invoke_ingress_controller.clj | +409 -47 | now=362 | 1f742f6fd2bf,67211f8d45e9,30b7de55375d,c5dd31031d0b,3fac43f6b9bf,232df0399728,835c39cd023f,8c06e0edc1ab
+futon3c/src/futon3c/agency/invoke_lifecycle_reconciliation.clj | +220 -8 | now=212 | 6795b1a566f0,7309d81c7b2d,718d370d6119,d090c0da447d
+futon3c/src/futon3c/agency/invoke_lifecycle_snapshot.clj | +153 -11 | now=142 | 4ef2dcf12b80,e1cf716e2022,dd870146e87b
+futon3c/src/futon3c/agency/r9_authority.clj | +242 -100 | now=142 | 04343e0ebfcd,5a1df3872086,7b591a4e71e5
+futon3c/src/futon3c/agency/r9_genesis.clj | +245 -54 | now=191 | 580f1a2a97e9,03f34fa0b252,04343e0ebfcd
+futon3c/src/futon3c/agency/selective_form_loader.clj | +151 -43 | now=108 | 2de72ab8ac5f,9cd966676544,26d5a1dc1c97
+futon3c/src/futon3c/transport/http.clj | +523 -175 | now=9669 | 5fcf9912b750,002c6d27b174,009cb3fbe99a,0d40a3594592,4138319fab1e,7e99b6da6624,835c39cd023f,8c06e0edc1ab,51269db9daae,4037f2297e4f
+futon3c/test/futon3c/agency/invoke_ingress_controller_test.clj | +213 -25 | now=188 | 1f742f6fd2bf,30b7de55375d,c5dd31031d0b,d2e362fbb7f4,3fac43f6b9bf,be83071d1884,232df0399728,8c06e0edc1ab
+futon3c/test/futon3c/agency/invoke_lifecycle_reconciliation_test.clj | +240 -80 | now=160 | 6795b1a566f0,5449e75d061a,5586f30221e9,7309d81c7b2d,718d370d6119,01ec41dd7c02,a03739e321dd,d090c0da447d
+futon3c/test/futon3c/agency/invoke_lifecycle_snapshot_test.clj | +156 -10 | now=146 | 4ef2dcf12b80,b8e02796a09b,5dad9ab63650,eda31d97b194,e1cf716e2022
+futon3c/test/futon3c/agency/r9_genesis_test.clj | +330 -94 | now=239 | 580f1a2a97e9,03f34fa0b252,04343e0ebfcd,7b591a4e71e5
+futon3c/test/futon3c/agency/selective_form_loader_test.clj | +55 -1 | now=54 | 2de72ab8ac5f,dc10cbca832b,26d5a1dc1c97
+futon3c/test/futon3c/transport/http_test.clj | +246 -102 | now=3411 | 5fcf9912b750,ff03ea32a52c,002c6d27b174,009cb3fbe99a,98b94d20fe5f,2e4ed7efecc5,0d40a3594592
+futon3c/test/futon3c/transport/invoke_ingress_integration_test.clj | +333 -3 | now=368 | 4138319fab1e,835c39cd023f,9972aa5ea539,129c73b1c139,8c06e0edc1ab,4037f2297e4f
+futon3c/test/futon3c/wm/runner_service_test.clj | +3 -1 | now=459 | 51269db9daae
+futon3c/test/resources/r9-genesis/source-backed-authority.edn | +15 -0 | now=15 | 580f1a2a97e9
+mathlib4/DarkTower/WarMachine/FullCertificateCrossLayerBinding.lean | +141 -0 | now=None | ec9952a070e0
+mathlib4/DarkTower/WarMachine/FullCertificateEventBinding.lean | +181 -3 | now=None | 8493dc2ef772,4cbdfe0d0d0e
+mathlib4/DarkTower/WarMachine/FullCertificatePredicate.lean | +270 -12 | now=None | 1a566fdb9a7e,d1586d9a2feb,cea8a8376937,b9bbcb833e7d
+mathlib4/DarkTower/WarMachine/FullCertificateRecordConnectionBinding.lean | +165 -6 | now=None | 3b4a828755b6,ce681f0c6984
+mathlib4/DarkTower/WarMachine/FullCertificateResolvedEvidence.lean | +132 -0 | now=None | 3616df4e28d7
+mathlib4/DarkTower/WarMachine/FullCertificateRunBinding.lean | +185 -0 | now=None | 1cfaf67474c2
+mathlib4/DarkTower/WarMachine/InteroceptivePolicyPosteriorFinite.lean | +196 -10 | now=202 | 0a2a5e63bcd2,b6635ea0ef71,3670a9e50679,8aab413f814a,5d3bff3257d9,3068112c2060,b57a10dee59f
+mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionBounded.lean | +132 -8 | now=124 | 6fb6a2f0fb84,272d3e2cb9be,1b9cca9a3f05,168bd082c572
+mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionPositiveDomain.lean | +91 -0 | now=91 | 47c09120ddde
+mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionProposal.lean | +86 -1 | now=85 | ebee489190df,5aafacb7b1d2
+mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionUniqueRoot.lean | +169 -7 | now=162 | bb31e951d7df,9c9b1f719d2a,15712715fc1f
+mathlib4/DarkTower/WarMachine/InteroceptivePolicyPrecisionVariance.lean | +303 -51 | now=252 | deb422925a24,7269edad777a,2904594248d8,112aced8bfe0,412f43d3f988,ff0ab6e5ea20
+```
+
+</details>
