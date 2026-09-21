@@ -1,0 +1,25 @@
+{
+  "seed": 20260922,
+  "pair_ids": [
+    "claude-5:d5cf8181-d2ac-4fee-962a-4974c894c122",
+    "claude-5:da36b730-1ddc-48ce-96e3-3816f56a980b",
+    "claude-5:9fe10466-9b3f-4e87-a86e-0afcef29ebce",
+    "claude-4:c2f156b5-257e-4ccb-82f5-662b09bf3f6f",
+    "claude-12:81b156e8-33eb-4c5b-a6d4-1885530a7f8f",
+    "claude-4:fe33a396-fe16-444a-b75d-3114d23137f6",
+    "claude-12:fd11024f-0c91-4f95-82b7-b849c66c859a",
+    "claude-4:a919b4ab-7518-4ea7-a569-8db3834a0070",
+    "claude-12:e55299cd-ca48-4b3b-854c-eda3686fb268",
+    "claude-4:28bd515c-bffe-4c16-93a1-974f4f408b72",
+    "claude-4:b63eea90-33c4-43c6-9276-47b6a4ebad08",
+    "claude-4:9e1301ce-9ba4-4cfc-bdb8-a8d24a4ed204",
+    "claude-12:5081b311-5f18-447d-8412-d08bbb162238",
+    "claude-12:a181b424-7eac-4073-b7a5-653638b58d94",
+    "claude-5:38e498e1-c957-4fa0-8000-20f58795da3b",
+    "claude-4:600945e2-51c1-43f7-bcdf-4ddc70ecb469",
+    "claude-4:f696aa11-0f37-4960-b9ff-4a94a79c9242",
+    "claude-4:bd01bba6-8886-4339-a2b4-aefb7d76231c",
+    "claude-4:edc8414e-b793-4bc3-8bce-1cc1956c968b",
+    "claude-5:27c2c76d-d4fa-4b93-b4eb-01ec61bfa87b"
+  ]
+}

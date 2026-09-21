@@ -96,6 +96,12 @@ def render_svg(rows, missing):
             parts.append(f'<circle cx="{x(i):.2f}" cy="{y(value):.2f}" r="3" fill="{color}" opacity="0.25"><title>{rows[i]["date"]}: {value} commits</title></circle>')
         points = ' '.join(f'{x(i):.2f},{y(v):.2f}' for i, v in enumerate(means))
         parts.append(f'<polyline points="{points}" fill="none" stroke="{color}" stroke-width="3" stroke-linejoin="round"/>')
+    # The break is a historical annotation, not a causal attribution.
+    if rows[0]['date'] <= '2026-08-30' <= rows[-1]['date']:
+        index = next(i for i, row in enumerate(rows) if row['date'] == '2026-08-30')
+        bx = x(index)
+        parts += [f'<line x1="{bx:.2f}" x2="{bx:.2f}" y1="{top}" y2="{bottom}" stroke="#454545" stroke-dasharray="6 4"/>',
+                  f'<text x="{bx+7:.2f}" y="{top+17}" font-size="13">Aug 30 · facade discovery</text>']
     coverage = ('Unavailable: ' + ', '.join(missing) + ' (not included in totals).') if missing else 'All requested repositories available.'
     parts += ['<text x="624" y="589" text-anchor="middle" font-size="15">Commit date (UTC, month-day)</text>',
               '<text transform="translate(26 348) rotate(-90)" text-anchor="middle" font-size="15">Commits per day</text>',

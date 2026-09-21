@@ -1,0 +1,101 @@
+pair_id,label,secondary,labeller,rationale
+claude-12:fd11024f-0c91-4f95-82b7-b849c66c859a,amend,,codex-14,Retains the audit direction but specifies three distinct purposes and a G-first scope.
+claude-12:78d448f9-eddb-4b72-be3a-3c5f062e0dd4,amend,,codex-14,Accepts better bindings while asking the agent to obtain the C account from Claude-4.
+claude-12:a0f422da-1767-4efb-95ce-4bca72ba6def,reject,,codex-14,Disputes the claim that the recovered C account is complete and identifies omitted institutions.
+claude-12:c25fdc78-28d0-4910-94ac-3df3ef79bf28,redirect,,codex-14,Moves from adjudicating institutional placement back to a comprehensive AIF audit.
+claude-12:5081b311-5f18-447d-8412-d08bbb162238,reject,,codex-14,Explicitly rejects leaving C outside the ledger as an unspecified hole.
+claude-12:dd96d6af-f4b2-4d6f-ab74-339c790a3e63,redirect,,codex-14,Prioritises theory and correct Lean definitions before any implementation audit.
+claude-12:e5e6d1a9-0ba9-43ac-890a-777ddf5264e3,accept,,codex-14,Explicitly approves the stated plan of work.
+claude-12:5ea32f55-bbf7-458f-a192-65c77eae4560,amend,,codex-14,Keeps institutional adjudication next but requires reading the thesis first.
+claude-12:a181b424-7eac-4073-b7a5-653638b58d94,redirect,,codex-14,Accepts the institutional fit but asks to work on learning now instead of the queued equations.
+claude-12:e55299cd-ca48-4b3b-854c-eda3686fb268,amend,,codex-14,Adds the requested paper reference and a missing GFlowNet learning lineage.
+claude-12:6a80707a-82d5-48ce-b013-14b020b09812,redirect,,codex-14,Moves to Clojure alignment and certification rather than the remaining equation rows.
+claude-12:d1579371-a410-480e-bead-c7c13d1f9c0f,redirect,,codex-14,Pauses certificate dispatch to resolve confusion about risk and ambiguity.
+claude-12:0369fc90-09e8-4130-a1fa-cdcbad4cf37c,reject,,codex-14,Questions the value of proving correctness of behaviour that may be unwanted.
+claude-12:81b156e8-33eb-4c5b-a6d4-1885530a7f8f,amend,,codex-14,Accepts the conditional-test interpretation but corrects the role of rulings and certificates.
+claude-12:83bdcb63-cf40-4572-8762-2c46709cb1c6,new,,codex-14,Introduces a concrete implementation census and cheaper bookkeeping dispatch after the core freeze.
+claude-12:f94cc458-18ea-48f5-962d-201572c059b2,amend,,codex-14,Adds a parallel intended-build account from Claude-4 to the implementation census.
+claude-12:968ee9ed-a800-4f01-9f65-244467d2ca27,redirect,,codex-14,Prioritises rewriting the completion DAG over further emission and witness work.
+claude-12:3796252f-112f-4417-9ac7-a79663781ebb,accept,,codex-14,Authorises the offered bell and checker while asking about ownership semantics.
+claude-12:cb682329-6a18-4137-8e3b-0de985e8dcfa,redirect,,codex-14,Moves from the implementation answers and lemma queue to understanding the A domain.
+claude-12:3b88faa8-7bce-4f67-839d-8bc6434ba08b,new,,codex-14,Introduces Rob's pgvector analogy as a fresh challenge to the design.
+claude-12:677aa652-d0f9-455b-ac45-7430329b3df2,redirect,,codex-14,"Shifts the comparison from pgvector to precision, tractability and model scale."
+claude-12:23a60bdd-0520-4a30-ad62-6f653a629103,redirect,,codex-14,Requests a practical fundamentals and tractability investigation before further lemmas.
+claude-12:111f63bd-4278-443f-89e2-a4d5ba8824fd,accept,,codex-14,Endorses the linear result and WMC direction while relating scale to applications.
+claude-12:e6474e5a-9e9c-4a63-9c84-c4dcaa34afff,redirect,,codex-14,Asks to run the WMC expressiveness pilot now rather than defer it.
+claude-12:2157e776-8696-4e06-80ef-c0372b473be6,accept,,codex-14,Approves adding the pilots to the DAG for later work.
+claude-12:ab18c753-8075-4e19-b7d0-3f8fb9de5c07,amend,,codex-14,Accepts commit provenance and adds an Inbox Zero constraint at restart.
+claude-12:12bd32fa-c457-4a2e-8ef4-d06b2cf20cc9,amend,,codex-14,Replaces blocking hot reload with a dirty marker while preserving provenance visibility.
+claude-12:0c3ce0bf-e73b-476e-b459-f52592c0f17d,redirect,,codex-14,Returns attention to the C grain map because another worker is waiting on it.
+claude-12:f553da09-259e-4e03-8ba2-4e8a70777096,accept,,codex-14,Explicitly selects the proposed next task of factorisation lemmas.
+claude-12:2cbe56a0-fdf1-4f7d-bcff-8f03d7520eee,redirect,,codex-14,Asks for the status of Claude-4's F question rather than the next queued proof.
+claude-12:ee5a6682-2480-4a73-9773-094fd1338780,reject,,codex-14,Points to the paper opening as still exhibiting the explicitly unwanted register.
+claude-12:cd7b2598-892d-47ef-b17f-f9dd1c8541f4,new,,codex-14,Raises missing embedding material and proposes a paper-update system prompt.
+claude-12:6ec55b6a-1c6d-49f7-ab04-97dd1d28058c,reject,,codex-14,Rejects conflating the old 3D partition with the operator's embedding proposal.
+claude-12:5d20aec1-a4e3-48e2-8a1c-ab23b8a3d85d,redirect,,codex-14,Moves from documenting the interview to whether the implementation uses its data sources.
+claude-12:381a3cf1-3672-4cce-9915-7c2ecbdedc29,amend,,codex-14,Extends the source audit concern to missing graph patterns and recurrence of a facade.
+claude-12:4aa2db48-821d-4572-8507-524978d5b9d4,continue,,codex-14,Asks to get on with the already stated next steps without adding a new task.
+claude-12:2457a14c-eb40-43d3-b2be-ce5148b22c93,redirect,,codex-14,Interrupts optional cleanup with the excessive-guardrails ticket as the main concern.
+claude-12:ab6a25ed-3c21-40b3-baef-5f61b5c7eec6,reject,,codex-14,Rejects an expensive guard audit and the presumption that unspecified vetoes are wanted.
+claude-12:4d122b38-7f07-49ce-8113-63c55f0afac2,redirect,,codex-14,Requests reproducing the real run instead of more guard demotion and readout work.
+claude-12:345d3a64-5d79-469a-8d7b-8c200bd4586d,new,,codex-14,Adds a design-level DAG audit while the dispatched reproduction runs.
+claude-12:54dc1f4b-02b6-4a1e-801e-41ca82a3981e,redirect,,codex-14,Replaces requested individual rulings with pattern-backed requirements and generic validation.
+claude-12:0d13cb55-e91c-4363-bed8-0cd9e6a88850,amend,,codex-14,Specifies that the proposed validator must be generic and explains a registry-based mechanism.
+claude-12:3b2d0fe3-80e5-4675-ade1-392c9d06e165,amend,,codex-14,Delegates drop and priority decisions to Claude-4 and supplies a worker allocation plan.
+claude-4:4c79d4ea-778b-409d-b5b4-d106bb8e718b,new,,codex-14,Introduces the broken Marimo surface in response to an open greeting.
+claude-4:1fa78e89-a5dc-455f-97af-01031661f72b,amend,,codex-14,Chooses Claude-4 but replaces the proposed REPL repair with a cell-based chat design.
+claude-4:81cdfd3d-4d40-4712-ac66-381f1a7ac44c,accept,,codex-14,Authorises the offered implementation dispatch using Codex-6.
+claude-4:c2f156b5-257e-4ccb-82f5-662b09bf3f6f,amend,,codex-14,"Requires turn storage to follow the established Emacs, IRC and Matrix convention."
+claude-4:b33c2cc6-2f50-43ed-a669-3d001ac61529,accept,,codex-14,Says yes to the specific restart and session-secret proposal.
+claude-4:7db51a71-982f-4f22-b2f8-769d27ba87d7,reject,,codex-14,Reports that the claimed ready surface still returns an HTTP error.
+claude-4:31f1f702-45a6-4a69-be98-d984f862e7d7,reject,,codex-14,Corrects the assertion that the login challenge never appears.
+claude-4:f00cc3b5-0582-4d8a-9b1e-b3e17c5aa719,redirect,,codex-14,Moves from login diagnostics to wrong-agent routing after successful login.
+claude-4:86d49be8-5b2f-4426-83bb-2abe3c7f9b63,new,,codex-14,Reports the chat notebook's sent status after a discussion of automatically resent turns.
+claude-4:57b537a7-90a2-4cce-b6c2-fcade8a47333,redirect,,codex-14,Moves from visual styling to delivery of a second Python-function request.
+claude-4:edc8414e-b793-4bc3-8bce-1cc1956c968b,new,,codex-14,Introduces publishing a frozen-code interactive page after accepting the reactive demo.
+claude-4:1f03e0f0-e848-4908-90c8-9e1bd1e2e305,accept,,codex-14,Selects publication behind login and requests a named Charlie account.
+claude-4:f18eb229-ed2c-43b8-afdf-648f63c82dd2,reject,,codex-14,Says the locked-down published result does not match the intended interactive demo.
+claude-4:6e6dceea-39b3-4ba3-9a41-eb9a99bf4571,reject,,codex-14,Challenges the no-chat consequence of the recommended WASM option.
+claude-4:330f6ed9-1056-4c0c-80ae-9c4ce5c2a2b1,amend,,codex-14,Clarifies that agent chat is the essential requirement of the demo.
+claude-4:f696aa11-0f37-4960-b9ff-4a94a79c9242,reject,,codex-14,Rejects requirements invented by the agent without asking the operator.
+claude-4:7349bf28-347f-4daa-8360-93d0c87ec161,redirect,,codex-14,Replaces the protection-first design with a trusted-collaborator shared-service demo.
+claude-4:75dd6626-9dd6-4bfc-8d9a-ebf780c3fe08,accept,,codex-14,Chooses the shared agent and notebook collection with explicit sender identification.
+claude-4:6f5a56be-fd8a-4349-8061-9c3ef640d6ca,reject,,codex-14,Reports that the promised Charlie login does not work.
+claude-4:545fa5ff-508a-4c5b-9bdf-544b578d1da2,new,,codex-14,Switches from token accounting to a closure strategy and a live dependency diagram.
+claude-4:cf6b7fa3-5710-4466-9837-182d80036c09,amend,,codex-14,Keeps the diagram but requests trimming it to nodes with dispatch prerequisites.
+claude-4:fe33a396-fe16-444a-b75d-3114d23137f6,amend,,codex-14,Accepts the diagram and adds a coordinated update through Codex-28 and the workers.
+claude-4:a919b4ab-7518-4ea7-a569-8db3834a0070,amend,,codex-14,Adds a separate R-layer view to make its WM dependencies readable.
+claude-4:9e1301ce-9ba4-4cfc-bdb8-a8d24a4ed204,amend,,codex-14,Extends the diagram work with a Lean validation layer and its maintenance gap.
+claude-4:686e5dd7-c726-4187-ab55-d19c1cf66042,accept,,codex-14,Approves the AIF-equation scope and names an independent auditor.
+claude-4:7d6dc885-ef2a-48e2-904f-b212378f0807,accept,,codex-14,Selects the proposed audit of the other fifteen equations before further details.
+claude-4:658dc484-e5b2-4f09-8097-9c7ea69697c6,new,,codex-14,Introduces a chat-panel overlap bug while the Lean audit runs.
+claude-4:28bd515c-bffe-4c16-93a1-974f4f408b72,amend,,codex-14,Requests all three offered actions rather than deferring the second as recommended.
+claude-4:288472ed-100a-4220-ad0a-44e35293ab14,redirect,,codex-14,Moves from recording audit findings to a strategy that produces actual closures.
+claude-4:d16ab990-ffd4-408c-83e9-dd7c705df019,reject,,codex-14,Rejects planning around a partial-machine paper and insists on verifiable completion.
+claude-4:f17191d4-f5a8-4d71-9704-af8ed61fbfd2,amend,,codex-14,Replaces Codex dispatches with assigned Zai workers and forbids further scope churn.
+claude-4:1d2ba953-3a9a-4015-afd3-3d04f20bc60f,accept,,codex-14,Authorises closed-state updates and transfers DAG writing responsibility to Claude-4.
+claude-4:945dd691-cfa4-4fbe-8da9-8c3e6b421ee7,amend,,codex-14,Approves the work but requires readable aliases and visible closure or progress per dispatch.
+claude-4:2ff4c00c-4d58-4387-8b5d-7f419c675775,amend,,codex-14,Confirms the division of work and specifies strategy ownership and a fundamentals-only focus.
+claude-4:600945e2-51c1-43f7-bcdf-4ddc70ecb469,reject,,codex-14,Rejects arbitrary operator rulings and requires theory-faithful proposals for approval.
+claude-4:75ae8997-4cbc-443e-8944-0aac61cc17d2,accept,,codex-14,Explicitly approves the AIF-plus-spec faithfulness plan and its ordering.
+claude-4:5e59d281-be57-4b7a-abf4-27785be91a9d,new,,codex-14,Introduces the earlier APM Lean-to-Clojure specification mapping as a reusable approach.
+claude-4:0778bc9b-557c-4bd3-959a-f58c804ed4d7,redirect,,codex-14,Reopens the design's possible fake-spec basis before further alignment commissions.
+claude-4:d8e32f17-28da-44e2-be3a-bf50a934816b,accept,,codex-14,Selects categorical replacements while retaining other Lean models for possible later adaptations.
+claude-4:b63eea90-33c4-43c6-9276-47b6a4ebad08,redirect,,codex-14,Requests updating the Marimo dependency view instead of waiting for re-audit reports.
+claude-4:a2895e5b-1f01-43b8-b8c7-9231b2a7a35f,amend,,codex-14,Approves wiring but requests clearer proposals and delegates the explanatory walkthrough.
+claude-4:3aba9847-8adf-4416-930f-41af2f8ada44,accept,,codex-14,Approves the previously discussed P10 with a future concurrency caveat.
+claude-4:bd01bba6-8886-4339-a2b4-aefb7d76231c,redirect,,codex-14,Moves from waiting for P10 delivery to an overall WM closure strategy.
+claude-5:da36b730-1ddc-48ce-96e3-3816f56a980b,new,,codex-14,Introduces business intelligence and closing AIF over the operator after a greeting.
+claude-5:38e498e1-c957-4fa0-8000-20f58795da3b,redirect,,codex-14,Requests checking current Lean and mapping R-nodes before developing the proposed paper framing.
+claude-5:27c2c76d-d4fa-4b93-b4eb-01ec61bfa87b,new,,codex-14,Introduces decentralised nomadic coordination and Coase as the wider purpose.
+claude-5:9cf4731e-ec2d-4fc0-85d4-1c3115819b13,redirect,,codex-14,Prioritises model-improvement dispatch and FUTON work over updating the paper narrative.
+claude-5:5b8fee5b-cc5d-4e5b-9720-8b2a168f3fab,new,,codex-14,Introduces business-landscape and product-versus-consulting analysis while implementation waits.
+claude-5:3b7f8817-da7c-4db4-8212-4446d68493a7,accept,,codex-14,Supplies the requested Rob-idea row: virtual things with a verification layer.
+claude-5:d5cf8181-d2ac-4fee-962a-4974c894c122,amend,,codex-14,"Refines the agent's interpretation with concrete dependencies, two service layers and paid verification."
+claude-5:9fe10466-9b3f-4e87-a86e-0afcef29ebce,redirect,,codex-14,Moves from writing the business note to an immediate knowledge-production audit pilot.
+claude-5:40d18a64-70dd-443f-870d-30891b7d8302,redirect,,codex-14,Replaces the proposed next call-count plot with R-node decomposition of work and costs.
+claude-5:8bcd3ebe-2ad3-4c20-af24-b58d1956800e,amend,,codex-14,Includes operator time and adds the operator-agent stance and creativity analysis.
+claude-5:9797483b-c588-405f-a45b-47e2773b16fa,amend,,codex-14,Approves the categories and blind exercise while selecting Codex-14 and editable Marimo plots.
+claude-5:873d2554-daf4-4b0b-9fdc-0d91727191a7,new,,codex-14,Adds a separate park/wake coordination-cost pilot to the queue.
+claude-5:e62a6a1f-e905-4191-9a39-5a05e9c705fe,redirect,,codex-14,"Moves from coordination-cost optimisation to learning surplus, capability and the facade break."
+claude-5:9b440557-280c-4c24-9f5a-665e0a8f7469,redirect,,codex-14,Prioritises sending the learning gap to Claude-3's build list over the proposed notebook comparison.
