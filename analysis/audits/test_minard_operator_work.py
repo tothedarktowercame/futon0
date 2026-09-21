@@ -16,9 +16,9 @@ class MinardTests(unittest.TestCase):
     def test_actual_data_and_relabel_change_the_integral(self):
         path = HERE / 'pattern-stages-2026-09-21.edn'
         baseline = self.build(path)
-        self.assertEqual((baseline['hits'], baseline['turns']), (2147, 2144))
-        self.assertEqual(sum(d['total'] for d in baseline['days']), 2147)
-        self.assertEqual(baseline['totals']['assurance'], 491)
+        self.assertEqual((baseline['hits'], baseline['turns']), (2882, 2879))
+        self.assertEqual(sum(d['total'] for d in baseline['days']), 2882)
+        self.assertEqual(baseline['totals']['assurance'], 689)
         for i, day in enumerate(baseline['days']):
             window = baseline['days'][max(0, i-2):i+1]
             for stage in baseline['stages']:
@@ -37,8 +37,8 @@ class MinardTests(unittest.TestCase):
             revised = Path(directory) / 'relabelled.edn'
             revised.write_text(dumps(doc))
             changed = self.build(revised)
-        self.assertEqual(changed['totals']['assurance'], 491 - 56)
-        self.assertEqual(changed['totals']['act'], 307 + 56)
+        self.assertEqual(changed['totals']['assurance'], 689 - 66)
+        self.assertEqual(changed['totals']['act'], 391 + 66)
         self.assertEqual(changed['hits'], baseline['hits'])
         self.assertNotEqual(changed['days'], baseline['days'])
 

@@ -12,7 +12,7 @@
     {
       :id "agency/bounded-lifecycle"
       :path "futon3/library/agency/bounded-lifecycle.flexiarg"
-      :hits 5
+      :hits 6
       :title "Every Resource Has a Bounded Lifecycle"
       :line 1
       :sha256 "52fb3e776a871f3316e2f191a05ac8a705cbf59e14166aefe76ccd6e4da29c60"
@@ -30,7 +30,7 @@
     {
       :id "agency/delivery-receipt"
       :path "futon3/library/agency/delivery-receipt.flexiarg"
-      :hits 7
+      :hits 9
       :title "Every Message Gets a Receipt or an Explicit Failure"
       :line 1
       :sha256 "e3be7b3cd57b486a5c8337ad6aba1ea7b61157459dc6f7d0e6380fc1d865c073"
@@ -48,7 +48,7 @@
     {
       :id "agency/identifier-separation"
       :path "futon3/library/agency/identifier-separation.flexiarg"
-      :hits 4
+      :hits 6
       :title "Keep Transport Identifiers Separate From LLM Session Identifiers"
       :line 1
       :sha256 "5e9b7f4432c2e43a365537114ec01fc50cc95e6037ac912c77b1277afacc5ac0"
@@ -66,7 +66,7 @@
     {
       :id "agency/invariants"
       :path "futon3/library/agency/invariants.flexiarg"
-      :hits 7
+      :hits 9
       :title "Agency Invariant Set"
       :line 1
       :sha256 "ae7601ae6a6f522d5fc6ab20bcee64db142b6314440e75e8e39ece26f509c1aa"
@@ -84,7 +84,7 @@
     {
       :id "agency/loud-failure"
       :path "futon3/library/agency/loud-failure.flexiarg"
-      :hits 4
+      :hits 5
       :title "Errors Surface at the Layer That Caused Them"
       :line 1
       :sha256 "859a2d41d9067a3c126d309d035e8c1f52d6acc7625e6ec26c534e504fa9051b"
@@ -102,7 +102,7 @@
     {
       :id "agency/self-attribution"
       :path "futon3/library/agency/self-attribution.flexiarg"
-      :hits 5
+      :hits 6
       :title "Agents Speak for Themselves"
       :line 1
       :sha256 "9bf0b72580084cc22e2729c65ffd1d89679f3730d28c3af001e980a6c5521a5a"
@@ -138,7 +138,7 @@
     {
       :id "agency/state-atomicity"
       :path "futon3/library/agency/state-atomicity.flexiarg"
-      :hits 3
+      :hits 4
       :title "State Transitions Are All-or-Nothing"
       :line 1
       :sha256 "309e174ff808a3c64068c00cd7b65b7bef4e00dabd17b238ffdde14b5d8e1d7d"
@@ -150,6 +150,24 @@
       :rationale "THEN: “Apply all-or-nothing semantics to every state transition: 1. Rollover: summarize → create new session → update state atomically. If any step fails, restore previous state and emit error. 2. Registration: register in” — topical: records, represents, or revises what is known."
       :quote-field "THEN"
       :quote "Apply all-or-nothing semantics to every state transition: 1. Rollover: summarize → create new session → update state atomically. If any step fails, restore previous state and emit error. 2. Registration: register in"
+      :flags [
+      ]
+    }
+    {
+      :id "agent/budget-bounds-exploration"
+      :path "futon3/library/agent/budget-bounds-exploration.flexiarg"
+      :hits 1
+      :title "Budget Bounds Exploration"
+      :line 1
+      :sha256 "6bf16405983beb0f33a9bb645d0b1ea05c071fd04efacb895ea6d25bd09996ba"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Assign explicit budgets (time, steps, tokens, reads) to exploratory phases and define reset rules. When budget nears exhaustion, force a decision: commit to best-so-far, escalate to a supervisor, or explicitly expand scope with justification.” — functional: forces a commitment or escalation at an explicit exploration limit."
+      :quote-field "THEN"
+      :quote "Assign explicit budgets (time, steps, tokens, reads) to exploratory phases and define reset rules. When budget nears exhaustion, force a decision: commit to best-so-far, escalate to a supervisor, or explicitly expand scope with justification."
       :flags [
       ]
     }
@@ -264,7 +282,7 @@
     {
       :id "agent/student-dispatch"
       :path "futon3/library/agent/student-dispatch.flexiarg"
-      :hits 3
+      :hits 4
       :title "Student Dispatch"
       :line 1
       :sha256 "41ead0ce673e834419065c2b0e7758421b713c0706c443d8a8d51b5bd9376848"
@@ -318,7 +336,7 @@
     {
       :id "ai4ci/proof-pattern-hierarchy"
       :path "futon3/library/ai4ci/proof-pattern-hierarchy.flexiarg"
-      :hits 1
+      :hits 2
       :title "Proof Patterns as a Hypothesised Mid-Level Hierarchy"
       :line 1
       :sha256 "76b9a5a0036ee246ca66a044e76204d29c6af684c5d37f1f56c766a1ba45e15f"
@@ -408,7 +426,7 @@
     {
       :id "aif/expected-free-energy-scorecard"
       :path "futon3/library/aif/expected-free-energy-scorecard.flexiarg"
-      :hits 3
+      :hits 4
       :title "Expected Free Energy as Multi-Term Scorecard"
       :line 1
       :sha256 "ff82d6c0ef5ec8450d72575fc37d8e0c42809f59e89c3c6ecb12af0a149b7e56"
@@ -481,7 +499,7 @@
     {
       :id "aif/interoceptive-tripwires"
       :path "futon3/library/aif/interoceptive-tripwires.flexiarg"
-      :hits 8
+      :hits 9
       :title "Interoceptive Tripwires (Freeze, Record, Park, Summon)"
       :line 1
       :sha256 "e543c22f3127a89e8e6e9e98ff51f9131b5f7db245fb01c8c803a5a43d8ceca8"
@@ -499,7 +517,7 @@
     {
       :id "aif/measurement-window-hygiene"
       :path "futon3/library/aif/measurement-window-hygiene.flexiarg"
-      :hits 7
+      :hits 8
       :title "Measurement-Window Hygiene (Tight Baseline, Settled Readback, Drop the Confounded)"
       :line 1
       :sha256 "e393cb9cd1fd8de60fa503fee23f565529fcedd6ccbb5dc6e40b5711803236dd"
@@ -517,7 +535,7 @@
     {
       :id "aif/placeholder-is-load-bearing"
       :path "futon3/library/aif/placeholder-is-load-bearing.flexiarg"
-      :hits 2
+      :hits 3
       :title "Placeholder Is Load-Bearing"
       :line 1
       :sha256 "c0fcab000d3f4a46f1b97c487d329e3e7dfa9bd5432c23c68c7e2f4455a3a168"
@@ -553,7 +571,7 @@
     {
       :id "aif/scheduled-observer-entrypoint"
       :path "futon3/library/aif/scheduled-observer-entrypoint.flexiarg"
-      :hits 4
+      :hits 6
       :title "Scheduled Observer Entrypoint (and the No-Op Trap)"
       :line 1
       :sha256 "fe2a427364957c766a355cb05b70a3ee64d189c3fa8e5a3484afa0be7e1ae82d"
@@ -605,6 +623,25 @@
       ]
     }
     {
+      :id "aif/structure-learning-by-model-reduction"
+      :path "futon3/library/aif/structure-learning-by-model-reduction.flexiarg"
+      :hits 3
+      :title "Structure Learning by Bayesian Model Reduction (the third optimisation level)"
+      :line 1
+      :sha256 "6242b468d8a822223afa3c475095afc2aa2d46c855c522c154c3b93972218939"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node "R17"
+      :confidence :medium
+      :rationale "THEN: “Implement Structure Learning as Bayesian Model Reduction over the Dirichlet concentration parameters. Given a full (parent) model with prior `a` and accumulated posterior `A`, and a reduced/alternative model with prior `a'`, compute analytically: reduced” — topical: updates the model structure by pruning or merging; R17 is explicit in the source but absent from the supplied stage mapping."
+      :quote-field "THEN"
+      :quote "Implement Structure Learning as Bayesian Model Reduction over the Dirichlet concentration parameters. Given a full (parent) model with prior `a` and accumulated posterior `A`, and a reduced/alternative model with prior `a'`, compute analytically: reduced"
+      :flags [
+        "R17-not-assigned-in-requested-rubric"
+      ]
+    }
+    {
       :id "aif/temporal-depth-beyond-greedy"
       :path "futon3/library/aif/temporal-depth-beyond-greedy.flexiarg"
       :hits 4
@@ -625,7 +662,7 @@
     {
       :id "aif/term-to-channel-traceability"
       :path "futon3/library/aif/term-to-channel-traceability.flexiarg"
-      :hits 2
+      :hits 6
       :title "Term-to-Channel Traceability"
       :line 1
       :sha256 "52abfe0cfb13aaa0f3236a15ba3b1657c8ad547fa35ffa62131ff5c187f47e2b"
@@ -643,7 +680,7 @@
     {
       :id "ants/baseline-cyber-ant"
       :path "futon3/library/ants/baseline-cyber-ant.flexiarg"
-      :hits 7
+      :hits 12
       :title "Baseline Cyber-AIF Ant"
       :line 1
       :sha256 "7f65024c6e11139c3cc9442b4ce54c466ddfc4570279d1d39d17fd1fdae79728"
@@ -661,7 +698,7 @@
     {
       :id "ants/cargo-return-discipline"
       :path "futon3/library/ants/cargo-return-discipline.flexiarg"
-      :hits 6
+      :hits 8
       :title "Cargo Return Discipline Pattern"
       :line 1
       :sha256 "d3dca1a3d3f7b0a4d4e44c9e294403feae522a9fbc13b9be285f11b3b9e32ba2"
@@ -697,7 +734,7 @@
     {
       :id "apparatus/done-is-observed-running"
       :path "futon3/library/apparatus/done-is-observed-running.flexiarg"
-      :hits 1
+      :hits 2
       :title "Done Is Observed Running"
       :line 1
       :sha256 "301a19b722382997e8e1d455be1c40605ebc987c998aedd5ce5302bcb4a70653"
@@ -713,9 +750,45 @@
       ]
     }
     {
+      :id "apparatus/every-wait-has-a-deadline"
+      :path "futon3/library/apparatus/every-wait-has-a-deadline.flexiarg"
+      :hits 1
+      :title "Every Wait Has A Deadline"
+      :line 1
+      :sha256 "17ee0dfd2f1871ae2a43daeab91e31023b01c436e7f591a16dcbada95fe03c34"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Give every wait a deadline. Make the deadline verifiably absolute — an already-past deadline fires instantly, which is a fault wearing this principle's clothes — and route expiry to an explicit decision point, never silently back into the wait.” — functional: bounds waiting for another party and routes expiry to a decision."
+      :quote-field "THEN"
+      :quote "Give every wait a deadline. Make the deadline verifiably absolute — an already-past deadline fires instantly, which is a fault wearing this principle's clothes — and route expiry to an explicit decision point, never silently back into the wait."
+      :flags [
+      ]
+    }
+    {
+      :id "apparatus/model-upstream-and-coupled"
+      :path "futon3/library/apparatus/model-upstream-and-coupled.flexiarg"
+      :hits 1
+      :title "The Formal Model Sits Upstream And Is Coupled"
+      :line 1
+      :sha256 "9974187d9e3148404f6b086a983b9bc06806c7882da8c4f9742818a64bf1103b"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Two obligations. Upstream: a new mechanism cannot ship without its contract obligation stated in the model first — trailing formalization back-fills, it never constitutes. Coupled: a standing check round-trips model → contract → validator → loaded namespace,” — functional: requires an enforced check connecting formal obligations to the loaded runtime."
+      :quote-field "THEN"
+      :quote "Two obligations. Upstream: a new mechanism cannot ship without its contract obligation stated in the model first — trailing formalization back-fills, it never constitutes. Coupled: a standing check round-trips model → contract → validator → loaded namespace,"
+      :flags [
+      ]
+    }
+    {
       :id "apparatus/new-failure-class-is-a-design-defect"
       :path "futon3/library/apparatus/new-failure-class-is-a-design-defect.flexiarg"
-      :hits 1
+      :hits 2
       :title "A New Failure Class Is A Design Defect, Not A New Species"
       :line 1
       :sha256 "8af3bd34bea9515913012d43575719596eedef43fb411b9e725206a7df07f36c"
@@ -731,9 +804,45 @@
       ]
     }
     {
+      :id "apparatus/pin-moves-with-the-population"
+      :path "futon3/library/apparatus/pin-moves-with-the-population.flexiarg"
+      :hits 1
+      :title "The Pin Moves With The Population, By The Hand That Moved It"
+      :line 1
+      :sha256 "259e32df9a71a6360bc7129cb48680329d9275bfd7c25b5c67c211c25ceb9b79"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “The mutation and its maintenance are one change: move the population and re-pin in the same commit; edit the source and re-emit the attestation in the same slice. A gate may enforce it — refuse a change that moves a pinned population without touching its pin.” — functional: keeps attestations bound to the revision whose population changed."
+      :quote-field "THEN"
+      :quote "The mutation and its maintenance are one change: move the population and re-pin in the same commit; edit the source and re-emit the attestation in the same slice. A gate may enforce it — refuse a change that moves a pinned population without touching its pin."
+      :flags [
+      ]
+    }
+    {
+      :id "apparatus/repairs-name-defects-not-neighborhoods"
+      :path "futon3/library/apparatus/repairs-name-defects-not-neighborhoods.flexiarg"
+      :hits 1
+      :title "A Repair Citation Names The Defect, Not The Neighborhood"
+      :line 1
+      :sha256 "763850f9e147b30e4bafe70d72e7b1a5d591fdf253b307c18a6059cb174d2a3a"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Require the citation to name the defect as a checkable claim: which violation signature the cited change makes absent, verifiable against the change itself. If the adjudicator cannot state that, the correct disposition is \"unclosed — defect not yet” — functional: requires a checkable defect-specific closure claim."
+      :quote-field "THEN"
+      :quote "Require the citation to name the defect as a checkable claim: which violation signature the cited change makes absent, verifiable against the change itself. If the adjudicator cannot state that, the correct disposition is \"unclosed — defect not yet"
+      :flags [
+      ]
+    }
+    {
       :id "apparatus/success-must-not-resemble-failure"
       :path "futon3/library/apparatus/success-must-not-resemble-failure.flexiarg"
-      :hits 1
+      :hits 2
       :title "Success Must Not Resemble Failure"
       :line 1
       :sha256 "db6d9b6607747034119325ea888e25c558fe0d0e9d6cd264216516af8ef766f3"
@@ -751,7 +860,7 @@
     {
       :id "apparatus/the-system-stops-on-schedule"
       :path "futon3/library/apparatus/the-system-stops-on-schedule.flexiarg"
-      :hits 2
+      :hits 5
       :title "The System Stops On Schedule"
       :line 1
       :sha256 "12822aa4403b2fd63f8d545271ad2d2b82fb5a71ec811b2dbd40d5c328f6a8c2"
@@ -781,6 +890,24 @@
       :rationale "THEN: “Separate the two intervals explicitly. Vary the adaptation budget over a training interval that ends before the measurement window opens, and hold the mechanism identical across arms inside the measurement window; or” — functional-and-topical: makes a claim independently checkable or preserves its trace."
       :quote-field "THEN"
       :quote "Separate the two intervals explicitly. Vary the adaptation budget over a training interval that ends before the measurement window opens, and hold the mechanism identical across arms inside the measurement window; or"
+      :flags [
+      ]
+    }
+    {
+      :id "baldwin/choose-the-heritable-unit-where-invariance-lives"
+      :path "futon3/library/baldwin/choose-the-heritable-unit-where-invariance-lives.flexiarg"
+      :hits 1
+      :title "Put the Heritable Unit Where the Invariance Is"
+      :line 1
+      :sha256 "45ecb2a5ba496d201c0e1bb34dc29c04210056149cbf3f92bf80f77a4c503a0c"
+      :kind :mixed
+      :stage :perceive
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Re-index the invariance measurement you already have before building anything. Take the same live-versus-frozen agreement statistic and compute it per candidate unit — for MetaCA, the four-bit context quadruple the rewrite already conditions on, which has” — functional-and-topical: reindexes an invariance measurement to find the stable heritable unit."
+      :quote-field "THEN"
+      :quote "Re-index the invariance measurement you already have before building anything. Take the same live-versus-frozen agreement statistic and compute it per candidate unit — for MetaCA, the four-bit context quadruple the rewrite already conditions on, which has"
       :flags [
       ]
     }
@@ -821,9 +948,27 @@
       ]
     }
     {
+      :id "buffer-cleaner/yield-settled"
+      :path "futon3/library/buffer-cleaner/yield-settled.flexiarg"
+      :hits 1
+      :title "Settle With Meters, Never With Claims"
+      :line 1
+      :sha256 "b5b0081b6106d003bad4927834d0abc3d2e5a4dd5dd04d53ed24d07393d70a45"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “Emit the meters, the declared threshold with its source label, and revisit-truth :unavailable; let the consumer decide admissibility against the declared rule — the terminal never asserts success.” — functional: emits typed meters without self-certifying success."
+      :quote-field "THEN"
+      :quote "Emit the meters, the declared threshold with its source label, and revisit-truth :unavailable; let the consumer decide admissibility against the declared rule — the terminal never asserts success."
+      :flags [
+      ]
+    }
+    {
       :id "campaign-coherence/cross-mission-escrow"
       :path "futon3/library/campaign-coherence/cross-mission-escrow.flexiarg"
-      :hits 4
+      :hits 6
       :title "Cross-Mission Escrow — Hold Dependent Work in Two Release Steps"
       :line 1
       :sha256 "b92faf9a41d0711daa053a3b807589f726ebb31705da44cf7a641d92103b112c"
@@ -858,6 +1003,24 @@
       ]
     }
     {
+      :id "cascade-construction/add-a-pattern-when-an-item-fits-no-class"
+      :path "futon3/library/cascade-construction/add-a-pattern-when-an-item-fits-no-class.flexiarg"
+      :hits 2
+      :title "Add A Pattern When A Real Item Fits No Existing Class"
+      :line 1
+      :sha256 "c4368e24e4f2d1a04303e3f6f43cd09dcb12531966c8b40a391416ed249538e1"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Name the gap, ask about the distinction, census the real items, and add the pattern.” — functional: adds a named distinction to the pattern vocabulary after a census."
+      :quote-field "THEN"
+      :quote "Name the gap, ask about the distinction, census the real items, and add the pattern."
+      :flags [
+      ]
+    }
+    {
       :id "cascade-construction/borrow-a-sibling-cascade"
       :path "futon3/library/cascade-construction/borrow-a-sibling-cascade.flexiarg"
       :hits 1
@@ -878,7 +1041,7 @@
     {
       :id "cascade-construction/choose-the-grain-where-state-lives"
       :path "futon3/library/cascade-construction/choose-the-grain-where-state-lives.flexiarg"
-      :hits 1
+      :hits 2
       :title "Choose The Cascade's Grain Where Its State Naturally Lives"
       :line 1
       :sha256 "83e3c5ee4ac655a3bafdf3e3b96acd6c259e8362f70174d4db18fdacff62ac25"
@@ -896,7 +1059,7 @@
     {
       :id "cascade-construction/lift-when-three-align"
       :path "futon3/library/cascade-construction/lift-when-three-align.flexiarg"
-      :hits 1
+      :hits 8
       :title "Write A Shared Pattern Only When Three Written Cascades Align, And Keep The Gaps"
       :line 1
       :sha256 "a9a35c33761075b077adcd1522686e6c9b08020bd3f34e954a72394ba96a9ee8"
@@ -914,7 +1077,7 @@
     {
       :id "cascade-construction/mine-patterns-from-incidents"
       :path "futon3/library/cascade-construction/mine-patterns-from-incidents.flexiarg"
-      :hits 2
+      :hits 6
       :title "One Pattern Per Requirement, Carrying The Incident That Forced It"
       :line 1
       :sha256 "f4e4d896be99c6f49b3f155bc206560b4b75033f8c41c579136c7cdb14c6ba97"
@@ -930,9 +1093,27 @@
       ]
     }
     {
+      :id "cascade-construction/read-what-exists-first"
+      :path "futon3/library/cascade-construction/read-what-exists-first.flexiarg"
+      :hits 4
+      :title "Read The Requirement, The Implementation And The Live State Before Proposing Patterns"
+      :line 1
+      :sha256 "d9e37ddd058fe0c22c3296c93d871056f8558f4d73614c8f41e7bd4ac3fc78be"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Read the four sources first and record where they disagree.” — functional: reads requirement, implementation, live state and prior attempts before construction."
+      :quote-field "THEN"
+      :quote "Read the four sources first and record where they disagree."
+      :flags [
+      ]
+    }
+    {
       :id "cascade-construction/run-it-on-a-real-case"
       :path "futon3/library/cascade-construction/run-it-on-a-real-case.flexiarg"
-      :hits 1
+      :hits 4
       :title "Run The Constructed Cascade On A Real Recorded Case Before Building Anything"
       :line 1
       :sha256 "3d006bdff9d3af808112139f9c0342bd93d1c4ab38adf550d9c4754a026d9046"
@@ -950,7 +1131,7 @@
     {
       :id "cascades/declared-skeleton"
       :path "futon3/library/cascades/declared-skeleton.flexiarg"
-      :hits 7
+      :hits 8
       :title "Declared Skeleton"
       :line 1
       :sha256 "d5dae482ff0e4edafbdce645b79a16949cd3a5a41ced3d62b4e034a7b54eb491"
@@ -968,7 +1149,7 @@
     {
       :id "cascades/edges-earn-permanence"
       :path "futon3/library/cascades/edges-earn-permanence.flexiarg"
-      :hits 2
+      :hits 3
       :title "Edges Earn Permanence"
       :line 1
       :sha256 "3226ac2100b997247e1d40fb2df071907ed78a6a28ddeb150ac59613df13d37b"
@@ -986,7 +1167,7 @@
     {
       :id "cascades/on-the-fly-cascade"
       :path "futon3/library/cascades/on-the-fly-cascade.flexiarg"
-      :hits 9
+      :hits 11
       :title "On-the-Fly Cascade"
       :line 1
       :sha256 "35e5fbcdfcc0ce43b0fa98789ebaf830d4d763b26c1133e56018bbce354fa0c1"
@@ -1004,7 +1185,7 @@
     {
       :id "cascades/repointable-declarations"
       :path "futon3/library/cascades/repointable-declarations.flexiarg"
-      :hits 2
+      :hits 4
       :title "Repointable Declarations"
       :line 1
       :sha256 "b2bfb91d244d7342c721c746cfc1f3170d0659ae2d3796bd80e9ef2a400fdf3f"
@@ -1056,9 +1237,27 @@
       ]
     }
     {
+      :id "contracts/declare-the-reductions"
+      :path "futon3/library/contracts/declare-the-reductions.flexiarg"
+      :hits 4
+      :title "Declare What The Runtime Does Not Preserve"
+      :line 1
+      :sha256 "8019bfff35602ff2481fcd2779d7048be8f6762c2c05795d3d42fed3cbccbf55"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Declare them; the claim is the declaration plus the rest.” — functional: declares the limits under which a correspondence is certified."
+      :quote-field "THEN"
+      :quote "Declare them; the claim is the declaration plus the rest."
+      :flags [
+      ]
+    }
+    {
       :id "contracts/holder-states-the-claim"
       :path "futon3/library/contracts/holder-states-the-claim.flexiarg"
-      :hits 2
+      :hits 6
       :title "The Holder States Exactly What Correspondence Is Claimed"
       :line 1
       :sha256 "07a6e525bf5ab800cb1f6ec1da9f89fec6b57bc4b68f09a2d089075257ddbe84"
@@ -1074,9 +1273,45 @@
       ]
     }
     {
+      :id "contracts/rebase-by-name"
+      :path "futon3/library/contracts/rebase-by-name.flexiarg"
+      :hits 2
+      :title "Rebase Pointers By Name, And Refuse Ambiguity"
+      :line 1
+      :sha256 "ba7aebae9866d800d376ffa10e04b1efde785308ea813ebc1d86629b61f48f7d"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Rebase by unique name and report the rest.” — functional: updates recorded pointers by stable identity."
+      :quote-field "THEN"
+      :quote "Rebase by unique name and report the rest."
+      :flags [
+      ]
+    }
+    {
+      :id "contracts/resolve-pointers-at-head"
+      :path "futon3/library/contracts/resolve-pointers-at-head.flexiarg"
+      :hits 1
+      :title "Resolve Every Cross-Language Pointer At Committed HEAD"
+      :line 1
+      :sha256 "3479d74730b53dd67dfb0076811f346fbfca03d865a461f1dfcf87e5cfc1365d"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Read both sides at HEAD and check named forms.” — functional: checks contract pointers against committed named forms."
+      :quote-field "THEN"
+      :quote "Read both sides at HEAD and check named forms."
+      :flags [
+      ]
+    }
+    {
       :id "contributing/devmap-contribution-protocol"
       :path "futon3/library/contributing/devmap-contribution-protocol.flexiarg"
-      :hits 10
+      :hits 12
       :title "Devmap Contribution Protocol"
       :line 1
       :sha256 "6e745940adb428a8d7183f631d914f05b4d7d5aac3dbac58b50c3ffb2e2a0646"
@@ -1148,7 +1383,7 @@
     {
       :id "control/agential-pattern-hygiene"
       :path "futon3/library/control/agential-pattern-hygiene.flexiarg"
-      :hits 1
+      :hits 2
       :title "Agential Pattern Hygiene"
       :line 1
       :sha256 "629141f832f1035d1f05779ea86108c755f67741275f7aeb8bd8ddc1c53548cb"
@@ -1166,7 +1401,7 @@
     {
       :id "control/effort-estimation"
       :path "futon3/library/control/effort-estimation.flexiarg"
-      :hits 1
+      :hits 3
       :title "Effort Estimation with Token & Human Time"
       :line 1
       :sha256 "90c9c53dee128ae97906be32c1ba7a5a547569cb16392899b884637a332e85e9"
@@ -1184,7 +1419,7 @@
     {
       :id "coordination/ARGUMENT"
       :path "futon3/library/coordination/ARGUMENT.flexiarg"
-      :hits 8
+      :hits 9
       :title "Coordination Argument (Gate Pipeline)"
       :line 1
       :sha256 "1d12fec7ac50501c627b4dc748d13d1edeabbe8baf50dba46b0ce439838f18e1"
@@ -1202,7 +1437,7 @@
     {
       :id "coordination/artifact-registration"
       :path "futon3/library/coordination/artifact-registration.flexiarg"
-      :hits 1
+      :hits 4
       :title "Artifact Registration (G2)"
       :line 1
       :sha256 "0452b0ecaf7d17c5b68175b2ff85c3a94a54080665c5831346225b9499bf7296"
@@ -1220,7 +1455,7 @@
     {
       :id "coordination/assignment-binding"
       :path "futon3/library/coordination/assignment-binding.flexiarg"
-      :hits 2
+      :hits 3
       :title "Assignment Binding (G4)"
       :line 1
       :sha256 "d20124da82dd1ff934ea1067f5626c154cbcf62f2487194e65c712db195253ee"
@@ -1236,9 +1471,27 @@
       ]
     }
     {
+      :id "coordination/bind-promotion-to-post-repair-replay"
+      :path "futon3/library/coordination/bind-promotion-to-post-repair-replay.flexiarg"
+      :hits 3
+      :title "Bind Promotion to Post-Repair Replay"
+      :line 1
+      :sha256 "7934e16df9564dedbafa62110479f656d706efe2d01d30046dc668f8c71c2d08"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "R9"
+      :confidence :high
+      :rationale "THEN: “Keep the certificate pending and record an independent replay request naming the repaired revision and the rejected controls. Reuse an already recorded matching request rather than claiming a new replay. Promote only after a successful independent receipt” — functional: requires independent replay of the repaired revision before promotion."
+      :quote-field "THEN"
+      :quote "Keep the certificate pending and record an independent replay request naming the repaired revision and the rejected controls. Reuse an already recorded matching request rather than claiming a new replay. Promote only after a successful independent receipt"
+      :flags [
+      ]
+    }
+    {
       :id "coordination/capability-gate"
       :path "futon3/library/coordination/capability-gate.flexiarg"
-      :hits 4
+      :hits 7
       :title "Capability Gate (G4)"
       :line 1
       :sha256 "1e606844bad799c1931c812b2f33e801ae4c3680bc792d7f441511eb8fc55a04"
@@ -1274,7 +1527,7 @@
     {
       :id "coordination/intent-to-mission-binding"
       :path "futon3/library/coordination/intent-to-mission-binding.flexiarg"
-      :hits 2
+      :hits 4
       :title "Intent to Mission Binding (G5)"
       :line 1
       :sha256 "9eb0d26661b50bdeb78edf6873156dd80c3697f76aa4da42be84392be5a02488"
@@ -1292,7 +1545,7 @@
     {
       :id "coordination/mandatory-psr"
       :path "futon3/library/coordination/mandatory-psr.flexiarg"
-      :hits 2
+      :hits 3
       :title "Mandatory PSR (G3)"
       :line 1
       :sha256 "db56ffc3122000fbd14e55ea66e1df3e995b9ae8c936f8970b992189bc164105"
@@ -1328,7 +1581,7 @@
     {
       :id "coordination/pattern-search-protocol"
       :path "futon3/library/coordination/pattern-search-protocol.flexiarg"
-      :hits 2
+      :hits 3
       :title "Pattern Search Protocol (G3)"
       :line 1
       :sha256 "94bf2f111506baa1eb393060d87e62a21b008da30622608fac277d4b6eda4713"
@@ -1382,7 +1635,7 @@
     {
       :id "cycle-machine/authority-port"
       :path "futon3/library/cycle-machine/authority-port.flexiarg"
-      :hits 5
+      :hits 6
       :title "Authority Port: One Resolver for Roots and Revisions"
       :line 1
       :sha256 "ef11b2bd11753b9e2d6bbea565aa14d04c9029cd8ad275a016c016e0a6fbb6c6"
@@ -1400,7 +1653,7 @@
     {
       :id "cycle-machine/job-port"
       :path "futon3/library/cycle-machine/job-port.flexiarg"
-      :hits 15
+      :hits 20
       :title "Job Port: One Producer of Dispatch Observations"
       :line 1
       :sha256 "7e4fc3977fe9e5e191e31bc5aca329e415acd898dc3e2570024764c15eb2bb35"
@@ -1418,7 +1671,7 @@
     {
       :id "cycle-machine/runtime-restoration"
       :path "futon3/library/cycle-machine/runtime-restoration.flexiarg"
-      :hits 6
+      :hits 10
       :title "Runtime Restoration: Reload the Shared JVM from Its Own Checkout, Whole"
       :line 1
       :sha256 "0b01b2b0073ff902668f9dd589e775d2ff4bea47048072cfa08c5aa186009e66"
@@ -1436,7 +1689,7 @@
     {
       :id "cycle-machine/single-producer"
       :path "futon3/library/cycle-machine/single-producer.flexiarg"
-      :hits 1
+      :hits 2
       :title "Single Producer per Verified Structure"
       :line 1
       :sha256 "edc2d012918ff8414bbe97f243fed3a12c524966381ee2f6f8311a6eae8dbfbe"
@@ -1454,7 +1707,7 @@
     {
       :id "cycle-machine/step-machine"
       :path "futon3/library/cycle-machine/step-machine.flexiarg"
-      :hits 10
+      :hits 12
       :title "Step Machine: Intents, Pre-State Digests, Postconditions"
       :line 1
       :sha256 "3c4c3c660fe226722fcfbff0a6b549f244b47c7231bb87446af59fb5023518bb"
@@ -1472,7 +1725,7 @@
     {
       :id "cycle-machine/toolchain-port"
       :path "futon3/library/cycle-machine/toolchain-port.flexiarg"
-      :hits 7
+      :hits 9
       :title "Toolchain Port: Corpus-Derived Baseline, Not Fixture-Derived"
       :line 1
       :sha256 "b61d1a0857eb7732825ec7c5d6fcbf8211cb45272bf525539f955e6e29db04f5"
@@ -1490,7 +1743,7 @@
     {
       :id "data-mining/checkpoint-the-long-run"
       :path "futon3/library/data-mining/checkpoint-the-long-run.flexiarg"
-      :hits 13
+      :hits 14
       :title "Checkpoint the Long Run — A Crash Must Not Cost the Whole Pass"
       :line 1
       :sha256 "4457c4d9f580aa12b6055b5cb36e72f6992084300c8a7dd0be869f5eee82000b"
@@ -1542,6 +1795,24 @@
       ]
     }
     {
+      :id "data-mining/fan-out-independent-runs-across-devices"
+      :path "futon3/library/data-mining/fan-out-independent-runs-across-devices.flexiarg"
+      :hits 5
+      :title "Fan Out Independent Runs Across the Idle Devices — Right-Size the Box, Then Saturate It"
+      :line 1
+      :sha256 "fb78b502862b3dbb1cc331f2d30126f1642cba172a54d2b8e05f35d59475ed41"
+      :kind :practice
+      :stage :act
+      :stage-mode :functional
+      :node "R16"
+      :confidence :high
+      :rationale "THEN: “Size the box to the model first: if one device suffices and you have exactly one config, rent one GPU. If you have k independent configs, rent k devices (or use the k you have) and fan out — one process per arm, each pinned `CUDA_VISIBLE_DEVICES=i`, launched” — functional: executes independent runs concurrently on assigned devices."
+      :quote-field "THEN"
+      :quote "Size the box to the model first: if one device suffices and you have exactly one config, rent one GPU. If you have k independent configs, rent k devices (or use the k you have) and fan out — one process per arm, each pinned `CUDA_VISIBLE_DEVICES=i`, launched"
+      :flags [
+      ]
+    }
+    {
       :id "data-mining/gates-as-code"
       :path "futon3/library/data-mining/gates-as-code.flexiarg"
       :hits 2
@@ -1562,7 +1833,7 @@
     {
       :id "data-mining/saturate-the-accelerator-with-concurrency"
       :path "futon3/library/data-mining/saturate-the-accelerator-with-concurrency.flexiarg"
-      :hits 3
+      :hits 5
       :title "Saturate the Accelerator — Fan Out Concurrent Requests, Don't Mine One-at-a-Time"
       :line 1
       :sha256 "32eb68f19be417ed77024a7d89f70eaab9b86892e946643e5c68a9d278800db5"
@@ -1580,7 +1851,7 @@
     {
       :id "data-mining/smoke-before-the-paid-run"
       :path "futon3/library/data-mining/smoke-before-the-paid-run.flexiarg"
-      :hits 3
+      :hits 5
       :title "Smoke-Test the Prompt on a Held-Out Sample Before the Paid Full Run"
       :line 1
       :sha256 "45bf2e6d4fe6d78a00fc06010ad6ea2eaa8af2760399124f9e24ec418ef7e1f6"
@@ -1598,7 +1869,7 @@
     {
       :id "data-mining/the-first-checkpoint-is-a-quality-probe"
       :path "futon3/library/data-mining/the-first-checkpoint-is-a-quality-probe.flexiarg"
-      :hits 1
+      :hits 4
       :title "The First Checkpoint Is a Quality Probe — Gate Early, Then Let It Ride"
       :line 1
       :sha256 "994b08bb36e5eba7b4fefc4fbf490374a7193daf22de3a335073547d7af1acdb"
@@ -1688,7 +1959,7 @@
     {
       :id "devmap-coherence/ifr-f1-dhammavicaya"
       :path "futon3/library/devmap-coherence/ifr-f1-dhammavicaya.flexiarg"
-      :hits 10
+      :hits 16
       :title "IFR — FUTON1 Graph Memory Seed (dhammavicaya)"
       :line 1
       :sha256 "25d21ce26e01983afc31c3b66b36563bb6d5601f75d478aef3b287f097b03abc"
@@ -1706,7 +1977,7 @@
     {
       :id "devmap-coherence/ifr-f2-viriya"
       :path "futon3/library/devmap-coherence/ifr-f2-viriya.flexiarg"
-      :hits 7
+      :hits 9
       :title "IFR — FUTON2 Active Inference Energy (viriya)"
       :line 1
       :sha256 "e21181a18f3a5e74bdaabc8e46014e0133709a079bc93db284e74307e656424c"
@@ -1724,7 +1995,7 @@
     {
       :id "devmap-coherence/ifr-f3-piti"
       :path "futon3/library/devmap-coherence/ifr-f3-piti.flexiarg"
-      :hits 10
+      :hits 11
       :title "IFR — FUTON3 Flexiformal Proofwork (pīti)"
       :line 1
       :sha256 "9f949b23e197b1176b6ae179525c3bc7ef57557d3f1bf2bfe05ff4f609243107"
@@ -1778,7 +2049,7 @@
     {
       :id "devmap-coherence/ifr-f5-samadhi"
       :path "futon3/library/devmap-coherence/ifr-f5-samadhi.flexiarg"
-      :hits 5
+      :hits 6
       :title "IFR — FUTON5 Nonstarter / Concentration Engine (samādhi)"
       :line 1
       :sha256 "9cbd5c3bc6b72a889c950f30c3bf4870de6d7343a0bf6bedd8924bf8f725bab5"
@@ -1796,7 +2067,7 @@
     {
       :id "devmap-coherence/ifr-f6-upekkha"
       :path "futon3/library/devmap-coherence/ifr-f6-upekkha.flexiarg"
-      :hits 6
+      :hits 7
       :title "IFR — FUTON6 Hyperreal Argumentarium (upekkhā)"
       :line 1
       :sha256 "475bc40719098ccf6e02a571bf5a72a6ddf924a8b7cdc739e501abb4b7d90048"
@@ -1814,7 +2085,7 @@
     {
       :id "devmap-coherence/ifr-f7-upa-upekkha"
       :path "futon3/library/devmap-coherence/ifr-f7-upa-upekkha.flexiarg"
-      :hits 20
+      :hits 24
       :title "IFR — FUTON7 Civic Field of Wisdom (upa-upekkhā)"
       :line 1
       :sha256 "30d0cc42001f5f36b9c3a30a5b7f2b71e9a5d3c854e659d819bc29c8d86bf637"
@@ -1850,7 +2121,7 @@
     {
       :id "devmap-coherence/next-steps-to-done"
       :path "futon3/library/devmap-coherence/next-steps-to-done.flexiarg"
-      :hits 2
+      :hits 3
       :title "Next Steps to Done"
       :line 1
       :sha256 "45b66c5a1e01b7c983ad9a68dccc31195c1541475cfbbc690bfe8e4d1d45fce2"
@@ -1995,7 +2266,7 @@
     {
       :id "dsc/evidence-situated-log"
       :path "futon3/library/dsc/thesis-traversal.multiarg"
-      :hits 10
+      :hits 13
       :title "Evidence as Situated Log, Not Exhibit"
       :line 41
       :sha256 "b9427d5bc7d28a42417eaaa509b0458c5c72969abfd4fb33ac45c92250b4a3b4"
@@ -2031,9 +2302,28 @@
       ]
     }
     {
+      :id "eight-gates/kao-lean"
+      :path "futon3/library/eight-gates/kao-lean.flexiarg"
+      :hits 1
+      :title "Kào: Lean"
+      :line 1
+      :sha256 "8aa24bdc7e55f093e834d74bf0ce2c83c330e7802fde2bb0f164607257c8ee0e"
+      :kind :mixed
+      :stage :act
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :low
+      :rationale "THEN: “Lean into the situation with your structure. Kào can manifest as shoulder (front or back), chest, or full back—whatever trunk surface is appropriate. The inclination is deliberate; the frame stays intact. You're not pushing with arms; you're bringing your” — functional-and-topical: uses bodily commitment as a metaphor for bringing the full working context into action."
+      :quote-field "THEN"
+      :quote "Lean into the situation with your structure. Kào can manifest as shoulder (front or back), chest, or full back—whatever trunk surface is appropriate. The inclination is deliberate; the frame stays intact. You're not pushing with arms; you're bringing your"
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
       :id "eight-gates/lean-commit"
       :path "futon3/library/eight-gates/lean-commit.flexiarg"
-      :hits 13
+      :hits 18
       :title "Lean: Full Commitment Escalation"
       :line 1
       :sha256 "3d560c1fe13e4afd56e3c46cb035694fed112710f71390d49a98306fc44ea2cb"
@@ -2071,7 +2361,7 @@
     {
       :id "enrichment/ARGUMENT"
       :path "futon3/library/enrichment/ARGUMENT.flexiarg"
-      :hits 18
+      :hits 20
       :title "Argument for Futon Enrichment: Rational Reconstruction of Cross-Column Connective Tissue"
       :line 1
       :sha256 "3638eaaeb21c2f893016c64b6705d63b112d9186732e86f3d6e37c712d941992"
@@ -2089,7 +2379,7 @@
     {
       :id "enrichment/churn-as-signal"
       :path "futon3/library/enrichment/churn-as-signal.flexiarg"
-      :hits 3
+      :hits 4
       :title "Git Churn as Behavioral Signal"
       :line 1
       :sha256 "e4c743596a1b51fbe68bdeb7091cd50924ed3cb986fa148dfdc1f1874b86682d"
@@ -2107,7 +2397,7 @@
     {
       :id "enrichment/extend-not-rewrite"
       :path "futon3/library/enrichment/extend-not-rewrite.flexiarg"
-      :hits 1
+      :hits 3
       :title "Extend, Don't Rewrite"
       :line 1
       :sha256 "69ab2d3d04c4c015f3071e13d6ff5c5ed920ba80d8b76ed073d6d8c277483291"
@@ -2125,7 +2415,7 @@
     {
       :id "enrichment/layered-ingestion"
       :path "futon3/library/enrichment/layered-ingestion.flexiarg"
-      :hits 2
+      :hits 3
       :title "Layered Ingestion Architecture"
       :line 1
       :sha256 "9a2e9c3b6ac8daa6a0010bf761c59523f605e4c1e312ff760ae600d66848771c"
@@ -2143,7 +2433,7 @@
     {
       :id "enrichment/rational-reconstruction"
       :path "futon3/library/enrichment/rational-reconstruction.flexiarg"
-      :hits 4
+      :hits 5
       :title "Rational Reconstruction Over Bulk Import"
       :line 1
       :sha256 "e47ed570e8a4239b69eb56777eb08dac3ce5632772ffb285b789349573314f8b"
@@ -2161,7 +2451,7 @@
     {
       :id "eoi-engine/tension-free-solo-rule"
       :path "futon3/library/eoi-engine/tension-free-solo-rule.flexiarg"
-      :hits 2
+      :hits 3
       :title "EoI Tension Prompt — August-2026 Free-Solo Rule Honesty"
       :line 1
       :sha256 "b387902dc9bb0ee62f5b606ca9a434a37adbe58122972db53aedeafb088232b8"
@@ -2173,6 +2463,24 @@
       :rationale "THEN: “Author chooses one of routes (a) / (b) / (c) and writes a short rule-honesty paragraph in their own register.” — functional: sets a choice, priority, or admission condition."
       :quote-field "THEN"
       :quote "Author chooses one of routes (a) / (b) / (c) and writes a short rule-honesty paragraph in their own register."
+      :flags [
+      ]
+    }
+    {
+      :id "equity/protected-interaction-merged"
+      :path "futon3/library/equity/protected-interaction-merged.flexiarg"
+      :hits 1
+      :title "Protected Interaction: Profiled Provisioning"
+      :line 1
+      :sha256 "e82a968e8a8117982cbe7bf38c826c0190a6441280c1cf408a247042ebc98307"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Each trainer declares a delivery profile: the modules they will own and the limits of that ownership. Each participating institution commits an explicit coverage profile with named resourcing: protected time, rooms, IT/admin support, team coverage, and a” — topical: allocates delivery responsibilities and institutional resources across a training network."
+      :quote-field "THEN"
+      :quote "Each trainer declares a delivery profile: the modules they will own and the limits of that ownership. Each participating institution commits an explicit coverage profile with named resourcing: protected time, rooms, IT/admin support, team coverage, and a"
       :flags [
       ]
     }
@@ -2215,7 +2523,7 @@
     {
       :id "exotic/dual-track-generation"
       :path "futon3/library/exotic/dual-track-generation.flexiarg"
-      :hits 3
+      :hits 7
       :title "Dual-Track Generated Patterns"
       :line 1
       :sha256 "096a55167c6047db4a949fce8757cb32d057eb55f22ee98318e899687aba5883"
@@ -2233,7 +2541,7 @@
     {
       :id "exotic/dual-windowing"
       :path "futon3/library/exotic/dual-windowing.flexiarg"
-      :hits 2
+      :hits 3
       :title "Dual Windowing"
       :line 1
       :sha256 "a77128fe9eea19b7030606ce87a03b2fabe2330f0f08e1e7861f69e8689c7dcc"
@@ -2251,7 +2559,7 @@
     {
       :id "exotic/full-lift-registry"
       :path "futon3/library/exotic/full-lift-registry.flexiarg"
-      :hits 1
+      :hits 2
       :title "Full Lift Registry with Lisp Templates"
       :line 1
       :sha256 "fc2892f70a2d5bccf9323a03be580477c4f48c35fc54a37a00f6ed1bf9b4dc50"
@@ -2269,7 +2577,7 @@
     {
       :id "f6/bootstrap-loop"
       :path "futon3/library/f6/bootstrap-loop.flexiarg"
-      :hits 1
+      :hits 2
       :title "Bootstrap Loop"
       :line 1
       :sha256 "3a316f4cc8a203db4201079193189417bd053ee64ee228d0f7a481e3c765f735"
@@ -2305,7 +2613,7 @@
     {
       :id "f6/proof-as-social-process"
       :path "futon3/library/f6/proof-as-social-process.flexiarg"
-      :hits 2
+      :hits 3
       :title "Proof as Social Process"
       :line 1
       :sha256 "6dcaed8b8c518c5c52420bc3568296065f1aa4d01a2673561749f97f38f924c7"
@@ -2317,6 +2625,24 @@
       :rationale "THEN: “Map each of the 25 math-informal patterns to one or more of the 5 thesis categories. Identify coverage gaps: categories where no pattern fires reliably. Use the Appendix B worked examples as test cases for the pattern” — functional-and-topical: makes a claim independently checkable or preserves its trace."
       :quote-field "THEN"
       :quote "Map each of the 25 math-informal patterns to one or more of the 5 thesis categories. Identify coverage gaps: categories where no pattern fires reliably. Use the Appendix B worked examples as test cases for the pattern"
+      :flags [
+      ]
+    }
+    {
+      :id "f6/q-turnstile-a"
+      :path "futon3/library/f6/q-turnstile-a.flexiarg"
+      :hits 1
+      :title "Q Turnstile A"
+      :line 1
+      :sha256 "a29087233dd6cb1c81606d581532e1762f66217d0abe5aa91e4f9432067b0988"
+      :kind :subject
+      :stage :select
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Design the Asker agent to generate questions that constrain their answers: each question should specify what kind of construction (proof, example, counterexample, algorithm) would resolve it. The Critic evaluates not just whether the answer is correct, but” — topical: constrains the required construction by specifying what would answer the question."
+      :quote-field "THEN"
+      :quote "Design the Asker agent to generate questions that constrain their answers: each question should specify what kind of construction (proof, example, counterexample, algorithm) would resolve it. The Critic evaluates not just whether the answer is correct, but"
       :flags [
       ]
     }
@@ -2335,6 +2661,24 @@
       :rationale "THEN: “Implement in tiers. Tier 1 (classical, no GPU): regex scope-opener detection with position tracking — enough for M-f6-ingest. Tier 2 (small model): classify binding types (variable intro, function intro, assumption) and” — topical: implements or executes the work."
       :quote-field "THEN"
       :quote "Implement in tiers. Tier 1 (classical, no GPU): regex scope-opener detection with position tracking — enough for M-f6-ingest. Tier 2 (small model): classify binding types (variable intro, function intro, assumption) and"
+      :flags [
+      ]
+    }
+    {
+      :id "f6/self-play-loop"
+      :path "futon3/library/f6/self-play-loop.flexiarg"
+      :hits 1
+      :title "Self-Play Loop"
+      :line 1
+      :sha256 "dfe467f0d88bfa5530d1945e5d333d1a7ace35e633f329dc481ac1efb0ee2fb0"
+      :kind :subject
+      :stage :assurance
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Gate each iteration: Critic scores must exceed a threshold before graph updates are committed. Track evaluation scores over iterations — if scores plateau or decline, pause and diagnose. The Critic's evaluations should be periodically calibrated against human” — topical: gates graph updates on critic evaluation with human calibration."
+      :quote-field "THEN"
+      :quote "Gate each iteration: Critic scores must exceed a threshold before graph updates are committed. Track evaluation scores over iterations — if scores plateau or decline, pause and diagnose. The Critic's evaluations should be periodically calibrated against human"
       :flags [
       ]
     }
@@ -2377,7 +2721,7 @@
     {
       :id "features/operator-turns-enter-the-observation-vector"
       :path "futon3/library/features/operator-turns-enter-the-observation-vector.flexiarg"
-      :hits 26
+      :hits 42
       :title "Read the Operator's Turns, Not His Absence"
       :line 1
       :sha256 "43bcf868e30e714fd129050aef2829e05ceb04cf40acce31d8644d864a3e779f"
@@ -2389,6 +2733,24 @@
       :rationale "THEN: “Three steps, and only the third one closes the ring. Keep them separately reviewable, because the first is cheap and reads like progress. 0. Wire acknowledgement. Persist `newly-acknowledged` at bulletin pull and feed” — topical: observes or exposes state."
       :quote-field "THEN"
       :quote "Three steps, and only the third one closes the ring. Keep them separately reviewable, because the first is cheap and reads like progress. 0. Wire acknowledgement. Persist `newly-acknowledged` at bulletin pull and feed"
+      :flags [
+      ]
+    }
+    {
+      :id "forward-model/graduate-strategy-by-outcome"
+      :path "futon3/library/forward-model/graduate-strategy-by-outcome.flexiarg"
+      :hits 1
+      :title "Graduate Strategy By Outcome"
+      :line 1
+      :sha256 "5f7ee004d1cc207123408ceadc1dffd3e02b7c428d82bbc0918e10dacb82c217"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Let a forward-model hypothesis graduate to attested, its pending sigil resolving and its file moving toward the war-room namespace, only when it clears a sealed graduation gate: enough independent attesting outcomes plus operator ratification. Graduation” — functional-and-topical: graduates a strategic hypothesis into an attested belief from outcome evidence."
+      :quote-field "THEN"
+      :quote "Let a forward-model hypothesis graduate to attested, its pending sigil resolving and its file moving toward the war-room namespace, only when it clears a sealed graduation gate: enough independent attesting outcomes plus operator ratification. Graduation"
       :flags [
       ]
     }
@@ -2451,7 +2813,7 @@
     {
       :id "fulab/clock-out"
       :path "futon3/library/fulab/fulab-patterns.multiarg"
-      :hits 9
+      :hits 13
       :title "Agent Clock-Out"
       :line 37
       :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
@@ -2489,7 +2851,7 @@
     {
       :id "fulab/notebook-cell"
       :path "futon3/library/fulab/fulab-patterns.multiarg"
-      :hits 1
+      :hits 3
       :title "Live Notebook Cell"
       :line 71
       :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
@@ -2508,7 +2870,7 @@
     {
       :id "fulab/pattern-dep"
       :path "futon3/library/fulab/fulab-patterns.multiarg"
-      :hits 2
+      :hits 3
       :title "Pattern Dependency Declaration"
       :line 16
       :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
@@ -2565,7 +2927,7 @@
     {
       :id "fulab/session-resume"
       :path "futon3/library/fulab/fulab-patterns.multiarg"
-      :hits 8
+      :hits 10
       :title "Session Resume"
       :line 87
       :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
@@ -2584,7 +2946,7 @@
     {
       :id "fulab/tradeoff-record"
       :path "futon3/library/fulab/fulab-patterns.multiarg"
-      :hits 5
+      :hits 6
       :title "Trade-off Record"
       :line 176
       :sha256 "70f8fdeed812de903ed447b4bd2a119d7803dd5f407f60ed0f42f1fa1fd24061"
@@ -2603,7 +2965,7 @@
     {
       :id "futon-stack/argument"
       :path "futon3/holes/futon-stack.flexiarg"
-      :hits 1
+      :hits 2
       :title "The FUTON Stack — An Argument for Persistent Knowledge Infrastructure"
       :line 1
       :sha256 "224f9574eb1f327fc08bcad929401285ca0a18b3875ca735e8091eab630fe4f6"
@@ -2622,7 +2984,7 @@
     {
       :id "futon-theory/agent-contract"
       :path "futon3/library/futon-theory/agent-contract.flexiarg"
-      :hits 4
+      :hits 7
       :title "Agent Contract"
       :line 1
       :sha256 "c01d3f375c07c2cce72ef0f90fa6aa053abee982f1daff83a738826889f60adb"
@@ -2640,7 +3002,7 @@
     {
       :id "futon-theory/coordination-protocol"
       :path "futon3/library/futon-theory/coordination-protocol.flexiarg"
-      :hits 11
+      :hits 12
       :title "Coordination Protocol (Multi-Agent Handoff)"
       :line 1
       :sha256 "a97191f5583715c4a800bb6a8b92e861147f49431d844a02647ec64c8e7e858f"
@@ -2694,7 +3056,7 @@
     {
       :id "futon-theory/derive-exits-on-a-minted-sorry"
       :path "futon3/library/futon-theory/derive-exits-on-a-minted-sorry.flexiarg"
-      :hits 5
+      :hits 6
       :title "DERIVE Exits on a Minted Sorry (You Can't Argue Until You Know What You're Arguing About)"
       :line 1
       :sha256 "39c6145b7d9597f7c99f958fb710ec12147832e708ce2302ae030f45893e39f7"
@@ -2785,7 +3147,7 @@
     {
       :id "futon-theory/mission-dependency"
       :path "futon3/library/futon-theory/mission-dependency.flexiarg"
-      :hits 2
+      :hits 5
       :title "Mission Dependency Graph"
       :line 1
       :sha256 "22b92e6df7e1ccd4de92bff0c32f3be7f9fb055fd7c0af10787ca63e355a4d91"
@@ -2803,7 +3165,7 @@
     {
       :id "futon-theory/mission-interface-signature"
       :path "futon3/library/futon-theory/mission-interface-signature.flexiarg"
-      :hits 27
+      :hits 34
       :title "Mission Interface Signature (Boundary Types)"
       :line 1
       :sha256 "f05354f78418c3d76661b461ed28e4e5cfba313dfe9a2b12a7aefcc50c619c2c"
@@ -2821,7 +3183,7 @@
     {
       :id "futon-theory/mission-lifecycle"
       :path "futon3/library/futon-theory/mission-lifecycle.flexiarg"
-      :hits 10
+      :hits 13
       :title "Mission Lifecycle (State Machine)"
       :line 1
       :sha256 "8eae741fbf5cd7482c911e6573cc7ac16fcb2c2994cd15159d5299a83bd07af9"
@@ -2833,6 +3195,24 @@
       :rationale "THEN: “Apply the mission state machine: ``` :greenfield → :scoped → :active → :blocked → :review → :done ↑ ↓ ↓ └──────────┴─────────┘ (can regress) ``` State definitions: - :greenfield - Idea captured, no work plan - :scoped -” — functional-and-topical: records, represents, or revises what is known."
       :quote-field "THEN"
       :quote "Apply the mission state machine: ``` :greenfield → :scoped → :active → :blocked → :review → :done ↑ ↓ ↓ └──────────┴─────────┘ (can regress) ``` State definitions: - :greenfield - Idea captured, no work plan - :scoped -"
+      :flags [
+      ]
+    }
+    {
+      :id "futon-theory/mission-scoping"
+      :path "futon3/library/futon-theory/mission-scoping.flexiarg"
+      :hits 3
+      :title "Mission Scoping (Bounded Ownership)"
+      :line 1
+      :sha256 "4b7f20ce5e42ee5fb72043e5b25a9ffadaafb24b40e76da953ab649c05c81c27"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Every mission document must specify: 1. SUCCESS-CRITERIA - Concrete, verifiable outcomes - \"Done when X is true\" not \"improve Y\" - Minimum 1, maximum 5 criteria 2. SCOPE-IN - What is explicitly included - Files, modules, features affected - Decisions this” — functional: sets mission boundaries, success criteria and ownership."
+      :quote-field "THEN"
+      :quote "Every mission document must specify: 1. SUCCESS-CRITERIA - Concrete, verifiable outcomes - \"Done when X is true\" not \"improve Y\" - Minimum 1, maximum 5 criteria 2. SCOPE-IN - What is explicitly included - Files, modules, features affected - Decisions this"
       :flags [
       ]
     }
@@ -2911,7 +3291,7 @@
     {
       :id "futon-theory/stop-the-line"
       :path "futon3/library/futon-theory/stop-the-line.flexiarg"
-      :hits 11
+      :hits 14
       :title "Stop-the-Line Protocol"
       :line 1
       :sha256 "ba33e0300fa946a5831460bcae1360cb5b9742c6ea72d5765348eeef64998e88"
@@ -2929,7 +3309,7 @@
     {
       :id "futon-theory/structural-tension-as-observation"
       :path "futon3/library/futon-theory/structural-tension-as-observation.flexiarg"
-      :hits 12
+      :hits 13
       :title "Structural Tension Is the Observation Vector for Library Evolution"
       :line 1
       :sha256 "344228d4ac54927d93b691b695fb533a576a7dc8a926c857438d450749b0877a"
@@ -2941,6 +3321,24 @@
       :rationale "THEN: “+ FREE-ENERGY-AND-CANONICALIZATION: In AIF, free energy is the divergence between the agent's model and reality. In library evolution: - Free energy = accumulated structural irritation. The gap between what the library” — topical: observes or exposes state."
       :quote-field "THEN"
       :quote "+ FREE-ENERGY-AND-CANONICALIZATION: In AIF, free energy is the divergence between the agent's model and reality. In library evolution: - Free energy = accumulated structural irritation. The gap between what the library"
+      :flags [
+      ]
+    }
+    {
+      :id "futon-theory/task-as-arrow"
+      :path "futon3/library/futon-theory/task-as-arrow.flexiarg"
+      :hits 1
+      :title "A Task Is a BHK Arrow: Constructive Transformation with Proof"
+      :line 1
+      :sha256 "b82f6c9b1e00c1c8eddb14fa720545bb3340522e1ce20ccc41a9e45af3d89c27"
+      :kind :subject
+      :stage :assurance
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “+ BHK-ARROW-SEMANTICS: In BHK proof theory: - A proof of A -> B is a constructive transformation - It takes a proof of A as input (not just a proposition) - It produces a proof of B as output (not just an artifact) - The transformation itself is the proof In” — topical: defines task validity by reconstructable proof of its transformation."
+      :quote-field "THEN"
+      :quote "+ BHK-ARROW-SEMANTICS: In BHK proof theory: - A proof of A -> B is a constructive transformation - It takes a proof of A as input (not just a proposition) - It produces a proof of B as output (not just an artifact) - The transformation itself is the proof In"
       :flags [
       ]
     }
@@ -2959,6 +3357,24 @@
       :rationale "THEN: “Treat composition (鹽) as the spindle's GATHERING stream: take the scattered fibres and twist them into one continuous strand under a single decomposition regime. Keep the recognition loop turning (寸 working 叀 — the hand” — topical: offers a symbolic account of composition rather than one operational stage."
       :quote-field "THEN"
       :quote "Treat composition (鹽) as the spindle's GATHERING stream: take the scattered fibres and twist them into one continuous strand under a single decomposition regime. Keep the recognition loop turning (寸 working 叀 — the hand"
+      :flags [
+      ]
+    }
+    {
+      :id "futon-theory/theory-as-exotype"
+      :path "futon3/library/futon-theory/theory-as-exotype.flexiarg"
+      :hits 1
+      :title "Theory as Exotype"
+      :line 1
+      :sha256 "a0208a8d284f91b7d3af7906b29e29f48515bf8fbf081002890f0931f7dc1b9f"
+      :kind :subject
+      :stage :none
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “+ FUTON-THEORY-AS-EXOTYPE: The theory patterns define allowable shapes for domain patterns: - proof-path constrains: All domain operations must be auditable - durability-first constrains: Storage patterns must confirm before success - error-hierarchy” — topical: describes recursive theory constraints spanning the whole stack rather than one stage."
+      :quote-field "THEN"
+      :quote "+ FUTON-THEORY-AS-EXOTYPE: The theory patterns define allowable shapes for domain patterns: - proof-path constrains: All domain operations must be auditable - durability-first constrains: Storage patterns must confirm before success - error-hierarchy"
       :flags [
       ]
     }
@@ -2995,6 +3411,42 @@
       :rationale "THEN: “Make AIF state part of the observation, not the prompt. The modeline shows free energy, confidence, mana, active pattern — but the agent is never asked to \"comply\" with it. The agent does what it naturally does in its” — topical: observes or exposes state."
       :quote-field "THEN"
       :quote "Make AIF state part of the observation, not the prompt. The modeline shows free energy, confidence, mana, active pattern — but the agent is never asked to \"comply\" with it. The agent does what it naturally does in its"
+      :flags [
+      ]
+    }
+    {
+      :id "gauntlet/co-presence-over-co-location"
+      :path "futon3/library/gauntlet/co-presence-over-co-location.flexiarg"
+      :hits 1
+      :title "Co-Presence Over Co-Location"
+      :line 1
+      :sha256 "69fbd2d3225ffad60128b20058c1dbf86fb657be7cf7efa7cf69f7892deacbb1"
+      :kind :subject
+      :stage :perceive
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Add presence as a first-class observable in each agent's umwelt. When agent A is working on a file, agent B's observation should include that fact — not as a message (\"FYI I'm on core.clj\") but as part of the world state (\"core.clj [Claude editing, 3 min” — topical: makes other agents' presence part of observed world state."
+      :quote-field "THEN"
+      :quote "Add presence as a first-class observable in each agent's umwelt. When agent A is working on a file, agent B's observation should include that fact — not as a message (\"FYI I'm on core.clj\") but as part of the world state (\"core.clj [Claude editing, 3 min"
+      :flags [
+      ]
+    }
+    {
+      :id "gauntlet/modeline-persists-across-worlds"
+      :path "futon3/library/gauntlet/modeline-persists-across-worlds.flexiarg"
+      :hits 1
+      :title "The Modeline Persists Across Worlds"
+      :line 1
+      :sha256 "d2d0dc868c75030b3db03010abe9b4591ff4d45c57341e67015c49599803e9ab"
+      :kind :subject
+      :stage :perceive
+      :stage-mode :topical
+      :node "R2"
+      :confidence :high
+      :rationale "THEN: “Implement the AIF modeline as a persistent status surface that renders in every peripheral mode, like the Emacs modeline that persists across buffers. The modeline carries: current peripheral mode, free energy (am I surprised?), mana/budget remaining, active” — topical: renders persistent AIF state in every observation surface."
+      :quote-field "THEN"
+      :quote "Implement the AIF modeline as a persistent status surface that renders in every peripheral mode, like the Emacs modeline that persists across buffers. The modeline carries: current peripheral mode, free energy (am I surprised?), mana/budget remaining, active"
       :flags [
       ]
     }
@@ -3037,7 +3489,7 @@
     {
       :id "gauntlet/umwelt-not-architecture"
       :path "futon3/library/gauntlet/umwelt-not-architecture.flexiarg"
-      :hits 6
+      :hits 7
       :title "Draw the Umwelt, Not the Architecture"
       :line 1
       :sha256 "85aabd08306144d3496af483b130f84dca82e6de53c838b2b4e343ea25d68ab2"
@@ -3073,7 +3525,7 @@
     {
       :id "hdm/bootstrap-kernel"
       :path "futon3/library/hdm/bootstrap-kernel.flexiarg"
-      :hits 1
+      :hits 2
       :title "HDM - Bootstrap Kernel"
       :line 1
       :sha256 "ba8970eb88d785df383e00d635cb1cbb33a021b8e0f1ac40eb856ccf3e9532ed"
@@ -3145,7 +3597,7 @@
     {
       :id "iching/hexagram-05-xu"
       :path "futon3/library/iching/hexagram-05-xu.flexiarg"
-      :hits 1
+      :hits 3
       :title "䷄ 需 (Xū) - Waiting"
       :line 1
       :sha256 "3705452cfe94dad8c98f7dd3fb9a0fdd47d8e8b5e74ee3e4974c97f08a1857c1"
@@ -3176,6 +3628,44 @@
       :rationale "THEN: “Seek clarification and minimal resolution; avoid total confrontation.” — functional-and-topical: routes work, roles, or communication between parties."
       :quote-field "THEN"
       :quote "Seek clarification and minimal resolution; avoid total confrontation."
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
+      :id "iching/hexagram-07-shi"
+      :path "futon3/library/iching/hexagram-07-shi.flexiarg"
+      :hits 1
+      :title "䷆ 師 (Shī) - The Army"
+      :line 1
+      :sha256 "63fbf49fd4b497202a7802c144a3566e35ed8a11a4e369eb5dc4ab99d2cc0780"
+      :kind :mixed
+      :stage :coordination
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Establish clear command and shared objectives; coordinate actions.” — functional-and-topical: uses shared objectives and command to align collective action."
+      :quote-field "THEN"
+      :quote "Establish clear command and shared objectives; coordinate actions."
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
+      :id "iching/hexagram-08-bi"
+      :path "futon3/library/iching/hexagram-08-bi.flexiarg"
+      :hits 1
+      :title "䷇ 比 (Bǐ) - Holding Together / Union"
+      :line 1
+      :sha256 "8101b9c97b2de12228f3376eb7418f4cfc2dcbaff24faeb38aff100707f800a6"
+      :kind :mixed
+      :stage :coordination
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Form bonds through trust and clear purpose; allow exits when misaligned.” — functional-and-topical: forms and maintains voluntary alignment between agents."
+      :quote-field "THEN"
+      :quote "Form bonds through trust and clear purpose; allow exits when misaligned."
       :flags [
         "metaphorical-or-contemplative-transfer"
       ]
@@ -3240,7 +3730,7 @@
     {
       :id "iching/hexagram-18-gu"
       :path "futon3/library/iching/hexagram-18-gu.flexiarg"
-      :hits 20
+      :hits 21
       :title "䷑ 蠱 (Gǔ) - Work on What Has Been Spoiled"
       :line 1
       :sha256 "67c098c43a41c94ac613348613b1ccbd53426428940666d19a9a81815181182b"
@@ -3295,6 +3785,25 @@
       ]
     }
     {
+      :id "iching/hexagram-24-fu"
+      :path "futon3/library/iching/hexagram-24-fu.flexiarg"
+      :hits 1
+      :title "䷗ 復 (Fù) - Return"
+      :line 1
+      :sha256 "528615515ac94918660922a8f4ba1d7c1c99e51295e82b769a887e99cc472679"
+      :kind :mixed
+      :stage :act
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :low
+      :rationale "THEN: “Follow the small return and rebuild gradually.” — functional-and-topical: advises gradual rebuilding from a small return, with no more specific operational mechanism."
+      :quote-field "THEN"
+      :quote "Follow the small return and rebuild gradually."
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
       :id "iching/hexagram-25-wuwang"
       :path "futon3/library/iching/hexagram-25-wuwang.flexiarg"
       :hits 1
@@ -3309,6 +3818,25 @@
       :rationale "THEN: “Act simply and directly, but remain aware.” — functional-and-topical: implements or executes the work."
       :quote-field "THEN"
       :quote "Act simply and directly, but remain aware."
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
+      :id "iching/hexagram-26-dachu"
+      :path "futon3/library/iching/hexagram-26-dachu.flexiarg"
+      :hits 1
+      :title "䷙ 大畜 (Dà Chù) - The Taming Power of the Great"
+      :line 1
+      :sha256 "e241d87e6ff27208715052ed1a917a17e7ebb22b8d23f4952303afedf415839a"
+      :kind :mixed
+      :stage :select
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :low
+      :rationale "THEN: “Store and refine power until the moment is right.” — functional-and-topical: advises withholding action until the appropriate moment."
+      :quote-field "THEN"
+      :quote "Store and refine power until the moment is right."
       :flags [
         "metaphorical-or-contemplative-transfer"
       ]
@@ -3352,6 +3880,25 @@
       ]
     }
     {
+      :id "iching/hexagram-32-heng"
+      :path "futon3/library/iching/hexagram-32-heng.flexiarg"
+      :hits 1
+      :title "䷟ 恆 (Héng) - Duration"
+      :line 1
+      :sha256 "b5ebe448f169f2206d49c68713bd00d91410cd75e842689653cc64232ddbba57"
+      :kind :mixed
+      :stage :act
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :low
+      :rationale "THEN: “Maintain constancy while allowing small corrections.” — functional-and-topical: advises maintaining an existing course while making small corrections."
+      :quote-field "THEN"
+      :quote "Maintain constancy while allowing small corrections."
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
       :id "iching/hexagram-35-jin"
       :path "futon3/library/iching/hexagram-35-jin.flexiarg"
       :hits 9
@@ -3373,7 +3920,7 @@
     {
       :id "iching/hexagram-36-mingyi"
       :path "futon3/library/iching/hexagram-36-mingyi.flexiarg"
-      :hits 2
+      :hits 6
       :title "䷣ 明夷 (Míng Yí) - Darkening of the Light"
       :line 1
       :sha256 "71854d4329c0b6137e4a338dc51c4cfa23b3f3166729c0b42200e71811d2cb8f"
@@ -3392,7 +3939,7 @@
     {
       :id "iching/hexagram-39-jian"
       :path "futon3/library/iching/hexagram-39-jian.flexiarg"
-      :hits 4
+      :hits 5
       :title "䷦ 蹇 (Jiǎn) - Obstruction / Limping"
       :line 1
       :sha256 "ea434ed455af40dd5106457e72248b1e596322cd0e0119bf4e0be0156c78fffd"
@@ -3447,6 +3994,25 @@
       ]
     }
     {
+      :id "iching/hexagram-42-yi"
+      :path "futon3/library/iching/hexagram-42-yi.flexiarg"
+      :hits 1
+      :title "䷩ 益 (Yì) - Increase"
+      :line 1
+      :sha256 "57ea93f8da915e724e7daab10393852bef473e5a8b45c76d1428ae49e6ea563d"
+      :kind :mixed
+      :stage :act
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :low
+      :rationale "THEN: “Increase with direction and balance.” — functional-and-topical: advises directed growth without specifying a narrower control operation."
+      :quote-field "THEN"
+      :quote "Increase with direction and balance."
+      :flags [
+        "metaphorical-or-contemplative-transfer"
+      ]
+    }
+    {
       :id "iching/hexagram-43-guai"
       :path "futon3/library/iching/hexagram-43-guai.flexiarg"
       :hits 7
@@ -3487,7 +4053,7 @@
     {
       :id "iching/hexagram-49-ge"
       :path "futon3/library/iching/hexagram-49-ge.flexiarg"
-      :hits 5
+      :hits 6
       :title "䷰ 革 (Gé) - Revolution"
       :line 1
       :sha256 "6e9f317cd451a4863296c0ed5d8e8158f2ec728ed245405fdb2d512da4dc0631"
@@ -3525,7 +4091,7 @@
     {
       :id "iching/hexagram-52-gen"
       :path "futon3/library/iching/hexagram-52-gen.flexiarg"
-      :hits 3
+      :hits 4
       :title "䷳ 艮 (Gèn) - Keeping Still (Mountain)"
       :line 1
       :sha256 "1c1a824b5e3b7f9274aa809b872abd704e0d00f89f5f412da9da492f852e6674"
@@ -3865,6 +4431,25 @@
       ]
     }
     {
+      :id "iiching/exotype-084"
+      :path "futon3/library/iiching/exotype-084.flexiarg"
+      :hits 1
+      :title "Exotype 084 (0x54)"
+      :line 1
+      :sha256 "b455154428588e8a2a12fe681a3206bc3f62d3bce85f94534a3bf06e70b4c15c"
+      :kind :subject
+      :stage :none
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Use the encoding fields for identification, the manifest for program/params, and the lift registry for pattern evidence.” — topical: an exotype encoding and lookup record does not specify a stage operation."
+      :quote-field "THEN"
+      :quote "Use the encoding fields for identification, the manifest for program/params, and the lift registry for pattern evidence."
+      :flags [
+        "configuration-record"
+      ]
+    }
+    {
       :id "iiching/exotype-088"
       :path "futon3/library/iiching/exotype-088.flexiarg"
       :hits 1
@@ -4056,9 +4641,45 @@
       ]
     }
     {
+      :id "inbox-zero/classify-the-dirt"
+      :path "futon3/library/inbox-zero/classify-the-dirt.flexiarg"
+      :hits 1
+      :title "Classify The Dirt By How Much Judgement It Needs"
+      :line 1
+      :sha256 "9cb3ee8618f3cfd598ef7739ab22b1f1f4a4508a4fcd5c546244873f8a017ee7"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Assign every item one class with recorded evidence, route each class to its own remedy, and keep an explicit unclassifiable class.” — functional: classifies each failing item to choose the remedy it needs."
+      :quote-field "THEN"
+      :quote "Assign every item one class with recorded evidence, route each class to its own remedy, and keep an explicit unclassifiable class."
+      :flags [
+      ]
+    }
+    {
+      :id "inbox-zero/gate-fails-loudly"
+      :path "futon3/library/inbox-zero/gate-fails-loudly.flexiarg"
+      :hits 1
+      :title "Make The Check A Facility That Fails Loudly On Change"
+      :line 1
+      :sha256 "ad5cb62b1f43ae9c196e3b69c51a43a2d089c476014a20a3e4e75382bcb1c4b1"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :functional
+      :node "R10"
+      :confidence :high
+      :rationale "THEN: “Give the check a trigger the system supplies, so no person has to choose to run it. A clock and a threshold the watched quantity crosses are both admissible; which one a generation uses is a property of that generation, not of this pattern. Consume the” — functional: automatically detects cleanliness changes and makes them visible to a responsible party."
+      :quote-field "THEN"
+      :quote "Give the check a trigger the system supplies, so no person has to choose to run it. A clock and a threshold the watched quantity crosses are both admissible; which one a generation uses is a property of that generation, not of this pattern. Consume the"
+      :flags [
+      ]
+    }
+    {
       :id "inbox-zero/ignore-by-kind"
       :path "futon3/library/inbox-zero/ignore-by-kind.flexiarg"
-      :hits 4
+      :hits 15
       :title "Ignore Generated Noise By Describing Its Kind"
       :line 1
       :sha256 "9252359df57163a77925de85331f92bafeb175cb7174cbed2b6bdc055d362912"
@@ -4076,7 +4697,7 @@
     {
       :id "inbox-zero/measure-against-the-remote"
       :path "futon3/library/inbox-zero/measure-against-the-remote.flexiarg"
-      :hits 1
+      :hits 3
       :title "Measure Against The Remote, Not The Local Copy Of It"
       :line 1
       :sha256 "f753a852e06f0bada755577313ec177dc2e53e259d484a6c368461eb659b3634"
@@ -4092,9 +4713,27 @@
       ]
     }
     {
+      :id "inbox-zero/promote-at-turn-end"
+      :path "futon3/library/inbox-zero/promote-at-turn-end.flexiarg"
+      :hits 2
+      :title "Promote A Turn's Work While Its Author Still Knows What Done Meant"
+      :line 1
+      :sha256 "356e53e1f3f5a9e32e844552ed52ef718c20db0dfb815d7f666816ce95379ee3"
+      :kind :practice
+      :stage :act
+      :stage-mode :functional
+      :node "R16"
+      :confidence :high
+      :rationale "THEN: “Promote the turn's own attributed files behind gates, exempt other seats' live edits with recorded reasons, make holds loud, and report exemptions older than 24h as failures of the exemption, not as clean.” — functional: commits and pushes the turn's attributed work behind gates."
+      :quote-field "THEN"
+      :quote "Promote the turn's own attributed files behind gates, exempt other seats' live edits with recorded reasons, make holds loud, and report exemptions older than 24h as failures of the exemption, not as clean."
+      :flags [
+      ]
+    }
+    {
       :id "inbox-zero/push-the-declared"
       :path "futon3/library/inbox-zero/push-the-declared.flexiarg"
-      :hits 1
+      :hits 6
       :title "Push What The Author Already Declared Done"
       :line 1
       :sha256 "b95f17af1a957c7ea8229f7f3b1a6d6b6891859b776f31f26299a17e8d650321"
@@ -4112,7 +4751,7 @@
     {
       :id "invariant-coherence/bounded-disposition"
       :path "futon3/library/invariant-coherence/bounded-disposition.flexiarg"
-      :hits 1
+      :hits 2
       :title "Bounded-Disposition: Per-Artifact Triage + Population Bound"
       :line 1
       :sha256 "041b3532e7e8dd4b79b25367606d816ce5804cf0b38c95d32f465cb5ac356d1a"
@@ -4184,7 +4823,7 @@
     {
       :id "invariant-coherence/single-locus"
       :path "futon3/library/invariant-coherence/single-locus.flexiarg"
-      :hits 4
+      :hits 6
       :title "Single-Locus: Uniqueness of Attribute per Identity"
       :line 1
       :sha256 "7e0dd480c1f5bdbcdd8f2a170fde06edbccb7ba5601485d097af282e5d7ff183"
@@ -4220,7 +4859,7 @@
     {
       :id "invariant-coherence/subsumption-witness"
       :path "futon3/library/invariant-coherence/subsumption-witness.flexiarg"
-      :hits 2
+      :hits 3
       :title "Subsumption-Witness: A is Obsolete Relative to a Stronger Record P"
       :line 1
       :sha256 "3c5972c589f7f1d2595b49e5302512205a8c921530dcb0a8d9541b5b6d70843e"
@@ -4294,7 +4933,7 @@
     {
       :id "library-coherence/library-embedding-refresh"
       :path "futon3/library/library-coherence/library-embedding-refresh.flexiarg"
-      :hits 6
+      :hits 7
       :title "Sigil Embedding Refresh Ritual"
       :line 1
       :sha256 "9245f4b4ada33a9f197fdc1bff63d3beb68e37237a24c084420734c54f4accb7"
@@ -4312,7 +4951,7 @@
     {
       :id "library-coherence/library-evidence-ledger"
       :path "futon3/library/library-coherence/library-evidence-ledger.flexiarg"
-      :hits 4
+      :hits 8
       :title "Canon Evidence Ledger"
       :line 1
       :sha256 "20bff107f17d473cb714dfd5539dd05183dcd6ec1c95abefab6149cda48ddc23"
@@ -4384,7 +5023,7 @@
     {
       :id "library-coherence/llm-argument-scan"
       :path "futon3/library/library-coherence/llm-argument-scan.flexiarg"
-      :hits 3
+      :hits 4
       :title "Assemble Library Arguments via Summary Scan"
       :line 1
       :sha256 "da33c0b5db9deea1d54fb1cd14dbf695b5345e75e8810d464eff1d73a974709f"
@@ -4490,6 +5129,24 @@
       ]
     }
     {
+      :id "math-formalization-CA/riemann-darboux-api"
+      :path "futon3/library/math-formalization-CA/riemann-darboux-api.flexiarg"
+      :hits 1
+      :title "Bridge Darboux Sums to the Lebesgue Integral by Telescoping the Cells"
+      :line 1
+      :sha256 "ce58b92fd93507119f6f155b1b2f8f28d53c0b6e6cb47eb2f4d85228fdaab2e4"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “State the lower and the upper comparison separately. Prove each on a single cell first, then sum, showing that the cell measures add up and that endpoint overlaps are null. Keep the bounded-measurable hypotheses explicit at the cell level, where they are” — topical: constructs the Darboux-integral comparison from cell-level proofs."
+      :quote-field "THEN"
+      :quote "State the lower and the upper comparison separately. Prove each on a single cell first, then sum, showing that the cell measures add up and that endpoint overlaps are null. Keep the bounded-measurable hypotheses explicit at the cell level, where they are"
+      :flags [
+      ]
+    }
+    {
       :id "math-formalization-CA/surj-via-oriented-root-preimage"
       :path "futon3/library/math-formalization-CA/surj-via-oriented-root-preimage.flexiarg"
       :hits 2
@@ -4504,6 +5161,24 @@
       :rationale "THEN: “Take the preimage as z := (1 - w ^ n') ^ (1/m : ℂ) using Complex.cpow_nat_inv_pow for the exact power identity; assume z.im = 0 and derive that w lies on the excluded set (arg_eq_zero_iff + arg arithmetic); orient the” — topical: implements or executes the work."
       :quote-field "THEN"
       :quote "Take the preimage as z := (1 - w ^ n') ^ (1/m : ℂ) using Complex.cpow_nat_inv_pow for the exact power identity; assume z.im = 0 and derive that w lies on the excluded set (arg_eq_zero_iff + arg arithmetic); orient the"
+      :flags [
+      ]
+    }
+    {
+      :id "math-formalization-FA/weak-convergence-hilbert"
+      :path "futon3/library/math-formalization-FA/weak-convergence-hilbert.flexiarg"
+      :hits 1
+      :title "Weak Plus Norm Convergence Is an API Chain With Side Conditions"
+      :line 1
+      :sha256 "9712cded92858e5bf6dd2cdb6da6348964f42f81e37eb8271f91bc0c8fc55aa8"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Write the chain out as named steps before proving any of them — `norm_sub_sq` expansion, weak limit of the inner product, cancellation, square root — and treat each side condition as its own obligation with its own witness. Establish coboundedness where the” — topical: assembles a weak-to-strong convergence proof through named library steps."
+      :quote-field "THEN"
+      :quote "Write the chain out as named steps before proving any of them — `norm_sub_sq` expansion, weak limit of the inner product, cancellation, square root — and treat each side condition as its own obligation with its own witness. Establish coboundedness where the"
       :flags [
       ]
     }
@@ -4546,7 +5221,7 @@
     {
       :id "math-formalization/bank-cheap-obligations-before-the-hard-bridge"
       :path "futon3/library/math-formalization/bank-cheap-obligations-before-the-hard-bridge.flexiarg"
-      :hits 1
+      :hits 2
       :title "Bank the Cheap Obligations Before Attacking the Hard Bridge"
       :line 1
       :sha256 "0ef6ec969d2b4dc0c9882e44f6547b6c9e58e81ed513fc996c3221a63a56b21a"
@@ -4582,7 +5257,7 @@
     {
       :id "math-formalization/construction-cost-asymmetry"
       :path "futon3/library/math-formalization/construction-cost-asymmetry.flexiarg"
-      :hits 1
+      :hits 2
       :title "Construction Cost Asymmetry"
       :line 1
       :sha256 "3dd862d4e1c163abce6745be00c3b5caa87d4cd2621b60e1e74c1b040e7ef82c"
@@ -4654,7 +5329,7 @@
     {
       :id "math-formalization/statement-ladder-before-proof-text"
       :path "futon3/library/math-formalization/statement-ladder-before-proof-text.flexiarg"
-      :hits 9
+      :hits 12
       :title "Write the Statement Ladder with Sorries Before Any Proof Text"
       :line 1
       :sha256 "36ec86440f993b05dc9176702adfa2b0974c577dce48e2382a5f66bf11dd9dc1"
@@ -4706,6 +5381,24 @@
       ]
     }
     {
+      :id "math-informal/failure-mode-characterization"
+      :path "futon3/library/math-informal/failure-mode-characterization.flexiarg"
+      :hits 1
+      :title "Failure-Mode Characterization"
+      :line 1
+      :sha256 "87d7c3af0f033d37b152e372b20e57e07b15ab9a46ef7132a1eb8b21df1eae66"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “1. Construct an explicit counterexample or family of counterexamples that lie just outside H. 2. Identify the structural feature of the counterexamples that makes T fail — the \"failure mechanism.\" 3. State the boundary as a theorem: \"T fails iff [structural” — topical: constructs counterexamples and a theorem describing the failure boundary."
+      :quote-field "THEN"
+      :quote "1. Construct an explicit counterexample or family of counterexamples that lie just outside H. 2. Identify the structural feature of the counterexamples that makes T fail — the \"failure mechanism.\" 3. State the boundary as a theorem: \"T fails iff [structural"
+      :flags [
+      ]
+    }
+    {
       :id "math-informal/structural-obstruction-as-theorem"
       :path "futon3/library/math-informal/structural-obstruction-as-theorem.flexiarg"
       :hits 1
@@ -4724,6 +5417,24 @@
         "retired-id"
       ]
       :source-revision "a89618a2378d684a602b33b1ef036474170da72f"
+    }
+    {
+      :id "math-informal/the-diagonal-argument"
+      :path "futon3/library/math-informal/the-diagonal-argument.flexiarg"
+      :hits 1
+      :title "The Diagonal Argument"
+      :line 1
+      :sha256 "b4f3c1b56374cfb8216fab966ed9c91ffa156b9a087be4e3843ed807329e7b34"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Given the purported list f(1), f(2), ..., construct an object d that differs from f(n) at position n for every n. Since d differs from every listed item, d is not on the list, contradicting surjectivity.” — topical: constructs a diagonal object to refute an enumeration."
+      :quote-field "THEN"
+      :quote "Given the purported list f(1), f(2), ..., construct an object d that differs from f(n) at position n for every n. Since d differs from every listed item, d is not on the list, contradicting surjectivity."
+      :flags [
+      ]
     }
     {
       :id "math-strategy/clarification-meta"
@@ -4748,7 +5459,7 @@
     {
       :id "math-strategy/corpus-trust-protocol"
       :path "futon3/library/math-strategy/corpus-trust-protocol.flexiarg"
-      :hits 2
+      :hits 3
       :title "Trust the Corpus Per Artifact, and Record What You Consulted"
       :line 1
       :sha256 "fb831b61b8863b91d4d2bbbb57e0ab63ac70779b225b2cd85f636b63e8927a34"
@@ -4820,7 +5531,7 @@
     {
       :id "math-strategy/plan-first-attempt"
       :path "futon3/library/math-strategy/plan-first-attempt.flexiarg"
-      :hits 2
+      :hits 3
       :title "Plan the Attempt Before Proving"
       :line 1
       :sha256 "967c770adbc6ced2dd40dcf9c17063ceb9c088d407f257ee26b8f0182c3825d7"
@@ -4910,7 +5621,7 @@
     {
       :id "measurement/warrant-travels-with-the-number"
       :path "futon3/library/measurement/warrant-travels-with-the-number.flexiarg"
-      :hits 2
+      :hits 3
       :title "A Number Without Its Warrant Is an Assertion — Make Disputes Checkable"
       :line 1
       :sha256 "415a41bc2fc385ebc02e7cae2dc20d0b484790afa9b14a7958fc66853652e7e3"
@@ -4928,7 +5639,7 @@
     {
       :id "memory/licence-to-fail"
       :path "futon3/library/memory/licence-to-fail.flexiarg"
-      :hits 19
+      :hits 23
       :title "A Probe Must Permit \"I Could Not Determine the Fix\""
       :line 1
       :sha256 "03494f011a7259969b522bdecaab26d94f7a44237f150d7dd95041aadba80c4a"
@@ -4964,7 +5675,7 @@
     {
       :id "memory/no-tightening-while-held"
       :path "futon3/library/memory/no-tightening-while-held.flexiarg"
-      :hits 32
+      :hits 39
       :title "Do Not Tighten a Schema While Agents Hold State Under the Old One"
       :line 1
       :sha256 "c331922e1542c5eb2bf83f5ddeaf3eb9c2bdbd823d3f2f4b17d827593e70d52d"
@@ -4982,7 +5693,7 @@
     {
       :id "memory/surface-the-closed-set"
       :path "futon3/library/memory/surface-the-closed-set.flexiarg"
-      :hits 3
+      :hits 5
       :title "A Validator That Knows the Answer Must Publish It"
       :line 1
       :sha256 "5dab7d9d532b719b6f462ac3411930a5919ecf70d0f63f2f004a3876039e7c8e"
@@ -5000,7 +5711,7 @@
     {
       :id "memory/verify-in-the-serving-process"
       :path "futon3/library/memory/verify-in-the-serving-process.flexiarg"
-      :hits 56
+      :hits 66
       :title "Committed Is Not Deployed"
       :line 1
       :sha256 "82d594e5058d998425f2a4c114197d62cf3cc646c29953d07665a086d146d63f"
@@ -5018,7 +5729,7 @@
     {
       :id "meta/designing-thoughts-not-text"
       :path "futon3/library/meta/designing-thoughts-not-text.flexiarg"
-      :hits 2
+      :hits 3
       :title "Designing Thoughts, Not Text"
       :line 1
       :sha256 "fd30f2a936aa1791f11053013a395116df4b383e712e0b86f12359246d7071e7"
@@ -5090,7 +5801,7 @@
     {
       :id "mission-coherence/logic-model-before-code"
       :path "futon3/library/mission-coherence/logic-model-before-code.flexiarg"
-      :hits 6
+      :hits 7
       :title "Verify the Logic Model Before Writing the Code"
       :line 1
       :sha256 "49d1775bffd48740cd643bd6c71fd21952bd1a4f83c9066c5911af4c18f9adf2"
@@ -5180,7 +5891,7 @@
     {
       :id "musn/aif-live-scores"
       :path "futon3/library/musn/aif-live-scores.flexiarg"
-      :hits 4
+      :hits 5
       :title "Live AIF Scores per Move"
       :line 1
       :sha256 "d4d50ddf6413a93e296f50a6ad9fd94855fdfc800cfc1513b1b5f3da3b2f3469"
@@ -5198,7 +5909,7 @@
     {
       :id "musn/declare-scope"
       :path "futon3/library/musn/declare-scope.flexiarg"
-      :hits 3
+      :hits 4
       :title "Declare Scope and Exit Condition"
       :line 1
       :sha256 "e5930c249cdbe50776fcc10cd38f8739e39bcf91f7e6ae2d135c6ab4a98c2496"
@@ -5234,7 +5945,7 @@
     {
       :id "musn/fulab-report-block"
       :path "futon3/library/musn/fulab-report-block.flexiarg"
-      :hits 4
+      :hits 7
       :title "FULAB Report Block"
       :line 1
       :sha256 "351966499097c20b55ab14751dac98d85770a8097e7c4240204fefd75b40dab2"
@@ -5288,7 +5999,7 @@
     {
       :id "musn/off-trail-budget"
       :path "futon3/library/musn/off-trail-budget.flexiarg"
-      :hits 3
+      :hits 5
       :title "Off-Trail Budget"
       :line 1
       :sha256 "8f6c50f9b61dd07789f71499e45f3afca21656308d20da94bca4d92fcc24f454"
@@ -5342,7 +6053,7 @@
     {
       :id "musn/plan-before-tool"
       :path "futon3/library/musn/plan-before-tool.flexiarg"
-      :hits 18
+      :hits 21
       :title "Plan Before Tool Use"
       :line 1
       :sha256 "ca62bd0832c5fcf8304a346e3e74cb7eb287eb09638a44efec41e41e6be8b4cf"
@@ -5378,7 +6089,7 @@
     {
       :id "musn/read-aif-plus-one"
       :path "futon3/library/musn/read-aif-plus-one.flexiarg"
-      :hits 5
+      :hits 6
       :title "Read AIF Suggestion Plus One"
       :line 1
       :sha256 "691ab4e264e303123e8b42262d66651424378aae13553123c5e108820c126c99"
@@ -5396,7 +6107,7 @@
     {
       :id "musn/selection-before-write"
       :path "futon3/library/musn/selection-before-write.flexiarg"
-      :hits 5
+      :hits 6
       :title "Selection Before Implement/Update"
       :line 1
       :sha256 "62687e770bbfe63046f0579d6a6aed6a89695971561b0be357bfa91b246c52b5"
@@ -5432,7 +6143,7 @@
     {
       :id "musn/use-requires-evidence"
       :path "futon3/library/musn/use-requires-evidence.flexiarg"
-      :hits 3
+      :hits 4
       :title "Use Requires Evidence"
       :line 1
       :sha256 "118f05e2843effed8cdee9cc997590879efe8b4af84599b45b0c3cfdf91a1832"
@@ -5462,6 +6173,24 @@
       :rationale "THEN: “Build the measure as a public, checkable artifact: the benchmark, the readiness scale, the typed failure taxonomy. Run it on real systems including your own, publish honest negatives. The measure then routes the field's” — functional-and-topical: makes a claim independently checkable or preserves its trace."
       :quote-field "THEN"
       :quote "Build the measure as a public, checkable artifact: the benchmark, the readiness scale, the typed failure taxonomy. Run it on real systems including your own, publish honest negatives. The measure then routes the field's"
+      :flags [
+      ]
+    }
+    {
+      :id "nomad/licensed-ground"
+      :path "futon3/library/nomad/licensed-ground.flexiarg"
+      :hits 1
+      :title "Engage Where the Convening Licenses the Conversation"
+      :line 1
+      :sha256 "5de4130c081297d4af4f054c6364fbc2db523ba11a7da39d3df1eb55a2b25f91"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Find the convening in the field's own lineage where the target already participates. Do not merely attend: contribute what the convening needs — a session, a demonstrated artifact, a measure (nomad/self-certifying-artifact and nomad/author-the-yardstick” — functional: routes a professional conversation through a contributing role at a convening."
+      :quote-field "THEN"
+      :quote "Find the convening in the field's own lineage where the target already participates. Do not merely attend: contribute what the convening needs — a session, a demonstrated artifact, a measure (nomad/self-certifying-artifact and nomad/author-the-yardstick"
       :flags [
       ]
     }
@@ -5539,6 +6268,25 @@
       ]
     }
     {
+      :id "or/expectation-scaffold"
+      :path "futon3/library/or/or.multiarg"
+      :hits 1
+      :title "Expectation Scaffold"
+      :line 527
+      :sha256 "8db817b2985bd79ae0b9324d10afa6cf7e4560fd2faa9f297d10195ea1bec9f6"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Publish a minimal expectation scaffold: required sessions, optional pathways, and a stated “ready-to-deliver” threshold. Provide a short, plain-language briefing on what T3 is and is not, plus a self-check checklist for trainers.” — functional: sets required sessions, optional pathways and a readiness threshold."
+      :quote-field "THEN"
+      :quote "Publish a minimal expectation scaffold: required sessions, optional pathways, and a stated “ready-to-deliver” threshold. Provide a short, plain-language briefing on what T3 is and is not, plus a self-check checklist for trainers."
+      :flags [
+        "multiarg-source"
+      ]
+    }
+    {
       :id "or/fit-for-use-stars"
       :path "futon3/library/or/or.multiarg"
       :hits 1
@@ -5553,6 +6301,25 @@
       :rationale "THEN: “Choose openness level by intended use rather than abstract ideal. Document it in a brief Use Note explaining trade-offs and planned upgrades. Treat openness as iterative design with scheduled enhancements.” — functional: sets a choice, priority, or admission condition."
       :quote-field "THEN"
       :quote "Choose openness level by intended use rather than abstract ideal. Document it in a brief Use Note explaining trade-offs and planned upgrades. Treat openness as iterative design with scheduled enhancements."
+      :flags [
+        "multiarg-source"
+      ]
+    }
+    {
+      :id "or/friction-as-feature"
+      :path "futon3/library/or/or.multiarg"
+      :hits 1
+      :title "Friction-as-Feature"
+      :line 76
+      :sha256 "8db817b2985bd79ae0b9324d10afa6cf7e4560fd2faa9f297d10195ea1bec9f6"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Treat seams as features, not flaws. Name and document each seam (e.g., metadata crosswalks), maintain a Seam Registry with steward, cadence, rationale, and “what we’d lose if smoothed,” and hold brief, time-boxed Seam Debates to revisit design choices.” — functional: records interoperability distinctions with ownership and reasons."
+      :quote-field "THEN"
+      :quote "Treat seams as features, not flaws. Name and document each seam (e.g., metadata crosswalks), maintain a Seam Registry with steward, cadence, rationale, and “what we’d lose if smoothed,” and hold brief, time-boxed Seam Debates to revisit design choices."
       :flags [
         "multiarg-source"
       ]
@@ -5617,7 +6384,7 @@
     {
       :id "or/tune-audits-quarterly"
       :path "futon3/library/or/or.multiarg"
-      :hits 1
+      :hits 2
       :title "Tune Audits (Quarterly)"
       :line 426
       :sha256 "8db817b2985bd79ae0b9324d10afa6cf7e4560fd2faa9f297d10195ea1bec9f6"
@@ -5654,7 +6421,7 @@
     {
       :id "or2/progress-cylinder-assurance"
       :path "futon3/library/or2/progress-cylinder-assurance.flexiarg"
-      :hits 1
+      :hits 3
       :title "Progress Cylinder Assurance"
       :line 1
       :sha256 "a854c28e779583d40a87ce74637a594d82083284ecaa85d42457182e1fceea58"
@@ -5708,7 +6475,7 @@
     {
       :id "or2/ukrn-horizon-bridge"
       :path "futon3/library/or2/ukrn-horizon-bridge.flexiarg"
-      :hits 1
+      :hits 2
       :title "UKRN Horizon Bridge"
       :line 1
       :sha256 "4dda25776cea12439aa8cfd7c461f51bcc3436836c0b36324943033bdf5aeb53"
@@ -5742,6 +6509,24 @@
       ]
     }
     {
+      :id "or3/authorship-for-first-time-contributors"
+      :path "futon3/library/or3/authorship-for-first-time-contributors.flexiarg"
+      :hits 1
+      :title "Authorship for First-Time Contributors"
+      :line 1
+      :sha256 "78d3d3a17a8fba31e9db83558fad71e664eb3444df830114675ca03d212b82ed"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Decide authorship on contribution to the work rather than contribution to the manuscript, and make participation possible in whatever form suits each contributor — a recorded conversation, a reviewed summary, comments relayed by a colleague — rather than” — functional: decides authorship from contribution and makes participation accessible."
+      :quote-field "THEN"
+      :quote "Decide authorship on contribution to the work rather than contribution to the manuscript, and make participation possible in whatever form suits each contributor — a recorded conversation, a reviewed summary, comments relayed by a colleague — rather than"
+      :flags [
+      ]
+    }
+    {
       :id "or3/co-design-the-call"
       :path "futon3/library/or3/co-design-the-call.flexiarg"
       :hits 1
@@ -5756,6 +6541,24 @@
       :rationale "THEN: “Run the topic generation itself as an open process before the briefs exist. Invite opt-in topic descriptions from the whole academic community; theme them collaboratively on a shared board; narrow them through” — functional: sets a choice, priority, or admission condition."
       :quote-field "THEN"
       :quote "Run the topic generation itself as an open process before the briefs exist. Invite opt-in topic descriptions from the whole academic community; theme them collaboratively on a shared board; narrow them through"
+      :flags [
+      ]
+    }
+    {
+      :id "or3/count-every-card-back"
+      :path "futon3/library/or3/count-every-card-back.flexiarg"
+      :hits 1
+      :title "Count Every Card Back"
+      :line 1
+      :sha256 "860fe473748631dcd28835649305c3cb8ebd0575a2fe1646891125ce517ad9ec"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “Keep a trace from every item in the final set back to its origin, and say at the outset that you are doing so. Treat this as a distinct obligation from publishing the material: the process can be fully open — visible criteria, visible voting, visible lineage” — functional: preserves each final item's provenance to its contributor."
+      :quote-field "THEN"
+      :quote "Keep a trace from every item in the final set back to its origin, and say at the outset that you are doing so. Treat this as a distinct obligation from publishing the material: the process can be fully open — visible criteria, visible voting, visible lineage"
       :flags [
       ]
     }
@@ -5796,6 +6599,24 @@
       ]
     }
     {
+      :id "orchestration/consent-gate"
+      :path "futon3/library/orchestration/consent-gate.flexiarg"
+      :hits 1
+      :title "The Consent Gate — Don't Act Unilaterally, Act Through a Recorded Approval Locus"
+      :line 1
+      :sha256 "479420b4d1f7673f36610fe5f8e69fed5109fee6b141625144c8d9f311dcee71"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Put a consent-gate at the action's locus. The agent acts autonomously on everything reversible and in-scope; for outward/irreversible acts it NAGs **with warrant** (per pattern-warranted-choice-point) and waits. The consent step emits a first-class” — functional: places recorded operator consent at the decision to authorize an outward act."
+      :quote-field "THEN"
+      :quote "Put a consent-gate at the action's locus. The agent acts autonomously on everything reversible and in-scope; for outward/irreversible acts it NAGs **with warrant** (per pattern-warranted-choice-point) and waits. The consent step emits a first-class"
+      :flags [
+      ]
+    }
+    {
       :id "orchestration/pattern-warranted-choice-point"
       :path "futon3/library/orchestration/pattern-warranted-choice-point.flexiarg"
       :hits 5
@@ -5816,7 +6637,7 @@
     {
       :id "orchestration/recorded-handoff"
       :path "futon3/library/orchestration/recorded-handoff.flexiarg"
-      :hits 50
+      :hits 66
       :title "The Recorded Handoff — dispatch as a modeled object"
       :line 1
       :sha256 "232ec874e6061ce48f7edc39cc6a7029c7005a934c5769abd26cf4ed93c30620"
@@ -5834,7 +6655,7 @@
     {
       :id "orchestration/state-in-substrate-deltas-in-messages"
       :path "futon3/library/orchestration/state-in-substrate-deltas-in-messages.flexiarg"
-      :hits 12
+      :hits 15
       :title "Lift State Into Shared Substrate; Keep Messages As Deltas"
       :line 1
       :sha256 "3b3a791f6cf8c9a04479b82ffa9c8b14a26170348cd299aace191efd914ed06f"
@@ -5870,7 +6691,7 @@
     {
       :id "p4ng/agent-pattern-triad"
       :path "futon3/library/software-design/agent-pattern-triad.flexiarg"
-      :hits 7
+      :hits 9
       :title "Agent Pattern Triad — Intent to Execution"
       :line 1
       :sha256 "23af9ab4eb0e0352841a1477d588559773762be598a470bc81ed52880a36796e"
@@ -5883,6 +6704,25 @@
       :quote-field "THEN"
       :quote "Make the pipeline explicit: intent parsing emits Commands, a SchedulingStrategy selects the next move, and decorators (logging, timing, synchronisation, permission checks, orb tracking) wrap each command before worker"
       :flags [
+      ]
+    }
+    {
+      :id "p4ng/borrow-the-situation"
+      :path "futon3/library/p4ng/p4ng-workshops.multiarg"
+      :hits 1
+      :title "Borrow the Situation"
+      :line 45
+      :sha256 "e17c808364c5b386fb707b1fa0347161236a387789df41edc55019c6c274d57c"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Invite participants to select, remix, or define their own prompts.” — functional: lets participants choose or define a better-fitting prompt."
+      :quote-field "THEN"
+      :quote "Invite participants to select, remix, or define their own prompts."
+      :flags [
+        "multiarg-source"
       ]
     }
     {
@@ -5907,7 +6747,7 @@
     {
       :id "p4ng/call-a-synthesizer"
       :path "futon3/library/p4ng/p4ng-simulation.multiarg"
-      :hits 8
+      :hits 10
       :title "Call a Synthesizer"
       :line 45
       :sha256 "f1213f6c3ffa7775b83824114a24eb05fe13a7987621ec2b174686e6a6b2bfd1"
@@ -5957,6 +6797,25 @@
       :rationale "THEN: “Introduce a Co-Design Partners Agent that maintains explicit shared purpose, navigates tensions, and keeps alive a dynamic map of mutual commitments.” — topical: routes work, roles, or communication between parties."
       :quote-field "THEN"
       :quote "Introduce a Co-Design Partners Agent that maintains explicit shared purpose, navigates tensions, and keeps alive a dynamic map of mutual commitments."
+      :flags [
+        "multiarg-source"
+      ]
+    }
+    {
+      :id "p4ng/feedback-rhythms"
+      :path "futon3/library/p4ng/p4ng-agents.multiarg"
+      :hits 1
+      :title "Feedback Rhythms"
+      :line 155
+      :sha256 "cbf2cae9d526aa5f99a424f359c536c015f341aec9aab020288ece7996ac084a"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Establish periodic feedback checkpoints where agents reflect on outcomes, revise patterns, and adjust shared strategies.” — functional: uses outcome feedback to revise patterns and shared strategies."
+      :quote-field "THEN"
+      :quote "Establish periodic feedback checkpoints where agents reflect on outcomes, revise patterns, and adjust shared strategies."
       :flags [
         "multiarg-source"
       ]
@@ -6171,6 +7030,25 @@
       ]
     }
     {
+      :id "p4ng/timebox-the-core"
+      :path "futon3/library/p4ng/p4ng-workshops.multiarg"
+      :hits 1
+      :title "Timebox the Core"
+      :line 89
+      :sha256 "e17c808364c5b386fb707b1fa0347161236a387789df41edc55019c6c274d57c"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Identify a minimal viable loop and simplify peripheral steps.” — functional: chooses a minimal loop and reduces peripheral scope."
+      :quote-field "THEN"
+      :quote "Identify a minimal viable loop and simplify peripheral steps."
+      :flags [
+        "multiarg-source"
+      ]
+    }
+    {
       :id "p4ng/timebox-the-core-agent"
       :path "futon3/library/p4ng/p4ng-agents.multiarg"
       :hits 1
@@ -6287,7 +7165,7 @@
     {
       :id "pacspine/frictionless-next"
       :path "futon3/library/pacspine/pacspine.multiarg"
-      :hits 13
+      :hits 22
       :title "Pattern 8 — Show Them How to Seal the Deal"
       :line 99
       :sha256 "9843465c6ba2c780b43a64065bc1e96fb5a84c9facc74e640bf76c428871e7c1"
@@ -6344,7 +7222,7 @@
     {
       :id "pacspine/simple-close"
       :path "futon3/library/pacspine/pacspine.multiarg"
-      :hits 9
+      :hits 11
       :title "Pattern 10 — Tie It All Together"
       :line 127
       :sha256 "9843465c6ba2c780b43a64065bc1e96fb5a84c9facc74e640bf76c428871e7c1"
@@ -6379,9 +7257,27 @@
       ]
     }
     {
+      :id "pattern-coherence/evidence-alignment"
+      :path "futon3/library/pattern-coherence/evidence-alignment.flexiarg"
+      :hits 3
+      :title "Align Evidence With the Claim"
+      :line 1
+      :sha256 "f6cbed907b4b5cd619dc087edb355d554ae511f599da39f996ce149e61b4c20a"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “State what observation would increase or decrease confidence in the pattern and why. Prefer evidence that targets the mechanism, not just the existence of a system or feature.” — functional: requires evidence capable of confirming or refuting the particular mechanism."
+      :quote-field "THEN"
+      :quote "State what observation would increase or decrease confidence in the pattern and why. Prefer evidence that targets the mechanism, not just the existence of a system or feature."
+      :flags [
+      ]
+    }
+    {
       :id "pattern-discipline/conclusion-required-others-recommended"
       :path "futon3/library/pattern-discipline/conclusion-required-others-recommended.flexiarg"
-      :hits 6
+      :hits 7
       :title "Conclusion Required, Other Canonical Components Recommended"
       :line 1
       :sha256 "778bc06285d440a76a02f9a15b6b2c11d66a5434d16f7961a8ec6ba43d85ac18"
@@ -6417,7 +7313,7 @@
     {
       :id "pattern-discipline/patterns-as-categorical-objects"
       :path "futon3/library/pattern-discipline/patterns-as-categorical-objects.flexiarg"
-      :hits 6
+      :hits 8
       :title "Patterns As Categorical Objects, Not Isolated Text"
       :line 1
       :sha256 "899c3d790c8c6016a8973fbf2614871a9b7c8b8bc7c8a71e9a71c127b7229a2b"
@@ -6429,6 +7325,96 @@
       :rationale "THEN: “Treat each canonical-seven component as a typed edge from the pattern-object: `:pattern/has-context`, `:pattern/has-if`, etc. (Level 1 already emits these into futon1a XTDB.) Build the admission predicate as: (a) the” — topical: records, represents, or revises what is known."
       :quote-field "THEN"
       :quote "Treat each canonical-seven component as a typed edge from the pattern-object: `:pattern/has-context`, `:pattern/has-if`, etc. (Level 1 already emits these into futon1a XTDB.) Build the admission predicate as: (a) the"
+      :flags [
+      ]
+    }
+    {
+      :id "pattern-discipline/peripheral-as-sokoban"
+      :path "futon3/library/pattern-discipline/peripheral-as-sokoban.flexiarg"
+      :hits 1
+      :title "Peripheral As Sokoban — Pre-write Capability Envelope, Not Post-write Validator"
+      :line 1
+      :sha256 "912449f5a0b20c871ad12490ccba98b8e30acc86f7d15a477f010d1024158d69"
+      :kind :mixed
+      :stage :select
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Provide a peripheral that exposes only a single bound action — submit-draft. Inside the peripheral, Edit/Write are constrained for the typed-artifact paths. The submit action validates against the canonical shape, runs reshape rules where they apply” — functional-and-topical: admits a draft only through a canonical-shape gate before writing."
+      :quote-field "THEN"
+      :quote "Provide a peripheral that exposes only a single bound action — submit-draft. Inside the peripheral, Edit/Write are constrained for the typed-artifact paths. The submit action validates against the canonical shape, runs reshape rules where they apply"
+      :flags [
+      ]
+    }
+    {
+      :id "pattern-interpretation/cite-the-source-bytes"
+      :path "futon3/library/pattern-interpretation/cite-the-source-bytes.flexiarg"
+      :hits 1
+      :title "Interpret From The Pattern's Own Bytes, Clause By Clause"
+      :line 1
+      :sha256 "dfaa2e87552c6fde152cc9f54a9a5377cce4246f690932b1e0c1bc98c8c4b285"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “Bind each clause of the interpretation to quoted, sha-pinned source bytes and make that record the single reading.” — functional: binds executable interpretations to checkable quotations and source hashes."
+      :quote-field "THEN"
+      :quote "Bind each clause of the interpretation to quoted, sha-pinned source bytes and make that record the single reading."
+      :flags [
+      ]
+    }
+    {
+      :id "pattern-interpretation/compile-guards-exactly"
+      :path "futon3/library/pattern-interpretation/compile-guards-exactly.flexiarg"
+      :hits 1
+      :title "Compile Guards Exactly, Including Unknowns And Disjunctions"
+      :line 1
+      :sha256 "cd98df322a0984d7aa5bd540720f0132327f1dc54e073a3ccff8f09ed3271855"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Use the two-token encoding, sibling expansion and linked parts.” — topical: compiles admitted guards and effects into the specified token kernel."
+      :quote-field "THEN"
+      :quote "Use the two-token encoding, sibling expansion and linked parts."
+      :flags [
+      ]
+    }
+    {
+      :id "pattern-interpretation/declare-the-universe"
+      :path "futon3/library/pattern-interpretation/declare-the-universe.flexiarg"
+      :hits 1
+      :title "Declare The Fact Universe With Meaning, Method, Value And Grain"
+      :line 1
+      :sha256 "7468e3102b8f24d1b3acd562fb92b5b6a800f1e7992946b796e1e638f5747b45"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :functional-and-topical
+      :node "R1"
+      :confidence :high
+      :rationale "THEN: “Apply the six admission rules before any interpretation using the fact is admitted.” — functional-and-topical: defines the fact vocabulary and its observed or unknown values."
+      :quote-field "THEN"
+      :quote "Apply the six admission rules before any interpretation using the fact is admitted."
+      :flags [
+      ]
+    }
+    {
+      :id "pattern-interpretation/put-uncertainty-in-theta"
+      :path "futon3/library/pattern-interpretation/put-uncertainty-in-theta.flexiarg"
+      :hits 2
+      :title "Put Uncertainty In q0 Or θ, Preference In C, And Keep Unknown For Unobserved"
+      :line 1
+      :sha256 "e2d6dc445fbf79d652ea783e611f1dc427de3fbb17efe49555d927e167995c68"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Put present-state uncertainty in q0 and act uncertainty in θ, keep C for preference, split acts whose effects differ in certainty, and give outcome wants a θ-weighted producing part scored by observation.” — topical: separates representations of current uncertainty, transition uncertainty and preference."
+      :quote-field "THEN"
+      :quote "Put present-state uncertainty in q0 and act uncertainty in θ, keep C for preference, split acts whose effects differ in certainty, and give outcome wants a θ-weighted producing part scored by observation."
       :flags [
       ]
     }
@@ -6543,7 +7529,7 @@
     {
       :id "peripherals/hot-reload-as-default-fix-path"
       :path "futon3/library/peripherals/hot-reload-as-default-fix-path.flexiarg"
-      :hits 30
+      :hits 37
       :title "Hot-Reload As Default Fix Path"
       :line 1
       :sha256 "292250d03ca0c396dabf06f2caa1f7a999bfc17996d7e0d38944da9f5c29204c"
@@ -6597,7 +7583,7 @@
     {
       :id "peripherals/progress-heartbeat-distinct-from-cycle-completion"
       :path "futon3/library/peripherals/progress-heartbeat-distinct-from-cycle-completion.flexiarg"
-      :hits 4
+      :hits 5
       :title "Progress Heartbeat Distinct From Cycle Completion"
       :line 1
       :sha256 "7d0c49787c8fad7daed229edbd5d6fb599f2df8520d2d1cfc3b6ba193bdc057b"
@@ -6613,9 +7599,27 @@
       ]
     }
     {
+      :id "peripherals/read-existing-seam-before-implementing"
+      :path "futon3/library/peripherals/read-existing-seam-before-implementing.flexiarg"
+      :hits 1
+      :title "Read Existing Seam Before Implementing"
+      :line 1
+      :sha256 "e3220d4d4f3d32402cede9c348c930c2f41745e0e3f634158c87ad13bad84392"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Before writing any code for the peripheral, do a structured seam-read: 1. **Transport seam**: how do bytes get to and from the peripheral? Is there a canonical WS pipeline, drawbridge channel, or agency dispatch path the peripheral should use? If yes, extend” — functional: reads the existing transport, event, registration and consent interfaces before implementing."
+      :quote-field "THEN"
+      :quote "Before writing any code for the peripheral, do a structured seam-read: 1. **Transport seam**: how do bytes get to and from the peripheral? Is there a canonical WS pipeline, drawbridge channel, or agency dispatch path the peripheral should use? If yes, extend"
+      :flags [
+      ]
+    }
+    {
       :id "peripherals/surface-earns-inhabitation"
       :path "futon3/library/peripherals/surface-earns-inhabitation.flexiarg"
-      :hits 1
+      :hits 2
       :title "Surface Earns Inhabitation"
       :line 1
       :sha256 "8aa42b1b946896c826311fec4abe68603c4648b9f09e2d22465ff690bb8830f7"
@@ -6651,7 +7655,7 @@
     {
       :id "plos-npt-with-small-n/coreq-checklist-adherence"
       :path "futon3/library/plos-npt-with-small-n/coreq-checklist-adherence.flexiarg"
-      :hits 2
+      :hits 5
       :title "Adhere to a Named Qualitative Reporting Checklist (COREQ)"
       :line 1
       :sha256 "8f976fd054732a28fbb3aadf19c7af3cc316b01d06436cffc20a4d74179f62eb"
@@ -6705,7 +7709,7 @@
     {
       :id "plos-npt-with-small-n/research-questions-stated-early"
       :path "futon3/library/plos-npt-with-small-n/research-questions-stated-early.flexiarg"
-      :hits 3
+      :hits 4
       :title "State the Research Questions Explicitly and Early"
       :line 1
       :sha256 "fcf71a92eac6aef253248fb19cbdb8e29d6cc7032761e01ee8b153b70c353f15"
@@ -6759,7 +7763,7 @@
     {
       :id "plos-npt-with-small-n/venue-register-boundary"
       :path "futon3/library/plos-npt-with-small-n/venue-register-boundary.flexiarg"
-      :hits 2
+      :hits 3
       :title "Use Content Cousins for Positioning, Not Venue Register"
       :line 1
       :sha256 "1992b0e939c85cf011547087c39f0fdb351b1beb121f5b2e6687bf9d41215abb"
@@ -6775,9 +7779,47 @@
       ]
     }
     {
+      :id "problems/agent-discoveries-do-not-teach-humans"
+      :path "futon3/library/problems/agent-discoveries-do-not-teach-humans.flexiarg"
+      :hits 1
+      :title "Problem node: agent discoveries do not teach humans"
+      :line 1
+      :sha256 "90d2a12c04d3a683c15dee4799e5eeed0665d75eb891fca28d9b249a36788cf9"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Treat this node as the landing point for agent-to-human teaching mechanisms.”; CONCLUSION: “This is a problem-stating node: agents can find material humans have not seen while lacking a mechanism to teach it back.” — topical: names the missing transfer of discoveries from agents to humans."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for agent-to-human teaching mechanisms."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
+      :id "problems/ai4ci-scope-can-outgrow-six-month-pilot"
+      :path "futon3/library/problems/ai4ci-scope-can-outgrow-six-month-pilot.flexiarg"
+      :hits 2
+      :title "Problem node: AI4CI scope can outgrow a six-month pilot"
+      :line 1
+      :sha256 "5af63b0e7cb8e239e7e593436bb8cfd86fcf0e0d699c2494c6ebac9841ed3a0b"
+      :kind :subject
+      :stage :select
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for pilot-scope mechanisms.”; CONCLUSION: “This is a problem-stating node: an unfenced AI-and-explanation project can expand into platform and model development and make its schedule unrealistic.” — topical: names the need to bound pilot scope."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for pilot-scope mechanisms."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
       :id "problems/baldwin-causal-claims-vs-engineering-metaphor"
       :path "futon3/library/problems/baldwin-causal-claims-vs-engineering-metaphor.flexiarg"
-      :hits 1
+      :hits 3
       :title "Problem node: Baldwin causal claims must be separated from the engineering metaphor"
       :line 1
       :sha256 "e77b7db890e4fccd0ba35e118c6598c8233a262e4f321fe50bdbe7459b99ab29"
@@ -6796,7 +7838,7 @@
     {
       :id "problems/contract-edits-wait-for-their-exemplar"
       :path "futon3/library/problems/contract-edits-wait-for-their-exemplar.flexiarg"
-      :hits 1
+      :hits 2
       :title "Pattern: contract edits wait for their exemplar"
       :line 1
       :sha256 "ad640134696adafcd26f0bb57cfae243d047e2d9c630bd5a4e62a4ccd6e86c85"
@@ -6815,7 +7857,7 @@
     {
       :id "problems/coordination-patterns-derivation"
       :path "futon3/library/problems/coordination-patterns-derivation.flexiarg"
-      :hits 5
+      :hits 10
       :title "Problem node: Agent coordination needs domain-specific patterns derived from futon-theory"
       :line 1
       :sha256 "31abd6eae55feeca1b1f5a09716ececdff2d6779ec264c3a20349fb93047c2cd"
@@ -6834,7 +7876,7 @@
     {
       :id "problems/cycle-model-boundary-gaps"
       :path "futon3/library/problems/cycle-model-boundary-gaps.flexiarg"
-      :hits 15
+      :hits 18
       :title "Problem node: Repairs cluster at boundaries the verified cycle model does not cover"
       :line 1
       :sha256 "09ead32d739de68b6c4003f541f304697647eefcaf64568cd800a41ceff904bf"
@@ -6853,7 +7895,7 @@
     {
       :id "problems/deliberate-refusals-allude-to-unwritten-patterns"
       :path "futon3/library/problems/deliberate-refusals-allude-to-unwritten-patterns.flexiarg"
-      :hits 5
+      :hits 8
       :title "Problem node: deliberate refusals allude to unwritten patterns"
       :line 1
       :sha256 "82473d833bcdcd2f93fd9fd6b6d3a1ff9e43c7e69d7d47b41a88a0c56e8d6eec"
@@ -6870,9 +7912,28 @@
       ]
     }
     {
+      :id "problems/exotype-encoding-programme"
+      :path "futon3/library/problems/exotype-encoding-programme.flexiarg"
+      :hits 1
+      :title "Problem node: the 256 exotypes need explicit, inspectable records"
+      :line 1
+      :sha256 "b3c46c8622078a88268fa9fd5ded030e7cfb325004b5076e3955c5ab129a3669"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “This node is the landing point for the 256 shared @why edges from the exotype records (mechanical pass, row L15); per-record questions (lift rules, program semantics) route to the futon5 sources the README names, not to invention here.”; CONCLUSION: “This is a problem-stating node at section grain: the 256 8-bit exotypes exist as programme objects but had no explicit, searchable library records, so exotype knowledge was not concrete, inspectable, or comparable.” — topical: names the missing searchable record of exotype knowledge, unlike the individual configuration entries."
+      :quote-field "THEN"
+      :quote "This node is the landing point for the 256 shared @why edges from the exotype records (mechanical pass, row L15); per-record questions (lift rules, program semantics) route to the futon5 sources the README names, not to invention here."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
       :id "problems/facade-instead-of-validated-efe-model"
       :path "futon3/library/problems/facade-instead-of-validated-efe-model.flexiarg"
-      :hits 1
+      :hits 2
       :title "Problem node: a facade in place of a validated EFE model"
       :line 1
       :sha256 "71e9facf2b867f3216ec8b3d261aa1f814c633aee730c7962a1cdb2c039ed697"
@@ -6891,7 +7952,7 @@
     {
       :id "problems/fundamentals-drowned-by-backlog"
       :path "futon3/library/problems/fundamentals-drowned-by-backlog.flexiarg"
-      :hits 14
+      :hits 21
       :title "Problem node: fundamentals drowned by the letter-number backlog"
       :line 1
       :sha256 "7c825e0fc81cfed10a415540fdf50d453f071942d84dfb8b1379c7014f38ab59"
@@ -6910,7 +7971,7 @@
     {
       :id "problems/g-over-cascade-is-undefined"
       :path "futon3/library/problems/g-over-cascade-is-undefined.flexiarg"
-      :hits 7
+      :hits 18
       :title "Problem node: G over a cascade is undefined; policy is a borrowed name"
       :line 1
       :sha256 "2e39b68d8fd8880cd41c796c3d73d4a2344c000b7679c3dbc88e62a4592402ea"
@@ -6929,7 +7990,7 @@
     {
       :id "problems/llm-over-corpus-mining-lessons"
       :path "futon3/library/problems/llm-over-corpus-mining-lessons.flexiarg"
-      :hits 2
+      :hits 3
       :title "Problem node: LLM-over-corpus mining pipelines need distilled lessons"
       :line 1
       :sha256 "3d77aedb59ed4ccaac3513e3d7f04e34500951d67ac872dae4fcc0c7eaebfc73"
@@ -6948,7 +8009,7 @@
     {
       :id "problems/most-patterns-have-no-globally-recognised-rationale"
       :path "futon3/library/problems/most-patterns-have-no-globally-recognised-rationale.flexiarg"
-      :hits 1
+      :hits 2
       :title "Problem node: most patterns have no globally recognised rationale"
       :line 1
       :sha256 "5f8d0970213a6988a02e1deb29f82ac5465a31c0af9a92c42c957bc3e8ecc9ea"
@@ -6967,7 +8028,7 @@
     {
       :id "problems/operator-turns-become-inference-observations"
       :path "futon3/library/problems/operator-turns-become-inference-observations.flexiarg"
-      :hits 19
+      :hits 29
       :title "Operator Turns Become Inference Observations"
       :line 1
       :sha256 "28cd96e29b84e7698a16ee0c4c020d345c49228dfb1fda6d8bd999ff46707ce9"
@@ -6986,7 +8047,7 @@
     {
       :id "problems/pattern-coding-and-novel-force-mining"
       :path "futon3/library/problems/pattern-coding-and-novel-force-mining.flexiarg"
-      :hits 4
+      :hits 9
       :title "Problem node: A pattern library must be codeable against a corpus and mined for what it misses"
       :line 1
       :sha256 "ee05bdcf41cdd2797b96cea9bd482f26d07173277b636e3c35c78b9dfb1882c4"
@@ -7005,7 +8066,7 @@
     {
       :id "problems/pattern-genesis-from-evidence-bearing-holes"
       :path "futon3/library/problems/pattern-genesis-from-evidence-bearing-holes.flexiarg"
-      :hits 1
+      :hits 6
       :title "Problem node: no existing pattern expresses a recurring way of acting (catalogue R17-triple-prime)"
       :line 1
       :sha256 "58ed7b6cbc88c40061b89f4c0ba33a17f57f7566ea0a65d1b0494cfe449b977c"
@@ -7062,7 +8123,7 @@
     {
       :id "problems/process-conduct-is-unassured"
       :path "futon3/library/problems/process-conduct-is-unassured.flexiarg"
-      :hits 10
+      :hits 24
       :title "Problem node: the WM's process conduct is unassured"
       :line 1
       :sha256 "563b4c5743510ee632867f462cad005c0a8d75f34b1b0d1a5c432168f2dcc00a"
@@ -7100,7 +8161,7 @@
     {
       :id "problems/r10-scheduled-entrypoint"
       :path "futon3/library/problems/r10-scheduled-entrypoint.flexiarg"
-      :hits 6
+      :hits 9
       :title "Problem node R10: Scheduled entrypoint"
       :line 1
       :sha256 "2b543b6227c8d52be59e6a804e572db95df2f46a0ac266fa0e983c6719d12ada"
@@ -7117,9 +8178,47 @@
       ]
     }
     {
+      :id "problems/r12-two-layer-calibration"
+      :path "futon3/library/problems/r12-two-layer-calibration.flexiarg"
+      :hits 1
+      :title "Problem node R12: Two-layer calibration"
+      :line 1
+      :sha256 "bac04f142720022c0a03e5241b70c160e0b52a609ffe40b36482a88ac04c1fb8"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node "R12"
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node.”; CONCLUSION: “This is a problem-stating node for control-map node R12 (Two-layer calibration): Control-stage R12 solves separating internal consistency from externally witnessed value evidence: the roster places **“Two-layer calibration”** in BELIEVE's assurance band (`control-stages.edn:40`; control-stage/catalogue numbering).” — topical: names two-layer calibration explicitly assigned to BELIEVE by the rubric."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
+      :id "problems/r13-temporal-policy-depth"
+      :path "futon3/library/problems/r13-temporal-policy-depth.flexiarg"
+      :hits 1
+      :title "Problem node R13: Temporal policy depth"
+      :line 1
+      :sha256 "7599f737cf5861e3be7419402da53caf368e91995924452a51f1a2cf86882418"
+      :kind :subject
+      :stage :select
+      :stage-mode :topical
+      :node "R13"
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node.”; CONCLUSION: “This is a problem-stating node for control-map node R13 (Temporal policy depth): R13 solves how delayed consequences can outrank a greedy first move: the roster places **“Temporal policy depth”** in SELECT (`p4ng/empirics-futon/control-stages.edn:24`; control-stage numbering).” — topical: names temporal policy depth explicitly assigned to SELECT by the rubric."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
       :id "problems/r14-commitment-temperature"
       :path "futon3/library/problems/r14-commitment-temperature.flexiarg"
-      :hits 2
+      :hits 4
       :title "Problem node R14: Commitment temperature"
       :line 1
       :sha256 "767418e134f032f0135ac224f3cb12680340cf7db53cfde8e781f0c8e0d1d6cb"
@@ -7157,7 +8256,7 @@
     {
       :id "problems/r16-grounded-actuation"
       :path "futon3/library/problems/r16-grounded-actuation.flexiarg"
-      :hits 1
+      :hits 4
       :title "Problem node R16: Grounded actuation"
       :line 1
       :sha256 "3fd3a02f6a60115d000339d68290548d043f23e137dfd7d8a11b2395aacb886b"
@@ -7176,7 +8275,7 @@
     {
       :id "problems/r2-structured-observation"
       :path "futon3/library/problems/r2-structured-observation.flexiarg"
-      :hits 2
+      :hits 3
       :title "Problem node R2: Structured observation"
       :line 1
       :sha256 "e54b7aebc4d3de879e0232a0bcf25b90cd6ecf67a13310ff73bdf6c7aff4a4d9"
@@ -7195,7 +8294,7 @@
     {
       :id "problems/r20-interoceptive-tripwires"
       :path "futon3/library/problems/r20-interoceptive-tripwires.flexiarg"
-      :hits 1
+      :hits 2
       :title "Problem node R20: Interoceptive tripwires"
       :line 1
       :sha256 "211abe99ed6efbe07ebd39533320b20440cd56fdc902117291d58bbdd1c1f5ed"
@@ -7212,9 +8311,28 @@
       ]
     }
     {
+      :id "problems/r3-belief-update"
+      :path "futon3/library/problems/r3-belief-update.flexiarg"
+      :hits 4
+      :title "Problem node R3: Belief update"
+      :line 1
+      :sha256 "5d43ba22f1805aea5d61fe990c8f62ff930bfc3be09759db06c36a5181f35a26"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node "R3"
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node.”; CONCLUSION: “This is a problem-stating node for control-map node R3 (Belief update): R3 solves how observations change belief without either overwriting it or letting it become immovable: the roster places **“Belief update”** in BELIEVE (`p4ng/empirics-futon/control-stages.edn:18`; control-stage numbering).” — topical: names observation-driven belief update."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
       :id "problems/r4-forward-model"
       :path "futon3/library/problems/r4-forward-model.flexiarg"
-      :hits 1
+      :hits 3
       :title "Problem node R4: Forward model"
       :line 1
       :sha256 "b763d08cc67714f8f3c22ed60062a4f2f299e3e9b463504d0b471d778aa46b32"
@@ -7252,7 +8370,7 @@
     {
       :id "problems/r6-candidate-action-space-and-selection"
       :path "futon3/library/problems/r6-candidate-action-space-and-selection.flexiarg"
-      :hits 1
+      :hits 5
       :title "Problem node R6: Candidate action space and selection"
       :line 1
       :sha256 "082aebc1cf5cf2deed93f47aba07adfcc9224ee4a091df72e5d8f9b051242fb3"
@@ -7269,9 +8387,48 @@
       ]
     }
     {
+      :id "problems/r7-evidence-channel-precision"
+      :path "futon3/library/problems/r7-evidence-channel-precision.flexiarg"
+      :hits 3
+      :title "Problem node R7: Evidence-channel precision"
+      :line 1
+      :sha256 "fee6dde2235410320c92da6876e31efe6c2f4ac249cb3401f21e9d16929f6c6d"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node "R7"
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node.”; CONCLUSION: “This is a problem-stating node for control-map node R7 (Evidence-channel precision): R7 solves how the loop varies trust by evidence channel without discarding noisy evidence: the roster places **“Evidence-channel precision”** in BELIEVE (`p4ng/empirics-futon/control-stages.edn:20`; control-stage numbering).” — topical: names varying trust by evidence channel."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
+      :id "problems/r8-present-fit-mismatch"
+      :path "futon3/library/problems/r8-present-fit-mismatch.flexiarg"
+      :hits 1
+      :title "Problem node R8: Present-fit mismatch"
+      :line 1
+      :sha256 "591f597a9614ae5d60978c01b991aa0d207709dd8095538421d28a6d2753a5d7"
+      :kind :subject
+      :stage :perceive
+      :stage-mode :topical
+      :node "R8"
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node.”; CONCLUSION: “This is a problem-stating node for control-map node R8 (Present-fit mismatch): R8 solves how the loop exposes whether its present belief explains the evidence: the roster places **“Present-fit mismatch”** in PERCEIVE (`p4ng/empirics-futon/control-stages.edn:16`; control-stage numbering).” — topical: names observed present-fit mismatch; R8 is absent from the supplied node mapping."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for @why edges from patterns that answer it; solving the problem itself is scoped by the dossier's residual-problems list, not by this node."
+      :flags [
+        "problem-statement-or-problem-section"
+        "R8-not-assigned-in-requested-rubric"
+      ]
+    }
+    {
       :id "problems/r9-no-self-certification"
       :path "futon3/library/problems/r9-no-self-certification.flexiarg"
-      :hits 1
+      :hits 3
       :title "Problem node R9: No self-certification"
       :line 1
       :sha256 "61cf95be7cc680ac32528689721338d3a2a5236f3fa043df68dc3cf58ca84aa5"
@@ -7290,7 +8447,7 @@
     {
       :id "problems/refusal-prediction-error-v1--source-field-missing"
       :path "futon3/library/problems/refusal-prediction-error-v1--source-field-missing.flexiarg"
-      :hits 6
+      :hits 9
       :title "Refusal: :prediction-error/v1 / :source-field-missing"
       :line 1
       :sha256 "44ef99b462628a314d1f993ec409c53bf86c05c82804e5a0efdda8ff61359643"
@@ -7328,7 +8485,7 @@
     {
       :id "problems/snatch-play-theory-gaps"
       :path "futon3/library/problems/snatch-play-theory-gaps.flexiarg"
-      :hits 2
+      :hits 3
       :title "Problem node: Snatch institutions need a theory of play, not only defence"
       :line 1
       :sha256 "a2c1b5970add3bc87a09e5eecc063d483e9afc2f963bf07497c23bb30bc7e30e"
@@ -7347,7 +8504,7 @@
     {
       :id "problems/spec-and-implementation-must-converge-to-runtime-certificates"
       :path "futon3/library/problems/spec-and-implementation-must-converge-to-runtime-certificates.flexiarg"
-      :hits 2
+      :hits 5
       :title "Problem node: spec and implementation must converge into runtime certificates"
       :line 1
       :sha256 "fd15dffa5b8e41b545fee8a8879927acde2c1ffc928ef36d711a6910b8f6cdf6"
@@ -7404,7 +8561,7 @@
     {
       :id "problems/theory-general-enough-to-drive-the-stack"
       :path "futon3/library/problems/theory-general-enough-to-drive-the-stack.flexiarg"
-      :hits 5
+      :hits 7
       :title "Problem node: Futon theory must be general enough to drive the whole stack"
       :line 1
       :sha256 "07b0c8b5e2c2992659d7944010d64109d3058006072adb09eedaa684cfda8df2"
@@ -7423,7 +8580,7 @@
     {
       :id "problems/trace-wm-trace-store-route-ledger"
       :path "futon3/library/problems/trace-wm-trace-store-route-ledger.flexiarg"
-      :hits 3
+      :hits 6
       :title "Problem node TRACE: WM trace store / route ledger"
       :line 1
       :sha256 "a816f928e09e8baa17d5773d9a68e16b11bd6a11a7f0e866f24a189566486576"
@@ -7440,9 +8597,28 @@
       ]
     }
     {
+      :id "problems/trainers-lack-collaborative-contribution-access"
+      :path "futon3/library/problems/trainers-lack-collaborative-contribution-access.flexiarg"
+      :hits 1
+      :title "Problem node: trainers lack collaborative contribution access"
+      :line 1
+      :sha256 "e24fc8b10f528503f4487e53022d9506e5085e703c205a9308259c62929cf243"
+      :kind :subject
+      :stage :coordination
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for @why edges from patterns that answer the missing-contribution-access problem.”; CONCLUSION: “This is a problem-stating node: some trainers lack collaborators and carry training delivery alone.” — topical: names trainers' missing collaborators and shared responsibility."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for @why edges from patterns that answer the missing-contribution-access problem."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
       :id "problems/transferable-open-research-practice"
       :path "futon3/library/problems/transferable-open-research-practice.flexiarg"
-      :hits 1
+      :hits 3
       :title "Problem node: Transferable open-research practice needs distilling from cases"
       :line 1
       :sha256 "37423467ae61933d54dbac7d4016621af1676bb52df2f2277e8ebf18b0295e0d"
@@ -7461,7 +8637,7 @@
     {
       :id "problems/undeclared-cascades-cannot-be-audited"
       :path "futon3/library/problems/undeclared-cascades-cannot-be-audited.flexiarg"
-      :hits 5
+      :hits 7
       :title "Problem node: undeclared cascades cannot be audited"
       :line 1
       :sha256 "c434ab759a5528588f83cd9ddace9ef5d1c845bada12a7fa276f2d7db3baf448"
@@ -7480,7 +8656,7 @@
     {
       :id "problems/undeclared-publication-cadence-obscures-version"
       :path "futon3/library/problems/undeclared-publication-cadence-obscures-version.flexiarg"
-      :hits 4
+      :hits 7
       :title "Problem node: undeclared publication cadence obscures version"
       :line 1
       :sha256 "be3c55bfd2d8baa6f965347be61e5e1bdc0be1353b8214fa540cc85c7cc31a0e"
@@ -7497,9 +8673,47 @@
       ]
     }
     {
+      :id "problems/unitemized-ai4ci-budget-looks-speculative"
+      :path "futon3/library/problems/unitemized-ai4ci-budget-looks-speculative.flexiarg"
+      :hits 4
+      :title "Problem node: an unitemized AI4CI budget looks speculative"
+      :line 1
+      :sha256 "8a5835dc992d31eab3ded918e6680ff4ffadf43fe0e5b0acb20f2c5484dc7c7d"
+      :kind :subject
+      :stage :assurance
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Treat this node as the landing point for budget-justification mechanisms.”; CONCLUSION: “This is a problem-stating node: without an activity ledger, the AI4CI request can look speculative or infrastructure-heavy.” — topical: names the missing auditable activity ledger behind a funding request."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for budget-justification mechanisms."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
+      :id "problems/unlinked-reasoning-cues-require-rediscovery"
+      :path "futon3/library/problems/unlinked-reasoning-cues-require-rediscovery.flexiarg"
+      :hits 1
+      :title "Problem node: unlinked reasoning cues require rediscovery"
+      :line 1
+      :sha256 "a1fd236617586fac3e90ce95a15c485196b80d1bfe9bca2e2b357bd08222eeff"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Treat this node as the landing point for mechanisms addressing cue linkage.”; CONCLUSION: “This is a problem-stating node: unlinked informal reasoning cues force annotators to rediscover links and leave downstream tools without reusable explanations.” — topical: names the missing reusable record linking informal reasoning cues."
+      :quote-field "THEN"
+      :quote "Treat this node as the landing point for mechanisms addressing cue linkage."
+      :flags [
+        "problem-statement-or-problem-section"
+      ]
+    }
+    {
       :id "problems/unqueryable-trails-block-recovery"
       :path "futon3/library/problems/unqueryable-trails-block-recovery.flexiarg"
-      :hits 3
+      :hits 4
       :title "Problem node: unqueryable trails block recovery"
       :line 1
       :sha256 "c1b1651a3ab73e0bab190ea19ae2aee4073c4f6f0e85c5bfe8a84750505b9260"
@@ -7536,7 +8750,7 @@
     {
       :id "process-coherence/is-this-even-a-problem"
       :path "futon3/library/process-coherence/is-this-even-a-problem.flexiarg"
-      :hits 4
+      :hits 5
       :title "Ask \"Is This Even a Problem?\" Before Engaging the Machinery"
       :line 1
       :sha256 "7768639e917489db14488b064fdea6a751faca88dc37b101f0778f04c6521f0a"
@@ -7554,7 +8768,7 @@
     {
       :id "process-coherence/refusal-becomes-pattern"
       :path "futon3/library/process-coherence/refusal-becomes-pattern.flexiarg"
-      :hits 3
+      :hits 6
       :title "Turn an Underdetermined Implementation Refusal into a Pattern"
       :line 1
       :sha256 "34832402cab254934b22f00ce073fc1cdb3e1a4df3257c587b7f5676e3eb0223"
@@ -7572,7 +8786,7 @@
     {
       :id "process-coherence/status-refresh-before-work"
       :path "futon3/library/process-coherence/status-refresh-before-work.flexiarg"
-      :hits 13
+      :hits 15
       :title "Refresh the Status Against Reality Before Working the Mission"
       :line 1
       :sha256 "8976e27af52c114c3a21ccabdb6f4afc65621c17e4b41fc1c9d2766d9a5a84b2"
@@ -7606,9 +8820,27 @@
       ]
     }
     {
+      :id "process/detection-wired-to-single-catastrophic-response"
+      :path "futon3/library/process/detection-wired-to-single-catastrophic-response.flexiarg"
+      :hits 2
+      :title "T7: Detection Wired to a Single Catastrophic Response"
+      :line 1
+      :sha256 "38c9181e21b6844ab487581f1560dcd1b2937d4b8192abdb77f7fc582131a701"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Map causes to responses as typed transitions (repair, retry, degrade, stop), with stop reserved for causes that justify it; a durable disable carries its re-arm condition in writing at the switch, so the machine can come back without archaeology.” — functional: chooses a proportionate typed response to a detected fault."
+      :quote-field "THEN"
+      :quote "Map causes to responses as typed transitions (repair, retry, degrade, stop), with stop reserved for causes that justify it; a durable disable carries its re-arm condition in writing at the switch, so the machine can come back without archaeology."
+      :flags [
+      ]
+    }
+    {
       :id "process/fake-done-via-binary-closure"
       :path "futon3/library/process/fake-done-via-binary-closure.flexiarg"
-      :hits 1
+      :hits 6
       :title "T1: Fake Done via Binary Closure"
       :line 1
       :sha256 "0a74d50f5c0974913518c1287087a9f2dd0e349eb383f6165c303fdbfd5147f8"
@@ -7662,7 +8894,7 @@
     {
       :id "process/spec-drift-by-displacement"
       :path "futon3/library/process/spec-drift-by-displacement.flexiarg"
-      :hits 1
+      :hits 2
       :title "T2: Spec or Plan Drift by Displacement, with No Decision"
       :line 1
       :sha256 "7b41395c3703ff5bdc288c85fdbb2b1746438294cdef82594a568b75b97b2edd"
@@ -7680,7 +8912,7 @@
     {
       :id "process/spec-silence-pair"
       :path "futon3/library/process/spec-silence-pair.flexiarg"
-      :hits 1
+      :hits 2
       :title "T4: The Spec-Silence Pair (Drift into Silence; Inference from Absence)"
       :line 1
       :sha256 "cbc8caba727aae873c8ea765bc1e384fe3886812df02f8cc4e431d8dc95c075a"
@@ -7698,7 +8930,7 @@
     {
       :id "process/watcher-that-observes-and-defers"
       :path "futon3/library/process/watcher-that-observes-and-defers.flexiarg"
-      :hits 2
+      :hits 3
       :title "T8: Watcher that Observes and Defers"
       :line 1
       :sha256 "53d007cf5b7f95e30b29b7968a9b735eddbd0ee716c58aaf7e0fb6043f3f55ed"
@@ -7716,7 +8948,7 @@
     {
       :id "proof-search/extend-library-not-proof"
       :path "futon3/library/proof-search/extend-library-not-proof.flexiarg"
-      :hits 2
+      :hits 3
       :title "When a Proof Stalls, Ask Whether the Library Is What's Missing"
       :line 1
       :sha256 "e5f3e84640a9831afb1d969916ae13a67f620a29cd55b1110064f68a5ae663eb"
@@ -7824,7 +9056,7 @@
     {
       :id "realtime/liveness-heartbeats"
       :path "futon3/library/realtime/liveness-heartbeats.flexiarg"
-      :hits 1
+      :hits 2
       :title "Require Liveness Heartbeats With Sequence Context"
       :line 1
       :sha256 "f30c851890f762011a4641ecb1370f5ef56dc445bd49cd09dcb970a747163617"
@@ -7896,7 +9128,7 @@
     {
       :id "realtime/mode-gate"
       :path "futon3/library/realtime/mode-gate.flexiarg"
-      :hits 4
+      :hits 6
       :title "Gate Code Changes Behind Explicit Modes"
       :line 1
       :sha256 "5e505b53101854792852c33f2c27c73c37597a8f3de02af096bdfc714e8020d9"
@@ -7914,7 +9146,7 @@
     {
       :id "realtime/rendezvous-handshake"
       :path "futon3/library/realtime/rendezvous-handshake.flexiarg"
-      :hits 5
+      :hits 9
       :title "Require Realtime Rendezvous Handshakes"
       :line 1
       :sha256 "bed1e0dbbf24a019269c8e52d613f32f95bad51c9301dc3142de55485ac43e45"
@@ -7932,7 +9164,7 @@
     {
       :id "realtime/single-line-transport"
       :path "futon3/library/realtime/single-line-transport.flexiarg"
-      :hits 1
+      :hits 2
       :title "Keep Realtime Messages Single-Line"
       :line 1
       :sha256 "0768aa1a6b5a3f7725b1b253b11855f41fcacc9125b96306a9532abc8e893cfd"
@@ -8040,7 +9272,7 @@
     {
       :id "relationship-coherence/quote-as-oblique-address"
       :path "futon3/library/relationship-coherence/quote-as-oblique-address.flexiarg"
-      :hits 9
+      :hits 11
       :title "A Found Text Can Carry What Direct Speech Can't Yet Hold"
       :line 1
       :sha256 "d1a2ee5936076a1f7e156462182731ec05dae14383e8bd9eca54fd47a212c071"
@@ -8146,6 +9378,24 @@
       ]
     }
     {
+      :id "sidecar/append-only-semantic-audit"
+      :path "futon3/library/sidecar/append-only-semantic-audit.flexiarg"
+      :hits 1
+      :title "Append-Only Semantic Audit"
+      :line 1
+      :sha256 "20b4c6ea725c9636f768742d372d0862eb3a872bb21b42ba14724c96be892f4e"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “Persist every semantic write (proposal, promotion, evidence, action, fact, chain) as append-only records with identifiers and audit metadata, and reject duplicate ids at the store boundary.” — functional: preserves append-only semantic-write provenance."
+      :quote-field "THEN"
+      :quote "Persist every semantic write (proposal, promotion, evidence, action, fact, chain) as append-only records with identifiers and audit metadata, and reject duplicate ids at the store boundary."
+      :flags [
+      ]
+    }
+    {
       :id "sidecar/artifact-entity-mention-grounding"
       :path "futon3/library/sidecar/artifact-entity-mention-grounding.flexiarg"
       :hits 2
@@ -8184,7 +9434,7 @@
     {
       :id "sidecar/chain-builder-softness-accounting"
       :path "futon3/library/sidecar/chain-builder-softness-accounting.flexiarg"
-      :hits 2
+      :hits 3
       :title "Chain Builder with Softness Accounting"
       :line 1
       :sha256 "7dada368994243ae4fbdb6821b2b61d733c4ea7a5b227d14adbf309b4353891d"
@@ -8272,9 +9522,27 @@
       ]
     }
     {
+      :id "snatch/a-free-mark-is-always-worth-assigning"
+      :path "futon3/library/snatch/a-free-mark-is-always-worth-assigning.flexiarg"
+      :hits 1
+      :title "A Free Mark Is Always Worth Assigning"
+      :line 1
+      :sha256 "90245f0c725bd1486dee752c4f9fccfb8f42b452c85654da35ba0f65fe25edb0"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Assign it, and treat declining as the decision it is — one that must be justified, not a default.” — topical: records a counterpart's defection for later decisions in an exchange game."
+      :quote-field "THEN"
+      :quote "Assign it, and treat declining as the decision it is — one that must be justified, not a default."
+      :flags [
+      ]
+    }
+    {
       :id "snatch/consult-the-remedy-before-exiting"
       :path "futon3/library/snatch/consult-the-remedy-before-exiting.flexiarg"
-      :hits 2
+      :hits 3
       :title "Consult the Remedy Before Exiting"
       :line 1
       :sha256 "6a01b7f17af02168f6a396722bd168aaf725428a0ae7447b5716c31c1cf5f221"
@@ -8344,6 +9612,24 @@
       ]
     }
     {
+      :id "snatch/preserve-the-right-to-abstain"
+      :path "futon3/library/snatch/preserve-the-right-to-abstain.flexiarg"
+      :hits 2
+      :title "Preserve the Right to Abstain"
+      :line 1
+      :sha256 "95de16a04f4b9b23d3e63eac614008337c0943fec86a4d65e8363c872f4ff862"
+      :kind :subject
+      :stage :select
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Leave abstention reachable, and where compulsion is wanted make it opt-in and visibly attributable to the party who imposed it.” — topical: preserves a visible choice to decline participation."
+      :quote-field "THEN"
+      :quote "Leave abstention reachable, and where compulsion is wanted make it opt-in and visibly attributable to the party who imposed it."
+      :flags [
+      ]
+    }
+    {
       :id "snatch/protect-the-unprotected-move"
       :path "futon3/library/snatch/protect-the-unprotected-move.flexiarg"
       :hits 3
@@ -8364,7 +9650,7 @@
     {
       :id "snatch/re-enter-after-observed-repair"
       :path "futon3/library/snatch/re-enter-after-observed-repair.flexiarg"
-      :hits 5
+      :hits 6
       :title "Re-enter After Observed Repair"
       :line 1
       :sha256 "4293feb4d644d7d6661a622839b156ecc8a89e56a3bc3c66858a351a6feb30f6"
@@ -8376,6 +9662,24 @@
       :rationale "THEN: “Re-enter with the smallest discriminating give-and-ask pair and expand only after an accepted exchange.” — functional-and-topical: weighs consequences, options, or limits."
       :quote-field "THEN"
       :quote "Re-enter with the smallest discriminating give-and-ask pair and expand only after an accepted exchange."
+      :flags [
+      ]
+    }
+    {
+      :id "snatch/revert-then-invert"
+      :path "futon3/library/snatch/revert-then-invert.flexiarg"
+      :hits 1
+      :title "Revert Then Invert"
+      :line 1
+      :sha256 "f7c579980a27c61738290951bde788ab0ecd75808d9fdeaa03ce69d154ad6f1d"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Revert, and then invert: transfer to the wronged party what the exchange would have given it, at the defector's expense.” — topical: executes restitution and an inverse transfer after adjudicated defection."
+      :quote-field "THEN"
+      :quote "Revert, and then invert: transfer to the wronged party what the exchange would have given it, at the defector's expense."
       :flags [
       ]
     }
@@ -8400,7 +9704,7 @@
     {
       :id "social/ARGUMENT"
       :path "futon3/library/social/ARGUMENT.flexiarg"
-      :hits 24
+      :hits 25
       :title "Argument for a Futon3c Social Coordination Layer"
       :line 1
       :sha256 "92b88e1d9209af8bf96e2495bdc628b556dc3ea9f1b3f0e2a0bc86cfd4569fc3"
@@ -8419,7 +9723,7 @@
     {
       :id "social/explicit-exit-over-abandonment"
       :path "futon3/library/social/explicit-exit-over-abandonment.flexiarg"
-      :hits 1
+      :hits 2
       :title "Exit Subsystems Through the Lifecycle State Machine, Not Silent Abandonment"
       :line 1
       :sha256 "5e6c7c6632fcca362b8ca0151802bdf2d668554334983cd72f870aa549dc96ad"
@@ -8437,7 +9741,7 @@
     {
       :id "social/idempotent-handoff"
       :path "futon3/library/social/idempotent-handoff.flexiarg"
-      :hits 1
+      :hits 2
       :title "Make Async Handoffs Idempotent — A Crossed or Re-Sent Bell Must Be a No-Op"
       :line 1
       :sha256 "ce9a7a8e29fe6f4fb80031ddea4637fc812b271fe50497d2d947184caa6a8ed7"
@@ -8491,7 +9795,7 @@
     {
       :id "software-design/facade-pattern"
       :path "futon3/library/software-design/facade-pattern.flexiarg"
-      :hits 3
+      :hits 4
       :title "Facade Pattern"
       :line 1
       :sha256 "58bfa3ec339549cb47df3374bfb48f3985f690f25a88c54c2172c366041e5165"
@@ -8527,7 +9831,7 @@
     {
       :id "stack-coherence/commit-intent-alignment"
       :path "futon3/library/stack-coherence/commit-intent-alignment.flexiarg"
-      :hits 11
+      :hits 14
       :title "Commit Intent Alignment"
       :line 1
       :sha256 "e1257816164c35402f7ab49e6b39878a90d61e784959715b01862422be854e95"
@@ -8545,7 +9849,7 @@
     {
       :id "stack-coherence/evidence-ledger"
       :path "futon3/library/stack-coherence/evidence-ledger.flexiarg"
-      :hits 5
+      :hits 8
       :title "Stack Evidence Ledger"
       :line 1
       :sha256 "257bd487436526ab4a3143a6fab37c1c64efbd53f9f5a9b7c9526e82e4dead3a"
@@ -8563,7 +9867,7 @@
     {
       :id "stack-coherence/futon-bridge-health"
       :path "futon3/library/stack-coherence/futon-bridge-health.flexiarg"
-      :hits 8
+      :hits 9
       :title "Futon Bridge Health Check"
       :line 1
       :sha256 "c719a1e8ab7d46d82a890b426c7fd724298a721688d24add619d9ccbc1508861"
@@ -8581,7 +9885,7 @@
     {
       :id "stack-coherence/futon1-determinism"
       :path "futon3/library/stack-coherence/futon1-determinism.flexiarg"
-      :hits 14
+      :hits 17
       :title "Futon1 Determinism Gate"
       :line 1
       :sha256 "79d97f75a3ff2345408844fd614733f7fdc1d1245fab7c33b8c337f37ca58a02"
@@ -8599,7 +9903,7 @@
     {
       :id "stack-coherence/futon1-storage-coherence"
       :path "futon3/library/stack-coherence/futon1-storage-coherence.flexiarg"
-      :hits 5
+      :hits 6
       :title "Futon1 Storage Coherence Guard"
       :line 1
       :sha256 "6906ca32f6f945508fbad475d49b10a94589eb4d2a2ff0de8bad0b6c47f4d1da"
@@ -8653,7 +9957,7 @@
     {
       :id "stack-coherence/stack-blocker-detection"
       :path "futon3/library/stack-coherence/stack-blocker-detection.flexiarg"
-      :hits 18
+      :hits 22
       :title "Stack Blocker Detection"
       :line 1
       :sha256 "a680ba35f026cf5ab2735312e066d324391e5cea7dfb9447d7ac2d3d0e62767e"
@@ -8707,7 +10011,7 @@
     {
       :id "storage/canonical-interface"
       :path "futon3/library/storage/canonical-interface.flexiarg"
-      :hits 5
+      :hits 7
       :title "Canonical Interface"
       :line 1
       :sha256 "248f91b07ea56d45e23f796a33f082940683888fdc0deeaefb47004eae9cb5c5"
@@ -8813,9 +10117,27 @@
       ]
     }
     {
+      :id "storage/guardrails-vs-tooling"
+      :path "futon3/library/storage/guardrails-vs-tooling.flexiarg"
+      :hits 1
+      :title "Guardrails vs Internal Tooling"
+      :line 1
+      :sha256 "6c1dfa469bb94f494486a50a908e1248719144a2491f2b39bd7e218fb9d52dca"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “route internal writers through the same guardrails as external API calls” — functional: applies authorization and invariant gates equally to internal writers."
+      :quote-field "THEN"
+      :quote "route internal writers through the same guardrails as external API calls"
+      :flags [
+      ]
+    }
+    {
       :id "storage/identity-uniqueness"
       :path "futon3/library/storage/identity-uniqueness.flexiarg"
-      :hits 3
+      :hits 4
       :title "Identity Uniqueness"
       :line 1
       :sha256 "2b8f29a194e9233ff1fa144ed65e2c092c48a11935ec5d40018c678957a813fb"
@@ -8887,7 +10209,7 @@
     {
       :id "storage/postcommit-materialization-gate"
       :path "futon3/library/storage/postcommit-materialization-gate.flexiarg"
-      :hits 4
+      :hits 6
       :title "Postcommit Materialization Gate"
       :line 1
       :sha256 "a13c30eab7580e36a8953f2b934c2b59ada14a33e31b1a39c0fcfbde8f4c5a90"
@@ -8959,7 +10281,7 @@
     {
       :id "structure/block-as-futonic-revolution"
       :path "futon3/library/structure/block-as-futonic-revolution.flexiarg"
-      :hits 1
+      :hits 2
       :title "A Block Is One Revolution of the Futonic Loop"
       :line 1
       :sha256 "ec1829122cccb3031485e3f2e39eba9ed98c10b2533851016ad1fe22dc70279d"
@@ -8977,7 +10299,7 @@
     {
       :id "structure/hinge-entry-slots"
       :path "futon3/library/structure/hinge-entry-slots.flexiarg"
-      :hits 2
+      :hits 3
       :title "Hinge-Log Entry Slot Structure (MVSG-Aligned)"
       :line 1
       :sha256 "f66bd46667340840297129ede34c386cee82798d4ce9bc52360d26a3efd589db"
@@ -8995,7 +10317,7 @@
     {
       :id "structure/interest-event-vocabulary"
       :path "futon3/library/structure/interest-event-vocabulary.flexiarg"
-      :hits 6
+      :hits 7
       :title "What state-transition is this checkpoint asserting against an interest-network entity?"
       :line 1
       :sha256 "b51296613be9c61bddf9b58d082eaaecbad91ef139373f73438762b2e0943405"
@@ -9013,7 +10335,7 @@
     {
       :id "structure/unresolved-tensions-at-closure"
       :path "futon3/library/structure/unresolved-tensions-at-closure.flexiarg"
-      :hits 3
+      :hits 4
       :title "What Tensions Would We Leave Unresolved If We Closed Here?"
       :line 1
       :sha256 "f0e48e155b61616b77d26f45f4001fca794604d8d42fada0c90a6aff3723b81f"
@@ -9049,7 +10371,7 @@
     {
       :id "structure/whose-question-is-this"
       :path "futon3/library/structure/whose-question-is-this.flexiarg"
-      :hits 2
+      :hits 4
       :title "Whose Question Is This?"
       :line 1
       :sha256 "ec1657a0a2995da11b18e3ee847b4915725486a8f25685b68ed4961a80519de9"
@@ -9067,7 +10389,7 @@
     {
       :id "system-coherence/bind-open-questions-to-closure-mechanisms"
       :path "futon3/library/system-coherence/bind-open-questions-to-closure-mechanisms.flexiarg"
-      :hits 2
+      :hits 3
       :title "Bind Open Questions to Closure Mechanisms"
       :line 1
       :sha256 "2fef15e6e68fa1fb5385a20ea78db4602c169fa8dfb6748a090e3549b42df588"
@@ -9085,7 +10407,7 @@
     {
       :id "system-coherence/correct-effect-claims-with-relevant-denominators"
       :path "futon3/library/system-coherence/correct-effect-claims-with-relevant-denominators.flexiarg"
-      :hits 1
+      :hits 3
       :title "Correct Effect Claims with Relevant Denominators"
       :line 1
       :sha256 "5bd8a91a8badec2493558cafee9d4c4e87f10e1ca593d993bff353f36124773b"
@@ -9097,6 +10419,24 @@
       :rationale "THEN: “Re-express activity as proportionate reach before making effect claims. + COMPOSITIONS: (1) Identify the affected population: academic staff, PGRs, the combined research community, or another population that matches the” — functional: makes a claim independently checkable or preserves its trace."
       :quote-field "THEN"
       :quote "Re-express activity as proportionate reach before making effect claims. + COMPOSITIONS: (1) Identify the affected population: academic staff, PGRs, the combined research community, or another population that matches the"
+      :flags [
+      ]
+    }
+    {
+      :id "system-coherence/match-region-weight-to-load"
+      :path "futon3/library/system-coherence/match-region-weight-to-load.flexiarg"
+      :hits 1
+      :title "Match Region Weight to Argumentative Load"
+      :line 1
+      :sha256 "5fd7007b1848d3c88713c5023a60ea5568bcdc32b393cc8d65b88a0cac1cc9b7"
+      :kind :practice
+      :stage :act
+      :stage-mode :functional
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Match region weight to argumentative load. Pick one composition. + COMPOSITIONS: (1) Compress in place. Augmentation schema: {:region <region-name> :compression-target <span-or-entity-id> :compression-ratio <approximate factor> :preserved-content <list>}” — functional: revises prose allocation by compressing, moving or reframing essay regions."
+      :quote-field "THEN"
+      :quote "Match region weight to argumentative load. Pick one composition. + COMPOSITIONS: (1) Compress in place. Augmentation schema: {:region <region-name> :compression-target <span-or-entity-id> :compression-ratio <approximate factor> :preserved-content <list>}"
       :flags [
       ]
     }
@@ -9193,7 +10533,7 @@
     {
       :id "system-coherence/turn-design-into-checks"
       :path "futon3/library/system-coherence/turn-design-into-checks.flexiarg"
-      :hits 2
+      :hits 3
       :title "Turn Design Into Checks"
       :line 1
       :sha256 "f374859ba56ef2f19b98b4cdb8b01d08ca87eca11543b21adc5d306a956dacd8"
@@ -9227,6 +10567,24 @@
       ]
     }
     {
+      :id "t3/living-materials-stewardship"
+      :path "futon3/library/t3/living-materials-stewardship.flexiarg"
+      :hits 1
+      :title "Shared Maintenance"
+      :line 1
+      :sha256 "81aea51ddec05913fb3556201f11c6e8d9b8f7a2709ed6d1bc0e1603edcf20c8"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Treat materials as a living product: assign stewards, publish update cadence, and provide a lightweight change log. Add an adaptation log so local changes can be upstreamed or documented.” — functional: assigns stewards and a cadence for sharing material updates."
+      :quote-field "THEN"
+      :quote "Treat materials as a living product: assign stewards, publish update cadence, and provide a lightweight change log. Add an adaptation log so local changes can be upstreamed or documented."
+      :flags [
+      ]
+    }
+    {
       :id "t4r/exec-summary-tree"
       :path "futon3/library/t4r/exec-summary.flexiarg"
       :hits 1
@@ -9245,9 +10603,27 @@
       ]
     }
     {
+      :id "t4r/rationale"
+      :path "futon3/library/t4r/rationale.flexiarg"
+      :hits 1
+      :title "1 Rationale for the choice of research subject area"
+      :line 1
+      :sha256 "b3a68cad936e448f3968020158d26c6a35c11858f76b95bfc61237eb8287f80b"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Introduce a REPL-style infrastructure that turns research into a learning system.” — topical: describes a research infrastructure for reflexive learning and revision."
+      :quote-field "THEN"
+      :quote "Introduce a REPL-style infrastructure that turns research into a learning system."
+      :flags [
+      ]
+    }
+    {
       :id "t4r/supplement"
       :path "futon3/library/t4r/supplement.flexiarg"
-      :hits 1
+      :hits 3
       :title "Supplement workshop transcript"
       :line 1
       :sha256 "17212c8e57e32e75be3694e56d9b8e1c15f3af5451839a729c2cefb25ca4eafa"
@@ -9265,7 +10641,7 @@
     {
       :id "t4r/support"
       :path "futon3/library/t4r/support.flexiarg"
-      :hits 2
+      :hits 3
       :title "6 Additional financial or other support resources"
       :line 1
       :sha256 "ddbaea176bc60d2c4d56acfee5728bedf6f40253b9c11792a8b41a4eb16bd051"
@@ -9283,7 +10659,7 @@
     {
       :id "test-registry/judge-adequacy"
       :path "futon3/library/test-registry/judge-adequacy.flexiarg"
-      :hits 1
+      :hits 6
       :title "The Reviewer's Work Is Adequacy, Not Execution"
       :line 1
       :sha256 "e01ff13888dfed46ed085aee758fed4d33d731e9bb3d9cad3fead44dbe902ccf"
@@ -9299,9 +10675,63 @@
       ]
     }
     {
+      :id "test-registry/meter-the-saving"
+      :path "futon3/library/test-registry/meter-the-saving.flexiarg"
+      :hits 3
+      :title "Meter What Was Saved, Including When Nothing Was"
+      :line 1
+      :sha256 "20a23b7c6ba9c5fc57356cb9a7589f3ce0c2a6173777325f2b5acc9878d31aad"
+      :kind :practice
+      :stage :perceive
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Meter per namespace and per lane, and re-price declared rates from the meters.” — functional: measures execution and overhead to determine actual savings."
+      :quote-field "THEN"
+      :quote "Meter per namespace and per lane, and re-price declared rates from the meters."
+      :flags [
+      ]
+    }
+    {
+      :id "test-registry/outlive-the-process"
+      :path "futon3/library/test-registry/outlive-the-process.flexiarg"
+      :hits 1
+      :title "Warrants And Refusals Both Outlive The Minting Process"
+      :line 1
+      :sha256 "90f6d13121e38f4365614485c7e4e5f9cf4d2d2f12593aeba94696462abb39ff"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “Force the durable backend at entry-point resolution, record refusals in the operation's own ledger, and keep readers tolerant of refusal entries.” — functional: preserves both warrants and refusals in durable evidence storage."
+      :quote-field "THEN"
+      :quote "Force the durable backend at entry-point resolution, record refusals in the operation's own ledger, and keep readers tolerant of refusal entries."
+      :flags [
+      ]
+    }
+    {
+      :id "test-registry/register-the-run"
+      :path "futon3/library/test-registry/register-the-run.flexiarg"
+      :hits 8
+      :title "The Author Runs Tests Once, Through The Registry"
+      :line 1
+      :sha256 "35367c3376b23bc28dd3cc0d9e67bf98de57db44ce8b0c7223764c106e9c27ec"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “Run through the registry with an explicit, bounded classpath and declared test environment; register intent and result; refuse typedly when inputs or environment cannot be fingerprinted.” — functional: registers exact test inputs, environment and results as a durable warrant."
+      :quote-field "THEN"
+      :quote "Run through the registry with an explicit, bounded classpath and declared test environment; register intent and result; refuse typedly when inputs or environment cannot be fingerprinted."
+      :flags [
+      ]
+    }
+    {
       :id "test-registry/rerun-when-the-warrant-fails"
       :path "futon3/library/test-registry/rerun-when-the-warrant-fails.flexiarg"
-      :hits 1
+      :hits 4
       :title "Full Rerun Only When The Warrant Fails Or The Lane Demands It"
       :line 1
       :sha256 "384762b422950de50b9711c505a2d74264b7a74e9f45cbd233d04e0ee5883724"
@@ -9317,9 +10747,27 @@
       ]
     }
     {
+      :id "test-registry/spot-check-at-the-declared-rate"
+      :path "futon3/library/test-registry/spot-check-at-the-declared-rate.flexiarg"
+      :hits 2
+      :title "Spot-Check At A Declared Rate, And Say What A Spot-Check Can Show"
+      :line 1
+      :sha256 "22916feaa0572e4f8b84cda8bad9cab52f7379df18ccdd6e894a75f9d341591e"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "R9"
+      :confidence :high
+      :rationale "THEN: “Run one declared, recorded test at the declared rate as a reproduction check.” — functional: independently spot-checks whether the recorded execution reproduces."
+      :quote-field "THEN"
+      :quote "Run one declared, recorded test at the declared rate as a reproduction check."
+      :flags [
+      ]
+    }
+    {
       :id "test-registry/warrant-rides-the-handoff"
       :path "futon3/library/test-registry/warrant-rides-the-handoff.flexiarg"
-      :hits 1
+      :hits 8
       :title "The Warrant Travels With The Handoff"
       :line 1
       :sha256 "4ea0872fd824982c0b83ae94e52577b890c111dc1bdc4fcc72dd6f498095cc5a"
@@ -9337,7 +10785,7 @@
     {
       :id "transition/f0-f4-boundary"
       :path "futon3/library/transition/prototype1-transition.multiarg"
-      :hits 8
+      :hits 10
       :title "Separate FUTON0 Signals from FUTON4 Footholds"
       :line 1
       :sha256 "b046439cd7bd7e0cc6ed5b68e7a98e68dd9205598da3e95fb398cd9bea3a30e3"
@@ -9373,9 +10821,27 @@
       ]
     }
     {
+      :id "translation/bind-to-the-source"
+      :path "futon3/library/translation/bind-to-the-source.flexiarg"
+      :hits 1
+      :title "Bind The Translation To Exact Source Bytes"
+      :line 1
+      :sha256 "090b884ab2dd93380696d7d2eb7347d313ae05a19c4d348417de34fc5e8f4617"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Bind by content hash and named form, and refuse on drift.” — functional: binds a translation to its exact source and refuses drift."
+      :quote-field "THEN"
+      :quote "Bind by content hash and named form, and refuse on drift."
+      :flags [
+      ]
+    }
+    {
       :id "translation/route-the-untranslatable"
       :path "futon3/library/translation/route-the-untranslatable.flexiarg"
-      :hits 1
+      :hits 3
       :title "Refuse What Cannot Be Translated, And Route It With The Reason"
       :line 1
       :sha256 "24d58b76a4293bd31d300d4301d542a29d88ef57ef6da782cbc88d20b9cf8662"
@@ -9387,6 +10853,24 @@
       :rationale "THEN: “Refuse typedly, route, and count by cause.” — functional: routes work, roles, or communication between parties."
       :quote-field "THEN"
       :quote "Refuse typedly, route, and count by cause."
+      :flags [
+      ]
+    }
+    {
+      :id "ukrns/assumptions-commons"
+      :path "futon3/library/ukrns/assumptions-commons.flexiarg"
+      :hits 2
+      :title "Assumptions Commons — Governance of the Shared Evidence File (Implementation Pattern)"
+      :line 1
+      :sha256 "6e4b81685093895ba68ff6f72b739b751460cec1311a3c0f882c3c68f46fd96e"
+      :kind :mixed
+      :stage :believe
+      :stage-mode :functional-and-topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “+ COMPOSITIONS: (1) Single maintainer + pull-request review: one named maintainer owns the file; contributors open PRs; maintainer reviews and merges. Gives up contributor autonomy; simplest to operate. (2) Working-group review: a small committee reviews all” — functional-and-topical: governs changes to the programme's declarative evidence state."
+      :quote-field "THEN"
+      :quote "+ COMPOSITIONS: (1) Single maintainer + pull-request review: one named maintainer owns the file; contributors open PRs; maintainer reviews and merges. Gives up contributor autonomy; simplest to operate. (2) Working-group review: a small committee reviews all"
       :flags [
       ]
     }
@@ -9447,7 +10931,7 @@
     {
       :id "ukrns/design-as-function-of-evidence"
       :path "futon3/library/ukrns/design-as-function-of-evidence.flexiarg"
-      :hits 4
+      :hits 5
       :title "Treat Design as a Function of Evidence"
       :line 1
       :sha256 "95b59faea8f4811c28355cd73f8b2fa7ef16754cb92a3cad1655659d955d6b45"
@@ -9465,7 +10949,7 @@
     {
       :id "ukrns/design-state-lineage"
       :path "futon3/library/ukrns/design-state-lineage.flexiarg"
-      :hits 2
+      :hits 3
       :title "Design-State Lineage — Versioned Service-Design Changes (Implementation Pattern)"
       :line 1
       :sha256 "0762dff39ad21bcf6fa7d427170f8d97beff63bf5b064f5dc918ab6961874342"
@@ -9483,7 +10967,7 @@
     {
       :id "ukrns/distinguish-delivery-from-practice-change"
       :path "futon3/library/ukrns/distinguish-delivery-from-practice-change.flexiarg"
-      :hits 2
+      :hits 3
       :title "Distinguish Delivery from Practice Change (Sketch)"
       :line 1
       :sha256 "3c6e430e6075c893735102de2c80cb5a80f1502c949790d03a14f21943ffc11f"
@@ -9625,6 +11109,24 @@
       ]
     }
     {
+      :id "ukrns/scale-register"
+      :path "futon3/library/ukrns/scale-register.flexiarg"
+      :hits 1
+      :title "Scale Register — Publishing Capability Scale Choices (Implementation Pattern)"
+      :line 1
+      :sha256 "c64abbe3367d8ed9d3c5c568347bad0d7f807b6697c7bd01fe4f807d55e7f395"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “+ COMPOSITIONS: (1) Central register: a single artefact (markdown, EDN, or similar) listing every capability with scale, rationale, date, revision history. Gives up per-capability depth. (2) Capability-by-capability docs: each capability has its own document” — functional: maintains an inspectable record of capability-scale decisions and revisions."
+      :quote-field "THEN"
+      :quote "+ COMPOSITIONS: (1) Central register: a single artefact (markdown, EDN, or similar) listing every capability with scale, rationale, date, revision history. Gives up per-capability depth. (2) Capability-by-capability docs: each capability has its own document"
+      :flags [
+      ]
+    }
+    {
       :id "ukrns/separate-evidence-gaps-from-implementation-decisions"
       :path "futon3/library/ukrns/separate-evidence-gaps-from-implementation-decisions.flexiarg"
       :hits 1
@@ -9639,6 +11141,24 @@
       :rationale "THEN: “Name the evidence gaps explicitly; name the implementation decisions explicitly; and refuse to let one masquerade as the other.” — functional: records, represents, or revises what is known."
       :quote-field "THEN"
       :quote "Name the evidence gaps explicitly; name the implementation decisions explicitly; and refuse to let one masquerade as the other."
+      :flags [
+      ]
+    }
+    {
+      :id "ukrns/treat-funder-cycles-as-operational-rhythm"
+      :path "futon3/library/ukrns/treat-funder-cycles-as-operational-rhythm.flexiarg"
+      :hits 1
+      :title "Treat Funder Cycles as Operational Rhythm (Sketch)"
+      :line 1
+      :sha256 "a5577d9ae6763fad0d0e3d77b68f4e86afa7069dd0cee602d38e6104b0990661"
+      :kind :subject
+      :stage :evaluate
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Build plans, expectations, and interpretation around the funding rhythm explicitly rather than treating it as noise outside the design.” — topical: uses funding cycles to interpret conditions and plan expectations."
+      :quote-field "THEN"
+      :quote "Build plans, expectations, and interpretation around the funding rhythm explicitly rather than treating it as noise outside the design."
       :flags [
       ]
     }
@@ -9663,7 +11183,7 @@
     {
       :id "vsat-next/ai-assisted-professional-storycrafting"
       :path "futon3/library/vsatlas/vsat-vsatlas.multiarg"
-      :hits 2
+      :hits 3
       :title "AI-Assisted Professional Storycrafting"
       :line 68
       :sha256 "7ca36d03501af9e3809a3c8aab55d9631d7e952330d1c8e04ed79baa32abd0d5"
@@ -9680,9 +11200,28 @@
       ]
     }
     {
-      :id "vsat/community-engagement"
+      :id "vsat/360-story-container"
       :path "futon3/library/vsatlas/vsat-vsatlas.multiarg"
       :hits 1
+      :title "360° Storytelling Container"
+      :line 1
+      :sha256 "7ca36d03501af9e3809a3c8aab55d9631d7e952330d1c8e04ed79baa32abd0d5"
+      :kind :subject
+      :stage :act
+      :stage-mode :topical
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Provide a navigable 360° scene graph where each node is an image and links form the backbone of the story.” — topical: provides the navigable scene graph used to construct immersive stories."
+      :quote-field "THEN"
+      :quote "Provide a navigable 360° scene graph where each node is an image and links form the backbone of the story."
+      :flags [
+        "multiarg-source"
+      ]
+    }
+    {
+      :id "vsat/community-engagement"
+      :path "futon3/library/vsatlas/vsat-vsatlas.multiarg"
+      :hits 3
       :title "Community Engagement Platform"
       :line 55
       :sha256 "7ca36d03501af9e3809a3c8aab55d9631d7e952330d1c8e04ed79baa32abd0d5"
@@ -9720,7 +11259,7 @@
     {
       :id "vsatelier/annotation-as-commitment"
       :path "futon3/library/vsatelier/annotation-as-commitment.flexiarg"
-      :hits 1
+      :hits 2
       :title "Annotation as Commitment"
       :line 1
       :sha256 "9f4365d5b96bd8929d2962d40cfa7107344edbc97e53773e2d7106390cccde81"
@@ -9772,9 +11311,28 @@
       ]
     }
     {
+      :id "vsatlas/connected-story-world"
+      :path "futon3/library/vsatlas/vsat-vsatlas.multiarg"
+      :hits 1
+      :title "Connected Story World"
+      :line 108
+      :sha256 "7ca36d03501af9e3809a3c8aab55d9631d7e952330d1c8e04ed79baa32abd0d5"
+      :kind :subject
+      :stage :believe
+      :stage-mode :topical
+      :node nil
+      :confidence :medium
+      :rationale "THEN: “Layer linking + annotation across stories so participants can see how experiences relate.” — topical: adds explicit relationships and annotations across existing stories."
+      :quote-field "THEN"
+      :quote "Layer linking + annotation across stories so participants can see how experiences relate."
+      :flags [
+        "multiarg-source"
+      ]
+    }
+    {
       :id "vsatlas/facilitation-scaffolds"
       :path "futon3/library/vsatlas/vsat-vsatlas.multiarg"
-      :hits 5
+      :hits 7
       :title "Facilitation Scaffolds"
       :line 229
       :sha256 "7ca36d03501af9e3809a3c8aab55d9631d7e952330d1c8e04ed79baa32abd0d5"
@@ -9791,9 +11349,27 @@
       ]
     }
     {
+      :id "vsatlas/festival-model"
+      :path "futon3/library/vsatlas/festival-model.flexiarg"
+      :hits 1
+      :title "Festival Model"
+      :line 1
+      :sha256 "9f433839cbcff4e852aa856045dcb34ca2e93b858b1953a01d9d63bc265eb570"
+      :kind :subject
+      :stage :none
+      :stage-mode :topical
+      :node nil
+      :confidence :low
+      :rationale "THEN: “Treat the manifold as a festival—an evolving scene where newcomers, veterans, and stewards co-create shared worlds.” — topical: a festival metaphor for co-creation does not specify one operational stage."
+      :quote-field "THEN"
+      :quote "Treat the manifold as a festival—an evolving scene where newcomers, veterans, and stewards co-create shared worlds."
+      :flags [
+      ]
+    }
+    {
       :id "vsatlas/interpretation-offering"
       :path "futon3/library/vsatlas/vsat-vsatlas.multiarg"
-      :hits 1
+      :hits 3
       :title "Interpretation Offering"
       :line 289
       :sha256 "7ca36d03501af9e3809a3c8aab55d9631d7e952330d1c8e04ed79baa32abd0d5"
@@ -9884,7 +11460,7 @@
     {
       :id "vsatlas/stewardship-layer"
       :path "futon3/library/vsatlas/stewardship-layer.flexiarg"
-      :hits 2
+      :hits 4
       :title "Stewardship Layer"
       :line 1
       :sha256 "9eb3573db71d2c5bf160d7e3297d2ac3a76edf282331b8f8a88b0119945cb6fa"
@@ -9921,7 +11497,7 @@
     {
       :id "vsatlatarium/cached-layout-computation"
       :path "futon3/library/vsatlatarium/cached-layout-computation.flexiarg"
-      :hits 11
+      :hits 13
       :title "Cached Layout Computation"
       :line 1
       :sha256 "59cafb808ea328dfb324cbcf7a010dd2f50689323b58a22ae322fb507df2a3fa"
@@ -10029,7 +11605,7 @@
     {
       :id "war-machine/coordination-bottleneck"
       :path "futon3/library/war-machine/coordination-bottleneck.flexiarg"
-      :hits 5
+      :hits 6
       :title "Coordination Bottleneck"
       :line 1
       :sha256 "eb31d1c55786aab8132452188c97f8f24d1976382dba4d6f7418c8ec1404fa1c"
@@ -10047,7 +11623,7 @@
     {
       :id "war-machine/half-blind-observation"
       :path "futon3/library/war-machine/half-blind-observation.flexiarg"
-      :hits 1
+      :hits 2
       :title "Half-Blind Observation"
       :line 1
       :sha256 "3348a01d6f44178f88fbe8ee48ed9953b19809f5fa9c4572f23ea0d9a137781a"
@@ -10065,7 +11641,7 @@
     {
       :id "war-machine/ideal-actual-gap"
       :path "futon3/library/war-machine/ideal-actual-gap.flexiarg"
-      :hits 5
+      :hits 6
       :title "Ideal Actual Gap"
       :line 1
       :sha256 "cf9368aa42a4d5cc096edca6d085a6b0314ed446638e10b8a3e9ab2c2d2d67b0"
@@ -10191,7 +11767,7 @@
     {
       :id "war-room/wr-13-futonic-debt-is-paid-in-order"
       :path "futon3/library/war-room/wr-13-futonic-debt-is-paid-in-order.flexiarg"
-      :hits 2
+      :hits 4
       :title "WR-13: Futonic Debt Is Paid In Order — Predecessor Work First, Library Hygiene Deferred"
       :line 1
       :sha256 "59ea627924ac5e1074509875f592d5257380ab3862ac59a126388e3e8e8bd430"
@@ -10209,7 +11785,7 @@
     {
       :id "war-room/wr-14-predecessor-completion-pull-is-a-fourth-next-move-criterion"
       :path "futon3/library/war-room/wr-14-predecessor-completion-pull-is-a-fourth-next-move-criterion.flexiarg"
-      :hits 3
+      :hits 7
       :title "WR-14: Predecessor-Completion Pull Is A Fourth Next-Move Criterion"
       :line 1
       :sha256 "7b941f15f2a36f5c31d80f22917c2e0f10ea20d975bc153491787a81c8cd60ff"
@@ -10245,7 +11821,7 @@
     {
       :id "war-room/wr-16-operationalised-exploit-loops-are-first-class-observation-channels"
       :path "futon3/library/war-room/wr-16-operationalised-exploit-loops-are-first-class-observation-channels.flexiarg"
-      :hits 9
+      :hits 14
       :title "WR-16: Operationalised Exploit-Loops Are First-Class Observation Channels"
       :line 1
       :sha256 "8472c4bef2a205a53375447edf9536527812f34bf5dc6464ce3311705c27e916"
@@ -10263,7 +11839,7 @@
     {
       :id "war-room/wr-17-futon0-as-cyborg-futon7-as-markov-blanket"
       :path "futon3/library/war-room/wr-17-futon0-as-cyborg-futon7-as-markov-blanket.flexiarg"
-      :hits 19
+      :hits 25
       :title "WR-17: futon0-As-Cyborg / futon7-As-Markov-Blanket Is Stack Architecture"
       :line 4
       :sha256 "97a31f3b333ac3aabdadff48998ce0b421d92fd1d59373fb8f60aac63d3fedb4"
@@ -10281,7 +11857,7 @@
     {
       :id "war-room/wr-18-war-machine-is-demonstrated-not-hypothesised"
       :path "futon3/library/war-room/wr-18-war-machine-is-demonstrated-not-hypothesised.flexiarg"
-      :hits 19
+      :hits 25
       :title "WR-18: The War Machine Is Demonstrated, Not Hypothesised"
       :line 1
       :sha256 "8de46655c6a7970227cdd4bd1c73d469cb15c9906cc6be2722a90293e46f5476"
@@ -10299,7 +11875,7 @@
     {
       :id "war-room/wr-19-tension-must-generate-not-only-rank"
       :path "futon3/library/war-room/wr-19-tension-must-generate-not-only-rank.flexiarg"
-      :hits 5
+      :hits 6
       :title "WR-19: Tension Must GENERATE, Not Only Rank"
       :line 1
       :sha256 "445636ae6e28710e5416b9d9fd7379a4a54f6e2c48aff269bc0fee22725d3853"
@@ -10335,7 +11911,7 @@
     {
       :id "war-room/wr-20-action-class-inventory-becomes-data"
       :path "futon3/library/war-room/wr-20-action-class-inventory-becomes-data.flexiarg"
-      :hits 4
+      :hits 6
       :title "WR-20: The Action-Class Inventory Becomes Data, Governed By One Self-Similar Primitive"
       :line 1
       :sha256 "3d4074f9b648699a52b21427cb60014267741d96489d544d1d755766d5f2d6cd"
@@ -10371,7 +11947,7 @@
     {
       :id "war-room/wr-23-upstream-trackers-are-stack-surfaces"
       :path "futon3/library/war-room/wr-23-upstream-trackers-are-stack-surfaces.flexiarg"
-      :hits 6
+      :hits 10
       :title "WR-23: Upstream Trackers Are Stack Surfaces"
       :line 1
       :sha256 "4d98d6f1d24d465ab6d43564971de2f339d2f2b7bed6f579e7815c849667f508"
@@ -10405,9 +11981,27 @@
       ]
     }
     {
+      :id "war-room/wr-25-good-news-gets-the-same-evidence-discipline-as-bad"
+      :path "futon3/library/war-room/wr-25-good-news-gets-the-same-evidence-discipline-as-bad.flexiarg"
+      :hits 1
+      :title "WR-25: Good News Gets the Same Evidence Discipline as Bad"
+      :line 1
+      :sha256 "178af73f35834b5a0245420deac0e58d2e69558221db17d72aa743ba8f37fcdd"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Apply the evidence rule symmetrically. Let operator-reported facts affect ordering, including lane preemption and which tension becomes decidable, but do not let them affect runway, probability, or marginal figures until an artifact anchors them. State this” — functional: withholds numerical posterior updates until evidence anchors the report."
+      :quote-field "THEN"
+      :quote "Apply the evidence rule symmetrically. Let operator-reported facts affect ordering, including lane preemption and which tension becomes decidable, but do not let them affect runway, probability, or marginal figures until an artifact anchors them. State this"
+      :flags [
+      ]
+    }
+    {
       :id "war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch"
       :path "futon3/library/war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch.flexiarg"
-      :hits 9
+      :hits 13
       :title "WR-26: A Capability Switched Off Carries Its Re-Arm Condition, in Writing"
       :line 1
       :sha256 "0009c4f9ec41d1a3e5ad132e62bb1de0ea1500b2de70300ccc0047f3cc543c95"
@@ -10443,7 +12037,7 @@
     {
       :id "war-room/wr-3-social-exotype-before-implementation"
       :path "futon3/library/war-room/wr-3-social-exotype-before-implementation.flexiarg"
-      :hits 7
+      :hits 8
       :title "WR-3: Social Exotype Before Implementation"
       :line 1
       :sha256 "59f7301ec770f3da7cb0cd4db06cf4c655189527a32a8d5537d4e9ec733d9c05"
@@ -10479,7 +12073,7 @@
     {
       :id "war-room/wr-5-war-machine-is-not-a-mission"
       :path "futon3/library/war-room/wr-5-war-machine-is-not-a-mission.flexiarg"
-      :hits 3
+      :hits 5
       :title "WR-5: The War Machine Is Not a Mission"
       :line 1
       :sha256 "32ae0aef20759e6c65d8e5621ac19d533b0826e5af52c1d02018680567c8047d"
@@ -10515,7 +12109,7 @@
     {
       :id "war-room/wr-7-frames-interoperate-or-they-do-not-exist"
       :path "futon3/library/war-room/wr-7-frames-interoperate-or-they-do-not-exist.flexiarg"
-      :hits 5
+      :hits 6
       :title "WR-7: Frames Interoperate or They Don't Exist"
       :line 1
       :sha256 "62457ef12c231290720e94f7eda1a44fda870019182ea799e7a3146378e68a14"
@@ -10531,9 +12125,27 @@
       ]
     }
     {
+      :id "war-room/wr-8-typed-files-are-sources-of-truth"
+      :path "futon3/library/war-room/wr-8-typed-files-are-sources-of-truth.flexiarg"
+      :hits 1
+      :title "WR-8: Typed Files Are Sources Of Truth, Prose Is Regenerated"
+      :line 1
+      :sha256 "a82d4a19e82ef1a4dac3ec5b00afa9923513266149aaa923220bd1ac91190f19"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “The sixteen leaf-level and one stack-level typed argument files at the futon5a stories are the canonical self-model. Prose deliverables are generated by renderers and re-rendered when the drift detector reports a source change. Editing prose in place is a” — functional: maintains a canonical typed self-model from which prose is generated."
+      :quote-field "THEN"
+      :quote "The sixteen leaf-level and one stack-level typed argument files at the futon5a stories are the canonical self-model. Prose deliverables are generated by renderers and re-rendered when the drift detector reports a source change. Editing prose in place is a"
+      :flags [
+      ]
+    }
+    {
       :id "workday/close-then-reframe-focus"
       :path "futon3/library/workday/agenda.multiarg"
-      :hits 2
+      :hits 5
       :title "Close Then Reframe Focus"
       :line 19
       :sha256 "ad0fd8aaf5cb1bee4f1a7ac46a90ab736e95a2a654920e871a6e28808ee3db7f"
@@ -10547,6 +12159,24 @@
       :quote "Complete the current FOCUS to a clear \"finished enough\" artifact, then deliberately select the next FOCUS from the overrun set based on leverage rather than urgency."
       :flags [
         "multiarg-source"
+      ]
+    }
+    {
+      :id "workday/external-project-index"
+      :path "futon3/library/workday/external-project-index.flexiarg"
+      :hits 1
+      :title "External Project Index as System of Record"
+      :line 1
+      :sha256 "fce9d4288753aa3366d6c408cf073473aa100fcf0c39a26a72077e74bab65f77"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Maintain a minimal registry that maps project-id or name to entry URL + short intent + last-touched date, and add a periodic link-audit micro-loop that refreshes broken pointers and promotes better entry chats when needed.” — functional: maintains and refreshes a project navigation registry."
+      :quote-field "THEN"
+      :quote "Maintain a minimal registry that maps project-id or name to entry URL + short intent + last-touched date, and add a periodic link-audit micro-loop that refreshes broken pointers and promotes better entry chats when needed."
+      :flags [
       ]
     }
     {
@@ -10570,7 +12200,7 @@
     {
       :id "workday/single-focus-amidst-agenda"
       :path "futon3/library/workday/agenda.multiarg"
-      :hits 3
+      :hits 6
       :title "Single-Focus Amidst Agenda Saturation"
       :line 1
       :sha256 "ad0fd8aaf5cb1bee4f1a7ac46a90ab736e95a2a654920e871a6e28808ee3db7f"
@@ -10623,6 +12253,24 @@
       ]
     }
     {
+      :id "workshop/accountable-next-action-choice"
+      :path "futon3/library/workshop/accountable-next-action-choice.flexiarg"
+      :hits 2
+      :title "Accountable Next-Action Choice"
+      :line 1
+      :sha256 "b66d0944e798356cfe3052fe4dd3863a904ae02d076c1b52d2fe48c981d91b3c"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node "TRACE"
+      :confidence :high
+      :rationale "THEN: “The selector emits its account with the choice: candidates, ranked-actions with reasons, the received preference's provenance (operator pin or rehydrated posterior), the uncertainty typed, and the shared-budget arithmetic. Choosing without emitting the” — functional: emits the evidence account of a next-action choice."
+      :quote-field "THEN"
+      :quote "The selector emits its account with the choice: candidates, ranked-actions with reasons, the received preference's provenance (operator pin or rehydrated posterior), the uncertainty typed, and the shared-budget arithmetic. Choosing without emitting the"
+      :flags [
+      ]
+    }
+    {
       :id "workshop/distinguishing-cases-before-adoption"
       :path "futon3/library/workshop/distinguishing-cases-before-adoption.flexiarg"
       :hits 1
@@ -10641,9 +12289,63 @@
       ]
     }
     {
+      :id "workshop/feedback-reaches-every-participant"
+      :path "futon3/library/workshop/feedback-reaches-every-participant.flexiarg"
+      :hits 1
+      :title "Feedback Reaches Every Participant"
+      :line 1
+      :sha256 "a01e36ef28a9622c8ef9d924b8fe9aae2c9294e0d0661bf341f36ab190b13a74"
+      :kind :practice
+      :stage :coordination
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Each edge is a channel by the four-field test (payload, acceptance authority, reconciliation, budget); discoveries that should teach a human surface as typed reports with their evidence; stakeholder boards carry their own per-author precision rows; the edge” — functional: routes feedback through typed channels to every affected participant."
+      :quote-field "THEN"
+      :quote "Each edge is a channel by the four-field test (payload, acceptance authority, reconciliation, budget); discoveries that should teach a human surface as typed reports with their evidence; stakeholder boards carry their own per-author precision rows; the edge"
+      :flags [
+      ]
+    }
+    {
+      :id "workshop/honest-holes-gate-composed-claims"
+      :path "futon3/library/workshop/honest-holes-gate-composed-claims.flexiarg"
+      :hits 4
+      :title "Honest Holes Gate Composed Claims"
+      :line 1
+      :sha256 "d002d8468ad18755c1a313fedb0502841c663b8db74362371fd57e7a8593bb0c"
+      :kind :practice
+      :stage :assurance
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Before publish: for each composed dimension, emit either the hole list or a typed none {:checked-dimensions [...] :holes-found 0}; s4 becomes true only on typed evidence. Publishing with s4=false is permitted only with the falsity rendered in-band (the page” — functional: checks and declares gaps before publishing composed claims."
+      :quote-field "THEN"
+      :quote "Before publish: for each composed dimension, emit either the hole list or a typed none {:checked-dimensions [...] :holes-found 0}; s4 becomes true only on typed evidence. Publishing with s4=false is permitted only with the falsity rendered in-band (the page"
+      :flags [
+      ]
+    }
+    {
+      :id "workshop/open-proposals-named-adoption"
+      :path "futon3/library/workshop/open-proposals-named-adoption.flexiarg"
+      :hits 1
+      :title "Open Proposals, Named Adoption"
+      :line 1
+      :sha256 "7d1ef4a82a2e8cd5a02c1f76324a67de4e335d403a026a6ca63d1f4a63b0bc29"
+      :kind :practice
+      :stage :select
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “Capture at the point a typed gate refusal or checker exit is received, or an agent explicitly declines an action because of a noticed tension. Retain the event or command receipt, including exit status and diagnostic; a nonzero exit alone does not establish a” — functional: reserves binding authority for a named adoption decision."
+      :quote-field "THEN"
+      :quote "Capture at the point a typed gate refusal or checker exit is received, or an agent explicitly declines an action because of a noticed tension. Retain the event or command receipt, including exit status and diagnostic; a nonzero exit alone does not establish a"
+      :flags [
+      ]
+    }
+    {
       :id "workshop/records-carry-warrant"
       :path "futon3/library/workshop/records-carry-warrant.flexiarg"
-      :hits 1
+      :hits 4
       :title "Records Carry Warrant"
       :line 1
       :sha256 "2019b6eb54ab609a0dfa97fe56379c1df5ca845f4cf84f98b119b97138284db9"
@@ -10655,6 +12357,24 @@
       :rationale "THEN: “Attach the derivation: the named query or pure replay, the inputs digest, the corpus/registry version, and the assumption field when replay is impossible. Claims without warrant are typed absences, not errors — but a” — functional: makes a claim independently checkable or preserves its trace."
       :quote-field "THEN"
       :quote "Attach the derivation: the named query or pure replay, the inputs digest, the corpus/registry version, and the assumption field when replay is impossible. Claims without warrant are typed absences, not errors — but a"
+      :flags [
+      ]
+    }
+    {
+      :id "workshop/revise-patterns-from-observed-use"
+      :path "futon3/library/workshop/revise-patterns-from-observed-use.flexiarg"
+      :hits 1
+      :title "Revise Patterns from Observed Use"
+      :line 1
+      :sha256 "227597cc9569e08a0a730858ebfab1e32272a9d5af1887b21331bdf98703c820"
+      :kind :practice
+      :stage :believe
+      :stage-mode :functional
+      :node nil
+      :confidence :high
+      :rationale "THEN: “The reviewing agent records the pattern version, situation, evidence of following or departing from it, observed outcome, and uncertainty about the connection. Classify the finding before proposing a response: application error, scope mismatch, ineffective” — functional: updates authoritative patterns from observed outcomes while retaining their history."
+      :quote-field "THEN"
+      :quote "The reviewing agent records the pattern version, situation, evidence of following or departing from it, observed outcome, and uncertainty about the connection. Classify the finding before proposing a response: application error, scope mismatch, ineffective"
       :flags [
       ]
     }
@@ -10715,7 +12435,7 @@
     {
       :id "writing-coherence/meet-the-reader-where-they-are"
       :path "futon3/library/writing-coherence/meet-the-reader-where-they-are.flexiarg"
-      :hits 3
+      :hits 4
       :title "Meet the Reader Where They Are"
       :line 1
       :sha256 "a87809d0b5cb6b449ec7f0318ed4f4d05989bf13188e0fedbaf955176c4ba9cf"
@@ -10787,7 +12507,7 @@
     {
       :id "writing-coherence/plain-language-thesis"
       :path "futon3/library/writing-coherence/plain-language-thesis.flexiarg"
-      :hits 6
+      :hits 8
       :title "State Top-Level Claims in Plain Language"
       :line 1
       :sha256 "1ffaea8b4f2de2bb164f5372e4b51e57235742863bf06c8638f82c1180a43168"
@@ -10805,7 +12525,7 @@
     {
       :id "writing-coherence/section-bridge-missing"
       :path "futon3/library/writing-coherence/section-bridge-missing.flexiarg"
-      :hits 2
+      :hits 3
       :title "Bridge the Section Boundary"
       :line 1
       :sha256 "501dfa8c5b39219ae1db432e0690a7bd47fad1e9a742bc4e6b0ba8ed4ad3d6ea"
@@ -10841,7 +12561,7 @@
     {
       :id "writing-coherence/structural-style-inconsistency"
       :path "futon3/library/writing-coherence/structural-style-inconsistency.flexiarg"
-      :hits 10
+      :hits 11
       :title "Normalise Heading Conventions Across Logical Depths"
       :line 1
       :sha256 "70f3d2b0e511ba6172fb815a6ee0758fa307c314b2b7a296611280df303efa52"
@@ -10875,4 +12595,5 @@
       ]
     }
   ]
+  :extraction-repair "futon1b 5d9938c; strictly descending whole-window keyset pages verified; cutoff unchanged"
 }

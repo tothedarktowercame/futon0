@@ -11,22 +11,40 @@
     "joe-not-user-turn": 181,
     "wake-payload-turns": 2,
     "continuation-payload-turns": 120,
-    "matched": 2147,
-    "unmatched": 13523,
-    "excluded-all-prefix-candidates-automatic": 955,
-    "ambiguous-text-prefix": 323,
-    "park-resume-marker": 687,
+    "matched": 2882,
+    "unmatched": 14936,
+    "excluded-all-prefix-candidates-automatic": 1027,
+    "ambiguous-text-prefix": 356,
+    "park-resume-marker": 1102,
     "continuation-payload": 2,
-    "duplicate-retrieval-evidence": 136
+    "wake-payload": 1
   },
   "retrieval-pages": [
     {
       "count": 1000,
       "limit": 1000,
+      "scanned": 5000,
+      "next-cursor": {
+        "at": "2026-09-19T19:19:38.203693890Z",
+        "id": "e-c2fe9a49-c8d8-4abb-8647-f776ef3708f5"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 14000,
+      "next-cursor": {
+        "at": "2026-09-16T18:24:51.650522818Z",
+        "id": "e-c31eb16d-13bd-4a52-9a50-e2e8ade70918"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
       "scanned": 7000,
       "next-cursor": {
-        "at": "2026-09-12T18:41:31.672414246Z",
-        "id": "e-9f058c82-3135-4596-a8ed-c41d0e32c12c"
+        "at": "2026-09-14T16:21:01.238927071Z",
+        "id": "e-60c08a5b-5e94-4f39-a195-21b56f025344"
       }
     },
     {
@@ -34,8 +52,17 @@
       "limit": 1000,
       "scanned": 9000,
       "next-cursor": {
-        "at": "2026-09-10T20:59:35.530107837Z",
-        "id": "e-74d66b1a-2c0d-48b1-89ab-5762a36e77da"
+        "at": "2026-09-11T09:01:49.775114478Z",
+        "id": "e-6ecc9ef6-0398-4881-a626-d7bab44d7cd6"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-09-10T15:47:29.231254560Z",
+        "id": "e-afbd04e0-e570-4501-95e0-392de44c57fb"
       }
     },
     {
@@ -43,8 +70,8 @@
       "limit": 1000,
       "scanned": 5000,
       "next-cursor": {
-        "at": "2026-09-10T08:37:32.891587103Z",
-        "id": "e-7b01e08b-0b9d-4a93-bdde-0d67f1600e69"
+        "at": "2026-09-10T02:43:05.069310025Z",
+        "id": "e-01ae4a7f-3ad6-4574-9904-30c63b719c9f"
       }
     },
     {
@@ -52,98 +79,8 @@
       "limit": 1000,
       "scanned": 4000,
       "next-cursor": {
-        "at": "2026-09-09T21:53:38.571319234Z",
-        "id": "e-1e8de03e-fca5-4c26-9eb3-3ace4025ddee"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 4000,
-      "next-cursor": {
-        "at": "2026-09-09T11:38:45.690898949Z",
-        "id": "e-30516415-103a-42d8-ac9f-debc75bbdb41"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 6000,
-      "next-cursor": {
-        "at": "2026-09-08T13:50:42.306658947Z",
-        "id": "e-189e67c8-83af-4404-b752-5af56a2058c6"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 6000,
-      "next-cursor": {
-        "at": "2026-09-07T20:00:00.078729837Z",
-        "id": "e-499a299a-5b61-45f0-9c88-b9c3ea90cdfa"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 8000,
-      "next-cursor": {
-        "at": "2026-09-06T10:01:24.929115258Z",
-        "id": "e-236c0f81-07f1-4920-9ff6-7574280ac860"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 9000,
-      "next-cursor": {
-        "at": "2026-09-02T17:25:35.481779200Z",
-        "id": "e-45883299-4e48-4d93-add8-207b8d365a9c"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 9000,
-      "next-cursor": {
-        "at": "2026-09-01T02:26:58.532506404Z",
-        "id": "e-bf16ea78-3bbf-427c-b06b-7ae097843e25"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 6000,
-      "next-cursor": {
-        "at": "2026-08-31T10:02:05.898586989Z",
-        "id": "e-d7a807e4-7691-4826-865d-cde79bb2b8d5"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 6000,
-      "next-cursor": {
-        "at": "2026-08-30T15:14:38.468927430Z",
-        "id": "e-9a0de245-fbb5-4cd7-be7f-d00e08f63bfc"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 7000,
-      "next-cursor": {
-        "at": "2026-08-28T18:16:58.617510260Z",
-        "id": "e-5f79d892-727a-4819-8e69-8e731672542b"
-      }
-    },
-    {
-      "count": 1000,
-      "limit": 1000,
-      "scanned": 4000,
-      "next-cursor": {
-        "at": "2026-08-27T16:46:52.734788886Z",
-        "id": "e-209e8143-b8c6-4b02-8d58-5209a3c21f37"
+        "at": "2026-09-09T17:36:12.592181661Z",
+        "id": "e-dba16535-c23a-4917-96a5-11931e9f087a"
       }
     },
     {
@@ -151,17 +88,44 @@
       "limit": 1000,
       "scanned": 5000,
       "next-cursor": {
-        "at": "2026-08-26T18:00:17.156310709Z",
-        "id": "e-23002270-cf5c-49fe-9bef-c74b57132afe"
+        "at": "2026-09-09T00:45:27.830076188Z",
+        "id": "e-546f29b4-f89e-4686-8b18-d9c7150854a2"
       }
     },
     {
       "count": 1000,
       "limit": 1000,
-      "scanned": 8000,
+      "scanned": 6000,
       "next-cursor": {
-        "at": "2026-08-25T04:08:53.603458197Z",
-        "id": "e-23f4b283-5a43-4af9-89f4-c8c5a52c5711"
+        "at": "2026-09-08T05:37:51.685096734Z",
+        "id": "e-b38df2bc-76bb-4862-995c-482e50c5cfa9"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 5000,
+      "next-cursor": {
+        "at": "2026-09-07T12:14:33.575698348Z",
+        "id": "e-fcd3d439-f72a-4929-bd08-beb243f939f5"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 10000,
+      "next-cursor": {
+        "at": "2026-09-05T08:42:12.701410730Z",
+        "id": "e-e57d25ea-5b21-4bd2-9234-5fb0927e15f7"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 9000,
+      "next-cursor": {
+        "at": "2026-09-01T17:43:01.570856839Z",
+        "id": "e-99623a93-2ba6-4dc7-a255-adc0e890f009"
       }
     },
     {
@@ -169,14 +133,77 @@
       "limit": 1000,
       "scanned": 7000,
       "next-cursor": {
-        "at": "2026-08-23T20:02:38.142682736Z",
-        "id": "e-733fb274-30f5-4689-82f9-2fabec7127c3"
+        "at": "2026-08-31T21:39:30.826022543Z",
+        "id": "e-eea203a4-cee6-4d21-a06b-9968d3bb5b40"
       }
     },
     {
-      "count": 773,
+      "count": 1000,
       "limit": 1000,
-      "scanned": 4621
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-08-30T20:50:13.680871040Z",
+        "id": "e-c0d10c6c-268e-4171-83f4-2926432d6349"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-08-29T22:29:20.808037459Z",
+        "id": "e-c094bf7e-56e1-4cf6-8e6d-8ae4861f034b"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-08-28T03:34:44.544554931Z",
+        "id": "e-90dd9cf7-9e80-4a32-af74-2bed14686c52"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 5000,
+      "next-cursor": {
+        "at": "2026-08-27T04:48:18.113012689Z",
+        "id": "e-ad9c2b49-f086-47be-829c-a74e46448fc1"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-08-25T22:35:30.385662043Z",
+        "id": "e-3ff64c87-4200-44b8-897c-4dc4299f7bf5"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 7000,
+      "next-cursor": {
+        "at": "2026-08-24T12:48:08.019793451Z",
+        "id": "e-530970c3-6d93-4d52-8e93-fe7f7343e7d8"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 6000,
+      "next-cursor": {
+        "at": "2026-08-22T15:17:21.816267525Z",
+        "id": "e-60de8b7f-8ba0-4958-91e0-ef7fc98c94bd"
+      }
+    },
+    {
+      "count": 306,
+      "limit": 1000,
+      "scanned": 1980
     }
   ],
   "joe-pages": [
@@ -232,63 +259,71 @@
     }
   ],
   "snapshot-sha256": {
-    "retrieval.json": "c3cf67c0a87db5fcf9ceaa0b0ba6fee888a5ad1beca9deeb4361af7fcfcfab56",
-    "joe.json": "b52b3c0b37a1e27f0171589826c75ac58f1afe91b1a49253002fb033f297c22f"
+    "retrieval.json": "c3c8e946d3eb442263ccf3f35c2377b7f7c4c99cd537c8e0f899b86fe4d60df5",
+    "joe.json": "c2069a0b2af93f2a67cde361f381354266370ed3579df07ed15d1bfaf3876222"
   },
-  "unique-matched-turns": 2144,
-  "matched-retrievals": 2147,
-  "labelled-patterns": 595,
-  "top50-hits": 801,
+  "unique-matched-turns": 2879,
+  "matched-retrievals": 2882,
+  "labelled-patterns": 689,
+  "top50-hits": 1023,
   "unmatched-origin": {
-    "agent": 10759,
-    "no-origin": 208,
+    "agent": 11598,
+    "no-origin": 270,
     "a": 182,
-    "harness": 2330,
-    "operator": 44
+    "harness": 2829,
+    "operator": 57
   },
   "directory-count": 121,
   "flexiarg-files": 1404,
-  "remaining-flexiarg-files": 866,
+  "remaining-flexiarg-files": 779,
   "kind-stage": {
     "practice": {
-      "perceive": 24,
-      "believe": 56,
+      "perceive": 28,
+      "believe": 65,
       "evaluate": 11,
-      "select": 29,
-      "act": 20,
-      "assurance": 74,
-      "coordination": 35,
+      "select": 40,
+      "act": 23,
+      "assurance": 91,
+      "coordination": 39,
       "none": 0
     },
     "subject": {
-      "perceive": 29,
-      "believe": 54,
-      "evaluate": 22,
-      "select": 30,
-      "act": 38,
-      "assurance": 43,
-      "coordination": 22,
-      "none": 30
+      "perceive": 32,
+      "believe": 64,
+      "evaluate": 23,
+      "select": 34,
+      "act": 45,
+      "assurance": 46,
+      "coordination": 25,
+      "none": 33
     },
     "mixed": {
-      "perceive": 6,
-      "believe": 14,
+      "perceive": 7,
+      "believe": 17,
       "evaluate": 9,
-      "select": 12,
-      "act": 17,
+      "select": 14,
+      "act": 21,
       "assurance": 9,
-      "coordination": 10,
+      "coordination": 12,
       "none": 1
     }
   },
   "stage-hits": {
-    "perceive": 224,
-    "believe": 409,
-    "evaluate": 128,
-    "select": 234,
-    "act": 307,
-    "assurance": 491,
-    "coordination": 289,
-    "none": 65
-  }
+    "perceive": 301,
+    "believe": 535,
+    "evaluate": 164,
+    "select": 334,
+    "act": 391,
+    "assurance": 689,
+    "coordination": 391,
+    "none": 77
+  },
+  "extraction-timing": {
+    "started-unix": 1790019250.2908738,
+    "fetch-finished-unix": 1790019634.062366,
+    "fetch-seconds": 383.77
+  },
+  "pagination-repair-commit": "5d9938c",
+  "newly-labelled-patterns": 94,
+  "prior-cohort-commit": "0909c324570cc6a01b288aceee0bbdf0405b7391"
 }

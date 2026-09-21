@@ -58,14 +58,18 @@ def main():
     assert sum(r["flexiarg-files"] for r in priors) == len(list(root.rglob("*.flexiarg")))
     assert sum(r["remaining-flexiarg-files"] for r in priors) == manifest["remaining-flexiarg-files"]
     items = json.loads((HERE / "pattern-stage-blind-items-2026-09-21.json").read_text())
-    key = json.loads((HERE / "pattern-stage-blind-key-2026-09-21.json").read_text())["labels"]
+    blind_reference = json.loads((HERE / "pattern-stage-blind-key-2026-09-21.json").read_text())
+    key = blind_reference["labels"]
+    # Freeze the original exercise when new retrievals expand the labelled cohort.
+    population = blind_reference.get("sampling-population", labels)
+    label_index = {r["id"]: r for r in labels}
     rng = random.Random(items["seed"])
     expected = []
     for kind in KINDS:
-        expected += rng.sample([r for r in labels if r["kind"] == kind], 10)
+        expected += rng.sample([r for r in population if r["kind"] == kind], 10)
     rng.shuffle(expected)
     assert [r["id"] for r in items["items"]] == [r["id"] for r in expected]
-    assert key == {r["id"]: {"kind": r["kind"], "stage": r["stage"]} for r in expected}
+    assert key == {r["id"]: {"kind": label_index[r["id"]]["kind"], "stage": label_index[r["id"]]["stage"]} for r in expected}
     assert not any(k in r for r in items["items"] for k in ("kind", "stage", "hits", "rationale"))
     assert manifest["kind-stage"] == {k: {s: sum(r["kind"] == k and r["stage"] == s for r in labels) for s in STAGES} for k in KINDS}
     assert manifest["stage-hits"] == {s: sum(r["hits"] for r in labels if r["stage"] == s) for s in STAGES}

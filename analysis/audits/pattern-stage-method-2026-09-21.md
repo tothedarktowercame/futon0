@@ -1,5 +1,7 @@
 # Pattern-stage method and exceptions — 2026-09-21
 
+**Historical method record for the original incomplete 595-ID / 2,147-hit cohort.** Current counts, 94 additional source readings, corrected pagination, fixed blind-sample population and transcript coverage are in [PATTERN-STAGES.md](PATTERN-STAGES.md#re-extraction-after-futon1b-5d9938c). The attribution rule and rubric below are unchanged; numerical results below are retained as the pre-repair record and are superseded.
+
 **595 retrieved IDs labelled; 2,147 joined rank-one retrieval hits covered (100% of accepted joins).** The top 50 IDs cover **801 hits (37.31%)**. These hits attach to **2,144 distinct operator-turn evidence records**, or **63.10% of 3,398 eligible recorded operator turns**. The remaining turns are unassigned; this is not a census of all operator work. Labels are provisional source-text readings, pending Joe’s blind check.
 
 ## Kind × stage and the first count integral

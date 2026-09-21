@@ -1,36 +1,89 @@
 # Pattern stages — 2026-09-21
 
-**595 retrieved IDs labelled, covering all 2,147 accepted rank-one hits.** The top 50 account for **801 hits (37.31%)**. These are provisional pattern labels, pending Joe’s blind check.
+**Repaired extraction: 689 retrieved IDs labelled, covering all 2,882 accepted rank-one hits.** This adds 94 manually read patterns and 735 hits. The top 50 account for **1,023 hits (35.50%)**. Existing kind/stage assignments are unchanged; all labels remain provisional pending Joe’s blind check.
 
-| Stage | Practice | Subject (topical) | Mixed | Pattern IDs | Rank-one hits | Hit share |
+| Stage | Practice | Subject (topical) | Mixed | Pattern IDs | Hits | Hit share |
 |---|---:|---:|---:|---:|---:|---:|
-| perceive | 24 | 29 | 6 | 59 | 224 | 10.43% |
-| believe | 56 | 54 | 14 | 124 | 409 | 19.05% |
-| evaluate | 11 | 22 | 9 | 42 | 128 | 5.96% |
-| select | 29 | 30 | 12 | 71 | 234 | 10.90% |
-| act | 20 | 38 | 17 | 75 | 307 | 14.30% |
-| assurance | 74 | 43 | 9 | 126 | 491 | 22.87% |
-| coordination | 35 | 22 | 10 | 67 | 289 | 13.46% |
-| none | 0 | 30 | 1 | 31 | 65 | 3.03% |
-| **Total** | **269** | **268** | **78** | **595** | **2,147** | **100.00%** |
+| perceive | 28 | 32 | 7 | 67 | 301 | 10.44% |
+| believe | 65 | 64 | 17 | 146 | 535 | 18.56% |
+| evaluate | 11 | 23 | 9 | 43 | 164 | 5.69% |
+| select | 40 | 34 | 14 | 88 | 334 | 11.59% |
+| act | 23 | 45 | 21 | 89 | 391 | 13.57% |
+| assurance | 91 | 46 | 9 | 146 | 689 | 23.91% |
+| coordination | 39 | 25 | 12 | 76 | 391 | 13.57% |
+| none | 0 | 33 | 1 | 34 | 77 | 2.67% |
+| **Total** | **297** | **302** | **90** | **689** | **2,882** | **100.00%** |
 
-This first count integral sums retrieval events by inherited stage. It is **not token cost or hours**, nor proof that Joe performed the retrieved pattern. Subject stages are topical. Practice contributes 1,022 hits; subject 905; mixed 220. The hits attach to **2,144 distinct operator turns**, **63.10% of 3,398 eligible recorded turns**; two turns have multiple retrievals with different stages. Unassigned turns are not silently classified.
+This count integral sums retrieval events by inherited stage, **not token cost, hours, or proof that Joe performed the pattern**. Subject stages are topical. Practice contributes 1,384 hits; subject 1,211; mixed 287. The hits attach to **2,879 distinct operator turns, 84.73% of 3,398 eligible recorded turns**. Two turns have multiple retrievals with different stages; unassigned turns remain unclassified.
 
-Window: August 22 through the **September 21, 17:19:12 UTC extraction snapshot**. A same-session, unique text-prefix join links retrievals to preceding operator turns, with a six-hour bound. Truncated envelope matches remain heuristic. Of 17,637 unique retrieval records, 2,147 join, 1,644 are automatic/resume matches, 323 are ambiguous, and 13,523 are unmatched (mostly agent/harness traffic). The narrower window contains 2,205 exact resume-marker turns, not the source audit’s wider-window 3,024. All automatic resume/wake candidates are excluded from hit totals.
+Window: `2026-08-22` inclusive to **`2026-09-21T17:19:12.718167Z` exclusive**, unchanged. The guarded whole-window extraction took **383.77 seconds (6m24s)**: 21 retrieval pages / 20,306 rows, six Joe pages / 5,786 rows. Both concatenated streams are strictly descending and duplicate-free. No day-window substitute was used. The same-session, unique text-prefix join and six-hour bound are unchanged: 2,353 ordinary prefix joins and 529 truncated operator-envelope joins. These are heuristic associations, not foreign keys.
+
+Of 20,306 retrieval records, 2,882 join, 2,132 match automatic/excluded traffic, 356 are ambiguous, and 14,936 are unmatched. The operator census remains 5,605 user records, excluding 2,205 resume/continuation markers and two wake payloads, leaving 3,398. Neither missing joins nor retrieval relevance is inferred away.
 
 Files:
 
-- [Per-pattern labels](pattern-stages-2026-09-21.edn): source ID/path/line/hash, hits, kind, stage, optional node, confidence, and quoted rationale.
-- [Directory priors](pattern-stage-dir-priors-2026-09-21.edn): **121 directories**, including 111 containing `.flexiarg` files. Of **1,404 files**, 538 supply hit labels; **866 remaining files get directory priors only**. Priors are weak, representative-based, and excluded from hit totals.
-- [Method, exclusions, exceptions, and replay commands](pattern-stage-method-2026-09-21.md), [manifest](pattern-stage-manifest-2026-09-21.json), and [evidence-ID join ledger](pattern-stage-joins-2026-09-21.jsonl).
+- [Per-pattern labels](pattern-stages-2026-09-21.edn): ID/path/line/hash, hits, kind, stage, optional node, confidence and quoted rationale.
+- [Directory priors](pattern-stage-dir-priors-2026-09-21.edn): 121 directories, including 111 directly containing `.flexiarg`. Of 1,404 files, 625 supply hit labels; **779 remaining files get directory priors only**. Priors do not contribute to hits.
+- [Original method record](pattern-stage-method-2026-09-21.md), [current manifest](pattern-stage-manifest-2026-09-21.json), [evidence-ID joins](pattern-stage-joins-2026-09-21.jsonl), and [transcript coverage ledger](pattern-stage-transcript-coverage-2026-09-21.json).
 
-Rubric exceptions: 53 IDs resolve to multiarg sources, one outside the library, two to retired IDs in git history, and one to an excluded template. Thirty-nine problem-directory entries describe content or gaps rather than performed work. Configuration records, broad theory/problem stubs, and some contemplative material do not fit one stage: **31 none labels, 65 hits**. Three sources lack IF/THEN/BECAUSE clauses and explicitly quote their conclusion instead. Math techniques are subject as requested. R8 is absent from the supplied node mapping and is flagged. The method document lists the specific cases. Confidence: 476 high, 114 medium, five low; this assesses the source-to-rubric reading, not retrieval attribution.
+Rubric exceptions: 60 IDs resolve to multiarg sources, one outside the library, two retired IDs and one excluded template. Fifty problem-directory entries describe content or gaps rather than performed work. Configuration records and broad theory/metaphors can span or fall outside the rubric: **34 none labels, 77 hits**. Three sources lack IF/THEN/BECAUSE and explicitly quote their conclusion. Math techniques remain subject. R8 and R17 are absent from the supplied node-to-stage mapping and explicit uses are flagged. Confidence: 538 high, 140 medium, 11 low; this concerns source interpretation, not retrieval attribution.
 
-Joe’s blind check is in [the sibling Marimo notebook](../../../marimo-zone/notebooks/pattern-stages-20260921.py), avoiding codex-14’s concurrent business-ideas notebook edits. **Seed 20260921; ten patterns per kind; 30 total.** Cards hide the assigned labels and hit counts. Explicit submission saves `pattern-stage-joe-labels-2026-09-21.json`; partial labels persist. Confusion matrices and Cohen’s kappa remain **awaiting labels** until all cards are complete. No synthetic Joe labels are supplied.
+Joe’s [30-card blind notebook](../../../marimo-zone/notebooks/pattern-stages-20260921.py) and cards are unchanged. **Seed 20260921, ten per kind, sampled from the original 595-ID population.** That population is now frozen in the separate answer key so adding patterns cannot silently resample the exercise. No Joe labels were fabricated. The existing [Minard regeneration notebook](../../../marimo-zone/notebooks/minard-operator-work-20260921.py) rereads the current EDN and ledger without needing a notebook edit.
 
-Validated every source hash, quotation and header line, the hit/turn totals, directory coverage, and seeded sample. Five focused tests pass; `marimo check` passes and HTML export executes the initial awaiting-labels view. futon1b and the library remained read-only. No Clojure/Lisp was touched.
+## Re-extraction after futon1b 5d9938c
+
+Joe restarted the services with the pagination repair live. The guarded whole-window downloader now completes under the original cutoff. All original retrieved identities and accepted joins survive; 2,669 previously skipped retrievals add 735 accepted hits. Newly hit source texts were read and labelled with the same rubric, and every source hash, header line and quotation resolves.
+
+| Stage | Old hits | Old share | Repaired hits | Repaired share | Change (pp) |
+|---|---:|---:|---:|---:|---:|
+| perceive | 224 | 10.43% | 301 | 10.44% | +0.01 |
+| believe | 409 | 19.05% | 535 | 18.56% | -0.49 |
+| evaluate | 128 | 5.96% | 164 | 5.69% | -0.27 |
+| select | 234 | 10.90% | 334 | 11.59% | +0.69 |
+| act | 307 | 14.30% | 391 | 13.57% | -0.73 |
+| assurance | 491 | 22.87% | 689 | 23.91% | +1.04 |
+| coordination | 289 | 13.46% | 391 | 13.57% | +0.11 |
+| none | 65 | 3.03% | 77 | 2.67% | -0.36 |
+
+**The post–September 13 collapse is removed.** For a like-for-like Claude comparison, the numerator below is a transcript UUID whose payload uniquely matches a stage-labelled store turn, in the same session and within five minutes (exact whitespace-normalized text, unique in both directions). This stricter cross-source confirmation does not alter the six-hour retrieval join. Total joined store turns include Codex and notebook traffic and are shown separately; they must not be divided by a Claude-only denominator.
+
+| UTC date | Retrieval emissions | Old joined store turns | Repaired joined store turns | Covered Claude transcript turns | Claude transcript denominator | Coverage |
+|---|---:|---:|---:|---:|---:|---:|
+| 09-08 | 1244 | 80 | 80 | 79 | 85 | 92.9% |
+| 09-09 | 1730 | 63 | 63 | 48 | 53 | 90.6% |
+| 09-10 | 2066 | 24 | 24 | 6 | 6 | 100.0% |
+| 09-11 | 528 | 57 | 57 | 0 | 0 | n/a |
+| 09-12 | 359 | 53 | 53 | 36 | 39 | 92.3% |
+| 09-13 | 301 | 4 | 21 | 16 | 17 | 94.1% |
+| 09-14 | 226 | 7 | 84 | 80 | 92 | 87.0% |
+| 09-15 | 456 | 8 | 109 | 70 | 86 | 81.4% |
+| 09-16 | 608 | 9 | 102 | 67 | 73 | 91.8% |
+| 09-17 | 291 | 19 | 140 | 129 | 136 | 94.9% |
+| 09-18 | 231 | 20 | 113 | 111 | 121 | 91.7% |
+| 09-19 | 392 | 25 | 101 | 90 | 99 | 90.9% |
+| 09-20 | 525 | 30 | 157 | 139 | 149 | 93.3% |
+| 09-21 | 324 | 31 | 61 | 51 | 54 | 94.4% |
+
+The denominator follows [claude-5’s census](claude_operator_census.py), commit `870497b`: all current and pre-compact Claude logs, user rows containing `From: joe` and `Origin: operator`, excluding `resumed: parked` and `WAKE CHECKLIST`, deduplicated by UUID. [The coverage script](pattern_stage_coverage.py) additionally applies the **full timestamp cutoff** (the original census CLI compares dates only). Thus September 21 has 54 transcript turns before 17:19:12, rather than the growing whole-day count. Zero on September 11 is Claude-only; the store contains other operator surfaces that day.
+
+Confirmed transcript coverage is **169/183 = 92.35% on September 8–12**, and **753/827 = 91.05% on September 13–21**. September 15 is lower at 81.4%, but the earlier persistent 10–20% collapse is absent. Remaining unmatched/ambiguous transcript records, missing retrievals and conservative joins remain visible. This is a lower bound under the stated exact-match rule, not proof of complete telemetry.
+
+The [published Minard figure](https://zone.hyperreal.enterprises/wip/audits/minard-operator-work-2026-09-21.html) was regenerated and the obsolete pagination-failure warning removed (HTTP 200 verified). Its provisional-label, topical-subject, turn-count-not-cost and incomplete-coverage caveats remain, with coverage updated to 84.7%. Light and dark renderings were inspected; annotations and all seven direct labels are legible. The count scale and lower-panel forensic data are unchanged.
+
+Replay the comparison from the private raw snapshot with:
+
+```sh
+../marimo-zone/.venv/bin/python analysis/audits/pattern_stage_coverage.py /tmp/codex16-pattern-stages-repaired --output /tmp/pattern-stage-coverage.json
+../marimo-zone/.venv/bin/python analysis/audits/validate_pattern_stages.py
+../marimo-zone/.venv/bin/python analysis/audits/minard_operator_work.py
+```
+
+Source stores and the pattern library remained read-only. Validation covers all 689 source citations, counts and frozen blind cards, six pattern tests and the real-data Minard relabelling test, plus browser hover, keyboard, tables, dark palette and mobile containment. No Clojure/Lisp was touched.
 
 ## Coverage drop from 2026-09-13
+
+**Historical diagnosis, superseded by the repaired extraction above.** The following records the pre-repair failure and stop decision; its counts and statements that work was blocked apply to that earlier snapshot.
+
 
 **Correction: the thinning is a retrieval-download coverage failure, not evidence of a drop in Joe’s work.** The whole-window endpoint violates its newest-first pagination contract: its first 1,000-result page advances the cursor into September 12 while omitting valid newer retrieval records. The prefix join never saw those records. Earlier totals above and the Minard’s shares describe the incomplete downloaded cohort; they must not be used as a time-varying work-volume census.
 

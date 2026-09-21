@@ -121,5 +121,2388 @@
       "kind": "practice",
       "stage": "believe"
     }
-  }
+  },
+  "sampling-population": [
+    {
+      "id": "agency/bounded-lifecycle",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/delivery-receipt",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/identifier-separation",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/invariants",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/loud-failure",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/self-attribution",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/single-routing-authority",
+      "kind": "subject"
+    },
+    {
+      "id": "agency/state-atomicity",
+      "kind": "subject"
+    },
+    {
+      "id": "agent/escalation-cost-vs-risk",
+      "kind": "practice"
+    },
+    {
+      "id": "agent/evidence-over-assertion",
+      "kind": "practice"
+    },
+    {
+      "id": "agent/handoff-preserves-context",
+      "kind": "practice"
+    },
+    {
+      "id": "agent/intent-handshake-is-binding",
+      "kind": "practice"
+    },
+    {
+      "id": "agent/pause-is-not-failure",
+      "kind": "practice"
+    },
+    {
+      "id": "agent/provisional-claims-ledger",
+      "kind": "practice"
+    },
+    {
+      "id": "agent/student-dispatch",
+      "kind": "practice"
+    },
+    {
+      "id": "ai4ci/funding-justification",
+      "kind": "subject"
+    },
+    {
+      "id": "ai4ci/project-summary-core",
+      "kind": "mixed"
+    },
+    {
+      "id": "ai4ci/proof-pattern-hierarchy",
+      "kind": "subject"
+    },
+    {
+      "id": "ai4ci/technical-grounding",
+      "kind": "mixed"
+    },
+    {
+      "id": "ai4ci/umbrella",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/admissibility",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/candidate-pattern-action-space",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/expected-free-energy-scorecard",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/free-energy-as-tick-scalar",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/grounded-actuation-not-reobservation",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/hierarchical-budget-aware-action-selection",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/interoceptive-tripwires",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/measurement-window-hygiene",
+      "kind": "practice"
+    },
+    {
+      "id": "aif/placeholder-is-load-bearing",
+      "kind": "practice"
+    },
+    {
+      "id": "aif/predictive-entropy-as-ambiguity",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/scheduled-observer-entrypoint",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/shared-kernel-predictive-forward-model",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/status-gated-belief-update",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/temporal-depth-beyond-greedy",
+      "kind": "subject"
+    },
+    {
+      "id": "aif/term-to-channel-traceability",
+      "kind": "practice"
+    },
+    {
+      "id": "ants/baseline-cyber-ant",
+      "kind": "subject"
+    },
+    {
+      "id": "ants/cargo-return-discipline",
+      "kind": "subject"
+    },
+    {
+      "id": "ants/hunger-precision-coupling",
+      "kind": "subject"
+    },
+    {
+      "id": "apparatus/done-is-observed-running",
+      "kind": "practice"
+    },
+    {
+      "id": "apparatus/new-failure-class-is-a-design-defect",
+      "kind": "practice"
+    },
+    {
+      "id": "apparatus/success-must-not-resemble-failure",
+      "kind": "mixed"
+    },
+    {
+      "id": "apparatus/the-system-stops-on-schedule",
+      "kind": "practice"
+    },
+    {
+      "id": "baldwin/ablation-axes-must-not-disable-the-instrument",
+      "kind": "mixed"
+    },
+    {
+      "id": "baldwin/metaca-negative-evidence-localizes-the-bottleneck",
+      "kind": "subject"
+    },
+    {
+      "id": "budgeted-action-selection/mana-gated-work",
+      "kind": "subject"
+    },
+    {
+      "id": "campaign-coherence/cross-mission-escrow",
+      "kind": "practice"
+    },
+    {
+      "id": "capability/capability-vocabulary-v0",
+      "kind": "subject"
+    },
+    {
+      "id": "cascade-construction/borrow-a-sibling-cascade",
+      "kind": "practice"
+    },
+    {
+      "id": "cascade-construction/choose-the-grain-where-state-lives",
+      "kind": "practice"
+    },
+    {
+      "id": "cascade-construction/lift-when-three-align",
+      "kind": "practice"
+    },
+    {
+      "id": "cascade-construction/mine-patterns-from-incidents",
+      "kind": "practice"
+    },
+    {
+      "id": "cascade-construction/run-it-on-a-real-case",
+      "kind": "practice"
+    },
+    {
+      "id": "cascades/declared-skeleton",
+      "kind": "mixed"
+    },
+    {
+      "id": "cascades/edges-earn-permanence",
+      "kind": "mixed"
+    },
+    {
+      "id": "cascades/on-the-fly-cascade",
+      "kind": "subject"
+    },
+    {
+      "id": "cascades/repointable-declarations",
+      "kind": "mixed"
+    },
+    {
+      "id": "code-coherence/dead-code-hygiene",
+      "kind": "practice"
+    },
+    {
+      "id": "collaboration-coherence/messy-with-lurkers",
+      "kind": "practice"
+    },
+    {
+      "id": "contracts/holder-states-the-claim",
+      "kind": "practice"
+    },
+    {
+      "id": "contributing/devmap-contribution-protocol",
+      "kind": "practice"
+    },
+    {
+      "id": "contributing/stack-scan-logging-protocol",
+      "kind": "practice"
+    },
+    {
+      "id": "control/agential-efficiency-measurement",
+      "kind": "practice"
+    },
+    {
+      "id": "control/agential-oss-infrastructure",
+      "kind": "mixed"
+    },
+    {
+      "id": "control/agential-pattern-hygiene",
+      "kind": "practice"
+    },
+    {
+      "id": "control/effort-estimation",
+      "kind": "practice"
+    },
+    {
+      "id": "coordination/ARGUMENT",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/artifact-registration",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/assignment-binding",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/capability-gate",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/cross-validation-protocol",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/intent-to-mission-binding",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/mandatory-psr",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/par-as-obligation",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/pattern-search-protocol",
+      "kind": "subject"
+    },
+    {
+      "id": "coordination/task-shape-validation",
+      "kind": "subject"
+    },
+    {
+      "id": "correspondence-coherence/mission-unlocks-eoi",
+      "kind": "practice"
+    },
+    {
+      "id": "cycle-machine/authority-port",
+      "kind": "subject"
+    },
+    {
+      "id": "cycle-machine/job-port",
+      "kind": "subject"
+    },
+    {
+      "id": "cycle-machine/runtime-restoration",
+      "kind": "mixed"
+    },
+    {
+      "id": "cycle-machine/single-producer",
+      "kind": "mixed"
+    },
+    {
+      "id": "cycle-machine/step-machine",
+      "kind": "subject"
+    },
+    {
+      "id": "cycle-machine/toolchain-port",
+      "kind": "subject"
+    },
+    {
+      "id": "data-mining/checkpoint-the-long-run",
+      "kind": "practice"
+    },
+    {
+      "id": "data-mining/classify-over-one-clean-source",
+      "kind": "practice"
+    },
+    {
+      "id": "data-mining/constrain-extraction-to-the-downstream-vocabulary",
+      "kind": "practice"
+    },
+    {
+      "id": "data-mining/gates-as-code",
+      "kind": "practice"
+    },
+    {
+      "id": "data-mining/saturate-the-accelerator-with-concurrency",
+      "kind": "practice"
+    },
+    {
+      "id": "data-mining/smoke-before-the-paid-run",
+      "kind": "practice"
+    },
+    {
+      "id": "data-mining/the-first-checkpoint-is-a-quality-probe",
+      "kind": "practice"
+    },
+    {
+      "id": "depositing/scan-talk-frame",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/baseline-freeze",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/devmap-scope-discipline",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f0-sati",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f1-dhammavicaya",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f2-viriya",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f3-piti",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f3a-piti-audit",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f4-passaddhi",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f5-samadhi",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f6-upekkha",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-f7-upa-upekkha",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/ifr-state-convergence",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/next-steps-to-done",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/prototype-alignment-bridge",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/prototype-alignment-role",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/prototype-alignment-tension",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/prototype-maturity-lifecycle",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/prototype-structure-checklist",
+      "kind": "practice"
+    },
+    {
+      "id": "devmap-coherence/status-keywords",
+      "kind": "practice"
+    },
+    {
+      "id": "dsc/appendix-epistemic-bridge",
+      "kind": "subject"
+    },
+    {
+      "id": "dsc/evidence-situated-log",
+      "kind": "practice"
+    },
+    {
+      "id": "eight-gates/an-push",
+      "kind": "mixed"
+    },
+    {
+      "id": "eight-gates/lean-commit",
+      "kind": "mixed"
+    },
+    {
+      "id": "eight-gates/pluck-extract",
+      "kind": "mixed"
+    },
+    {
+      "id": "enrichment/ARGUMENT",
+      "kind": "subject"
+    },
+    {
+      "id": "enrichment/churn-as-signal",
+      "kind": "subject"
+    },
+    {
+      "id": "enrichment/extend-not-rewrite",
+      "kind": "practice"
+    },
+    {
+      "id": "enrichment/layered-ingestion",
+      "kind": "mixed"
+    },
+    {
+      "id": "enrichment/rational-reconstruction",
+      "kind": "subject"
+    },
+    {
+      "id": "eoi-engine/tension-free-solo-rule",
+      "kind": "practice"
+    },
+    {
+      "id": "equity/shared-maintenance",
+      "kind": "subject"
+    },
+    {
+      "id": "equity/visible-impact-as-published",
+      "kind": "subject"
+    },
+    {
+      "id": "exotic/dual-track-generation",
+      "kind": "mixed"
+    },
+    {
+      "id": "exotic/dual-windowing",
+      "kind": "subject"
+    },
+    {
+      "id": "exotic/full-lift-registry",
+      "kind": "subject"
+    },
+    {
+      "id": "f6/bootstrap-loop",
+      "kind": "subject"
+    },
+    {
+      "id": "f6/pattern-as-strategy",
+      "kind": "subject"
+    },
+    {
+      "id": "f6/proof-as-social-process",
+      "kind": "mixed"
+    },
+    {
+      "id": "f6/scope-chain-tracking",
+      "kind": "subject"
+    },
+    {
+      "id": "f6/stratum-bridge",
+      "kind": "subject"
+    },
+    {
+      "id": "features/emit-per-tick-mismatch",
+      "kind": "subject"
+    },
+    {
+      "id": "features/operator-turns-enter-the-observation-vector",
+      "kind": "subject"
+    },
+    {
+      "id": "forward-model/the-forward-model-is-a-pattern-cascade",
+      "kind": "subject"
+    },
+    {
+      "id": "fulab/changelog-trail",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/clock-in",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/clock-out",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/devmap-xref",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/notebook-cell",
+      "kind": "subject"
+    },
+    {
+      "id": "fulab/pattern-dep",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/pattern-propose",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/proof-commit",
+      "kind": "practice"
+    },
+    {
+      "id": "fulab/session-resume",
+      "kind": "subject"
+    },
+    {
+      "id": "fulab/tradeoff-record",
+      "kind": "practice"
+    },
+    {
+      "id": "futon-stack/argument",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/agent-contract",
+      "kind": "mixed"
+    },
+    {
+      "id": "futon-theory/coordination-protocol",
+      "kind": "practice"
+    },
+    {
+      "id": "futon-theory/counter-ratchet",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/curry-howard-operational",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/derive-exits-on-a-minted-sorry",
+      "kind": "mixed"
+    },
+    {
+      "id": "futon-theory/error-hierarchy",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/event-protocol",
+      "kind": "mixed"
+    },
+    {
+      "id": "futon-theory/futonic-logic",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/minimum-viable-events",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/mission-dependency",
+      "kind": "mixed"
+    },
+    {
+      "id": "futon-theory/mission-interface-signature",
+      "kind": "practice"
+    },
+    {
+      "id": "futon-theory/mission-lifecycle",
+      "kind": "mixed"
+    },
+    {
+      "id": "futon-theory/progress-signal",
+      "kind": "practice"
+    },
+    {
+      "id": "futon-theory/proof-path",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/rapid-debugging",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/retrospective-stability",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/stop-the-line",
+      "kind": "practice"
+    },
+    {
+      "id": "futon-theory/structural-tension-as-observation",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/the-woven-form",
+      "kind": "subject"
+    },
+    {
+      "id": "futon-theory/xenotype-portability",
+      "kind": "subject"
+    },
+    {
+      "id": "gauntlet/aif-as-environment-not-instruction",
+      "kind": "subject"
+    },
+    {
+      "id": "gauntlet/placenta-transfer",
+      "kind": "mixed"
+    },
+    {
+      "id": "gauntlet/teaching-inversion",
+      "kind": "mixed"
+    },
+    {
+      "id": "gauntlet/umwelt-not-architecture",
+      "kind": "practice"
+    },
+    {
+      "id": "gauntlet/world-is-hypergraph",
+      "kind": "subject"
+    },
+    {
+      "id": "hdm/bootstrap-kernel",
+      "kind": "subject"
+    },
+    {
+      "id": "hdm/hyperreal-capital",
+      "kind": "subject"
+    },
+    {
+      "id": "hdm/opacity-to-transparency",
+      "kind": "subject"
+    },
+    {
+      "id": "hdm/outline-first-detail-later",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-05-xu",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-06-song",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-13-tongren",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-14-dayou",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-17-sui",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-18-gu",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-22-bi",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-23-bo",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-25-wuwang",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-28-daguo",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-30-li",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-35-jin",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-36-mingyi",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-39-jian",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-40-jie",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-41-sun",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-43-guai",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-46-sheng",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-49-ge",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-50-ding",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-52-gen",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-54-guimei",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-55-feng",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-60-jie",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-61-zhongfu",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-62-xiaoguo",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-63-jiji",
+      "kind": "mixed"
+    },
+    {
+      "id": "iching/hexagram-64-weiji",
+      "kind": "mixed"
+    },
+    {
+      "id": "iiching/exotype-003",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-011",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-012",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-019",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-031",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-032",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-042",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-043",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-064",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-074",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-088",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-089",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-141",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-163",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-193",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-196",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-205",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-219",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-248",
+      "kind": "subject"
+    },
+    {
+      "id": "iiching/exotype-XYZ",
+      "kind": "subject"
+    },
+    {
+      "id": "inbox-zero/ignore-by-kind",
+      "kind": "practice"
+    },
+    {
+      "id": "inbox-zero/measure-against-the-remote",
+      "kind": "practice"
+    },
+    {
+      "id": "inbox-zero/push-the-declared",
+      "kind": "practice"
+    },
+    {
+      "id": "invariant-coherence/bounded-disposition",
+      "kind": "subject"
+    },
+    {
+      "id": "invariant-coherence/drain-channel-shape",
+      "kind": "subject"
+    },
+    {
+      "id": "invariant-coherence/protocol-family-naming",
+      "kind": "practice"
+    },
+    {
+      "id": "invariant-coherence/shape-first-identify",
+      "kind": "practice"
+    },
+    {
+      "id": "invariant-coherence/single-locus",
+      "kind": "subject"
+    },
+    {
+      "id": "invariant-coherence/state-snapshot-witness",
+      "kind": "subject"
+    },
+    {
+      "id": "invariant-coherence/subsumption-witness",
+      "kind": "subject"
+    },
+    {
+      "id": "liberation/mundane/right-speech",
+      "kind": "mixed"
+    },
+    {
+      "id": "liberation/noble/right-concentration",
+      "kind": "subject"
+    },
+    {
+      "id": "library-coherence/from-argument-to-pilot",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/library-embedding-refresh",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/library-evidence-ledger",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/library-readme-sync",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/library-staleness-scan",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/library-template-discipline",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/llm-argument-scan",
+      "kind": "practice"
+    },
+    {
+      "id": "library-coherence/pattern-differentiation-alarms",
+      "kind": "practice"
+    },
+    {
+      "id": "math-formalization-CA/ae-integral-zero",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization-CA/continuous-linear-map-composition",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization-CA/layer-cake-crossover-split",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization-CA/radialize-via-gauge-rescale",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization-CA/surj-via-oriented-root-preimage",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization-GN/connectedness-component-api",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization-MG/chart-a-polytope-sphere-by-perimeter-walk",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization/bank-cheap-obligations-before-the-hard-bridge",
+      "kind": "mixed"
+    },
+    {
+      "id": "math-formalization/binder-expression-mismatch",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization/construction-cost-asymmetry",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization/lift-prove-upstairs-reflect-by-injectivity",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization/probe-constant-name-and-signature",
+      "kind": "practice"
+    },
+    {
+      "id": "math-formalization/stamp-siblings-from-one-compiled-branch",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization/statement-ladder-before-proof-text",
+      "kind": "subject"
+    },
+    {
+      "id": "math-formalization/tactic-algebra-interference",
+      "kind": "subject"
+    },
+    {
+      "id": "math-informal-CT/chase-the-diagram",
+      "kind": "subject"
+    },
+    {
+      "id": "math-informal/structural-obstruction-as-theorem",
+      "kind": "subject"
+    },
+    {
+      "id": "math-strategy/clarification-meta",
+      "kind": "subject"
+    },
+    {
+      "id": "math-strategy/corpus-trust-protocol",
+      "kind": "practice"
+    },
+    {
+      "id": "math-strategy/exhaustion-as-theorem",
+      "kind": "subject"
+    },
+    {
+      "id": "math-strategy/isolate-computational-kernel-before-transport",
+      "kind": "subject"
+    },
+    {
+      "id": "math-strategy/missing-dependency-protocol",
+      "kind": "practice"
+    },
+    {
+      "id": "math-strategy/plan-first-attempt",
+      "kind": "practice"
+    },
+    {
+      "id": "math-strategy/preemptive-objection-clearance",
+      "kind": "subject"
+    },
+    {
+      "id": "math-strategy/route-exploration-and-pivot",
+      "kind": "mixed"
+    },
+    {
+      "id": "math-strategy/structural-relation-result",
+      "kind": "subject"
+    },
+    {
+      "id": "math-strategy/technique-landscape-map",
+      "kind": "subject"
+    },
+    {
+      "id": "measurement/warrant-travels-with-the-number",
+      "kind": "practice"
+    },
+    {
+      "id": "memory/licence-to-fail",
+      "kind": "practice"
+    },
+    {
+      "id": "memory/name-a-reusable-artifact",
+      "kind": "practice"
+    },
+    {
+      "id": "memory/no-tightening-while-held",
+      "kind": "practice"
+    },
+    {
+      "id": "memory/surface-the-closed-set",
+      "kind": "mixed"
+    },
+    {
+      "id": "memory/verify-in-the-serving-process",
+      "kind": "practice"
+    },
+    {
+      "id": "meta/designing-thoughts-not-text",
+      "kind": "practice"
+    },
+    {
+      "id": "meta/layering-design-into-argument",
+      "kind": "practice"
+    },
+    {
+      "id": "meta/scaffolding-emergent-clarity",
+      "kind": "practice"
+    },
+    {
+      "id": "meta/sigil-differentiation",
+      "kind": "practice"
+    },
+    {
+      "id": "mission-coherence/logic-model-before-code",
+      "kind": "practice"
+    },
+    {
+      "id": "mmca/eye-before-metric",
+      "kind": "practice"
+    },
+    {
+      "id": "mmca/instrument-horizon-must-match-system",
+      "kind": "practice"
+    },
+    {
+      "id": "mmca/realization-variance-is-not-a-regime",
+      "kind": "practice"
+    },
+    {
+      "id": "mmca/verified-but-idle-link",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/aif-live-scores",
+      "kind": "subject"
+    },
+    {
+      "id": "musn/declare-scope",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/expensive-move-consent",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/fulab-report-block",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/intent-restatement",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/off-trail-brief-log",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/off-trail-budget",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/pattern-action-helper-command",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/pause-backtrace",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/plan-before-tool",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/psr-pur-real-actions",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/read-aif-plus-one",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/selection-before-write",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/tool-name-hygiene",
+      "kind": "practice"
+    },
+    {
+      "id": "musn/use-requires-evidence",
+      "kind": "practice"
+    },
+    {
+      "id": "nomad/author-the-yardstick",
+      "kind": "mixed"
+    },
+    {
+      "id": "nomad/live-yardstick",
+      "kind": "practice"
+    },
+    {
+      "id": "nomad/owner-of-the-problem",
+      "kind": "practice"
+    },
+    {
+      "id": "nomad/self-certifying-artifact",
+      "kind": "practice"
+    },
+    {
+      "id": "or/bridge-before-portal",
+      "kind": "practice"
+    },
+    {
+      "id": "or/fit-for-use-stars",
+      "kind": "practice"
+    },
+    {
+      "id": "or/peripheral-to-core-pathways",
+      "kind": "subject"
+    },
+    {
+      "id": "or/retirement-shelf",
+      "kind": "practice"
+    },
+    {
+      "id": "or/snapshot-with-story-doi",
+      "kind": "practice"
+    },
+    {
+      "id": "or/tune-audits-quarterly",
+      "kind": "practice"
+    },
+    {
+      "id": "or2/data-intensive-infrastructure-gap",
+      "kind": "mixed"
+    },
+    {
+      "id": "or2/progress-cylinder-assurance",
+      "kind": "practice"
+    },
+    {
+      "id": "or2/spread-effort-assurance",
+      "kind": "practice"
+    },
+    {
+      "id": "or2/topology-dungeon-crawl",
+      "kind": "subject"
+    },
+    {
+      "id": "or2/ukrn-horizon-bridge",
+      "kind": "subject"
+    },
+    {
+      "id": "or2/xiangqi-decorators",
+      "kind": "subject"
+    },
+    {
+      "id": "or3/co-design-the-call",
+      "kind": "practice"
+    },
+    {
+      "id": "or3/design-around-the-red-line",
+      "kind": "practice"
+    },
+    {
+      "id": "or3/plural-value-accounting",
+      "kind": "mixed"
+    },
+    {
+      "id": "orchestration/pattern-warranted-choice-point",
+      "kind": "practice"
+    },
+    {
+      "id": "orchestration/recorded-handoff",
+      "kind": "practice"
+    },
+    {
+      "id": "orchestration/state-in-substrate-deltas-in-messages",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/agent-command-pattern",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/agent-pattern-triad",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/bridge-before-portal",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/call-a-synthesizer",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/candidate-move-generation",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/co-design-partners-agent",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/fit-for-use",
+      "kind": "mixed"
+    },
+    {
+      "id": "p4ng/legitimate-iteration",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/license-laddering",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/name-the-frame",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/norm-seed",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/pattern-the-play",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/proportional-load-sharing",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/reflection-scaffold-upgrade",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/role-reveal",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/shared-memory-architecture",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/snapshot-with-story",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/timebox-the-core-agent",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/timebox-the-core-agent-prime",
+      "kind": "subject"
+    },
+    {
+      "id": "p4ng/tune-audits",
+      "kind": "practice"
+    },
+    {
+      "id": "p4ng/two-stage-fidelity",
+      "kind": "practice"
+    },
+    {
+      "id": "pacspine/channel-upgrade",
+      "kind": "practice"
+    },
+    {
+      "id": "pacspine/crisp-success",
+      "kind": "practice"
+    },
+    {
+      "id": "pacspine/frictionless-next",
+      "kind": "practice"
+    },
+    {
+      "id": "pacspine/indicators-checker",
+      "kind": "practice"
+    },
+    {
+      "id": "pacspine/quick-intro",
+      "kind": "practice"
+    },
+    {
+      "id": "pacspine/simple-close",
+      "kind": "practice"
+    },
+    {
+      "id": "pattern-coherence/applicability-signals",
+      "kind": "practice"
+    },
+    {
+      "id": "pattern-discipline/conclusion-required-others-recommended",
+      "kind": "subject"
+    },
+    {
+      "id": "pattern-discipline/pattern-to-code-receipts",
+      "kind": "practice"
+    },
+    {
+      "id": "pattern-discipline/patterns-as-categorical-objects",
+      "kind": "subject"
+    },
+    {
+      "id": "pattern-interpretation/reproduce-the-recorded-run",
+      "kind": "practice"
+    },
+    {
+      "id": "pattern-interpretation/route-the-untranslatable",
+      "kind": "practice"
+    },
+    {
+      "id": "peeragogy/creating-a-guide",
+      "kind": "practice"
+    },
+    {
+      "id": "peeragogy/moderation",
+      "kind": "practice"
+    },
+    {
+      "id": "peeragogy/roles",
+      "kind": "practice"
+    },
+    {
+      "id": "peripherals/canonical-typed-event-vs-side-channel",
+      "kind": "subject"
+    },
+    {
+      "id": "peripherals/hot-reload-as-default-fix-path",
+      "kind": "practice"
+    },
+    {
+      "id": "peripherals/pattern-becomes-peripheral",
+      "kind": "subject"
+    },
+    {
+      "id": "peripherals/pilot-plus-ground-control",
+      "kind": "practice"
+    },
+    {
+      "id": "peripherals/progress-heartbeat-distinct-from-cycle-completion",
+      "kind": "subject"
+    },
+    {
+      "id": "peripherals/surface-earns-inhabitation",
+      "kind": "mixed"
+    },
+    {
+      "id": "plos-npt-with-small-n/abstract-n-method-frame",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/coreq-checklist-adherence",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/disconfirmation-not-just-triangulation",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/inductive-before-deductive-warrant",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/research-questions-stated-early",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/site-case-data-display",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/theory-as-heuristic-not-law",
+      "kind": "practice"
+    },
+    {
+      "id": "plos-npt-with-small-n/venue-register-boundary",
+      "kind": "practice"
+    },
+    {
+      "id": "problems/baldwin-causal-claims-vs-engineering-metaphor",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/contract-edits-wait-for-their-exemplar",
+      "kind": "mixed"
+    },
+    {
+      "id": "problems/coordination-patterns-derivation",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/cycle-model-boundary-gaps",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/deliberate-refusals-allude-to-unwritten-patterns",
+      "kind": "mixed"
+    },
+    {
+      "id": "problems/facade-instead-of-validated-efe-model",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/fundamentals-drowned-by-backlog",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/g-over-cascade-is-undefined",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/llm-over-corpus-mining-lessons",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/most-patterns-have-no-globally-recognised-rationale",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/operator-turns-become-inference-observations",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/pattern-coding-and-novel-force-mining",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/pattern-genesis-from-evidence-bearing-holes",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/per-tick-mismatch-instruments-outer-loop-gain",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/peripheral-hops-reset-self-regulation",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/process-conduct-is-unassured",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r1-belief-state",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r10-scheduled-entrypoint",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r14-commitment-temperature",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r15-hierarchy-and-timescale",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r16-grounded-actuation",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r2-structured-observation",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r20-interoceptive-tripwires",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r4-forward-model",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r5-expected-free-energy-core",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r6-candidate-action-space-and-selection",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/r9-no-self-certification",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/refusal-prediction-error-v1--source-field-missing",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/satisfied-rungs-are-counted-and-surfaced",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/snatch-play-theory-gaps",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/spec-and-implementation-must-converge-to-runtime-certificates",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/tension-proposes-candidates",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/tensions-are-navigated-not-eliminated",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/theory-general-enough-to-drive-the-stack",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/trace-wm-trace-store-route-ledger",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/transferable-open-research-practice",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/undeclared-cascades-cannot-be-audited",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/undeclared-publication-cadence-obscures-version",
+      "kind": "subject"
+    },
+    {
+      "id": "problems/unqueryable-trails-block-recovery",
+      "kind": "subject"
+    },
+    {
+      "id": "process-coherence/author-the-missing-pattern",
+      "kind": "practice"
+    },
+    {
+      "id": "process-coherence/is-this-even-a-problem",
+      "kind": "practice"
+    },
+    {
+      "id": "process-coherence/refusal-becomes-pattern",
+      "kind": "practice"
+    },
+    {
+      "id": "process-coherence/status-refresh-before-work",
+      "kind": "practice"
+    },
+    {
+      "id": "process/built-but-not-wired-invisibility",
+      "kind": "practice"
+    },
+    {
+      "id": "process/fake-done-via-binary-closure",
+      "kind": "practice"
+    },
+    {
+      "id": "process/recorded-but-not-surfaced",
+      "kind": "practice"
+    },
+    {
+      "id": "process/reflexivity-failure-in-a-gate",
+      "kind": "practice"
+    },
+    {
+      "id": "process/spec-drift-by-displacement",
+      "kind": "practice"
+    },
+    {
+      "id": "process/spec-silence-pair",
+      "kind": "practice"
+    },
+    {
+      "id": "process/watcher-that-observes-and-defers",
+      "kind": "practice"
+    },
+    {
+      "id": "proof-search/extend-library-not-proof",
+      "kind": "practice"
+    },
+    {
+      "id": "proof-search/sorry-boundary-clustering",
+      "kind": "practice"
+    },
+    {
+      "id": "proof-search/typed-hole-as-frontier",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/authoritative-transcript",
+      "kind": "subject"
+    },
+    {
+      "id": "realtime/branch-parallelism",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/listener-leases",
+      "kind": "subject"
+    },
+    {
+      "id": "realtime/liveness-heartbeats",
+      "kind": "subject"
+    },
+    {
+      "id": "realtime/loop-failure-signals",
+      "kind": "subject"
+    },
+    {
+      "id": "realtime/loop-recovery-actions",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/loop-success-signals",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/mode-gate",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/rendezvous-handshake",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/single-line-transport",
+      "kind": "practice"
+    },
+    {
+      "id": "realtime/transport-pivot",
+      "kind": "practice"
+    },
+    {
+      "id": "relationship-coherence/base-camp",
+      "kind": "mixed"
+    },
+    {
+      "id": "relationship-coherence/body-attunement",
+      "kind": "mixed"
+    },
+    {
+      "id": "relationship-coherence/capacity-honoring",
+      "kind": "mixed"
+    },
+    {
+      "id": "relationship-coherence/low-pressure-bid",
+      "kind": "practice"
+    },
+    {
+      "id": "relationship-coherence/quote-as-oblique-address",
+      "kind": "practice"
+    },
+    {
+      "id": "relationship-coherence/resonance-weaving",
+      "kind": "mixed"
+    },
+    {
+      "id": "relationship-coherence/rupture-repair",
+      "kind": "practice"
+    },
+    {
+      "id": "repository-transition/diagnostics",
+      "kind": "subject"
+    },
+    {
+      "id": "repository-transition/identity-space",
+      "kind": "subject"
+    },
+    {
+      "id": "repository-transition/job-argument",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/artifact-entity-mention-grounding",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/bridge-triple-escalator",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/chain-builder-softness-accounting",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/explicit-promotion-to-facts",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/proposal-ledger-for-fuzzy-output",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/sense-shift-gate",
+      "kind": "subject"
+    },
+    {
+      "id": "sidecar/tri-store-separation",
+      "kind": "subject"
+    },
+    {
+      "id": "snatch/consult-the-remedy-before-exiting",
+      "kind": "mixed"
+    },
+    {
+      "id": "snatch/institutions-vary-by-position-and-force",
+      "kind": "subject"
+    },
+    {
+      "id": "snatch/non-binding-talk-still-moves-play",
+      "kind": "subject"
+    },
+    {
+      "id": "snatch/play-the-authored-order-first",
+      "kind": "mixed"
+    },
+    {
+      "id": "snatch/protect-the-unprotected-move",
+      "kind": "subject"
+    },
+    {
+      "id": "snatch/re-enter-after-observed-repair",
+      "kind": "mixed"
+    },
+    {
+      "id": "snatch/widen-the-cascade-only-on-evidence",
+      "kind": "practice"
+    },
+    {
+      "id": "social/ARGUMENT",
+      "kind": "subject"
+    },
+    {
+      "id": "social/explicit-exit-over-abandonment",
+      "kind": "practice"
+    },
+    {
+      "id": "social/idempotent-handoff",
+      "kind": "practice"
+    },
+    {
+      "id": "social/scope-bounded-handoff",
+      "kind": "practice"
+    },
+    {
+      "id": "social/tension-before-code",
+      "kind": "practice"
+    },
+    {
+      "id": "software-design/facade-pattern",
+      "kind": "subject"
+    },
+    {
+      "id": "software-design/observer-pattern",
+      "kind": "subject"
+    },
+    {
+      "id": "stack-coherence/commit-intent-alignment",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/evidence-ledger",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/futon-bridge-health",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/futon1-determinism",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/futon1-storage-coherence",
+      "kind": "mixed"
+    },
+    {
+      "id": "stack-coherence/readme-devmap-sync",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/ready-blocked-triage",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/stack-blocker-detection",
+      "kind": "practice"
+    },
+    {
+      "id": "stack-coherence/staleness-scan",
+      "kind": "practice"
+    },
+    {
+      "id": "storage/all-or-nothing-startup",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/canonical-interface",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/deterministic-substrate",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/durability-first",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/durability-throughput-gate",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/error-layer-hierarchy",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/graph-memory-contract",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/identity-uniqueness",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/invariants-vs-repair",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/open-world-continuity",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/open-world-velocity-validation",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/postcommit-materialization-gate",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/rapid-debugging",
+      "kind": "subject"
+    },
+    {
+      "id": "storage/reproducible-mirroring",
+      "kind": "subject"
+    },
+    {
+      "id": "structure/backwards-induction",
+      "kind": "practice"
+    },
+    {
+      "id": "structure/block-as-futonic-revolution",
+      "kind": "mixed"
+    },
+    {
+      "id": "structure/hinge-entry-slots",
+      "kind": "practice"
+    },
+    {
+      "id": "structure/interest-event-vocabulary",
+      "kind": "subject"
+    },
+    {
+      "id": "structure/unresolved-tensions-at-closure",
+      "kind": "practice"
+    },
+    {
+      "id": "structure/what-problem-is-this-actually-solving",
+      "kind": "practice"
+    },
+    {
+      "id": "structure/whose-question-is-this",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/bind-open-questions-to-closure-mechanisms",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/correct-effect-claims-with-relevant-denominators",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/name-the-decision-before-the-framework",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/plan-as-enumeration",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/present-graph-topology-not-adjacency-lists",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/separate-configurable-choices-from-load-bearing-couplings",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/tag-evidence-by-timescale",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/turn-design-into-checks",
+      "kind": "practice"
+    },
+    {
+      "id": "system-coherence/verified-rewrite-from-diagnostic-annotation",
+      "kind": "practice"
+    },
+    {
+      "id": "t4r/exec-summary-tree",
+      "kind": "mixed"
+    },
+    {
+      "id": "t4r/supplement",
+      "kind": "subject"
+    },
+    {
+      "id": "t4r/support",
+      "kind": "subject"
+    },
+    {
+      "id": "test-registry/judge-adequacy",
+      "kind": "practice"
+    },
+    {
+      "id": "test-registry/rerun-when-the-warrant-fails",
+      "kind": "practice"
+    },
+    {
+      "id": "test-registry/warrant-rides-the-handoff",
+      "kind": "practice"
+    },
+    {
+      "id": "transition/f0-f4-boundary",
+      "kind": "subject"
+    },
+    {
+      "id": "transition/persistence-conditions",
+      "kind": "subject"
+    },
+    {
+      "id": "translation/route-the-untranslatable",
+      "kind": "practice"
+    },
+    {
+      "id": "ukrns/calibrate-impact-promises-to-current-indicator-capacity",
+      "kind": "practice"
+    },
+    {
+      "id": "ukrns/computation-as-exploration",
+      "kind": "practice"
+    },
+    {
+      "id": "ukrns/cycle-position-publication",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/design-as-function-of-evidence",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/design-state-lineage",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/distinguish-delivery-from-practice-change",
+      "kind": "practice"
+    },
+    {
+      "id": "ukrns/distributed-coverage",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/exercise-response-capture",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/join-up-training-indicators-and-sector-positioning",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/open-the-triangle",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/provision-at-network-scale",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/reader-as-participant",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/reader-run-path",
+      "kind": "subject"
+    },
+    {
+      "id": "ukrns/separate-evidence-gaps-from-implementation-decisions",
+      "kind": "practice"
+    },
+    {
+      "id": "ukrns/worked-contrast",
+      "kind": "practice"
+    },
+    {
+      "id": "vsat-next/ai-assisted-professional-storycrafting",
+      "kind": "subject"
+    },
+    {
+      "id": "vsat/community-engagement",
+      "kind": "subject"
+    },
+    {
+      "id": "vsat/embedded-annotation",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatelier/annotation-as-commitment",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatelier/decision-provenance",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatelier/return-loop",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/facilitation-scaffolds",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/interpretation-offering",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/minimal-linking-pilot",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/pilot-offers",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/proof-through-pilots",
+      "kind": "mixed"
+    },
+    {
+      "id": "vsatlas/shared-stewardship-compact",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/stewardship-layer",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlas/three-layer-architecture",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlatarium/cached-layout-computation",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlatarium/cluster-as-story",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlatarium/dome-projection",
+      "kind": "subject"
+    },
+    {
+      "id": "vsatlatarium/embodied-browsing",
+      "kind": "subject"
+    },
+    {
+      "id": "war-machine/advanceability",
+      "kind": "subject"
+    },
+    {
+      "id": "war-machine/ambient-pattern-retrieval",
+      "kind": "subject"
+    },
+    {
+      "id": "war-machine/coordination-bottleneck",
+      "kind": "mixed"
+    },
+    {
+      "id": "war-machine/half-blind-observation",
+      "kind": "practice"
+    },
+    {
+      "id": "war-machine/ideal-actual-gap",
+      "kind": "subject"
+    },
+    {
+      "id": "war-machine/inhabitation-threshold",
+      "kind": "mixed"
+    },
+    {
+      "id": "war-machine/operational-not-decorative",
+      "kind": "practice"
+    },
+    {
+      "id": "war-machine/spatial-over-tabular",
+      "kind": "subject"
+    },
+    {
+      "id": "war-machine/state-capture",
+      "kind": "mixed"
+    },
+    {
+      "id": "war-room/wr-0-organise-without-apparatus",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-1-three-futon-split",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-13-futonic-debt-is-paid-in-order",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-14-predecessor-completion-pull-is-a-fourth-next-move-criterion",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-15-head-as-escrow-is-a-sanctioned-pattern",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-16-operationalised-exploit-loops-are-first-class-observation-channels",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-17-futon0-as-cyborg-futon7-as-markov-blanket",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-18-war-machine-is-demonstrated-not-hypothesised",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-19-tension-must-generate-not-only-rank",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-2-pattern-library-stays-canonical",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-20-action-class-inventory-becomes-data",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-21-geometrization-is-a-shared-cross-mission-dependency",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-23-upstream-trackers-are-stack-surfaces",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-24-a-removed-constraint-does-not-remove-the-discipline-it-supplied",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch",
+      "kind": "practice"
+    },
+    {
+      "id": "war-room/wr-27-a-loop-is-born-instrumented-for-its-gain",
+      "kind": "practice"
+    },
+    {
+      "id": "war-room/wr-3-social-exotype-before-implementation",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-4-inhabit-before-building",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-5-war-machine-is-not-a-mission",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-6-daily-scan-is-depositing-heartbeat",
+      "kind": "subject"
+    },
+    {
+      "id": "war-room/wr-7-frames-interoperate-or-they-do-not-exist",
+      "kind": "subject"
+    },
+    {
+      "id": "workday/close-then-reframe-focus",
+      "kind": "practice"
+    },
+    {
+      "id": "workday/sign-off-affordance",
+      "kind": "mixed"
+    },
+    {
+      "id": "workday/single-focus-amidst-agenda",
+      "kind": "practice"
+    },
+    {
+      "id": "workflow-coherence/weekly-rhythm",
+      "kind": "practice"
+    },
+    {
+      "id": "workflow-coherence/wip-cap",
+      "kind": "practice"
+    },
+    {
+      "id": "workshop/distinguishing-cases-before-adoption",
+      "kind": "practice"
+    },
+    {
+      "id": "workshop/records-carry-warrant",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/citation-density-load-bearing-claim",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/first-mention-undischarged",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/floating-formalism",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/meet-the-reader-where-they-are",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/meta-title",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/name-what-you-drop",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/one-paragraph-per-typed-claim",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/plain-language-thesis",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/section-bridge-missing",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/stale-reference-after-restructure",
+      "kind": "practice"
+    },
+    {
+      "id": "writing-coherence/structural-style-inconsistency",
+      "kind": "practice"
+    },
+    {
+      "id": "xed-roads/live-recording-bridge",
+      "kind": "practice"
+    }
+  ],
+  "sampling-population-note": "Original 595-ID cohort from 0909c324; cards remain fixed during retrieval repair."
 }
