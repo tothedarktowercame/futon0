@@ -1,0 +1,2236 @@
+{
+  "source": "/home/joe/code/futon0/analysis/audits/operator-reply-pilot-2026-09-21/sample_pairs.jsonl",
+  "source_sha256": "57e9d49a42e871f05140e59ad80a4870ae48ea06d1d721661619caf20da75bbd",
+  "runtime": "real session-mode--turn-matches in batch Emacs",
+  "rules_snapshot": [
+    [
+      "approve",
+      "I agree",
+      "I approve",
+      "that's a good fit",
+      "that's great",
+      "looks good",
+      "good news",
+      "sounds good",
+      "you're right",
+      "Yes you can do this",
+      "I definitely like the idea"
+    ],
+    [
+      "disagree",
+      "I disagree",
+      "I don't agree",
+      "I do not agree",
+      "that's wrong",
+      "misunderstood my intent",
+      "doesn't match my intent",
+      "does not match my intent",
+      "of no use whatsoever",
+      "a bad design"
+    ],
+    [
+      "clarify",
+      "I don't understand",
+      "help me understand",
+      "I'd like to know",
+      "I'd like to see some examples",
+      "what's the story",
+      "What gives",
+      "I'm slightly confused",
+      "How should we proceed",
+      "what's our strategy"
+    ],
+    [
+      "propose",
+      "I suggest",
+      "We could perhaps",
+      "maybe we could",
+      "Maybe we should",
+      "I wonder if",
+      "I think it would be good"
+    ],
+    [
+      "extend",
+      "in parallel",
+      "Another thing we should pay attention to",
+      "we should also",
+      "we could also",
+      "that's another analysis",
+      "could be a further set of tasks"
+    ],
+    [
+      "prioritize",
+      "as a matter of priority",
+      "please do that next step",
+      "needs to be the next",
+      "first instance",
+      "we have 7 minutes"
+    ],
+    [
+      "delegate",
+      "please bell",
+      "you can bell",
+      "let's ask",
+      "ask Zai",
+      "we should ask",
+      "should be sent to",
+      "for dispatches",
+      "you will be responsible for"
+    ],
+    [
+      "verify",
+      "we should check",
+      "we need to check",
+      "we need to be able to validate",
+      "we'll have to check",
+      "we have to audit",
+      "I want a reproduction"
+    ],
+    [
+      "constrain",
+      "don't do that",
+      "I am not asking you to",
+      "I don't want to spend",
+      "please use aliases",
+      "we will not do any deep dives",
+      "I don't want a repeat",
+      "not going to decide things by fiat"
+    ],
+    [
+      "defer",
+      "we'll do it when we get time",
+      "we can come back to",
+      "at some point",
+      "for now",
+      "defer processing"
+    ],
+    [
+      "continue",
+      "please continue",
+      "go on",
+      "get on with it",
+      "let's continue",
+      "Please do 1, 2, and 3"
+    ],
+    [
+      "redirect",
+      "rather than",
+      "let's trim",
+      "we will instead focus",
+      "I'd like to return to",
+      "what we should do is",
+      "I want to alter"
+    ],
+    [
+      "explain",
+      "here's why",
+      "my main point",
+      "what I mean",
+      "the broader long term idea",
+      "the use cases would be",
+      "my use case"
+    ],
+    [
+      "report-problem",
+      "is currently broken",
+      "I still see an HTTP error",
+      "it's broken",
+      "login doesn't work",
+      "overlaps existing UI elements",
+      "point of major concern"
+    ],
+    [
+      "collect",
+      "collect information",
+      "getting logs",
+      "keep a record",
+      "record the turns"
+    ],
+    [
+      "qualify",
+      "with the caveat",
+      "to the extent that it is possible"
+    ],
+    [
+      "ask-action",
+      "can you please",
+      "please publish",
+      "please sort this out",
+      "I would like to have",
+      "please update"
+    ]
+  ],
+  "turns": [
+    {
+      "pair_id": "claude-12:fd11024f-0c91-4f95-82b7-b849c66c859a",
+      "session": "claude-12",
+      "old": [
+        [
+          319,
+          322,
+          "qualify",
+          "but"
+        ],
+        [
+          521,
+          524,
+          "qualify",
+          "But"
+        ],
+        [
+          1047,
+          1050,
+          "qualify",
+          "But"
+        ],
+        [
+          1515,
+          1518,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          475,
+          495,
+          "disagree",
+          "of no use whatsoever"
+        ],
+        [
+          540,
+          570,
+          "verify",
+          "We need to be able to validate"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:78d448f9-eddb-4b72-be3a-3c5f062e0dd4",
+      "session": "claude-12",
+      "old": [
+        [
+          287,
+          298,
+          "redirect",
+          "Rather than"
+        ],
+        [
+          584,
+          587,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          287,
+          298,
+          "redirect",
+          "Rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:a0f422da-1767-4efb-95ce-4bca72ba6def",
+      "session": "claude-12",
+      "old": [
+        [
+          57,
+          60,
+          "qualify",
+          "but"
+        ],
+        [
+          530,
+          533,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:c25fdc78-28d0-4910-94ac-3df3ef79bf28",
+      "session": "claude-12",
+      "old": [
+        [
+          323,
+          326,
+          "qualify",
+          "But"
+        ],
+        [
+          601,
+          604,
+          "qualify",
+          "But"
+        ],
+        [
+          960,
+          963,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          71,
+          84,
+          "explain",
+          "My main point"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:5081b311-5f18-447d-8412-d08bbb162238",
+      "session": "claude-12",
+      "old": [
+        [
+          233,
+          236,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          0,
+          18,
+          "clarify",
+          "I don't understand"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:dd96d6af-f4b2-4d6f-ab74-339c790a3e63",
+      "session": "claude-12",
+      "old": [
+        [
+          61,
+          64,
+          "qualify",
+          "but"
+        ],
+        [
+          319,
+          322,
+          "qualify",
+          "But"
+        ],
+        [
+          624,
+          627,
+          "qualify",
+          "But"
+        ],
+        [
+          897,
+          900,
+          "qualify",
+          "But"
+        ],
+        [
+          1107,
+          1110,
+          "qualify",
+          "but"
+        ],
+        [
+          1785,
+          1788,
+          "qualify",
+          "But"
+        ],
+        [
+          1892,
+          1895,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          422,
+          442,
+          "ask-action",
+          "please sort this out"
+        ],
+        [
+          443,
+          466,
+          "prioritize",
+          "as a matter of priority"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:e5e6d1a9-0ba9-43ac-890a-777ddf5264e3",
+      "session": "claude-12",
+      "old": [
+        [
+          6,
+          15,
+          "agree",
+          "I approve"
+        ]
+      ],
+      "new": [
+        [
+          6,
+          15,
+          "approve",
+          "I approve"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:5ea32f55-bbf7-458f-a192-65c77eae4560",
+      "session": "claude-12",
+      "old": [
+        [
+          305,
+          308,
+          "qualify",
+          "But"
+        ],
+        [
+          639,
+          642,
+          "qualify",
+          "but"
+        ],
+        [
+          930,
+          933,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          1004,
+          1028,
+          "prioritize",
+          "please do that next step"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:a181b424-7eac-4073-b7a5-653638b58d94",
+      "session": "claude-12",
+      "old": [
+        [
+          3,
+          20,
+          "agree",
+          "that's a good fit"
+        ],
+        [
+          675,
+          678,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          3,
+          20,
+          "approve",
+          "that's a good fit"
+        ],
+        [
+          226,
+          239,
+          "defer",
+          "at some point"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:e55299cd-ca48-4b3b-854c-eda3686fb268",
+      "session": "claude-12",
+      "old": [
+        [
+          363,
+          366,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          62,
+          102,
+          "extend",
+          "Another thing we should pay attention to"
+        ],
+        [
+          106,
+          146,
+          "extend",
+          "Another thing we should pay attention to"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:6a80707a-82d5-48ce-b013-14b020b09812",
+      "session": "claude-12",
+      "old": [
+        [
+          333,
+          336,
+          "qualify",
+          "but"
+        ],
+        [
+          469,
+          472,
+          "qualify",
+          "But"
+        ],
+        [
+          910,
+          913,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          214,
+          228,
+          "propose",
+          "maybe we could"
+        ],
+        [
+          417,
+          433,
+          "clarify",
+          "I'd like to know"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:d1579371-a410-480e-bead-c7c13d1f9c0f",
+      "session": "claude-12",
+      "old": [
+        [
+          249,
+          252,
+          "qualify",
+          "but"
+        ],
+        [
+          604,
+          607,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          342,
+          363,
+          "clarify",
+          "I'm slightly confused"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:0369fc90-09e8-4130-a1fa-cdcbad4cf37c",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:81b156e8-33eb-4c5b-a6d4-1885530a7f8f",
+      "session": "claude-12",
+      "old": [
+        [
+          253,
+          256,
+          "qualify",
+          "But"
+        ],
+        [
+          407,
+          414,
+          "redirect",
+          "Instead"
+        ],
+        [
+          465,
+          468,
+          "qualify",
+          "But"
+        ],
+        [
+          1192,
+          1195,
+          "qualify",
+          "But"
+        ],
+        [
+          1422,
+          1425,
+          "qualify",
+          "But"
+        ],
+        [
+          1942,
+          1945,
+          "qualify",
+          "But"
+        ],
+        [
+          2329,
+          2332,
+          "qualify",
+          "But"
+        ],
+        [
+          2394,
+          2397,
+          "qualify",
+          "But"
+        ],
+        [
+          2916,
+          2919,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          2131,
+          2140,
+          "propose",
+          "I suggest"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:83bdcb63-cf40-4572-8762-2c46709cb1c6",
+      "session": "claude-12",
+      "old": [
+        [
+          215,
+          218,
+          "qualify",
+          "But"
+        ],
+        [
+          917,
+          920,
+          "qualify",
+          "But"
+        ],
+        [
+          1094,
+          1105,
+          "redirect",
+          "rather than"
+        ]
+      ],
+      "new": [
+        [
+          1029,
+          1038,
+          "propose",
+          "I suggest"
+        ],
+        [
+          1094,
+          1105,
+          "redirect",
+          "rather than"
+        ],
+        [
+          1199,
+          1206,
+          "delegate",
+          "Ask Zai"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:f94cc458-18ea-48f5-962d-201572c059b2",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          7,
+          19,
+          "approve",
+          "That's great"
+        ],
+        [
+          25,
+          36,
+          "extend",
+          "in parallel"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:968ee9ed-a800-4f01-9f65-244467d2ca27",
+      "session": "claude-12",
+      "old": [
+        [
+          134,
+          137,
+          "qualify",
+          "but"
+        ],
+        [
+          433,
+          436,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          761,
+          770,
+          "propose",
+          "I suggest"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:3796252f-112f-4417-9ac7-a79663781ebb",
+      "session": "claude-12",
+      "old": [
+        [
+          90,
+          93,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          4,
+          16,
+          "delegate",
+          "you can bell"
+        ],
+        [
+          94,
+          112,
+          "clarify",
+          "I don't understand"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:cb682329-6a18-4137-8e3b-0de985e8dcfa",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          4,
+          18,
+          "ask-action",
+          "can you please"
+        ],
+        [
+          19,
+          37,
+          "clarify",
+          "help me understand"
+        ],
+        [
+          232,
+          242,
+          "clarify",
+          "What gives"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:3b88faa8-7bce-4f67-839d-8bc6434ba08b",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:677aa652-d0f9-455b-ac45-7430329b3df2",
+      "session": "claude-12",
+      "old": [
+        [
+          326,
+          329,
+          "qualify",
+          "but"
+        ],
+        [
+          389,
+          400,
+          "redirect",
+          "rather than"
+        ]
+      ],
+      "new": [
+        [
+          389,
+          400,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:23a60bdd-0520-4a30-ad62-6f653a629103",
+      "session": "claude-12",
+      "old": [
+        [
+          9,
+          12,
+          "qualify",
+          "But"
+        ],
+        [
+          146,
+          149,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          32,
+          52,
+          "prioritize",
+          "needs to be the next"
+        ],
+        [
+          292,
+          321,
+          "clarify",
+          "I'd like to see some examples"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:111f63bd-4278-443f-89e2-a4d5ba8824fd",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          19,
+          28,
+          "approve",
+          "good news"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:e6474e5a-9e9c-4a63-9c84-c4dcaa34afff",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          0,
+          16,
+          "propose",
+          "We could perhaps"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:2157e776-8696-4e06-80ef-c0372b473be6",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          34,
+          62,
+          "defer",
+          "we'll do it when we get time"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:ab18c753-8075-4e19-b7d0-3f8fb9de5c07",
+      "session": "claude-12",
+      "old": [
+        [
+          167,
+          170,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:12bd32fa-c457-4a2e-8ef4-d06b2cf20cc9",
+      "session": "claude-12",
+      "old": [
+        [
+          146,
+          157,
+          "redirect",
+          "rather than"
+        ],
+        [
+          244,
+          247,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          146,
+          157,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:0c3ce0bf-e73b-476e-b459-f52592c0f17d",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          270,
+          286,
+          "clarify",
+          "what's the story"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:f553da09-259e-4e03-8ba2-4e8a70777096",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:2cbe56a0-fdf1-4f7d-bcff-8f03d7520eee",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:ee5a6682-2480-4a73-9773-094fd1338780",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:cd7b2598-892d-47ef-b17f-f9dd1c8541f4",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          423,
+          438,
+          "propose",
+          "Maybe we should"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:6ec55b6a-1c6d-49f7-ab04-97dd1d28058c",
+      "session": "claude-12",
+      "old": [
+        [
+          4,
+          7,
+          "qualify",
+          "but"
+        ],
+        [
+          298,
+          301,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          122,
+          129,
+          "defer",
+          "for now"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:5d20aec1-a4e3-48e2-8a1c-ab23b8a3d85d",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:381a3cf1-3672-4cce-9915-7c2ecbdedc29",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          424,
+          443,
+          "verify",
+          "we'll have to check"
+        ],
+        [
+          556,
+          577,
+          "constrain",
+          "I don't want a repeat"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:4aa2db48-821d-4572-8507-524978d5b9d4",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          94,
+          108,
+          "continue",
+          "get on with it"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:2457a14c-eb40-43d3-b2be-ce5148b22c93",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          18,
+          40,
+          "report-problem",
+          "point of major concern"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:ab6a25ed-3c21-40b3-baef-5f61b5c7eec6",
+      "session": "claude-12",
+      "old": [
+        [
+          915,
+          918,
+          "qualify",
+          "but"
+        ],
+        [
+          1333,
+          1336,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          73,
+          83,
+          "explain",
+          "here's why"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:4d122b38-7f07-49ce-8113-63c55f0afac2",
+      "session": "claude-12",
+      "old": [],
+      "new": [
+        [
+          4,
+          37,
+          "qualify",
+          "to the extent that it is possible"
+        ],
+        [
+          38,
+          59,
+          "verify",
+          "I want a reproduction"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:345d3a64-5d79-469a-8d7b-8c200bd4586d",
+      "session": "claude-12",
+      "old": [
+        [
+          175,
+          186,
+          "redirect",
+          "Rather than"
+        ],
+        [
+          514,
+          525,
+          "redirect",
+          "rather than"
+        ]
+      ],
+      "new": [
+        [
+          8,
+          24,
+          "verify",
+          "we have to audit"
+        ],
+        [
+          175,
+          186,
+          "redirect",
+          "Rather than"
+        ],
+        [
+          383,
+          404,
+          "constrain",
+          "I don't want to spend"
+        ],
+        [
+          422,
+          431,
+          "delegate",
+          "let's ask"
+        ],
+        [
+          514,
+          525,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:54dc1f4b-02b6-4a1e-801e-41ca82a3981e",
+      "session": "claude-12",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-12:0d13cb55-e91c-4363-bed8-0cd9e6a88850",
+      "session": "claude-12",
+      "old": [
+        [
+          70,
+          81,
+          "redirect",
+          "rather than"
+        ],
+        [
+          312,
+          315,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          70,
+          81,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-12:3b2d0fe3-80e5-4675-ade1-392c9d06e165",
+      "session": "claude-12",
+      "old": [
+        [
+          200,
+          203,
+          "qualify",
+          "but"
+        ],
+        [
+          663,
+          666,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          491,
+          505,
+          "delegate",
+          "for dispatches"
+        ],
+        [
+          614,
+          628,
+          "delegate",
+          "for dispatches"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:4c79d4ea-778b-409d-b5b4-d106bb8e718b",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          43,
+          62,
+          "report-problem",
+          "is currently broken"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:1fa78e89-a5dc-455f-97af-01031661f72b",
+      "session": "claude-4",
+      "old": [
+        [
+          309,
+          312,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          20,
+          27,
+          "defer",
+          "for now"
+        ],
+        [
+          140,
+          152,
+          "disagree",
+          "a bad design"
+        ],
+        [
+          155,
+          170,
+          "redirect",
+          "I want to alter"
+        ],
+        [
+          320,
+          334,
+          "prioritize",
+          "first instance"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:81cdfd3d-4d40-4712-ac66-381f1a7ac44c",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          20,
+          34,
+          "delegate",
+          "for dispatches"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:c2f156b5-257e-4ccb-82f5-662b09bf3f6f",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:b33c2cc6-2f50-43ed-a669-3d001ac61529",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:7db51a71-982f-4f22-b2f8-769d27ba87d7",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          0,
+          25,
+          "report-problem",
+          "I still see an HTTP error"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:31f1f702-45a6-4a69-be98-d984f862e7d7",
+      "session": "claude-4",
+      "old": [
+        [
+          15,
+          18,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          44,
+          55,
+          "report-problem",
+          "it's broken"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:f00cc3b5-0582-4d8a-9b1e-b3e17c5aa719",
+      "session": "claude-4",
+      "old": [
+        [
+          12,
+          15,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:86d49be8-5b2f-4426-83bb-2abe3c7f9b63",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:57b537a7-90a2-4cce-b6c2-fcade8a47333",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:edc8414e-b793-4bc3-8bce-1cc1956c968b",
+      "session": "claude-4",
+      "old": [
+        [
+          106,
+          109,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          6,
+          16,
+          "approve",
+          "looks good"
+        ],
+        [
+          19,
+          30,
+          "propose",
+          "I wonder if"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:1f03e0f0-e848-4908-90c8-9e1bd1e2e305",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          4,
+          18,
+          "ask-action",
+          "please publish"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:f18eb229-ed2c-43b8-afdf-648f63c82dd2",
+      "session": "claude-4",
+      "old": [
+        [
+          49,
+          52,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          58,
+          81,
+          "disagree",
+          "doesn't match my intent"
+        ],
+        [
+          263,
+          284,
+          "clarify",
+          "How should we proceed"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:6e6dceea-39b3-4ba3-9a41-eb9a99bf4571",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:330f6ed9-1056-4c0c-80ae-9c4ce5c2a2b1",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:f696aa11-0f37-4960-b9ff-4a94a79c9242",
+      "session": "claude-4",
+      "old": [
+        [
+          55,
+          66,
+          "redirect",
+          "rather than"
+        ]
+      ],
+      "new": [
+        [
+          55,
+          66,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:7349bf28-347f-4daa-8360-93d0c87ec161",
+      "session": "claude-4",
+      "old": [
+        [
+          30,
+          33,
+          "qualify",
+          "but"
+        ],
+        [
+          250,
+          253,
+          "qualify",
+          "but"
+        ],
+        [
+          811,
+          814,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          312,
+          338,
+          "explain",
+          "The broader long term idea"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:75dd6626-9dd6-4bfc-8d9a-ebf780c3fe08",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          6,
+          23,
+          "prioritize",
+          "we have 7 minutes"
+        ],
+        [
+          43,
+          67,
+          "propose",
+          "I think it would be good"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:6f5a56be-fd8a-4349-8061-9c3ef640d6ca",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          4,
+          22,
+          "report-problem",
+          "login doesn't work"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:545fa5ff-508a-4c5b-9bdf-544b578d1da2",
+      "session": "claude-4",
+      "old": [
+        [
+          567,
+          570,
+          "qualify",
+          "but"
+        ],
+        [
+          654,
+          657,
+          "qualify",
+          "but"
+        ],
+        [
+          812,
+          815,
+          "qualify",
+          "but"
+        ],
+        [
+          1343,
+          1354,
+          "redirect",
+          "rather than"
+        ]
+      ],
+      "new": [
+        [
+          606,
+          628,
+          "constrain",
+          "I am not asking you to"
+        ],
+        [
+          1343,
+          1354,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:cf6b7fa3-5710-4466-9837-182d80036c09",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          354,
+          364,
+          "redirect",
+          "Let's trim"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:fe33a396-fe16-444a-b75d-3114d23137f6",
+      "session": "claude-4",
+      "old": [
+        [
+          28,
+          31,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          16,
+          26,
+          "approve",
+          "looks good"
+        ],
+        [
+          32,
+          45,
+          "delegate",
+          "we should ask"
+        ],
+        [
+          110,
+          129,
+          "collect",
+          "collect information"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:a919b4ab-7518-4ea7-a569-8db3834a0070",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:9e1301ce-9ba4-4cfc-bdb8-a8d24a4ed204",
+      "session": "claude-4",
+      "old": [
+        [
+          853,
+          864,
+          "redirect",
+          "rather than"
+        ]
+      ],
+      "new": [
+        [
+          853,
+          864,
+          "redirect",
+          "rather than"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:686e5dd7-c726-4187-ab55-d19c1cf66042",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:7d6dc885-ef2a-48e2-904f-b212378f0807",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          66,
+          85,
+          "defer",
+          "we can come back to"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:658dc484-e5b2-4f09-8097-9c7ea69697c6",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          41,
+          70,
+          "report-problem",
+          "overlaps existing UI elements"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:28bd515c-bffe-4c16-93a1-974f4f408b72",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          0,
+          21,
+          "continue",
+          "Please do 1, 2, and 3"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:288472ed-100a-4220-ad0a-44e35293ab14",
+      "session": "claude-4",
+      "old": [
+        [
+          323,
+          326,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:d16ab990-ffd4-408c-83e9-dd7c705df019",
+      "session": "claude-4",
+      "old": [
+        [
+          64,
+          67,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:f17191d4-f5a8-4d71-9704-af8ed61fbfd2",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:1d2ba953-3a9a-4015-afd3-3d04f20bc60f",
+      "session": "claude-4",
+      "old": [
+        [
+          179,
+          182,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          51,
+          69,
+          "clarify",
+          "I don't understand"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:945dd691-cfa4-4fbe-8da9-8c3e6b421ee7",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          0,
+          19,
+          "approve",
+          "Yes you can do this"
+        ],
+        [
+          28,
+          46,
+          "constrain",
+          "please use aliases"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:2ff4c00c-4d58-4387-8b5d-7f419c675775",
+      "session": "claude-4",
+      "old": [
+        [
+          345,
+          352,
+          "redirect",
+          "instead"
+        ]
+      ],
+      "new": [
+        [
+          136,
+          163,
+          "delegate",
+          "You will be responsible for"
+        ],
+        [
+          274,
+          303,
+          "constrain",
+          "we will not do any deep dives"
+        ],
+        [
+          337,
+          358,
+          "redirect",
+          "We will instead focus"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:600945e2-51c1-43f7-bcdf-4ddc70ecb469",
+      "session": "claude-4",
+      "old": [
+        [
+          134,
+          137,
+          "qualify",
+          "but"
+        ],
+        [
+          343,
+          346,
+          "qualify",
+          "but"
+        ],
+        [
+          413,
+          416,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          98,
+          132,
+          "constrain",
+          "not going to decide things by fiat"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:75ae8997-4cbc-443e-8944-0aac61cc17d2",
+      "session": "claude-4",
+      "old": [
+        [
+          0,
+          9,
+          "agree",
+          "I approve"
+        ]
+      ],
+      "new": [
+        [
+          0,
+          9,
+          "approve",
+          "I approve"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:5e59d281-be57-4b7a-abf4-27785be91a9d",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:0778bc9b-557c-4bd3-959a-f58c804ed4d7",
+      "session": "claude-4",
+      "old": [
+        [
+          39,
+          42,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:d8e32f17-28da-44e2-be3a-bf50a934816b",
+      "session": "claude-4",
+      "old": [
+        [
+          71,
+          74,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:b63eea90-33c4-43c6-9276-47b6a4ebad08",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          0,
+          14,
+          "ask-action",
+          "Can you please"
+        ],
+        [
+          8,
+          21,
+          "ask-action",
+          "please update"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:a2895e5b-1f01-43b8-b8c7-9231b2a7a35f",
+      "session": "claude-4",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-4:3aba9847-8adf-4416-930f-41af2f8ada44",
+      "session": "claude-4",
+      "old": [
+        [
+          8,
+          17,
+          "agree",
+          "I approve"
+        ]
+      ],
+      "new": [
+        [
+          8,
+          17,
+          "approve",
+          "I approve"
+        ],
+        [
+          23,
+          38,
+          "qualify",
+          "with the caveat"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-4:bd01bba6-8886-4339-a2b4-aefb7d76231c",
+      "session": "claude-4",
+      "old": [],
+      "new": [
+        [
+          4,
+          23,
+          "clarify",
+          "what's our strategy"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:da36b730-1ddc-48ce-96e3-3816f56a980b",
+      "session": "claude-5",
+      "old": [],
+      "new": [
+        [
+          0,
+          21,
+          "redirect",
+          "I'd like to return to"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:38e498e1-c957-4fa0-8000-20f58795da3b",
+      "session": "claude-5",
+      "old": [
+        [
+          221,
+          224,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          225,
+          240,
+          "verify",
+          "we should check"
+        ],
+        [
+          648,
+          657,
+          "propose",
+          "I suggest"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:27c2c76d-d4fa-4b93-b4eb-01ec61bfa87b",
+      "session": "claude-5",
+      "old": [
+        [
+          75,
+          78,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-5:9cf4731e-ec2d-4fc0-85d4-1c3115819b13",
+      "session": "claude-5",
+      "old": [
+        [
+          559,
+          562,
+          "qualify",
+          "but"
+        ],
+        [
+          622,
+          625,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          64,
+          75,
+          "delegate",
+          "please bell"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:5b8fee5b-cc5d-4e5b-9720-8b2a168f3fab",
+      "session": "claude-5",
+      "old": [
+        [
+          39,
+          42,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-5:3b7f8817-da7c-4db4-8212-4446d68493a7",
+      "session": "claude-5",
+      "old": [],
+      "new": []
+    },
+    {
+      "pair_id": "claude-5:d5cf8181-d2ac-4fee-962a-4974c894c122",
+      "session": "claude-5",
+      "old": [
+        [
+          290,
+          293,
+          "qualify",
+          "but"
+        ],
+        [
+          944,
+          947,
+          "qualify",
+          "but"
+        ],
+        [
+          1034,
+          1037,
+          "qualify",
+          "but"
+        ],
+        [
+          1706,
+          1709,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          196,
+          218,
+          "explain",
+          "the use cases would be"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:9fe10466-9b3f-4e87-a86e-0afcef29ebce",
+      "session": "claude-5",
+      "old": [
+        [
+          1086,
+          1089,
+          "qualify",
+          "But"
+        ],
+        [
+          1563,
+          1566,
+          "qualify",
+          "but"
+        ],
+        [
+          1567,
+          1574,
+          "redirect",
+          "instead"
+        ]
+      ],
+      "new": [
+        [
+          114,
+          125,
+          "explain",
+          "my use case"
+        ],
+        [
+          567,
+          587,
+          "ask-action",
+          "I would like to have"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:40d18a64-70dd-443f-870d-30891b7d8302",
+      "session": "claude-5",
+      "old": [
+        [
+          87,
+          90,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          113,
+          124,
+          "propose",
+          "I wonder if"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:8bcd3ebe-2ad3-4c20-af24-b58d1956800e",
+      "session": "claude-5",
+      "old": [
+        [
+          427,
+          430,
+          "qualify",
+          "But"
+        ],
+        [
+          527,
+          530,
+          "qualify",
+          "but"
+        ],
+        [
+          995,
+          1010,
+          "continue",
+          "please continue"
+        ],
+        [
+          1226,
+          1229,
+          "qualify",
+          "But"
+        ],
+        [
+          1809,
+          1816,
+          "agree",
+          "I agree"
+        ]
+      ],
+      "new": [
+        [
+          431,
+          438,
+          "defer",
+          "for now"
+        ],
+        [
+          995,
+          1010,
+          "continue",
+          "please continue"
+        ],
+        [
+          1809,
+          1816,
+          "approve",
+          "I agree"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:9797483b-c588-405f-a45b-47e2773b16fa",
+      "session": "claude-5",
+      "old": [
+        [
+          161,
+          164,
+          "qualify",
+          "But"
+        ],
+        [
+          477,
+          480,
+          "qualify",
+          "but"
+        ],
+        [
+          650,
+          653,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          0,
+          26,
+          "approve",
+          "I definitely like the idea"
+        ],
+        [
+          828,
+          835,
+          "defer",
+          "for now"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:873d2554-daf4-4b0b-9fdc-0d91727191a7",
+      "session": "claude-5",
+      "old": [
+        [
+          221,
+          224,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": [
+        [
+          379,
+          402,
+          "extend",
+          "that's another analysis"
+        ]
+      ]
+    },
+    {
+      "pair_id": "claude-5:e62a6a1f-e905-4191-9a39-5a05e9c705fe",
+      "session": "claude-5",
+      "old": [
+        [
+          40,
+          43,
+          "qualify",
+          "But"
+        ],
+        [
+          768,
+          771,
+          "qualify",
+          "But"
+        ]
+      ],
+      "new": []
+    },
+    {
+      "pair_id": "claude-5:9b440557-280c-4c24-9f5a-665e0a8f7469",
+      "session": "claude-5",
+      "old": [
+        [
+          391,
+          394,
+          "qualify",
+          "but"
+        ]
+      ],
+      "new": [
+        [
+          65,
+          82,
+          "delegate",
+          "should be sent to"
+        ],
+        [
+          155,
+          167,
+          "approve",
+          "you're right"
+        ]
+      ]
+    }
+  ]
+}
