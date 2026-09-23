@@ -97,6 +97,10 @@ tmux absorbs the abort. mosh-client dying then costs a reconnect and nothing els
 
 ### `~/bin/tm` on Zone (new)
 
+> **Superseded 2026-09-23. See README-termux.md §1.** Grouped sessions made every
+> terminal that ran `tm dex` a mirror of the others. `tm` now gives each terminal
+> its own session and ignores its argument. The text below is the original record.
+
 The grouped-view logic moved out of `.bashrc` into a real script, because **a shell
 function cannot be the remote command of a mosh invocation** and that is precisely
 where it needs to run. The `.bashrc` function now delegates:
@@ -314,7 +318,9 @@ hand-started Emacs would clobber that session's door — the §6 failure this un
 exists to end. **[verified]**: attempted against the live Emacs, the unit
 refused once, `ExecStart` never ran, and the socket's mtime never moved.
 
-**d. `~/bin/eg`, one command for the whole stack.** Knowing the right nesting
+**d. `~/bin/eg`, one command for the whole stack.** *(Superseded 2026-09-23:
+`eg` no longer uses `main` or views. Each terminal gets its own `emacsclient -t`,
+and the tty is restored if the daemon dies. See README-termux.md §1.)* Knowing the right nesting
 is not the same as getting it every time by hand, and §7.1 is the evidence that
 by hand loses. `eg` builds `mosh -> tmux -> emacsclient -t -> daemon` in order:
 
@@ -588,11 +594,30 @@ Not done, in rough order of value:
 Also still open from §7.1: nothing forces the `eg` path to be used, and a bare
 shell under `mosh-server` is still only *warned* about.
 
+### 8.7 A different abort, 2026-09-23 — `bidi.c:1330`
+
+Not cm.c:122, and the guard is irrelevant to it. At 17:44:19 the daemon aborted in
+`bidi_fetch_char` ("we don't expect to find ourselves in the middle of a display
+property"). This was an idle redisplay (timers, not a command) of `*scratch*` (org-mode,
+one ~1850-char pasted line) in a 120x31 tty frame. `display_line` was skipping the rest
+of a truncated long line and landed inside text covered by a `display` property.
+No resize was involved: `frame-sizes.log` is quiet for that frame. It is an upstream
+redisplay bug, not yet reproduced or reported. The write-up and core are in
+`~/.emacs-graph/crashes/20260923T174419-*`.
+
+Two lessons from reading the core. `~/core` is overwritten on every crash, so move it
+first. And sourcing `src/.gdbinit` makes gdb 15 segfault, so decode buffer and
+frame names by hand (`(struct buffer *)((char*)w->contents - 5)` etc.).
+
+The knock-on mattered more than the crash. A dying daemon leaves every `emacsclient -t`
+terminal raw and on the alternate screen, so the terminals looked frozen. `eg` now
+restores the tty after `emacsclient` exits (README-termux.md §1, "If a terminal
+looks frozen").
+
 ## 9. See also
 
-- `README-termux.md` §1 — the one command, and why tmux sits under mosh
-- `README-termux.md` §5 — `aggressive-resize on`, which is what makes the grouped
-  views behave when phone and monitor differ in size
+- `README-termux.md` §1 — how the connection works now: the layers, `zone` / `eg` / `tm`,
+  what survives what, and how to unfreeze a terminal
 - `README-kinesis.md` — the other half of the phone-as-workstation input story
 
 ---

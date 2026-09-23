@@ -10,28 +10,91 @@ the phone (Samsung + DeX + Termux) becomes a client. Related:
 
 ---
 
-## 1. The one command
+## 1. How the connection works (current as of 2026-09-23)
 
-```bash
-mosh zone -- tmux new-session -A -s main
+Four layers, each there for one reason:
+
+```
+Termux on the phone
+  └─ mosh          survives network changes (wifi ↔ cellular, sleep ↔ wake)
+      └─ tmux      survives mosh itself crashing, so you can reconnect
+          └─ emacsclient -t  one screen onto…
+              └─ emacs-graph.service  the one Emacs, which holds all the buffers
 ```
 
-`new-session -A` attaches if `main` exists and creates it otherwise, so the same
-command works the first time and every time. **[verified]** idempotent.
+### The commands
 
-**Correction 2026-08-17:** the earlier claim that "`main` already exists on Zone"
-went stale — by that afternoon `tmux list-sessions` reported *no server running on
-`/tmp/tmux-1000/default`*, leaving only a stale socket. **A tmux server exits when
-its last session ends**, so a standing session is not self-sustaining and does not
-survive a reboot either. `-A` makes the command work regardless, but §8's model
-("Zone holds the session") is only true while a session is actually up. `main` was
-recreated 2026-08-17 15:46 and is empty. If the model matters, it wants a systemd
-user unit rather than trust.
+| On | Command | What you get |
+|---|---|---|
+| phone | `zone` | mosh to Zone, then `tm`: a shell under tmux |
+| phone | `zone-bare` | mosh to Zone, no tmux (escape hatch) |
+| Zone | `eg` | Emacs in this terminal (starts the daemon if needed) |
+| Zone | `tm` | a shell under tmux in this terminal |
 
-**mosh survives the network, tmux survives mosh.** A phone changes networks
-constantly — wifi to cellular, cell to cell, sleep to wake — and plain SSH dies
-on every one of those. If the phone dies entirely, the tmux session keeps
-running on Zone and you reattach to exactly what you left.
+`~/bin/eg` and `~/bin/tm` are scripts, not shell functions, so they also work as
+the remote command of a mosh call (`mosh zone -- /home/joe/bin/eg`). Any
+argument, like the phone's `tm dex`, is ignored and kept only so old aliases
+still work.
+
+### Every terminal is independent
+
+**Nothing is shared or mirrored between terminals.** Each Termux window gets
+its own tmux session and, under `eg`, its own Emacs frame. Emacs is where the
+sharing happens: all the frames show buffers from the same daemon, so a file
+open in one terminal is open in all of them, but each screen shows what you
+choose.
+
+(Until 2026-09-23, `tm dex` / `tm phone` attached grouped sessions onto a shared
+`main`. Every terminal that ran `tm dex` joined the same session, so they
+mirrored each other. That design is gone. Do not bring back session groups.)
+
+### What survives what
+
+- **Network change:** mosh reconnects on its own.
+- **mosh-client crash** (it aborts when the screen briefly reports zero height,
+  e.g. on rotation or a DeX display switch, README-emacs.md §3): run `zone`,
+  `eg` or `tm` again. They **reattach the oldest session with nobody attached**,
+  so you land back where you were (`eN` sessions for `eg`, any session for
+  `tm`). If there is none, you get a new one.
+- **Emacs daemon crash:** systemd restarts it in about 5 s (README-emacs.md
+  §7.5, and §8 for the crashes themselves). Buffers you had not saved are lost.
+  The `emacsclient` in each terminal exits, and `eg` then **restores the
+  terminal** (sane tty modes, alternate screen off, cursor on) and leaves you
+  at a shell. Run `eg` again.
+- **Zone reboot:** tmux sessions are gone; the daemon starts again at boot
+  (unit enabled, user linger on).
+
+### tmux stays out of the way
+
+tmux is here only as crash insurance for mosh. Its visible features are turned
+off in `~/.tmux.conf`:
+
+- **no status bar** (`status off`);
+- **mouse off**. With it on, tmux swallowed Termux's long-press, so text
+  could not be selected or copied. The cost is that swiping no longer scrolls
+  tmux's history;
+- **prefix is `C-]`, not `C-b`**, so `C-b` (backward-char) reaches Emacs.
+  Detach is `C-]` `d`; press `C-]` twice to send one to Emacs
+  (abort-recursive-edit).
+
+### If a terminal looks frozen
+
+It is almost always a screen left behind by a dead Emacs: the shell underneath
+is fine, but the pane is still on Emacs's alternate screen. Terminals opened
+with the current `eg` restore themselves. For an older one, on Zone:
+
+```bash
+tmux list-panes -a -F '#{session_name} #{pane_current_command} alt=#{alternate_on}'
+tmux respawn-pane -k -t <session>    # only if that pane is an idle shell
+```
+
+`respawn-pane -k` kills whatever runs in the pane, so check it is a plain shell
+first. Typing `reset` into the pane is not enough: it does not bring the screen
+back.
+
+To see who is attached to what:
+`tmux list-clients -F '#{client_tty} #{client_session} #{client_activity}'`. A
+stale mosh client can stay attached for days.
 
 ---
 
@@ -78,7 +141,7 @@ mosh --server=/usr/bin/mosh-server zone
 ssh zone                       # 1. auth + network
 ssh zone 'mosh-server --help'  # 2. server binary reachable non-interactively
 mosh zone                      # 3. the UDP path
-mosh zone -- tmux new-session -A -s main    # 4. the real thing
+mosh zone -- /home/joe/bin/tm              # 4. the real thing (§1)
 ```
 
 Step 3 is the one that fails on a hostile network — mosh needs **UDP
@@ -291,11 +354,10 @@ extra-keys = [['ESC','/','-','HOME','UP','END','PGUP'], \
 Then `termux-reload-settings`. Matters less with a DeX hardware keyboard, but it
 is what makes the phone-only fallback survivable.
 
-**Zone's `~/.tmux.conf` is already tuned for this** **[verified]**, including
-`aggressive-resize on` — resizes to the smallest attached client *per window*, so
-attaching from the phone does not shrink the windows you are viewing on a
-monitor. Also `mouse on` (touch scrolling), `escape-time 0` (no ESC lag over
-mosh), 50k scrollback, vi copy-mode.
+**Zone's `~/.tmux.conf`** is tuned to stay out of the way: mouse off, prefix
+`C-]`, no status bar (§1). It also keeps `escape-time 0` (no ESC lag over mosh), 50k
+scrollback and vi copy-mode. `aggressive-resize on` is still set but matters
+little now that no two terminals share a session.
 
 **Untested:** whether mathematical unicode (`⊣`, `⧄`, `≐`) renders in Termux or
 comes out as boxes. Affects reading pattern files, not running anything.
@@ -448,12 +510,12 @@ its fingerprint, rather than by rotating all 61 passwords.
 
 ## 8. Working with both machines at once
 
-While Dionysus is still around: **Zone holds the session, both clients attach to
-it.** Work lives on neither client. `aggressive-resize` stops the phone's small
-screen from shrinking the desktop's windows.
+Superseded 2026-09-23. **Zone holds the work, and every client gets its own
+view of it** (§1): independent tmux sessions, with all Emacs frames on the one daemon.
+The original model had both clients attach to one shared session. That is what
+mirrored the terminals, and it is no longer used.
 
-That also makes the handover a non-event — when Dionysus goes back, one client
-stops attaching and nothing else changes.
+---
 
 ## 9. A second phone (2026-08-27)
 
