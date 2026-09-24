@@ -58,6 +58,17 @@ handled by the keyboard's own processor, so it still works while HID output is
 disabled — you cannot lock yourself in. Touch also keeps working, which matters
 because typing does not.
 
+**`Progm`+`F1` needs Power User Mode.** Without it the chord does nothing: the
+keyboard keeps typing, and the phone's USB device list does not change.
+**[verified 2026-09-24]** Turn it on with `Progm`+`Shift`+`Esc`. Hold Progm, then
+Shift, then tap Esc; pressing Esc before Shift gives a status report instead. All
+four LEDs flash four times when PUM comes on, and twice when it goes off. It stays
+on until toggled or a Hard Reset. To check it, run `Progm`+`Esc` (status report): the
+"Power User Mode" line appears only while PUM is on.
+
+Mount on the phone the keyboard is actually plugged into. `termux-usb -l` over
+each tunnel shows which one: a phone with no keyboard lists `[]`.
+
 Termux **cannot** reach the volume by path. `/storage` and `/mnt/media_rw` are both
 permission-denied to its uid, and no USB volume appears in `/proc/mounts`.
 **[verified]** Removable volumes are reachable only through the Storage Access
