@@ -218,26 +218,42 @@ remaps through the file in the first place.
 ## 6. The current layout
 
 Both outer thumb keys are momentary modifiers; the inner ones keep Backspace and
-Space. Enter moved to `[rctrl]`. Held under either thumb key:
+Space. Enter moved to `[rctrl]`, and also sits on `[lctrl]`; `[lalt]` and `[rwin]`
+send Tab. The key above `-_` (location `[/]`) sends `\|`, as `[intl-\]`. Held under
+either thumb key:
 
 ```
-'  ->  \                        ,  ->  Backspace
-.  ->  up                       p  ->  Delete
-o  ->  left                     y  ->  `
-e  ->  down                     -  ->  ~     (the / ? ~ key)
-u  ->  right                    \  ->  em dash
+left hand                         right hand (mirror, same directions)
+'  ->  \       ,  ->  Backspace    g  ->  Backspace
+.  ->  up      p  ->  Delete       c  ->  up        r  ->  Delete
+o  ->  left                        h  ->  left
+e  ->  down                        t  ->  down
+u  ->  right                       n  ->  right
 a  ->  [       i  ->  ]
+y  ->  `       -  ->  ~ (the / ? ~ key)     \  ->  em dash
 ```
 
-The arrow keys form an inverted-T on the left home row, which they need to, because
-the four physical arrow keys were given over to Ctrl and Alt in the top layer.
+Both hands carry an inverted-T of arrows with Backspace and Delete either side of
+up. They need to, because the four physical arrow keys were given over to Ctrl and
+Alt in the top layer.
 
-Two loose ends, both harmless:
+**The right hand on the keypad layer is the embedded numeric keypad, so its
+location tokens are numbers, not letters.** From Fig 33, for the Dvorak letters:
 
-- `{kp-\}` and `{kp\}` are both present as em-dash triggers. The manual's rule says
-  keypad locations take a `kp-` prefix, but Fig 33 renders that key without one, and
-  it is unclear whether that is real or kerning. One of the two is being ignored as
-  unparseable; we have not determined which.
+```
+g c r  =  [kp7] [kp8] [kp9]
+h t n  =  [kp4] [kp5] [kp6]
+```
+
+`[kp-h]` and the like do not exist and would fail silently. Added 2026-09-24,
+through phone1: the v-Drive never mounted on phone2, the Pixel.
+
+Loose ends:
+
+- The em dash comes from `{kp-\}`. A second copy, `{kp\}`, came back from the
+  keyboard's own rewrite as `{}`, which settles the question: `kp\` is not a
+  location token the firmware accepts, even though Fig 33 prints it that way for
+  the right-hand `\` key. The empty line was dropped.
 - ``[kp-y]>[`]`` and `{kp-/}` are leftovers from diagnosing the tilde. They work and do
   no harm.
 
