@@ -256,7 +256,8 @@ g c r  =  [kp7] [kp8] [kp9]
 h t n  =  [kp4] [kp5] [kp6]
 ```
 
-`[kp-h]` and the like do not exist and would fail silently. Added 2026-09-24,
+`[kp-h]` and the like do not exist and would fail silently. The numeric names are
+confirmed working (Status Report counted all six). Added 2026-09-24,
 through phone1: the v-Drive never mounted on phone2, the Pixel.
 
 Loose ends:
@@ -289,3 +290,17 @@ that is *both* Backspace and a modifier.
 Changes take effect when the v-Drive closes. Eject from the Android notification
 shade *first* — the volume is FAT, and pulling it out from under a buffered write is
 how you corrupt the volume rather than just the file — then `Progm`+`F1`.
+
+**Closing the v-Drive does not always reload the layout — verify by count.**
+**[verified 2026-09-24]** After an eject and `Progm`+`F1`, the file on the drive
+held 31 remaps and 3 macros, but the keyboard kept running the old 25 and 4.
+Worse, the new right-hand arrows *seemed* to work, because keypad 4/6/8 with Num Lock
+off already send Left/Right/Up — only `g`, `r` and `t` (Home, Page Up, keypad 5)
+gave it away. So after every edit:
+
+1. `Progm`+`F4` — reselect `dvorak.txt`, forcing a reload from the drive.
+2. `Progm`+`Esc` in a scratch buffer — the Status Report's `Keys remapped>` and
+   `Stored macros>` must match the counts of `[...]` and `{...}` lines in the file.
+
+A count that doesn't move means the file was not loaded; a count that moves but a
+key that misbehaves means a bad token (invalid lines are dropped, not counted).
