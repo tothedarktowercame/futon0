@@ -13,6 +13,19 @@ The live layout is saved next to this file at `kinesis/dvorak.txt`, with
 `kinesis/state.txt` and the now-unused `kinesis/qwerty.txt`. Restoring is a matter of
 copying `dvorak.txt` back into `active/` on the v-Drive.
 
+### The edit cycle, in order
+
+1. **`Progm`+`Shift`+`Esc` — Power User Mode on** (four LED flashes). Without it
+   `Progm`+`F1` does nothing at all. It persists, so check with `Progm`+`Esc`: the
+   report ends with `Power user mode> on`.
+2. Find the phone with the keyboard: `termux-usb -l` over each tunnel; the other lists `[]`.
+3. Agent fires `termux-saf-managedir` on that phone **before** the mount (§2).
+4. `Progm`+`F1` — mount. Typing stops; in the picker, grant `active/`.
+5. Agent reads, edits, writes, reads back (§3).
+6. Eject from the notification shade, then `Progm`+`F1` to close the v-Drive.
+7. **`Progm`+`F4`** to force the reload, then **`Progm`+`Esc`**: `Keys remapped>` and
+   `Stored macros>` must equal the file's `[...]` and `{...}` line counts (§7).
+
 ---
 
 ## 1. The rule that explains every failure
@@ -257,8 +270,8 @@ h t n  =  [kp4] [kp5] [kp6]
 ```
 
 `[kp-h]` and the like do not exist and would fail silently. The numeric names are
-confirmed working (Status Report counted all six). Added 2026-09-24,
-through phone1: the v-Drive never mounted on phone2, the Pixel.
+confirmed working (Status Report counted all six). Added 2026-09-24, through
+phone1, which is where the keyboard was plugged in; phone2 could not see it at all.
 
 Loose ends:
 
