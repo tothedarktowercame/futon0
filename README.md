@@ -104,6 +104,7 @@ flowchart LR
         F0M["README.md<br/>(this file)"]
         F0B["README-boundary.md"]
         F0S["README-setup.md"]
+        F0K["README-kimi.md"]
     end
 
     subgraph F1["futon1"]
