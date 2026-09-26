@@ -804,3 +804,50 @@ precomputed readings); operator-turn data must be filtered of harness
 notices and parked-job wakes before it counts as the user's acts; the
 demo's own fixture must be public (the red-tape incident is already written
 up in public futon3c).
+
+## 2b.6 Claude Code–native variant, and where the selling point sits (2026-09-26)
+
+**Operator:** rather than Kimi, a Claude Code–native 象 could dispatch to a
+Sonnet subagent. **Not to be built now:** the mainline version comes first;
+this is recorded as an idea for DERIVE.
+
+**Shape discussed (agent sketch, not a decision):**
+
+- **Tier 1, every turn, classical:** a Claude Code `UserPromptSubmit` hook
+  runs a fast lookup over the library (futon3a's index or a plain
+  keyword/embedding script) and adds the top few patterns to the turn's
+  context. No model call. Quiet unless above a relevance threshold, or it
+  becomes the "steady red until ignored" that `inbox-zero/gate-fails-loudly`
+  warns about. This is the tier that would have put that pattern in front of
+  the agent on 09-24 before the commit, not after — i.e. it closes §2b.1 QB2
+  (retrieved, not reached) for the Claude path.
+- **Tier 2, on demand, Sonnet subagent** (`.claude/agents/…` with
+  `model: sonnet`, read-only tools): incident review and end-of-session
+  annotation; its output is the outcome record.
+- Needs none of the JVM stack: pattern folder + subagent + hook +
+  onboarding skill. That is adoption level **L1** (IDENTIFY, Q1 table).
+
+**Operator caution — the demo must not give the value away:** *"the 'selling'
+point would have to come *after* that demo, otherwise people will say, oh
+that's great and just go off happily with their pattern annotations."* And:
+*"the actual Elephant-2000 features need XTDB and Clojure/JVM."*
+
+**Consequence for DERIVE (agent reading):** the L1 demo is the way in, not the
+offer. It should be built to end at the question it cannot answer, which only
+the stack can:
+
+| L1 (patterns + Sonnet) can do | Only the stack can do (L2/L3) |
+|---|---|
+| Read a session and name the pattern at play | Say which rules were **in force as of T**, and when each arose or was withdrawn |
+| Suggest the pattern that would have prevented an incident | **Rewind** to just before the act, and check by **replay** that the pattern would have prevented it (a clearing proof) |
+| Annotate turns in one session | Keep a durable, **as-of** record across sessions, agents and commits, and walk from a commit back to the acts behind it (*derivation of R*) |
+| Retrieval hints per turn | Attestation levels that accumulate from outside evidence (load-bearing, witness), not from the annotator's own citations |
+
+So the demo's last step is the one it cannot finish, e.g. *"this pattern was
+already in your library on the day; when did the rule it warns against come
+into force, and what would have happened without it?"* That question needs
+the as-of store, replay and the speech-act history: the M-象-2000 features.
+
+**Ordering implied:** mainline 象-2000 on the stack first (M-象-2000 DERIVE →
+build); the L1 variant afterwards, designed backwards from the question it
+hands over.
