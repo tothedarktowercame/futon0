@@ -1178,3 +1178,39 @@ nothing it does can cause damage); the War Machine does the hard thing
 (decides, and must justify each decision with a pattern). This supersedes
 §2b.8 point 3's framing: the War Machine is not only "more automation" but
 **automation with warrants**, which is what makes it safer than bypass.
+
+**Operator, same day: the tool-level variant exists — it is the zaif
+harness** (`futon2/holes/M-zaif-harness.md`, open since 2026-07-11).
+
+What zaif is, from its mission: a controller that sits *between turns* of an
+interactive agent loop and scores four arms by expected free energy (G):
+**retrieve** (look something up, priced in tokens), **act** (do it now, at the
+risk of misreading what the operator wants), **ask** (spend operator attention
+to learn what they want), **yield** (hand the turn back). *"zai and zaif share
+everything below the seam; they differ only in this controller."* So the
+choice between "do it" and "ask Joe" is a scored decision, not a keypress —
+the operator's "warranted approval" at the level of individual moves.
+
+**Measured state (from the mission's own checkpoints; not re-run here):**
+
+- ZU-2 (2026-07-13): **`:ask` is structurally unreachable at the shipped
+  constants**; the calibration gap was published rather than tuned away.
+- U6 (2026-09-02), over 114 replayed sessions: the `:act` G-term is exactly
+  0.0 in 114/114 (task belief is never hydrated, so the mission's γ
+  multiplies zero), and **83 of 114 decisions were settled by tie order, not
+  by a score**; only the 31 `:retrieve` choices came from arithmetic.
+
+**Reading for this mission:** the mechanism for warranted approval exists and
+is instrumented well enough to show where it does not yet decide. For a
+newcomer offer, that means the War Machine / zaif claim is currently
+**"approval by warrant is designed and measured"**, not **"approval by
+warrant works"**: the ask arm, which is the one that stands in for the
+operator's approval, cannot yet fire. Two follow-ons for DERIVE:
+
+1. zaif runs on the zai/kimi API harness. The Claude-native equivalent is a
+   permission hook (§2c.6) that consults the same controller, so the same
+   act/ask/yield decision governs Claude Code tool calls.
+2. The honest demo for this rung is the one zaif's own record points to: a
+   session replay in which `:ask` fires on the move that should have been
+   escalated (e.g. the 09-24 enforcement commit), and not on the ones that
+   should not.
