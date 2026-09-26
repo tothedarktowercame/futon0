@@ -1296,3 +1296,25 @@ and the public surface serves both:
 The second reader is served by the case-study artefacts already named here
 (§2c.7: the account of building the War Machine; §2b.5: the red-tape
 incident) more than by a quickstart. Positioning detail lives in futon7.
+
+## 2c.9 A practitioner's pain, in their words (2026-09-26)
+
+A developer using AI agents at work, reported by the operator: she knows the
+systems can go off the rails, but her job *"has now become continual
+checking, nannying, babysitting, coaxing, scolding, beseeching, etc., and that
+takes the fun out of it"*. *"If i could just get into a flow state more that
+would be great."* Operator: the cost is burnout; *"Just make their lives not
+suck."*
+
+**Reading:** this is the approval-fatigue pain of §2c.6 from the developer's
+side, and the plainest statement yet of what the upper rungs are for: *only
+interrupt me when it matters, and say why.* It is also measurable from
+session records: the share of a developer's turns that are corrective
+(象-2000 already types turns as constrain / disagree / redirect /
+report-problem), and the length of stretches without a correction or an
+approval prompt. One account, second-hand: a statement of the pain, not a
+measure of its prevalence. The §2c survey did not cover developer
+satisfaction or burnout.
+
+**Candidate C1 line, in the user's terms:** *get your flow back — the agents
+only interrupt you when it matters, and tell you why.*
