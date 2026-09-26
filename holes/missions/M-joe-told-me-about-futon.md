@@ -1,7 +1,7 @@
 # M-joe-told-me-about-futon
 
 **Status:** HEAD captured 2026-09-26 · MAP first pass complete for Q-install (§2) ·
-IDENTIFY drafted (§1, end of file), awaiting operator review.
+IDENTIFY drafted (§1), awaiting operator review · walkthrough Checkpoint 1 recorded.
 **Gate:** operator-acceptance — HEAD must be recognised as faithful before
 IDENTIFY hardens it into a gap statement.
 
@@ -473,3 +473,51 @@ C1 and C3 stand as drafted. C2 and C4 are refined:
 
 **Exit criterion (per lifecycle):** the operator agrees the gap is real and the
 scope is right.
+
+---
+
+### Checkpoint 1 — 2026-09-26: newcomer walkthrough, first attempt
+
+**Setting:** fresh cloud container, Ubuntu 24.04, 16 GiB RAM, OpenJDK
+21.0.10, python3, node, make; no Clojure tooling, no Emacs, no prior futon
+state. **Network policy:** Maven Central and GitHub reachable; `repo.clojars.org`
+and `download.clojure.org` **blocked by the container's egress policy** (a
+property of this environment, not of FUTON). Followed
+`README-apollo-trial.md` → `config/public-install-candidate.json`.
+
+**What was done and what happened**
+
+| Step | Result | Whose problem |
+|---|---|---|
+| `install-fetch.py` with the candidate manifest | Failed at once: `HTTP Error 403` from the unauthenticated GitHub API visibility check | Environment (API blocked here); but note the fetcher has no fallback |
+| Same fetch, replicated by hand (init / fetch pinned commit / checkout) | 9 of 10 OK, futon4's `reazon` submodule OK, 3.4 GiB | — |
+| futon1b pinned `d5a071e…` | **`not our ref`** — the commit is no longer on any public branch (current `master` is `ac3f83b`) | **FUTON: pinned manifest unreproducible** |
+| Pinned futon0 `7a568e8` | Predates `scripts/install-plan.py`, which the install docs tell you to run | **FUTON: manifest pins a futon0 without its own installer** |
+| futon3c `make tools` | Failed: `bootstrap-tools.sh` asks the GitHub API for "latest" and JSON-parses a 403 page (`JSONDecodeError`) | Environment trigger; FUTON has no pinned-version default |
+| `bootstrap-tools.sh` with pinned versions | babashka 1.13.219 OK; Clojure CLI blocked (download.clojure.org) | Environment |
+| Clojure CLI 1.12.5.1664 from the GitHub mirror, installed by hand | OK | — |
+| `clojure -P` for futon1b `:server`, futon3c `:dev-serve`, futon1 `:run-m` | **All three stop at the first Clojars artifact** (e.g. `cheshire 5.11.0`) | Environment |
+| `install-plan.py plan` / `doctor` (current futon0) | **Works as documented:** plan exit 0; doctor exit 2, `launch_ready false`, memory/ports/paths OK, flags missing `clojure`/`bb`/`clj-kondo` on PATH and lists the four remaining release gates | **FUTON: this part is good** |
+| Apollo release blocker (`promote-exec/execute-plan-with-refresh!`) | **Fixed in public HEADs:** present in `futon3/inbox-zero-lib/.../promote_exec.clj:131`. But the candidate manifest still pins the old futon3 `bfa8a9c`, so a newcomer following the docs would reproduce the failure | **FUTON: manifest stale** |
+
+**Findings for the mission**
+
+1. **The candidate manifest has aged out in 17 days.** One pinned commit is gone
+   from the public remote, one pins a futon0 without the installer, and one
+   still pins the pre-fix futon3. A pinned manifest is only reproducible if the
+   pinned commits are kept reachable (tags, not branch tips) and the manifest
+   is re-cut after fixes.
+2. **The planning tools are the best-behaved part of the newcomer path.**
+   `doctor` gave accurate, honest output on a machine it had never seen.
+3. **Toolchain bootstrap depends on network calls that can fail opaquely**
+   (GitHub API "latest", `download.clojure.org`). Pinned versions, and a clear
+   error instead of a Python traceback, would make failure legible.
+4. **Not reached, so untested:** dependency resolution, cold load of futon3c
+   at current HEADs, boot, write/retrieve/search, agent task, restart. These
+   need Clojars access.
+
+**Test state:** no FUTON tests run (dependencies unresolvable here).
+
+**Next:** with `repo.clojars.org` allowed, re-run from `clojure -P` at current
+public HEADs: resolve futon1b `:server` and futon3c `:dev-serve`, cold-load
+`futon3c.dev`, then attempt the Apollo acceptance cycle.
