@@ -232,3 +232,126 @@ superseded layer, which answers neither Q-install nor Q-bother.
 **Exit criterion:** met for Q-install's MAP questions. Q-bother's MAP is
 deliberately thin: its facts are mostly private, and per the anti-glibness
 discipline it cannot be answered by reading.
+
+---
+
+# 1. IDENTIFY (draft, 2026-09-26)
+
+*Numbered 1 per the lifecycle, though written after MAP, as in the sibling
+mission. Draft for operator review; the HEAD gate above is the operator's to
+clear.*
+
+## The value claim under test
+
+Joe, 2026-09-26:
+
+> "FUTON should help even a post-training AI make sense of my codebase and
+> use-cases. So you can continue to 'learn' even though your training is
+> finished. That may or may not be exciting to you; but it should be of
+> interest to human users if they have any moderately complex coding tasks to
+> do."
+
+Stated precisely: a model's weights do not change after training, but FUTON
+keeps an **external, structured memory** — missions with stated phase and
+status, evidence of past turns, patterns with recorded use, honest technical
+notes — that the *next* agent session reads and builds on. For a human with a
+moderately complex coding task, that means **an agent that picks up where the
+last one left off, whose reasoning is on record.**
+
+## Motivation — the gap
+
+The gap is between that claim and a newcomer's ability to check it:
+
+1. **The claim's distinctive parts run in a system a newcomer cannot start**
+   (§2.3–2.6): the Evidence Landscape, Agency, the reflection API, mission
+   control.
+2. **What a newcomer *can* reach is the documents.** So today the claim can only
+   be tested as "FUTON the method, as written down", not as "FUTON the system".
+3. **The obvious comparison is unanswered.** Any human who uses coding agents
+   already has CLAUDE.md, AGENTS.md, memory files and rules files. FUTON's own
+   repos use them too. The question a newcomer will ask is not "is external
+   memory useful?" but **"what does FUTON add over a good CLAUDE.md?"**
+
+## Evidence from this session: one cold agent, documents only
+
+This mission was opened by an agent arriving cold at futon0–futon7 in a cloud
+container with shallow clones and no running services. It is an n=1 subject of
+exactly the kind the claim names. It is **not** independent (it was asked by
+the operator and is inclined to be helpful), so this is observation, not a
+result.
+
+| What happened | Direction | FUTON element involved |
+|---|---|---|
+| Fastest orientation came from documents that state their own status with evidence: `README-apollo-trial.md` ("Agency cannot load"), `mission-lifecycle.md`, the futon7 thesis ledger's status column | helped | evidence-over-assertion discipline; mission status lines |
+| The futon7 thesis ledger recorded *why* futon7 is private (a past leak). That stopped the agent putting private business content into this public file | helped: prevented a mistake | recorded rationale |
+| The lifecycle doc let the agent write a mission in house format without asking | helped | mission lifecycle as a portable protocol |
+| Top-level READMEs sent the agent to the wrong store and port (futon1 on :8080), to nonexistent files, and to a stack diagram missing three repos | hindered | stale entry surfaces (HEAD T4) |
+| The agent found the sibling `M-what-is-it-who-is-it-for` by listing a directory, not through any index. Had it written first, it would have duplicated the mission | near miss | no routing for a file-only agent |
+| The agent never touched the running system | untested | Evidence Landscape, Agency, reflection |
+
+Reading: **the method helped where it was followed and hurt where it had
+decayed.** The written discipline delivered some of the claimed value with no
+code running. That is some evidence for the "method, no code" unit in HEAD T2.
+It says nothing yet about the running system.
+
+## Theoretical anchoring
+
+- futon7 thesis ledger T∞ (public paraphrase): FUTON is a method others can
+  follow, witnessed only when **someone other than Joe** gains a capability by
+  following it.
+- The stack's own blind-control discipline (futon7 `E-business-exotype-audit`
+  §3): a claim about gain needs a rate-matched comparison with the mechanism
+  removed. Here, the comparison is **the same task with a plain repo and an
+  ordinary CLAUDE.md**.
+- Sibling `M-what-is-it-who-is-it-for` T5's product filter: a boundary, a user
+  other than Joe, something demonstrable.
+
+## Scope
+
+**In:** the value claim above, for coding with AI agents; the newcomer path
+for whichever unit is chosen; the plain-language statement of the claim.
+
+**Out (deferred, not dismissed):** futon6 mathematics, futon5 MMCA research,
+futon7 business modelling, the War Machine, and full-stack installation
+*unless* the chosen unit requires it.
+
+## Completion criteria (draft; testable)
+
+- **C1 — Stated plainly.** The claim appears on the public entry point in one
+  paragraph that uses no FUTON vocabulary.
+- **C2 — Compared.** A defined, moderately complex coding task is run by a cold
+  agent twice: once with FUTON's surfaces and once with the baseline (the same
+  repo plus an ordinary CLAUDE.md). Measures are fixed in advance, e.g.
+  orientation errors (wrong entry point, following a stale doc, duplicated
+  work, crossing a privacy boundary), rework, and whether the next session
+  resumes correctly. The result is reported even if it favours the baseline.
+- **C3 — Reachable.** The chosen unit can be installed or adopted by a
+  newcomer to the Apollo standard (fresh environment, public sources, a
+  write → retrieve → agent task → recover cycle), or, for the method-only
+  unit, adopted with no FUTON code.
+- **C4 — Witnessed.** A human who is not Joe applies it to **their own**
+  codebase on a moderately complex task and says whether it was worth their
+  time. This is the real exit; C1–C3 are its preconditions.
+
+## Relationship to other missions
+
+- **Depends on:** futon0 public-install work (C3); a licence decision (MAP §2.5).
+- **Enables:** T∞ in the private futon7 ledger; any outward-facing offer.
+- **Sibling:** `M-what-is-it-who-is-it-for` (inside view: what exists).
+
+## Open questions for the operator (blocking IDENTIFY exit)
+
+1. **The unit (HEAD T2).** Method only, one layer (Agency plus the Evidence
+   Landscape?), or the whole stack? This session's evidence leans toward
+   "method first, system second", but the distinctive claim lives in the
+   system.
+2. **Whose codebase?** "My codebase" in the claim is Joe's. For C4 it must be
+   the newcomer's own. Can FUTON's surfaces be pointed at a foreign repository
+   today, or only at the futon repos?
+3. **The C2 task.** Which moderately complex task makes a fair test, and who
+   picks it so the result isn't tuned to FUTON?
+4. **The candidate for C4.** Is there a named person, even a friendly one, for
+   n=1?
+
+**Exit criterion (per lifecycle):** the operator agrees the gap is real and the
+scope is right.
