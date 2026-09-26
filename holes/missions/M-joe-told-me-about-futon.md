@@ -1531,6 +1531,20 @@ Mathematics (§2d.6); the War Machine as autonomy (the ask arm cannot yet
 fire; §2c.6); FUTON as an install (INSTALL.md serves adopters who come
 anyway). These can appear as "what I've built", not as what is sold.
 
+**D5 — Does 象-2000 cross the river?** (operator, 2026-09-26: *"whether
+象-2000 can 'cross the river' and become part of the pitch or not"*.) In
+xiangqi the elephant cannot cross the river and is blocked if the midpoint of
+its move is occupied ("blocking the elephant's eye", 塞象眼).
+IF 象-2000 is the most distinctive thing built, HOWEVER it is work in progress
+and depends on an LLM annotator (a Kimi seat, or precomputed readings), THEN
+for pitch v1 it stays on its own side: it works *inside* the audit (the
+supervision-load measure is its turn-typing under a plain name) but is not
+named or sold; and audit v0 computes a crude supervision measure without it
+(heuristics over user-turn text), so 象's typing is an upgrade rather than a
+precondition, BECAUSE a pitch that depends on the annotator running on client
+data has its elephant's eye blocked. It crosses later as its own demo (the
+red-tape replay; warranted refusals), per §3.7.
+
 ## 3.2 The offer (draft, to test)
 
 > **Find out what your AI agents are actually doing.** Give me two weeks of
