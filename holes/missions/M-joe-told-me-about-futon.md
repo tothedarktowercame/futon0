@@ -1,7 +1,7 @@
 # M-joe-told-me-about-futon
 
 **Status:** HEAD captured 2026-09-26 · MAP first pass complete for Q-install (§2) ·
-IDENTIFY not started.
+IDENTIFY drafted (§1, end of file), awaiting operator review.
 **Gate:** operator-acceptance — HEAD must be recognised as faithful before
 IDENTIFY hardens it into a gap statement.
 
