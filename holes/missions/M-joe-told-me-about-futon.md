@@ -1619,6 +1619,23 @@ recommendations. The audit runs on the client's machine, offline; only the numbe
 | **One-page pitch** | §3.2 + the numbers | SF Tech Week |
 | **30-second version** | the one-pager | conversations at SF Tech Week |
 
+**Data available (operator, 2026-09-26):** the operator has agent logs going
+back to about April 2026; Rob may too. So the sample reports can be
+**longitudinal**: monthly spend, model mix, supervision load and flow; shifts
+around known changes in practice (missions, the War Machine rebuild, the
+09-24 red-tape week); and a first cut of the mission-effect test (§2b.7) by
+joining sessions to missions via working directory and mission files touched.
+Two practitioners over similar spans is a much stronger sample than one.
+
+**Checks before relying on it:**
+- **Retention:** Claude Code deletes old transcripts after a retention period
+  (setting `cleanupPeriodDays`; believed to default to 30 days; verify). Rob
+  should check and raise it now if his older logs are to survive. Codex keeps
+  its own sessions under `~/.codex/`.
+- **Format drift since April:** several versions; the report states which
+  signals exist for which period (D6 risk). Deduplicate `.pre-compact-*`
+  snapshots by `uuid`, as the existing operator census already does.
+
 ## 3.4 Plan
 
 | Days | Work | With Rob |
