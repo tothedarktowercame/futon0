@@ -521,3 +521,72 @@ property of this environment, not of FUTON). Followed
 **Next:** with `repo.clojars.org` allowed, re-run from `clojure -P` at current
 public HEADs: resolve futon1b `:server` and futon3c `:dev-serve`, cold-load
 `futon3c.dev`, then attempt the Apollo acceptance cycle.
+
+### Checkpoint 2 — 2026-09-26: walkthrough with full network access
+
+**Setting:** as Checkpoint 1, with network access widened. All ten public
+repos moved to their **current HEADs** (the pinned manifest is stale, per
+Checkpoint 1). Clojure CLI 1.12.5.1664, local Maven repo, `MALLOC_ARENA_MAX=2`.
+Ports from the Apollo plan: store 7273, Agency 7270, Drawbridge 6968.
+Repos linked into `~/code/`, as the docs assume.
+
+**Result: the storage and coordination half of the Apollo acceptance cycle
+passes from public sources on a fresh machine.** This is the first time that
+has been recorded; on 2026-09-09 Agency could not load.
+
+| Apollo acceptance step | Result |
+|---|---|
+| Resolve deps, futon1b `:server` and futon3c `:dev-serve` | **Pass** (163 MiB cache, both exit 0) |
+| Cold load of `futon3c.dev` from public sources | **Pass** — the 09-09 missing-function blocker is fixed at HEAD |
+| Boot futon1b on a fresh store | **Pass** — `/health` ok, text index built on the empty store |
+| Boot Agency against futon1b | **Pass** — `I-evidence-per-turn boot check: OK (futon1b)`, `/health` status ok, `claude-1` and `codex-1` registered |
+| Write → read → reply-chain → text search | **Pass** — direct to futon1b, and written via Agency's `/api/alpha/evidence`, read back through both |
+| Stop both JVMs, restart, recover | **Pass** — all three entries and the search index survived; Agency re-read them |
+| One agent task via `/api/alpha/invoke` | **Not tested — environment.** The only agent CLI here is the host session's own Claude Code, running as root; it refuses to start in `bypassPermissions` as root, and driving it would borrow the host session's identity rather than a newcomer's own login |
+
+**Findings (FUTON-side), in the order a newcomer meets them**
+
+1. **Without the right environment variables the stack still boots, and says
+   loudly that it's wrong.** First launch without `FUTON3C_EVIDENCE_BACKEND`:
+   *"I-evidence-per-turn BOOT CHECK FAILED … writes will not persist. Fix and
+   restart."* That is exactly the right behaviour for a newcomer, and the
+   variable to set is named in the message.
+2. **No newcomer doc lists the environment that works.** The working launch
+   needed `FUTON3C_EVIDENCE_BACKEND=futon1b`, `FUTON1B_URL`,
+   `FUTON1B_PENHOLDER=api`, `FUTON3C_PORT`, `FUTON3C_DRAWBRIDGE_PORT` and
+   `FUTON3C_ROLE=laptop`. The futon3c README's env table documents none of the
+   `FUTON1B_*` variables and still describes futon1a on 7071.
+3. **The penholder allowlist defaults to `joe` and `api`.** A write as any other
+   penholder is refused with `layer 3 forbidden, allowed [joe api]`: clear, but
+   the name of the operator is a default.
+4. **The futon3c README's evidence-write example is rejected.** It omits
+   `subject`, which `EvidenceEntry` now requires (`social/shapes.clj:324`). The
+   error is well-formed and shows the rejected entry, but a newcomer's first
+   copy-paste fails.
+5. **The README's `CLAUDE_PERMISSION_MODE` is dead.** The code reads
+   `CLAUDE_PERMISSION` (`dev/futon3c/dev/agents.clj:131`). The documented
+   override for the permissive default does nothing.
+6. **`FUTON_CODE_ROOT` is honoured in 3 places; the watcher is not one of
+   them.** It watches `/home/joe/code/*` (14 roots, including private
+   futon5a/futon7/futon7a) regardless, and logs a stream of
+   `ConnectException` and `cannot change to '/home/joe/code/…'`. Boot
+   continues.
+7. **Boot emits one hard-coded-path failure** (`structural-law-inventory.sexp`
+   under `/home/joe/code/futon3c/docs`), recorded as evidence and survived.
+8. **The first boot creates `~/code/storage`** before the user has put
+   anything in `~/code`.
+
+**Environment-side, not FUTON (recorded so they are not mistaken for FUTON
+defects):** Maven resolution through this container's proxy needed a
+`~/.m2/settings.xml` proxy entry; the agent CLI is the host session's own.
+
+**Test state:** no test suites run; acceptance checks above are end-to-end.
+
+**Reading for IDENTIFY.** L2 (the shared core as code) is closer than MAP
+suggested: a stranger can boot the store and Agency and get durable, searchable,
+restart-safe evidence today, *if* told six environment variables. What stands
+between that and a newcomer doc is small and specific (findings 2–6), not
+architectural. The untested step, an agent task, is where FUTON's claimed value
+("the next session picks up where the last one left off") actually lives, so it
+should be the first thing run on a real newcomer machine, as a normal user with
+their own agent CLI.
