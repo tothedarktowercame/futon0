@@ -590,3 +590,27 @@ architectural. The untested step, an agent task, is where FUTON's claimed value
 ("the next session picks up where the last one left off") actually lives, so it
 should be the first thing run on a real newcomer machine, as a normal user with
 their own agent CLI.
+
+### Checkpoint 3 — 2026-09-26: single entry point shipped
+
+**What was done:**
+- `futon0/INSTALL.md` written from the Checkpoint 2 path, then re-verified
+  with exactly its documented commands: futon1b on `:7074` (Agency's default),
+  `make dev` with three settings (`FUTON3C_EVIDENCE_BACKEND=futon1b`,
+  `FUTON3C_ROLE=laptop`, `CLAUDE_PERMISSION=default`), first write/read via
+  Agency. The store also survived an unplanned container restart.
+- Found while verifying: futon3c defaults to futon1b on **7074** while
+  futon1b's README starts it on **7073**; `FUTON1B_PENHOLDER` already defaults
+  to `api`; `make dev` sets `CLAUDE_BIN=~/.local/bin/claude` and
+  Codex `danger-full-access`/`approval=never`. All stated in INSTALL.md.
+- Every other futon README (futon1, 1a, 1b, 2, 3, 3a, 3b, 3c, 4, 5) now opens
+  with a pointer to INSTALL.md and one line on that repo's role in the core
+  install. futon6 had no README; a short one was added.
+
+**Addresses:** MAP §2.1–2.2 (no single start, contradictory docs) and HEAD T4
+for the install question. C1 (a plain statement of the value on the public
+entry point) is partly met by INSTALL.md's "What you get".
+
+**Still open:** the agent-task step (INSTALL.md §6, marked unverified);
+the README-level fixes in futon3c (env table, evidence example, permission
+variable name) — INSTALL.md works around them rather than fixing them.
