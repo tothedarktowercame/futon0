@@ -198,13 +198,24 @@ superseded layer, which answers neither Q-install nor Q-bother.
 - No public document answers "why would I bother?" in a newcomer's terms. The
   closest are architectural self-descriptions (futon0 README, futon3c README)
   whose vocabulary presupposes the stack.
+- **Correction (same day):** public business-model analysis *does* exist, in
+  `futon0/analysis/business-models/` (e.g. `SPINE.md`: missions as a
+  capability ledger, valuation left to the world). It is written for insiders
+  and is not linked from any README, but it is public. The first pass missed it.
+- **Correction (same day):** the common ground between futon and Rob's
+  derivative, mfuton, is being worked out in public in
+  `futon3c/holes/E-futon-mfuton-successor-requirements.md`: 31 shared
+  requirements drawn from a futon/mfuton design dialogue, and a *configurator*
+  sketch whose acceptance test is that it can describe both systems as
+  configurations. The first pass missed this too.
 - The reasons that *do* exist (daily-driver value to its operator; paid work
   that exercised the methods; the transferable-method thesis) live in private
   futon7, deliberately. futon7's own README names a clean public successor as
   the intended outward surface; it does not yet exist.
-- Nothing public describes a *user who is not Joe* — matching the sibling
-  mission's Q9 finding that no process in the stack has ever produced audience
-  information.
+- ~~Nothing public describes a *user who is not Joe*~~ — **wrong**: mfuton and
+  Rob are named across public futon0 and futon3c documents. What is true is
+  narrower: no newcomer-facing page mentions that another person has adopted
+  and adapted FUTON.
 
 ## 2.8 Surprises — recorded before DERIVE
 
@@ -218,6 +229,12 @@ superseded layer, which answers neither Q-install nor Q-bother.
    else**, including any business use by a third party.
 4. **Permissive agent defaults** mean that a newcomer who did get it running
    would, by default, grant agents unrestricted local access.
+5. **The first MAP pass missed three public, directly relevant documents**
+   (`analysis/business-models/`, `analysis/audits/PRODUCT-CENSUS-*`,
+   `E-futon-mfuton-successor-requirements.md`). The cold agent found them only
+   when a name from the operator (Rob, mfuton) gave it something to grep for.
+   Same finding as the near-miss in §1: for a file-only agent, relevant work is
+   reachable by search but not by navigation.
 
 ## 2.9 Ready vs missing
 
@@ -252,11 +269,22 @@ Joe, 2026-09-26:
 > do."
 
 Stated precisely: a model's weights do not change after training, but FUTON
-keeps an **external, structured memory** — missions with stated phase and
-status, evidence of past turns, patterns with recorded use, honest technical
-notes — that the *next* agent session reads and builds on. For a human with a
-moderately complex coding task, that means **an agent that picks up where the
-last one left off, whose reasoning is on record.**
+gives it **registers it can write, recall and act on**: missions with stated
+phase and status, evidence of past turns, candid technical notes, and — the
+one that changes behaviour, not just recall — the **pattern library**
+(`futon3/library/`). An agent that writes a pattern, selects it later (PSR),
+and records how it went (PUR) has changed its own functional behaviour on
+evidence. Joe, 2026-09-26: *"We could call that memory or we could call it
+learning, maybe it's both; what it is is a kind of slow-motion learning."*
+
+For a human with a moderately complex coding task, that means **an agent that
+picks up where the last one left off, whose reasoning is on record, and whose
+working rules improve from recorded outcomes.**
+
+This sharpens the CLAUDE.md comparison below. A CLAUDE.md is also a register
+an agent can write to. FUTON's distinctive claim is not memory as such but
+**evaluated memory**: each rule carries its selection and outcome records, so
+revisions follow evidence rather than whoever last edited the file.
 
 ## Motivation — the gap
 
@@ -339,19 +367,84 @@ futon7 business modelling, the War Machine, and full-stack installation
 - **Enables:** T∞ in the private futon7 ledger; any outward-facing offer.
 - **Sibling:** `M-what-is-it-who-is-it-for` (inside view: what exists).
 
-## Open questions for the operator (blocking IDENTIFY exit)
+## Operator answers, 2026-09-26
 
-1. **The unit (HEAD T2).** Method only, one layer (Agency plus the Evidence
-   Landscape?), or the whole stack? This session's evidence leans toward
-   "method first, system second", but the distinctive claim lives in the
-   system.
-2. **Whose codebase?** "My codebase" in the claim is Joe's. For C4 it must be
-   the newcomer's own. Can FUTON's surfaces be pointed at a foreign repository
-   today, or only at the futon repos?
-3. **The C2 task.** Which moderately complex task makes a fair test, and who
-   picks it so the result isn't tuned to FUTON?
-4. **The candidate for C4.** Is there a named person, even a friendly one, for
-   n=1?
+**FUTON is both a codebase and a methodology; both are worth exploring and
+testing on a newcomer basis** (Joe). The questions below were put to the
+operator by the drafting agent; answers are paraphrased with key phrases quoted.
+
+**Q1 — The unit: adoption comes in levels, and futon is a demonstration
+instance.** Joe: *"we could say that futon is a demonstration instance."* The
+plan is to find the common ground (for example, as a set of design patterns)
+and then build *"a 'pushout' that's custom for any client."* In category terms:
+given the shared core **C** with maps into the futon core and into a client's
+own material, the client's system is the pushout that glues them along **C**.
+mfuton is a second, independent point in that picture.
+
+Proposed levels (for DERIVE to confirm or replace):
+
+| Level | What is adopted | Needs FUTON code? |
+|---|---|---|
+| L0 — read | The method as documents: mission lifecycle, PSR/PUR, evidence-over-assertion | No |
+| L1 — patterns | A pattern library of one's own, with selection and outcome records | No, or minimal |
+| L2 — core | Shared-core services (evidence store, agent coordination) | Yes, the common core |
+| L3 — pushout | Core + the client's custom material, glued along the shared core | Yes, per client |
+| (futon itself) | The full demonstration instance | Yes, all of it |
+
+The shared core **C** is not greenfield: the configurator sketch in
+`futon3c/holes/E-futon-mfuton-successor-requirements.md` (seven parts:
+carrier and ingress, typed schema, retrieval lanes, history, witness binding,
+use and measurement, revision and governance) and its acceptance test
+(describe *both* futon and mfuton as configurations) are a first candidate
+for C.
+
+**Q2 — Someone else's codebase: mfuton is the existence proof.** Joe:
+*"my friend Rob got his agents to read futon and adapt it as 'mfuton' and made
+what I think are many improvements so much so that mfuton is really Rob's thing
+now."* Rob runs the core of futon alongside his own material, and *"the stuff
+he does use he finds very much worth his time."*
+
+Two readings, recorded separately so neither launders into the other:
+
+- **For the value claim itself** ("helps a post-training AI make sense of a
+  codebase"): Rob's *agents* read futon and produced a working adaptation.
+  That is agents making sense of the codebase well enough to rebuild from it,
+  by someone other than Joe. It is the strongest evidence for the claim so
+  far, and it predates this mission.
+- **For C4's grade:** Rob is a user other than Joe, but a *warm* one: a
+  long-standing collaborator who already shares the vocabulary (missions,
+  flexiargs). That witnesses "a close, ontology-compatible collaborator finds
+  it worth their time". It does not yet witness "a stranger does". Both
+  grades are worth having; they are different claims.
+
+**Q3 — The fair C2 task: open, to be refined together.** Joe is *"a bit too
+close to the material"* to pick it alone. Working proposal for DERIVE: **Rob
+picks the task, from his own backlog, in a codebase that is his**, and judges
+the outcome. That removes the operator's selection bias and matches C4's
+"their own codebase". The baseline arm is the same task with the repo and an
+ordinary CLAUDE.md.
+
+**Q4 — The C4 witness: Rob, in person.** Joe will be working alongside Rob in
+person for about a month. That is the occasion for C4 at warm grade and a
+natural setting for C2, with the witness present to judge.
+
+## Revised completion criteria
+
+C1 and C3 stand as drafted. C2 and C4 are refined:
+
+- **C2 — Compared, per level.** Test the *method* (L0–L1) and the *codebase*
+  (L2–L3) separately, since either could carry the value without the other.
+  Task chosen and outcome judged by Rob (Q3).
+- **C4 — Witnessed, graded.** (a) **Warm:** Rob, in his own words, on what in
+  futon or mfuton is worth his time and what is not, recorded during the
+  in-person period. (b) **Cold:** a person with no prior contact with FUTON.
+  (a) is in reach now; (b) stays open and may belong to a follow-on mission.
+
+## Remaining before IDENTIFY exit
+
+1. Operator acceptance of HEAD (gate above) and of this scope.
+2. Whether C4(b), the cold witness, is in scope for *this* mission or deferred.
+3. The C2 task: settled with Rob rather than here.
 
 **Exit criterion (per lifecycle):** the operator agrees the gap is real and the
 scope is right.
