@@ -1424,3 +1424,40 @@ checks), not markets.
 scale — making statement fidelity, evidence and review cheap and honest —
 not the proof engine at the top. For maths that is futon6's pairing; for
 firms it is triage and audit. Business detail in futon7.
+
+## 2d.5 The intake gate: from slop to backlog (operator, 2026-09-26)
+
+**A practitioner's case (reported by the operator):** her company's *clients*
+now use their own in-house AI systems to suggest what she should put in the
+code, and fielding them is exhausting. The remedy they found was a polite
+ask: *"yes we'll consider it if you put it in the form of a standard business
+request."* That lets them manage, sequence and think about proposals instead
+of fielding a million of them. Operator: *"the 'AI slop' discussion at the
+corporate level, but now fenced off with some yellow tape."*
+
+**Operator on Lean:** used here less for mathematical theorems than to ask
+*"does this code behave the way it is supposed to?"* That does not verify a
+business requirement, *"but it could at least verify that the proforma had
+been filled in at a sufficient level of detail that it would become
+'potentially actionable'."*
+
+**Reading (agent):**
+
+- **A new, decidable rung on the warrant scale (§2d.4): well-formed and
+  actionable.** Whether a proposal is *right* is often undecidable; whether it
+  is *complete enough to act on* can be checked mechanically (a typed schema,
+  or a Lean-stated completeness condition). This makes the middle of the
+  scale cheap: the sender does the work of specifying; the receiver checks
+  form, not merit, before spending attention.
+- **It is yellow tape, not red tape** (M-象-2000): intake stays open and
+  cheap to use; what is fenced off is the *receiver's attention*, which
+  only admitted requests reach. It meets the §2c.9 pain (babysitting,
+  flow) at the organisational boundary.
+- **It produces the War Machine's prerequisite.** §2b.9: the War Machine
+  needs a backlog of well-specified work. An intake gate that admits only
+  actionable requests *manufactures* that backlog from what would otherwise
+  be slop. Slop → admitted request → mission → War Machine.
+- **Precedents already in the stack:** the War Machine's guardrail admits
+  mission actions only for an open mission with open holes (§2c.6); the
+  PLoP catalogue's shape-aware witness (a specification can be the typed,
+  checkable artefact). The intake gate is the same move facing outward.
