@@ -1275,3 +1275,24 @@ good faith rather than by any check that could fail").
   M-象-2000's design is *"detect after, rewind cheaply"*. The yellow-tape
   distinction (rewind to *examine* and re-decide, not to erase) may reconcile
   them, but the two texts should say so.
+
+## 2c.8 Who the newcomer is (operator, 2026-09-26)
+
+**Operator:** new users have many options, and it would help to say "this is
+different" rather than "why bother". The operator's aim is not to compete
+with existing tools but to support consulting work; recommending a
+third-party tool where it fits is acceptable.
+
+**Consequence for this mission (agent reading):** there are two newcomers,
+and the public surface serves both:
+
+1. **The adopter**, who installs and uses FUTON (INSTALL.md; C3, C4).
+2. **The evaluator**, who reads the public repos to decide whether the
+   person behind them understands agentic development well enough to advise
+   them. For this reader the stack is evidence, not a product: what matters
+   is the record (dated, honest, including negative results) and the
+   instruments' results on real incidents, not whether they install it.
+
+The second reader is served by the case-study artefacts already named here
+(§2c.7: the account of building the War Machine; §2b.5: the red-tape
+incident) more than by a quickstart. Positioning detail lives in futon7.
