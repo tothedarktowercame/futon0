@@ -116,9 +116,7 @@ What the three settings do:
   localhost.
 - `CLAUDE_PERMISSION=default` — **important.** Without it, agents launched by
   Agency run Claude Code with `bypassPermissions`: no confirmation before they
-  edit files or run commands. Set it unless you have decided otherwise. (The
-  futon3c README calls this `CLAUDE_PERMISSION_MODE`; the code reads
-  `CLAUDE_PERMISSION`.)
+  edit files or run commands. Set it unless you have decided otherwise.
 
 Also note: `make dev` sets Codex to `sandbox=danger-full-access
 approval=never` by default. Override `CODEX_SANDBOX` and `CODEX_APPROVAL` if
@@ -153,7 +151,16 @@ message shows the rejected entry but not which field failed.
 
 ## 6. First agent task (not yet verified — please report back)
 
-With Claude Code installed and logged in as your normal user:
+The `laptop` role does not register the local Claude agent by default. Start
+Agency with it registered by adding one setting to step 4:
+
+```bash
+FUTON3C_EVIDENCE_BACKEND=futon1b FUTON3C_ROLE=laptop \
+CLAUDE_PERMISSION=default FUTON3C_REGISTER_CLAUDE=true make dev
+```
+
+The log should show `Claude agent registered: claude-1`. Then, with Claude
+Code installed and logged in as your normal user (not root):
 
 ```bash
 curl --max-time 300 -X POST http://localhost:7070/api/alpha/invoke \
