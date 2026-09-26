@@ -1318,3 +1318,13 @@ satisfaction or burnout.
 
 **Candidate C1 line, in the user's terms:** *get your flow back — the agents
 only interrupt you when it matters, and tell you why.*
+
+**A second practitioner (reported by the operator):** much of their
+conversation with agents is *"so you are refusing to work"* (one agent) or
+*"you've done what now???"* (another). This separates two failure modes that
+both cost attention: **under-action** (stalling, refusing, asking when it
+should act) and **over-action** (acting when it should ask, or beyond the
+request). The babysitting measure should count corrections that push an
+agent to do more separately from those that pull it back; they call for
+different remedies. In zaif's terms, the controller has to get the
+act / ask / yield balance right in both directions.
