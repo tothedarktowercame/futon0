@@ -1567,6 +1567,32 @@ choose" removes it. Consequences:
 - **Regulatory fit:** the same property (data never leaves) is what a
   provenance or readiness review needs.
 
+**D6, feasibility (2026-09-26).** Operator: a classical diagnostic is *"a
+pretty intense constraint … but I think it *may* be possible."* A check of
+this session's Claude Code transcript found that most signals are recorded as
+fields, not prose:
+
+1. **Deterministic** (arithmetic over fields): per-message token usage;
+   `cost-state` records with `totalCostUSD`; `totalAPIDuration`;
+   `totalLinesAdded`/`totalLinesRemoved`; `modelUsage`. → spend, model mix,
+   re-read cost of long sessions.
+2. **Structural** (events, no language understanding): "Request interrupted
+   by user" markers; a `rewound` field; tool results with `is_error`;
+   rejected tool uses; `permissionMode`; `stopReason`; `isSidechain`
+   (subagents); timestamps. → pull-back events, rework loops (same file
+   re-edited), risky commands (regex), flow stretches between interruptions.
+3. **Lexical** (weakest): heuristics over developer text for push
+   ("just do it", "you're refusing") vs pull-back ("why did you…", "undo").
+
+**Calibration:** run 象's LLM typing on the operator's own logs (where an LLM
+is acceptable) and report the heuristics' agreement with it; ship the
+heuristics with that agreement rate stated (D2), not asserted. This is
+M-象-2000's "fully classical mining picture" reached from the business side.
+
+**Risk:** the log format is not a stable contract (this environment writes
+extra record types; local Claude Code versions and Codex differ). v0 reads
+defensively and reports which signals were present in each client's logs.
+
 ## 3.2 The offer (draft, to test)
 
 > **Find out what your AI agents are actually doing.** Give me two weeks of
