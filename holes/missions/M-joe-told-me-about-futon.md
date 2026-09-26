@@ -977,3 +977,154 @@ So the ladder in §2b.8 has a layer above it:
 **Operator observation:** open-source software is mainly produced by firms, so
 there may be buyers at the firm level with an interest in the commons level
 too. (Business analysis of that point is kept in futon7.)
+
+---
+
+# 2c. MAP — third pass: public signals of pain (2026-09-26)
+
+**Operator:** *"if we want to do MAP properly though, what we'd do is look
+around for some public signals of pain points, not just opportunities for
+clever demos."*
+
+Method: web survey by a research agent, figures checked against primary pages
+where possible; `[secondary]` marks press/blog reports not traced to a
+primary source. Measurement (RCT, telemetry, survey) is distinguished from
+opinion. Vendor surveys (Faros, Qodo, Jellyfish, DX) come from companies that
+sell measurement tools.
+
+## 2c.1 Findings by cluster
+
+**C1 — Memory across sessions; rules-file burden. Signal: strong (complaint),
+contested (remedy).**
+- Qodo, *State of AI Code Quality*, Jun 2025: missing context is the top
+  complaint, 65% during refactoring, above hallucination.
+  https://www.qodo.ai/reports/state-of-ai-code-quality/
+- Qodo 2026 (23 Sep 2026; 500 devs, 300 leaders): only 35% say agents
+  "always follow organizational standards", though 42.6% have centralized
+  context systems. https://www.qodo.ai/blog/state-of-ai-code-quality-report-2026/
+- Gloaguen et al. (ETH), *Evaluating AGENTS.md*, 2026: context files "do not
+  generally improve task success rates, while increasing inference cost by
+  over 20%". https://arxiv.org/abs/2602.11988
+- Lulla et al., Jan 2026: with AGENTS.md, median runtime −28.64%, output
+  tokens −16.58%. https://arxiv.org/abs/2601.20404
+- Many practitioner posts ("Claude Code forgets everything between sessions")
+  and a market of memory tools (claude-mem, Beads, Mem0).
+
+**C2 — Drift, destructive actions, review and rewind. Signal: moderate
+(incidents, not measurement).**
+- Replit/SaaStr, Jul 2025: agent deleted a production database during a code
+  freeze, then wrongly said rollback was impossible.
+  https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/
+- Claude Code issues on `rm -rf` of home directories; #88462 (Aug 2026) is the
+  "5th report of this class"; logs held output but not the command.
+  https://github.com/anthropics/claude-code/issues/88462
+- Böckeler (martinfowler.com, Oct 2025): agents "frequently ignored
+  instructions or over-followed them".
+  https://www.martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html
+- Vendor rewind exists but is partial: Claude Code checkpoints do not track
+  shell-command or most subagent edits. https://code.claude.com/docs/en/checkpointing
+
+**C3 — Quality and productivity. Signal: strong (best measured).**
+- METR RCT, Jul 2025: experienced OSS devs 19% slower with AI while believing
+  they were 20% faster. https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/
+  Follow-up Feb 2026: METR calls its new estimates "an unreliable signal";
+  the true speedup "could be much higher". https://metr.org/blog/2026-02-24-uplift-update/
+- GitClear, Jan 2026 (623M changes): block duplication +81% since 2023,
+  refactoring moves −70%, error-masking constructs +47%.
+  https://www.gitclear.com/the_ai_code_quality_maintainability_gap
+- DORA 2025: 90% use AI, 30% have little or no trust in its code; adoption
+  negatively related to delivery stability.
+  https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report
+- Stack Overflow 2025: 46% distrust AI accuracy (3.1% highly trust); 66% cite
+  "almost right, but not quite". https://survey.stackoverflow.co/2025/ai
+- Faros, Jul 2025 (telemetry, 10k+ devs): +98% merged PRs, **review time
+  +91%**, bugs/dev +9%, no company-level gain. https://www.faros.ai/blog/ai-software-engineering
+
+**C4 — Open-source maintainers. Signal: strong (policy decisions).**
+- curl ended its bug bounty (Jan 2026) over AI slop; by Apr 2026 Stenberg
+  reported confirmed-vulnerability rates back to ~15–16% as AI-assisted
+  reports improved. https://daniel.haxx.se/blog/2026/01/26/the-end-of-the-curl-bug-bounty/
+  https://daniel.haxx.se/blog/2026/04/22/high-quality-chaos/
+- Ghostty AI_POLICY (Jan 2026): drive-by AI PRs closed; "not an anti-AI
+  stance… an anti-idiot stance". https://github.com/ghostty-org/ghostty/blob/main/AI_POLICY.md
+- Gentoo and NetBSD ban LLM code (2024); QEMU declines AI-derived
+  contributions on DCO/copyright grounds.
+- Codeberg (Jul 2026) voted 358–144 to ban predominantly AI-generated repos.
+- Counter-trend: Anthropic's Claude for Open Source programme (Jul 2026)
+  `[details secondary]`.
+
+**C5 — Autonomous agents and cost. Signal: moderate–strong (cost), moderate
+(unattended failures).**
+- Uber (Fortune, May 2026): 2026 AI budget spent by April on Claude Code;
+  COO: the link to customer value "is not there yet"; Aug 2026, CTO: the
+  "tokenmaxxing era" is ending. https://fortune.com/2026/05/26/uber-coo-ai-spending-tokens-claude-code/
+- Jellyfish 2026 (636 respondents): cost the top challenge; 21% of PRs from
+  autonomous agents in high-adoption teams. https://jellyfish.co/2026-state-of-engineering-management/
+- Qodo 2026: **89% of organisations report an AI-related production
+  incident; only 45% can trace AI activity to the code it changed.**
+- No systematic data found on unattended overnight runs.
+
+**C6 — Organisations: ROI, governance, spec-driven development. Signal:
+moderate (mostly vendor surveys).**
+- Faros: gains vanish at company level. DX 2026 `[secondary]`: PR throughput
+  up ~10% across 121k devs.
+- Qodo 2026: 3.7% of leaders say current processes are sufficient as agents
+  take on more work.
+- Böckeler on spec-driven tools (Kiro): a small bug became "4 user stories…
+  16 acceptance criteria", "like using a sledgehammer to crack a nut"; she
+  would "rather review code than all these markdown files", and warns of
+  repeating model-driven development's failures.
+
+## 2c.2 Analogues and competitors
+
+- **Spec-driven development:** GitHub Spec Kit (specify → plan → tasks), Amazon
+  Kiro (spec-centred IDE), Tessl (spec-as-source), BMAD Method, OpenSpec.
+  These are the nearest analogues to **missions**.
+- **Agent memory:** claude-mem, Mem0, Letta, Zep, Beads, Claude's built-in
+  memory. None found that **revises working rules from recorded outcomes** —
+  the "evaluated" in "evaluated memory".
+- **Rewind:** Claude Code `/rewind`, Cursor checkpoints: undo files; no intent
+  annotation or incident review (the 象-2000 difference).
+
+## 2c.3 Against the ladder (§2b.8)
+
+| Pain cluster | Evidence | Rung |
+|---|---|---|
+| C1 memory / rules files | strong complaint, contested remedy | evaluated memory; missions |
+| C2 drift, rewind | incidents | 象-2000 |
+| C3 quality; review is the bottleneck | strong measurement | missions (verification phase); 象-2000 as a review aid |
+| C5 cost, unattended runs, traceability | moderate–strong | War Machine (needs cost control); evidence landscape (traceability) |
+| C4 OSS maintainers; C6 organisations | strong (policy), moderate | organisation layer |
+
+## 2c.4 Findings that bear on the value claim
+
+1. **The evidence landscape answers a measured gap directly.** Qodo 2026:
+   only 45% of organisations can trace AI activity to the code it changed.
+   FUTON records every substantive agent turn as evidence (I-evidence-per-turn)
+   and can join turns to commits. This is the most concrete, externally
+   evidenced pain FUTON already addresses, and none of the offers so far
+   leads with it.
+2. **"Rules files don't reliably help" cuts both ways.** Gloaguen et al.
+   support the case that unevaluated memory is not enough, but they set the
+   bar: FUTON must show outcome evidence for *its* memory, not assert it
+   (C2 in IDENTIFY; §2b.7's mission-effect test).
+3. **Review, not writing, is the bottleneck** (Faros: review time +91%).
+   象-2000's pattern reading of a session is, in that light, a review aid;
+   that may be a better first framing than incident review.
+4. **Missions face the "sledgehammer" objection.** The ceremony must scale
+   down for small tasks, or the spec-driven critique applies directly.
+5. **Cost is a first-order pain for autonomous agents** (Uber). The War
+   Machine's offer must lead with cost control and cost per outcome.
+
+## 2c.5 Pain points FUTON does not address (recorded, not dismissed)
+
+- Token cost and budget control as a product in itself.
+- Destructive-action safety and sandboxing (`rm -rf` blocking). Note FUTON's
+  own defaults (`bypassPermissions`, Codex `danger-full-access`; §2.4, INSTALL.md)
+  sit on the wrong side of this.
+- Legal provenance / copyright of AI output (the basis of the Gentoo, NetBSD,
+  QEMU, Codeberg policies).
+- Review capacity as such (beyond 3 above), and security of generated code
+  (not surveyed).
+- Slop triage on the receiving end of open source; and curl's April 2026
+  report suggests that problem may be easing as models improve.
