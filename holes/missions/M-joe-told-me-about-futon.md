@@ -851,3 +851,46 @@ the as-of store, replay and the speech-act history: the M-象-2000 features.
 **Ordering implied:** mainline 象-2000 on the stack first (M-象-2000 DERIVE →
 build); the L1 variant afterwards, designed backwards from the question it
 hands over.
+
+## 2b.7 The value claim, restated by the operator (2026-09-26)
+
+**Operator:** *"The conception of 'symbolic invariants' is what is at the
+heart of futon theory. The way this works in practice is that the missions
+lead to high quality code almost all the time. 象-2000 is meant to bring some
+of that quality into the 'vibe coding' experience, for people who aren't
+working on missions and therefore don't get the scaffolding that the
+mission-hierarchy implies."*
+
+Three readings of 象, as they bear on this: **elephant** (McCarthy's history
+that does not forget; 象不忘), **symbol** (the operator's sense: 象形,
+pictographic form, as in oracle-bone script; the "symbolic invariants" of
+futon theory; futonic-logic's 象 = configuration), and **image conceived from
+remains** (Han Feizi, 解老: people who had seen only an elephant's bones
+imagined the living animal from them; the ← speculative-history operator in
+`futon-theory/reverse-morphogenesis`).
+
+**Plain-language version (candidate for C1):** *Work organised as missions
+produces good code. Most people using AI agents are not working that way.
+FUTON reads their sessions for the structure a mission would have given them,
+and puts it back in front of them while they work.*
+
+**What this changes (agent reading):**
+
+- It names the **user**: the vibe coder, not the mission-runner. The
+  mission-hierarchy is the demonstration instance; 象-2000 is the product for
+  everyone else.
+- It names the **benefit** in their terms: mission-grade quality without
+  running missions.
+- It turns "evaluated memory" from the offer into the **mechanism**.
+
+**The claim needs its own evidence (anti-glibness, HEAD):** "missions lead to
+high quality code almost all the time" is an operator judgment. The stack
+already holds data to test it: `analysis/audits/PRODUCT-CENSUS-2026-09-21.md`
+records produced / survived / used code per week, reverts, and files later
+deleted; `FORENSIC-autopilot-2026-09-21.md` records a deliverable that
+diverged from its request (the isolated E6b apparatus: 2,063 retained lines,
+zero importers). A split of those measures by **mission-linked vs
+unlinked** work (commit ↔ mission joins exist in `futon5a` `piano_roll.py`,
+per `M-what-is-it-who-is-it-for`) would show whether the mission effect is
+real and how large, before it is offered to anyone. If it holds, it is also
+the before/after a newcomer page needs.
