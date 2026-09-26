@@ -1545,6 +1545,28 @@ precondition, BECAUSE a pitch that depends on the annotator running on client
 data has its elephant's eye blocked. It crosses later as its own demo (the
 red-tape replay; warranted refusals), per §3.7.
 
+**D6 — The audit runs on the client's machine, with no "phone home".**
+(Operator, 2026-09-26.) IF the audit reads session logs that contain code,
+secrets and possibly customer data, HOWEVER any tool that uploads them (or
+calls an external model on them) fails a client's security review before it
+starts, THEN the audit is a local diagnostic: one small, readable program,
+standard library only, no network calls and no LLM calls, run by the client;
+it writes an aggregate report that contains no transcript text by default,
+which the client reads before deciding what to share, BECAUSE trust is the
+first barrier and "read it, run it offline, share only the numbers you
+choose" removes it. Consequences:
+
+- **The client can check the claim:** the code is short enough to read, and a
+  test asserts it opens no sockets; it can be run with networking disabled.
+- **D5 is reinforced:** no LLM annotation on client data, so the
+  supervision measure uses local heuristics; 象's typing is a later,
+  opt-in upgrade that would run on the client's own model.
+- **What is sold is the reading, not the tool:** interpretation of the
+  numbers and the recommendations. The tool can be open (see the licence
+  decision in futon7), which helps trust.
+- **Regulatory fit:** the same property (data never leaves) is what a
+  provenance or readiness review needs.
+
 ## 3.2 The offer (draft, to test)
 
 > **Find out what your AI agents are actually doing.** Give me two weeks of
@@ -1558,7 +1580,7 @@ the re-read cost of long sessions; (2) supervision load: the share of
 developer turns that are corrections, split into *push* (the agent under-acts)
 and *pull back* (it over-acts), plus uninterrupted stretches; (3) risky
 actions (permission bypass, destructive commands); (4) three to five
-recommendations. Data stays on the client's machines.
+recommendations. The audit runs on the client's machine, offline; only the numbers the client chooses to share leave it (D6).
 
 ## 3.3 Artefacts needed by 4 October
 
