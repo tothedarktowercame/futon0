@@ -1328,3 +1328,99 @@ request). The babysitting measure should count corrections that push an
 agent to do more separately from those that pull it back; they call for
 different remedies. In zaif's terms, the controller has to get the
 act / ask / yield balance right in both directions.
+
+---
+
+# 2d. MAP — fourth pass: the mathematics space (2026-09-26)
+
+**Operator:** AI for mathematics *"seems just as crowded as 'compliance' or
+'AI productivity ware'."* A collaborator is installing Mistral's Leanstral.
+A possible direction: a *"verified marketplace"*, which *"could also be built
+inside companies rather than as a true market. Keeping in mind Coase, what's
+the point of even being inside a company? You reduce transaction costs. But
+now, the executive is getting 'great ideas' from Copilot, and suddenly each
+meeting is a headache."*
+
+Method: web survey by a research agent; `[secondary]` = press/blog only.
+
+## 2d.1 Landscape
+
+- **Leanstral** (Mistral): open weights, Apache-2.0, ~6B active parameters;
+  v1 2026-03-16, v1.5 2026-07-02 (reported: miniF2F 100%, PutnamBench
+  587/672; free API). https://mistral.ai/news/leanstral-1-5/
+- **Frontier results:** AlphaProof in *Nature* (2025-11-12); Gemini Deep
+  Think IMO 2025 gold (natural language); several 42/42 IMO 2026 results
+  `[secondary]`; OpenAI's claimed Navier–Stokes blow-up proof with a Lean
+  formalisation (2026-09-08), not independently accepted as of mid-September
+  `[secondary]`.
+- **Funded companies:** Harmonic (Aristotle; $120M Series C, $1.45B,
+  2025-11), Axiom ($200M Series A, ~$1.6B, 2026-03; pitch: verify
+  AI-generated code), Math Inc (Gauss; sphere-packing formalisation ~200k
+  lines, 2026-03).
+- **Open provers:** DeepSeek-Prover-V2, DeepSeekMath-V2, Goedel-Prover-V2,
+  ByteDance Seed-Prover 1.5.
+- **Infrastructure and funding:** Lean FRO roadmap (Mathlib toward 10M lines;
+  now 1.9M+); XTX / Renaissance Philanthropy AI for Math Fund ($31.5M total);
+  DARPA expMath (13 teams).
+- **Erdős problems** falling to AI at "a few hundred dollars per-problem"
+  (Quanta, 2026-08-03).
+
+## 2d.2 Pain points reported by mathematicians and formalisers
+
+- **Statement fidelity:** a "formal proof of a nearby statement would still
+  compile"; misformalised lemmas make later work "formally correct but
+  mathematically irrelevant". https://arxiv.org/html/2606.05400
+- **Definitions and API design** are the weak point, not proofs
+  (Ilin & Nugent, 2026). https://arxiv.org/abs/2606.13925
+- **Review burden:** Buzzard, *"I am not reading AI-generated informal
+  mathematics"* (2026-07-20); a human audit of OpenAI's results found
+  "review depth varies" (https://arxiv.org/abs/2608.14673).
+- **Nobody understands the artefact:** of a 25k-line AI formalisation, "no
+  single human … is really familiar with this artifact".
+- **Credit and morale** for formalisers; **defective benchmarks**
+  (FrontierMath v2 fixed errors in 42% of problems).
+
+## 2d.3 Crowding and gaps
+
+| Niche | Crowding |
+|---|---|
+| Proving / autoformalisation engines | very crowded, heavily funded; proofs getting cheap |
+| Verifying AI-written code | crowding (Axiom, Harmonic, AWS) |
+| **Statement fidelity: does the formal statement say what was meant?** | **thin: papers and individual experts** |
+| Definition and library design for autoformalised maths | thin |
+| Review, audit and correction records; credit/provenance | thin |
+| Verified bounties | early, crypto-dominated, credibility risk |
+
+**Where FUTON's existing work sits:** futon6 pairs informal and formal
+arguments indexed by patterns — which is the statement-fidelity problem the
+field names as unsolved. The evidence store and attestation levels
+(M-象-2000) are the provenance and audit layer. Neither is a proving engine.
+
+## 2d.4 The Coase reading (operator's framing, agent's elaboration)
+
+Firms exist because coordination inside them is cheaper than on the market
+(Coase). AI makes proposals cheap to produce but not cheaper to check, so
+verification cost rises inside the firm. The same shape recurs at every
+scale surveyed: code review (§2c: review time +91%), open-source slop (§2c),
+mathematics (Buzzard will not read AI-generated informal maths), and the
+operator's case of meetings flooded with AI-generated ideas. **Generation got
+cheap; verification became the bottleneck.**
+
+A "verified marketplace" lowers the cost of checking by making proposals
+arrive with warrants, graded by strength: Lean-checked → externally
+witnessed → evidence cited → merely claimed (M-象-2000's attestation levels;
+the thesis ledger's witnessed/claimed). The internal version needs no market
+liquidity: triage by warrant level before a proposal reaches a meeting.
+
+**Evidence against (from the survey):** a Lean check does not establish that
+the right claim was proved (Navier–Stokes); the most visible "verified
+marketplace" is a sponsored crypto prize with unverified claims; proofs are
+getting cheap, so there is little margin in selling them; no company was
+found running an internal market for verified proposals; outside maths, the
+working products are vendor-integrated (AWS Bedrock Automated Reasoning
+checks), not markets.
+
+**Reading:** the durable, uncrowded part is the *middle* of the warrant
+scale — making statement fidelity, evidence and review cheap and honest —
+not the proof engine at the top. For maths that is futon6's pairing; for
+firms it is triage and audit. Business detail in futon7.
