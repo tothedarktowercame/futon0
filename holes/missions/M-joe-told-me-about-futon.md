@@ -894,3 +894,48 @@ unlinked** work (commit ↔ mission joins exist in `futon5a` `piano_roll.py`,
 per `M-what-is-it-who-is-it-for`) would show whether the mission effect is
 real and how large, before it is offered to anyone. If it holds, it is also
 the before/after a newcomer page needs.
+
+## 2b.8 Three offers on one ladder (operator, 2026-09-26)
+
+**Operator:** two (now three) solutions that *"risk being solutions looking
+for problems"*, forming a hierarchy of increasing automation:
+
+| Rung | For someone who… | What it is | State |
+|---|---|---|---|
+| **Missions** | wants to stay in control and not automate | the mission lifecycle + pattern library, run by hand with agents | in daily use; *"anecdotally, … great, and Rob might also confirm"* |
+| **象-2000** | does not want to run missions | reads ordinary ("vibe coding") sessions for the structure a mission would give, and puts it back in front of them | work in progress (futon3c `M-象-2000`) |
+| **War Machine** | wants work done without them | *"point my AI agents at a collection of missions and patterns and have them do useful work while I sleep"* | work in progress, *"quite far along"* |
+
+Rising up the ladder: more automation, so more token cost and more risk of
+things not working, but more potential benefit (e.g. *"codebase kept aligned
+with the specification automatically"*).
+
+**Agent reading, for DERIVE:**
+
+1. **Start each rung from the problem, not the product** (the operator's own
+   worry). Candidate pain points, to be checked against the customer
+   conversations recorded in futon7:
+   - Missions: long agentic work drifts from what was asked; decisions get
+     made twice or lost.
+   - 象-2000: an agent session goes off the rails and you only notice after
+     the damage (the 09-24 red-tape incident is the worked example).
+   - War Machine: not enough hours; the backlog of well-specified work
+     outgrows the operator.
+2. **The rungs are not independent: each feeds the next.** The War Machine
+   consumes missions and patterns; 象-2000's incident reviews produce the
+   outcome records that make patterns trustworthy enough to automate on.
+   So someone can enter at any rung, but the upper rungs are only as good as
+   the evaluated memory the lower ones produce.
+3. **象-2000 automates the scaffolding, not the work.** It asks *less* of the
+   user than missions, but it is not more autonomous; it is the rung with
+   the lowest risk of unattended damage. Worth saying explicitly so the
+   ladder is not read as "each step hands over more control".
+4. **Two axes, not one.** This ladder (how much is automated) is separate
+   from the adoption levels in IDENTIFY (L0 method … L3 per-client pushout:
+   how much is installed). 象-2000 exists at L1 (patterns + Sonnet) *and* at
+   L2 (the XTDB-backed Elephant features); the War Machine needs at least L2.
+   A newcomer page could place each offer on both.
+5. **Evidence needed per rung, in order:** missions → the mission-linked vs
+   unlinked split proposed in §2b.7, plus Rob's account; 象-2000 → the blind
+   comparison in §2b.5; War Machine → an overnight run whose output is
+   judged the next morning against its missions, with the token cost stated.
