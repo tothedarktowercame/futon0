@@ -939,3 +939,41 @@ with the specification automatically"*).
    unlinked split proposed in §2b.7, plus Rob's account; 象-2000 → the blind
    comparison in §2b.5; War Machine → an overnight run whose output is
    judged the next morning against its missions, with the token cost stated.
+
+## 2b.9 The War Machine's prerequisite, and a layer above the ladder (2026-09-26)
+
+**Operator:** *"If they don't have a backlog of well-specified work, the War
+Machine can't really help them. Whereas, someone with 100s of backlogged
+missions, 1000s of patterns… yes the War Machine could help them, at least
+potentially."*
+
+- **Entry condition for the top rung:** a backlog of well-specified work
+  (missions) and a pattern library. The War Machine is not a first step; the
+  lower rungs produce what it consumes.
+- **A bridge that already exists:** futon3c `make gh-issue-holes` exports
+  open GitHub issues as Holistic-Argument EDN holes. An issue tracker is the
+  backlog most organisations already have; whether issue → hole → mission is
+  good enough for the War Machine to act on is a DERIVE question.
+
+**A fourth layer: the organisation.** The operator's interest in Active
+Inference is a model of firms and post-firm collaborations in the manner of
+Stafford Beer (Viable System Model) and Yochai Benkler (commons-based peer
+production). "War Machine" is taken from Deleuze & Guattari: *"maybe it's
+mostly 'decorative' but still it can be provocative too."* The system-by-system
+mapping of the VSM onto the War Machine already exists:
+`futon2/holes/labs/wm-contract/NOTE-vsm-aif.md` (firm boundary as Markov
+blanket; Systems 1–5 onto boards, coordination, the inner loop, audit,
+forecasting, and the operator's preferences).
+
+So the ladder in §2b.8 has a layer above it:
+
+| Level | Unit | Offer |
+|---|---|---|
+| individual, by hand | a developer and their agents | missions |
+| individual, assisted | a developer without missions | 象-2000 |
+| individual, automated | a developer with a backlog | War Machine |
+| **organisation** | a firm or a commons project | the War Machine as a model of the organisation itself (VSM / AIF) |
+
+**Operator observation:** open-source software is mainly produced by firms, so
+there may be buyers at the firm level with an interest in the commons level
+too. (Business analysis of that point is kept in futon7.)
