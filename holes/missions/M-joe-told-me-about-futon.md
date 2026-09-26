@@ -1128,3 +1128,53 @@ moderate (mostly vendor surveys).**
   (not surveyed).
 - Slop triage on the receiving end of open source; and curl's April 2026
   report suggests that problem may be easing as models improve.
+
+## 2c.6 The War Machine as the answer to approval fatigue (operator, 2026-09-26)
+
+**Operator:** *"I run --permission-mode bypassPermissions because I can't be
+bothered to approve individual things. But that's actually what the War
+Machine automates. Instead of just pressing TAB RET in response to claude
+suggestions ('shall I delete your home directory now?') it warrants moves with
+design patterns. So the WM does the hard thing whereas 象-2000 does the easy
+thing."*
+
+This reframes the top rung against pain cluster C2 (§2c.1): the choice today
+is rubber-stamping every prompt or bypassing them all. The War Machine offers
+a third option: approve by warrant.
+
+**What the code does today (verified, futon3c `src/futon3c/wm/`):**
+
+- `guardrails.clj` `classify-action` sorts each candidate action into
+  `:autonomous`, `:needs-operator` or `:refused`. Autonomous types are
+  `:address-sorry`, `:fire-pattern`, `:open-mission`, `:advance-mission`,
+  `:advance-ticket`, and mission actions only for an open mission with open
+  holes. Outward, irreversible acts (send, email, invoice, post, publish,
+  deliver) and goal-changing ones ("niche construction") go to the operator.
+- An escalation carries a **pattern warrant** (`pattern-warrants`, e.g.
+  `:aif/niche-construction` with `:aif/admissibility`: "per the
+  niche-construction rule you set, that's yours to authorize"), surfaced by
+  `needs_you.clj` as *"Sorry Joe, because of <pattern>: <gap>"*.
+
+**The granularity gap (agent reading):** the warrants act at the level of
+**which work to do** (address this sorry, advance that mission), not at the
+level of **individual tool calls** inside the work. No code found on the
+agent path uses Claude Code's per-tool approval surfaces (a `PreToolUse`
+hook, or a permission-prompt tool); the agents that carry out the work still
+run under `bypassPermissions`. So "shall I delete your home directory now?"
+is not yet a question the War Machine answers.
+
+**Design candidate for DERIVE:** carry the same classifier down to the tool
+call. A permission hook asks the War Machine's guardrails, which return
+allow / ask-operator / refuse *with the pattern that warrants it*. That would:
+
+- replace both TAB-RET and `bypassPermissions` with warranted approval;
+- answer C2 (destructive actions) directly, and the §2c.5 exposure of FUTON's
+  own defaults;
+- leave a record of every approval and its warrant (answering Qodo's
+  traceability gap, §2c.4).
+
+**Revised ladder reading:** 象-2000 does the easy thing (reads and annotates;
+nothing it does can cause damage); the War Machine does the hard thing
+(decides, and must justify each decision with a pattern). This supersedes
+§2b.8 point 3's framing: the War Machine is not only "more automation" but
+**automation with warrants**, which is what makes it safer than bypass.
