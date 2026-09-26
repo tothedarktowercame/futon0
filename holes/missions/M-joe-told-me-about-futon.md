@@ -1246,3 +1246,32 @@ reflection potentially productive/useful experience."*
   War Machine, written in the reader's terms, pairing each pain with what was
   learned and, where it exists, the clearing proof. It serves the cold
   newcomer (C4b) better than a quickstart does: it is the call, written down.
+
+**Operator, same day:** the account of building the War Machine already
+exists as the operator's PLoP 2026 paper (`p4ng/plop-2026.tex`, private
+repo), to be presented at Pattern Languages of Programs 2026 and revised for
+the proceedings. The draft the operator had shared earlier was the "facade"
+version that set off the large rebuild; the paper's introduction now tells
+that story (the Learn handoff found severed, "connected by inspection and
+good faith rather than by any check that could fail").
+
+**Bearing on this mission (agent reading, from the draft of 2026-09-26):**
+
+- **Audience.** The paper names three readers: people building agent
+  harnesses, the pattern community, and active-inference researchers. The
+  vibe coder of §2b.7 is not among them; the newcomer page and the paper
+  serve different readers and need not merge.
+- **Its stated non-claim matches C2 here.** *"It does not claim that
+  governing coding agents this way makes them better. That comparison has not
+  been run."* Same gap as IDENTIFY's C2 and §2b.7's mission-effect test.
+- **Its closing test is the survey's question.** *"If these invariants are
+  real, they should be recognisable in harnesses built for entirely different
+  reasons by people who have never read this paper."* §2c's analogues
+  (spec-driven tools, memory products, vendor checkpoints, the traceability
+  demand in Qodo 2026) are candidate places to look; PLoP's convention of
+  "known uses" asks for exactly that evidence.
+- **A tension to resolve.** The paper's conclusion says to *"treat a failure
+  as terrain to be crossed later rather than as something to roll back"*;
+  M-象-2000's design is *"detect after, rewind cheaply"*. The yellow-tape
+  distinction (rewind to *examine* and re-decide, not to erase) may reconcile
+  them, but the two texts should say so.
