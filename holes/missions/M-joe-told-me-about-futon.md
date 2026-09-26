@@ -1693,3 +1693,19 @@ The 象-2000 demo (§2b.5) and the Claude-native L1 variant (§2b.6); the
 permission hook backed by the War Machine's classifier (§2c.6); the mission-
 effect split (§2b.7); the licence decision (futon7); the intake gate
 (§2d.5) as a follow-on offer; C4(b) cold witness (follow-on mission).
+
+---
+
+# 4. ARGUE (opened 2026-09-26, in parallel with DERIVE)
+
+The lifecycle asks ARGUE for a plain-language argument that someone outside
+the project can follow. **Operator:** rather than agent-written copy, a set of
+writing prompts so the operator writes the site's text in their own voice
+(*"to give it a 'human touch'"*). The prompts (futon7
+`site-draft/PROMPTS.md`) are grouped as: the core argument (the thirty-second
+version, why you, what you would not claim, who it's for); one or two per
+brochure page; and practitioners' own words, with permission. The agent's
+role afterwards is to shape and trim, and to flag each sentence that makes a
+claim needing a warrant (D2), not to change the voice.
+
+The answers to the core prompts are this mission's plain-language argument.
