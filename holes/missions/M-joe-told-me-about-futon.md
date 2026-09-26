@@ -1,8 +1,9 @@
 # M-joe-told-me-about-futon
 
-**Status:** HEAD and IDENTIFY accepted by the operator 2026-09-26 · **MAP in
-progress** — first pass (§2, Q-install) complete; second pass (§2b, Q-bother)
-recorded · Checkpoints 1–3 (install walkthrough, INSTALL.md) at end of file.
+**Status:** HEAD and IDENTIFY accepted 2026-09-26 · **MAP closed** 2026-09-26
+(§2 install, §2b value, §2c public pain signals, §2d mathematics) · **DERIVE
+open** (§3, end of file): an immediate plan to decide the pitch by
+2026-10-04 · Checkpoints 1–3 recorded.
 
 Per `futon4/holes/mission-lifecycle.md`: HEAD preserves the operator's voice and
 carries tensions forward. **It is not design.** Nothing below prescribes an
@@ -1475,3 +1476,120 @@ side comes first until the stack pays for its own running costs.
 **out of scope** for this mission's offers, except the thin slice of §2d.5:
 checking that a request or proforma is actionable. futon6 remains a
 demonstration of rigour, not a product line.
+
+---
+
+# 3. DERIVE (opened 2026-09-26): what to pitch, decided by 4 October
+
+**MAP exit (operator, 2026-09-26):** MAP covered install, value, public pain
+signals, interviews, competitors and the mathematics space; scope narrowed
+(§2d.6). Closed.
+
+**Operator framing:** not *"a grand solution to everything but a somewhat
+immediate plan of action."* About two more weeks working alongside Rob; then
+SF Tech Week and PLoP, *"various places to try out a 'pitch'. But by October
+5th it would be good to know what we're pitching."*
+
+**Fixed dates:**
+
+| Date | Event |
+|---|---|
+| to ~2026-10-10 | working in person with Rob |
+| **2026-10-04** | **pitch v1 frozen** |
+| 2026-10-05 → 11 | SF Tech Week, San Francisco (a16z-coordinated; hundreds of independent events; founders and investors). https://www.tech-week.com/ |
+| 2026-10-19 → 22 | PLoP 2026, Strathmere, near Ottawa (the operator's paper). https://plopcon.org/plop2026/ |
+
+## 3.1 Design decisions (IF / HOWEVER / THEN / BECAUSE)
+
+**D1 — Lead with a diagnosis, not a product.**
+IF the aim is paid work soon (§2d.6), HOWEVER FUTON is not yet installable
+by strangers without help and its distinctive automation is not live (zaif's
+`:ask` unreachable, §2c.6), THEN pitch a diagnostic engagement that uses
+FUTON as the instrument, BECAUSE it can be delivered with what works today
+and it answers measured pains (§2c: cost, review bottleneck, traceability)
+and reported ones (§2c.9: babysitting instead of flow).
+
+**D2 — Every claim in the pitch carries its warrant.**
+IF the pitch says "I'll tell you where you can save money", HOWEVER the
+field is full of unevidenced AI-productivity claims (§2c.1, C3), THEN the
+pitch shows numbers from real rollouts (the operator's own, and Rob's with
+consent), and states what is measured vs claimed, BECAUSE this is FUTON's own
+invariant ("evaluated memory"; no self-certification) applied to the pitch,
+and it is what distinguishes it from the crowd.
+
+**D3 — One offer, framed per audience.**
+IF the venues differ (SF Tech Week: founders, engineering leaders,
+investors; PLoP: pattern researchers; a regulatory contact: compliance),
+HOWEVER three different products would split nine days, THEN one offer —
+*find out what your AI agents are actually doing* — with three framings:
+cost and flow (SF), invariants and known uses (PLoP), provenance for
+regulatory readiness (details in futon7), BECAUSE the same rollout analysis
+supports all three.
+
+**D4 — What not to pitch yet.**
+Mathematics (§2d.6); the War Machine as autonomy (the ask arm cannot yet
+fire; §2c.6); FUTON as an install (INSTALL.md serves adopters who come
+anyway). These can appear as "what I've built", not as what is sold.
+
+## 3.2 The offer (draft, to test)
+
+> **Find out what your AI agents are actually doing.** Give me two weeks of
+> your agent session logs (e.g. Claude Code or Codex `.jsonl`). I'll show you
+> where the money goes, where your developers are babysitting instead of
+> building, and what nobody reviewed — and what to change, even if the answer
+> is a tool I didn't build.
+
+Deliverable: a short report with (1) spend by session, model and task, and
+the re-read cost of long sessions; (2) supervision load: the share of
+developer turns that are corrections, split into *push* (the agent under-acts)
+and *pull back* (it over-acts), plus uninterrupted stretches; (3) risky
+actions (permission bypass, destructive commands); (4) three to five
+recommendations. Data stays on the client's machines.
+
+## 3.3 Artefacts needed by 4 October
+
+| Artefact | Built from | Needed for |
+|---|---|---|
+| **Rollout audit v0** (script) | extends `analysis/audits/` (operator census, Minard, pattern-stage joins); reads `~/.claude/projects/**/*.jsonl` and Codex rollouts | everything below |
+| **Sample report: the operator's own rollouts** | audit v0 | the pitch's evidence; also cuts the operator's own costs |
+| **Second sample: Rob's rollouts** (with consent; run on his machine) | audit v0 | tests generality (n=2); Rob's reading of it |
+| **Rob's account** (a few paragraphs, his words, if willing) | conversation | the case study; mfuton's story |
+| **One-page pitch** | §3.2 + the numbers | SF Tech Week |
+| **30-second version** | the one-pager | conversations at SF Tech Week |
+
+## 3.4 Plan
+
+| Days | Work | With Rob |
+|---|---|---|
+| Sep 27–29 | Build audit v0; run on the operator's rollouts; check coverage first (Checkpoint-style caveat: transcripts can be incomplete) | review the measures: which would *he* want to see? |
+| Sep 30–Oct 1 | Run on Rob's rollouts; compare; calibrate the push/pull split on real turns (his "refusing to work" vs "done what now???") | he reads his own report and says what is right and wrong |
+| Oct 2 | Write both sample reports (anonymised as needed) and the one-pager | — |
+| Oct 3 | Rehearse the pitch on Rob; revise | Rob as first critic |
+| **Oct 4** | **Freeze pitch v1** | — |
+| Oct 5–11 | SF Tech Week: treat each conversation as a data point | — |
+| Oct 12–18 | Revise from Tech Week; regulatory follow-up call; prepare PLoP | — |
+| Oct 19–22 | PLoP: the paper; the invariants' known uses (futon7 worklist) | — |
+
+## 3.5 Decision rule for 4 October
+
+- **If** the two sample reports show at least one concrete saving (money or
+  supervision time) that the owner of the rollouts agrees is real, **then**
+  lead with §3.2.
+- **Else** lead with the provenance / regulatory-readiness framing (it needs
+  the same audit's traceability part, not its savings claims), and say
+  plainly that the savings audit is in development.
+- Either way, the pitch states what is measured and what is claimed (D2).
+
+## 3.6 Measuring the pitch (so SF Tech Week is evidence, not just travel)
+
+Log each substantive conversation: who (role, company size), which framing,
+their stated pain in their words, and outcome (none / interested /
+follow-up / offered data). Success threshold to set before going, e.g. five
+follow-ups and one offer of data. Record in futon7, not here.
+
+## 3.7 Carried forward (not in this plan)
+
+The 象-2000 demo (§2b.5) and the Claude-native L1 variant (§2b.6); the
+permission hook backed by the War Machine's classifier (§2c.6); the mission-
+effect split (§2b.7); the licence decision (futon7); the intake gate
+(§2d.5) as a follow-on offer; C4(b) cold witness (follow-on mission).
