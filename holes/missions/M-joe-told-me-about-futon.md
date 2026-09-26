@@ -751,3 +751,56 @@ records and patterns already in the store, so the newcomer's first session is
 the system's second. And the call works where the page does not because the
 call starts from **the listener's pain point**, then shows the mechanism; the
 public surfaces start from the mechanism.
+
+## 2b.5 Candidate for DERIVE: a 象-2000 demo (operator idea, 2026-09-26)
+
+**Operator:** ship futon3's pattern library together with a demo that uses it.
+The candidate is the 象-2000 work (futon3c `holes/missions/M-象-2000.md`, in
+DERIVE/ARGUE), an Elephant-2000-style record in which each operator turn is
+typed as speech acts and annotated with library patterns, readable *as of* any
+moment. It *"supplements the UI with a pattern interpretation of the user's
+turns and then can be used for 'critical incident' review"*. Proposed
+onboarding: a short script — *"What are your pain points with agentic
+coding?"* — that customises pattern retrieval to the user's situation.
+
+**Operator hypothesis:** the patterns are not idiosyncratic to Joe but
+*"represent objects and morphisms inside LLMs"*.
+
+**Why it fits the §2b findings (agent reading):**
+
+- **Value in one sitting.** A pattern reading of the user's own session is
+  useful immediately, on their material; no pre-seeded "yesterday" needed.
+  And each reading leaves records, so it also *builds* the yesterday.
+- **The worked example already exists, publicly.** M-象-2000's Q5
+  reconstruction (`holes/labs/M-象-2000/MAP-Q5-1620-reconstruction.md`): on
+  2026-09-24 an enforcement rule became 42 notices of "red tape". The library
+  as of 16:20 already held `inbox-zero/gate-fails-loudly`, whose violation
+  signature matches what happened; live retrieval ranked it 3rd, six seconds
+  *after* the commit, and its output only reached a sigil in an Emacs buffer.
+  That is §2b's gap in one incident — *retrieved, not reached* — and it is the
+  story a newcomer can follow: the library knew; the problem was surfacing.
+- **It produces the missing evaluation.** Clearing an incident requires a
+  proof ("pattern P in force at T₀ would have prevented it"), so incident
+  review generates outcome records — the half of "evaluated memory" that
+  §2b.1 QB3 found sparse.
+- **Its design already names reach.** M-象-2000 lists "reachable vs
+  retrievable" and "detect after, rewind cheaply" (not pre-act gating), which
+  is the answer to QB2 for any agent path, not only Claude's.
+
+**Testing the hypothesis (for DERIVE; not decided):**
+
+- Match rate on strangers' turns shows coverage, not fit. Use a **blind
+  comparison**: users rate readings from real retrieval vs shuffled patterns.
+  M-象-2000's weak-activation result (a rejected pattern is ~3× more likely
+  to be cited in the next five turns, but symmetric in time: topic, not
+  prediction) is a baseline measured on Joe's turns only.
+- Order: Rob (independent practice, shared vocabulary) → a cold user.
+- Language: the 象 family is written in Chinese; whether readings hold for
+  users writing in English is part of the hypothesis.
+
+**Constraints a public demo would meet (from M-象-2000):** the annotator 象
+runs on a reserved Kimi seat (a paid API a newcomer would need, or ship
+precomputed readings); operator-turn data must be filtered of harness
+notices and parked-job wakes before it counts as the user's acts; the
+demo's own fixture must be public (the red-tape incident is already written
+up in public futon3c).
