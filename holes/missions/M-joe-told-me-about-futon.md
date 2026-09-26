@@ -440,11 +440,36 @@ C1 and C3 stand as drafted. C2 and C4 are refined:
   in-person period. (b) **Cold:** a person with no prior contact with FUTON.
   (a) is in reach now; (b) stays open and may belong to a follow-on mission.
 
+## Operator decisions, 2026-09-26 (second round)
+
+- **Core value accepted:** *"memory that has been evaluated"* is the summary
+  of what FUTON offers.
+- **C2 at L0–L1 is judged validated by mfuton.** Joe: mfuton is *"frankly way
+  ahead of futon in many regards"* in this connection, and he considers C2
+  *"already validated at that level."* Recorded as an operator judgment grounded
+  in an existing derivative, not as a measurement run by this mission.
+- **The live question is L2 and L3.** Can someone adopt the shared core as
+  code, and can a per-client pushout be built on it?
+- **Candidate for the cold path: a single "CMYK-style projection".** Joe: *"If
+  we wanted to combine all the futons into one best of CYMK-style projection,
+  maybe that would be useful for 'cold' witnesses, i.e., rather than having to
+  read a bunch of repos they could just read one that includes the core
+  components of all."* Read as: each futon is a separation (one ink); the
+  projection overprints the core of each into one printable image, one repo.
+  Recorded here as a DERIVE candidate; note that it would be a concrete
+  instance of the shared core **C** from Q1, so the configurator's acceptance
+  test (describe both futon and mfuton) is a natural check on it.
+- **C4(b), the cold witness, is a follow-on mission.** It cannot be settled in
+  one session. This mission keeps C4(a), the warm witness.
+- **This mission's next concrete work is the newcomer walkthrough**, done by
+  the agent: follow the public docs literally on a clean machine and record
+  what happens.
+
 ## Remaining before IDENTIFY exit
 
-1. Operator acceptance of HEAD (gate above) and of this scope.
-2. Whether C4(b), the cold witness, is in scope for *this* mission or deferred.
-3. The C2 task: settled with Rob rather than here.
+1. Operator acceptance of HEAD: remove the gate line above when satisfied
+   (agents may not clear a gate).
+2. The C2 task at L2–L3: settled with Rob rather than here.
 
 **Exit criterion (per lifecycle):** the operator agrees the gap is real and the
 scope is right.
