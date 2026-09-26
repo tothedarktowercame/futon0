@@ -1,0 +1,26 @@
+INDEPENDENT CHECK: tornhill-chat-2026-09-26.json
+generated: 2026-09-26T00:54:06+00:00
+
+(1) operator turns, census loop re-run per session:
+  b2de8138-7b5 report=294 census=294 MATCH
+  af24caa1-54d report=254 census=254 MATCH
+  d158cebc-06a report=167 census=167 MATCH
+  9824b707-fda report=107 census=107 MATCH
+
+(2) commit named in its session transcript (sha prefix or subject):
+  codex futon3c 973881e6 in 01a032d8-d66: FOUND
+  codex futon3c 1d47bb82 in 01a032d8-d66: FOUND
+  codex futon3c b5fecb72 in 01a032d8-d66: FOUND
+  codex futon3c 5c9a60fb in 01a032d8-d66: FOUND
+  claude futon3c ad6757c5 in 083f3138-4e0: FOUND
+  claude voxterm 49187f9f in 083f3138-4e0: FOUND
+  claude futon3c 90dbe72f in 083f3138-4e0: FOUND
+  claude futon3c a11496df in 083f3138-4e0: FOUND
+
+(3) file lists, git show --name-only vs report (top files by operator share):
+  futon3c/src/futon3c/apm/workspace_lifecycle.clj report=3 hand=3 MATCH
+  futon3c/test/futon3c/apm/workspace_lifecycle_test.clj report=3 hand=3 MATCH
+  futon2/scripts/futon2/report/war_machine.clj report=90 hand=90 MATCH
+  futon2/src/futon2/aif/trace.clj report=33 hand=33 MATCH
+
+result: PASS

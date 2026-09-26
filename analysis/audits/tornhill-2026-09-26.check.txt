@@ -1,0 +1,82 @@
+INDEPENDENT CHECK: tornhill-2026-09-26.json
+generated: 2026-09-26T00:48:42+00:00
+
+Method: git log HEAD --no-merges --full-history --no-renames --numstat -- <file>
+(--full-history: default path simplification drops side-branch commits that
+really changed the file; found via futon6 304beb6 on the first run),
+filtered to the window; compared with the report's revs and churn.
+
+futon0: scripts/futon-sync.clj revs report=11 hand=11 churn report=771 hand=771 MATCH
+futon0: contrib/stack-hud.el revs report=3 hand=3 churn report=548 hand=548 MATCH
+futon0: test/futon_sync_check_clean_test.clj revs report=5 hand=5 churn report=329 hand=329 MATCH
+futon0: spearman(revs, churn) over 47 files = 0.55
+
+futon1: no code files changed in window
+futon1a: src/futon1a/api/routes.clj revs report=3 hand=3 churn report=56 hand=56 MATCH
+futon1a: src/futon1a/http/app.clj revs report=1 hand=1 churn report=6 hand=6 MATCH
+futon1a: src/futon1a/api/snapshot.clj revs report=3 hand=3 churn report=105 hand=105 MATCH
+futon1a: spearman(revs, churn) over 13 files = 0.73
+
+futon1b: futon1b_graph.clj revs report=45 hand=45 churn report=3128 hand=3128 MATCH
+futon1b: futon1b_server.clj revs report=55 hand=55 churn report=1848 hand=1848 MATCH
+futon1b: test_a3a4a5.clj revs report=22 hand=22 churn report=801 hand=801 MATCH
+futon1b: spearman(revs, churn) over 84 files = 0.66
+
+futon2: src/futon2/aif/full_loop_runner.clj revs report=236 hand=236 churn report=11081 hand=11081 MATCH
+futon2: scripts/futon2/report/war_machine.clj revs report=154 hand=154 churn report=8679 hand=8679 MATCH
+futon2: test/futon2/aif/full_loop_runner_test.clj revs report=198 hand=198 churn report=8558 hand=8558 MATCH
+futon2: spearman(revs, churn) over 1537 files = 0.55
+
+futon2a: src/ants/war.clj revs report=1 hand=1 churn report=1583 hand=1583 MATCH
+futon2a: src/ants/aif/policy.clj revs report=1 hand=1 churn report=1161 hand=1161 MATCH
+futon2a: src/ants/aif/experiment.clj revs report=1 hand=1 churn report=1176 hand=1176 MATCH
+futon2a: spearman(revs, churn) over 70 files = nan
+
+futon3: test/library_graph_lint_test.clj revs report=17 hand=17 churn report=782 hand=782 MATCH
+futon3: checks/library_graph_lint.clj revs report=14 hand=14 churn report=1123 hand=1123 MATCH
+futon3: checks/playout_snatch.clj revs report=17 hand=17 churn report=1343 hand=1343 MATCH
+futon3: spearman(revs, churn) over 79 files = 0.48
+
+futon3a: src/futon/flexiarg/projection.clj revs report=4 hand=4 churn report=262 hand=262 MATCH
+futon3a: test/futon/flexiarg/projection_test.clj revs report=6 hand=6 churn report=114 hand=114 MATCH
+futon3a: src/futon/missions.clj revs report=1 hand=1 churn report=26 hand=26 MATCH
+futon3a: spearman(revs, churn) over 60 files = -0.09
+
+futon3b: src/futon3/gate/shapes.clj revs report=4 hand=4 churn report=190 hand=190 MATCH
+futon3b: test/futon3/gate/shapes_test.clj revs report=1 hand=1 churn report=106 hand=106 MATCH
+
+futon3c: src/futon3c/transport/http.clj revs report=189 hand=189 churn report=7819 hand=7819 MATCH
+futon3c: src/futon3c/apm/countdown_control.clj revs report=133 hand=133 churn report=4087 hand=4087 MATCH
+futon3c: test/futon3c/transport/http_test.clj revs report=57 hand=57 churn report=1927 hand=1927 MATCH
+futon3c: spearman(revs, churn) over 1167 files = 0.66
+
+futon4: dev/arxana-browser-core.el revs report=4 hand=4 churn report=79 hand=79 MATCH
+futon4: dev/arxana-field-desk.el revs report=4 hand=4 churn report=1147 hand=1147 MATCH
+futon4: dev/check-parens.el revs report=5 hand=5 churn report=191 hand=191 MATCH
+futon4: spearman(revs, churn) over 15 files = 0.73
+
+futon5: notebooks/sci-repro/src/scirepro/report.clj revs report=6 hand=6 churn report=728 hand=728 MATCH
+futon5: notebooks/sci-repro/src/scirepro/engine.clj revs report=8 hand=8 churn report=904 hand=904 MATCH
+futon5: src/futon5/mmca/exoevolve.clj revs report=4 hand=4 churn report=186 hand=186 MATCH
+futon5: spearman(revs, churn) over 270 files = 0.42
+
+futon5a: scripts/capability_mining.clj revs report=9 hand=9 churn report=1206 hand=1206 MATCH
+futon5a: scripts/capability_graph_ingest.clj revs report=6 hand=6 churn report=597 hand=597 MATCH
+futon5a: scripts/capability_mining_test.clj revs report=8 hand=8 churn report=504 hand=504 MATCH
+futon5a: spearman(revs, churn) over 35 files = 0.72
+
+futon6: scripts/linode_stepper.py revs report=31 hand=31 churn report=919 hand=919 MATCH
+futon6: scripts/mark3_iatc_loop.py revs report=27 hand=27 churn report=1299 hand=1299 MATCH
+futon6: scripts/superpod-job.py revs report=1 hand=1 churn report=13 hand=13 MATCH
+futon6: spearman(revs, churn) over 316 files = 0.45
+
+futon7: holes/pudding-prover.bb revs report=13 hand=13 churn report=1524 hand=1524 MATCH
+futon7: src/f7/gh.clj revs report=1 hand=1 churn report=78 hand=78 MATCH
+futon7: holes/labs/M-cold-chain/cold_chain_state.bb revs report=1 hand=1 churn report=261 hand=261 MATCH
+futon7: spearman(revs, churn) over 20 files = 0.38
+
+futon7a: lab/pattern-cascade/check_composition.clj revs report=1 hand=1 churn report=117 hand=117 MATCH
+futon7a: lab/pattern-cascade/check_structure.clj revs report=1 hand=1 churn report=165 hand=165 MATCH
+
+missing repositories: none
+result: PASS
