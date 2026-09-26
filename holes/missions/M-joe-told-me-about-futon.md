@@ -1461,3 +1461,17 @@ been filled in at a sufficient level of detail that it would become
   mission actions only for an open mission with open holes (§2c.6); the
   PLoP catalogue's shape-aware witness (a specification can be the typed,
   checkable artefact). The intake gate is the same move facing outward.
+
+## 2d.6 Scope decision: mathematics is interest, not the business focus (operator, 2026-09-26)
+
+The informal-to-formal "alignment" problem (§2d.3) is real and long-standing,
+and the operator knows and admires the people working on it, but *"I don't
+see it as an obvious way forward for business applications … maybe a thin
+slice of it (business proformas) but not mathematics per se."* The operator
+remains very interested in AI mathematics; for this mission, the business
+side comes first until the stack pays for its own running costs.
+
+**Effect on scope:** mathematics (futon6, Lean proving, statement fidelity) is
+**out of scope** for this mission's offers, except the thin slice of §2d.5:
+checking that a request or proforma is actionable. futon6 remains a
+demonstration of rigour, not a product line.
