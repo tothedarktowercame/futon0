@@ -1636,6 +1636,27 @@ Two practitioners over similar spans is a much stronger sample than one.
   signals exist for which period (D6 risk). Deduplicate `.pre-compact-*`
   snapshots by `uuid`, as the existing operator census already does.
 
+**Correction (operator, 2026-09-26):** Rob uses FUTON (mfuton), so his
+durable record may be his **evidence store**, not Claude Code's own
+transcript files; the operator will check whether his chats are being saved
+there. For FUTON users the audit should read both sources.
+
+**A working benefit, in use daily (operator):** *"it really is very useful to
+be able to say things like 'I was talking about such-and-such' and just have
+my agents find it via the README-fts feature"* (full-text search over the
+evidence store; futon1b `README-fts.md`). It *"took me a while to get that
+working"*. Notes:
+
+- It answers the most-reported pain in the survey directly (C1, §2c.1:
+  context lost between sessions) and works today, independent of the
+  unfinished parts (zaif, War Machine autonomy).
+- It is **pull, not push** (the user asks; the agent searches), consistent
+  with §2b.1 QB2; for recall that is the natural interaction.
+- It is the best candidate so far for the **adopter's** first experience:
+  the INSTALL.md "first run" could end with it, i.e. log a few turns, then
+  find them by topic in a later session. The difficulty of getting it
+  working is itself an install finding to fix.
+
 ## 3.4 Plan
 
 | Days | Work | With Rob |
