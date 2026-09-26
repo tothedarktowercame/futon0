@@ -1709,3 +1709,104 @@ role afterwards is to shape and trim, and to flag each sentence that makes a
 claim needing a warrant (D2), not to change the voice.
 
 The answers to the core prompts are this mission's plain-language argument.
+
+**ARGUE draft (2026-09-26):** the argument assembled verbatim from the
+operator's own sentences in the session (futon7
+`site-draft/ARGUMENT-own-words.md`; others' words excluded until they agree).
+It runs problem → hard-won experience → offer → mechanism → options →
+honesty, and marks the two claims that still need warrants.
+
+---
+
+# 5. VERIFY (2026-09-26): is "read logs + build a website" the right use of nine days?
+
+**Operator:** help verify *"whether or not the design … i.e. the 'read logs
+plus a website' is actually a good use of the 9 days or whether we've missed
+something major."*
+
+## 5.1 Completion-criteria pre-check (from IDENTIFY)
+
+| Criterion | Addressed by the nine-day plan? |
+|---|---|
+| C1 plain statement on the public entry point | **Yes** — new home page and the own-words argument |
+| C2 compared (method, code) | **Partly** — L0–L1 judged validated by mfuton; L2–L3 not in this plan |
+| C3 reachable (install) | **Yes** for the core (INSTALL.md); agent-task step still unverified |
+| C4(a) warm witness (Rob) | **Yes, if** Rob reads his own sample report (§3.4, Sep 30–Oct 1) |
+| C4(b) cold witness | Deferred by decision |
+
+## 5.2 Specification bill of materials
+
+| Aspect | Formalism / level | Status |
+|---|---|---|
+| Claim ("I'll find savings") | causal: n=2 practitioners' logs; owner agrees the saving is real | test scheduled (decision rule §3.5); **n=2 is anecdote, say so** |
+| Artefact (audit tool) | stdlib-only script; test asserting no sockets; reports which signals were present | to build |
+| Process (the nine days) | this plan | freeform; see wiring note |
+| Decision | IF/HOWEVER/THEN/BECAUSE (D1–D6) | done |
+
+**Wiring-diagram test** (lifecycle): criterion 4 holds (the pitch's claims
+rest on evidence produced by the tool being built). **Priced decline:** the
+tool is single-process and single-writer, so no diagram now; revisit if the
+audit gains a second component (e.g. 象 typing or an evidence-store reader).
+
+## 5.3 What the plan misses (findings, most important first)
+
+1. **No price and no proposal.** The goal is break-even, but the plan
+   produces a pitch and no way to say yes to it. A follow-up at Tech Week
+   cannot convert without a fixed-fee pilot, a price and a one-page proposal.
+   *Add:* a pilot offer (scope, two to four weeks, fixed fee, data stays on
+   site) before Oct 4.
+2. **The warmest lead is scheduled after the pitch is frozen.** The
+   regulatory-readiness contact (lawyer plus lead engineer) is the only
+   conversation already heading towards a joint offer, and the plan puts it
+   in Oct 12–18. It could reorder the pitch. *Add:* book that call before
+   Oct 4.
+3. **Rob is treated as a test subject, not a partner.** The buyer roster's
+   ask for Rob was to co-develop a Hyperreal/mfuton business plan, and the
+   futon/mfuton notes record Rob's own commercialisation thread. Two weeks
+   together is the moment to decide whether the pitch is joint.
+   *Add:* one conversation with Rob about a joint offer, before Oct 4.
+4. **"Save money" may not be money for subscription users.** On flat-rate
+   plans, tokens are not billed per use; savings show up as rate-limit
+   headroom or seats, not cash. The operator's own logs are likely of this
+   kind. *Fix:* report both token volume and its API-price equivalent, and
+   say which applies to the reader (the founders at the Founder House pay
+   per token for their products, so for them it is money).
+5. **No outside reaction before freezing.** Everything before Oct 4 is
+   judged by the operator, Rob and the agent. *Add:* send the one-pager to
+   two or three people outside (e.g. the practitioner whose account is in
+   §2c.9, a former student) for a reaction by Oct 3.
+6. **Showing your own logs publicly can leak.** The sample report from the
+   operator's logs will touch client work and private repos. *Add:* a
+   redaction pass before any of it goes on the site or into the pitch;
+   aggregate numbers only (the same rule the tool enforces for clients).
+7. **Willingness to pay is untested.** MAP found pain and interest, not
+   payment. Tech Week should ask for the pilot explicitly, and the
+   measurement in §3.6 should count "agreed to a paid pilot" separately from
+   "interested".
+8. **Too much for nine days.** Audit tool, two sample reports, four brochure
+   pages, one-pager, pricing, two calls — while the PLoP paper and the War
+   Machine also need time. *Cut:* for Oct 4 keep the tool, one sample report
+   (the operator's), the one-pager, pricing and pages 2–3; move pages 4–9 to
+   before PLoP.
+9. **Contingency for the Founder House.** It is invite-only; if not
+   accepted, SF Tech Week has hundreds of other events. Pick two backups now.
+
+## 5.4 Verdict
+
+The design is sound in its core: a local diagnostic answers measured and
+reported pains, uses what already works, and suits the consulting model; the
+website gives the evaluator something to read. What it lacks is the
+**commercial end** (price, proposal, the warm lead, Rob as partner) and
+an **outside check** before the freeze. Revised priority for the nine days:
+
+1. Audit tool v0 and one sample report (the operator's own logs), redacted.
+2. Pilot offer with a price; one-page proposal.
+3. Calls before Oct 4: the regulatory contact; Rob on a joint offer.
+4. One-pager and 30-second version, checked by two outside readers.
+5. Site: home, work overview, pages 2–3. The rest before PLoP.
+
+## 5.5 Decision log
+
+- VERIFY revises §3.4's order (commercial steps moved before the freeze) and
+  §3.3's scope (one sample report required, the second optional).
+- D1–D6 unchanged.
