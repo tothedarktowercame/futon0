@@ -728,3 +728,26 @@ missing complete. **No design follows here.** Candidate directions for DERIVE
 (not decisions): a runnable two-session demonstration on a public fixture;
 extending session-start memory to the Claude path; a public account of mfuton
 in Rob's words, if he agrees.
+
+## 2b.4 Operator observations (2026-09-26, after §2b)
+
+- **Rob had a clear use case**, which is part of why mfuton happened: the value
+  was visible because he brought his own problem to it.
+- **Other potential users recognise the pain points** FUTON (or a successor
+  such as zabuton) addresses, in conversation: *"customer interviews" minus,
+  so far, the willingness to pay.* The value currently travels **in the form
+  of a call, not a quickstart.** (Details of those conversations belong in
+  futon7, not here.)
+- **Comparison, Claude Code:** on startup the user sees *"a picture of a
+  hermit crab without a shell and a box they can type into"*: the benefit is
+  not obvious either, *"though at least the intended user interaction is
+  clear."*
+
+**Reading (agent, for DERIVE to test):** Claude Code shows its value in the
+first minutes because the unit of value is **one turn** on the user's own
+problem. FUTON's claimed value arrives **across sessions**, so a quickstart
+cannot show it in one sitting unless it ships a *yesterday*: prior sessions,
+records and patterns already in the store, so the newcomer's first session is
+the system's second. And the call works where the page does not because the
+call starts from **the listener's pain point**, then shows the mechanism; the
+public surfaces start from the mechanism.
