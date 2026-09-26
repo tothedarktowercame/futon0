@@ -1810,3 +1810,14 @@ an **outside check** before the freeze. Revised priority for the nine days:
 - VERIFY revises §3.4's order (commercial steps moved before the freeze) and
   §3.3's scope (one sample report required, the second optional).
 - D1–D6 unchanged.
+
+**Finding 10 (operator, 2026-09-26): the brochure describes the core offer
+but gives no experience of it.** Remedy adopted in the site draft: visible
+scaffolding, after the Centre Pompidou. Each section of the home page
+carries a margin card naming the library pattern that shaped it, why it was
+used, and its record (retrieval counts from the pattern-stage audit;
+recorded uses; "no record yet" stated where true). The page thereby does
+what the offer claims: every move carries its reason and its track record.
+Later, the cards could be generated from the library and evidence store so
+their records update themselves, which would make the site a live instance
+of evaluated memory rather than a description of it.
