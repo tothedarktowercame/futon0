@@ -1,9 +1,8 @@
 # M-joe-told-me-about-futon
 
-**Status:** HEAD captured 2026-09-26 · MAP first pass complete for Q-install (§2) ·
-IDENTIFY drafted (§1), awaiting operator review · walkthrough Checkpoint 1 recorded.
-**Gate:** operator-acceptance — HEAD must be recognised as faithful before
-IDENTIFY hardens it into a gap statement.
+**Status:** HEAD and IDENTIFY accepted by the operator 2026-09-26 · **MAP in
+progress** — first pass (§2, Q-install) complete; second pass (§2b, Q-bother)
+recorded · Checkpoints 1–3 (install walkthrough, INSTALL.md) at end of file.
 
 Per `futon4/holes/mission-lifecycle.md`: HEAD preserves the operator's voice and
 carries tensions forward. **It is not design.** Nothing below prescribes an
@@ -614,3 +613,118 @@ entry point) is partly met by INSTALL.md's "What you get".
 **Still open:** the agent-task step (INSTALL.md §6, marked unverified);
 the README-level fixes in futon3c (env table, evidence example, permission
 variable name) — INSTALL.md works around them rather than fixing them.
+
+---
+
+# 2b. MAP — second pass: Q-bother (2026-09-26)
+
+**Operator, on entering MAP:** *"now we have a reasonable sense that our
+imagined interlocutors could understand how to install futon, but I still am
+not sure they see the value in doing so."*
+
+Research only: facts, not design. Question under survey: **after following
+INSTALL.md, what would a newcomer see that shows the value claimed in
+IDENTIFY** — memory that has been evaluated, and an agent that picks up where
+the last session left off?
+
+## 2b.1 Survey questions, answered
+
+**QB1 — What does a newcomer have after INSTALL.md?** An empty evidence store,
+Agency's HTTP API, and one entry they wrote by hand with `curl`. Nothing in the
+install shows memory being *used*. (Checkpoints 2–3.)
+
+**QB2 — Is the claimed mechanism wired for the agent a newcomer would use?**
+For Claude Code, **no**. Verified on the invoke path:
+
+- `make-claude-invoke-fn` (`futon3c/dev/futon3c/dev.clj:3608-3613`) runs
+  `claude -p … [--resume sid] -- <prompt>`: no system-prompt addition, no
+  retrieved evidence, missions, patterns or PSR/PUR records. The warm-pouch
+  path (`src/futon3c/agency/agent_pouch.clj:439-446`) is the same.
+- Evidence flows **outward only** on this path: `emit-invoke-evidence!`
+  records the call; nothing reads back.
+- Continuity for a Claude seat is therefore the Claude CLI's own `--resume`
+  plus **instructions** in CLAUDE.md (select patterns, write PSR/PUR, keep
+  mission docs). No CLAUDE.md tells an agent to query the evidence store at
+  session start.
+
+Where memory **is** pushed at session start, it is on other paths:
+
+- The **zai/kimi API harness**: `boot-packet-string` and `rehydration-string`
+  (`src/futon3c/peripheral/memory_backend.clj:673-721`, last 10 turns),
+  injected into the system message by `src/futon3c/agents/zai_api.clj:2105-2117`,
+  gated by `:memory-mode`; plus agent-callable tools `memory_search`,
+  `pattern_memory`, `psr_search`, `evidence_graph`, `mission_context`
+  (`zai_api.clj:170, 314-337`).
+- **Recall-before-dispatch** for math-problem work:
+  `src/futon3c/dispatch_with_recall.clj` assembles a pattern-conditioned
+  memory packet and posts it with the task (`:push`, line 22; packet at
+  1308; bell at 1465), run from scripts such as `scripts/codex_sorry_cron.py`.
+
+**QB3 — How "evaluated" is the memory in practice?**
+
+- The library is large: **1,411 patterns in 117 families** (`futon3/library`).
+- Retrieval is heavily exercised: `analysis/audits/PATTERN-STAGES.md` (window
+  2026-08-22 → 09-21) counts **20,306 retrieval records**, with a rank-one
+  pattern joined to **84.7% of 3,398 recorded operator turns**.
+- Explicit evaluation is thin: of **323 mission files**, **18 have a PSR
+  section and 7 a PUR section**; there are 48 legacy PSR/PUR files. Recorded
+  selections name **24 distinct patterns**, 17 of which resolve to library
+  files.
+- Reading: the stack *retrieves* patterns constantly; it *records how a
+  pattern turned out* rarely. "Evaluated memory" is the right description of
+  the design, but the evaluation half is sparse in the record.
+
+**QB4 — Is there any demonstration of the cycle (session 1 records, session 2
+benefits)?** **None found** as a tutorial, fixture or demo. The nearest are
+experiments: `futon3c/holes/labs/M-memory-retrieval/` (e.g.
+`E9-pull-probe-prereg.md`, whether an agent pulls known memories unprompted),
+`test/futon3c/agents/zai_memory_tool_contract_test.clj`,
+`test/futon3c/dispatch_with_recall_test.clj`, and futon3b's library-level
+`full-loop-round-trip` (`futon3b/AGENTS.md:300-307`: gap → new pattern →
+accepted), which is library evolution, not an agent recalling earlier work.
+
+**QB5 — What public surfaces explain the value?**
+
+- `hyperreal.enterprises` (company site): **does not mention FUTON.**
+- `zone.hyperreal.enterprises`: a decision log (*"decisions, with the evidence
+  attached"*) — rigorous, but written for someone already inside the work.
+- INSTALL.md's "What you get" paragraph (Checkpoint 3) is now the only plain
+  statement, and it asserts the value rather than showing it.
+
+**QB6 — What independent evidence of value exists?** mfuton: another person's
+agents read futon and built a working adaptation, which that person now uses
+and judges worth the time (IDENTIFY, operator answers Q2). It is the strongest
+evidence available, and it is **not visible to a newcomer**: no public page
+says it happened or what was carried over.
+
+## 2b.2 Ready vs missing (for Q-bother)
+
+| Ready — exists today | Missing — the actual work |
+|---|---|
+| A working install path (INSTALL.md, verified) | Anything the install *shows*: the store starts empty and nothing reads it |
+| Pushed memory at session start — for the zai harness, and recall-before-dispatch for math work | The same for the agents a newcomer is likely to bring (Claude Code, Codex) |
+| A heavily used pattern-retrieval layer (20k records/month) | Outcome records at a rate that makes "evaluated" visible (7 of 323 missions have a PUR) |
+| Experiments and tests of recall (M-memory-retrieval, recall tests) | A demonstration: session 1 records → session 2 is measurably better, runnable by a stranger |
+| An independent adopter (mfuton) | A public account of that adoption, in the adopter's words |
+| A decision log with evidence attached | A public page that says what FUTON is for, outside the log |
+
+## 2b.3 Surprises — recorded before DERIVE
+
+1. **The value claim is most true on the path a newcomer is least likely to
+   use.** Memory is pushed at session start for the API-harness seats and for
+   dispatched math work; the Claude Code path that INSTALL.md points to gets
+   none of it.
+2. **"Picking up where you left off" is, for Claude seats, mostly Claude's own
+   `--resume` plus written instructions.** That is close to the CLAUDE.md
+   baseline IDENTIFY asked FUTON to beat — so on that path, a C2 comparison
+   would currently find little difference, by construction.
+3. **Retrieval is abundant; evaluation is scarce.** The distinctive half of
+   "evaluated memory" is the half least present in the record.
+4. **The best evidence is private by default.** mfuton's existence is in
+   public futon3c notes, but nowhere a newcomer would read it.
+
+**Exit criterion for this pass:** QB1–QB6 answered with citations; ready vs
+missing complete. **No design follows here.** Candidate directions for DERIVE
+(not decisions): a runnable two-session demonstration on a public fixture;
+extending session-start memory to the Claude path; a public account of mfuton
+in Rob's words, if he agrees.
