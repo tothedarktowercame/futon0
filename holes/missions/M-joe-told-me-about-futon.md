@@ -1214,3 +1214,35 @@ operator's approval, cannot yet fire. Two follow-ons for DERIVE:
    session replay in which `:ask` fires on the move that should have been
    escalated (e.g. the 09-24 enforcement commit), and not on the ones that
    should not.
+
+## 2c.7 Building the War Machine as a case study (operator, 2026-09-26)
+
+**Operator:** zaif is *"basically waiting for the WM itself which has been
+extremely slow, beset by red tape, etc., but still showing good signs of
+nearing completion."* Building the WM is *"a very complex mission (or suite
+of missions), and I've hit a bunch of the pain points that I anticipate that
+I can help others solve. That was initially quite embarrassing but on
+reflection potentially productive/useful experience."*
+
+**Agent reading:**
+
+- **The operator's pains match the public clusters (§2c.1).** The 09-24
+  requisition rule and its 42 notices are C2 (an agent adding unrequested
+  bureaucracy) and the "sledgehammer" objection (C6) at once; "extremely
+  slow" is C3's productivity paradox, experienced first-hand. This is
+  evidence the pains are real *in this practice*, not only in surveys.
+- **The record is unusually complete.** Few builders of agentic systems have
+  a dated, as-of record of their own failures: M-象-2000's acceptance case,
+  zaif's published calibration gaps (§2c.6), the WM wiring ledgers, the
+  product census. That record is the raw material for case studies no
+  competitor can easily produce.
+- **Anti-glibness (HEAD): hitting a pain is not solving it.** The credible
+  claim is *pains hit and then cleared, with the clearing shown*: M-象-2000's
+  "clearing proof" (pattern P in force at T₀ would have prevented it,
+  checked by replay) is the right standard. Pains hit and not yet cleared
+  (zaif's `:ask`, the WM's pace) count as first-hand knowledge of the
+  problem, not as a solution to sell.
+- **Candidate artefact for DERIVE:** a short public account of building the
+  War Machine, written in the reader's terms, pairing each pain with what was
+  learned and, where it exists, the clearing proof. It serves the cold
+  newcomer (C4b) better than a quickstart does: it is the call, written down.
