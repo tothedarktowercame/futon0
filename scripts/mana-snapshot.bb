@@ -209,7 +209,12 @@
                                             "high" 2 "stop-the-line" 3}]
                                   (if (> (get rank t 0) (get rank acc 0)) t acc)))
                               "silent"))
-        max-pressure (apply max 0.0 (map :P per-repo))
+        ;; Union-added uncertain-only roots carry NO :P measurement: max
+        ;; aggregates measured pressures only, and coverage says so.
+        measured-ps (vec (keep :P per-repo))
+        max-pressure (apply max 0.0 measured-ps)
+        pressure-coverage {:measured (count measured-ps)
+                           :unmeasured (count (remove :P per-repo))}
         agents (fetch-agents)
         sessions (mapv session-record agents)
         pool (fetch-pool)]
@@ -218,6 +223,7 @@
      :max-tier max-tier
      :max-pressure max-pressure
      :per-repo per-repo
+     :pressure-coverage pressure-coverage
      :uncertainty (dissoc uncertainty :repos-by-root)
      ;; Per D-01: each session is its own AIF head; War Machine consumes.
      :sessions sessions

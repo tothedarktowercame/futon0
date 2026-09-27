@@ -34,7 +34,8 @@
 
 (defn- row [root n]
   {:label "x" :root root :dirty-count n :untracked 0
-   :remainder 0 :paths (vec (repeat n {:path "p" :mtime-ms 1}))})
+   :remainder 0 :paths (vec (for [i (range n)]
+                             {:path (str "p-" i) :mtime-ms i}))})
 
 (deftest missing-input-is-unavailable-never-zero
   (let [u (u-load "/nonexistent/n4.edn")]

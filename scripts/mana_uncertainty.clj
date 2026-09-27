@@ -18,17 +18,26 @@
 
 (defn- nat? [x] (and (integer? x) (not (neg? x))))
 
+(defn- valid-path-entry? [e]
+  (and (map? e) (string? (:path e)) (not (str/blank? (:path e)))))
+
 (defn- valid-row?
-  "One feed row must carry a non-blank root, non-negative counts with
-  untracked <= dirty, a non-negative remainder, and a :paths vector whose
-  length equals :dirty-count (the complete per-file drilldown)."
+  "One feed row must carry a canonical-shaped ABSOLUTE root (relative or
+  traversal-shaped roots are rejected), non-negative counts with
+  untracked <= dirty, a non-negative remainder, and a :paths vector of
+  unique non-blank entries whose length equals :dirty-count (the complete
+  per-file drilldown)."
   [row]
   (and (map? row)
-       (string? (:root row)) (not (str/blank? (:root row)))
+       (string? (:root row)) (str/starts-with? (:root row) "/")
        (nat? (:dirty-count row))
        (nat? (:untracked row)) (<= (:untracked row) (:dirty-count row))
        (nat? (:remainder row))
-       (vector? (:paths row)) (= (count (:paths row)) (:dirty-count row))))
+       (vector? (:paths row))
+       (= (count (:paths row)) (:dirty-count row))
+       (every? valid-path-entry? (:paths row))
+       (= (count (:paths row))
+          (count (distinct (map :path (:paths row)))))))
 
 (defn validate-feed
   "Nil when the feed value is chronologically and structurally valid;
@@ -73,6 +82,11 @@
               :stale? (> age-ms (* 2 interval))
               :drilldown (:drilldown v)
               :diagnostics-available? (boolean (:diagnostics-available? v))
+              ;; Producer-side completeness, propagated so consumers never
+              ;; read a partial pass as full coverage.
+              :collection-complete? (get-in v [:collection :complete?])
+              :row-failures (long (or (get-in v [:collection :row-failures]) 0))
+              :backlog-written? (get-in v [:publication :backlog-written?])
               :repos-by-root
               (into {}
                     (map (fn [row]
