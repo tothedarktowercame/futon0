@@ -1,9 +1,10 @@
 # M-joe-told-me-about-futon
 
 **Status:** HEAD and IDENTIFY accepted 2026-09-26 · **MAP closed** 2026-09-26
-(§2 install, §2b value, §2c public pain signals, §2d mathematics) · **DERIVE
-open** (§3, end of file): an immediate plan to decide the pitch by
-2026-10-04 · Checkpoints 1–3 recorded.
+(§2 install, §2b value, §2c public pain signals, §2d mathematics) · DERIVE,
+ARGUE and VERIFY 2026-09-26 (§3–§5) · **INSTANTIATE open** 2026-09-27 (§6,
+end of file): the campaign as a lightweight active-inference model ·
+Checkpoints 1–3 recorded.
 
 Per `futon4/holes/mission-lifecycle.md`: HEAD preserves the operator's voice and
 carries tensions forward. **It is not design.** Nothing below prescribes an
@@ -1821,3 +1822,117 @@ what the offer claims: every move carries its reason and its track record.
 Later, the cards could be generated from the library and evidence store so
 their records update themselves, which would make the site a live instance
 of evaluated memory rather than a description of it.
+
+---
+
+# 6. INSTANTIATE (opened 2026-09-27): the campaign as a slowly-arriving active-inference model
+
+**Operator (2026-09-27):** the agent's advice to keep the "model what your
+agents are trying to do" claim out of the pitch *"is already readable (by me)
+as a precision calibration issue in its own right."* So INSTANTIATE *"could
+'be' a lightweight active-inference model, just slowly coming online"*: the
+next customer dialogues and micro-tests are chosen, and read, as ways to
+sharpen precision. The image is the operator's profile picture, Goofy walking
+Pluto: *what you want* and *what you think you want* can differ.
+
+**How this departs from the lifecycle.** The lifecycle's INSTANTIATE builds
+code and should be the least creative phase. Here the thing instantiated is a
+campaign (Dallas to 4 Oct, SF, PLoP, then reassess), and the lifecycle's
+**loop closure** item ("demonstrate the full cycle") is the centre, not an
+afterthought. The audit tool (§5.4 item 1) is still built as ordinary code.
+
+**Scope of the claim.** This is active inference as a *bookkeeping
+discipline*, not a fitted generative model and not the War Machine. It is kept
+in files the War Machine could later read; that is the sense of "coming
+online". Precedent: futon7 `M-buyer-discovery` already treats buyer discovery
+as the prediction-error channel for a high-precision prior.
+
+## 6.1 The model
+
+- **Hidden states** (what the campaign is uncertain about): who pays first;
+  which pain is primary (cost, supervision/flow, compliance/traceability,
+  rework); which framing lands (savings audit, provenance, evaluated memory,
+  modelling behaviour); what price is acceptable; and the operator's own
+  allocation of time, stated versus revealed (Goofy and Pluto).
+- **Observations:** coded answers from dialogues; results of micro-tests; the
+  operator's commits, logs and calendar.
+- **Actions:** *epistemic* (ask, test, show a draft) and *pragmatic* (ask for a
+  paid pilot, send a proposal). Choose the next one by three rough scores
+  (0–2 each): would the result change what we do next; does it move towards a
+  paid pilot; what does it cost in days.
+- **Precision = what each claim is allowed to do in public.** A ladder:
+
+  | Level | Allowed use |
+  |---|---|
+  | P0 | held privately |
+  | P1 | asked as a question ("have you seen …?") |
+  | P2 | stated as our hypothesis |
+  | P3 | stated as a claim, with its warrant beside it |
+  | P4 | priced, in a proposal |
+
+  A claim moves up only on evidence recorded in the ledger, and down on a
+  disconfirming observation. "Keep it out of the pitch" becomes "it is at P1",
+  and the ledger says what would move it.
+
+## 6.2 Instruments
+
+1. **Claims ledger** (futon7, private): each claim, its level, its warrant,
+   and what would move it up or down.
+2. **Prediction before each observation.** Before every dialogue or
+   micro-test, write one line: *I expect …, confidence …%.* Afterwards: hit or
+   miss, and the surprise in a sentence. The run of hits and misses per claim
+   is its calibration; that is precision measured rather than asserted.
+3. **Dialogue card:** the same few questions in every conversation, so answers
+   are comparable across people (§3.6 extended). Answers are coded against the
+   hidden states afterwards, not during.
+4. **Weekly stated-versus-revealed check:** the split the operator intended
+   (building / outreach / writing) against the split the commits, logs and
+   calendar show. The model's first subject is its operator (§6.5): the
+   inverse direction, tried on the person with the most data.
+
+## 6.3 Phases as a changing policy
+
+| Phase | Dates | Policy | Exit |
+|---|---|---|---|
+| Dallas | to Oct 4 | few, high-value observations: own-logs audit, Rob on a joint offer, the regulatory contact's team, two outside readers | pitch v1 with every sentence tagged P0–P4; a price (P4) exists |
+| SF Tech Week and after | Oct 5–~18 | many observations; ask more than tell; alternate framings between conversations; thresholds set before going | posterior review: which states moved |
+| PLoP | Oct 19–22 | test the evaluated-memory and pattern-record claims with pattern experts | same |
+| Reassess | late Oct | mix of coding and outreach set by where prediction errors are largest: uncertain buyers → more outreach; uncertain product → more code | next plan |
+
+## 6.4 Completion criteria for this phase (draft)
+
+- Every pitch sentence carries a precision level, and none above P2 lacks a
+  recorded warrant.
+- At least one full loop is shown: prediction → observation → surprise →
+  level change → changed pitch.
+- The stated-versus-revealed check has run at least twice, with a prediction
+  of the next week made before it.
+
+## 6.5 What a working active-inference implementation is for (operator, 2026-09-27)
+
+**Operator:** with the War Machine nearly working, *"what good is it having a
+working AIF implementation?"* Answer: a tool *"to understand my behaviour and
+the behaviour of other organized and organizational entities."*
+
+**Agent's elaboration (to be checked):**
+
+- *Forward*, the implementation acts from its priors. *Inverse*, it asks which
+  preferences and precisions would make an agent behave as observed. The
+  inverse use needs a working forward model to fit, which is why finishing the
+  War Machine matters for understanding, not only for automation.
+- The inverse use is the long-run form of the rollout diagnostic (§3.2): from
+  counting what agents did to saying what the agent-and-operator system
+  behaves as if it wants. Over-action and under-action (§2c) read as
+  miscalibrated precision; "babysitting" reads as the human supplying the
+  precision and the asking the agent lacks.
+- The same fit applies to anything with a trail of observations and actions:
+  one person's logs, a two-person team with agents, a firm, an open-source
+  project. This is where the Beer layer (§2b.9) stops being a metaphor:
+  System 3* is a channel for inferring a unit's state from its behaviour.
+- First finding, on itself: in the zaif harness `:ask` is unreachable and 83
+  of 114 decisions were settled by tie order. A model that cannot ask cannot
+  explain humans whose main supervisory act is asking.
+- **Risk:** free-energy accounts can fit anything after the fact. The honest
+  test is held-out prediction: fit on part of the logs, predict something in
+  the rest (e.g. where the operator intervenes next) and beat the plain
+  counts. Until then this stays at P1 in the pitch (§6.1).
