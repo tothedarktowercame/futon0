@@ -614,7 +614,75 @@ terminal raw and on the alternate screen, so the terminals looked frozen. `eg` n
 restores the tty after `emacsclient` exits (README-termux.md §1, "If a terminal
 looks frozen").
 
-## 9. See also
+## 9. A hang, 2026-09-27 — url.el requests in the daemon
+
+Not a crash. The graph daemon sat at 100% CPU and `emacsclient` hung without an
+answer. Nothing was wrong in C: every stall came from url.el requests that were
+never closed.
+
+### 9.1 What happened **[verified]**
+
+After 3.8 days of uptime the daemon held **1001 sockets**, 989 of them idle
+connections to the Agency on :7070, and had reached its 1024-descriptor limit.
+Once no descriptor was free:
+
+1. `emacsclient` could not connect, because accepting a client needs a descriptor.
+2. Every new connection attempt failed and left a dead process in `process-list`.
+   By the time it hung there were **20,328** of them.
+3. `make_process` names a new process by trying `127.0.0.1<1>`, `<2>`, … and
+   searching the whole process list for each candidate. At 20,000 entries that
+   search is quadratic, and it ran on every poll tick, so the daemon never got back
+   to its event loop.
+
+The sockets leaked because **url.el has no timeout of its own**:
+
+- `url-retrieve` (async) waits forever for an answer. The park poller in
+  `futon3c/emacs/agent-repl-park.el` asks :7070 twice every 3 s per REPL buffer, and
+  when a request went unanswered for 30 s it started a new one and left the old one
+  open.
+- `url-retrieve-synchronously` with a TIMEOUT returns nil when the time is up but
+  **leaves the request running**. A late answer lands in a response buffer nobody
+  kills; the daemon had 23 orphaned `/api/alpha/evidence` responses (one 1.4 MB). An
+  answer that never comes keeps its socket forever.
+
+A batch Emacs with `ulimit -n 64` and a local server that accepts connections but
+never replies reproduces both stages in seconds.
+
+### 9.2 Rules for code that runs in the daemon
+
+- **Synchronous requests:** use `futon-url-retrieve-synchronously URL TIMEOUT`
+  (`futon3c/emacs/futon-url.el`), not `url-retrieve-synchronously`. It takes the same
+  `url-request-*` bindings and returns the same buffer, but a request that misses
+  its deadline has its connection deleted and its buffer killed. Every futon3c call
+  site was switched on 2026-09-27; `futon3c/test/futon-url-test.el` pins the
+  behaviour.
+- **Async requests** need a deadline too. `agent-repl-park--retrieve` shows the
+  pattern: a timer that deletes the connection and runs the callback with an
+  `:error`.
+- **Before deleting a url.el connection, detach its sentinel**
+  (`(set-process-sentinel proc #'ignore)`). Otherwise
+  `url-http-end-of-document-sentinel` treats the close as a dropped keep-alive and
+  **sends the request again**.
+- **Every callback kills its response buffer**, on the error path too. Wrap parsing
+  in `unwind-protect` so a parse error cannot strand the buffer.
+
+### 9.3 Spotting it early, and reviving a daemon without killing it
+
+- Warning signs: `(length (process-list))` in the hundreds, or a descriptor count
+  climbing towards 1024 (`ls /proc/$(systemctl --user show -p MainPID --value
+  emacs-graph)/fd | wc -l`). A quiet daemon holds about 20.
+- `kill -USR2 <pid>` interrupts whatever Lisp is spinning and drops it into
+  `*Backtrace*` (`debug-on-event`). **[verified]** That broke the timer loop.
+- If descriptors are exhausted, `sudo ss -K` on the daemon's own client ports frees
+  them (read the ports from `ss -tnp`). Be aware that url.el then re-sends each
+  in-flight request (the sentinel above).
+- **Never inject Lisp into the daemon through gdb** (`call Feval(...)`). The first
+  attempt was cut short by a signal; retrying with `handle all nostop noprint pass`
+  forwarded a SIGSEGV to Emacs and **killed the daemon** **[verified]**. systemd
+  restarted it, but every attached terminal frame and unsaved buffer was lost. Keep
+  gdb to read-only `bt` and `p`.
+
+## 10. See also
 
 - `README-termux.md` §1 — how the connection works now: the layers, `zone` / `eg` / `tm`,
   what survives what, and how to unfreeze a terminal
