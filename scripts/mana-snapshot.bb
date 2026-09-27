@@ -23,6 +23,7 @@
          '[babashka.process :as proc]
          '[babashka.http-client :as http]
          '[cheshire.core :as json]
+         '[clojure.edn :as edn]
          '[clojure.string :as str])
 
 (def manifest-path
@@ -181,13 +182,82 @@
                        :unknown)
      :aif-head/source :session}))
 
+;; ---------------------------------------------------------------------------
+;; Uncertain-ownership pressure (inbox-zero sweeper, C8)
+;;
+;; The sweeper publishes storage/inbox-zero/uncertain-pressure.edn every
+;; pass. Merge it per-repo BY CANONICAL WORKTREE ROOT, never by label:
+;; futon3c-d and futon3c are different worktrees and must not share a row.
+;; Missing/malformed input is reported as unavailable; stale input is
+;; merged but flagged — never silently reported as zero uncertain dirt.
+
+(def uncertain-pressure-path
+  (or (System/getenv "FUTON0_UNCERTAIN_PRESSURE_PATH")
+      "/home/joe/code/storage/inbox-zero/uncertain-pressure.edn"))
+
+(defn- canonical-root [p]
+  (try (str (fs/real-path p))
+       (catch Throwable _ (str (fs/normalize p)))))
+
+(defn load-uncertainty
+  "Read the sweeper's uncertain-pressure EDN. Returns
+   {:status :available :generated-at :stale? :age-minutes :drilldown
+    :repos-by-root {canonical-root row}}
+   or {:status :missing} / {:status :malformed}. Staleness is judged
+   against the feed's own :interval-ms (default 30min): older than 2x the
+   interval is stale, and stale input is still data, not zero."
+  ([path] (load-uncertainty path (now-ms)))
+  ([path now]
+   (if-not (fs/exists? path)
+     {:status :missing}
+     (try
+       (let [v (edn/read-string (slurp path))]
+         (if-not (and (map? v) (vector? (:repos v)))
+           {:status :malformed}
+           (let [at (:at v)
+                 gen-ms (when (instance? java.util.Date at) (.getTime at))
+                 interval (long (or (:interval-ms v) 1800000))
+                 age-ms (when gen-ms (max 0 (- now gen-ms)))
+                 stale? (boolean (and age-ms (> age-ms (* 2 interval))))]
+             {:status :available
+              :generated-at at
+              :age-minutes (when age-ms (double (/ age-ms 60000.0)))
+              :stale? stale?
+              :drilldown (:drilldown v)
+              :repos-by-root
+              (into {}
+                    (map (fn [row]
+                           [(canonical-root (:root row))
+                            (select-keys row [:label :dirty-count :untracked
+                                              :remainder])]))
+                    (:repos v))})))
+       (catch Throwable _ {:status :malformed})))))
+
+(defn merge-uncertainty
+  "Join the uncertainty rows onto snapshot per-repo entries by canonical
+  root. Repos with no row get NO :uncertain key (absence is unknown, not
+  zero). Stale feeds tag merged rows with :uncertain-stale."
+  [per-repo uncertainty]
+  (if-not (= :available (:status uncertainty))
+    per-repo
+    (mapv (fn [r]
+            (if-let [u (get (:repos-by-root uncertainty)
+                            (canonical-root (:abs-path r)))]
+              (cond-> (assoc r :uncertain u)
+                (:stale? uncertainty) (assoc :uncertain-stale true))
+              r))
+          per-repo)))
+
 (defn snapshot []
   (let [repos (load-repos)
-        per-repo (vec
-                  (for [{:keys [name abs-path]} repos]
-                    (let [paths (list-uncommitted-paths abs-path)
-                          p (compute-pressure paths nominals)]
-                      (assoc p :repo name :abs-path abs-path))))
+        uncertainty (load-uncertainty uncertain-pressure-path)
+        per-repo (merge-uncertainty
+                  (vec
+                   (for [{:keys [name abs-path]} repos]
+                     (let [paths (list-uncommitted-paths abs-path)
+                           p (compute-pressure paths nominals)]
+                       (assoc p :repo name :abs-path abs-path))))
+                  uncertainty)
         max-tier (->> per-repo (map :tier)
                       (reduce (fn [acc t]
                                 (let [rank {"silent" 0 "advisory" 1
@@ -203,6 +273,7 @@
      :max-tier max-tier
      :max-pressure max-pressure
      :per-repo per-repo
+     :uncertainty (dissoc uncertainty :repos-by-root)
      ;; Per D-01: each session is its own AIF head; War Machine consumes.
      :sessions sessions
      :pool pool}))
