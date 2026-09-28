@@ -365,6 +365,35 @@ pre-empt its self-corrections; the human version records the learner's stuck
 points and which pattern unstuck them, and offers that pattern at a similar
 point — the same cascade, driven by human stuck points.
 
+### Sequencing and value (operator, 2026-09-28, later the same session)
+
+> Sequence this after the `ai-passes-prelims` star, which we are on the way to
+> closing if a pass means every problem solved in Lean against a graded
+> statement. A second set (Berkeley Problems in Mathematics) would be a bonus
+> round, not a certification. `joe-passes-prelims` is not on the star map yet,
+> and may or may not be worth pursuing: it does little good for me to pass
+> prelims unless that makes it considerably easier for others, and only if the
+> value of doing so is attested. That depends on a calculation over the rest of
+> the capability landscape. I could be convinced to prioritise it if the "what
+> it's for" questions gather evidence.
+
+Links, as found in the registries (claude-18):
+
+- `ai-passes-prelims` (star map, `:held`, compute-gated) = pudding-prover
+  `:T3.4`. On the operator's definition of a pass, grading must extend beyond
+  topology: `problems/STATEMENTS.json` covers only topology, and the 2026-09-27
+  audit found weakened statements there, so the closed a/b/m problems have not
+  yet had the check that found them.
+- `joe-passes-prelims` has the shape of pudding-prover `:T2` ("a capability
+  OTHERS can follow"; base case Joe n=1; discharged only by an out-of-blanket
+  acceptance) and bears on `:T-inf.3` ("how does AI change what it means to
+  learn and become an expert"). By T2's own criterion, Joe passing is the base
+  case, not the witness; the witness is someone else getting further, faster,
+  with the scaffolding.
+- Evidence for "what it's for" is the cheap lever on priority: reverse
+  dependencies in Mathlib (which later results use a given concept) are
+  computable, so the claim can gather evidence without the ~500 hours.
+
 ### Open design questions carried forward
 
 6. **Granularity.** A Mathlib closure holds thousands of auxiliary lemmas; what
@@ -395,6 +424,8 @@ point — the same cascade, driven by human stuck points.
 
 ## Next
 
-Scheduling first (operator's call): whether a 10–20 week slot exists. Pilots
+Sequenced after `ai-passes-prelims` (operator, 2026-09-28). Scheduling is the
+operator's call: whether a 10–20 week slot exists, and whether
+`joe-passes-prelims` earns a place on the star map at all. Pilots
 above proceed in stride meanwhile. IDENTIFY, once MAP has answered: **which ledger is authoritative, and how large
 is the genuinely-unseen set?** Everything else waits on those two numbers.
