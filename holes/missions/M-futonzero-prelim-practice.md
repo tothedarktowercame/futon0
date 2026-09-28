@@ -425,6 +425,35 @@ hypotheses carry over as design conditions: the images of A and B must be
 disjoint, so if a relevant and an irrelevant problem land on the same topic
 tags, the topic space is too coarse to separate them and needs refining.
 
+### Operator's refinement: adjacency via the WarMachine's own AIF in Lean (2026-09-28)
+
+> Look at the formal treatment of AIF in DarkTower/WarMachine, find its
+> concepts in the Lean proofs for the APM material, and map back to the
+> informal problems: a curated curriculum at least "adjacent to" the AIF.
+
+Rough first pass (claude-18, same day; one script, not kept). The formal AIF is
+`mathlib4/DarkTower/{AIF,WarMachine}` (248 files, ~45k lines). It is the
+*discrete* flavour: `Fintype` 292 uses, `Real.log` 290, `EReal` 186,
+`Real.exp` 86, entropy 60, softmax 34, KL 34, Dirichlet 21, `HasDerivAt` 15;
+no manifolds, flows or topology. Scoring each problem's `Main.lean` by shared
+Mathlib identifiers, weighted by rarity across the corpus: topology problems
+average 4.4 against 11–18 for the others, so this route selects analysis and
+inequalities, not the geometry of the continuous FEP. Top hits mix one real
+find with vocabulary noise:
+
+- a01A06 (∫gf < A whenever ∫eᶠ ≤ 1; what follows for g) is the exponential /
+  entropy duality behind the variational form of free energy — a genuine
+  match.
+- a01J06 (zeros of an entire function of exponential type) scores top only
+  through `log`/`exp` lemmas; not AIF.
+- Several high scorers share only list and finset bookkeeping lemmas.
+
+So shared identifiers make a candidate generator, not a relevance score: a
+reader (or the superpod) must then judge each candidate. Design notes: drop
+bookkeeping namespaces (List, Finset induction, Nat arithmetic) before
+weighting; the continuous-FEP half has no Lean counterpart in DarkTower, so
+it would need the text-based map instead.
+
 ### Open design questions carried forward
 
 6. **Granularity.** A Mathlib closure holds thousands of auxiliary lemmas; what
