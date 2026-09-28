@@ -394,6 +394,37 @@ Links, as found in the registries (claude-18):
   dependencies in Mathlib (which later results use a given concept) are
   computable, so the claim can gather evidence without the ~500 hours.
 
+### Value criterion: applications-first, active inference as the test case (2026-09-28)
+
+> What is mathematics useful for, and what is the human capability to do it
+> good for? I'm likely to be applications-based: 50-hour weeks for 10 weeks are
+> only useful if the result gets used. If the mathematics gave me a properly
+> mathematical understanding of, and facility with, active inference, I'd be
+> all for it — though AIF comes from neuroscience with a foot in physics, not
+> from the mathematics department. Can we separate the AIF-relevant problems
+> from the AIF-irrelevant ones, so the hours go to the former?
+
+(The operator's own dependency answer was declined: which later Mathlib results
+use a theorem is the proof tree, not what the mathematics is for.)
+
+Direction reversed accordingly: start from the mathematics AIF uses and find
+the corpus problems inside it. Candidate areas (claude-18, from general
+knowledge of the FEP literature, to be checked against actual texts):
+variational calculus and KL divergence (measure theory, functional analysis:
+the m-problems, m98J04 Euler–Lagrange, m98A05 IFT); flows of vector fields and
+the Helmholtz decomposition (t92J08, t98A06 flows on manifolds, t91A01 index of
+a zero, m99J01 trapping regions); information geometry (manifolds, metrics);
+stochastic dynamics (Langevin, Fokker–Planck, NESS) — probably outside the
+prelims, which would itself be a finding. Immediate use: the War Machine's
+own EFE model (`futon2.aif.efe`).
+
+The separation is t96J01 applied to the corpus: relevant problems A and
+irrelevant problems B, a map from problems to a space of AIF topics, and a
+graded score g ∈ [0,1] rather than a yes/no — hours in proportion to g. Its
+hypotheses carry over as design conditions: the images of A and B must be
+disjoint, so if a relevant and an irrelevant problem land on the same topic
+tags, the topic space is too coarse to separate them and needs refining.
+
 ### Open design questions carried forward
 
 6. **Granularity.** A Mathlib closure holds thousands of auxiliary lemmas; what
@@ -412,6 +443,11 @@ Links, as found in the registries (claude-18):
     question (tension 2).
 
 ### Pilots to take in stride (no schedule)
+
+- AIF relevance map: list the mathematics used in one or two core AIF texts,
+  then score every corpus problem g ∈ [0,1] against it (A = relevant,
+  B = irrelevant, the rest graded). Check whether A and B separate on the topic
+  tags; where they collide, refine the topics.
 
 - Concept-graph extraction over the 61 closed, registered topology proofs:
   closures, filter to named concepts, check legibility. One small script.
