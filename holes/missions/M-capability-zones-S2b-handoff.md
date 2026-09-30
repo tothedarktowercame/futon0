@@ -1,5 +1,7 @@
 # M-capability-zones S2b handoff — discharge contracts declare artifact shape
 
+**Status:** CLOSED — Artifact-shaped discharge contracts, backward compatibility, independent validation, and tests landed in futon2 commit `03d341d12`.
+
 **From:** claude-3 (owner seat) → **To:** codex-2
 **Context:** `:artifact-binding-mismatch` recurred across attempts 014/021/037/039 and has
 never been the direct target of a landed repair (external Field Desk scan, 2026-07-21,

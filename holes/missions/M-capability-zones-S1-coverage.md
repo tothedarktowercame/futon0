@@ -1,5 +1,7 @@
 # M-capability-zones S1 honest coverage — 2026-07-19
 
+**Status:** CLOSED — The pinned FUTON corpus traversal and honest coverage record are complete in this file: 6,810 reachable-history items are accounted for by grain and repository.
+
 ## Scope and semantics
 
 The pinned 17-name FUTON corpus was traversed without a commit cap. For each Git repository, every commit reachable from its detected default branch was described. Merge-reachable history is included; non-default and unreachable orphan branches are not. `futonY` was present as a directory but was not a Git repository. Worktree clones were excluded. Classification used BGE `BAAI/bge-large-en-v1.5` and text-seed nearest cosine. A global margin below 0.01 resisted description; resisted items are retained.

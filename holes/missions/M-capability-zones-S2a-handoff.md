@@ -1,5 +1,7 @@
 # M-capability-zones S2a handoff — Native-Currency Discrimination (both legs)
 
+**Status:** CLOSED — Both native-currency EFE legs and their discrimination/degradation tests landed in futon2 commit `b3b0e473c`.
+
 **From:** claude-3 (owner seat) → **To:** codex-1
 **Pattern (normative):** `p4ng/main-2026.tex` — "Native-Currency Discrimination (the
 R17′–R12 edge)", committed `718e7a3`. Read it first; this slice implements it exactly.

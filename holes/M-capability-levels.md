@@ -1,6 +1,14 @@
 # M-capability-levels
 
-**Status:** HEAD — operator-shape captured 2026-08-15, not yet IDENTIFY.
+**Status:** OPEN — HEAD — operator-shape captured 2026-08-15, not yet IDENTIFY.
+
+## Acceptance checklist (2026-09-30)
+
+- [x] `holes/missions/M-capability-star-map.graph.edn` carries `:scale`, `:position`, `:next-rung`, and `:curriculum`, and its downstream generated graph is byte-identical without those fields. (evidence: “The finding” and “What underwrites it” in this file)
+- [ ] An `IDENTIFY` section states which capabilities require explicit levels and which may remain `:curriculum :implicit`.
+- [ ] Every explicitly levelled capability names an externally grounded scale top and a demonstrable next-rung artifact or event.
+- [ ] The representation of `:position` distinguishes derived evidence from operator-attested evidence with machine-readable provenance.
+- [ ] The capability register represents branching or merged descent where a linear level sequence would misstate the capability phylogeny.
 **Gate:** operator-acceptance — HEAD must be recognised as faithful before
 IDENTIFY hardens it into a gap statement.
 

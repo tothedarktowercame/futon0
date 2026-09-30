@@ -1,5 +1,7 @@
 # M-capability-zones S1 handoff — seeds, membership, retro harvest
 
+**Status:** CLOSED — S1 seeds, `zone-of`, harvest, tests, and the coverage note landed in futon2 commit `56df8e52b` and `holes/missions/M-capability-zones-S1-coverage.md`.
+
 **From:** claude-3 (owner seat this session) → **To:** codex-10
 **Mission:** `futon0/holes/missions/M-capability-zones.md` — read HEAD + S1 before coding.
 **Scope:** S1 ONLY. Do not touch S1.5 (rendering) or S2 (G wiring). Do not touch

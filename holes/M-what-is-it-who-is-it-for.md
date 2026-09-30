@@ -1,7 +1,14 @@
 # M-what-is-it-who-is-it-for
 
-**Status:** HEAD captured 2026-08-17 · **MAP complete** 2026-08-17 (§2) ·
-IDENTIFY not started · DERIVE not started.
+**Status:** OPEN — HEAD captured 2026-08-17 · **MAP complete** 2026-08-17 (§2) · IDENTIFY not started · DERIVE not started.
+
+## Acceptance checklist (2026-09-30)
+
+- [x] MAP answers Q1–Q9 and records a complete ready/missing table over the live and drained evidence stores. (evidence: §2.3–§2.5 in this file)
+- [ ] An `IDENTIFY` section names the precise gap to close among audience, searchable objects, materialised bumps, and the missing holes/evidence join.
+- [ ] A `DERIVE` section names the chosen object and entry-point shape without introducing another append-only aggregate document.
+- [ ] The chosen entry point shows what a named object or bump is, who it is for, and the dated evidence from which that account was derived.
+- [ ] A forgotten low-frequency artifact such as the WYSIWYG LaTeXML editor is recoverable without telemetry mentions outranking operator-authored evidence.
 **Gate:** operator-acceptance — HEAD must be recognised as faithful before
 IDENTIFY hardens it into a gap statement. MAP was run ahead of IDENTIFY because
 the landscape was being surveyed anyway (Joe: *"we've been mapping the

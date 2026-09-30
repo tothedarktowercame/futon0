@@ -1,7 +1,16 @@
 # Mission: APM Capability Ratchet — From Solved Proofs to Transferable Mathematical Capability
 
 **Date:** 2026-07-22
-**Status:** MAP — capability-topology map and evidence-observation substrate survey added 2026-07-22
+**Status:** OPEN — MAP — capability-topology map and evidence-observation substrate survey added 2026-07-22
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] `apm-capability-topology-map.v1` defines stable packet, proof-episode, transfer-probe, and evaluation-run identities without conflating action zones with mathematical capabilities.
+- [ ] One APM problem is run through the evidence-capturing zai invoke path and its strategy choices, failed routes, and route changes are inspectable as durable evidence.
+- [ ] `mathematical-capability-packet.v1` and a deterministic validator preserve provenance, applicability boundaries, status transitions, and negative fixtures.
+- [ ] The `a94J05` packet, sealed transfer probes, scoring rubric, and three predeclared run conditions exist as versioned artifacts.
+- [ ] Replaying the evaluation manifest reproduces its scores and a verdict in `#{promote revise split reject}` while correctly refusing or qualifying a boundary probe.
+- [ ] A capability-star-map node is registered only if the durable transfer verdict warrants promotion.
 **Owner:** Joe + agents
 **Mission home:** `futon0`
 **Initial problem corpus:** `apm-lean/problems/`
