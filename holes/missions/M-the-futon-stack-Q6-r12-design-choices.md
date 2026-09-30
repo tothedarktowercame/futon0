@@ -1,6 +1,6 @@
 # M-the-futon-stack Q6 — R12 narrow-take-up: design choices
 
-**Status:** DERIVE phase, pre-INSTANTIATE. Authored 2026-05-21 by claude-9
+**Status:** OPEN — DERIVE phase, pre-INSTANTIATE. Authored 2026-05-21 by claude-9
 (session id is the current emacs-claude-repl session).
 **Companion to:** `~/code/futon0/holes/missions/M-the-futon-stack.md` §Q6.
 **Handoff source:** `~/code/futon0/holes/handoffs/r12-to-stack-Q6-2026-05-21.md`
@@ -476,3 +476,10 @@ parallel "operator confirmed automation step" substrate work.
 
 No code change. Documented to close the §11 open question.
 
+## Acceptance checklist (2026-09-30)
+
+- [x] Per-action-class Beta state, XTDB bootstrap replay, and atom-driven intrinsic values exist. (evidence: `futon2/src/futon2/aif/intrinsic_values.clj`, `futon2/src/futon2/aif/action_proposer.clj`)
+- [x] The daily outer-loop scheduler is installed and its sliding-window update is idempotent. (evidence: §13 and `futon0/data/cron-jobs.edn`)
+- [ ] A dedicated outer-loop penholder is accepted by futon1a and written on new hyperparameter-update records instead of the shared `api` penholder.
+- [ ] `:fire-pattern` has a genuine operator-action substrate and can update from Beta(1,1) without using retrievals or commit-message mentions as a proxy.
+- [ ] The operator debug surface exposes a narrative digest of emissions, follow-through, posterior values, and unavailable substrates for each action class.

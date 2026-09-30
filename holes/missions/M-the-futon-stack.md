@@ -1,4 +1,4 @@
-**Status:** ACTIVE (since November 2025; mission text drafted 2026-05-01).
+**Status:** OPEN — ACTIVE (since November 2025; mission text drafted 2026-05-01).
 **Target completion:** ~August 2026 (eight weeks of slow methodical work, paced by evidence accumulation, not by implementation velocity).
 **Home-repo:** futon0 (this mission spans the whole stack; futon0 is the workspace-hygiene repo and natural cross-repo coordination home; per `single-locus/mission-home`).
 **Cross-references:** `futon5a/holes/THE-STACK.md` (Level-0 reading); `futon3/holes/holistic-argument.md` (predecessor argument); `futon3/holes/holistic-argument.sexp`; `futon5a/holes/stories/THE-STACK.aif.edn` (machine-readable Level-0); `futon3/library/invariant-coherence/*.flexiarg` (the shape patterns this mission's apparatus is built from); `algorithms/next-invariant.md` (the mission's hand-stepping loop, redundant once PI runs).
@@ -525,3 +525,10 @@ directly, no `:learn-action-class` wrapper). `:open-mission` posterior
 already moves under inference from existing emissions.
 
 **Next-move:** unchanged — step PI against the current precision substrate.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] Durable evidence records show Q1–Q7 all holding at the same time, including measured cognitive-function and efficiency results.
+- [ ] An intentional-fault exercise demonstrates the kill-switch, decision debug surface, consent gates, and correction-based reversal protocol.
+- [ ] Phase D completes at least seven consecutive nights on at least ten eligible items per night without an operator-noticed regression.
+- [ ] Mission checkpoints record every meaningful step from November 2025 through the completed Phase D run.

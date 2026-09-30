@@ -1,7 +1,7 @@
 # Mission: Usage Hacking — Spend Agent Quotas Deliberately
 
 **Date:** 2026-07-14
-**Status:** IDENTIFY (mission proposal)
+**Status:** OPEN — IDENTIFY (mission proposal)
 **Owner:** Joe
 **Blocked by:** Accurate, durable usage telemetry for Claude, Codex, and Zai
 **Cross-ref:**
@@ -224,3 +224,11 @@ view, not a replacement for the original measurement.
 - How much forecast error is acceptable before the system falls back to the
   conservative fixed gate?
 
+## Acceptance checklist (2026-09-30)
+
+- [ ] A versioned append-only ledger durably records Claude, Codex, and Zai native usage windows, reset times, provenance, and measurement certainty.
+- [ ] The all-agent burndown displays recorded usage history, reset boundaries, burn-rate forecasts, and forecast error without replacing provider-native measurements.
+- [ ] Durable evidence distinguishes foreground and unattended consumption and joins APM usage to clean, partial, failed, and attempted proof outcomes.
+- [ ] A deterministic replay reproduces the Zai 13–18 July window and explains decisions from both the fixed 50% policy and at least one adaptive candidate policy.
+- [ ] Missing provider evidence refuses adaptive spending, and replay tests show that every active window and configured foreground reserve remain enforced.
+- [ ] Any adaptive scheduling integration remains recommendation-only until Joe's explicit authorization is recorded.

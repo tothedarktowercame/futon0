@@ -1,7 +1,7 @@
 # Mission: Stack HUD Refactor — ant's-eye view, posframe-native
 
 **Date:** 2026-04-25
-**Status:** PARTIAL (Phase 1 shipped 2026-04-25; Phases 2–4 deferred)
+**Status:** OPEN — PARTIAL (Phase 1 shipped 2026-04-25; Phases 2–4 deferred)
 **Owner:** Joe
 **Cross-ref:**
 - `futon0/analysis/excursions/E-stack-hud-cleanup.md` — full audit + port manifest (working doc)
@@ -290,3 +290,12 @@ mission COMPLETE.
   same time as their render function.
 - `stack-hud-2-blocks` defcustom controls render order. Rearrange in
   init if the default order doesn't match the morning glance pattern.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] Every visible `stack-hud-2` block identifies one of the decision categories in §3 in its widget-owned documentation.
+- [ ] `boundary`, `musn`, and `pattern-sync` are absent from the legacy HUD block configuration, and `focus` is either populated and ported or removed.
+- [ ] Services, git, vitality, liveness, reminders, voice, and hot-reload render as `stack-hud-2` widgets, with toggle-button support in `stack-hud-2-mode-map`.
+- [ ] The HUD renders a top-level alarm ribbon driven by at least one registered reazon check.
+- [ ] The legacy HUD is named `stack-hud-1.el`, its consumers require that name, and `stack-doc.el` is unused by widget blocks.
+- [ ] A per-agent HUD follow-up excursion references M-aif-head Phase 2 and the committed cross-futon dependency map.
