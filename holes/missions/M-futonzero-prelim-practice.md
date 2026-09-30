@@ -1,6 +1,6 @@
 # M-futonzero-prelim-practice
 
-**Status:** HEAD — operator shape captured 2026-08-15; second operator session
+**Status:** OPEN — HEAD — operator shape captured 2026-08-15; second operator session
 2026-09-28 (appended below, with a design sketch the operator asked to develop
 here *as design*, not build). Not yet IDENTIFY.
 **Phase discipline:** per `futon4/holes/mission-lifecycle.md`, HEAD preserves the
@@ -494,3 +494,10 @@ operator's call: whether a 10–20 week slot exists, and whether
 `joe-passes-prelims` earns a place on the star map at all. Pilots
 above proceed in stride meanwhile. IDENTIFY, once MAP has answered: **which ledger is authoritative, and how large
 is the genuinely-unseen set?** Everything else waits on those two numbers.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] The mission names the authoritative prelim-practice ledger and reports the size of the genuinely unseen problem set.
+- [ ] A concept-graph extraction over the closed registered topology proofs produces a reviewer-legible graph of named concepts.
+- [ ] Two or three treatments in the t96J01 form exist for problems sharing a pattern and expose their cross-links.
+- [ ] One masked operator attempt records a stuck point without exposing the hidden solution before the attempt.

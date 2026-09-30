@@ -1,7 +1,7 @@
 # M-capability-zones: a Voronoi partition of Futon City, so learning has ground to stand on
 
 **Type:** Mission
-**Status:** INSTANTIATE (S1) — chartered 2026-07-19 (claude-9 draft from the morning-after
+**Status:** CLOSED — checkpoint 5 records the arc resolved: obligations 036, 037, 039, 041 and initialization resolved against grounded attempt-046; old status: INSTANTIATE (S1) — chartered 2026-07-19 (claude-9 draft from the morning-after
 design conversation with Joe). Operator scope-pin + dimensional amendment 2026-07-19; S1
 belled to codex-10 the same day (spec: `M-capability-zones-S1-handoff.md`). Paper pattern
 landed in `p4ng/main-2026.tex` (sibling of R17′′).

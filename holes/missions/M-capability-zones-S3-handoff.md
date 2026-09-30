@@ -1,5 +1,7 @@
 # M-capability-zones S3 handoff — readiness that wakes, not shrugs
 
+**Status:** CLOSED — acceptance landed as futon2 `200a850c`; `M-capability-zones.md` checkpoint 5 records owner review and green gates
+
 **From:** claude-3 (owner seat) → **To:** (first free of codex-1/codex-2; set at dispatch)
 **Evidence base:** ledger kinds `agent-unavailable` ×3 (attempts 004, 012, 025/027 window)
 and `substrate-unavailable` ×1 (attempt-028); plus 2026-07-21: post-OOM agents in Agency

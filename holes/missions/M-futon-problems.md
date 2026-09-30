@@ -1,7 +1,7 @@
 # M-futon-problems: what problems is this stack actually solving?
 
 **Type:** Mission
-**Status:** HEAD (drafted 2026-08-21, claude-13 + Joe, emacs-repl)
+**Status:** OPEN — HEAD (drafted 2026-08-21, claude-13 + Joe, emacs-repl)
 **Gate:** operator-acceptance — HEAD must be recognised as faithful before
 IDENTIFY hardens it.
 **Owner:** unassigned (drafted by claude-13)
@@ -916,3 +916,11 @@ spine section lists nine patterns in a comment block and writes up none. That
 is the next increment, and it is the same increment for both artefacts — a WR
 pattern revised until it describes what is actually there is simultaneously
 mission progress and paper content.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] All 27 war-room patterns carry authored `@references` fields that resolve to registered patterns.
+- [ ] A single-judge pass over all 27 rulings records which rulings are invertible without dispatch hints.
+- [ ] The 64 patterns cited by at least three missions carry `@why` links to invertible roots, and `@how` is derived as their reverse index.
+- [ ] One real turn has a recorded `retrieved → used → verdict` credit computation with retrieved-but-unused patterns reported separately.
+- [ ] `p4ng/futon-2026.tex` contains prose for each of the nine WR spine patterns rather than only the current comment-block list.

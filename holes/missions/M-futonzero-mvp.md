@@ -1,7 +1,7 @@
 # Mission: FutonZero MVP — Capability Monitor + Tutor for First Proof
 
 **Date:** 2026-02-27
-**Status:** IDENTIFY (mission proposal)
+**Status:** OPEN — IDENTIFY (mission proposal)
 **Blocked by:** None
 **Cross-ref:** `futon3c/docs/futonic-missions.md`, `futon3c/holes/missions/M-mission-control.md`, `futon3c/holes/missions/tickle-spec.md`, `futon6` first-proof workstream
 
@@ -984,3 +984,12 @@ produced knowledge is pedagogically transmissible and durable under guided pathw
 **Next:**
 - Proceed with MVP1 implementation.
 - Run MVP2 implementation only after MVP1 exit gate is satisfied.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] A versioned first-proof taskset loads through the documented FutonZero CLI from the `futon6` corpus.
+- [ ] Practice and attempt records persist append-only with deterministic IDs, and the scheduler emits the documented due/review/edge/probe mix.
+- [ ] The futon0 implementation and its tests satisfy the G2 execution gate without a Python core path.
+- [ ] A seven-day report shows at least one measured task-capability delta and one measured discipline-adaptation delta.
+- [ ] A recorded coach output changes the next-task selection for at least one agent.
+- [ ] The G5, G4, GF, G3, G2, GD, G1, and G0 gate checklist above is fully checked with durable report and PAR evidence.

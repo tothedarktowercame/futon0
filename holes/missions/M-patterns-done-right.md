@@ -1,4 +1,4 @@
-**Status:** OPEN (drafted 2026-05-04; sibling to M-the-futon-stack).
+**Status:** OPEN — OPEN (drafted 2026-05-04; sibling to M-the-futon-stack).
 **Target completion:** open-ended — paced by the four levels' evidence, not a calendar.
 **Home-repo:** futon0 (cross-stack — pattern library lives in futon3, parser in futon3a, peripheral surface in futon3c, categorical infrastructure in futon5, entity-graph in futon1a, code-receipts touch the whole codebase; futon0 is the cross-repo coordination home per `single-locus/mission-home`).
 **Cross-references:**
@@ -262,3 +262,10 @@ or similar.
 **Cold-start accessibility evidence (added 2026-05-04 same day):** while this mission was being drafted, an unrelated Claude session — with no context about this mission, the Sokoban, or the rulebook — authored `library/writing-coherence/meet-the-reader-where-they-are.flexiarg`. Validating it against the Sokoban after the fact: `:status :ok`, parses cleanly, with `[conclusion, context, if, however, failure-modes, then, compositions, check]` clause shape — full canonical structure including rulebook-recognised substructure (failure-modes under however, compositions + check under then). **The substrate's ambient signal alone (the 985 already-canonical patterns in the corpus, the futon3 CLAUDE.md, the reshape rulebook on disk) was enough for an unprimed agent to author a Sokoban-admissible pattern.** That's strong cold-start evidence for Q1: the canonical shape is honest enough to be derivable from the corpus without needing to be told.
 
 **Next-move:** author the four insight flexiargs in `library/pattern-discipline/` *through* the Sokoban. Each refusal is evidence about whether the canonical seven actually fits; each admission validates the substrate. After ~4 authoring rounds, decide what's worth promoting to MAP work.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] Every new `library/**/*.flexiarg` since the operator's cutover has a recoverable peripheral refusal/admission trail.
+- [ ] The futon5 design-pattern category contains all registered patterns as objects, composes their morphisms without violation, and applies its admission predicate to new patterns.
+- [ ] Every post-cutover commit touching a pattern-claimed region carries a resolving `Pattern:` footer and `invariant-pattern-receipts-resolve` passes.
+- [ ] The four named `library/pattern-discipline/` flexiargs exist and were admitted through the pattern peripheral.

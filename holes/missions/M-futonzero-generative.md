@@ -1,7 +1,7 @@
 # Mission: FutonZero Generative — Self-Bootstrapping WM Learner
 
 **Date:** 2026-06-09
-**Status:** HEAD / IDENTIFY charter
+**Status:** OPEN — HEAD / IDENTIFY charter
 **Owner:** Joe + agents
 **Cross-ref:**
   - `M-futonzero-capability.md` §22 (source mapping; completed monitor)
@@ -215,3 +215,8 @@ this is the first non-fallback (`:realised-source :measured`) pair for G-SIM.
 needed for `:calibratable`).
 **Next:** §4.2 toy field fixture (the next safe work product) + continue
 accruing measured pairs toward G-SIM clearance.
+
+## Acceptance checklist (2026-09-30)
+
+- [ ] The canonical calibration report records enough independent measured pairs to clear G-SIM under its stated adequacy criterion.
+- [ ] The Pudding Prover G1 arrow-witness binding clears G-REWARD under the mission's anti-laundered-reward criterion.

@@ -1,7 +1,7 @@
 # Mission: FutonZero — Capability Monitor for the Self-Representing Stack
 
 **Date:** 2026-03-04
-**Status:** COMPLETE (2026-03-04)
+**Status:** CLOSED — COMPLETE (2026-03-04)
 **Blocked by:** None (three-column stack operational, futon1a populated,
 futon3c evidence store running)
 **Cross-ref:** `futon4/holes/missions/M-three-column-stack.md`,
