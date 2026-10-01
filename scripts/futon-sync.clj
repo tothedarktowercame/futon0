@@ -396,9 +396,6 @@
                             aged)
          oldest (oldest-unpushed status now-ms)
          worktrees (:worktrees status)
-         dead-worktrees (filterv :dead worktrees)
-         equivalent-worktrees (filterv #(= "patch-equivalent" (:integration %)) worktrees)
-         unknown-worktrees (filterv #(= "unknown" (:integration %)) worktrees)
          ;; Only an EPHEMERAL path is a failure. /tmp does not survive a reboot,
          ;; so a checkout there is work that exists in one place and is scheduled
          ;; for deletion -- the same cost clause 3 is about. A worktree merely
@@ -419,9 +416,20 @@
                                                    (str tmp-root "/"))))
          ephemeral-worktrees (filterv ephemeral? worktrees)
          off-tree-info (filterv #(and (not (:sibling %))
-                                      (not (:dead %))
                                       (not (ephemeral? %)))
                                 worktrees)
+         ;; Relocation is the settlement action for preserved worktrees. Once a
+         ;; checkout is in durable worktree storage it must remain inventoried,
+         ;; but its age or patch relationship must not keep the canonical repo
+         ;; red. Sibling checkouts still block retirement, and /tmp still fails
+         ;; separately because it is not durable storage.
+         dead-worktrees (filterv #(and (:sibling %) (:dead %)) worktrees)
+         equivalent-worktrees (filterv #(and (:sibling %)
+                                             (= "patch-equivalent" (:integration %)))
+                                       worktrees)
+         unknown-worktrees (filterv #(and (:sibling %)
+                                          (= "unknown" (:integration %)))
+                                    worktrees)
          live-worktrees (filterv #(and (:default-branch status)
                                       (not (:dead %)) (:sibling %)
                                       (not (#{"patch-equivalent" "unknown"} (:integration %))))

@@ -247,16 +247,19 @@
               (is (some #(= "worktree-off-sibling-tree" (:reason %))
                         (:info verdict))))))
 
-        (testing "n2: off-sibling worktree at the default branch still fails as dead"
+        (testing "n2: relocated dead worktree is inventoried without blocking canonical clean"
           (let [repo (init-repo! root "off-tree-dead" true)
                 container (fs/path root "not-a-sibling-dead")
                 wt (fs/path container "off-tree-dead-agent")]
             (fs/create-dirs container)
             (git! repo "worktree" "add" "-b" "off-tree-dead-agent" (str wt) "main")
-            (let [failures (:failures (clean-verdict (status repo "off-tree-dead") now))]
-              (is (some #(and (= 5 (:clause %))
-                              (= "dead-worktree" (:reason %)))
-                        failures)))))
+            (spit (str (fs/path wt "preserved-wip.txt")) "not ready to commit")
+            (let [verdict (clean-verdict (status repo "off-tree-dead") now)
+                  info (some #(when (= "worktree-off-sibling-tree" (:reason %)) %)
+                             (:info verdict))]
+              (is (:clean verdict))
+              (is (= 1 (get-in info [:worktree :dirty-count])))
+              (is (true? (get-in info [:worktree :dead]))))))
 
         (testing "o: no extra worktrees leaves the verdict unchanged"
           (let [repo (init-repo! root "no-extra-worktrees" true)
