@@ -1,5 +1,9 @@
 # futon0 — Stack Instrumentation, Reporting, and Capability Observation
 
+> **New to FUTON? Start with [INSTALL.md](INSTALL.md)**: what FUTON is for, and
+> how to install and run the shared core (evidence store + Agency) on your own
+> machine. Verified on a fresh machine 2026-09-26.
+
 `futon0` is the local instrumentation layer of the futon stack. It gathers
 derivative signals from work that is already happening, turns them into usable
 reports, and keeps the Stack HUD live. In practice that means git/activity
