@@ -119,9 +119,12 @@ if [ "${1:-}" = "--smoke" ]; then
   echo "==> smoke: dependency resolution on the :dev-serve classpath (no server start)"
   ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -P )
   echo "==> smoke: namespace loads without side channels"
+  # NB: war-machine.server.core starts its HTTP server at require time — do NOT
+  # require it in the smoke. futon3c.marks transitively installs the isolated
+  # test-registry sqlite backend (REGISTRY_DB), proving the futon2/futon1
+  # local-root closure resolves without touching /home/joe.
   ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -m clojure.main -e '
      (require (quote [futon3c.marks]))
-     (require (quote [war-machine.server.core]))
      (println :demo-smoke-ok :namespaces-loadable)' )
   echo "==> smoke: bb orchestration deps"
   ( cd "$DEMO_ROOT/code/futon5" && bb -e "(+ 1 1)" >/dev/null && echo "bb ok" )
