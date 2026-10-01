@@ -1,0 +1,71 @@
+{:node "R6"
+ :priming [{:claim "The catalogue places R6 in the SELECT stage and loop band and labels it Candidate action space."
+            :symbol "control-stages/R6"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 30}
+           {:claim "The runtime constructs R6 candidates from supplied interpretations and repository structure, always includes the empty cascade first, and returns each candidate's precedence, acting order, established tokens, coverage, and organised form."
+            :symbol "candidate-space"
+            :file "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj"
+            :line 284}
+           {:claim "The live cascade lane invokes candidate-space as its R6 step and stops the lane when that step returns a typed refusal."
+            :symbol "cascade-lane"
+            :file "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj"
+            :line 119}
+           {:claim "The formal policy carrier is the extensional set of cascade-grain policy keys present in the supplied menu, where each key retains mission, ordered pattern IDs, and semilattice edges."
+            :symbol "DarkTower.WarMachine.Proof2.CascadePolicySet.cascadePolicySet"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/CascadePolicySet.lean"
+            :line 46}
+           {:claim "R6's theory-defined posterior normalises weights only over candidates whose expected and variational free-energy terms are finite, returning typed absence when no admissible normaliser exists."
+            :symbol "DarkTower.WarMachine.Proof2.PolicyPosteriorAtMachine.machinePosteriorE"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PolicyPosteriorAtMachine.lean"
+            :line 870}
+           {:claim "At executed-prefix free energy, R6 computes policy weights from the habit prior, machine grade, positive temperature, and the supplied prefix result, preserving missing-prefix history as an explicit absence."
+            :symbol "DarkTower.WarMachine.Proof2.PrefixFreeEnergyPosterior.machineWeightsAtPrefixF"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyPosterior.lean"
+            :line 41}
+           {:claim "The candidate ordering imported from an observed interpretation is produced only when the interpretation supply is present; publication failure yields an OrderAbsence instead of a default order."
+            :symbol "DarkTower.WarMachine.Proof2.ContainmentOrderAtMachine.orderAtSupply"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ContainmentOrderAtMachine.lean"
+            :line 31}]
+ :bids [{:pattern "gauntlet/umwelt-not-architecture"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "candidate-space"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj"
+                :line 284}
+         :how "The function constructs and publishes the machine's active surface as an explicit candidate cascade set, but it does not describe R6's sensory surface or the surrounding darkness."}
+        {:pattern "contracts/declare-the-reductions"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "candidate-space"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj"
+                :line 284}
+         :how "The returned :rules explicitly declare the precedence rule, tie-break, acting rule, closure, mandatory empty cascade, and the fact that retrieval and interpretation are not performed here."}
+        {:pattern "process/fake-done-via-binary-closure"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "candidate-space"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj"
+                :line 284}
+         :how "The function runs organise and the guard/kernel fold on every candidate before returning the space, providing the unitwise checking part of the pattern without governing a binary completion status."}
+        {:pattern "futon-theory/stop-the-line"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "candidate-space"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj"
+                :line 284}
+         :how "The constructor refuses immediately on an interpretation outside the repository, invalid input shape, excessive subset expansion, or precedence outside the supplied interpretations, thereby blocking downstream selection while not implementing the pattern's diagnostic stopped-state protocol."}]
+ :declined [{:pattern "memory/surface-the-closed-set"
+             :why "R6 returns the constructed candidate set, but it does not derive a caller-facing schema enum from a server-side validator definition."}
+            {:pattern "musn/read-aif-plus-one"
+             :why "R6 enumerates candidate subsets, but it does not identify an AIF-suggested pattern and require that pattern plus one alternative to be read."}
+            {:pattern "orchestration/pattern-warranted-choice-point"
+             :why "R6 records construction rules and candidate structure, but the cited code does not record a selected pattern as the warrant for an autonomous choice-point."}
+            {:pattern "memory/licence-to-fail"
+             :why "Typed refusals preserve construction failures, but they do not give a diagnostic runner the requested licence or enforce the pattern's source-consultation restrictions."}
+            {:pattern "workday/single-focus-amidst-agenda"
+             :why "Both concern candidate restriction, but R6 constructs all cascade candidates and does not privilege a workday FOCUS item or minimize the others."}]}

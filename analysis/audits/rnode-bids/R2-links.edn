@@ -1,0 +1,28 @@
+{:node "R2"
+ :priming [{:claim "The catalogue places R2 in the PERCEIVE loop band and names it Structured observation." :symbol ":node \"R2\"" :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn" :line 19}
+           {:claim "The equation registry defines R2's observation as o, imported from world state, executed action, observation model A, and transition model B." :symbol ":observe" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 98}
+           {:claim "The runtime declares a fixed ordered set of fourteen named observation channels." :symbol "futon2.aif.observation/observation-channels" :file "/home/joe/code/futon2/src/futon2/aif/observation.clj" :line 11}
+           {:claim "The runtime projects heterogeneous scan data into the named observation map and attaches per-channel provenance metadata." :symbol "futon2.aif.observation/observe" :file "/home/joe/code/futon2/src/futon2/aif/observation.clj" :line 103}
+           {:claim "The persistent observation envelope preserves whether each numeric coordinate was observed or substituted for a missing source." :symbol "futon2.aif.observation/observation-envelope" :file "/home/joe/code/futon2/src/futon2/aif/observation.clj" :line 84}
+           {:claim "The machine observation law conditions the process distribution on the machine's selected action and realised world state, returning typed absence when no action exists." :symbol "DarkTower.WarMachine.Proof2.ObservationAtMachine.machineObservationLaw" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ObservationAtMachine.lean" :line 47}
+           {:claim "Published pattern interpretations arrive at R2 with recorded attestation, while eight distinct non-publication outcomes remain explicit and are never replaced by a default interpretation." :symbol "DarkTower.WarMachine.Proof2.ObservedInterpretation.observedInterpretation" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ObservedInterpretation.lean" :line 47}]
+ :bids [{:pattern "workshop/records-carry-warrant" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.flight-runner/admit-observation" :file "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj" :line 763}
+         :how "The admission function turns an asserted observation with no evidence into a typed refusal, implementing the warrant-presence part of the pattern but not requiring its full replay, digest, version, and assumption fields."}
+        {:pattern "aif/placeholder-is-load-bearing" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.observation/observation-envelope" :file "/home/joe/code/futon2/src/futon2/aif/observation.clj" :line 84}
+         :how "The envelope makes every substituted numeric default self-describing with an absent variant, reason, source paths, and value, implementing the provenance requirement but not the deletion replay."}
+        {:pattern "process/fake-done-via-binary-closure" :kind :functional :strength :strong
+         :code {:lang :clojure :symbol "futon2.aif.flight-runner/observe-fn" :file "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj" :line 82}
+         :how "The observation adapter checks each located want and keeps refused checks unknown so they cannot count as either advanced or met."}
+        {:pattern "war-machine/operational-not-decorative" :kind :functional :strength :strong
+         :code {:lang :clojure :symbol "futon2.aif.observation-checks/observe*" :file "/home/joe/code/futon2/src/futon2/aif/observation_checks.clj" :line 628}
+         :how "The observer executes the registered check for every token and routes failed or unavailable validation into :refused instead of silently treating the declaration as observed."}
+        {:pattern "workshop/honest-holes-gate-composed-claims" :kind :functional :strength :partial
+         :code {:lang :lean :symbol "DarkTower.WarMachine.Proof2.ObservedInterpretation.observedInterpretation" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ObservedInterpretation.lean" :line 47}
+         :how "The interpretation boundary preserves each typed non-publication outcome and never substitutes a published pattern, implementing explicit holes but not the pattern's per-dimension publication gate."}]
+ :declined [{:pattern "gauntlet/umwelt-not-architecture" :why "R2 implements a sensory surface, but it does not perform the pattern's design-and-draw procedure."}
+            {:pattern "aif/measurement-window-hygiene" :why "R2 constructs observations but does not bracket baseline and settled-effect measurement windows."}
+            {:pattern "aif/term-to-channel-traceability" :why "R2 names and tags observation channels, but it does not declare which channels and precision settings each G contribution consumed."}
+            {:pattern "futon-theory/mission-interface-signature" :why "R2 has typed boundaries, but its code does not require mission documents to publish interface-signature sections."}
+            {:pattern "stack-coherence/ready-blocked-triage" :why "R2 classifies observed versus absent or refused evidence, but it does not emit the pattern's done, ready, blocked, or drift report."}]}

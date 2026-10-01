@@ -1,0 +1,36 @@
+{:node "R3"
+ :priming [{:claim "The catalogue places R3 in the loop's BELIEVE stage and labels it Belief update."
+            :symbol ":nodes/R3"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 23}
+           {:claim "The current categorical R3 equation predicts through the transition kernel, conditions on the observation likelihood, and returns none exactly when predictive observation probability is zero."
+            :symbol ":state-belief-update"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 580}
+           {:claim "The finite runtime implementation computes the predicted distribution from B and the prior, then conditions it using A while retaining the consumed kernel rows."
+            :symbol "futon2.aif.exact-belief-adapter/exact-update"
+            :file "/home/joe/code/futon2/src/futon2/aif/exact_belief_adapter.clj"
+            :line 8}
+           {:claim "The temporal runtime admits only a declared C3 observation law and applies one exact update using the retained executed transition, refusing rather than inventing an observation model or posterior."
+            :symbol "futon2.aif.temporal-update/compute"
+            :file "/home/joe/code/futon2/src/futon2/aif/temporal_update.clj"
+            :line 18}
+           {:claim "The closed-loop Lean step obtains the machine's action and observation law, rejects impossible observations, and otherwise applies exactUpdate with the selected action's transition row without defaults."
+            :symbol "DarkTower.WarMachine.Proof2.BeliefStepAtMachine.machineStep"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefStepAtMachine.lean"
+            :line 49}
+           {:claim "The legacy Gaussian-channel binding computes one precision-weighted prediction-error step, mu plus alpha times precision times sensory error."
+            :symbol "DarkTower.WarMachine.LaplaceBeliefUpdate.beliefUpdate"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/LaplaceBeliefUpdate.lean"
+            :line 33}]
+ :bids []
+ :declined [{:pattern "translation/test-by-reproducing-behaviour"
+             :why "R3 has formal fixtures and a Clojure realization, but the opened declarations do not themselves compare the translation with source runs or attribute disagreements as the THEN requires."}
+            {:pattern "aif/term-to-channel-traceability"
+             :why "R3 retains observation and transition rows in its update receipt, but it does not emit G-term contributions or the required term-to-channel provenance mapping."}
+            {:pattern "aif/placeholder-is-load-bearing"
+             :why "R3 refuses missing or zero-evidence updates instead of managing scoring placeholders, and it performs no deletion replay against an arena."}
+            {:pattern "problems/deliberate-refusals-allude-to-unwritten-patterns"
+             :why "R3 carries typed computational refusals, but its code does not author a problems-library node for each refusal."}
+            {:pattern "contracts/declare-the-reductions"
+             :why "The registry documents R3 reductions, but the R3 Lean and Clojure declarations compute updates rather than enforce that every correspondence entry declares its losses."}]}

@@ -1,0 +1,24 @@
+{:node "R9"
+ :priming [{:claim "The catalogue places R9 in the ACT-stage assurance band and labels it No self-certification." :symbol ":nodes/R9" :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn" :line 42}
+           {:claim "The equations registry classifies R9 as plumbing that runs no AIF equation." :symbol ":plumbing" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 1893}
+           {:claim "The cascade lane leaves its enactment claim pending as :independent-check-required and records the enactor instead of confirming its own work." :symbol "cascade-lane" :file "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj" :line 119}
+           {:claim "The R9 checker refuses equal author and reviewer identities, joins declared roles to executed jobs and receipts, requires review to precede admission, and emits an anchored independence admission." :symbol "check-independence" :file "/home/joe/code/futon2/src/futon2/aif/r9_checker.clj" :line 72}
+           {:claim "The pre-enact verifier binds an independent R9 verdict to the exact pending occurrence and construction, but production mode currently refuses because serving retention, genesis, and pending-event authority are unavailable." :symbol "verify-pre-enact" :file "/home/joe/code/futon2/src/futon2/aif/machine_pre_enact_authorization.clj" :line 85}
+           {:claim "The process census records the historical R9 process as named-only, with no node-linked refusing check found at that census revision." :symbol "[N9]" :file "/home/joe/code/futon2/holes/labs/wm-contract/ALIGN-rnode-process-census.md" :line 290}]
+ :bids [{:pattern "war-machine/operational-not-decorative" :kind :functional :strength :strong
+         :code {:lang :clojure :symbol "verify-pre-enact" :file "/home/joe/code/futon2/src/futon2/aif/machine_pre_enact_authorization.clj" :line 85}
+         :how "The verifier derives authorization from pinned evidence and throws typed refusals on missing, changed, mismatched, self-reviewed, retroactive, or noncanonical evidence, so failed validation changes behaviour."}
+        {:pattern "orchestration/recorded-handoff" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "check-independence" :file "/home/joe/code/futon2/src/futon2/aif/r9_checker.clj" :line 72}
+         :how "The checker models and joins author and reviewer jobs, the review commission digest, review receipt, execution trace, and distinct-seat gate, but it does not enforce the mission-record or commit-trailer portions."}
+        {:pattern "futon-theory/coordination-protocol" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "check-independence" :file "/home/joe/code/futon2/src/futon2/aif/r9_checker.clj" :line 72}
+         :how "The checker enforces the review portion of the handoff cycle by requiring a distinct reviewer, a matching commission and receipt, executed review evidence, and review-before-admission chronology, but not channel fallback or escalation."}
+        {:pattern "test-registry/bind-warrant-to-the-diff" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "verify-pre-enact" :file "/home/joe/code/futon2/src/futon2/aif/machine_pre_enact_authorization.clj" :line 85}
+         :how "The verifier checks pinned evidence bytes, schemas, exact subject identity, field-source pins, and canonical review provenance with typed refusals, but it does not check a test-registry warrant's complete manifests or environment fingerprint."}]
+ :declined [{:pattern "test-registry/judge-adequacy" :why "R9 checks reviewer identity, execution, provenance, and chronology, but does not record claimed behaviours, coverage gaps, or added tests."}
+            {:pattern "test-registry/warrant-rides-the-handoff" :why "The R9 input carries commissions and verification receipts, but the checker does not require base SHA plus registry warrant IDs or route an unwarranted handoff to a full rerun."}
+            {:pattern "coordination/bind-promotion-to-post-repair-replay" :why "The code checks pre-enact independent review, not a post-repair replay request and revision-bound certificate promotion."}
+            {:pattern "futon-theory/stop-the-line" :why "Typed refusals stop the local verifier call, but R9 does not implement the pattern's global stopped state while preserving OBSERVE and VERIFY operations."}
+            {:pattern "test-registry/bind-the-subject" :why "R9 binds evidence to an exact subject, but it does not manage incident-triggered revalidation or require a warrant minted after an incident."}]}

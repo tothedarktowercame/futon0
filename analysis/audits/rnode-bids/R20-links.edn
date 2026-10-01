@@ -1,0 +1,63 @@
+{:node "R20"
+ :priming [{:claim "The catalogue places R20 in the EVALUATE stage's assurance band and labels it Interoceptive tripwires."
+            :symbol "R20"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 39}
+           {:claim "The equation registry classifies R20 as plumbing that runs no AIF equation."
+            :symbol ":plumbing"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 1893}
+           {:claim "R20 maintains an independently enabled registry of checks for conservation, closure, provenance, repair-store integrity, wedges, budgets, code coherence, job-state vocabulary, and artifact binding."
+            :symbol "wire-registry"
+            :file "/home/joe/code/futon2/src/futon2/aif/tripwire.clj"
+            :line 78}
+           {:claim "Every full-loop phase event is presented to R20 before the event is printed or appended to the phase log."
+            :symbol "emit-phase!"
+            :file "/home/joe/code/futon2/src/futon2/aif/full_loop_runner.clj"
+            :line 330}
+           {:claim "The observational R20 path evaluates enabled wires, selects the first violation witness, and either records, halts, or defers it according to the configured policy while containing evaluator failures."
+            :symbol "observe!"
+            :file "/home/joe/code/futon2/src/futon2/aif/tripwire.clj"
+            :line 1117}
+           {:claim "The admitting R20 path returns an explicit pass for a clear observation, but on a witness durably writes a needs-Joe discharge and returns a typed refusal."
+            :symbol "check!"
+            :file "/home/joe/code/futon2/src/futon2/aif/tripwire.clj"
+            :line 876}
+           {:claim "R20's commitment projection joins every genuine production trip to a repair finding and reports unresolved joined trips as open while excluding test, shadow-record, and terminally discharged trips."
+            :symbol "confidence-snapshot"
+            :file "/home/joe/code/futon2/src/futon2/aif/interoceptive_commitment.clj"
+            :line 109}]
+ :bids [{:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.tripwire/check!"
+                :file "/home/joe/code/futon2/src/futon2/aif/tripwire.clj"
+                :line 876}
+         :how "check! derives status from an evaluated witness, durably records the evidence, and changes the admission result from :passed to a typed :refused transition."}
+        {:pattern "coordination/session-durability-check"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.tripwire/check!"
+                :file "/home/joe/code/futon2/src/futon2/aif/tripwire.clj"
+                :line 876}
+         :how "check! writes the discharge report before returning refusal, and a persistence failure escapes instead of allowing a successful admission response."}
+        {:pattern "futon-theory/stop-the-line"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.tripwire/halt!"
+                :file "/home/joe/code/futon2/src/futon2/aif/tripwire.clj"
+                :line 1022}
+         :how "halt! durably records and announces the invariant witness before throwing a typed tripwire failure, but this only stops the current run when halting is enabled and does not implement the pattern's global stopped-state middleware."}]
+ :declined [{:pattern "memory/surface-the-closed-set"
+             :why "R20 validates job states against known-job-states, but the inspected code does not derive or publish that set in a caller-facing schema."}
+            {:pattern "cascade-construction/mine-patterns-from-incidents"
+             :why "R20 records trip incidents and repair findings but does not construct one library pattern per incident."}
+            {:pattern "test-registry/bind-the-subject"
+             :why "R20 joins trips to repair identities, but it does not maintain subject-to-warrant bindings or require a fresher currently bound warrant for closure."}
+            {:pattern "workshop/honest-holes-gate-composed-claims"
+             :why "The registry honestly marks T12 as a disabled chartered stub, but R20 does not emit the pattern's per-dimension holes-or-typed-none publication evidence."}
+            {:pattern "iching/hexagram-63-jiji"
+             :why "Continuous phase-boundary checking resembles vigilance, but the pattern's THEN is too general to identify a specific implemented practice beyond that shared theme."}]}

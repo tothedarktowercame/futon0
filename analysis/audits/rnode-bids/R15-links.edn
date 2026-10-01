@@ -1,0 +1,51 @@
+{:node "R15"
+ :priming [{:claim "The catalogue assigns R15 to the SELECT stage in the loop band and labels it Hierarchy and timescale."
+            :symbol "R15 control-stage row"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 33}
+           {:claim "The equations registry records that only one level is realised, R15 runs no equation, and its role is plumbing."
+            :symbol ":hierarchy"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 1187}
+           {:claim "The registry explicitly includes R15 among nodes that run no equation."
+            :symbol ":plumbing"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 1893}
+           {:claim "R15 derives a slow strategic mode from accumulated per-action-class intrinsic values, returning one of three fixed modes or nil for an empty table."
+            :symbol "futon2.aif.temporal-hierarchy/slow-context-from-intrinsics"
+            :file "/home/joe/code/futon2/src/futon2/aif/temporal_hierarchy.clj"
+            :line 68}
+           {:claim "R15 shapes each recognized move class by multiplying its prior by the slow-mode weight and adding negative log weight to its effective step cost."
+            :symbol "futon2.aif.temporal-hierarchy/apply-slow-prior"
+            :file "/home/joe/code/futon2/src/futon2/aif/temporal_hierarchy.clj"
+            :line 111}
+           {:claim "R15 composes the slow and fast timescales by shaping moves before passing them to the ordinary rollout search."
+            :symbol "futon2.aif.temporal-hierarchy/hierarchical-rollout"
+            :file "/home/joe/code/futon2/src/futon2/aif/temporal_hierarchy.clj"
+            :line 165}
+           {:claim "R15 accepts only witnessed fast outcomes with deterministic audit identifiers, performs one Beta update, derives the next slow mode, and returns the prior mode plus feedback record."
+            :symbol "futon2.aif.temporal-hierarchy/advance-slow-state"
+            :file "/home/joe/code/futon2/src/futon2/aif/temporal_hierarchy.clj"
+            :line 190}
+           {:claim "The process census classifies the R15 mechanism as built but never entered: no production caller, retained slow-state values, or R15 route hops were found."
+            :symbol "A15"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/ALIGN-rnode-process-census.md"
+            :line 250}]
+ :bids [{:pattern "data-mining/constrain-extraction-to-the-downstream-vocabulary"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.temporal-hierarchy/slow-context-from-intrinsics"
+                :file "/home/joe/code/futon2/src/futon2/aif/temporal_hierarchy.clj"
+                :line 68}
+         :how "The function constrains its derived downstream mode to the declared strategic-mode vocabulary and uses :exploitation as the unmatched nonempty fallback, but it does not implement the pattern's frequency anchors, negative examples, or explicit allowlist gate."}]
+ :declined [{:pattern "war-room/wr-27-a-loop-is-born-instrumented-for-its-gain"
+             :why "advance-slow-state records a returned outcome and its state update, but no R15 declaration computes the required fraction of returned signals that change subsequent action."}
+            {:pattern "orchestration/state-in-substrate-deltas-in-messages"
+             :why "R15 returns a pure successor state but neither designates a shared coordination substrate nor implements the pattern's append/read/closure messaging protocol."}
+            {:pattern "memory/surface-the-closed-set"
+             :why "strategic-modes exposes a fixed map, but R15 has no caller-facing schema derived from it, no server-side enum validation, and no set-equality verification."}
+            {:pattern "aif/placeholder-is-load-bearing"
+             :why "R15 preserves defaults for absent or unknown slow modes, but it does not replay a proposed deletion or attach provenance to placeholders as the pattern requires."}
+            {:pattern "contracts/declare-the-reductions"
+             :why "The temporal-hierarchy namespace documents its limited two-level scope, but it is not a correspondence entry declaring what a translation between formal and runtime holders fails to preserve."}]}

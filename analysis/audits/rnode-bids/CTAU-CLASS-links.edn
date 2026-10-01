@@ -1,0 +1,79 @@
+{:node "CTAU-CLASS"
+ :priming [{:claim "The catalogue places CTAU-CLASS in the EVALUATE stage and loop band, where it denotes the class-valued preference schedule for the tick's joint decision."
+            :symbol "CTAU-CLASS"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 29}
+           {:claim "The equation registry defines C-class as a terminal distribution over focused, related, unrelated, and stop-the-line, with unit mass on ending/not-yet-evaluated before the horizon."
+            :symbol ":class-preference-schedule"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 892}
+           {:claim "The runtime fixes the terminal class weights at 55/100 focused, 35/100 related, and 5/100 each for unrelated and stop-the-line."
+            :symbol "class-preference-weights"
+            :file "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj"
+            :line 490}
+           {:claim "The class observation-model constructor expands those weights into a step-indexed schedule, using ending/not-yet-evaluated before T and recording the model as synthetic and uncalibrated."
+            :symbol "class-observation-model"
+            :file "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj"
+            :line 502}
+           {:claim "The class-model validator enforces the exact five-symbol class universe, an allowlisted target classification, a complete schedule through the horizon, and normalized per-step preferences."
+            :symbol "validate!"
+            :file "/home/joe/code/futon2/src/futon2/aif/observation_model.clj"
+            :line 72}
+           {:claim "Per-candidate scoring sends each rollout belief, tau, target, and class preference to the observation model, then computes G as risk plus ambiguity minus expected information gain."
+            :symbol "score-candidate"
+            :file "/home/joe/code/futon2/src/futon2/aif/cascade_observation_scoring.clj"
+            :line 133}
+           {:claim "An explicit observation-model option selects the bounded model-query scorer, so the tick's joint decision follows the class lane instead of the token preference-member lane."
+            :symbol "rank-cascade-actions"
+            :file "/home/joe/code/futon2/src/futon2/aif/efe.clj"
+            :line 1066}]
+ :bids [{:pattern "memory/surface-the-closed-set"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "class-observation-model"
+                :file "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj"
+                :line 502}
+         :how "The constructed model publishes the complete five-value :class-universe beside the fields whose values are checked against that same closed vocabulary."}
+        {:pattern "data-mining/constrain-extraction-to-the-downstream-vocabulary"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "validate!"
+                :file "/home/joe/code/futon2/src/futon2/aif/observation_model.clj"
+                :line 72}
+         :how "The validator performs the pattern's allowlist gate for class and target-class values, but it does not implement the prompting, frequency-anchor, or few-shot-negative parts."}
+        {:pattern "aif/term-to-channel-traceability"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "score-candidate"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_observation_scoring.clj"
+                :line 133}
+         :how "The score certificate persists the consumed observation model and C schedule, per-step evaluations, raw intermediates, normalization, and final G terms, but it does not name a precision channel separately for every term."}
+        {:pattern "workshop/records-carry-warrant"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "score-candidate"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_observation_scoring.clj"
+                :line 133}
+         :how "Each score carries a replay-oriented certificate containing its initial belief, model, step distributions, node evaluations, term decomposition, and provenance, but no input digest or corpus version."}
+        {:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "validate!"
+                :file "/home/joe/code/futon2/src/futon2/aif/observation_model.clj"
+                :line 72}
+         :how "The declared class-model shape changes execution because any invalid universe, classification, provenance, horizon, or preference schedule raises a typed refusal instead of remaining documentary metadata."}]
+ :declined [{:pattern "aif/placeholder-is-load-bearing"
+             :why "The pre-horizon ending/not-yet-evaluated point mass is deliberate scoring semantics rather than an unscored glue placeholder, and this node does not perform deletion replay."}
+            {:pattern "futon-theory/stop-the-line"
+             :why "Class-model failures refuse one candidate family, but they do not place the whole system in a stopped state while selectively allowing observe and verify operations."}
+            {:pattern "contracts/declare-the-reductions"
+             :why "The runtime records class-specific typed absences and comments on the token/class distinction, but it is not the contract entry that enumerates formal-to-runtime reductions."}
+            {:pattern "contracts/holder-states-the-claim"
+             :why "CTAU-CLASS has no Lean declaration or correspondence holder, so its runtime code does not choose or enforce one of the pattern's correspondence stages."}
+            {:pattern "memory/no-tightening-while-held"
+             :why "The code validates model state, but it neither migrates held state nor governs a schema-tightening operation."}]}

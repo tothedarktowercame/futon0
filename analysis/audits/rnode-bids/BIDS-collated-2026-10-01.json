@@ -1,0 +1,2599 @@
+{
+ "bids": [
+  {
+   "node": "R2",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The admission function turns an asserted observation with no evidence into a typed refusal, implementing the warrant-presence part of the pattern but not requiring its full replay, digest, version, and assumption fields.",
+   "symbol": "futon2.aif.flight-runner/admit-observation",
+   "file": "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj",
+   "line": 763
+  },
+  {
+   "node": "R2",
+   "pattern": "aif/placeholder-is-load-bearing",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The envelope makes every substituted numeric default self-describing with an absent variant, reason, source paths, and value, implementing the provenance requirement but not the deletion replay.",
+   "symbol": "futon2.aif.observation/observation-envelope",
+   "file": "/home/joe/code/futon2/src/futon2/aif/observation.clj",
+   "line": 84
+  },
+  {
+   "node": "R2",
+   "pattern": "process/fake-done-via-binary-closure",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The observation adapter checks each located want and keeps refused checks unknown so they cannot count as either advanced or met.",
+   "symbol": "futon2.aif.flight-runner/observe-fn",
+   "file": "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj",
+   "line": 82
+  },
+  {
+   "node": "R2",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The observer executes the registered check for every token and routes failed or unavailable validation into :refused instead of silently treating the declaration as observed.",
+   "symbol": "futon2.aif.observation-checks/observe*",
+   "file": "/home/joe/code/futon2/src/futon2/aif/observation_checks.clj",
+   "line": 628
+  },
+  {
+   "node": "R2",
+   "pattern": "workshop/honest-holes-gate-composed-claims",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The interpretation boundary preserves each typed non-publication outcome and never substitutes a published pattern, implementing explicit holes but not the pattern's per-dimension publication gate.",
+   "symbol": "DarkTower.WarMachine.Proof2.ObservedInterpretation.observedInterpretation",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ObservedInterpretation.lean",
+   "line": 47
+  },
+  {
+   "node": "R8",
+   "pattern": "futon-theory/stop-the-line",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "admitFrom stops the local policy prefix at the first failed invariant and excludes every later step, implementing the halt-on-failure part but not the pattern's system-wide diagnostic and recovery states.",
+   "symbol": "DarkTower.WarMachine.Proof2.PrefixFreeEnergyAtMachine.admitFrom",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyAtMachine.lean",
+   "line": 130
+  },
+  {
+   "node": "R8",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "PrefixAbsence explicitly declares the two conditions under which the runtime-to-formal correspondence supplies no ordinary numeric prefix F, covering the absence reduction but not every carrier difference requested by the pattern.",
+   "symbol": "DarkTower.WarMachine.Proof2.PrefixFreeEnergyAtMachine.PrefixAbsence",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyAtMachine.lean",
+   "line": 151
+  },
+  {
+   "node": "R8",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "admit attaches each admitted observation update to its source path and SHA-256 while preserving the policy, occurrence, and predecessor chain needed to check it, though it does not carry the pattern's corpus-version and assumption fields.",
+   "symbol": "futon2.aif.policy-prefix-admission/admit",
+   "file": "/home/joe/code/futon2/src/futon2/aif/policy_prefix_admission.clj",
+   "line": 31
+  },
+  {
+   "node": "R8",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "checkStep makes policy, occurrence, chain, support, and posterior validation operational because any failed check changes admission and therefore the prefix that R8 sums, although it does not itself force a correction workflow.",
+   "symbol": "DarkTower.WarMachine.Proof2.PrefixFreeEnergyAtMachine.checkStep",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyAtMachine.lean",
+   "line": 117
+  },
+  {
+   "node": "R8",
+   "pattern": "workshop/honest-holes-gate-composed-claims",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "prefixF emits typed noAdmittedSteps or contradiction errors rather than letting an empty or impossible composed prefix masquerade as a valid total, but it does not implement the pattern's publication-wide dimension census.",
+   "symbol": "DarkTower.WarMachine.Proof2.PrefixFreeEnergyAtMachine.prefixF",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyAtMachine.lean",
+   "line": 159
+  },
+  {
+   "node": "R19",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "verify derives failures from quote occurrence, line, and code-point-span evidence, and read-outcomes turns any such failure into refusal of the whole extracted C.",
+   "symbol": "futon2.wm.extract-outcomes/verify",
+   "file": "/home/joe/code/futon2/scripts/futon2/wm/extract_outcomes.clj",
+   "line": 799
+  },
+  {
+   "node": "R19",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The reading carries its input digest, extracted span evidence, and each proposal with its verification result, but it does not attach a corpus or registry version.",
+   "symbol": "futon2.aif.served-by-reading/reading",
+   "file": "/home/joe/code/futon2/src/futon2/aif/served_by_reading.clj",
+   "line": 109
+  },
+  {
+   "node": "R19",
+   "pattern": "translation/test-by-reproducing-behaviour",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The theorem supplies a falsifier text with one valid and one duplicated cue and proves the formal translation reproduces the runtime rule that one bad cue refuses all outcomes, but it does not classify later disagreements by side.",
+   "symbol": "DarkTower.WarMachine.Proof2.MissionPreference.duplicateQuoteRefusesAll",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/MissionPreference.lean",
+   "line": 258
+  },
+  {
+   "node": "R19",
+   "pattern": "data-mining/constrain-extraction-to-the-downstream-vocabulary",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "extract emits only outcomes selected by the predeclared cue-rules table and records the matching rule IDs, implementing the fixed-vocabulary part without the pattern's frequency anchors or few-shot negatives.",
+   "symbol": "futon2.wm.extract-outcomes/extract",
+   "file": "/home/joe/code/futon2/scripts/futon2/wm/extract_outcomes.clj",
+   "line": 513
+  },
+  {
+   "node": "R19",
+   "pattern": "workshop/honest-holes-gate-composed-claims",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The composed reading explicitly emits typed absences for missing quotes, instance anchors, or admitted outcomes, though it does not maintain the pattern's per-dimension s4 publication gate.",
+   "symbol": "futon2.aif.served-by-reading/reading",
+   "file": "/home/joe/code/futon2/src/futon2/aif/served_by_reading.clj",
+   "line": 109
+  },
+  {
+   "node": "R1",
+   "pattern": "data-mining/constrain-extraction-to-the-downstream-vocabulary",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The filter enforces status-set as an allowlist for incoming event types and emits a typed omitted-observation for an out-of-vocabulary value, implementing the pattern's vocabulary gate but not its prompting, frequency-anchor, or few-shot-negative practices.",
+   "symbol": "futon2.aif.belief/categorical-filter-step",
+   "file": "/home/joe/code/futon2/src/futon2/aif/belief.clj",
+   "line": 341
+  },
+  {
+   "node": "R1",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The theorem makes failed belief validation operational by forcing an impossible observation to change the trajectory into updateRefused, though it does not itself derive documentary status or force a correction workflow.",
+   "symbol": "DarkTower.WarMachine.Proof2.BeliefAtMachine.impossibleObservationRefuses",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefAtMachine.lean",
+   "line": 158
+  },
+  {
+   "node": "R3a",
+   "pattern": "translation/test-by-reproducing-behaviour",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The theorem reproduces the source equation on the producer's present branch and explicitly isolates variance as producer gating rather than part of the translated equation, but the declaration itself does not include the module's separate missing-variance falsifier.",
+   "symbol": "DarkTower.WarMachine.SensoryPredictionError.machine_present_computes_eq46",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/SensoryPredictionError.lean",
+   "line": 69
+  },
+  {
+   "node": "R7",
+   "pattern": "aif/term-to-channel-traceability",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "For each channel, weighted-error records the adaptive precision, weighted intermediate error, and preserved per-call precision together, implementing the pattern's channel/precision/intermediate traceability but not its complete per-G-term provenance schema.",
+   "symbol": "weighted-error",
+   "file": "/home/joe/code/futon2/src/futon2/aif/precision.clj",
+   "line": 212
+  },
+  {
+   "node": "R7",
+   "pattern": "process/fake-done-via-binary-closure",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "cellOf re-derives numerator and denominator from every qualifying underlying record and returns typed unobserved for an empty denominator, though it does not itself gate advancement.",
+   "symbol": "DarkTower.WarMachine.Proof2.AdjudicationCounts.cellOf",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/AdjudicationCounts.lean",
+   "line": 139
+  },
+  {
+   "node": "R7",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "recordsFor admits evidence to counting only through labels whose mechanism identity matches the loaded name and source, carrying a checkable provenance condition but not the pattern's full query, digest, and registry-version warrant.",
+   "symbol": "DarkTower.WarMachine.Proof2.ChannelIdentity.recordsFor",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ChannelIdentity.lean",
+   "line": 19
+  },
+  {
+   "node": "R7",
+   "pattern": "aif/placeholder-is-load-bearing",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "kernelSupply represents the checkable zero-kernel default as the distinct zeroKernelAssumed constructor and refuses partial measurements, making this placeholder self-describing although it does not perform the pattern's deletion replay.",
+   "symbol": "DarkTower.WarMachine.Proof2.AdjudicationCounts.kernelSupply",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/AdjudicationCounts.lean",
+   "line": 271
+  },
+  {
+   "node": "R4",
+   "pattern": "translation/test-by-reproducing-behaviour",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The theorem uses a known fixture as a falsifier and attributes the changed one-step prediction specifically to substituting a different descent order while holding patterns and state fixed.",
+   "symbol": "DarkTower.WarMachine.Proof2.CoApplicationAtMachine.machineKernel_differs_at_other_order",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/CoApplicationAtMachine.lean",
+   "line": 215
+  },
+  {
+   "node": "R4",
+   "pattern": "aif/placeholder-is-load-bearing",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The function performs the THEN's provenance part by turning an absent theta into an explicit value with :theta-source :documented-default, but it does not perform deletion replay or deletion sequencing.",
+   "symbol": "with-pattern-theta",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_model_manifest.clj",
+   "line": 282
+  },
+  {
+   "node": "R4",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The theorem states and enforces the precise zero-false-negative and zero-false-positive conditions under which predicted observations reduce to predicted states, covering the THEN's conditional-agreement declaration but not every runtime reduction.",
+   "symbol": "DarkTower.WarMachine.TokenObservation.predictedOutcome_eq_rolloutState",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/TokenObservation.lean",
+   "line": 164
+  },
+  {
+   "node": "R5",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The theorem states both the conditionally localised quantity and the exact outside-token term that the local reduction fails to preserve.",
+   "symbol": "DarkTower.WarMachine.Proof2.TargetGrainG.totalG_sub_eq_localDelta_sub_outside",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/TargetGrainG.lean",
+   "line": 133
+  },
+  {
+   "node": "R5",
+   "pattern": "aif/term-to-channel-traceability",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The scorer persists the prediction, per-channel decomposition, intermediate term values, final contributions, and risk/ambiguity modes beside the score, but it does not explicitly enumerate consumed precision channels for every term.",
+   "symbol": "futon2.aif.efe/compute-efe",
+   "file": "/home/joe/code/futon2/src/futon2/aif/efe.clj",
+   "line": 481
+  },
+  {
+   "node": "R5",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The returned score record carries its prediction, decomposed inputs, preference stack, modes, augmentation terms, and goal-outcome replay inputs, but lacks the complete input digest and corpus or registry version required by the pattern.",
+   "symbol": "futon2.aif.efe/compute-efe",
+   "file": "/home/joe/code/futon2/src/futon2/aif/efe.clj",
+   "line": 481
+  },
+  {
+   "node": "CTAU-TOKEN",
+   "pattern": "aif/term-to-channel-traceability",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The certificate persists alongside G the consumed A rates, step-indexed C distributions, initial D, predicted Q beliefs, per-step risk and ambiguity, evaluation reduction, and fixed zeta precision.",
+   "symbol": "futon2.aif.cascade-model-manifest/horizon-g-sparse-cert",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_model_manifest.clj",
+   "line": 1117
+  },
+  {
+   "node": "CTAU-TOKEN",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The certificate explicitly distinguishes computed ambiguity from ambiguity reduced identically to zero, names the reduction and evaluation path, and records whether likelihood tempering actually occurred.",
+   "symbol": "futon2.aif.cascade-model-manifest/horizon-g-sparse-cert",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_model_manifest.clj",
+   "line": 1117
+  },
+  {
+   "node": "CTAU-TOKEN",
+   "pattern": "aif/placeholder-is-load-bearing",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The receipt performs the pattern's provenance portion by representing the absent-placement default as :every-step while marking its source :defaulted, but it does not replay deletion counterfactuals.",
+   "symbol": "futon2.aif.wm.cascade-decision/token-preference-schedule",
+   "file": "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj",
+   "line": 63
+  },
+  {
+   "node": "CTAU-CLASS",
+   "pattern": "memory/surface-the-closed-set",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The constructed model publishes the complete five-value :class-universe beside the fields whose values are checked against that same closed vocabulary.",
+   "symbol": "class-observation-model",
+   "file": "/home/joe/code/futon2/src/futon2/aif/wm/cascade_decision.clj",
+   "line": 502
+  },
+  {
+   "node": "CTAU-CLASS",
+   "pattern": "data-mining/constrain-extraction-to-the-downstream-vocabulary",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The validator performs the pattern's allowlist gate for class and target-class values, but it does not implement the prompting, frequency-anchor, or few-shot-negative parts.",
+   "symbol": "validate!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/observation_model.clj",
+   "line": 72
+  },
+  {
+   "node": "CTAU-CLASS",
+   "pattern": "aif/term-to-channel-traceability",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The score certificate persists the consumed observation model and C schedule, per-step evaluations, raw intermediates, normalization, and final G terms, but it does not name a precision channel separately for every term.",
+   "symbol": "score-candidate",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_observation_scoring.clj",
+   "line": 133
+  },
+  {
+   "node": "CTAU-CLASS",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "Each score carries a replay-oriented certificate containing its initial belief, model, step distributions, node evaluations, term decomposition, and provenance, but no input digest or corpus version.",
+   "symbol": "score-candidate",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_observation_scoring.clj",
+   "line": 133
+  },
+  {
+   "node": "CTAU-CLASS",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The declared class-model shape changes execution because any invalid universe, classification, provenance, horizon, or preference schedule raises a typed refusal instead of remaining documentary metadata.",
+   "symbol": "validate!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/observation_model.clj",
+   "line": 72
+  },
+  {
+   "node": "R6",
+   "pattern": "gauntlet/umwelt-not-architecture",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The function constructs and publishes the machine's active surface as an explicit candidate cascade set, but it does not describe R6's sensory surface or the surrounding darkness.",
+   "symbol": "candidate-space",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj",
+   "line": 284
+  },
+  {
+   "node": "R6",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The returned :rules explicitly declare the precedence rule, tie-break, acting rule, closure, mandatory empty cascade, and the fact that retrieval and interpretation are not performed here.",
+   "symbol": "candidate-space",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj",
+   "line": 284
+  },
+  {
+   "node": "R6",
+   "pattern": "process/fake-done-via-binary-closure",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The function runs organise and the guard/kernel fold on every candidate before returning the space, providing the unitwise checking part of the pattern without governing a binary completion status.",
+   "symbol": "candidate-space",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj",
+   "line": 284
+  },
+  {
+   "node": "R6",
+   "pattern": "futon-theory/stop-the-line",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The constructor refuses immediately on an interpretation outside the repository, invalid input shape, excessive subset expansion, or precedence outside the supplied interpretations, thereby blocking downstream selection while not implementing the pattern's diagnostic stopped-state protocol.",
+   "symbol": "candidate-space",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_policy.clj",
+   "line": 284
+  },
+  {
+   "node": "R13",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The declaration validator makes the horizon artifact operational by refusing a present :horizon-steps value unless it is a positive integer, so invalid evidence changes behavior and forces correction.",
+   "symbol": "futon2.aif.cascade-sources/check-file!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_sources.clj",
+   "line": 135
+  },
+  {
+   "node": "R14",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The theorem explicitly declares that the three runtime temperature modes reduce the same valid input to different values, while the adjacent scoped theorems state exactly when the variational beta correspondence holds.",
+   "symbol": "DarkTower.WarMachine.MachineTemperature.threeLawsDisagree",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineTemperature.lean",
+   "line": 180
+  },
+  {
+   "node": "R14",
+   "pattern": "aif/term-to-channel-traceability",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The certificate persists each candidate's observation model, steps, consumed G, G terms, preference source, rate provenance, and returned score, but it does not uniformly expose an explicit precision-channel field for every term.",
+   "symbol": "selection-certificate",
+   "file": "/home/joe/code/futon2/src/futon2/aif/policy.clj",
+   "line": 285
+  },
+  {
+   "node": "R14",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The runtime validates the declared temperature and candidate inputs and turns invalid declarations or an empty admissible support into typed refusals that prevent selection, covering the pattern's failure-changes-behaviour requirement for this boundary.",
+   "symbol": "selection-posterior",
+   "file": "/home/joe/code/futon2/src/futon2/aif/cascade_selection.clj",
+   "line": 54
+  },
+  {
+   "node": "R15",
+   "pattern": "data-mining/constrain-extraction-to-the-downstream-vocabulary",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The function constrains its derived downstream mode to the declared strategic-mode vocabulary and uses :exploitation as the unmatched nonempty fallback, but it does not implement the pattern's frequency anchors, negative examples, or explicit allowlist gate.",
+   "symbol": "futon2.aif.temporal-hierarchy/slow-context-from-intrinsics",
+   "file": "/home/joe/code/futon2/src/futon2/aif/temporal_hierarchy.clj",
+   "line": 68
+  },
+  {
+   "node": "R11",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The boundary derives the decision from SHA-pinned versioned source records and returns their verification metadata together with the mapper's complete replay receipt.",
+   "symbol": "futon2.aif.machine-budget-authority/resolve-and-map",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_budget_authority.clj",
+   "line": 150
+  },
+  {
+   "node": "R11",
+   "pattern": "translation/test-by-reproducing-behaviour",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The replay function recomputes a recorded R11 mapping and compares every retained field with known output, but it does not itself supply falsifier cases or attribute disagreements.",
+   "symbol": "futon2.aif.machine-budget-mapping/replay",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_budget_mapping.clj",
+   "line": 215
+  },
+  {
+   "node": "R11",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The verifier makes R11 evidence operational by throwing typed refusals when its schema, source verification, portfolio coverage, identity, or accounting disagrees, though it does not derive a separate status surface.",
+   "symbol": "futon2.aif.machine-portfolio-restriction/verify-e1!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_portfolio_restriction.clj",
+   "line": 17
+  },
+  {
+   "node": "R11",
+   "pattern": "futon-theory/stop-the-line",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "Any failed R11 portfolio invariant raises a typed exception and prevents selection from continuing, implementing the blocking step without the pattern's persistent stopped-state and diagnostic operations.",
+   "symbol": "futon2.aif.machine-portfolio-restriction/verify-e1!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_portfolio_restriction.clj",
+   "line": 17
+  },
+  {
+   "node": "R11",
+   "pattern": "test-registry/bind-warrant-to-the-diff",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The authority reader accepts source bytes only when their SHA-256 exactly matches the configured pin and otherwise refuses with expected and actual hashes, covering source identity but not the pattern's full chain, diff, and environment checks.",
+   "symbol": "futon2.aif.machine-budget-authority/read-source!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_budget_authority.clj",
+   "line": 77
+  },
+  {
+   "node": "R11",
+   "pattern": "process/fake-done-via-binary-closure",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The verifier checks the underlying complete R6 support and refuses unless selected plus rejected occurrences and ordered accounting cover that full denominator, rather than trusting R11's completion flags.",
+   "symbol": "futon2.aif.machine-portfolio-restriction/verify-e1!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_portfolio_restriction.clj",
+   "line": 17
+  },
+  {
+   "node": "GRAIN-GATE",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "enact-fn makes the grain declaration operational by running its validator before commit and withholding the commit when the validator returns a refusal.",
+   "symbol": "futon2.aif.flight-runner/enact-fn",
+   "file": "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj",
+   "line": 846
+  },
+  {
+   "node": "GRAIN-GATE",
+   "pattern": "test-registry/bind-warrant-to-the-diff",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "grain-gate implements the code-shape portion by checking the recorded resolver path, argument list, and SHA and returning typed mismatches, but it does not check chains, diff coverage, manifests, or environment fingerprints.",
+   "symbol": "futon2.aif.grain-gate/grain-gate",
+   "file": "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj",
+   "line": 65
+  },
+  {
+   "node": "GRAIN-GATE",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "grain-gate requires an enactment's grain claim to carry resolver evidence comprising a function, path, argument list, and optional content digest, then checks that evidence against source, but it does not attach corpus versions or replay assumptions.",
+   "symbol": "futon2.aif.grain-gate/grain-gate",
+   "file": "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj",
+   "line": 65
+  },
+  {
+   "node": "R16",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "close-loop! derives explicit gate verdicts and permits enactment only for the first :pass, so a failed validation changes behavior by preventing execution and remaining visible in the audit record.",
+   "symbol": "futon2.aif.enact/close-loop!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/enact.clj",
+   "line": 323
+  },
+  {
+   "node": "R16",
+   "pattern": "orchestration/pattern-warranted-choice-point",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "enact! records the chosen cascade's pattern identifiers and prediction source beside the enacted result, implementing the autonomous-pick warrant record but not the pattern's operator-facing NAG gap and unblock fields.",
+   "symbol": "futon2.aif.enact/enact!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/enact.clj",
+   "line": 276
+  },
+  {
+   "node": "R16",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "enact! carries the executor source, cascade inputs, predicted score source, realized construction counts, and typed failure into the enactment audit, but it does not attach the full input digest and corpus or registry version required by the pattern.",
+   "symbol": "futon2.aif.enact/enact!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/enact.clj",
+   "line": 276
+  },
+  {
+   "node": "R10",
+   "pattern": "coordination/session-durability-check",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The boundary appends the joined commission and dispatch receipt to the durable evidence store and throws :r10/recording-failed instead of returning success when persistence fails.",
+   "symbol": "run-scheduled-dispatch!",
+   "file": "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj",
+   "line": 127
+  },
+  {
+   "node": "R10",
+   "pattern": "orchestration/recorded-handoff",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The code models the dispatch as a durable object joining a named commission, dispatch id, full receipt, author and timestamp, but it does not implement the pattern's return, commit-attribution or reviewer-verdict stages.",
+   "symbol": "run-scheduled-dispatch!",
+   "file": "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj",
+   "line": 127
+  },
+  {
+   "node": "R10",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The emitted dispatch claim carries its complete linked commission and producer receipt as replayable inputs, but it does not attach a named derivation, corpus version or explicit assumption field.",
+   "symbol": "run-scheduled-dispatch!",
+   "file": "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj",
+   "line": 127
+  },
+  {
+   "node": "R12",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The declaration states exactly that Layer 1 preserves only model-consistency information and must never be treated as value evidence, while the adjacent Layer 2 declaration names the unavailable independent-evidence remainder.",
+   "symbol": "futon2.aif.calibration-cycle/layer-1-label",
+   "file": "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj",
+   "line": 19
+  },
+  {
+   "node": "R12",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The checker derives status from the returned scan and emits specific refusal verdicts for malformed availability, posterior, and count evidence, which the admission boundary prevents the consumer from accepting.",
+   "symbol": "futon2.aif.calibration-cycle/check-apparatus",
+   "file": "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj",
+   "line": 57
+  },
+  {
+   "node": "R12",
+   "pattern": "process/fake-done-via-binary-closure",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The checker examines every per-class posterior in the underlying scan and refuses a mismatched class-count summary instead of trusting the summary count as evidence.",
+   "symbol": "futon2.aif.calibration-cycle/check-apparatus",
+   "file": "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj",
+   "line": 57
+  },
+  {
+   "node": "R12",
+   "pattern": "workshop/honest-holes-gate-composed-claims",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "R12 emits and renders an in-band typed absence for the missing independent-evidence layer, but it does not implement the pattern's general per-dimension publication gate.",
+   "symbol": "futon2.aif.calibration-cycle/layer-2-not-available",
+   "file": "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj",
+   "line": 26
+  },
+  {
+   "node": "R12",
+   "pattern": "test-registry/bind-warrant-to-the-diff",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The boundary accepts only a check tied to the exact commission and returned artifact and otherwise gives typed refusals, but it does not compare manifests, diff coverage, or environment fingerprints.",
+   "symbol": "futon2.aif.calibration-admission/admit!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/calibration_admission.clj",
+   "line": 6
+  },
+  {
+   "node": "R20",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "check! derives status from an evaluated witness, durably records the evidence, and changes the admission result from :passed to a typed :refused transition.",
+   "symbol": "futon2.aif.tripwire/check!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/tripwire.clj",
+   "line": 876
+  },
+  {
+   "node": "R20",
+   "pattern": "coordination/session-durability-check",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "check! writes the discharge report before returning refusal, and a persistence failure escapes instead of allowing a successful admission response.",
+   "symbol": "futon2.aif.tripwire/check!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/tripwire.clj",
+   "line": 876
+  },
+  {
+   "node": "R20",
+   "pattern": "futon-theory/stop-the-line",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "halt! durably records and announces the invariant witness before throwing a typed tripwire failure, but this only stops the current run when halting is enabled and does not implement the pattern's global stopped-state middleware.",
+   "symbol": "futon2.aif.tripwire/halt!",
+   "file": "/home/joe/code/futon2/src/futon2/aif/tripwire.clj",
+   "line": 1022
+  },
+  {
+   "node": "R17",
+   "pattern": "workshop/records-carry-warrant",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The emitted decision envelope carries a named pure replay entrypoint, its complete canonical input, parent structure, proposal evidence, and envelope version, providing replayable warrant although it does not add an explicit input digest.",
+   "symbol": "run",
+   "file": "/home/joe/code/futon2/src/futon2/aif/r17_offline.clj",
+   "line": 64
+  },
+  {
+   "node": "R17",
+   "pattern": "translation/test-by-reproducing-behaviour",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The theorem runs the composed reduction on a known identity fixture and checks its reduced posterior, zero evidence change, and threshold rejection, alongside the mismatched-length falsifier carried by the same module.",
+   "symbol": "DarkTower.WarMachine.ModelReduction.identityFixture_endToEnd",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/ModelReduction.lean",
+   "line": 126
+  },
+  {
+   "node": "R17",
+   "pattern": "contracts/declare-the-reductions",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The decision type explicitly records the same-coordinate condition needed to prevent List.zip truncation and ties the supplied posterior to the declared BMR equation, covering that concrete reduction condition but not every Lean-to-runtime difference.",
+   "symbol": "DarkTower.WarMachine.ModelReduction.ModelReductionDecision",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/ModelReduction.lean",
+   "line": 21
+  },
+  {
+   "node": "R17",
+   "pattern": "process/fake-done-via-binary-closure",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "Every constructed reduction decision must supply the underlying posterior equation and all three length equalities, so acceptance cannot rest on the verdict bit alone, though this checks only the model-reduction artifact's stated invariants.",
+   "symbol": "DarkTower.WarMachine.ModelReduction.modelReductionDecision",
+   "file": "/home/joe/code/mathlib4/DarkTower/WarMachine/ModelReduction.lean",
+   "line": 41
+  },
+  {
+   "node": "R17",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The runtime validates observation provenance, belief presence, initialization authority, lineage, and recurrence success, and each failed condition changes behavior by refusing the accumulation rather than merely documenting a discrepancy.",
+   "symbol": "accumulation-step-for-tick",
+   "file": "/home/joe/code/futon2/scripts/futon2/report/war_machine.clj",
+   "line": 1556
+  },
+  {
+   "node": "R9",
+   "pattern": "war-machine/operational-not-decorative",
+   "kind": "functional",
+   "strength": "strong",
+   "how": "The verifier derives authorization from pinned evidence and throws typed refusals on missing, changed, mismatched, self-reviewed, retroactive, or noncanonical evidence, so failed validation changes behaviour.",
+   "symbol": "verify-pre-enact",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_pre_enact_authorization.clj",
+   "line": 85
+  },
+  {
+   "node": "R9",
+   "pattern": "orchestration/recorded-handoff",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The checker models and joins author and reviewer jobs, the review commission digest, review receipt, execution trace, and distinct-seat gate, but it does not enforce the mission-record or commit-trailer portions.",
+   "symbol": "check-independence",
+   "file": "/home/joe/code/futon2/src/futon2/aif/r9_checker.clj",
+   "line": 72
+  },
+  {
+   "node": "R9",
+   "pattern": "futon-theory/coordination-protocol",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The checker enforces the review portion of the handoff cycle by requiring a distinct reviewer, a matching commission and receipt, executed review evidence, and review-before-admission chronology, but not channel fallback or escalation.",
+   "symbol": "check-independence",
+   "file": "/home/joe/code/futon2/src/futon2/aif/r9_checker.clj",
+   "line": 72
+  },
+  {
+   "node": "R9",
+   "pattern": "test-registry/bind-warrant-to-the-diff",
+   "kind": "functional",
+   "strength": "partial",
+   "how": "The verifier checks pinned evidence bytes, schemas, exact subject identity, field-source pins, and canonical review provenance with typed refusals, but it does not check a test-registry warrant's complete manifests or environment fingerprint.",
+   "symbol": "verify-pre-enact",
+   "file": "/home/joe/code/futon2/src/futon2/aif/machine_pre_enact_authorization.clj",
+   "line": 85
+  }
+ ],
+ "patterns": [
+  {
+   "pattern": "memory/verify-in-the-serving-process",
+   "stage": "assurance",
+   "hits": 66,
+   "title": "Committed Is Not Deployed",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "orchestration/recorded-handoff",
+   "stage": "coordination",
+   "hits": 66,
+   "title": "The Recorded Handoff — dispatch as a modeled object",
+   "status": "contested",
+   "functional": [
+    "R10",
+    "R9"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R10",
+    "R9"
+   ]
+  },
+  {
+   "pattern": "memory/no-tightening-while-held",
+   "stage": "evaluate",
+   "hits": 39,
+   "title": "Do Not Tighten a Schema While Agents Hold State Under the Old One",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "peripherals/hot-reload-as-default-fix-path",
+   "stage": "act",
+   "hits": 37,
+   "title": "Hot-Reload As Default Fix Path",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/mission-interface-signature",
+   "stage": "coordination",
+   "hits": 34,
+   "title": "Mission Interface Signature (Boundary Types)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f7-upa-upekkha",
+   "stage": "assurance",
+   "hits": 24,
+   "title": "IFR — FUTON7 Civic Field of Wisdom (upa-upekkhā)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "memory/licence-to-fail",
+   "stage": "assurance",
+   "hits": 23,
+   "title": "A Probe Must Permit \"I Could Not Determine the Fix\"",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "pacspine/frictionless-next",
+   "stage": "coordination",
+   "hits": 22,
+   "title": "Pattern 8 — Show Them How to Seal the Deal",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "stack-coherence/stack-blocker-detection",
+   "stage": "perceive",
+   "hits": 22,
+   "title": "Stack Blocker Detection",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-18-gu",
+   "stage": "act",
+   "hits": 21,
+   "title": "䷑ 蠱 (Gǔ) - Work on What Has Been Spoiled",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/plan-before-tool",
+   "stage": "select",
+   "hits": 21,
+   "title": "Plan Before Tool Use",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "eight-gates/lean-commit",
+   "stage": "select",
+   "hits": 18,
+   "title": "Lean: Full Commitment Escalation",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/pause-backtrace",
+   "stage": "assurance",
+   "hits": 18,
+   "title": "Pause with Backtrace",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "stack-coherence/futon1-determinism",
+   "stage": "assurance",
+   "hits": 17,
+   "title": "Futon1 Determinism Gate",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f1-dhammavicaya",
+   "stage": "assurance",
+   "hits": 16,
+   "title": "IFR — FUTON1 Graph Memory Seed (dhammavicaya)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "inbox-zero/ignore-by-kind",
+   "stage": "act",
+   "hits": 15,
+   "title": "Ignore Generated Noise By Describing Its Kind",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "orchestration/state-in-substrate-deltas-in-messages",
+   "stage": "coordination",
+   "hits": 15,
+   "title": "Lift State Into Shared Substrate; Keep Messages As Deltas",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "process-coherence/status-refresh-before-work",
+   "stage": "believe",
+   "hits": 15,
+   "title": "Refresh the Status Against Reality Before Working the Mission",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "data-mining/checkpoint-the-long-run",
+   "stage": "act",
+   "hits": 14,
+   "title": "Checkpoint the Long Run — A Crash Must Not Cost the Whole Pass",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/stop-the-line",
+   "stage": "select",
+   "hits": 14,
+   "title": "Stop-the-Line Protocol",
+   "status": "contested",
+   "functional": [
+    "R8",
+    "R6",
+    "R11",
+    "R20"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R20",
+    "R8"
+   ]
+  },
+  {
+   "pattern": "stack-coherence/commit-intent-alignment",
+   "stage": "believe",
+   "hits": 14,
+   "title": "Commit Intent Alignment",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "dsc/evidence-situated-log",
+   "stage": "assurance",
+   "hits": 13,
+   "title": "Evidence as Situated Log, Not Exhibit",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "fulab/clock-out",
+   "stage": "assurance",
+   "hits": 13,
+   "title": "Agent Clock-Out",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/mission-lifecycle",
+   "stage": "believe",
+   "hits": 13,
+   "title": "Mission Lifecycle (State Machine)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "test-registry/bind-the-subject",
+   "stage": "assurance",
+   "hits": 13,
+   "title": "",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch",
+   "stage": "select",
+   "hits": 13,
+   "title": "WR-26: A Capability Switched Off Carries Its Re-Arm Condition, in Writing",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "contributing/devmap-contribution-protocol",
+   "stage": "believe",
+   "hits": 12,
+   "title": "Devmap Contribution Protocol",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/coordination-protocol",
+   "stage": "coordination",
+   "hits": 12,
+   "title": "Coordination Protocol (Multi-Agent Handoff)",
+   "status": "single",
+   "functional": [
+    "R9"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R9"
+   ]
+  },
+  {
+   "pattern": "code-coherence/dead-code-hygiene",
+   "stage": "act",
+   "hits": 11,
+   "title": "Dead Code Hygiene",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f3-piti",
+   "stage": "assurance",
+   "hits": 11,
+   "title": "IFR — FUTON3 Flexiformal Proofwork (pīti)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "pacspine/simple-close",
+   "stage": "act",
+   "hits": 11,
+   "title": "Pattern 10 — Tie It All Together",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "relationship-coherence/quote-as-oblique-address",
+   "stage": "coordination",
+   "hits": 11,
+   "title": "A Found Text Can Carry What Direct Speech Can't Yet Hold",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "writing-coherence/structural-style-inconsistency",
+   "stage": "act",
+   "hits": 11,
+   "title": "Normalise Heading Conventions Across Logical Depths",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cycle-machine/runtime-restoration",
+   "stage": "act",
+   "hits": 10,
+   "title": "Runtime Restoration: Reload the Shared JVM from Its Own Checkout, Whole",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "p4ng/call-a-synthesizer",
+   "stage": "coordination",
+   "hits": 10,
+   "title": "Call a Synthesizer",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f2-viriya",
+   "stage": "assurance",
+   "hits": 9,
+   "title": "IFR — FUTON2 Active Inference Energy (viriya)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/prototype-alignment-bridge",
+   "stage": "assurance",
+   "hits": 9,
+   "title": "Prototype Alignment — Context & Bridge Check",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-35-jin",
+   "stage": "act",
+   "hits": 9,
+   "title": "䷢ 晉 (Jìn) - Progress",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-50-ding",
+   "stage": "act",
+   "hits": 9,
+   "title": "䷱ 鼎 (Dǐng) - The Cauldron",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "memory/name-a-reusable-artifact",
+   "stage": "believe",
+   "hits": 9,
+   "title": "Prefer Memories That Can Witness Their Own Use",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "realtime/rendezvous-handshake",
+   "stage": "coordination",
+   "hits": 9,
+   "title": "Require Realtime Rendezvous Handshakes",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "stack-coherence/futon-bridge-health",
+   "stage": "assurance",
+   "hits": 9,
+   "title": "Futon Bridge Health Check",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "system-coherence/verified-rewrite-from-diagnostic-annotation",
+   "stage": "assurance",
+   "hits": 9,
+   "title": "Verified Rewrite from Diagnostic Annotation",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "translation/test-by-reproducing-behaviour",
+   "stage": "assurance",
+   "hits": 9,
+   "title": "",
+   "status": "contested",
+   "functional": [
+    "R19",
+    "R3a",
+    "R4",
+    "R11",
+    "R17"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R11",
+    "R17",
+    "R19",
+    "R3a",
+    "R4"
+   ]
+  },
+  {
+   "pattern": "aif/measurement-window-hygiene",
+   "stage": "perceive",
+   "hits": 8,
+   "title": "Measurement-Window Hygiene (Tight Baseline, Settled Readback, Drop the Confounded)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cascade-construction/lift-when-three-align",
+   "stage": "believe",
+   "hits": 8,
+   "title": "Write A Shared Pattern Only When Three Written Cascades Align, And Keep The Gaps",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cascades/declared-skeleton",
+   "stage": "believe",
+   "hits": 8,
+   "title": "Declared Skeleton",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/baseline-freeze",
+   "stage": "assurance",
+   "hits": 8,
+   "title": "Baseline Freeze & Audit Hooks",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "library-coherence/library-evidence-ledger",
+   "stage": "assurance",
+   "hits": 8,
+   "title": "Canon Evidence Ledger",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "problems/deliberate-refusals-allude-to-unwritten-patterns",
+   "stage": "believe",
+   "hits": 8,
+   "title": "Problem node: deliberate refusals allude to unwritten patterns",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "stack-coherence/evidence-ledger",
+   "stage": "assurance",
+   "hits": 8,
+   "title": "Stack Evidence Ledger",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "test-registry/register-the-run",
+   "stage": "assurance",
+   "hits": 8,
+   "title": "The Author Runs Tests Once, Through The Registry",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "test-registry/warrant-rides-the-handoff",
+   "stage": "coordination",
+   "hits": 8,
+   "title": "The Warrant Travels With The Handoff",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "writing-coherence/plain-language-thesis",
+   "stage": "act",
+   "hits": 8,
+   "title": "State Top-Level Claims in Plain Language",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "agent/provisional-claims-ledger",
+   "stage": "believe",
+   "hits": 7,
+   "title": "Provisional Claims Ledger",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f6-upekkha",
+   "stage": "assurance",
+   "hits": 7,
+   "title": "IFR — FUTON6 Hyperreal Argumentarium (upekkhā)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "exotic/dual-track-generation",
+   "stage": "believe",
+   "hits": 7,
+   "title": "Dual-Track Generated Patterns",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/agent-contract",
+   "stage": "assurance",
+   "hits": 7,
+   "title": "Agent Contract",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "gauntlet/umwelt-not-architecture",
+   "stage": "believe",
+   "hits": 7,
+   "title": "Draw the Umwelt, Not the Architecture",
+   "status": "single",
+   "functional": [
+    "R6"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R6"
+   ]
+  },
+  {
+   "pattern": "iching/hexagram-43-guai",
+   "stage": "act",
+   "hits": 7,
+   "title": "䷪ 夬 (Guài) - Breakthrough",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "library-coherence/library-embedding-refresh",
+   "stage": "believe",
+   "hits": 7,
+   "title": "Sigil Embedding Refresh Ritual",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "mission-coherence/logic-model-before-code",
+   "stage": "assurance",
+   "hits": 7,
+   "title": "Verify the Logic Model Before Writing the Code",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/fulab-report-block",
+   "stage": "assurance",
+   "hits": 7,
+   "title": "FULAB Report Block",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "aif/term-to-channel-traceability",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "Term-to-Channel Traceability",
+   "status": "contested",
+   "functional": [
+    "R7",
+    "R5",
+    "CTAU-TOKEN",
+    "CTAU-CLASS",
+    "R14"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "CTAU-CLASS",
+    "CTAU-TOKEN",
+    "R14",
+    "R5",
+    "R7"
+   ]
+  },
+  {
+   "pattern": "campaign-coherence/cross-mission-escrow",
+   "stage": "coordination",
+   "hits": 6,
+   "title": "Cross-Mission Escrow — Hold Dependent Work in Two Release Steps",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cascade-construction/mine-patterns-from-incidents",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "One Pattern Per Requirement, Carrying The Incident That Forced It",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "contracts/holder-states-the-claim",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "The Holder States Exactly What Correspondence Is Claimed",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f5-samadhi",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "IFR — FUTON5 Nonstarter / Concentration Engine (samādhi)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "fulab/tradeoff-record",
+   "stage": "evaluate",
+   "hits": 6,
+   "title": "Trade-off Record",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/derive-exits-on-a-minted-sorry",
+   "stage": "select",
+   "hits": 6,
+   "title": "DERIVE Exits on a Minted Sorry (You Can't Argue Until You Know What You're Arguing About)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-36-mingyi",
+   "stage": "select",
+   "hits": 6,
+   "title": "䷣ 明夷 (Míng Yí) - Darkening of the Light",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-49-ge",
+   "stage": "act",
+   "hits": 6,
+   "title": "䷰ 革 (Gé) - Revolution",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "inbox-zero/push-the-declared",
+   "stage": "act",
+   "hits": 6,
+   "title": "Push What The Author Already Declared Done",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "library-coherence/pattern-differentiation-alarms",
+   "stage": "believe",
+   "hits": 6,
+   "title": "Pattern Differentiation Alarms",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/read-aif-plus-one",
+   "stage": "evaluate",
+   "hits": 6,
+   "title": "Read AIF Suggestion Plus One",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/selection-before-write",
+   "stage": "select",
+   "hits": 6,
+   "title": "Selection Before Implement/Update",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "process-coherence/refusal-becomes-pattern",
+   "stage": "believe",
+   "hits": 6,
+   "title": "Turn an Underdetermined Implementation Refusal into a Pattern",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "process/fake-done-via-binary-closure",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "T1: Fake Done via Binary Closure",
+   "status": "contested",
+   "functional": [
+    "R2",
+    "R7",
+    "R6",
+    "R11",
+    "R12",
+    "R17"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R11",
+    "R12",
+    "R17",
+    "R2",
+    "R6",
+    "R7"
+   ]
+  },
+  {
+   "pattern": "realtime/mode-gate",
+   "stage": "select",
+   "hits": 6,
+   "title": "Gate Code Changes Behind Explicit Modes",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "snatch/re-enter-after-observed-repair",
+   "stage": "evaluate",
+   "hits": 6,
+   "title": "Re-enter After Observed Repair",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "stack-coherence/futon1-storage-coherence",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "Futon1 Storage Coherence Guard",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "test-registry/judge-adequacy",
+   "stage": "assurance",
+   "hits": 6,
+   "title": "The Reviewer's Work Is Adequacy, Not Execution",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "war-machine/coordination-bottleneck",
+   "stage": "coordination",
+   "hits": 6,
+   "title": "Coordination Bottleneck",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "workday/single-focus-amidst-agenda",
+   "stage": "select",
+   "hits": 6,
+   "title": "Single-Focus Amidst Agenda Saturation",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "agent/intent-handshake-is-binding",
+   "stage": "select",
+   "hits": 5,
+   "title": "Intent Handshake Is Binding",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "apparatus/the-system-stops-on-schedule",
+   "stage": "select",
+   "hits": 5,
+   "title": "The System Stops On Schedule",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "baldwin/ablation-axes-must-not-disable-the-instrument",
+   "stage": "assurance",
+   "hits": 5,
+   "title": "An Ablation Axis Must Not Also Switch Off the Measurement",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "contributing/stack-scan-logging-protocol",
+   "stage": "assurance",
+   "hits": 5,
+   "title": "Stack Coherence Scan Logging Protocol",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "data-mining/fan-out-independent-runs-across-devices",
+   "stage": "act",
+   "hits": 5,
+   "title": "Fan Out Independent Runs Across the Idle Devices — Right-Size the Box, Then Saturate It",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "data-mining/saturate-the-accelerator-with-concurrency",
+   "stage": "act",
+   "hits": 5,
+   "title": "Saturate the Accelerator — Fan Out Concurrent Requests, Don't Mine One-at-a-Time",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "data-mining/smoke-before-the-paid-run",
+   "stage": "assurance",
+   "hits": 5,
+   "title": "Smoke-Test the Prompt on a Held-Out Sample Before the Paid Full Run",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/mission-dependency",
+   "stage": "coordination",
+   "hits": 5,
+   "title": "Mission Dependency Graph",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "futon-theory/progress-signal",
+   "stage": "perceive",
+   "hits": 5,
+   "title": "Progress Signal (Evidence Accumulation)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-22-bi",
+   "stage": "act",
+   "hits": 5,
+   "title": "䷕ 賁 (Bì) - Grace",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-39-jian",
+   "stage": "coordination",
+   "hits": 5,
+   "title": "䷦ 蹇 (Jiǎn) - Obstruction / Limping",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "math-strategy/missing-dependency-protocol",
+   "stage": "perceive",
+   "hits": 5,
+   "title": "Localize a Missing Dependency, Don't Rebuild Around It",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "memory/surface-the-closed-set",
+   "stage": "believe",
+   "hits": 5,
+   "title": "A Validator That Knows the Answer Must Publish It",
+   "status": "single",
+   "functional": [
+    "CTAU-CLASS"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "CTAU-CLASS"
+   ]
+  },
+  {
+   "pattern": "musn/off-trail-budget",
+   "stage": "select",
+   "hits": 5,
+   "title": "Off-Trail Budget",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "orchestration/pattern-warranted-choice-point",
+   "stage": "assurance",
+   "hits": 5,
+   "title": "Pattern-Warranted Choice-Points (and the NAG as the Undecidable Fork)",
+   "status": "single",
+   "functional": [
+    "R16"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R16"
+   ]
+  },
+  {
+   "pattern": "plos-npt-with-small-n/coreq-checklist-adherence",
+   "stage": "assurance",
+   "hits": 5,
+   "title": "Adhere to a Named Qualitative Reporting Checklist (COREQ)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "process-coherence/author-the-missing-pattern",
+   "stage": "believe",
+   "hits": 5,
+   "title": "The Library Is Incomplete by Construction — Author What the Argument Needs",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "process-coherence/is-this-even-a-problem",
+   "stage": "perceive",
+   "hits": 5,
+   "title": "Ask \"Is This Even a Problem?\" Before Engaging the Machinery",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "realtime/branch-parallelism",
+   "stage": "coordination",
+   "hits": 5,
+   "title": "Split Realtime Work Across Feature Branches",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "structure/backwards-induction",
+   "stage": "believe",
+   "hits": 5,
+   "title": "Backwards Induction and Forward Construction",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "system-coherence/present-graph-topology-not-adjacency-lists",
+   "stage": "believe",
+   "hits": 5,
+   "title": "Present the Graph as Edges, Not Per-Node Adjacency Lists",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "test-registry/bind-warrant-to-the-diff",
+   "stage": "assurance",
+   "hits": 5,
+   "title": "",
+   "status": "contested",
+   "functional": [
+    "R11",
+    "GRAIN-GATE",
+    "R12",
+    "R9"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "GRAIN-GATE",
+    "R11",
+    "R12",
+    "R9"
+   ]
+  },
+  {
+   "pattern": "war-room/wr-27-a-loop-is-born-instrumented-for-its-gain",
+   "stage": "perceive",
+   "hits": 5,
+   "title": "WR-27: A Loop Is Born Instrumented for Its Gain",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "workday/close-then-reframe-focus",
+   "stage": "select",
+   "hits": 5,
+   "title": "Close Then Reframe Focus",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "writing-coherence/first-mention-undischarged",
+   "stage": "act",
+   "hits": 5,
+   "title": "Discharge the Term at First Mention",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "writing-coherence/meta-title",
+   "stage": "act",
+   "hits": 5,
+   "title": "Title the Section by What It Says, Not What It Discusses",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "agent/student-dispatch",
+   "stage": "coordination",
+   "hits": 4,
+   "title": "Student Dispatch",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cascade-construction/read-what-exists-first",
+   "stage": "perceive",
+   "hits": 4,
+   "title": "Read The Requirement, The Implementation And The Live State Before Proposing Patterns",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cascade-construction/run-it-on-a-real-case",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Run The Constructed Cascade On A Real Recorded Case Before Building Anything",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "cascades/repointable-declarations",
+   "stage": "believe",
+   "hits": 4,
+   "title": "Repointable Declarations",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "contracts/declare-the-reductions",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Declare What The Runtime Does Not Preserve",
+   "status": "contested",
+   "functional": [
+    "R8",
+    "R4",
+    "R5",
+    "CTAU-TOKEN",
+    "R6",
+    "R14",
+    "R12",
+    "R17"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "CTAU-TOKEN",
+    "R12",
+    "R14",
+    "R17",
+    "R4",
+    "R5",
+    "R6",
+    "R8"
+   ]
+  },
+  {
+   "pattern": "data-mining/the-first-checkpoint-is-a-quality-probe",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "The First Checkpoint Is a Quality Probe — Gate Early, Then Let It Ride",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/devmap-scope-discipline",
+   "stage": "believe",
+   "hits": 4,
+   "title": "Devmap Scope Discipline",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/prototype-alignment-tension",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Prototype Alignment — Tension & Readiness Check",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "devmap-coherence/status-keywords",
+   "stage": "believe",
+   "hits": 4,
+   "title": "Devmap Status Keywords",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "fulab/pattern-propose",
+   "stage": "believe",
+   "hits": 4,
+   "title": "Agent Pattern Proposal",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "fulab/proof-commit",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Proof-Conformant Commit",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-52-gen",
+   "stage": "select",
+   "hits": 4,
+   "title": "䷳ 艮 (Gèn) - Keeping Still (Mountain)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "iching/hexagram-63-jiji",
+   "stage": "perceive",
+   "hits": 4,
+   "title": "䷾ 既濟 (Jì Jì) - After Completion",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "inbox-zero/escalate-by-who-can-act",
+   "stage": "coordination",
+   "hits": 4,
+   "title": "",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "library-coherence/library-readme-sync",
+   "stage": "believe",
+   "hits": 4,
+   "title": "Canon ↔ README Sync Ritual",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "library-coherence/llm-argument-scan",
+   "stage": "believe",
+   "hits": 4,
+   "title": "Assemble Library Arguments via Summary Scan",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/declare-scope",
+   "stage": "select",
+   "hits": 4,
+   "title": "Declare Scope and Exit Condition",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/expensive-move-consent",
+   "stage": "select",
+   "hits": 4,
+   "title": "Consent for Expensive Moves",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/tool-name-hygiene",
+   "stage": "act",
+   "hits": 4,
+   "title": "Tool Name Hygiene",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "musn/use-requires-evidence",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Use Requires Evidence",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "pacspine/indicators-checker",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Pattern 11 — Indicators Checker",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "plos-npt-with-small-n/research-questions-stated-early",
+   "stage": "believe",
+   "hits": 4,
+   "title": "State the Research Questions Explicitly and Early",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "realtime/loop-recovery-actions",
+   "stage": "act",
+   "hits": 4,
+   "title": "Realtime Loop Recovery Actions",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "stack-coherence/ready-blocked-triage",
+   "stage": "perceive",
+   "hits": 4,
+   "title": "Ready/Blocked/Triage Classifier",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "structure/unresolved-tensions-at-closure",
+   "stage": "believe",
+   "hits": 4,
+   "title": "What Tensions Would We Leave Unresolved If We Closed Here?",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "structure/what-problem-is-this-actually-solving",
+   "stage": "believe",
+   "hits": 4,
+   "title": "What Problem Is This Actually Solving?",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "structure/whose-question-is-this",
+   "stage": "perceive",
+   "hits": 4,
+   "title": "Whose Question Is This?",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "test-registry/rerun-when-the-warrant-fails",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Full Rerun Only When The Warrant Fails Or The Lane Demands It",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "war-machine/operational-not-decorative",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Operational Not Decorative",
+   "status": "contested",
+   "functional": [
+    "R2",
+    "R8",
+    "R19",
+    "R1",
+    "CTAU-CLASS",
+    "R13",
+    "R14",
+    "R11",
+    "GRAIN-GATE",
+    "R16",
+    "R12",
+    "R20",
+    "R17",
+    "R9"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "CTAU-CLASS",
+    "GRAIN-GATE",
+    "R1",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R16",
+    "R17",
+    "R19",
+    "R2",
+    "R20",
+    "R8",
+    "R9"
+   ]
+  },
+  {
+   "pattern": "workshop/honest-holes-gate-composed-claims",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Honest Holes Gate Composed Claims",
+   "status": "contested",
+   "functional": [
+    "R2",
+    "R8",
+    "R19",
+    "R12"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R12",
+    "R19",
+    "R2",
+    "R8"
+   ]
+  },
+  {
+   "pattern": "workshop/records-carry-warrant",
+   "stage": "assurance",
+   "hits": 4,
+   "title": "Records Carry Warrant",
+   "status": "contested",
+   "functional": [
+    "R2",
+    "R8",
+    "R19",
+    "R7",
+    "R5",
+    "CTAU-CLASS",
+    "R11",
+    "GRAIN-GATE",
+    "R16",
+    "R10",
+    "R17"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "CTAU-CLASS",
+    "GRAIN-GATE",
+    "R10",
+    "R11",
+    "R16",
+    "R17",
+    "R19",
+    "R2",
+    "R5",
+    "R7",
+    "R8"
+   ]
+  },
+  {
+   "pattern": "writing-coherence/meet-the-reader-where-they-are",
+   "stage": "act",
+   "hits": 4,
+   "title": "Meet the Reader Where They Are",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "writing-coherence/stale-reference-after-restructure",
+   "stage": "perceive",
+   "hits": 4,
+   "title": "Audit the Downstream After Restructure",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "aif/placeholder-is-load-bearing",
+   "stage": "evaluate",
+   "hits": 3,
+   "title": "Placeholder Is Load-Bearing",
+   "status": "contested",
+   "functional": [
+    "R2",
+    "R7",
+    "R4",
+    "CTAU-TOKEN"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R2",
+    "R7"
+   ]
+  },
+  {
+   "pattern": "cascades/edges-earn-permanence",
+   "stage": "believe",
+   "hits": 3,
+   "title": "Edges Earn Permanence",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "control/effort-estimation",
+   "stage": "evaluate",
+   "hits": 3,
+   "title": "Effort Estimation with Token & Human Time",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "coordination/bind-promotion-to-post-repair-replay",
+   "stage": "assurance",
+   "hits": 3,
+   "title": "Bind Promotion to Post-Repair Replay",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  },
+  {
+   "pattern": "coordination/session-durability-check",
+   "stage": "assurance",
+   "hits": 3,
+   "title": "",
+   "status": "contested",
+   "functional": [
+    "R10",
+    "R20"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "R10",
+    "R20"
+   ]
+  },
+  {
+   "pattern": "data-mining/constrain-extraction-to-the-downstream-vocabulary",
+   "stage": "believe",
+   "hits": 3,
+   "title": "Constrain an Extracted Field to the Downstream Vocabulary; Default to the Common Case",
+   "status": "contested",
+   "functional": [
+    "R19",
+    "R1",
+    "CTAU-CLASS",
+    "R15"
+   ],
+   "topic": [],
+   "cross-stage": [
+    "CTAU-CLASS",
+    "R15",
+    "R19"
+   ]
+  },
+  {
+   "pattern": "devmap-coherence/ifr-f4-passaddhi",
+   "stage": "assurance",
+   "hits": 3,
+   "title": "IFR — FUTON4 GravPad / Memory Atelier (passaddhi)",
+   "status": "unbid",
+   "functional": [],
+   "topic": [],
+   "cross-stage": []
+  }
+ ],
+ "nodes": {
+  "R2": {
+   "stage": "PERCEIVE",
+   "band": "loop",
+   "functional": 5,
+   "topic": 0
+  },
+  "R8": {
+   "stage": "PERCEIVE",
+   "band": "loop",
+   "functional": 5,
+   "topic": 0
+  },
+  "R19": {
+   "stage": "PERCEIVE",
+   "band": "loop",
+   "functional": 5,
+   "topic": 0
+  },
+  "R1": {
+   "stage": "BELIEVE",
+   "band": "loop",
+   "functional": 2,
+   "topic": 0
+  },
+  "R3": {
+   "stage": "BELIEVE",
+   "band": "loop",
+   "functional": 0,
+   "topic": 0
+  },
+  "R3a": {
+   "stage": "BELIEVE",
+   "band": "loop",
+   "functional": 1,
+   "topic": 0
+  },
+  "R7": {
+   "stage": "BELIEVE",
+   "band": "loop",
+   "functional": 4,
+   "topic": 0
+  },
+  "R4": {
+   "stage": "EVALUATE",
+   "band": "loop",
+   "functional": 3,
+   "topic": 0
+  },
+  "R5": {
+   "stage": "EVALUATE",
+   "band": "loop",
+   "functional": 3,
+   "topic": 0
+  },
+  "CTAU-TOKEN": {
+   "stage": "EVALUATE",
+   "band": "loop",
+   "functional": 3,
+   "topic": 0
+  },
+  "CTAU-CLASS": {
+   "stage": "EVALUATE",
+   "band": "loop",
+   "functional": 5,
+   "topic": 0
+  },
+  "R6": {
+   "stage": "SELECT",
+   "band": "loop",
+   "functional": 4,
+   "topic": 0
+  },
+  "R13": {
+   "stage": "SELECT",
+   "band": "loop",
+   "functional": 1,
+   "topic": 0
+  },
+  "R14": {
+   "stage": "SELECT",
+   "band": "loop",
+   "functional": 3,
+   "topic": 0
+  },
+  "R15": {
+   "stage": "SELECT",
+   "band": "loop",
+   "functional": 1,
+   "topic": 0
+  },
+  "R11": {
+   "stage": "SELECT",
+   "band": "loop",
+   "functional": 6,
+   "topic": 0
+  },
+  "GRAIN-GATE": {
+   "stage": "SELECT",
+   "band": "loop",
+   "functional": 3,
+   "topic": 0
+  },
+  "R16": {
+   "stage": "ACT",
+   "band": "loop",
+   "functional": 3,
+   "topic": 0
+  },
+  "R10": {
+   "stage": "PERCEIVE",
+   "band": "assurance",
+   "functional": 3,
+   "topic": 0
+  },
+  "R12": {
+   "stage": "BELIEVE",
+   "band": "assurance",
+   "functional": 5,
+   "topic": 0
+  },
+  "R20": {
+   "stage": "EVALUATE",
+   "band": "assurance",
+   "functional": 3,
+   "topic": 0
+  },
+  "R17": {
+   "stage": "SELECT",
+   "band": "assurance",
+   "functional": 5,
+   "topic": 0
+  },
+  "R9": {
+   "stage": "ACT",
+   "band": "assurance",
+   "functional": 4,
+   "topic": 0
+  }
+ }
+}

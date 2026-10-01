@@ -1,0 +1,17 @@
+{:node "R4"
+ :priming [{:claim "The catalogue places R4 in the EVALUATE loop band and labels it Forward model." :symbol "R4" :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn" :line 26}
+           {:claim "The equation registry defines R4's output as Q(o|pi), importing the current belief, observation model, transition model, policy, and horizon." :symbol ":Q-o-pi" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 262}
+           {:claim "machineRollout constructs a horizon-indexed predicted-outcome distribution from the machine's current trajectory belief, refusing absent belief, zero depth, or a policy outside the machine policy set." :symbol "DarkTower.WarMachine.Proof2.RolloutAtMachine.machineRollout" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/RolloutAtMachine.lean" :line 77}
+           {:claim "tokenLikelihood supplies R4's observation kernel as the product of per-token false-negative and false-positive adjudication probabilities." :symbol "DarkTower.WarMachine.TokenObservation.tokenLikelihood" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/TokenObservation.lean" :line 46}
+           {:claim "machineCoApplyKernel binds the transition kernel to the containment order derived from the same interpreted patterns." :symbol "DarkTower.WarMachine.Proof2.CoApplicationAtMachine.machineCoApplyKernel" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/CoApplicationAtMachine.lean" :line 48}
+           {:claim "The live cascade rollout repeatedly pushes the token-state belief through the policy's step-specific precedence model and propagates typed refusals." :symbol "rollout" :file "/home/joe/code/futon2/src/futon2/aif/cascade_model_manifest.clj" :line 486}]
+ :bids [{:pattern "translation/test-by-reproducing-behaviour" :kind :functional :strength :strong
+         :code {:lang :lean :symbol "DarkTower.WarMachine.Proof2.CoApplicationAtMachine.machineKernel_differs_at_other_order" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/CoApplicationAtMachine.lean" :line 215}
+         :how "The theorem uses a known fixture as a falsifier and attributes the changed one-step prediction specifically to substituting a different descent order while holding patterns and state fixed."}
+        {:pattern "aif/placeholder-is-load-bearing" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "with-pattern-theta" :file "/home/joe/code/futon2/src/futon2/aif/cascade_model_manifest.clj" :line 282}
+         :how "The function performs the THEN's provenance part by turning an absent theta into an explicit value with :theta-source :documented-default, but it does not perform deletion replay or deletion sequencing."}
+        {:pattern "contracts/declare-the-reductions" :kind :functional :strength :partial
+         :code {:lang :lean :symbol "DarkTower.WarMachine.TokenObservation.predictedOutcome_eq_rolloutState" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/TokenObservation.lean" :line 164}
+         :how "The theorem states and enforces the precise zero-false-negative and zero-false-positive conditions under which predicted observations reduce to predicted states, covering the THEN's conditional-agreement declaration but not every runtime reduction."}]
+ :declined [{:pattern "cascade-construction/run-it-on-a-real-case" :why "R4 rolls candidate policies forward, but these declarations do not run a newly constructed cascade against a recorded source case before implementation or use the comparison to reshape its design."}]}

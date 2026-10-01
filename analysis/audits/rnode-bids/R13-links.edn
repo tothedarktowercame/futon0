@@ -1,0 +1,47 @@
+{:node "R13"
+ :priming [{:claim "The catalogue places R13 in the SELECT stage and loop band, labeled Temporal policy depth."
+            :symbol "R13"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 31}
+           {:claim "The equations registry defines R13's T as one temporal horizon shared by every risk-plus-ambiguity summand, with step-indexed preferences C_tau."
+            :symbol ":depth"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 350}
+           {:claim "The formal carrier computes expected free energy by summing stepTerm over exactly the T future indices of a depth-T policy."
+            :symbol "DarkTower.WarMachine.PolicyHorizon.horizonEFE"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/PolicyHorizon.lean"
+            :line 61}
+           {:claim "Extending a policy horizon by one preserves all earlier terms and adds exactly the risk-plus-ambiguity term at T+1."
+            :symbol "DarkTower.WarMachine.PolicyHorizon.horizonEFE_succ"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/PolicyHorizon.lean"
+            :line 120}
+           {:claim "For a fixed candidate and distribution-valued preferences, expected free energy is monotone as the prediction horizon grows."
+            :symbol "DarkTower.WarMachine.PolicyHorizon.horizonEFE_mono"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/PolicyHorizon.lean"
+            :line 136}
+           {:claim "The runtime cascade ranker requires one positive common horizon for the whole candidate family and returns a typed missing-common-horizon refusal otherwise."
+            :symbol "futon2.aif.efe/rank-cascade-actions"
+            :file "/home/joe/code/futon2/src/futon2/aif/efe.clj"
+            :line 1066}
+           {:claim "The scalar runtime implementation iterates tau from 1 through the declared horizon, adding risk and ambiguity computed from the same rolled-out step."
+            :symbol "futon2.aif.cascade-model-manifest/horizon-g"
+            :file "/home/joe/code/futon2/src/futon2/aif/cascade_model_manifest.clj"
+            :line 632}]
+ :bids [{:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.cascade-sources/check-file!"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_sources.clj"
+                :line 135}
+         :how "The declaration validator makes the horizon artifact operational by refusing a present :horizon-steps value unless it is a positive integer, so invalid evidence changes behavior and forces correction."}]
+ :declined [{:pattern "futon-theory/stop-the-line"
+             :why "Invalid or absent horizons refuse the affected scoring path, but R13 does not implement the pattern's global STOPPED state, diagnostic permissions, notifications, or write/commit blockade."}
+            {:pattern "contracts/declare-the-reductions"
+             :why "R13's documentation describes reductions and scope, but its executable declarations compute or validate a horizon rather than carry out the contract-entry declaration practice."}
+            {:pattern "aif/term-to-channel-traceability"
+             :why "R13 enforces a common temporal index and can emit per-step values, but it does not persist the required per-term observation keys, precision channels, intermediates, and final contributions."}
+            {:pattern "workday/single-focus-amidst-agenda"
+             :why "A shared policy horizon is not discretionary work allocation, and the runtime neither identifies a FOCUS item nor minimizes execution depth for other agenda items."}
+            {:pattern "workday/close-then-reframe-focus"
+             :why "R13 evaluates candidates through a declared temporal horizon but does not close a current focus artifact or choose a successor from an overrun set."}]}

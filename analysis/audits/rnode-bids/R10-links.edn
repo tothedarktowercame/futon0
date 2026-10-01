@@ -1,0 +1,59 @@
+{:node "R10"
+ :priming [{:claim "The catalogue classifies R10 as the PERCEIVE-stage assurance-band node labelled Scheduled entrypoint."
+            :symbol "control-stages/R10"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 37}
+           {:claim "The equation registry explicitly classifies R10 as plumbing that runs no AIF equation."
+            :symbol ":plumbing"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 1893}
+           {:claim "The scheduled-dispatch boundary requires a named commission, tags it R10, requires the receipt to echo the commission identity and a dispatch identity, and refuses success if durable evidence recording fails."
+            :symbol "run-scheduled-dispatch!"
+            :file "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj"
+            :line 127}
+           {:claim "R10 makes a commission single-use by durably creating its reservation with CREATE_NEW and refusing an already-existing commission."
+            :symbol "reserve!"
+            :file "/home/joe/code/futon3c/src/futon3c/wm/r10_commission.clj"
+            :line 86}
+           {:claim "The commissioned click composes server-owned authority, reservation, runner invocation, dispatch evidence, and the final recorded transition while refusing a missing evidence store or a busy runner before reservation."
+            :symbol "commissioned-click!"
+            :file "/home/joe/code/futon3c/src/futon3c/wm/r10_click_adapter.clj"
+            :line 20}
+           {:claim "The route verifier checks a bounded ordered R10-to-tick-to-observation/predecessor-to-R8 chain, while explicitly refusing to treat its fixture authority as production authorization."
+            :symbol "verify-route!"
+            :file "/home/joe/code/futon2/src/futon2/aif/scheduled_route_evidence.clj"
+            :line 118}]
+ :bids [{:pattern "coordination/session-durability-check"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "run-scheduled-dispatch!"
+                :file "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj"
+                :line 127}
+         :how "The boundary appends the joined commission and dispatch receipt to the durable evidence store and throws :r10/recording-failed instead of returning success when persistence fails."}
+        {:pattern "orchestration/recorded-handoff"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "run-scheduled-dispatch!"
+                :file "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj"
+                :line 127}
+         :how "The code models the dispatch as a durable object joining a named commission, dispatch id, full receipt, author and timestamp, but it does not implement the pattern's return, commit-attribution or reviewer-verdict stages."}
+        {:pattern "workshop/records-carry-warrant"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "run-scheduled-dispatch!"
+                :file "/home/joe/code/futon3c/src/futon3c/social/coordination_ledger.clj"
+                :line 127}
+         :how "The emitted dispatch claim carries its complete linked commission and producer receipt as replayable inputs, but it does not attach a named derivation, corpus version or explicit assumption field."}]
+ :declined [{:pattern "agent/intent-handshake-is-binding"
+             :why "The commission binds an authorized dispatch identity and scope, but no agent restates intent, constraints and success criteria or records the pattern's acknowledgment event."}
+            {:pattern "futon-theory/mission-lifecycle"
+             :why "R10 enforces reserved-to-dispatched-to-recorded transitions for a commission, not the pattern's mission states and mission-specific transition requirements."}
+            {:pattern "orchestration/state-in-substrate-deltas-in-messages"
+             :why "R10 persists one-shot dispatch state, and the pattern explicitly says it does not apply to one-shot asynchronous handoffs."}
+            {:pattern "futon-theory/stop-the-line"
+             :why "R10 refuses an individual invalid dispatch or failed recording operation but does not enter a global STOPPED state that separately permits OBSERVE and VERIFY."}
+            {:pattern "futon-theory/progress-signal"
+             :why "R10 records one dispatch evidence event but does not calculate evidence accumulation, velocity, momentum, completion or mission health."}]}

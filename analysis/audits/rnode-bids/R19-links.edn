@@ -1,0 +1,39 @@
+{:node "R19"
+ :priming [{:claim "The catalogue places R19 in the PERCEIVE loop band as the extractor that reads mission preference C from the target mission at click time." :symbol "R19 catalogue row" :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn" :line 21}
+           {:claim "The registry defines C as cued outcomes read from mission text, requiring exactly-once spans and typed absences rather than substituted values." :symbol ":mission-preference" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 675}
+           {:claim "The formal reader collects outcomes selected by a predeclared cue table, refuses the whole result when any found cue fails verification, and reports a typed absence when none match." :symbol "DarkTower.WarMachine.Proof2.MissionPreference.readOutcomes" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/MissionPreference.lean" :line 150}
+           {:claim "A completed reading becomes a preference distribution only when the mission states a weighting; otherwise missionPreference returns unstatedWeighting." :symbol "DarkTower.WarMachine.Proof2.MissionPreference.missionPreference" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/MissionPreference.lean" :line 195}
+           {:claim "The companion click-time product U(t) preserves the distinction between a recorded empty universe and the typed absence of any recorded universe." :symbol "DarkTower.WarMachine.Proof2.TargetUniverse.targetUniverse" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/TargetUniverse.lean" :line 80}
+           {:claim "The runtime reading records the extractor output, text SHA-256, served-by status, and every quoted proposal's verified result or typed refusal without dropping failures." :symbol "futon2.aif.served-by-reading/reading" :file "/home/joe/code/futon2/src/futon2/aif/served_by_reading.clj" :line 109}
+           {:claim "The flight invokes its read step before reading wants and reads the target mission text during that click, publishing validated criteria and retaining non-publications as typed needs." :symbol "futon2.aif.flight-runner/read-fn" :file "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj" :line 654}
+           {:claim "The declared R19-to-R5 theory edge remains unrealised: current risk consumes preferences assembled from wants and schedules rather than the outcomes extracted by this reader." :symbol ":mission-preference" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 675}]
+ :bids [{:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure :symbol "futon2.wm.extract-outcomes/verify" :file "/home/joe/code/futon2/scripts/futon2/wm/extract_outcomes.clj" :line 799}
+         :how "verify derives failures from quote occurrence, line, and code-point-span evidence, and read-outcomes turns any such failure into refusal of the whole extracted C."}
+        {:pattern "workshop/records-carry-warrant"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.served-by-reading/reading" :file "/home/joe/code/futon2/src/futon2/aif/served_by_reading.clj" :line 109}
+         :how "The reading carries its input digest, extracted span evidence, and each proposal with its verification result, but it does not attach a corpus or registry version."}
+        {:pattern "translation/test-by-reproducing-behaviour"
+         :kind :functional
+         :strength :partial
+         :code {:lang :lean :symbol "DarkTower.WarMachine.Proof2.MissionPreference.duplicateQuoteRefusesAll" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/MissionPreference.lean" :line 258}
+         :how "The theorem supplies a falsifier text with one valid and one duplicated cue and proves the formal translation reproduces the runtime rule that one bad cue refuses all outcomes, but it does not classify later disagreements by side."}
+        {:pattern "data-mining/constrain-extraction-to-the-downstream-vocabulary"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure :symbol "futon2.wm.extract-outcomes/extract" :file "/home/joe/code/futon2/scripts/futon2/wm/extract_outcomes.clj" :line 513}
+         :how "extract emits only outcomes selected by the predeclared cue-rules table and records the matching rule IDs, implementing the fixed-vocabulary part without the pattern's frequency anchors or few-shot negatives."}
+        {:pattern "workshop/honest-holes-gate-composed-claims"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.served-by-reading/reading" :file "/home/joe/code/futon2/src/futon2/aif/served_by_reading.clj" :line 109}
+         :how "The composed reading explicitly emits typed absences for missing quotes, instance anchors, or admitted outcomes, though it does not maintain the pattern's per-dimension s4 publication gate."}]
+ :declined [{:pattern "test-registry/bind-warrant-to-the-diff" :why "R19 pins spans to a mission-text SHA and refuses mismatches, but it does not review code diffs, manifests, or execution environments."}
+            {:pattern "futon-theory/mission-interface-signature" :why "R19 reads mission contents but does not require or validate the mission-wide input/output port tables and composition contract named by this pattern."}
+            {:pattern "contracts/declare-the-reductions" :why "The reader records local unverifiable co-reference as reader-claimed, but it does not author correspondence entries declaring reductions between Lean and runtime carriers."}
+            {:pattern "aif/placeholder-is-load-bearing" :why "TargetUniverse proves that defaulting absence to an empty universe would flatten scores, but R19 does not perform the pattern's deletion replay or placeholder-provenance procedure."}
+            {:pattern "cascade-construction/read-what-exists-first" :why "The click reads mission text and runtime sources, but it does not read and compare the pattern's four construction authorities or record their disagreements."}]}

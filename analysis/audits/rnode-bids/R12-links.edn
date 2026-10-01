@@ -1,0 +1,83 @@
+{:node "R12"
+ :priming [{:claim "The catalogue places R12 in the BELIEVE stage's assurance band and labels it Two-layer calibration."
+            :symbol "R12"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 38}
+           {:claim "The equation registry classifies R12 as plumbing that runs no AIF equation."
+            :symbol ":plumbing"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 1893}
+           {:claim "R12 admits a returned artifact only when its node and commission identity match and an approving check names the exact return and commission."
+            :symbol "futon2.aif.calibration-admission/admit!"
+            :file "/home/joe/code/futon2/src/futon2/aif/calibration_admission.clj"
+            :line 6}
+           {:claim "The first calibration layer is explicitly restricted to prediction-versus-model-realisation consistency and can never serve as value evidence."
+            :symbol "futon2.aif.calibration-cycle/layer-1-label"
+            :file "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj"
+            :line 19}
+           {:claim "The second calibration layer records a typed not-available result because no independently witnessed prediction/outcome pair has an authorized eligibility rule."
+            :symbol "futon2.aif.calibration-cycle/layer-2-not-available"
+            :file "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj"
+            :line 26}
+           {:claim "The narrow outer-loop apparatus updates each action class's Beta posterior from emission opportunities and attributable operator follow-through, retaining evidence references and pre/post parameters."
+            :symbol "futon2.aif.intrinsic-values/next-record"
+            :file "/home/joe/code/futon2/src/futon2/aif/intrinsic_values.clj"
+            :line 133}
+           {:claim "The live report scans persisted hyperparameter-update records and selects the latest Beta posterior and intrinsic value for each action class."
+            :symbol "futon2.report.war-machine/scan-r12-apparatus"
+            :file "/home/joe/code/futon2/scripts/futon2/report/war_machine.clj"
+            :line 7074}
+           {:claim "The report routes the R12 scan through the calibration admission cycle before exposing it to the rendering consumer."
+            :symbol "futon2.report.war-machine/generate-war-machine"
+            :file "/home/joe/code/futon2/scripts/futon2/report/war_machine.clj"
+            :line 7133}]
+ :bids [{:pattern "contracts/declare-the-reductions"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.calibration-cycle/layer-1-label"
+                :file "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj"
+                :line 19}
+         :how "The declaration states exactly that Layer 1 preserves only model-consistency information and must never be treated as value evidence, while the adjacent Layer 2 declaration names the unavailable independent-evidence remainder."}
+        {:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.calibration-cycle/check-apparatus"
+                :file "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj"
+                :line 57}
+         :how "The checker derives status from the returned scan and emits specific refusal verdicts for malformed availability, posterior, and count evidence, which the admission boundary prevents the consumer from accepting."}
+        {:pattern "process/fake-done-via-binary-closure"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.calibration-cycle/check-apparatus"
+                :file "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj"
+                :line 57}
+         :how "The checker examines every per-class posterior in the underlying scan and refuses a mismatched class-count summary instead of trusting the summary count as evidence."}
+        {:pattern "workshop/honest-holes-gate-composed-claims"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.calibration-cycle/layer-2-not-available"
+                :file "/home/joe/code/futon2/src/futon2/aif/calibration_cycle.clj"
+                :line 26}
+         :how "R12 emits and renders an in-band typed absence for the missing independent-evidence layer, but it does not implement the pattern's general per-dimension publication gate."}
+        {:pattern "test-registry/bind-warrant-to-the-diff"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.calibration-admission/admit!"
+                :file "/home/joe/code/futon2/src/futon2/aif/calibration_admission.clj"
+                :line 6}
+         :how "The boundary accepts only a check tied to the exact commission and returned artifact and otherwise gives typed refusals, but it does not compare manifests, diff coverage, or environment fingerprints."}]
+ :declined [{:pattern "workshop/records-carry-warrant"
+             :why "R12 carries commission identities, evidence references, and an explicit missing-evidence reason, but it does not attach the required input digest, corpus version, and replayable derivation to every claim."}
+            {:pattern "coordination/bind-promotion-to-post-repair-replay"
+             :why "R12 preserves Layer 2 as unavailable, but its code neither requests an independent post-repair replay nor controls certificate promotion."}
+            {:pattern "coordination/session-durability-check"
+             :why "The persistence function returns errors without rejecting outer-loop success, so it does not enforce the pattern's durability gate."}
+            {:pattern "cascade-construction/run-it-on-a-real-case"
+             :why "The runtime reads recorded posterior state, but it does not run a constructed cascade on a real case and compare it with a counterfactual."}
+            {:pattern "contracts/holder-states-the-claim"
+             :why "R12 labels its two calibration layers precisely, but it has no Lean-runtime correspondence holder or holder-specific verifier."}]}

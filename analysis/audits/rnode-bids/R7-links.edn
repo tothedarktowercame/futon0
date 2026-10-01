@@ -1,0 +1,67 @@
+{:node "R7"
+ :priming [{:claim "The catalogue places R7 in the BELIEVE stage and loop band, labelled Evidence-channel precision."
+            :symbol "R7"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 25}
+           {:claim "Production channel precision keeps a bounded error-history and computes inverse regularized prediction-error variance, with the preference-gap signal retained separately as salience."
+            :symbol "update-channel-precision"
+            :file "/home/joe/code/futon2/src/futon2/aif/precision.clj"
+            :line 116}
+           {:claim "The runtime updates R7 once per belief micro-step from present, non-excluded channel errors and immediately uses the resulting state to precision-weight those errors."
+            :symbol "r3-inner-loop"
+            :file "/home/joe/code/futon2/scripts/futon2/report/war_machine.clj"
+            :line 6139}
+           {:claim "The machine-level formalization computes channel precision from the complete window of the machine's state-prediction errors, propagating collection failure rather than dropping an absent step."
+            :symbol "DarkTower.WarMachine.Proof2.ChannelPrecisionAtMachine.machineChannelPrecision"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ChannelPrecisionAtMachine.lean"
+            :line 78}
+           {:claim "R7 also formalizes categorical likelihood precision by Gibbs-reweighting each likelihood row with exponent zeta and renormalizing it."
+            :symbol "DarkTower.WarMachine.LikelihoodPrecision.precisionLikelihood"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/LikelihoodPrecision.lean"
+            :line 32}
+           {:claim "R7's adjudication-rate evidence consists only of records pairing a recorded verdict with the independently admitted reference appropriate to the requested error kind."
+            :symbol "DarkTower.WarMachine.Proof2.AdjudicationCounts.paired"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/AdjudicationCounts.lean"
+            :line 132}
+           {:claim "Before adjudication records are counted, channel identity filters labels to those stamped with the currently loaded mechanism name and source."
+            :symbol "DarkTower.WarMachine.Proof2.ChannelIdentity.currentPopulation"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ChannelIdentity.lean"
+            :line 16}]
+ :bids [{:pattern "aif/term-to-channel-traceability"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "weighted-error"
+                :file "/home/joe/code/futon2/src/futon2/aif/precision.clj"
+                :line 212}
+         :how "For each channel, weighted-error records the adaptive precision, weighted intermediate error, and preserved per-call precision together, implementing the pattern's channel/precision/intermediate traceability but not its complete per-G-term provenance schema."}
+        {:pattern "process/fake-done-via-binary-closure"
+         :kind :functional
+         :strength :partial
+         :code {:lang :lean
+                :symbol "DarkTower.WarMachine.Proof2.AdjudicationCounts.cellOf"
+                :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/AdjudicationCounts.lean"
+                :line 139}
+         :how "cellOf re-derives numerator and denominator from every qualifying underlying record and returns typed unobserved for an empty denominator, though it does not itself gate advancement."}
+        {:pattern "workshop/records-carry-warrant"
+         :kind :functional
+         :strength :partial
+         :code {:lang :lean
+                :symbol "DarkTower.WarMachine.Proof2.ChannelIdentity.recordsFor"
+                :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ChannelIdentity.lean"
+                :line 19}
+         :how "recordsFor admits evidence to counting only through labels whose mechanism identity matches the loaded name and source, carrying a checkable provenance condition but not the pattern's full query, digest, and registry-version warrant."}
+        {:pattern "aif/placeholder-is-load-bearing"
+         :kind :functional
+         :strength :partial
+         :code {:lang :lean
+                :symbol "DarkTower.WarMachine.Proof2.AdjudicationCounts.kernelSupply"
+                :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/AdjudicationCounts.lean"
+                :line 271}
+         :how "kernelSupply represents the checkable zero-kernel default as the distinct zeroKernelAssumed constructor and refuses partial measurements, making this placeholder self-describing although it does not perform the pattern's deletion replay."}]
+ :declined [{:pattern "aif/measurement-window-hygiene"
+             :why "R7 maintains a bounded rolling prediction-error history, but it does not bracket an intervention with a tight baseline and settled post-action readback or reject independently confounded pairs."}
+            {:pattern "problems/deliberate-refusals-allude-to-unwritten-patterns"
+             :why "R7 has typed refusal outcomes, but its code does not create a problems-library pattern naming the choices and owners behind each refusal."}
+            {:pattern "data-mining/constrain-extraction-to-the-downstream-vocabulary"
+             :why "R7 uses closed channel and outcome types, but it is not an extraction component enforcing a downstream label allowlist or rare-label default."}]}

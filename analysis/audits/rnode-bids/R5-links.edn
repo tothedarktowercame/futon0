@@ -1,0 +1,59 @@
+{:node "R5"
+ :priming [{:claim "The catalogue places R5 in the loop-band EVALUATE stage and labels it Expected free energy core."
+            :symbol "R5"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 27}
+           {:claim "The equation registry assigns R5 the predictive-outcome risk equation, importing the predicted outcome distribution and preferences."
+            :symbol ":risk"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 270}
+           {:claim "R5's exact risk definition is an extended-real KL that returns top when a positively predicted outcome has zero preferred mass."
+            :symbol "DarkTower.WarMachine.OutcomeRiskKL.outcomeRisk"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/OutcomeRiskKL.lean"
+            :line 33}
+           {:claim "R5 computes ambiguity as predicted-state-mass-weighted observation entropy."
+            :symbol "DarkTower.WarMachine.Holes.ambiguity"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Holes.lean"
+            :line 7221}
+           {:claim "The model-bound construction derives both risk and ambiguity from one generative model, reading, belief, and supplied preference distribution."
+            :symbol "DarkTower.WarMachine.MachineQ.machineExpectedFreeEnergy"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineQ.lean"
+            :line 280}
+           {:claim "The runtime persists canonical G as risk plus ambiguity while separately naming the engineering controller augmentation and its component terms."
+            :symbol "futon2.aif.efe/compute-efe"
+            :file "/home/joe/code/futon2/src/futon2/aif/efe.clj"
+            :line 481}
+           {:claim "At target grain, R5 defines a candidate-versus-baseline delta over the target's own token universe."
+            :symbol "DarkTower.WarMachine.Proof2.TargetGrainG.localDelta"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/TargetGrainG.lean"
+            :line 60}
+           {:claim "The runtime scores every supported candidate and ranks candidates by ascending controller score, while refusing a mixed cascade/non-cascade candidate list."
+            :symbol "futon2.aif.efe/rank-actions"
+            :file "/home/joe/code/futon2/src/futon2/aif/efe.clj"
+            :line 1438}]
+ :bids [{:pattern "contracts/declare-the-reductions"
+         :kind :functional
+         :strength :strong
+         :code {:lang :lean
+                :symbol "DarkTower.WarMachine.Proof2.TargetGrainG.totalG_sub_eq_localDelta_sub_outside"
+                :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/TargetGrainG.lean"
+                :line 133}
+         :how "The theorem states both the conditionally localised quantity and the exact outside-token term that the local reduction fails to preserve."}
+        {:pattern "aif/term-to-channel-traceability"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.efe/compute-efe"
+                :file "/home/joe/code/futon2/src/futon2/aif/efe.clj"
+                :line 481}
+         :how "The scorer persists the prediction, per-channel decomposition, intermediate term values, final contributions, and risk/ambiguity modes beside the score, but it does not explicitly enumerate consumed precision channels for every term."}
+        {:pattern "workshop/records-carry-warrant"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.efe/compute-efe"
+                :file "/home/joe/code/futon2/src/futon2/aif/efe.clj"
+                :line 481}
+         :how "The returned score record carries its prediction, decomposed inputs, preference stack, modes, augmentation terms, and goal-outcome replay inputs, but lacks the complete input digest and corpus or registry version required by the pattern."}]
+ :declined [{:pattern "aif/placeholder-is-load-bearing"
+             :why "R5 contains defaults and typed absences, but the declarations inspected do not replay proposed term deletions against placeholder-bearing arenas or enforce deletion sequencing."}]}

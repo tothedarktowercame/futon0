@@ -1,0 +1,59 @@
+{:node "R1"
+ :priming [{:claim "The catalogue places R1 in the BELIEVE stage and loop band and labels it Belief state."
+            :symbol "R1"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 22}
+           {:claim "The equation registry defines R1's mu as the belief-state trajectory initialized at q0, updated by the categorical filter, and represented by typed refusal when predictive probability is zero."
+            :symbol ":belief-state"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 223}
+           {:claim "The runtime carrier is a map from entity identifiers to categorical distributions over a declared seven-status vocabulary."
+            :symbol "status-set"
+            :file "/home/joe/code/futon2/src/futon2/aif/belief.clj"
+            :line 37}
+           {:claim "A fresh R1 entity belief is initialized as a uniform prior over the status vocabulary."
+            :symbol "initial-belief-state"
+            :file "/home/joe/code/futon2/src/futon2/aif/belief.clj"
+            :line 64}
+           {:claim "The runtime categorical filter predicts with B, conditions with the tempered A likelihood, validates its model inputs, and returns typed refusal or omission instead of silently fabricating a posterior."
+            :symbol "categorical-filter-step"
+            :file "/home/joe/code/futon2/src/futon2/aif/belief.clj"
+            :line 341}
+           {:claim "Across runtime ticks, R1 keeps carried posteriors for surviving entities, gives new entities fresh priors, and drops entities outside the current domain."
+            :symbol "reconcile-belief-carry"
+            :file "/home/joe/code/futon2/src/futon2/aif/belief.clj"
+            :line 529}
+           {:claim "The Lean R1 declaration closes the loop from q0 by binding each successful belief to the next machineStep and preserving any StepAbsence as an error."
+            :symbol "DarkTower.WarMachine.Proof2.BeliefAtMachine.machineTrajectory"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefAtMachine.lean"
+            :line 76}
+           {:claim "Lean proves that an impossible categorical update stops the trajectory at updateRefused, so no later belief is carried past that failure."
+            :symbol "DarkTower.WarMachine.Proof2.BeliefAtMachine.impossibleObservationRefuses"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefAtMachine.lean"
+            :line 158}]
+ :bids [{:pattern "data-mining/constrain-extraction-to-the-downstream-vocabulary"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.belief/categorical-filter-step"
+                :file "/home/joe/code/futon2/src/futon2/aif/belief.clj"
+                :line 341}
+         :how "The filter enforces status-set as an allowlist for incoming event types and emits a typed omitted-observation for an out-of-vocabulary value, implementing the pattern's vocabulary gate but not its prompting, frequency-anchor, or few-shot-negative practices."}
+        {:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :partial
+         :code {:lang :lean
+                :symbol "DarkTower.WarMachine.Proof2.BeliefAtMachine.impossibleObservationRefuses"
+                :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefAtMachine.lean"
+                :line 158}
+         :how "The theorem makes failed belief validation operational by forcing an impossible observation to change the trajectory into updateRefused, though it does not itself derive documentary status or force a correction workflow."}]
+ :declined [{:pattern "orchestration/state-in-substrate-deltas-in-messages"
+             :why "R1 stores belief and consumes evidence events, but this code does not implement the pattern's two-party shared coordination substrate, append protocol, read-before-response rule, or closure marker."}
+            {:pattern "futon-theory/mission-lifecycle"
+             :why "The seven statuses describe entity beliefs rather than mission states, and R1 does not enforce the pattern's mission transition requirements or audit trail."}
+            {:pattern "memory/surface-the-closed-set"
+             :why "R1 declares and validates status-set, but the inspected code does not derive or publish a caller-facing schema enum from it or verify equality against a serving specification."}
+            {:pattern "data-mining/checkpoint-the-long-run"
+             :why "Belief carry preserves state across ticks, but it is not per-item durable checkpointing and does not implement the pattern's exception-local record construction or atomic checkpoint writes."}
+            {:pattern "aif/placeholder-is-load-bearing"
+             :why "Uniform priors and defaults affect R1 behavior, but the code does not replay their deletion against an arena or attach the provenance fields required by the pattern."}]}

@@ -1,0 +1,18 @@
+{:node "GRAIN-GATE"
+ :priming [{:claim "The catalogue places GRAIN-GATE in the SELECT stage and loop band, classifies it as a support restriction, and labels it the grain gate for admissible-enactment support." :symbol "GRAIN-GATE" :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn" :line 35}
+           {:claim "The equations registry classifies GRAIN-GATE as plumbing rather than an equation node because it imports no equation symbol and instead restricts admissible enactments." :symbol ":plumbing" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 1887}
+           {:claim "grain-gate compares the candidate and planned-attempt grain declarations and returns either :pass or a typed refusal." :symbol "futon2.aif.grain-gate/grain-gate" :file "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj" :line 65}
+           {:claim "grain-gate refuses the first failed condition in order: missing grain key, key mismatch, scope mismatch, missing resolver evidence, resolver absence, argument-list mismatch, or evidence-file SHA mismatch." :symbol "futon2.aif.grain-gate/grain-gate" :file "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj" :line 65}
+           {:claim "resolver-arglist locates the declared resolver's actual defn argument vector in the cited source, permitting the gate to compare executable shape with recorded evidence." :symbol "futon2.aif.grain-gate/resolver-arglist" :file "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj" :line 47}
+           {:claim "enact-fn asks for a plan before the grain-bearing step, runs grain-gate, requests the commit only on :pass, and otherwise records :grain-gate-refused without committing." :symbol "futon2.aif.flight-runner/enact-fn" :file "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj" :line 846}]
+ :bids [{:pattern "war-machine/operational-not-decorative" :kind :functional :strength :strong
+         :code {:lang :clojure :symbol "futon2.aif.flight-runner/enact-fn" :file "/home/joe/code/futon2/src/futon2/aif/flight_runner.clj" :line 846}
+         :how "enact-fn makes the grain declaration operational by running its validator before commit and withholding the commit when the validator returns a refusal."}
+        {:pattern "test-registry/bind-warrant-to-the-diff" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.grain-gate/grain-gate" :file "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj" :line 65}
+         :how "grain-gate implements the code-shape portion by checking the recorded resolver path, argument list, and SHA and returning typed mismatches, but it does not check chains, diff coverage, manifests, or environment fingerprints."}
+        {:pattern "workshop/records-carry-warrant" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.grain-gate/grain-gate" :file "/home/joe/code/futon2/src/futon2/aif/grain_gate.clj" :line 65}
+         :how "grain-gate requires an enactment's grain claim to carry resolver evidence comprising a function, path, argument list, and optional content digest, then checks that evidence against source, but it does not attach corpus versions or replay assumptions."}]
+ :declined [{:pattern "process/fake-done-via-binary-closure" :why "The gate checks one planned enactment against its grain evidence, not every unit behind a binary completion denominator or summary bit."}
+            {:pattern "futon-theory/mission-interface-signature" :why "The grain record has a declared comparator and evidence shape, but this code neither requires mission input/output port tables nor verifies their complete composition."}]}

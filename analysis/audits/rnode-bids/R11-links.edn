@@ -1,0 +1,87 @@
+{:node "R11"
+ :priming [{:claim "The catalogue places R11 in the SELECT stage and loop band, labelled Hierarchical shared budget."
+            :symbol "R11"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 34}
+           {:claim "The equation registry classifies R11 as plumbing that runs no registered AIF equation."
+            :symbol ":plumbing"
+            :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn"
+            :line 1893}
+           {:claim "R11 removes cost/utility-dominated alternatives and resolves equal options by a stable lexical proposal-id key."
+            :symbol "pareto-frontier"
+            :file "/home/joe/code/futon2/src/futon2/aif/hierarchical_budget.clj"
+            :line 28}
+           {:claim "R11 chooses the maximum-utility feasible portfolio, charges each selected proposal at its leaf and every ancestor, and returns per-node usage as a replayable budget witness."
+            :symbol "arbitrate"
+            :file "/home/joe/code/futon2/src/futon2/aif/hierarchical_budget.clj"
+            :line 157}
+           {:claim "The ranked-field boundary normalizes separate proposal fields, applies an at-most-one choice per field, and records a self-contained replay receipt."
+            :symbol "select-ranked-proposal-fields"
+            :file "/home/joe/code/futon2/src/futon2/aif/hierarchical_budget_adapter.clj"
+            :line 74}
+           {:claim "The verified authority boundary obtains complete R6 support, costs, utilities, memberships, and budgets from independently configured SHA-pinned files before invoking the R11 mapping."
+            :symbol "resolve-and-map"
+            :file "/home/joe/code/futon2/src/futon2/aif/machine_budget_authority.clj"
+            :line 150}
+           {:claim "Production entry is deliberately refused because no independently owned production authority configuration is installed, so the implemented arbiter is not currently a live production computation."
+            :symbol "common-metadata!"
+            :file "/home/joe/code/futon2/src/futon2/aif/machine_budget_authority.clj"
+            :line 120}]
+ :bids [{:pattern "workshop/records-carry-warrant"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.machine-budget-authority/resolve-and-map"
+                :file "/home/joe/code/futon2/src/futon2/aif/machine_budget_authority.clj"
+                :line 150}
+         :how "The boundary derives the decision from SHA-pinned versioned source records and returns their verification metadata together with the mapper's complete replay receipt."}
+        {:pattern "translation/test-by-reproducing-behaviour"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.machine-budget-mapping/replay"
+                :file "/home/joe/code/futon2/src/futon2/aif/machine_budget_mapping.clj"
+                :line 215}
+         :how "The replay function recomputes a recorded R11 mapping and compares every retained field with known output, but it does not itself supply falsifier cases or attribute disagreements."}
+        {:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.machine-portfolio-restriction/verify-e1!"
+                :file "/home/joe/code/futon2/src/futon2/aif/machine_portfolio_restriction.clj"
+                :line 17}
+         :how "The verifier makes R11 evidence operational by throwing typed refusals when its schema, source verification, portfolio coverage, identity, or accounting disagrees, though it does not derive a separate status surface."}
+        {:pattern "futon-theory/stop-the-line"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.machine-portfolio-restriction/verify-e1!"
+                :file "/home/joe/code/futon2/src/futon2/aif/machine_portfolio_restriction.clj"
+                :line 17}
+         :how "Any failed R11 portfolio invariant raises a typed exception and prevents selection from continuing, implementing the blocking step without the pattern's persistent stopped-state and diagnostic operations."}
+        {:pattern "test-registry/bind-warrant-to-the-diff"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "futon2.aif.machine-budget-authority/read-source!"
+                :file "/home/joe/code/futon2/src/futon2/aif/machine_budget_authority.clj"
+                :line 77}
+         :how "The authority reader accepts source bytes only when their SHA-256 exactly matches the configured pin and otherwise refuses with expected and actual hashes, covering source identity but not the pattern's full chain, diff, and environment checks."}
+        {:pattern "process/fake-done-via-binary-closure"
+         :kind :functional
+         :strength :strong
+         :code {:lang :clojure
+                :symbol "futon2.aif.machine-portfolio-restriction/verify-e1!"
+                :file "/home/joe/code/futon2/src/futon2/aif/machine_portfolio_restriction.clj"
+                :line 17}
+         :how "The verifier checks the underlying complete R6 support and refuses unless selected plus rejected occurrences and ordered accounting cover that full denominator, rather than trusting R11's completion flags."}]
+ :declined [{:pattern "workday/single-focus-amidst-agenda"
+             :why "R11's at-most-one alternative per proposal field is a feasibility constraint, not protection of one discretionary agenda focus."}
+            {:pattern "musn/off-trail-budget"
+             :why "Both mechanisms mention budgets, but R11 selects a feasible costed portfolio and does not warn, pause, or request expanded scope as trail usage approaches a limit."}
+            {:pattern "memory/surface-the-closed-set"
+             :why "R11 validates several closed schemas and formats but does not publish a caller-facing enum or derive one from those validators."}
+            {:pattern "mission-coherence/logic-model-before-code"
+             :why "The runtime enforces budget invariants directly; it does not construct or query the prescribed core.logic/pldb abstract-trace model."}
+            {:pattern "futon-theory/mission-interface-signature"
+             :why "The R11 functions have documented data shapes, but they do not enforce that every mission document declares typed input and output ports and wiring."}]}

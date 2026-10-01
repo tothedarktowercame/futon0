@@ -1,0 +1,19 @@
+{:node "R16"
+ :priming [{:claim "The catalogue places R16 in the ACT stage and loop band, labelled Grounded enactment." :symbol "R16" :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn" :line 36}
+           {:claim "The equations registry defines R16's action u_t as the action-marginal argmax over the machine policy posterior." :symbol ":action" :file "/home/joe/code/futon2/holes/labs/wm-contract/aif-equations.edn" :line 452}
+           {:claim "machineAction computes R16's action from machinePosterior, returning the selected action or preserving a typed absence without supplying a default." :symbol "DarkTower.WarMachine.Proof2.ActionAtMachine.machineAction" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ActionAtMachine.lean" :line 88}
+           {:claim "machineAction_isBayesAction proves that every successful machine action maximizes the summed posterior mass of policies whose current action is that action." :symbol "DarkTower.WarMachine.Proof2.ActionAtMachine.machineAction_isBayesAction" :file "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ActionAtMachine.lean" :line 303}
+           {:claim "The production bayes-choice aggregates posterior probability by current action, refuses missing or empty action support, and deterministically selects the greatest mass with ascending-name tie-breaking." :symbol "futon2.aif.cascade-selection/bayes-choice" :file "/home/joe/code/futon2/src/futon2/aif/cascade_selection.clj" :line 131}
+           {:claim "The runtime R16 boundary admits only the first passing act gate, executes it, records its enactment audit, and attaches the realized outcome while converting thrown failures into typed enactment-failed records." :symbol "futon2.aif.enact/close-loop!" :file "/home/joe/code/futon2/src/futon2/aif/enact.clj" :line 323}]
+ :bids [{:pattern "war-machine/operational-not-decorative" :kind :functional :strength :strong
+         :code {:lang :clojure :symbol "futon2.aif.enact/close-loop!" :file "/home/joe/code/futon2/src/futon2/aif/enact.clj" :line 323}
+         :how "close-loop! derives explicit gate verdicts and permits enactment only for the first :pass, so a failed validation changes behavior by preventing execution and remaining visible in the audit record."}
+        {:pattern "orchestration/pattern-warranted-choice-point" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.enact/enact!" :file "/home/joe/code/futon2/src/futon2/aif/enact.clj" :line 276}
+         :how "enact! records the chosen cascade's pattern identifiers and prediction source beside the enacted result, implementing the autonomous-pick warrant record but not the pattern's operator-facing NAG gap and unblock fields."}
+        {:pattern "workshop/records-carry-warrant" :kind :functional :strength :partial
+         :code {:lang :clojure :symbol "futon2.aif.enact/enact!" :file "/home/joe/code/futon2/src/futon2/aif/enact.clj" :line 276}
+         :how "enact! carries the executor source, cascade inputs, predicted score source, realized construction counts, and typed failure into the enactment audit, but it does not attach the full input digest and corpus or registry version required by the pattern."}]
+ :declined [{:pattern "orchestration/recorded-handoff" :why "R16's full-loop path dispatches authors and reviewers and records jobs and verdicts, but the inspected declarations do not implement the pattern's required mission-INSTANTIATE record or Mission commit trailer."}
+            {:pattern "futon-theory/coordination-protocol" :why "The full-loop runtime performs a bounded author-review-revision exchange, but it does not implement the pattern's complete PUR/PSR cycle, channel-priority ladder, or timed escalation protocol."}
+            {:pattern "futon-theory/mission-lifecycle" :why "R16 records enactment and review phases rather than enforcing the pattern's declared mission-state transitions from greenfield through done."}]}
