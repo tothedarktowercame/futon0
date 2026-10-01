@@ -5,14 +5,16 @@
 | Stage | Practice | Subject (topical) | Mixed | Pattern IDs | Hits | Hit share | Provisional hits |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | perceive | 138 | 270 | 16 | 78 | 424 | 10.44% | 19 |
-| believe | 307 | 374 | 78 | 162 | 759 | 18.69% | 31 |
+| believe | 294 | 374 | 78 | 161 | 746 | 18.37% | 18 |
 | evaluate | 88 | 114 | 20 | 54 | 222 | 5.47% | 17 |
 | select | 223 | 204 | 67 | 100 | 494 | 12.16% | 17 |
 | act | 231 | 206 | 112 | 108 | 549 | 13.52% | 20 |
-| assurance | 694 | 264 | 31 | 160 | 989 | 24.35% | 31 |
+| assurance | 707 | 264 | 31 | 161 | 1,002 | 24.67% | 44 |
 | coordination | 315 | 171 | 31 | 87 | 517 | 12.73% | 14 |
 | none | 0 | 106 | 2 | 37 | 108 | 2.66% | 4 |
 | **Total** | **1,996** | **1,709** | **357** | **786** | **4,062** | **100.00%** | **153** |
+
+(Joe reclassified `test-registry/bind-the-subject` believe→assurance on 2026-10-01, after the first build: 13 hits moved, believe 759→746, assurance 989→1,002; kind stays practice, so the totals row is unchanged.)
 
 The "Provisional hits" column separates hits whose label comes from the 97 Kimi-pack additions (**153 hits, 3.77%**) from the 3,909 hits labelled by the original 689 (whose stage×kind distribution is the difference of the columns). Provisional labels are lower-confidence: treat their stage attribution as arguable pending Joe's blind check. Counts are count integrals of retrieval events by inherited stage — not token cost, hours, or proof that Joe performed the pattern. The hits attach to **4,059 distinct operator turns, 82.87% of 4,898 eligible recorded turns**.
 
