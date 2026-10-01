@@ -1,0 +1,234 @@
+[
+ {
+  "node": "R2",
+  "stage": "PERCEIVE",
+  "band": "loop",
+  "label": "Structured observation",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ObservationAtMachine.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ObservedInterpretation.lean"
+  ]
+ },
+ {
+  "node": "R8",
+  "stage": "PERCEIVE",
+  "band": "loop",
+  "label": "Present-fit mismatch",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyAtMachine.lean"
+  ]
+ },
+ {
+  "node": "R19",
+  "stage": "PERCEIVE",
+  "band": "loop",
+  "label": "Mission preference (C read at click time)",
+  "basis": "C is read from the target mission's own text at click time, so it is a step of the click and not a vector the stack must have prepared. Code: futon2 scripts/futon2/wm/extract_outcomes.clj (the three disciplines; verify-proposed-link; extract); src/futon2/aif/served_by_reading.clj (proposal, read-link, reading: quotes to code-point spans pinned to the text sha256); src/futon2/aif/flight_runner.clj read-fn (the flight's read step). Stage PERCEIVE, not EVALUATE: the step reads text and emits cued outcomes, which WM-EQUATIONS-DELTA-D section 2.1 hosts at R2 with imports [:mission-text]; its output reaches R5 as the R2 to R5 edge carrying C, which the delta records as a theory edge the code does not yet carry. The catalogue names this the C vector and the drawing shows it as an unnumbered Preferences node (r-wr-factoring.edn:55); this row gives it the R19 id the delta uses. The C that enters risk today is still built at src/futon2/aif/cascade_problems.clj:150-174 from :want and the live-c scales, not from this step.",
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/MissionPreference.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/TargetUniverse.lean"
+  ]
+ },
+ {
+  "node": "R1",
+  "stage": "BELIEVE",
+  "band": "loop",
+  "label": "Belief state",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefAtMachine.lean"
+  ]
+ },
+ {
+  "node": "R3",
+  "stage": "BELIEVE",
+  "band": "loop",
+  "label": "Belief update",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/LaplaceBeliefUpdate.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/BeliefStepAtMachine.lean"
+  ]
+ },
+ {
+  "node": "R3a",
+  "stage": "BELIEVE",
+  "band": "loop",
+  "label": "Prediction-error projection",
+  "basis": "R3a is in BELIEVE because it reads the BELIEF and not only the world: futon2/scripts/futon2/report/war_machine.clj:5971 calls futon2.aif.free-energy/channel-prediction-error with the observation AND (get predictions ch), where predictions is belief/predict-observation over the loop's current belief (war_machine.clj:5959-5966), the call sits inside the R3 belief-update micro-step loop (war_machine.clj:5955-6098) and re-runs as that belief moves, and its only measured consumer is R7 at war_machine.clj:5989 (futon2.aif.precision/update-precision-state), which the drawing puts in BELIEVE. Producer futon2/src/futon2/aif/free_energy.clj:203. Edges and receipt: p4ng/empirics-futon/control-map-edges.edn:130-139, receipt futon2/holes/labs/wm-contract/pair/R2-R7-delivery.edn; typed :mediator/R3a at p4ng/empirics-futon/hyper-edge-schema.edn:171. RETIRED 2026-09-10 (C498): this was the MEASURED_MEMBERS stand-in; the drawing now draws R3a at translate(334 250) under BELIEVE inside the loop band, so stage/band are lifted from the drawing and only label/kind/basis remain as explicit source metadata. The eps HOSTING question (:R8 vs :R3a, aif-equations.edn:77) was NOT settled by the U50 entry and is not settled here.",
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/StatePredictionErrorAtMachine.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/SensoryPredictionError.lean"
+  ]
+ },
+ {
+  "node": "R7",
+  "stage": "BELIEVE",
+  "band": "loop",
+  "label": "Evidence-channel precision",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/LikelihoodPrecision.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/AdjudicationCounts.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ChannelIdentity.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ChannelPrecisionAtMachine.lean"
+  ]
+ },
+ {
+  "node": "R4",
+  "stage": "EVALUATE",
+  "band": "loop",
+  "label": "Forward model",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/CoApplicationAtMachine.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/RolloutAtMachine.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/TokenObservation.lean"
+  ]
+ },
+ {
+  "node": "R5",
+  "stage": "EVALUATE",
+  "band": "loop",
+  "label": "Expected free energy core",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Holes.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineQ.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/OutcomeRiskKL.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/TargetGrainG.lean"
+  ]
+ },
+ {
+  "node": "CTAU-TOKEN",
+  "stage": "EVALUATE",
+  "band": "loop",
+  "label": "Token C_tau (per-problem lane + constructor)",
+  "basis": "CTAU-I, from CTAU-D (futon3c e30a3a54, claude-2). The TOKEN C_tau family: cascade_model_manifest/preference-member builds C_tau over subsets of the problem's token universe from the cascade spec's :want and :evidence with lam and mu, under the schedule's :placement, and horizon-g-sparse* takes risk against it per tau. Consumed by the per-problem lane's R5 step (war_machine.clj:5905-5935) and the constructor's :evaluate-g (constructed-candidate-g :6065). Stage EVALUATE because the family exists to be scored against, not to be read. It is a node and an equation row (:preference-schedule): the registry needed a place for the family that is distinct from :mission-preference's READ outcomes at R19, because HOP 1 (text -> outcomes -> spec) is not wired and the two must not share a box. NOT the family the tick's joint decision scores; that is CTAU-CLASS.",
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/PolicyHorizon.lean"
+  ]
+ },
+ {
+  "node": "CTAU-CLASS",
+  "stage": "EVALUATE",
+  "band": "loop",
+  "label": "Class C_tau (the tick's joint decision)",
+  "basis": "CTAU-I, from CTAU-D. The CLASS C_tau family: war_machine/class-observation-model holds the literal {focused 55/100, related 35/100, unrelated 5/100, stop-the-line 5/100} at tau = T and unit mass on :ending/not-yet-evaluated at tau < T, and cascade_observation_scoring reads (get-in model [:class-preference tau]) -- its own comment says classes are NOT routed through preference-member. Reached by the tick's joint decision through efe.clj:1111's (contains? opts :observation-model) branch. Stage EVALUATE, beside CTAU-TOKEN, because the two are alternative scorers of the same position and the figure should show that there are two. The relation -> class -> class-model hops that feed it are VERIFIED wires of the M-wm-wiring map, not edges of this registry.",
+  "lean-files": []
+ },
+ {
+  "node": "R6",
+  "stage": "SELECT",
+  "band": "loop",
+  "label": "Candidate action space",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/CascadePolicySet.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ContainmentOrderAtMachine.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ExpectedFreeEnergyPosterior.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PolicyPosteriorAtMachine.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/PrefixFreeEnergyPosterior.lean"
+  ]
+ },
+ {
+  "node": "R13",
+  "stage": "SELECT",
+  "band": "loop",
+  "label": "Temporal policy depth",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/PolicyHorizon.lean"
+  ]
+ },
+ {
+  "node": "R14",
+  "stage": "SELECT",
+  "band": "loop",
+  "label": "Commitment temperature",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineTemperature.lean"
+  ]
+ },
+ {
+  "node": "R15",
+  "stage": "SELECT",
+  "band": "loop",
+  "label": "Hierarchy and timescale",
+  "basis": null,
+  "lean-files": []
+ },
+ {
+  "node": "R11",
+  "stage": "SELECT",
+  "band": "loop",
+  "label": "Hierarchical shared budget",
+  "basis": null,
+  "lean-files": []
+ },
+ {
+  "node": "GRAIN-GATE",
+  "stage": "SELECT",
+  "band": "loop",
+  "label": "Grain gate (admissible-enactment support)",
+  "basis": "The grain gate defines no symbol any equation imports; it restricts which enactments are admissible, the shape Clause T gives feasibility (membership in the policy support, not a term of G). Code: futon2 src/futon2/aif/grain_gate.clj:65-127 (grain-gate: first typed refusal wins among :grain-not-declared, :grain-mismatch, :scope-mismatch, :resolver-missing, :arglist-mismatch, :sha-mismatch, else :pass); box :r5-grain-gate. Stage SELECT because selection ranges over the support it restricts. Declared as a node, not an equation, per WM-EQUATIONS-DELTA-D section 4, which says a drawn box is needed for it to appear in Figure 6A.",
+  "lean-files": []
+ },
+ {
+  "node": "R16",
+  "stage": "ACT",
+  "band": "loop",
+  "label": "Grounded enactment",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/ActionAtMachine.lean"
+  ]
+ },
+ {
+  "node": "R10",
+  "stage": "PERCEIVE",
+  "band": "assurance",
+  "label": "Scheduled entrypoint",
+  "basis": null,
+  "lean-files": []
+ },
+ {
+  "node": "R12",
+  "stage": "BELIEVE",
+  "band": "assurance",
+  "label": "Two-layer calibration",
+  "basis": null,
+  "lean-files": []
+ },
+ {
+  "node": "R20",
+  "stage": "EVALUATE",
+  "band": "assurance",
+  "label": "Interoceptive tripwires",
+  "basis": null,
+  "lean-files": []
+ },
+ {
+  "node": "R17",
+  "stage": "SELECT",
+  "band": "assurance",
+  "label": "Structure learning",
+  "basis": null,
+  "lean-files": [
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/DirichletLearning.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/ModelReduction.lean",
+   "/home/joe/code/mathlib4/DarkTower/WarMachine/Proof2/EnactmentHabit.lean"
+  ]
+ },
+ {
+  "node": "R9",
+  "stage": "ACT",
+  "band": "assurance",
+  "label": "No self- certification",
+  "basis": null,
+  "lean-files": []
+ }
+]

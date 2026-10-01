@@ -1,0 +1,63 @@
+{:node "R14"
+ :priming [{:claim "The catalogue places R14 in the SELECT stage and loop band, labelled Commitment temperature."
+            :symbol "R14"
+            :file "/home/joe/code/p4ng/empirics-futon/control-stages.edn"
+            :line 32}
+           {:claim "R14 computes one of three temperature laws: spread temperature divided by floored gain, inverse floored gain, or a validated caller-supplied variational beta."
+            :symbol "DarkTower.WarMachine.MachineTemperature.machineTemperature"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineTemperature.lean"
+            :line 42}
+           {:claim "The three temperature laws produce pairwise-distinct values on one shared valid input, so the mode must be named before tau denotes a unique runtime quantity."
+            :symbol "DarkTower.WarMachine.MachineTemperature.threeLawsDisagree"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineTemperature.lean"
+            :line 180}
+           {:claim "At the variational policy-choice boundary R14 consumes positive beta as tau, applies gamma as its reciprocal, and refuses invalid temperature declarations."
+            :symbol "selection-posterior"
+            :file "/home/joe/code/futon2/src/futon2/aif/cascade_selection.clj"
+            :line 54}
+           {:claim "R14 forms policy scores as ln E minus G divided by tau, with the habit prior unscaled, and rejects nonpositive or nonfinite tau before scoring."
+            :symbol "selection-scores"
+            :file "/home/joe/code/futon2/src/futon2/aif/policy.clj"
+            :line 59}
+           {:claim "Increasing positive tau flattens score gaps, but with zero habit prior every positive tau preserves candidate ordering."
+            :symbol "DarkTower.WarMachine.MachineTemperature.largerTemperatureFlattensScores"
+            :file "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineTemperature.lean"
+            :line 242}
+           {:claim "The live cascade decision records beta, gamma, tau, their source, the posterior, action marginal, exclusions, and tie-break beside the selected action."
+            :symbol "select-action-cascades"
+            :file "/home/joe/code/futon2/src/futon2/aif/policy.clj"
+            :line 338}]
+ :bids [{:pattern "contracts/declare-the-reductions"
+         :kind :functional
+         :strength :strong
+         :code {:lang :lean
+                :symbol "DarkTower.WarMachine.MachineTemperature.threeLawsDisagree"
+                :file "/home/joe/code/mathlib4/DarkTower/WarMachine/MachineTemperature.lean"
+                :line 180}
+         :how "The theorem explicitly declares that the three runtime temperature modes reduce the same valid input to different values, while the adjacent scoped theorems state exactly when the variational beta correspondence holds."}
+        {:pattern "aif/term-to-channel-traceability"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "selection-certificate"
+                :file "/home/joe/code/futon2/src/futon2/aif/policy.clj"
+                :line 285}
+         :how "The certificate persists each candidate's observation model, steps, consumed G, G terms, preference source, rate provenance, and returned score, but it does not uniformly expose an explicit precision-channel field for every term."}
+        {:pattern "war-machine/operational-not-decorative"
+         :kind :functional
+         :strength :partial
+         :code {:lang :clojure
+                :symbol "selection-posterior"
+                :file "/home/joe/code/futon2/src/futon2/aif/cascade_selection.clj"
+                :line 54}
+         :how "The runtime validates the declared temperature and candidate inputs and turns invalid declarations or an empty admissible support into typed refusals that prevent selection, covering the pattern's failure-changes-behaviour requirement for this boundary."}]
+ :declined [{:pattern "aif/placeholder-is-load-bearing"
+             :why "R14 labels empty cascades as non-actions and records their excluded mass, but its code does not perform the pattern's required counterfactual deletion replay."}
+            {:pattern "orchestration/pattern-warranted-choice-point"
+             :why "R14 records numerical selection provenance and the applied law, but it does not attach governing library pattern IDs or construct a warranted operator gate."}
+            {:pattern "war-room/wr-27-a-loop-is-born-instrumented-for-its-gain"
+             :why "R14 records gain and posterior quantities, but it does not compute the requested fraction of returned signals that changed subsequent action."}
+            {:pattern "contracts/holder-states-the-claim"
+             :why "The R14 certificate names the applied selection law and provenance, but the inspected declaration does not choose or enforce a contract holder class."}
+            {:pattern "translation/test-by-reproducing-behaviour"
+             :why "MachineTemperature states falsifying examples and correspondence theorems, but the declarations themselves do not run a translation against recorded source behaviour or attribute runtime disagreements."}]}
