@@ -53,3 +53,23 @@ Join methods on the surviving 4,062: 3,460 session-text-prefix, 602 operator-env
 - Component snapshots: [09-21 manifest](pattern-stage-manifest-2026-09-21.json), [10-01 manifest](pattern-stage-manifest-2026-10-01.json); raw 10-01 snapshot uncommitted at `storage/futon0/pattern-stage-2026-10-01/`.
 - Figure: [minard-operator-work-2026-10-01.html](minard-operator-work-2026-10-01.html), published at `https://zone.hyperreal.enterprises/wip/audits/minard-operator-work-2026-10-01.html`. `minard_operator_work.py` now takes `--start/--end/--joins/--manifest/--labels/--report/--template` with the 09-21 values as defaults; a default run reproduces the committed 09-21 page byte for byte (verified with `cmp`). The lower panel's token data ends at the forensic report's 2026-09-21 cutoff; the hatched region after that is marked "no token data", not zero.
 - All `*-2026-09-21*` files are byte-identical to their committed versions.
+
+## Families
+
+One panel per stage in [minard-families-2026-10-01.html](minard-families-2026-10-01.html) (published at https://zone.hyperreal.enterprises/wip/audits/minard-families-2026-10-01.html): each stage band opened into its top families (up to 8 + grey other), same y-scale in every panel, marker at 2026-09-21T17:19Z where the +97 provisional labels begin. Families above 5% of their stage's hits in either window (script-generated; "before → after" hits with within-window shares):
+
+**perceive** (424 hits): features 42 (14%) → 22 (18%); problems 42 (14%) → 11 (9%); futon-theory 25 (8%) → 12 (10%); war-room 32 (11%) → 3 (2%); stack-coherence 30 (10%) → 3 (2%); cascade-construction 5 (2%) → 8 (7%); (other families) 96 (32%) → 56 (46%)
+
+**believe** (746 hits): problems 61 (11%) → 24 (11%); war-room 47 (9%) → 12 (6%); enrichment 28 (5%) → 5 (2%); or2 12 (2%) → 14 (7%); cascade-construction 12 (2%) → 12 (6%); (other families) 305 (57%) → 122 (58%)
+
+**evaluate** (222 hits): memory 39 (24%) → 10 (17%); problems 26 (16%) → 16 (28%); aif 19 (12%) → 4 (7%); transition 10 (6%) → 2 (3%); snatch 9 (5%) → 2 (3%); math-strategy 4 (2%) → 6 (10%); (other families) 47 (29%) → 15 (26%)
+
+**select** (494 hits): war-room 53 (16%) → 13 (8%); problems 39 (12%) → 25 (16%); musn 40 (12%) → 19 (12%); futon-theory 23 (7%) → 14 (9%); iching 21 (6%) → 10 (6%); eight-gates 18 (5%) → 2 (1%); p4ng 10 (3%) → 10 (6%); (other families) 116 (35%) → 62 (39%)
+
+**act** (549 hits): iching 68 (17%) → 30 (19%); peripherals 42 (11%) → 17 (11%); writing-coherence 39 (10%) → 4 (3%); cycle-machine 30 (8%) → 10 (6%); inbox-zero 23 (6%) → 17 (11%); math-formalization 24 (6%) → 11 (7%); data-mining 24 (6%) → 8 (5%); vsatlatarium 16 (4%) → 12 (8%); (other families) 125 (32%) → 49 (31%)
+
+**assurance** (1002 hits): devmap-coherence 104 (15%) → 31 (10%); memory 89 (13%) → 19 (6%); problems 55 (8%) → 22 (7%); test-registry 21 (3%) → 43 (14%); stack-coherence 40 (6%) → 10 (3%); storage 36 (5%) → 13 (4%); (other families) 286 (42%) → 154 (49%)
+
+**coordination** (517 hits): orchestration 81 (21%) → 16 (13%); futon-theory 51 (13%) → 22 (17%); social 28 (7%) → 21 (17%); pacspine 25 (6%) → 5 (4%); cycle-machine 20 (5%) → 2 (2%); (other families) 142 (36%) → 46 (37%)
+
+**none** (108 hits): problems 39 (51%) → 25 (81%); iiching 22 (29%) → 4 (13%); math-strategy 8 (10%) → 0 (0%); futon-theory 4 (5%) → 0 (0%); iching 2 (3%) → 2 (6%)
