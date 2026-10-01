@@ -4,14 +4,18 @@
 <style>
 :root{color-scheme:light;--surface:#faf9f5;--ink:#242522;--muted:#66665e;--rule:#d6d5cc;--agent:#535750;--perceive:#2a78d6;--believe:#eb6834;--evaluate:#1baf7a;--select:#eda100;--act:#e87ba4;--assurance:#008300;--coordination:#4a3aa7;--none:#99998f}
 :root[data-theme=dark]{color-scheme:dark;--surface:#171b20;--ink:#eeeee7;--muted:#b5b9bd;--rule:#45494e;--agent:#b6bab5;--perceive:#3987e5;--believe:#d95926;--evaluate:#199e70;--select:#c98500;--act:#d55181;--assurance:#008300;--coordination:#9085e9;--none:#898d91}
-*{box-sizing:border-box}body{background:var(--surface);color:var(--ink);font:15px/1.5 system-ui,sans-serif;margin:0;padding:32px 3vw}main{max-width:1550px;margin:auto}header{display:flex;justify-content:space-between;gap:20px;align-items:start}h1{font:normal 36px/1.2 Georgia,serif;margin:0 0 8px}h2{font:normal 23px Georgia,serif}p{margin:8px 0}.subtitle{color:var(--muted);max-width:1020px}button,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:6px 10px;border-radius:3px}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 8px;font-size:13px}.key{display:flex;align-items:center;gap:7px}.swatch{width:18px;height:10px;background:var(--c)}.scroll{overflow-x:auto}svg{display:block;width:100%;min-width:1120px;height:auto}svg text{fill:var(--ink);font:13px system-ui,sans-serif}.small{font-size:11px}.muted{fill:var(--muted)}.heading{font-size:16px;font-weight:600}.direct{font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}.rule{stroke:var(--rule);fill:none}.leader{stroke:var(--muted);stroke-width:1;fill:none}.hit{cursor:crosshair;fill:transparent;stroke:none}.hit:focus{outline:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3}.tooltip{position:fixed;z-index:5;display:none;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--rule);box-shadow:0 2px 12px #0002;padding:10px 12px;max-width:340px;font-size:13px}.notes{border-top:1px solid var(--rule);padding-top:16px;max-width:1180px;font-size:13px}.notes strong{font-weight:600}details{margin-top:18px}summary{cursor:pointer}table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}th,td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}th:first-child,td:first-child{text-align:left}caption{text-align:left;margin:12px 0}a{color:var(--ink)}.readout{font-size:13px;min-height:24px;color:var(--muted)}@media print{body{padding:0}button,select,.tooltip{display:none}svg{min-width:0}details{break-inside:avoid}}
+*{box-sizing:border-box}body{background:var(--surface);color:var(--ink);font:15px/1.5 system-ui,sans-serif;margin:0;padding:32px 3vw}main{max-width:1550px;margin:auto}header{display:flex;justify-content:space-between;gap:20px;align-items:start}h1{font:normal 36px/1.2 Georgia,serif;margin:0 0 8px}h2{font:normal 23px Georgia,serif}p{margin:8px 0}.subtitle{color:var(--muted);max-width:1020px}button,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:6px 10px;border-radius:3px}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 8px;font-size:13px}.key{display:flex;align-items:center;gap:7px}.swatch{width:18px;height:10px;background:var(--c)}.scroll{overflow-x:auto}svg{display:block;width:100%;min-width:1120px;height:auto}svg text{fill:var(--ink);font:13px system-ui,sans-serif}.small{font-size:11px}.muted{fill:var(--muted)}.heading{font-size:16px;font-weight:600}.direct{font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}.rule{stroke:var(--rule);fill:none}.leader{stroke:var(--muted);stroke-width:1;fill:none}.hit{cursor:crosshair;fill:transparent;stroke:none}.hit:focus{outline:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3}.tooltip{position:fixed;z-index:5;display:none;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--rule);box-shadow:0 2px 12px #0002;padding:10px 12px;max-width:340px;font-size:13px}.notes{border-top:1px solid var(--rule);padding-top:16px;max-width:1180px;font-size:13px}.notes strong{font-weight:600}details{margin-top:18px}summary{cursor:pointer}table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}th,td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}th:first-child,td:first-child{text-align:left}caption{text-align:left;margin:12px 0}a{color:var(--ink)}.readout{font-size:13px;min-height:24px;color:var(--muted)}path[data-stream]{cursor:pointer}path[data-stream]:focus{outline:none;stroke:var(--ink);stroke-width:1.5}rect.hit[data-stage]{cursor:pointer}.key{cursor:pointer;border:1px solid var(--rule);border-radius:3px;padding:3px 8px}.dimmed{opacity:.18}.fam-head{display:flex;gap:16px;align-items:center;margin:20px 0 2px}#family-panel{margin-bottom:8px}@media print{body{padding:0}button,select,.tooltip{display:none}svg{min-width:0}details{break-inside:avoid}}
 </style>
 <main>
 <header><div><h1>Joe’s work, and the work that ran on</h1><p class="subtitle">22 August–1 October 2026 · UTC · a horizontal count integral, after Minard</p><p class="subtitle" id="headline"></p></div><label>Appearance <select id="theme" aria-label="Appearance"><option value="auto">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
 <div class="legend" id="legend" aria-label="Stage legend"></div>
 <div class="scroll"><svg id="chart" viewBox="0 0 1450 900" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Stage-labelled operator stream and autonomous Codex activity</title><desc id="chart-desc">A centred, variable-thickness band split by eight stage categories over time. An independent lower panel shows logged token totals in recorded operator gaps. Exact daily data is available below.</desc></svg></div>
-<div class="readout" id="readout" aria-live="polite">Hover a stream or gap, or focus it with the keyboard, for exact values.</div>
-<p class="breakout"><strong>Each stage opened up by pattern family:</strong> <a href="minard-families-2026-10-01.html">eight breakout panels, one per stage (perceive, believe, evaluate, select, act, assurance, coordination, none)</a>, on a shared scale, with the 21 September label change marked.</p>
+<div class="readout" id="readout" aria-live="polite">Hover a stream or gap, or focus it with the keyboard, for exact values. Click a stage band (or its legend entry) to open it into its pattern families.</div>
+<div id="family-panel" hidden>
+<div class="fam-head"><button id="back-all" type="button">← All stages</button><strong id="fam-title"></strong></div>
+<div class="scroll"><svg id="fchart" viewBox="0 0 1450 260" role="img" aria-label="Pattern-family breakdown of the opened stage"></svg></div>
+</div>
+<p class="breakout"><strong>Interactive:</strong> clicking (or pressing Enter on) a stage band in the main stream, or its legend entry, opens that stage into its top pattern families directly below the figure — same clock, same thickness scale — with a button back to the all-stages view. The <a href="minard-families-2026-10-01.html">eight standalone family panels</a> remain available as a separate page.</p>
 <section class="notes">
 <p><strong>Read the widths carefully.</strong> Upper thickness = stage-labelled rank-one retrieval hits attached to operator turns, not cost. A trailing three-day arithmetic mean uses available days at the left edge (one, then two, then three); the curves linearly join daily means. Dates use the operator-turn timestamp. The faint tick row gives unsmoothed daily totals. Two turns carry multiple retrievals. October 1 is partial, through 21:12 UTC; the previous cutoff of September 21, 17:19 UTC is where the lower panel’s data ends.</p>
 <p><strong>The integral column uses exact raw counts.</strong> Smoothing changes the area inside a finite window; its geometric area is not the count integral. Two-pixel surface-coloured separator strokes are visual cuts, not quantities; very thin slices can be obscured. “None” keeps its measured thickness, in grey, rather than an invented minimum.</p>
@@ -21,11 +25,13 @@
 </section>
 <details><summary>Daily counts by stage — exact, unsmoothed (table view)</summary><div class="scroll" id="daily-table"></div></details>
 <details><summary>Operator-gap windows and logged Codex tokens (table view)</summary><div class="scroll" id="gap-table"></div></details>
+<details><summary>Family tables: hits per window, shares, top patterns</summary><div class="scroll" id="family-tables"></div></details>
 <details><summary>Source fingerprints and regeneration</summary><p>Regenerate with <code>minard_operator_work.py</code> or the sibling <code>minard-operator-work-20260921.py</code> Marimo notebook. Editing the stage EDN changes the next rendering; human blind-check answers are not silently propagated to unreviewed patterns.</p><pre id="provenance" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
 </main><div id="tooltip" class="tooltip" role="tooltip"></div>
 <script>
 'use strict';
 const DATA=/*DATA*/;
+const FDATA=/*FAMILY_DATA*/;
 const ns='http://www.w3.org/2000/svg', svg=document.getElementById('chart');
 function el(tag,attrs={},parent=svg){const n=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);parent.appendChild(n);return n;}
 function text(x,y,value,cls='',attrs={}){const n=el('text',{x,y,class:cls,...attrs});n.textContent=value;return n;}
@@ -50,7 +56,8 @@ for(const a of annotations){const i=DATA.days.findIndex(d=>d.date===a.date),xx=x
 for(let j=0;j<DATA.stages.length;j++){
  const s=DATA.stages[j], coords=[[x0,...ys[0][j]],...ys.map((y,i)=>[x(dates[i]),...y[j]]),[x(cutoff),...ys.at(-1)[j]]];
  const path='M '+coords.map(v=>v[0]+','+v[1]).join(' L ')+' L '+coords.slice().reverse().map(v=>v[0]+','+v[2]).join(' L ')+' Z';
- el('path',{d:path,fill:`var(--${s})`,'clip-path':'url(#recorded)','data-stream':s});const sliceClip=el('clipPath',{id:'slice-'+s},defs);el('path',{d:path},sliceClip);
+ const band=el('path',{d:path,fill:`var(--${s})`,'clip-path':'url(#recorded)','data-stream':s,tabindex:0,role:'button','aria-label':s+' band — activate to open its pattern families'});
+ band.addEventListener('click',()=>activate(s));band.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(s);}});const sliceClip=el('clipPath',{id:'slice-'+s},defs);el('path',{d:path},sliceClip);
  if(j>0)el('path',{d:'M '+coords.map(v=>v[0]+','+v[1]).join(' L '),fill:'none',stroke:'var(--surface)','stroke-width':2,'vector-effect':'non-scaling-stroke','clip-path':'url(#recorded)'});
  const yy=249+j*29;el('rect',{x:1180,y:yy-10,width:16,height:9,fill:`var(--${s})`});text(1206,yy,s);text(1414,yy,pct((DATA.totals[s]||0)/DATA.hits),'',{'text-anchor':'end'});
 }
@@ -88,15 +95,59 @@ for(let i=0;i<31;i++)for(let j=0;j<8;j++){
  const d=DATA.days[i],s=DATA.stages[j],left=x(start+i*86400000),right=x(Math.min(start+(i+1)*86400000,cutoff));if(right<=left)continue;
  const count=d.counts[s],share=d.total?count/d.total:0;
  const description=`${d.date} · ${s} · ${count} hits attached to turns that day / ${d.total} (${pct(share)}) · trailing mean ${d.mean[s].toFixed(2)} per day`;
- const hit=el('rect',{x:left,y:145,width:right-left,height:390,'clip-path':'url(#slice-'+s+')',class:'hit',tabindex:0,role:'button','aria-label':description,'data-day':d.date,'data-stage':s});bindTip(hit,description);
+ const hit=el('rect',{x:left,y:145,width:right-left,height:390,'clip-path':'url(#slice-'+s+')',class:'hit',tabindex:0,role:'button','aria-label':description+'. Activate to open '+s+' families.','data-day':d.date,'data-stage':s});bindTip(hit,description);
+ hit.addEventListener('click',()=>activate(s));hit.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(s);}});
 }
 function bindTip(node,description){const tip=document.getElementById('tooltip');function show(e){tip.textContent=description;tip.style.display='block';const r=node.getBoundingClientRect(),cx=e.clientX||r.x,cy=e.clientY||r.y;tip.style.left=Math.max(8,Math.min(innerWidth-350,cx+15))+'px';tip.style.top=Math.min(innerHeight-100,cy+15)+'px';document.getElementById('readout').textContent=description;}node.addEventListener('pointermove',show);node.addEventListener('focus',show);for(const event of ['pointerleave','blur'])node.addEventListener(event,()=>{tip.style.display='none';});}
-for(const s of DATA.stages){const node=document.createElement('span');node.className='key';node.innerHTML=`<span class="swatch" style="--c:var(--${s})"></span>${s}`;document.getElementById('legend').appendChild(node);}
+for(const s of DATA.stages){const node=document.createElement('button');node.type='button';node.className='key';node.innerHTML=`<span class="swatch" style="--c:var(--${s})"></span>${s}`;node.setAttribute('aria-label','Open '+s+' pattern families');node.addEventListener('click',()=>activate(s));document.getElementById('legend').appendChild(node);}
 const coverage=100*DATA.turns/DATA.eligible;document.getElementById('coverage-note').textContent=coverage.toFixed(1)+'% of eligible recorded turns carry a label.';document.getElementById('headline').textContent=`${fmt(DATA.hits)} labelled hits · ${fmt(DATA.turns)} distinct operator turns · ${coverage.toFixed(1)}% of eligible recorded turns`;
 function table(headers,rows,caption){return '<table><caption>'+caption+'</caption><thead><tr>'+headers.map(h=>'<th scope="col">'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map((v,i)=>i===0?'<th scope="row">'+v+'</th>':'<td>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
 document.getElementById('daily-table').innerHTML=table(['Date UTC',...DATA.stages,'Total'],DATA.days.map(d=>[d.date,...DATA.stages.map(s=>d.counts[s]),d.total]),'Daily retrieval-hit counts, assigned to operator-turn dates. September 21 is partial.');
 document.getElementById('gap-table').innerHTML=table(['Start UTC','End UTC','Hours','Logged tokens'],DATA.gaps.map(g=>[g.start,g.end,g.hours,g.tokens===null?'NR — not zero':fmt(g.tokens)]),'All activity-bearing gaps from the forensic table (which ends 2026-09-21) overlapping this window; not a census of every absence. No token data exists after 2026-09-21T17:19:12Z.');
 document.getElementById('provenance').textContent=JSON.stringify(DATA.sourceHashes,null,2);
+// Family breakdown: one stage at a time, opened in place below the main figure.
+const fcut=Date.parse(FDATA.cutoff2),fmid=112,fpx=plotScale;
+let openStageName=null;
+function applyDim(stage){for(const n of document.querySelectorAll('#chart path[data-stream],#chart [data-direct]'))n.classList.toggle('dimmed',!!stage&&(n.dataset.stream||n.dataset.direct)!==stage);}
+function renderFamilies(stage){
+ const fsvg=document.getElementById('fchart');fsvg.textContent='';
+ const p=FDATA.panels.find(q=>q.stage===stage);
+ const ft=(x,y,v,c='',a={})=>{const n=el('text',{x,y,class:c,...a},fsvg);n.textContent=v;return n;};
+ ft(x0,22,stage.toUpperCase()+' — '+fmt(p.total)+' hits','heading');
+ ft(x0,40,'Centred thickness · trailing 3-day mean · same clock and thickness scale as the main band','small muted');
+ const fdefs=el('defs',{},fsvg);const fclip=el('clipPath',{id:'rec-open'},fdefs);el('rect',{x:x0,y:0,width:x1-x0,height:260},fclip);
+ const bands=p.families.map(()=>[]);
+ for(let i=0;i<DATA.days.length;i++){const total=p.families.reduce((n,f)=>n+f.means[i],0)*fpx;let y=fmid-total/2;for(let j=0;j<p.families.length;j++){const h=p.families[j].means[i]*fpx;bands[j].push([y,y+h]);y+=h;}}
+ for(let j=0;j<p.families.length;j++){
+  const f=p.families[j],c=[[x0,...bands[j][0]],...bands[j].map((yy,i)=>[x(dates[i]),...yy])];
+  const d='M '+c.map(v=>v[0]+','+v[1]).join(' L ')+' L '+c.slice().reverse().map(v=>v[0]+','+v[2]).join(' L ')+' Z';
+  el('path',{d,fill:f.color,'clip-path':'url(#rec-open)','data-family-band':f.name},fsvg);
+  if(j>0)el('path',{d:'M '+c.map(v=>v[0]+','+v[1]).join(' L '),fill:'none',stroke:'var(--surface)','stroke-width':1.5,'clip-path':'url(#rec-open)'},fsvg);
+ }
+ {const mx=x(fcut);el('line',{x1:mx,x2:mx,y1:52,y2:196,stroke:'var(--ink)','stroke-width':1,'stroke-dasharray':'5 4'},fsvg);ft(mx-6,64,'2026-09-21 · '+FDATA.markerLabel,'small muted',{'text-anchor':'end'});}
+ ft(x0,236,'Raw daily','small muted');
+ for(let i=0;i<DATA.days.length;i++){const t=p.days[i].total,xx=x(dates[i]);if(t)el('line',{x1:xx,x2:xx,y1:228,y2:228-t*0.16,stroke:'var(--muted)','stroke-opacity':.35},fsvg);}
+ el('line',{x1:x0,x2:x1,y1:196,y2:196,class:'rule'},fsvg);
+ for(let i=0;i<DATA.days.length;i++){const xx=x(dates[i]);el('line',{x1:xx,x2:xx,y1:196,y2:200,class:'rule'},fsvg);if([0,7,14,21,28,35,40].includes(i)){const m=DATA.days[i].date.slice(5,7);ft(xx,214,DATA.days[i].date.slice(8)+' '+(m==='08'?'Aug':m==='09'?'Sep':'Oct'),'small muted',{'text-anchor':'middle'});}}
+ p.families.forEach((f,j)=>{const yy=58+j*17;el('rect',{x:1180,y:yy-9,width:14,height:9,fill:f.color},fsvg);ft(1200,yy,f.name+' · '+fmt(f.hits),'small');});
+ // Hover targets tile each family's own slice per day, so thin families stay readable.
+ for(let j=0;j<p.families.length;j++){const f=p.families[j];
+  for(let i=0;i<DATA.days.length;i++){const left=x(start+i*86400000),right=x(Math.min(start+(i+1)*86400000,finish));if(right<=left)continue;
+   const next=bands[j][Math.min(i+1,DATA.days.length-1)],top=Math.min(bands[j][i][0],next[0]),bot=Math.max(bands[j][i][1],next[1]);
+   const description=`${stage} · ${f.name} · ${FDATA.days[i]} · ${p.days[i].counts[f.name]} exact hits (3-day mean ${f.means[i].toFixed(2)})`;
+   const hit=el('rect',{x:left,y:top,width:right-left,height:Math.max(bot-top,1),class:'hit',tabindex:0,role:'button','aria-label':description,'data-family':f.name,'data-day':FDATA.days[i]},fsvg);
+   bindTip(hit,description);}}
+}
+function activate(stage){if(openStageName===stage){deactivate();return;}openStageName=stage;renderFamilies(stage);document.getElementById('fam-title').textContent=stage+' opened by pattern family — same clock, same y-scale as the main band';document.getElementById('family-panel').hidden=false;applyDim(stage);}
+function deactivate(){openStageName=null;document.getElementById('family-panel').hidden=true;applyDim(null);}
+document.getElementById('back-all').addEventListener('click',deactivate);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openStageName)deactivate();});
+{const ftb=document.getElementById('family-tables');
+ for(const p of FDATA.panels){const b=p.families.reduce((n,f)=>n+f.hitsBefore,0)||1,a=p.families.reduce((n,f)=>n+f.hitsAfter,0)||1;
+  ftb.insertAdjacentHTML('beforeend',table(['Family','Hits 22 Aug–21 Sep','Share','Hits 21 Sep–1 Oct','Share','Top patterns'],
+   p.families.map(f=>[f.name,fmt(f.hitsBefore),f.hitsBefore?pct(f.hitsBefore/b):'—',fmt(f.hitsAfter),f.hitsAfter?pct(f.hitsAfter/a):'—',f.topPatterns.map(t=>t.id+' ('+t.hits+')').join(', ')]),
+   p.stage+' — '+fmt(p.total)+' hits total. Windows split at '+FDATA.cutoff2+'.'));}}
+window.MINARD_FAMILY_DATA=FDATA;
 const theme=document.getElementById('theme'),mq=matchMedia('(prefers-color-scheme: dark)');function setTheme(){document.documentElement.dataset.theme=theme.value==='auto'?(mq.matches?'dark':'light'):theme.value;}theme.addEventListener('change',setTheme);mq.addEventListener('change',setTheme);setTheme();
 window.MINARD_DATA=DATA;
 </script></html>
