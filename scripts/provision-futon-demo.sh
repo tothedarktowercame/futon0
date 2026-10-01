@@ -114,6 +114,8 @@ sed -e "s|%h/code/futon3c|$DEMO_ROOT/code/futon3c|g" \
 echo "    (install manually as the owning user if/when desired; not enabled here)"
 
 if [ "${1:-}" = "--smoke" ]; then
+  # shellcheck disable=SC1091
+  . "$DEMO_ROOT/demo-env"
   echo "==> smoke: dependency resolution on the :dev-serve classpath (no server start)"
   ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -P )
   echo "==> smoke: namespace loads without side channels"
