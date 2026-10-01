@@ -1,0 +1,6 @@
+{:node "R9"
+ :reads "R9 takes a pending enactment claim plus author, reviewer, job, and receipt evidence, and produces an anchored admission only after a distinct reviewer has checked the exact work before admission."
+ :bids [{:turn "T048" :strength :strong :quote "I'd say that this passes VERIFY and could go to codex-4 for INSTANTIATE." :why "Joe supplies the independent VERIFY verdict that admits the work to a subsequent enactment by codex-4."}
+        {:turn "T133" :strength :strong :quote "Again, for \"decisions\" you should come to me with proposals which I can approve or decline." :why "Joe separates the proposing role from his reviewing and admitting role, preventing the proposer from certifying its own proposal."}
+        {:turn "T258" :strength :strong :quote "So, you could ask the grader to review m98A02, but that should be straightforward;" :why "Joe requires the completed problem to pass through a distinct grader before it is treated as admitted."}
+        {:turn "T263" :strength :partial :quote "Those look OK to me, can you please post them via gh as tothedarktowercame ?" :why "Joe independently reviews the supplied items and emits approval before authorizing their publication."}]}

@@ -1,0 +1,74 @@
+{:node "R13"
+ :reads "R13 takes a candidate policy, one positive common horizon T, and step-indexed preferences, and produces expected free energy summed over exactly those T future steps."
+ :bids [{:turn "T004"
+         :strength :strong
+         :quote "I want you to work through that list in order, with handoffs to the relevant delegates ad needed. Don't stop to ask me questions, because they can all be settled by the existing framing.  If there is something that can't be settled in order, leave it and go on to thr next problem, and we will get it in the next loop."
+         :why "Joe sets the current policy to span the ordered list while explicitly assigning unresolved outcomes beyond that horizon to the next loop."}
+        {:turn "T006"
+         :strength :partial
+         :quote "Let's take the 3 loops down.  We have good evidence that they can run effectively but I think they may still need supervision via watching the logs so I don't accidentally burn up too much usage overnight.  I can run them tomorrow."
+         :why "Joe limits the present policy horizon rather than allowing the loops to roll forward unsupervised overnight."}
+        {:turn "T027"
+         :strength :strong
+         :quote "OK, I accept your proposal on the condition that you chain through it using parks and don't come back to me until it's done or there's a major issue"
+         :why "Joe chooses a policy horizon terminating at completion or a major adverse observation, rather than at each intermediate step."}
+        {:turn "T041"
+         :strength :partial
+         :quote "I don't love taking 19 minutes per build though, so if we can come up with ways to speed that up that would be good, otherwise I worry we'll be there 1000 x 19 minutes or something which is a long time"
+         :why "Joe evaluates the build policy over a long projected sequence of 1000 repetitions, exposing a cost invisible at one-step depth."}
+        {:turn "T048"
+         :strength :strong
+         :quote "NB. claude-8 War MAchine requirements don't have to be built in this first pass, but we can write them down as an as an Excursion to follow INSTANTIATE."
+         :why "Joe bounds the current policy at the first pass and places additional requirements beyond that horizon in a successor excursion."}
+        {:turn "T103"
+         :strength :partial
+         :quote "Supposing I even found an organisation that was willing to do an unpaid pilot, what kind of pilot would we do there that would make it interesting for them or others to contract paid work later?"
+         :why "Joe assesses a pilot policy through its later contracting consequence, extending evaluation beyond the immediate pilot outcome."}
+        {:turn "T145"
+         :strength :partial
+         :quote "So, let's discuss the \"old candidate directories can't be reused\" b/c that makes sense for these 12 or 100 paper pilots that we expect to complete in one session, but if we need to run at scale and the run doesn't complete, we don't want to delete the work or require an officious and unnecessary reset"
+         :why "Joe distinguishes a one-session horizon from a longer incomplete-run horizon and changes the preferred policy when evaluation extends to the latter."}
+        {:turn "T154"
+         :strength :strong
+         :quote "The mismatch: the prediction asks \"all wants within 6 kernel steps\", but the enactment is counted in attempts."
+         :why "Joe identifies that the chosen six-step prediction horizon is expressed in a temporal unit inconsistent with the enacted policy."}
+        {:turn "T154"
+         :strength :strong
+         :quote "Fix: predict the *number of attempts until all wants are met* as a distribution, rather than a probability at an arbitrary horizon."
+         :why "Joe replaces an arbitrary fixed depth with a stopping-depth distribution tied to policy completion."}
+        {:turn "T166"
+         :strength :strong
+         :quote "E.g. the test-registry is because it is untenable to rerun tests endlessly and I'd rather spend a day making a well-functioning warrant system that we can reuse than spend endless days on tests."
+         :why "Joe compares policies over their longer-term repeated costs and selects the one-day reusable investment over an unbounded sequence of reruns."}
+        {:turn "T171"
+         :strength :partial
+         :quote "Let's hold this thought for another day, and write up an E-象-catchup excursion note.  The exact details of 12% aren't really needed.  If we are already at 26% we might as well process the whole thing."
+         :why "Joe defers one branch beyond the current horizon while extending the selected processing policy from partial coverage to the whole corpus."}
+        {:turn "T192"
+         :strength :strong
+         :quote "Eventually I'd just like to run it over all existing unsolved non-excluded problems, and a test with 5 seems the right next step to me."
+         :why "Joe selects depth five for the next trial while reserving the full-problem horizon for a later policy."}
+        {:turn "T246"
+         :strength :strong
+         :quote "Okay, could we also have another pause in dispatches after those ones come back?"
+         :why "Joe makes the currently dispatched jobs the common endpoint of the active policy before another selection occurs."}
+        {:turn "T255"
+         :strength :strong
+         :quote "Yes, I'll award 5 more clicks"
+         :why "Joe explicitly extends the active policy horizon by five additional action steps."}
+        {:turn "T273"
+         :strength :partial
+         :quote "j7 stay off (but come back to this later) ; j8 stay off (again, for now)"
+         :why "Joe excludes two actions from the present horizon while retaining them for reconsideration at a later depth."}
+        {:turn "T289"
+         :strength :strong
+         :quote "I'm about to get on an airplane in a couple days, and I'd like to have some kind of guarantee that this work is actually going to be progressing during the… Six or eight hour flight. And furthermore, every night I go to sleep for six or eight hours, and I'd like to have some guarantee that this stuff is progressing every night."
+         :why "Joe requires the selected policy to remain effective across a common six-to-eight-hour unattended horizon."}
+        {:turn "T289"
+         :strength :strong
+         :quote "And if a frame can fit within two hours, Then it should be fitting in two hours, and if it isn't fitting in two hours, that's an error of a whole other class, which we need to start looking at."
+         :why "Joe sets two hours as the expected depth of each frame and treats trajectories exceeding it as a distinct adverse outcome."}
+        {:turn "T292"
+         :strength :strong
+         :quote "However the deferred \"WMC and variance-wmc\" work should be written up in a mission as a successor to the plop-2026 completion, pointing out how it addresses limitations of the A we are working on now"
+         :why "Joe places WMC work beyond the current completion horizon as an explicit successor policy responding to limitations visible now."}]}

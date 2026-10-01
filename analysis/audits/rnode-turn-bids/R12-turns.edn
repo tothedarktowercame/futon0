@@ -1,0 +1,74 @@
+{:node "R12"
+ :reads "R12 takes in identity-matched returned artifacts, exact approving checks, prediction/model-realisation pairs, and attributable operator follow-through, and produces admitted calibration evidence, updated action-class Beta posteriors, or a typed not-available result when independent value evidence is unauthorized."
+ :bids [{:turn "T021"
+         :strength :partial
+         :quote "I'd like to continue on with this naive summary, comparing it with the *existing* lines of code per each feature, because the I don't know if the estimated total LOC is \"close\" or \"far\", or \"way under\" or \"way over\" at the moment."
+         :why "Joe asks to compare a prediction with its realised implementation quantity, which supplies first-layer consistency evidence."}
+        {:turn "T073"
+         :strength :strong
+         :quote "I'm working with codex-21 right now to make a renderer for scopes that we have detected so that we can actually look at what's there and start to get evidence that it is useful for something.  Obviously if it totally fails in the ways you detected and fixed, it isn't useful for anything, however the worse case would be \"silent failure\" where we detect lots of scopes and spend lots of GPU and then can't actually use the material for anything."
+         :why "Joe distinguishes successful model realisation from evidence of usefulness, performing the separation between R12's first and second calibration layers."}
+        {:turn "T081"
+         :strength :strong
+         :quote "What are the recent APM frames that have completed living up to your expectations about memory use related to the report you wrote?"
+         :why "Joe requests prediction-versus-realisation evidence by comparing completed frames' memory use with the reported expectation."}
+        {:turn "T097"
+         :strength :strong
+         :quote "I don't see why we should \"rate\" them as opposed to use them all and see if they work.  I'm not sure \"ratings\" can be decided in advance."
+         :why "Joe rejects prior value ratings and requires observed use and outcomes before assigning value evidence."}
+        {:turn "T119"
+         :strength :partial
+         :quote "we log certificates of whatever sort (cognitect, lean, core.logic, whatever) against hashes, then we run the machine with those validations."
+         :why "Joe specifies admission checks tied to exact hashed artifacts, matching R12's identity-bound calibration admission."}
+        {:turn "T152"
+         :strength :strong
+         :quote "The historical record of model mix vs problems closed would be an interesting analytic to develop, perhaps as a Marimo notebook"
+         :why "Joe proposes calibrating action classes from historical selections and attributable successful follow-through."}
+        {:turn "T154"
+         :strength :strong
+         :quote "**Q-link:** becomes \"how likely was the observed 8 attempts under the prediction\". No horizon has to be chosen, and it doubles as a calibration score."
+         :why "Joe explicitly turns a prediction and its observed model realisation into a calibration score."}
+        {:turn "T154"
+         :strength :strong
+         :quote "**Also:** gives the missing clause-4 requirement, that prediction and outcome are stated in the same unit."
+         :why "Joe imposes the commensurability condition needed for R12's prediction-versus-realisation layer."}
+        {:turn "T154"
+         :strength :strong
+         :quote "Every check we trust has been run on a known-good tree (it should pass) and on a known-bad one (the old code, which should fail). Those runs are exactly the pairs A needs: how often a check passes when the thing is true, and how often when it's false."
+         :why "Joe identifies witnessed check/outcome pairs from which empirical calibration rates can be updated."}
+        {:turn "T167"
+         :strength :partial
+         :quote "Last I checked, v3 was worse than v2... and white paper aside, I am worried that the memory system itself needs a lot of upgrades.  What we've done here is a \"case study\" but not a redesign."
+         :why "Joe uses observed comparative performance to withhold broader value evidence from a narrower realised result."}
+        {:turn "T239"
+         :strength :strong
+         :quote "one signal could be if patterns are *retrieved* by the War machine but not *used* — that would suggest they are somehow spammy or SEO'ed through the graph, but not well written."
+         :why "Joe treats an emission opportunity without attributable follow-through as negative action-class calibration evidence."}
+        {:turn "T239"
+         :strength :strong
+         :quote "In terms of gaining weight, I think \"attestation\" comes from *use*, which happens inside missions rather than through the analysis of turns."
+         :why "Joe says calibration weight must come from attributable use within missions rather than proxy evidence."}
+        {:turn "T262"
+         :strength :partial
+         :quote "show me it working via the next dispatch"
+         :why "Joe requests a witnessed action opportunity and outcome instead of accepting an unobserved implementation claim."}
+        {:turn "T271"
+         :strength :strong
+         :quote "And yet the system that's been built and verified isn't reliable."
+         :why "Joe withholds outcome-level assurance because construction and verification evidence did not predict realised reliability."}
+        {:turn "T275"
+         :strength :strong
+         :quote "\"build and switched off\" comes up quite a lot.  Again annoying for my paper draft in which all of the R-numbers were supposedly \"run-evidenced\"."
+         :why "Joe distinguishes a built artifact from independently witnessed operation and challenges the claimed calibration evidence."}
+        {:turn "T278"
+         :strength :strong
+         :quote "getting a demo of working system, \"end to end\" in the sense of user experience not just \"all built all green\""
+         :why "Joe separates internal model-realisation consistency from the outer layer's evidence of operator-facing value."}
+        {:turn "T296"
+         :strength :strong
+         :quote "if we can say that \"β is learned\" then, indeed, we may be able to model it from historical interactions"
+         :why "Joe proposes learning a calibration parameter from historical interaction evidence."}
+        {:turn "T296"
+         :strength :strong
+         :quote "rather than asking my opinion about it, the better way to go would be to compute some regressions etc. to find out what it is.  For that to work we need to align the operator behaviours that we're modelling."
+         :why "Joe requires an empirically estimated value from aligned operator behaviours rather than an unsupported judgment."}]}

@@ -1,0 +1,54 @@
+{:node "R19"
+ :reads "R19 reads verified outcome cues and any stated weighting from the target mission's text at click time, producing cued outcomes or a typed absence/refusal and, when weighted, a mission-preference distribution."
+ :bids [{:turn "T030"
+         :strength :partial
+         :quote "So there are a couple of criteria here. One is that the FUTON 2026 paper is sort of a working paper that connects with the PLOP 2026 paper."
+         :why "Joe begins extracting the requested work's outcome criteria from the relationship stated in the two target papers."}
+        {:turn "T042"
+         :strength :strong
+         :quote "our criteria should probably expand to include at least M-futon-problems and M-apm-demonstration b/c I have active sessions clocked in on those missions right now."
+         :why "Joe updates the cued outcome set by adding two named missions to the current verification criterion."}
+        {:turn "T059"
+         :strength :strong
+         :quote "In this context. Here's something I want. However, here's something else that's going on which I don't want."
+         :why "Joe identifies positive and negative outcome cues in the current context, exactly the material R19 reads as mission preference."}
+        {:turn "T097"
+         :strength :strong
+         :quote "As for the 11 unrated rows, they are all design principles, and I don't see why we should \"rate\" them as opposed to use them all and see if they work.  I'm not sure \"ratings\" can be decided in advance."
+         :why "Joe reads the candidate outcomes as present but explicitly finds their weighting unstated, preserving the distinction R19 requires."}
+        {:turn "T105"
+         :strength :strong
+         :quote "I've told you I don't want it. We made a mission about it."
+         :why "Joe retrieves a negative outcome cue from the mission record and treats it as the operative preference."}
+        {:turn "T133"
+         :strength :partial
+         :quote "we need C to similarly be faithful but suited to our use case."
+         :why "Joe supplies the outcome constraints that the mission's C representation must preserve."}
+        {:turn "T166"
+         :strength :strong
+         :quote "I'd rather spend a day making a well-functioning warrant system that we can reuse than spend endless days on tests."
+         :why "Joe states an explicit relative weighting between two possible outcomes, yielding preference information rather than an unweighted want."}
+        {:turn "T176"
+         :strength :strong
+         :quote "So I think we should reread that PLOP 2026 paper and use that as a completion list, because that's exactly what we're trying to re-architect with validation that the nodes work and the connections work. And that it is actually AIF."
+         :why "Joe designates the target text as the authority from which to read the mission's completion outcomes and names the resulting criteria."}
+        {:turn "T203"
+         :strength :partial
+         :quote "The mission should have given us the core functionality we need based on the paper, but we haven't built demos of all of that."
+         :why "Joe reads the mission and its source paper as containing the required outcomes, then observes that those cued outcomes remain unmet."}
+        {:turn "T224"
+         :strength :strong
+         :quote "The clicks could only ever satisfy instance-level wants, while the mission's own exits (the MAP table, ARGUE, DOCUMENT) were produced by claude-1 working as a person would, not by any click."
+         :why "Joe extracts the mission's own named exit outcomes and contrasts them with the narrower wants currently consumed by clicks."}
+        {:turn "T230"
+         :strength :strong
+         :quote "We just talked in this very session about C and what I think C means. So I don't want to restore some old thing if it doesn't correspond to what I want."
+         :why "Joe requires C to be read from his current stated preference rather than substituted from an older representation."}
+        {:turn "T278"
+         :strength :strong
+         :quote "I'd say the explicit condition I personally intended wasn't just P12 but all of the P-numbers.  That's because the two specific held items to me are less vital to build than getting a demo of working system, \"end to end\" in the sense of user experience not just \"all built all green\""
+         :why "Joe corrects the extracted condition to include all P-numbers and states a relative weighting favoring an end-to-end user outcome."}
+        {:turn "T291"
+         :strength :strong
+         :quote "Allow. Thirty-five percent. Four. Associated Work. 55% for Focused Work. And 5% each. 5% for relevant work that's delivered. Or sort of irrelevant work that's delivered, relevant to something else. Let's say interruptions, you know, emergency services, that kind of stuff. And then another 5%. for... Nothing delivered"
+         :why "Joe supplies explicit numerical weights over named outcomes, allowing R19's completed reading to become a preference distribution."}]}

@@ -1,0 +1,6 @@
+{:node "CTAU-CLASS"
+ :reads "The node takes a tick index and class-valued rollout outcomes and produces the tick's normalized preference distribution, using not-yet-evaluated before the horizon and terminal weights over focused, related, unrelated, and stop-the-line."
+ :bids [{:turn "T291"
+         :strength :strong
+         :quote "Allow. Thirty-five percent. Four. Associated Work. 55% for Focused Work. And 5% each. 5% for relevant work that's delivered. Or sort of irrelevant work that's delivered, relevant to something else. Let's say interruptions, you know, emergency services, that kind of stuff. And then another 5%. for... Nothing delivered, which is weird because that's not my preference. I don't prefer that nothing's delivered. But at least I'd rather know if nothing was delivered than not know about it. So this 5% is kind of the tax for... Allowing the possibility of dealing with failure modes, and that's maybe where I would put in the... Things like the stop the line. So, you know, I really value stopping the line when something is going wrong, even though it means that no work is getting delivered at that time."
+         :why "Joe directly produces the terminal class-preference weights: 55% focused, 35% related, 5% unrelated or interrupting work, and 5% stop-the-line or no-delivery outcomes."}]}

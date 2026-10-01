@@ -1,0 +1,22 @@
+{:node "R7"
+ :reads "R7 takes an identity-filtered history of present prediction errors or paired adjudication outcomes and produces learned channel-reliability weights—principally inverse regularized error variance or Gibbs-sharpened likelihoods—while retaining preference-gap salience separately."
+ :bids [{:turn "T073"
+         :strength :partial
+         :quote "I'm working with codex-21 right now to make a renderer for scopes that we have detected so that we can actually look at what's there and start to get evidence that it is useful for something.  Obviously if it totally fails in the ways you detected and fixed, it isn't useful for anything, however the worse case would be \"silent failure\" where we detect lots of scopes and spend lots of GPU and then can't actually use the material for anything."
+         :why "Joe calls for observed outcomes that distinguish a useful scope-detection channel from one producing undetected false positives, supplying the error evidence from which its precision should be learned."}
+        {:turn "T097"
+         :strength :partial
+         :quote "GLM 5.2 (and maybe latest 5.3) was very good at noticing its own mistakes *in turn* rather than via handoffs.  Codex refusals are a bit similar — even though codex tends to be very confident about things it knows how to do, it refuses to do things that are unspecified.  So all 3 models have known ways to self-correct (claude: noticing when its handoffs have been refused / Codex refusing / Zai self-correcting)."
+         :why "Joe differentiates model channels by their observed error-detection behavior, effectively assigning different reliability to evidence from each model."}
+        {:turn "T154"
+         :strength :strong
+         :quote "Every check we trust has been run on a known-good tree (it should pass) and on a known-bad one (the old code, which should fail). Those runs are exactly the pairs A needs: how often a check passes when the thing is true, and how often when it's false."
+         :why "Joe specifies paired admitted truth and verdict records and derives the observation channel's false-positive and false-negative rates from them."}
+        {:turn "T239"
+         :strength :strong
+         :quote "I'm not sure about \"both rejected for the same fragment\" that seems like a very weak association, though (for 3) one signal could be if patterns are *retrieved* by the War machine but not *used* — that would suggest they are somehow spammy or SEO'ed through the graph, but not well written.  I don't know what you mean by \"hand authored\".  In terms of gaining weight, I think \"attestation\" comes from *use*, which happens inside missions rather than through the analysis of turns."
+         :why "Joe rejects a weak evidential association and identifies actual mission use as the admissible outcome history by which a pattern channel gains weight."}
+        {:turn "T244"
+         :strength :partial
+         :quote "I.e. throwing out Juxt because we know about it & have contributed something useful to them and useful to us would be exactly the wrong move.  However, with UKRNS, it's not actually clear that we've really helped them solve a problem — I tried, but they haven't necessarily said \"thanks that's super helpful\"."
+         :why "Joe distinguishes two evidence records by whether an independent recipient supplied a confirming outcome, lowering confidence in the unconfirmed UKRNS channel without excluding Juxt merely for self-inclusion."}]}

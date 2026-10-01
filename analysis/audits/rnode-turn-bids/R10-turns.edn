@@ -1,0 +1,42 @@
+{:node "R10"
+ :reads "R10 takes a server-authorized, uniquely named single-use commission and produces one identity-linked runner dispatch plus a durably recorded receipt and transition."
+ :bids [{:turn "T077"
+         :strength :strong
+         :quote "I'd like to comission a pilot comparing the claude-12 (d158cebc-06aa-4763-8704-e216a5a39f5c) and claude-4 (sessions af24caa1-54d3-4f19-9d73-c8183eb9cb65) sessions in terms of their redirections (a time series of cosine   distances relative to the pattern embedding)"
+         :why "Joe creates a specifically scoped, named commission whose identity and work can be carried into a dispatch."}
+        {:turn "T169"
+         :strength :strong
+         :quote "ok; when you do resume later please use a unique requisition ID, per README-kimi if notes are up to date"
+         :why "Joe requires the resumed dispatch authority to carry a unique identity, matching R10's named single-use commission input."}
+        {:turn "T192"
+         :strength :strong
+         :quote "Hm...  rather than pre-preparing all the seats for all the campaigns, I think they should be created when the last one finishes.  So to make it work well, we'd just put in a list of problems."
+         :why "Joe specifies a scheduled entry rule that consumes an ordered problem list and creates each next dispatch only after its predecessor finishes."}
+        {:turn "T255"
+         :strength :strong
+         :quote "Yes, I'll award 5 more clicks"
+         :why "Joe supplies bounded operator authority for five further runner entries, the authority that R10 turns into commissioned clicks."}
+        {:turn "T262"
+         :strength :partial
+         :quote "OK, show me it working via the next dispatch"
+         :why "Joe selects the next dispatch as the concrete entrypoint and requires its execution to return observable evidence."}
+        {:turn "T289"
+         :strength :partial
+         :quote "And so it's just a matter of running them according to a schedule"
+         :why "Joe requires the procedural work to enter execution through a schedule, which is the role of R10's scheduled-dispatch boundary."}
+        {:turn "T004"
+         :strength :partial
+         :quote "I want you to work through that list in order, with handoffs to the relevant delegates ad needed."
+         :why "Joe provides an ordered workload and continuation rule from which successive commissioned dispatches are to be issued."}
+        {:turn "T173"
+         :strength :partial
+         :quote "If you're able to keep all of them going by using chained parks (README-park.md) that would be great"
+         :why "Joe asks for completion receipts to trigger continued scheduled entries through chained parks."}
+        {:turn "T188"
+         :strength :partial
+         :quote "Remember to use Agency and to use Bells and Parks so that we can change through the process without stopping."
+         :why "Joe specifies the dispatch-and-continuation mechanism by which authorized work repeatedly enters execution."}
+        {:turn "T259"
+         :strength :partial
+         :quote "Great; you can continue in this way with parallel dispatches to Codex helpers via Agency (park so we can chain through)"
+         :why "Joe authorizes further Agency dispatches and requires park-mediated continuation, supplying a scheduled entry policy."}]}

@@ -1,0 +1,70 @@
+{:node "R5"
+ :reads "R5 takes predicted outcome and state distributions together with preferred outcome masses, computes risk plus ambiguity, and produces comparable expected-free-energy scores or candidate-versus-baseline deltas for ranking actions."
+ :bids [{:turn "T006"
+         :strength :strong
+         :quote "We have good evidence that they can run effectively but I think they may still need supervision via watching the logs so I don't accidentally burn up too much usage overnight."
+         :why "Joe evaluates continued operation from its predicted useful outcome, uncertainty requiring supervision, and undesirable usage cost."}
+        {:turn "T037"
+         :strength :strong
+         :quote "Right, I think this approach is much better than the earlier deep dive into t00J02.  Now I think we get a better idea of what kinds of problems/constructions are really involved in this set of problems."
+         :why "Joe ranks one approach above its baseline because it is expected to reduce uncertainty about the problem set."}
+        {:turn "T041"
+         :strength :partial
+         :quote "I don't love taking 19 minutes per build though, so if we can come up with ways to speed that up that would be good, otherwise I worry we'll be there 1000 x 19 minutes or something which is a long time"
+         :why "Joe evaluates the proposed process against the predicted cumulative time cost of its outcomes."}
+        {:turn "T115"
+         :strength :strong
+         :quote "The purple outranks green in terms of where the focus is going for the next turn."
+         :why "Joe directly produces an ordering between supported candidates."}
+        {:turn "T133"
+         :strength :partial
+         :quote "we need C to similarly be faithful but suited to our use case."
+         :why "Joe specifies a constraint on the preference distribution that R5 uses to score predicted outcomes."}
+        {:turn "T148"
+         :strength :strong
+         :quote "Either we need my \"split up the big file\" or your \"read the diff\" (which I think is brittle and costly but if you want to give it one more go you can)."
+         :why "Joe compares two candidate actions and assigns the second an adverse expected-outcome cost."}
+        {:turn "T166"
+         :strength :strong
+         :quote "I'd rather spend a day making a well-functioning warrant system that we can reuse than spend endless days on tests."
+         :why "Joe ranks candidate strategies by comparing their predicted near-term and repeated future costs."}
+        {:turn "T203"
+         :strength :strong
+         :quote "Hm... fork session with a new ID would create a cascade of things to fix, let's not build it right now.  Let's review the McCarthy paper and see what other things we can build."
+         :why "Joe rejects one candidate for its predicted cascade of costly outcomes and prefers an alternative."}
+        {:turn "T219"
+         :strength :partial
+         :quote "2+ hours under bg.py to get a full trace would be fine with me"
+         :why "Joe judges the action's time cost acceptable relative to the preferred informative outcome."}
+        {:turn "T240"
+         :strength :strong
+         :quote "Well, given that it ALMOST works, I would rather try to find the questionmark source in the current map than remap everything"
+         :why "Joe compares candidate-versus-baseline repair costs and ranks the localized search above complete remapping."}
+        {:turn "T244"
+         :strength :strong
+         :quote "I.e. throwing out Juxt because we know about it & have contributed something useful to them and useful to us would be exactly the wrong move.  However, with UKRNS, it's not actually clear that we've really helped them solve a problem"
+         :why "Joe evaluates two inclusion candidates against preferred reciprocal-usefulness outcomes and distinguishes their scores."}
+        {:turn "T261"
+         :strength :strong
+         :quote "It would be much better to rerun some slow tests once than try to migrate content from a slow warrant store."
+         :why "Joe ranks two candidate plans by contrasting their predicted one-time and continuing costs."}
+        {:turn "T278"
+         :strength :strong
+         :quote "That's because the two specific held items to me are less vital to build than getting a demo of working system, \"end to end\" in the sense of user experience not just \"all built all green\""
+         :why "Joe assigns relative preference to candidate outcomes and ranks an end-to-end demonstration above two held items."}
+        {:turn "T283"
+         :strength :partial
+         :quote "The more interesting question is if we could adapt PROOF-2 to take the architectural features we've talked about into consideration; I suspect that's less of a reach."
+         :why "Joe evaluates the adaptation candidate as having lower expected difficulty than the implicit alternative."}
+        {:turn "T288"
+         :strength :strong
+         :quote "Regarding the \"cheaper\" training system, let's not try to make it cheaper but let's ensure that the segements and intents are well-processed.  I'd like it to feed both the pattern graph and the 小象 system.  We can use zai, kimi, and Sonnet for tagging, they are all \"cheap enough\" and we will likely get some varied reads (which is good, in my opinion)."
+         :why "Joe evaluates cost, processing quality, downstream utility, and diversity of observations to rank the training-system design."}
+        {:turn "T291"
+         :strength :strong
+         :quote "So, you know, I really value stopping the line when something is going wrong, even though it means that no work is getting delivered at that time."
+         :why "Joe explicitly supplies a preferred-outcome judgment in which avoiding failure outweighs the delivery loss."}
+        {:turn "T297"
+         :strength :partial
+         :quote "In your earlier DAG. I think you would have kept us going endlessly because it has been going like that."
+         :why "Joe evaluates the earlier plan from its predicted outcome relative to his preference for finite closure."}]}

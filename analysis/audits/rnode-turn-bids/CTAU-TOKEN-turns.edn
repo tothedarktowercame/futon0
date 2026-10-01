@@ -1,0 +1,14 @@
+{:node "CTAU-TOKEN"
+ :reads "CTAU-TOKEN takes a validated problem preference specification—wanted and evidenced tokens, effective lambda and mu, placement, and the declared token universe—and produces a step-indexed distribution over token subsets for per-tau risk scoring."
+ :bids [{:turn "T059"
+         :strength :partial
+         :quote "So here's the context. In this context. Here's something I want. However, here's something else that's going on which I don't want."
+         :why "The span identifies positive and negative problem-specific outcomes from which a token preference member can be constructed."}
+        {:turn "T224"
+         :strength :strong
+         :quote "The clicks could only ever satisfy instance-level wants, while the mission's own exits (the MAP table, ARGUE, DOCUMENT) were produced by claude-1 working as a person would, not by any click."
+         :why "The span corrects the preferred token universe by requiring mission-exit tokens, not merely instance-level wants, to appear among the outcomes scored by C_tau."}
+        {:turn "T278"
+         :strength :partial
+         :quote "I'd say the explicit condition I personally intended wasn't just P12 but all of the P-numbers.  That's because the two specific held items to me are less vital to build than getting a demo of working system, \"end to end\" in the sense of user experience not just \"all built all green\""
+         :why "The span expands the desired token set to every P-number and supplies a relative preference between held-item outcomes and an end-to-end demonstration outcome."}]}

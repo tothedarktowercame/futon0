@@ -1,0 +1,78 @@
+{:node "R6"
+ :reads "R6 takes supplied interpretations and repository structure, constructs the ordered admissible cascade-policy menu with explicit absence on failure, and produces candidate metadata and normalized policy weights."
+ :bids [{:turn "T004"
+         :strength :strong
+         :quote "we have 39 problems to close before we even have something \"valid\" much less \"viable\".  I want you to work through that list in order"
+         :why "Joe supplies a finite candidate set of 39 actions and gives it a precedence order."}
+        {:turn "T013"
+         :strength :partial
+         :quote "It would be good if there was a \"gone means gone\" semantics by default, and a \"hide scopes only\" option (not by default)"
+         :why "Joe constructs two candidate interface actions and records their ordering through the default."}
+        {:turn "T026"
+         :strength :strong
+         :quote "please switch to the dependency DAG approach you mentioned, working across all outstanding topology problems."
+         :why "Joe defines the candidate space as every outstanding topology problem organized by dependency."}
+        {:turn "T029"
+         :strength :strong
+         :quote "It could have been MAA, or The Open University, or even Wolfram Research."
+         :why "Joe enumerates the candidate infrastructure sponsors for the contemplated policy."}
+        {:turn "T041"
+         :strength :strong
+         :quote "Regarding the speedups 1. **Change the key** / 2. Speed up the to cache format..."
+         :why "Joe produces a two-member candidate menu of build-speed actions."}
+        {:turn "T043"
+         :strength :strong
+         :quote "I think, for example, R5 would be a good candidate. All the ones with red rings from our reconstruction would be good candidates."
+         :why "Joe derives the candidate node set from the observed red-ring structure."}
+        {:turn "T059"
+         :strength :strong
+         :quote "And so then you'll look around for design patterns that might help with that, because design patterns have that overall shape. They acknowledge these kinds of tensions. And then they might have some structures. You might not assume it's one design pattern solves everything, but you'd look for some cascade of design patterns that would work that tension through."
+         :why "Joe specifies how context and tension should generate candidate patterns and multi-pattern cascades rather than taking one cascade as fixed."}
+        {:turn "T097"
+         :strength :partial
+         :quote "they are all design principles, and I don't see why we should \"rate\" them as opposed to use them all and see if they work."
+         :why "Joe retains all eleven design principles in the candidate policy space instead of prematurely reducing it by ratings."}
+        {:turn "T103"
+         :strength :partial
+         :quote "I'm curious what others might find it specifically useful for, and I'm curious about my own potential use of it in a \"fast\" mode *before* sending any turn to the 象 annotator.  I'm also curious to think about business cases where someone would encounter it on the website and decide \"this is interesting, I'd like to contact them for more details\"."
+         :why "Joe generates several candidate uses and routes for 小象 from the current product context."}
+        {:turn "T136"
+         :strength :partial
+         :quote "revising the patterns that are in there or organizing them into cascades or... Checking what happened, if they were or were not followed, or having any kind of sanctions that like... Would be in place like if something doesn't work out well, maybe a cooling off period or something"
+         :why "Joe enumerates candidate operations for a pattern-language process layer."}
+        {:turn "T148"
+         :strength :strong
+         :quote "Either we need my \"split up the big file\" or your \"read the diff\" (which I think is brittle and costly but if you want to give it one more go you can)."
+         :why "Joe explicitly constructs the two available candidate actions and preserves both for evaluation."}
+        {:turn "T157"
+         :strength :strong
+         :quote "cascade-construction is a policy for creating policies"
+         :why "Joe identifies cascade construction itself as the policy that produces the downstream candidate-policy space."}
+        {:turn "T175"
+         :strength :partial
+         :quote "So if we wanted to build Zai spider agents, we could build them. Or build whatever other kind of reusable harness kit to run Zai off of."
+         :why "Joe opens a candidate space of reusable Zai roles and gives spider agents as one concrete member."}
+        {:turn "T192"
+         :strength :strong
+         :quote "we'd just put in a list of problems.  If it needs adjusting to make that possible, let's adjust it first.  Eventually I'd just like to run it over all existing unsolved non-excluded problems, and a test with 5 seems the right next step to me."
+         :why "Joe defines the eventual candidate set by an explicit repository predicate and a five-candidate test menu."}
+        {:turn "T196"
+         :strength :strong
+         :quote "I can think of a couple relevant things to look at in MAP, namely, a bit of web research to see if Elephant 2000 was ever implemented in a pre-agent era (if so, we can find the reference implementation) and the second thing would be a more detailed comparison of XTDB's XT features with the theoretical requirements of the paper"
+         :why "Joe produces a two-action candidate menu for the MAP stage."}
+        {:turn "T203"
+         :strength :partial
+         :quote "Let's review the McCarthy paper and see what other things we can build.  The mission should have given us the core functionality we need based on the paper, but we haven't built demos of all of that."
+         :why "Joe uses the paper and existing mission functionality as the supply from which candidate demonstrations should be constructed."}
+        {:turn "T217"
+         :strength :partial
+         :quote "we could look into the current results qualitatively, and then see if we could refresh the later rounds of the runner."
+         :why "Joe constructs two candidate follow-up actions from the supplied Mark7 results."}
+        {:turn "T252"
+         :strength :partial
+         :quote "turn the patterns as a list #1 into a cascade (using ideas from our 象 translation on turns, but now at the level of a pattern language which should become one big s-exp or collection of s-exps, augmented with other patterns from futon3/library where appropriate), #2 into a typed hole (where would this connect to existing FUTON architecture), and #3 into a wiring diagram that proposes a build plan."
+         :why "Joe converts the supplied pattern list into an organized three-member action structure with cascade, interface, and build-plan products."}
+        {:turn "T288"
+         :strength :partial
+         :quote "We can use zai, kimi, and Sonnet for tagging, they are all \"cheap enough\" and we will likely get some varied reads (which is good, in my opinion)."
+         :why "Joe admits three tagging agents into the candidate action space based on cost and desired interpretive diversity."}]}
