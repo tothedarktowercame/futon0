@@ -9,7 +9,8 @@
 #   * own port set (default 17070/17073/16768); refuses to provision if busy
 #   * never writes outside $DEMO_ROOT; refuses $DEMO_ROOT under /home/joe
 #   * no credentials copied; a fresh box-local admin token is generated instead
-#   * starts nothing; --smoke only resolves deps and requires namespaces
+#   * starts nothing; --smoke resolves deps and invokes clojure.main directly
+#     (the :dev-serve alias's futon3c.dev main is never executed)
 #
 # Parameters (env overrides):
 #   DEMO_ROOT  target root          (default: ~/futon-demo)
@@ -39,9 +40,22 @@ case "$DEMO_ROOT" in
 esac
 [ -d "$SRC_BASE" ] || { echo "REFUSED: SRC_BASE $SRC_BASE missing" >&2; exit 2; }
 
-for p in "$AGENCY_PORT" "$SUBSTRATE_PORT" "$DRAWBRIDGE_PORT"; do
-  if ss -tln "sport = :$p" | grep -q LISTEN; then
-    echo "REFUSED: port $p already listening; demo must not collide with live services" >&2; exit 3
+declare -A selected_ports=()
+for binding in "AGENCY_PORT=$AGENCY_PORT" "SUBSTRATE_PORT=$SUBSTRATE_PORT" "DRAWBRIDGE_PORT=$DRAWBRIDGE_PORT"; do
+  name="${binding%%=*}"
+  p="${binding#*=}"
+  if ! [[ "$p" =~ ^[0-9]+$ ]] || (( p < 1 || p > 65535 )); then
+    echo "REFUSED: $name must be an integer from 1 through 65535 (got: $p)" >&2
+    exit 3
+  fi
+  if [ -n "${selected_ports[$p]:-}" ]; then
+    echo "REFUSED: $name and ${selected_ports[$p]} both select port $p" >&2
+    exit 3
+  fi
+  selected_ports[$p]="$name"
+  if ss -H -ltn "sport = :$p" | grep -q . || ss -H -lun "sport = :$p" | grep -q .; then
+    echo "REFUSED: $name port $p already listening; choose an unused demo port" >&2
+    exit 3
   fi
 done
 
@@ -76,6 +90,9 @@ export FUTON3C_REGISTER_CODEX=false
 export FUTON3C_BOOTSTRAP_AGENT_TYPES=
 export FUTON3C_AGENT_ROSTER_FILE="$DEMO_ROOT/state/futon3c/demo-agent-roster.edn"
 export FUTON3C_DURABLE_QUEUE_PATH="$DEMO_ROOT/state/futon3c/demo-turn-queue.edn"
+# Keep watcher discovery inside this installation. Without this override the
+# serving image falls back to the canonical /home/joe/code roots.
+export FUTON3C_INSTALLATION_WATCH_ROOT="$DEMO_ROOT/code"
 export FUTON5_PORT=0
 export FUTON1A_PORT=0
 export FUTON3C_WEBARXANA_SERVER_AUTOSTART=false
@@ -116,14 +133,21 @@ echo "    (install manually as the owning user if/when desired; not enabled here
 if [ "${1:-}" = "--smoke" ]; then
   # shellcheck disable=SC1091
   . "$DEMO_ROOT/demo-env"
-  echo "==> smoke: dependency resolution on the :dev-serve classpath (no server start)"
-  ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -P )
+  echo "==> smoke: resolve the :dev-serve classpath without running its main"
+  smoke_classpath="$(cd "$DEMO_ROOT/code/futon3c" && clojure -Spath -M:dev-serve)"
   echo "==> smoke: namespace loads without side channels"
   # NB: war-machine.server.core starts its HTTP server at require time — do NOT
   # require it in the smoke. futon3c.marks transitively installs the isolated
   # test-registry sqlite backend (REGISTRY_DB), proving the futon2/futon1
   # local-root closure resolves without touching /home/joe.
-  ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -m clojure.main -e '
+  # Do not use `clojure -M:dev-serve -e ...` here: :dev-serve supplies
+  # `-m futon3c.dev`, so that form starts a complete Agency before evaluating
+  # the expression. Invoke clojure.main explicitly over the resolved classpath.
+  ( cd "$DEMO_ROOT/code/futon3c" && java \
+      --add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED \
+      -Dio.netty.tryReflectionSetAccessible=true \
+      -Djava.net.preferIPv4Stack=true \
+      -cp "$smoke_classpath" clojure.main -e '
      (require (quote [futon3c.marks]))
      (println :demo-smoke-ok :namespaces-loadable)' )
   echo "==> smoke: bb orchestration deps"

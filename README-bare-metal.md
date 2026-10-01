@@ -40,6 +40,36 @@ showed **2 × 64 GB installed, 2 slots empty, `Maximum Capacity: 128 GB`** — i
 board caps at half the ordered amount, so it was not a missing-sticks problem but an
 undeliverable spec. Worth raising with the provider; `dmidecode` needs root.
 
+### Check service ports before choosing or installing a unit
+
+A fresh-install guide does not imply a fresh host. Before copying a service unit or
+starting Agency, inspect both TCP and UDP listeners and compare them with every port
+the proposed installation will claim:
+
+```bash
+ssh zone-joe '
+  ss -H -ltnp
+  ss -H -lunp
+  for p in 7070 7073 6768; do
+    if ss -H -ltn "sport = :$p" | grep -q . ||
+       ss -H -lun "sport = :$p" | grep -q .; then
+      echo "IN USE: $p"
+    else
+      echo "available: $p"
+    fi
+  done'
+```
+
+The three selected ports must also be distinct from one another. If a port is in use,
+identify its owner and either use the already-installed service or assign the new
+installation a coherent, non-overlapping port set. Do not stop an existing service,
+reuse its port, or change only one side of a URL/port pair to get past the check.
+
+The canonical worker defaults are Agency `7070`, substrate `7073`, and Drawbridge
+`6768`. The isolated demo provisioner deliberately defaults to `17070`, `17073`, and
+`16768`, validates their range and distinctness, and refuses any TCP or UDP listener
+collision before it creates installation state.
+
 ---
 
 ## 1. sudo
@@ -568,6 +598,10 @@ to the serving JVM; only Agency port 7070 is exposed to federation peers.
 The supported topology on zone-joe is one managed JVM containing Agency and
 futon1b. Install the inert unit files, create a box-local Drawbridge token, and
 enable user lingering so the service survives logout and starts at boot:
+
+Run the port probe in §0 immediately before this step. The check must describe the
+current host, not merely the host as it looked before packages and other services were
+installed.
 
 ```bash
 ssh zone-joe '
