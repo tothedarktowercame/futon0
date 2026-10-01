@@ -111,11 +111,12 @@ sed -e "s|%h/code/futon3c|$DEMO_ROOT/code/futon3c|g" \
 echo "    (install manually as the owning user if/when desired; not enabled here)"
 
 if [ "${1:-}" = "--smoke" ]; then
-  echo "==> smoke: dependency resolution on the :dev classpath (no server start)"
-  ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev -P )
+  echo "==> smoke: dependency resolution on the :dev-serve classpath (no server start)"
+  ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -P )
   echo "==> smoke: namespace loads without side channels"
-  ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev -e '
-     (require (quote [futon3c.config :as cfg]))
+  ( cd "$DEMO_ROOT/code/futon3c" && clojure -M:dev-serve -m clojure.main -e '
+     (require (quote [futon3c.marks]))
+     (require (quote [war-machine.server.core]))
      (println :demo-smoke-ok :namespaces-loadable)' )
   echo "==> smoke: bb orchestration deps"
   ( cd "$DEMO_ROOT/code/futon5" && bb -e "(+ 1 1)" >/dev/null && echo "bb ok" )
