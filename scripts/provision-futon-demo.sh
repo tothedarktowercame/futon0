@@ -92,6 +92,9 @@ export FUTON_SUBSTRATE_URL=\$FUTON1B_URL
 export FUTON1A_URL=\$FUTON_SUBSTRATE_URL
 export FUTON4_BASE_URL=\$FUTON_SUBSTRATE_URL/api/alpha
 export FUTON3C_DRAWBRIDGE_PORT=$DRAWBRIDGE_PORT
+# Isolated test-registry sqlite authority (local-port installs at require time;
+# REGISTRY_DB is the supported override of the /home/joe default).
+export REGISTRY_DB="$DEMO_ROOT/state/futon3c/warrant-index.sqlite"
 # No federation: this is a demo island.
 export FUTON3C_PEERS=
 export FUTON3C_PEER_SITES=
