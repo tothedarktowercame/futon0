@@ -15,9 +15,9 @@
 <section class="notes">
 <p><strong>Read the widths carefully.</strong> Upper thickness = stage-labelled rank-one retrieval hits attached to operator turns, not cost. A trailing three-day arithmetic mean uses available days at the left edge (one, then two, then three); the curves linearly join daily means. Dates use the operator-turn timestamp. The faint tick row gives unsmoothed daily totals. Two turns carry multiple retrievals. October 1 is partial, through 21:12 UTC; the previous cutoff of September 21, 17:19 UTC is where the lower panel’s data ends.</p>
 <p><strong>The integral column uses exact raw counts.</strong> Smoothing changes the area inside a finite window; its geometric area is not the count integral. Two-pixel surface-coloured separator strokes are visual cuts, not quantities; very thin slices can be obscured. “None” keeps its measured thickness, in grey, rather than an invented minimum.</p>
-<p><strong>Lower panel:</strong> horizontal length = gap duration; vertical thickness = logged Codex input + output tokens in that entire gap, including cached input. This is <strong>not plan usage, billing, or unique text</strong>. Dashed hairlines mean no retained qualifying token event, not zero. The first gap starts before August 22: its duration is clipped here, but its full-window token total is retained. Bar area is duration × tokens, not a token integral. The forensic token report ends at the September 21 cutoff: the hatched region after that date marks <strong>no token data</strong>, not zero activity. No recorded operator turn is not proof of physical absence, and no connector implies that an upper-stream turn caused a lower-panel job.</p>
+<p><strong>Lower panel:</strong> horizontal length = gap duration; vertical thickness = logged Codex input + output tokens in that entire gap, including cached input. This is <strong>not plan usage, billing, or unique text</strong>. Dashed hairlines mean no retained qualifying token event, not zero. The first gap starts before August 22: its duration is clipped here, but its full-window token total is retained. Bar area is duration × tokens, not a token integral. Gaps and tokens run to the snapshot, computed by <code>operator_gaps.py</code>, which reproduces the September 21 forensic report’s rows exactly over that report’s window. No recorded operator turn is not proof of physical absence, and no connector implies that an upper-stream turn caused a lower-panel job.</p>
 <p><strong>Provisional:</strong> Joe’s 30-card blind check is pending; subject patterns carry topical labels. <span id="coverage-note"></span> Unmatched and ambiguous retrievals are excluded. Dated editorial annotations are supplied by Joe/claude-5 (22 Aug–13 Sep) and claude-17/zai-2 (27 Sep); the forensic source does not independently establish the “unrequested” characterization. Census method change vs 2026-09-21: turns flagged by futon3c/scripts/xiang2000_p6o3.py classify() (kimi notices, inbox-zero reminders, late park-wake variants) are additionally excluded — 92 turns in the 2026-09-21→10-01 window (0 traceable in the earlier window), dropping 75 hits. 153 of the labelled hits ride the 97 provisional Kimi-pack additions.</p>
-<p>Sources: committed pattern-stage EDN (689 labels + 97 provisional additions) + evidence-ID joins; <code>FORENSIC-autopilot-2026-09-21.md</code> (codex-15, initial commit <code>0685ccf</code>), which is also the lower panel’s only token source. Design reference: <a href="https://www.edwardtufte.com/product/napoleons-march/">Minard’s Napoleon’s March, Edward Tufte</a>. No external scripts, fonts, or data requests.</p>
+<p>Sources: committed pattern-stage EDN (689 labels + 97 provisional additions) + evidence-ID joins; <code>FORENSIC-autopilot-2026-09-21.md</code> (codex-15, initial commit <code>0685ccf</code>) for the dated annotations; lower-panel gaps and tokens from <code>operator-gaps-2026-10-01.json</code> (<code>operator_gaps.py</code>, Codex session logs). Design reference: <a href="https://www.edwardtufte.com/product/napoleons-march/">Minard’s Napoleon’s March, Edward Tufte</a>. No external scripts, fonts, or data requests.</p>
 </section>
 <details><summary>Daily counts by stage — exact, unsmoothed (table view)</summary><div class="scroll" id="daily-table"></div></details>
 <details><summary>Operator-gap windows and logged Codex tokens (table view)</summary><div class="scroll" id="gap-table"></div></details>
@@ -33,7 +33,7 @@ function el(tag,attrs={},parent=svg){const n=document.createElementNS(ns,tag);fo
 function text(x,y,value,cls='',attrs={}){const n=el('text',{x,y,class:cls,...attrs});n.textContent=value;return n;}
 function lines(x,y,values,cls=''){values.forEach((v,i)=>text(x,y+i*17,v,cls));}
 const fmt=n=>n.toLocaleString('en-US'), pct=n=>(100*n).toFixed(2)+'%';
-const x0=74,x1=1134,W=x1-x0,start=Date.parse('2026-08-22T00:00:00Z'),finish=Date.parse('2026-10-02T00:00:00Z'),cutoff=Date.parse(DATA.cutoff),tokenDataEnd=Date.parse('2026-09-21T17:19:00Z');
+const x0=74,x1=1134,W=x1-x0,start=Date.parse('2026-08-22T00:00:00Z'),finish=Date.parse('2026-10-02T00:00:00Z'),cutoff=Date.parse(DATA.cutoff);
 const x=t=>x0+W*(t-start)/(finish-start),mid=340,plotScale=2.15;
 const dates=DATA.days.map(d=>Date.parse(d.date+'T12:00:00Z'));
 const ys=DATA.days.map(d=>{const sum=DATA.stages.reduce((n,s)=>n+d.mean[s],0);let y=mid-sum*plotScale/2;return DATA.stages.map(s=>{const a=y;y+=d.mean[s]*plotScale;return[a,y];});});
@@ -72,17 +72,15 @@ axis(562);
 text(x0,629,'02  WORK DURING RECORDED OPERATOR GAPS','heading');text(x0,650,'Gap duration on the same clock · thickness = logged Codex tokens, including cached input','small muted');
 const agentMid=751,tokenScale=120/831983803;
 el('line',{x1:x0,x2:x1,y1:agentMid,y2:agentMid,class:'rule'});
+const topGaps=new Set([...DATA.gaps].filter(g=>g.tokens!==null).sort((a,b)=>b.tokens-a.tokens).slice(0,3).map(g=>g.rank));
 for(const g of DATA.gaps){const left=x(Math.max(start,Date.parse(g.start))),right=x(Math.min(cutoff,Date.parse(g.end))),h=g.tokens===null?0:g.tokens*tokenScale;
  if(g.tokens===null)el('line',{x1:left,x2:right,y1:agentMid,y2:agentMid,stroke:'var(--agent)','stroke-width':2,'stroke-dasharray':'3 3'});
  else el('rect',{x:left,y:agentMid-h/2,width:right-left,height:h,fill:'var(--agent)'});
  const hit=el('rect',{x:left,y:agentMid-Math.max(h,12)/2,width:right-left,height:Math.max(h,12),class:'hit',tabindex:0,'data-gap':g.rank,role:'button'});
  const description=`${g.start} → ${g.end} · ${g.tokens===null?'No retained token event (not zero)':fmt(g.tokens)+' logged tokens incl. cached input'} · ${g.hours} hours${g.clipped?' · clipped duration; full-window token total':''}`;hit.setAttribute('aria-label',description);bindTip(hit,description);
- if([1,2,7].includes(g.rank)){text((left+right)/2,agentMid-h/2-10,(g.tokens/1e6).toFixed(1)+'M','small',{'text-anchor':'middle'});}
+ if(topGaps.has(g.rank)){text((left+right)/2,agentMid-h/2-10,(g.tokens/1e6).toFixed(1)+'M','small',{'text-anchor':'middle'});}
 }
 text(1180,700,'SEPARATE WIDTH SCALE','small');
-{const hatch=el('pattern',{id:'nodata',width:7,height:7,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);el('rect',{width:7,height:7,fill:'var(--surface)'},hatch);el('line',{x1:0,y1:0,x2:0,y2:7,stroke:'var(--rule)','stroke-width':1.5},hatch);
- const nl=x(tokenDataEnd),nr=x1;el('rect',{x:nl,y:agentMid-24,width:nr-nl,height:48,fill:'url(#nodata)',stroke:'var(--rule)','stroke-dasharray':'4 3'});
- text((nl+nr)/2,agentMid-34,'no token data','small muted',{'text-anchor':'middle'});text((nl+nr)/2,agentMid+4,'forensic report ends 2026-09-21','small muted',{'text-anchor':'middle'});}
 for(const [i,n]of [100e6,400e6,800e6].entries()){const h=n*tokenScale,xx=1190+i*75;el('rect',{x:xx,y:779-h/2,width:12,height:h,fill:'var(--agent)'});text(xx+6,855,n/1e6+'M','small',{'text-anchor':'middle'});}
 text(1180,882,'Tokens logged · not plan usage','small muted');axis(839);
 el('line',{x1:x(cutoff),x2:x(cutoff),y1:187,y2:855,stroke:'var(--muted)','stroke-dasharray':'3 4'});text(x(cutoff)-5,884,`snapshot · ${DATA.cutoff.slice(0,16).replace('T',' ')} UTC`,'small muted',{'text-anchor':'end'});
