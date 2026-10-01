@@ -1,0 +1,1502 @@
+{
+ "T001": {
+  "evidence-id": "emacs-3ab6c85f493e0a7a776454ecb705a451",
+  "pattern": "test-registry/register-the-run",
+  "stage": "assurance"
+ },
+ "T002": {
+  "evidence-id": "emacs-be16d8ab96ddf89e251ca1b0932b7235",
+  "pattern": "war-machine/ideal-actual-gap",
+  "stage": "perceive"
+ },
+ "T003": {
+  "evidence-id": "emacs-abc10957fa74500444e719d6c1ccb479",
+  "pattern": "relationship-coherence/quote-as-oblique-address",
+  "stage": "coordination"
+ },
+ "T004": {
+  "evidence-id": "emacs-8fb2d9d61cd1af194e4e87ab39f484fa",
+  "pattern": "pacspine/frictionless-next",
+  "stage": "coordination"
+ },
+ "T005": {
+  "evidence-id": "emacs-d4368120c762ef9f4d92b33a108f6847",
+  "pattern": "agency/delivery-receipt",
+  "stage": "assurance"
+ },
+ "T006": {
+  "evidence-id": "emacs-8a0f0469561db68d897e955994149aa7",
+  "pattern": "problems/fundamentals-drowned-by-backlog",
+  "stage": "select"
+ },
+ "T007": {
+  "evidence-id": "emacs-9178dfaa54cbc6869404b705a3580c7e",
+  "pattern": "problems/r10-scheduled-entrypoint",
+  "stage": "perceive"
+ },
+ "T008": {
+  "evidence-id": "emacs-4ec3d273b871862bbeb2c1e1cec4acbc",
+  "pattern": "writing-coherence/structural-style-inconsistency",
+  "stage": "act"
+ },
+ "T009": {
+  "evidence-id": "emacs-a8eab385cf9846d9dae1b786e56aa557",
+  "pattern": "transition/f0-f4-boundary",
+  "stage": "evaluate"
+ },
+ "T010": {
+  "evidence-id": "emacs-a152b1968ad3d14a466f3aa9375e4668",
+  "pattern": "agency/invariants",
+  "stage": "assurance"
+ },
+ "T011": {
+  "evidence-id": "emacs-88956e3c38e9574ddb1278345cf786b3",
+  "pattern": "vsatlatarium/cached-layout-computation",
+  "stage": "act"
+ },
+ "T012": {
+  "evidence-id": "emacs-fe3c54862a5a34533f28a1496636e43e",
+  "pattern": "memory/name-a-reusable-artifact",
+  "stage": "believe"
+ },
+ "T013": {
+  "evidence-id": "emacs-6eb1d9ab9e807731625c5c850970770a",
+  "pattern": "cycle-machine/runtime-restoration",
+  "stage": "act"
+ },
+ "T014": {
+  "evidence-id": "emacs-7e6e412abb7f09029d2cb4c34ddd5dd9",
+  "pattern": "cascade-construction/run-it-on-a-real-case",
+  "stage": "assurance"
+ },
+ "T015": {
+  "evidence-id": "emacs-f9e1cd0a932fb610989052403aa1a866",
+  "pattern": "futon-theory/mission-lifecycle",
+  "stage": "believe"
+ },
+ "T016": {
+  "evidence-id": "emacs-a8b255c1742193e4c4f1adbdedf101a3",
+  "pattern": "war-room/wr-23-upstream-trackers-are-stack-surfaces",
+  "stage": "coordination"
+ },
+ "T017": {
+  "evidence-id": "emacs-7af2100286f6d9ad5cdac713ad59cd78",
+  "pattern": "problems/theory-general-enough-to-drive-the-stack",
+  "stage": "none"
+ },
+ "T018": {
+  "evidence-id": "emacs-3e170c56cb895c06719300dd591ea493",
+  "pattern": "contributing/stack-scan-logging-protocol",
+  "stage": "assurance"
+ },
+ "T019": {
+  "evidence-id": "emacs-a4e49a0de527dece11a23d27a1e79d06",
+  "pattern": "futon-theory/coordination-protocol",
+  "stage": "coordination"
+ },
+ "T020": {
+  "evidence-id": "emacs-9d6d3332c4a8989d8ae5093163e3db44",
+  "pattern": "memory/verify-in-the-serving-process",
+  "stage": "assurance"
+ },
+ "T021": {
+  "evidence-id": "emacs-7d7acbcc9d472a2b88520cb73faead9d",
+  "pattern": "fulab/clock-out",
+  "stage": "assurance"
+ },
+ "T022": {
+  "evidence-id": "emacs-cef3bbd250e1eefa7139966de6f15f53",
+  "pattern": "features/emit-per-tick-mismatch",
+  "stage": "believe"
+ },
+ "T023": {
+  "evidence-id": "emacs-a02008cf9e8084b84b312db6a2059c19",
+  "pattern": "storage/durability-first",
+  "stage": "assurance"
+ },
+ "T024": {
+  "evidence-id": "emacs-8d0e727b523a3243a8c4615ca980a3e9",
+  "pattern": "transition/f0-f4-boundary",
+  "stage": "evaluate"
+ },
+ "T025": {
+  "evidence-id": "emacs-d1a506eb191bcfe170166041c17df7c4",
+  "pattern": "futon-theory/structural-tension-as-observation",
+  "stage": "perceive"
+ },
+ "T026": {
+  "evidence-id": "emacs-7fe9ca707462fa699d9f41fe6191798d",
+  "pattern": "enrichment/ARGUMENT",
+  "stage": "believe"
+ },
+ "T027": {
+  "evidence-id": "emacs-c334ad830559fe6de2e49bbbe7e3227b",
+  "pattern": "ants/cargo-return-discipline",
+  "stage": "act"
+ },
+ "T028": {
+  "evidence-id": "emacs-d2666911e936904cbe5748cdcb7e728d",
+  "pattern": "orchestration/recorded-handoff",
+  "stage": "coordination"
+ },
+ "T029": {
+  "evidence-id": "emacs-dbd38999cea580acb2fed131ba51d37f",
+  "pattern": "devmap-coherence/ifr-f7-upa-upekkha",
+  "stage": "assurance"
+ },
+ "T030": {
+  "evidence-id": "emacs-efddda48ccd1273708c76eb8dba641cc",
+  "pattern": "problems/coordination-patterns-derivation",
+  "stage": "coordination"
+ },
+ "T031": {
+  "evidence-id": "emacs-e23471c405ee22c1db5acbbb5058d314",
+  "pattern": "war-room/wr-3-social-exotype-before-implementation",
+  "stage": "assurance"
+ },
+ "T032": {
+  "evidence-id": "emacs-909c664046b28ae2800ac700f66edba5",
+  "pattern": "musn/plan-before-tool",
+  "stage": "select"
+ },
+ "T033": {
+  "evidence-id": "emacs-8b67b5cd548578ef027199bc4bc65890",
+  "pattern": "iching/hexagram-50-ding",
+  "stage": "act"
+ },
+ "T034": {
+  "evidence-id": "emacs-74da8c2f133316d58f364242c889aee3",
+  "pattern": "orchestration/state-in-substrate-deltas-in-messages",
+  "stage": "coordination"
+ },
+ "T035": {
+  "evidence-id": "emacs-e5dc760489943957737439a298f23c04",
+  "pattern": "problems/process-conduct-is-unassured",
+  "stage": "assurance"
+ },
+ "T036": {
+  "evidence-id": "emacs-5b304d5a7b3d99b66082280e145f95f8",
+  "pattern": "process-coherence/status-refresh-before-work",
+  "stage": "believe"
+ },
+ "T037": {
+  "evidence-id": "emacs-d9a119a0799cb47021a45e847fdc63d3",
+  "pattern": "problems/operator-turns-become-inference-observations",
+  "stage": "perceive"
+ },
+ "T038": {
+  "evidence-id": "emacs-a93fa997cf85020b003e994ea6918767",
+  "pattern": "futon-theory/mission-lifecycle",
+  "stage": "believe"
+ },
+ "T039": {
+  "evidence-id": "emacs-d49e7c3fcd5420ae001e1c7174331599",
+  "pattern": "library-coherence/library-evidence-ledger",
+  "stage": "assurance"
+ },
+ "T040": {
+  "evidence-id": "emacs-25b2ff4c4a88f7e9f8a9d9f2ae7311e7",
+  "pattern": "war-machine/ideal-actual-gap",
+  "stage": "perceive"
+ },
+ "T041": {
+  "evidence-id": "emacs-bebd3a237966f3c7647114c91a7e5c66",
+  "pattern": "eight-gates/lean-commit",
+  "stage": "select"
+ },
+ "T042": {
+  "evidence-id": "emacs-9b7225b0b3f0ea0d7ab45470a7c2ba8a",
+  "pattern": "devmap-coherence/ifr-f7-upa-upekkha",
+  "stage": "assurance"
+ },
+ "T043": {
+  "evidence-id": "emacs-79e351d0f53cfddf6d9e68b8968fe5e6",
+  "pattern": "futon-theory/structural-tension-as-observation",
+  "stage": "perceive"
+ },
+ "T044": {
+  "evidence-id": "emacs-814cd2d9328c5f6fc801b934f9cc5d10",
+  "pattern": "memory/licence-to-fail",
+  "stage": "assurance"
+ },
+ "T045": {
+  "evidence-id": "emacs-738f982723df67677fe6d7f1bc82fccf",
+  "pattern": "war-room/wr-3-social-exotype-before-implementation",
+  "stage": "assurance"
+ },
+ "T046": {
+  "evidence-id": "emacs-e7f81b5249f2ae37b6e5a7f89cdea4f4",
+  "pattern": "devmap-coherence/ifr-f1-dhammavicaya",
+  "stage": "assurance"
+ },
+ "T047": {
+  "evidence-id": "emacs-94fdc39bd49bfd0eccd7d45ebe6c7759",
+  "pattern": "coordination/ARGUMENT",
+  "stage": "coordination"
+ },
+ "T048": {
+  "evidence-id": "emacs-3f4ed241c1672d4a015d242bb3dac0a7",
+  "pattern": "contracts/holder-states-the-claim",
+  "stage": "assurance"
+ },
+ "T049": {
+  "evidence-id": "emacs-5ac5f92a7324cc986d913ee186308f31",
+  "pattern": "iching/hexagram-62-xiaoguo",
+  "stage": "act"
+ },
+ "T050": {
+  "evidence-id": "emacs-028b5f53f64ef5922f754253f5ee325f",
+  "pattern": "ants/cargo-return-discipline",
+  "stage": "act"
+ },
+ "T051": {
+  "evidence-id": "emacs-c88d623923718da9bb89a645d28174e6",
+  "pattern": "war-room/wr-18-war-machine-is-demonstrated-not-hypothesised",
+  "stage": "believe"
+ },
+ "T052": {
+  "evidence-id": "emacs-e49f556e46db45dfbe046e7e5f966154",
+  "pattern": "problems/deliberate-refusals-allude-to-unwritten-patterns",
+  "stage": "believe"
+ },
+ "T053": {
+  "evidence-id": "emacs-80d8897d7d58e48a95ab94788d9bac94",
+  "pattern": "contributing/stack-scan-logging-protocol",
+  "stage": "assurance"
+ },
+ "T054": {
+  "evidence-id": "emacs-e2d79c442597a9b6f76d5d615c1e0cd8",
+  "pattern": "war-room/wr-23-upstream-trackers-are-stack-surfaces",
+  "stage": "coordination"
+ },
+ "T055": {
+  "evidence-id": "emacs-a2aab087876fdd2a48e14df929ff71e9",
+  "pattern": "workday/single-focus-amidst-agenda",
+  "stage": "select"
+ },
+ "T056": {
+  "evidence-id": "emacs-b897c684dc868d3d7d6947b4c06d9756",
+  "pattern": "cascades/on-the-fly-cascade",
+  "stage": "select"
+ },
+ "T057": {
+  "evidence-id": "emacs-6e059fe3ed51f2ca17c944eb9f64f5fe",
+  "pattern": "dsc/evidence-situated-log",
+  "stage": "assurance"
+ },
+ "T058": {
+  "evidence-id": "emacs-b7501cb74ab0e7bfec0b9c4e600496a1",
+  "pattern": "futon-theory/stop-the-line",
+  "stage": "select"
+ },
+ "T059": {
+  "evidence-id": "emacs-893bef3dc5270a76005c709ebf149034",
+  "pattern": "cascades/on-the-fly-cascade",
+  "stage": "select"
+ },
+ "T060": {
+  "evidence-id": "emacs-bbc3e44835b1172cf668dd1d07e5518f",
+  "pattern": "agency/identifier-separation",
+  "stage": "believe"
+ },
+ "T061": {
+  "evidence-id": "emacs-fb3e1c59f659608f8198eb1050db8e57",
+  "pattern": "process/fake-done-via-binary-closure",
+  "stage": "assurance"
+ },
+ "T062": {
+  "evidence-id": "emacs-4c98feaca2beaacf3a475f2f9c15ad8d",
+  "pattern": "musn/pause-backtrace",
+  "stage": "assurance"
+ },
+ "T063": {
+  "evidence-id": "emacs-8d8df46f76cf91057ab7a735da821bc6",
+  "pattern": "writing-coherence/structural-style-inconsistency",
+  "stage": "act"
+ },
+ "T064": {
+  "evidence-id": "emacs-e68ee8adaaee917c4705440e6eea8cea",
+  "pattern": "apparatus/the-system-stops-on-schedule",
+  "stage": "select"
+ },
+ "T065": {
+  "evidence-id": "emacs-5eb8c4188a868fb73e29bf8e2685c37d",
+  "pattern": "pacspine/simple-close",
+  "stage": "act"
+ },
+ "T066": {
+  "evidence-id": "emacs-a3e03c1dcecac9d69eb4a3bf67f3f352",
+  "pattern": "ants/cargo-return-discipline",
+  "stage": "act"
+ },
+ "T067": {
+  "evidence-id": "emacs-aaf9611f6477a2916827fa965cf47794",
+  "pattern": "devmap-coherence/ifr-f7-upa-upekkha",
+  "stage": "assurance"
+ },
+ "T068": {
+  "evidence-id": "emacs-3b3dbb6adb84a24b47418253c159b559",
+  "pattern": "inbox-zero/push-the-declared",
+  "stage": "act"
+ },
+ "T069": {
+  "evidence-id": "emacs-52aa28b3b79c520cdfa47fe60c96d48b",
+  "pattern": "devmap-coherence/prototype-alignment-bridge",
+  "stage": "assurance"
+ },
+ "T070": {
+  "evidence-id": "emacs-842d6b2116b846f523d9abdb3b946791",
+  "pattern": "test-registry/rerun-when-the-warrant-fails",
+  "stage": "assurance"
+ },
+ "T071": {
+  "evidence-id": "emacs-6dd08dcc7cc6415e98f4d51b70f12d27",
+  "pattern": "war-room/wr-23-upstream-trackers-are-stack-surfaces",
+  "stage": "coordination"
+ },
+ "T072": {
+  "evidence-id": "emacs-517981c97f741a2b815d1f8d91d4d5c0",
+  "pattern": "social/ARGUMENT",
+  "stage": "coordination"
+ },
+ "T073": {
+  "evidence-id": "emacs-e6d66b1a5e1b8d55bd696fd172f85804",
+  "pattern": "iching/hexagram-18-gu",
+  "stage": "act"
+ },
+ "T074": {
+  "evidence-id": "emacs-3464ef1f4fd37be94d93c9bfb18e44d8",
+  "pattern": "stack-coherence/commit-intent-alignment",
+  "stage": "believe"
+ },
+ "T075": {
+  "evidence-id": "emacs-0ed091c2cb47f43d92be773cb2a694cd",
+  "pattern": "agency/delivery-receipt",
+  "stage": "assurance"
+ },
+ "T076": {
+  "evidence-id": "emacs-af8873394ae3320acc5298130eb325d7",
+  "pattern": "iching/hexagram-18-gu",
+  "stage": "act"
+ },
+ "T077": {
+  "evidence-id": "emacs-7ef61e00d265958614f2a6fe393dbcea",
+  "pattern": "fulab/session-resume",
+  "stage": "coordination"
+ },
+ "T078": {
+  "evidence-id": "emacs-1dde42297bec16010b16d58b1c8f852b",
+  "pattern": "pacspine/frictionless-next",
+  "stage": "coordination"
+ },
+ "T079": {
+  "evidence-id": "emacs-5f49cac462dd43981d628ec088e88ae7",
+  "pattern": "stack-coherence/commit-intent-alignment",
+  "stage": "believe"
+ },
+ "T080": {
+  "evidence-id": "emacs-6d007d1e4ce40d1561daa2bae15be099",
+  "pattern": "devmap-coherence/ifr-f2-viriya",
+  "stage": "assurance"
+ },
+ "T081": {
+  "evidence-id": "emacs-da5f174cdbe7cb94974fae0d970d8353",
+  "pattern": "memory/name-a-reusable-artifact",
+  "stage": "believe"
+ },
+ "T082": {
+  "evidence-id": "emacs-05e5a76fa065b6044ca1b79d6cddd215",
+  "pattern": "stack-coherence/futon-bridge-health",
+  "stage": "assurance"
+ },
+ "T083": {
+  "evidence-id": "emacs-d2da578318c5552a4665317c1339a6b0",
+  "pattern": "futon-theory/proof-path",
+  "stage": "assurance"
+ },
+ "T084": {
+  "evidence-id": "emacs-c6236d85daad0545e230814a4aa0d6df",
+  "pattern": "stack-coherence/stack-blocker-detection",
+  "stage": "perceive"
+ },
+ "T085": {
+  "evidence-id": "emacs-c39cc19fdb78520f6e20d5149c2b874f",
+  "pattern": "war-room/wr-17-futon0-as-cyborg-futon7-as-markov-blanket",
+  "stage": "select"
+ },
+ "T086": {
+  "evidence-id": "emacs-eb854042d19f82cbd8ffc6e35db4370e",
+  "pattern": "peripherals/hot-reload-as-default-fix-path",
+  "stage": "act"
+ },
+ "T087": {
+  "evidence-id": "emacs-314b606a2777f0be1355118f105b5fd5",
+  "pattern": "test-registry/judge-adequacy",
+  "stage": "assurance"
+ },
+ "T088": {
+  "evidence-id": "emacs-439f75e4b6b6f95c50efb2bd1bd23a8d",
+  "pattern": "inbox-zero/ignore-by-kind",
+  "stage": "act"
+ },
+ "T089": {
+  "evidence-id": "emacs-243cc89909695ec5861e639d998e818c",
+  "pattern": "memory/no-tightening-while-held",
+  "stage": "evaluate"
+ },
+ "T090": {
+  "evidence-id": "emacs-38078a599081760f7656bcdbadf3178e",
+  "pattern": "devmap-coherence/ifr-f3-piti",
+  "stage": "assurance"
+ },
+ "T091": {
+  "evidence-id": "emacs-6aa2374e245e9d00909e0bce0e59074f",
+  "pattern": "cascade-construction/read-what-exists-first",
+  "stage": "perceive"
+ },
+ "T092": {
+  "evidence-id": "emacs-ed9398371799573348340a767a54c550",
+  "pattern": "memory/no-tightening-while-held",
+  "stage": "evaluate"
+ },
+ "T093": {
+  "evidence-id": "emacs-4e038cfcdacaf38c459acc203b8eab67",
+  "pattern": "stack-coherence/futon-bridge-health",
+  "stage": "assurance"
+ },
+ "T094": {
+  "evidence-id": "emacs-ab11b4548e0d38ab9f74c9c7cf33114c",
+  "pattern": "process/fake-done-via-binary-closure",
+  "stage": "assurance"
+ },
+ "T095": {
+  "evidence-id": "emacs-980acb93e7cd3b5ac88931de7b870a5b",
+  "pattern": "war-room/wr-16-operationalised-exploit-loops-are-first-class-observation-channels",
+  "stage": "perceive"
+ },
+ "T096": {
+  "evidence-id": "emacs-5660d408a4761cbb68eecda817991c0c",
+  "pattern": "test-registry/bind-the-subject",
+  "stage": "assurance"
+ },
+ "T097": {
+  "evidence-id": "emacs-55935f3d205a77012db1cbea9274caab",
+  "pattern": "test-registry/judge-adequacy",
+  "stage": "assurance"
+ },
+ "T098": {
+  "evidence-id": "emacs-7b8a78eda7b4505d36c2c3ae068ed0de",
+  "pattern": "memory/verify-in-the-serving-process",
+  "stage": "assurance"
+ },
+ "T099": {
+  "evidence-id": "emacs-90193d13a31aad85d09128e4e1997b12",
+  "pattern": "math-formalization/statement-ladder-before-proof-text",
+  "stage": "act"
+ },
+ "T100": {
+  "evidence-id": "emacs-46085ae2ee0bbf5cc56d217332a317f4",
+  "pattern": "storage/durability-first",
+  "stage": "assurance"
+ },
+ "T101": {
+  "evidence-id": "emacs-6a05edceba4c641421a29a761796ea7d",
+  "pattern": "cycle-machine/job-port",
+  "stage": "coordination"
+ },
+ "T102": {
+  "evidence-id": "emacs-b9ad5e8ec0234f5763e46acc6aeff194",
+  "pattern": "iching/hexagram-50-ding",
+  "stage": "act"
+ },
+ "T103": {
+  "evidence-id": "emacs-3a7ea279f60ba623d0d09e8f98526d29",
+  "pattern": "iching/hexagram-62-xiaoguo",
+  "stage": "act"
+ },
+ "T104": {
+  "evidence-id": "emacs-389c80e2ef961eb287fb3936ce1b9f93",
+  "pattern": "aif/interoceptive-tripwires",
+  "stage": "evaluate"
+ },
+ "T105": {
+  "evidence-id": "emacs-fa4f406f7f6928dc7ca6660598085e43",
+  "pattern": "war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch",
+  "stage": "select"
+ },
+ "T106": {
+  "evidence-id": "emacs-e61b548016123ddc0c54c9b3789aefc7",
+  "pattern": "war-machine/ideal-actual-gap",
+  "stage": "perceive"
+ },
+ "T107": {
+  "evidence-id": "emacs-8b79341a683b27e0facbb26f53322ae5",
+  "pattern": "futon-theory/proof-path",
+  "stage": "assurance"
+ },
+ "T108": {
+  "evidence-id": "emacs-166c4a235ca1471435c11901ba781d6f",
+  "pattern": "or2/topology-dungeon-crawl",
+  "stage": "believe"
+ },
+ "T109": {
+  "evidence-id": "emacs-d637ecf848b78987684e714040aec811",
+  "pattern": "fulab/clock-out",
+  "stage": "assurance"
+ },
+ "T110": {
+  "evidence-id": "emacs-12189b876275cc2d2687333a8d73bb8f",
+  "pattern": "peripherals/hot-reload-as-default-fix-path",
+  "stage": "act"
+ },
+ "T111": {
+  "evidence-id": "emacs-e8d6650ab6fba84596083253fd3fc25a",
+  "pattern": "problems/fundamentals-drowned-by-backlog",
+  "stage": "select"
+ },
+ "T112": {
+  "evidence-id": "emacs-c263e92fb2a8b13de3b143cded88dbdd",
+  "pattern": "aif/interoceptive-tripwires",
+  "stage": "evaluate"
+ },
+ "T113": {
+  "evidence-id": "emacs-6a1392804fa788a9068926c2d91c20c4",
+  "pattern": "agency/invariants",
+  "stage": "assurance"
+ },
+ "T114": {
+  "evidence-id": "emacs-d56b4bddc4f315d832a381330c1bd7a4",
+  "pattern": "writing-coherence/structural-style-inconsistency",
+  "stage": "act"
+ },
+ "T115": {
+  "evidence-id": "emacs-7d1d0324d5282b09b13915d979f79243",
+  "pattern": "iching/hexagram-35-jin",
+  "stage": "act"
+ },
+ "T116": {
+  "evidence-id": "emacs-e3bf6bdff26e4e2a795b45bcc467e2fc",
+  "pattern": "orchestration/state-in-substrate-deltas-in-messages",
+  "stage": "coordination"
+ },
+ "T117": {
+  "evidence-id": "emacs-b940dbfaa61b56fe83e36f0f89ad9f0d",
+  "pattern": "futon-theory/coordination-protocol",
+  "stage": "coordination"
+ },
+ "T118": {
+  "evidence-id": "emacs-de8ac12566401cfe6a377446f1bba4ae",
+  "pattern": "musn/aif-live-scores",
+  "stage": "perceive"
+ },
+ "T119": {
+  "evidence-id": "emacs-3876b65d32a8e7cb16e7df671df49e30",
+  "pattern": "library-coherence/library-evidence-ledger",
+  "stage": "assurance"
+ },
+ "T120": {
+  "evidence-id": "emacs-3da86888a99b6c26276b85710a805d0f",
+  "pattern": "futon-theory/structural-tension-as-observation",
+  "stage": "perceive"
+ },
+ "T121": {
+  "evidence-id": "emacs-ab7363267d8f507744aefd2f42f11284",
+  "pattern": "stack-coherence/stack-blocker-detection",
+  "stage": "perceive"
+ },
+ "T122": {
+  "evidence-id": "emacs-3e22ece6d72a1418a722d991b22c63cd",
+  "pattern": "stack-coherence/futon1-determinism",
+  "stage": "assurance"
+ },
+ "T123": {
+  "evidence-id": "emacs-951fe82c80888c2cb50ae43985089106",
+  "pattern": "storage/durability-first",
+  "stage": "assurance"
+ },
+ "T124": {
+  "evidence-id": "emacs-62d47867441ada0d3a784ff5f67a9c89",
+  "pattern": "war-room/wr-17-futon0-as-cyborg-futon7-as-markov-blanket",
+  "stage": "select"
+ },
+ "T125": {
+  "evidence-id": "emacs-a4e87b014aba58113f1784f5452fd1e1",
+  "pattern": "ants/baseline-cyber-ant",
+  "stage": "believe"
+ },
+ "T126": {
+  "evidence-id": "emacs-4ee647883737bc82d43d38f70551d981",
+  "pattern": "cycle-machine/toolchain-port",
+  "stage": "assurance"
+ },
+ "T127": {
+  "evidence-id": "emacs-824d91cd628d67bab7df256cc1409bfe",
+  "pattern": "contributing/devmap-contribution-protocol",
+  "stage": "believe"
+ },
+ "T128": {
+  "evidence-id": "emacs-80319acdd445d909d9c044fb33a04e32",
+  "pattern": "problems/fundamentals-drowned-by-backlog",
+  "stage": "select"
+ },
+ "T129": {
+  "evidence-id": "emacs-a0a7d4cbb7939b199008bad98f949057",
+  "pattern": "math-formalization/statement-ladder-before-proof-text",
+  "stage": "act"
+ },
+ "T130": {
+  "evidence-id": "emacs-e8c71b8a1e9354d39bcc9177c5042a7f",
+  "pattern": "stack-coherence/commit-intent-alignment",
+  "stage": "believe"
+ },
+ "T131": {
+  "evidence-id": "emacs-de4fadecb0c24832356f99d9821788e6",
+  "pattern": "inbox-zero/promote-at-turn-end",
+  "stage": "act"
+ },
+ "T132": {
+  "evidence-id": "emacs-7843638369cd0f2a3bfd88c6a18c4a97",
+  "pattern": "iching/hexagram-35-jin",
+  "stage": "act"
+ },
+ "T133": {
+  "evidence-id": "emacs-9c36c0986a80bbd02f8a1447f601f1e6",
+  "pattern": "problems/deliberate-refusals-allude-to-unwritten-patterns",
+  "stage": "believe"
+ },
+ "T134": {
+  "evidence-id": "emacs-4efc8e79c19c47b28bff1d637202a61b",
+  "pattern": "p4ng/call-a-synthesizer",
+  "stage": "coordination"
+ },
+ "T135": {
+  "evidence-id": "emacs-294c2737b70a5ccc40a8e12ff875c18e",
+  "pattern": "problems/theory-general-enough-to-drive-the-stack",
+  "stage": "none"
+ },
+ "T136": {
+  "evidence-id": "emacs-6eb37e0cd3a55eea9648f6b40cf01826",
+  "pattern": "problems/coordination-patterns-derivation",
+  "stage": "coordination"
+ },
+ "T137": {
+  "evidence-id": "emacs-f9c984a0c334ecd1149f9280655bacf7",
+  "pattern": "cycle-machine/toolchain-port",
+  "stage": "assurance"
+ },
+ "T138": {
+  "evidence-id": "emacs-5a92fd653d5ff95ad3f86b45e201695e",
+  "pattern": "devmap-coherence/prototype-alignment-bridge",
+  "stage": "assurance"
+ },
+ "T139": {
+  "evidence-id": "emacs-e9a34a2aa55465590f6c57e5d97ff21d",
+  "pattern": "stack-coherence/stack-blocker-detection",
+  "stage": "perceive"
+ },
+ "T140": {
+  "evidence-id": "emacs-d70fa1173b3fdb797d8f2573ca6b51f7",
+  "pattern": "problems/g-over-cascade-is-undefined",
+  "stage": "evaluate"
+ },
+ "T141": {
+  "evidence-id": "emacs-2ef6634c3faaa016ff09b346d6ed41bc",
+  "pattern": "war-room/wr-18-war-machine-is-demonstrated-not-hypothesised",
+  "stage": "believe"
+ },
+ "T142": {
+  "evidence-id": "emacs-4ade017b217ef1a996b19f64d0364029",
+  "pattern": "p4ng/call-a-synthesizer",
+  "stage": "coordination"
+ },
+ "T143": {
+  "evidence-id": "emacs-7f9b1039302e191ceb8c5a771f990ae0",
+  "pattern": "p4ng/call-a-synthesizer",
+  "stage": "coordination"
+ },
+ "T144": {
+  "evidence-id": "emacs-08f5951bd2e30dd0e7e11d3c54f0c464",
+  "pattern": "cycle-machine/step-machine",
+  "stage": "act"
+ },
+ "T145": {
+  "evidence-id": "emacs-070362acb02598aac6867fe403d79e30",
+  "pattern": "test-registry/rerun-when-the-warrant-fails",
+  "stage": "assurance"
+ },
+ "T146": {
+  "evidence-id": "emacs-a305f4131e25fd3c13bbbb46935cbb4a",
+  "pattern": "musn/pause-backtrace",
+  "stage": "assurance"
+ },
+ "T147": {
+  "evidence-id": "emacs-15688db61b6c6534eb46edc3cf063e53",
+  "pattern": "devmap-coherence/ifr-f2-viriya",
+  "stage": "assurance"
+ },
+ "T148": {
+  "evidence-id": "emacs-81657acd886e4b793a174996e49b89f1",
+  "pattern": "inbox-zero/ignore-by-kind",
+  "stage": "act"
+ },
+ "T149": {
+  "evidence-id": "emacs-d331616a9c4a9af14205d358d6548828",
+  "pattern": "orchestration/state-in-substrate-deltas-in-messages",
+  "stage": "coordination"
+ },
+ "T150": {
+  "evidence-id": "emacs-05c51c5e0f6246e4d01bb72850e63336",
+  "pattern": "inbox-zero/push-the-declared",
+  "stage": "act"
+ },
+ "T151": {
+  "evidence-id": "emacs-376383677520ecdde04e326f4279ad62",
+  "pattern": "problems/refusal-prediction-error-v1--source-field-missing",
+  "stage": "believe"
+ },
+ "T152": {
+  "evidence-id": "emacs-be3edbeb771a1d5e8b32f37e262af506",
+  "pattern": "data-mining/checkpoint-the-long-run",
+  "stage": "act"
+ },
+ "T153": {
+  "evidence-id": "emacs-7d308e2f8e2c999625ca7dec23e0861c",
+  "pattern": "problems/g-over-cascade-is-undefined",
+  "stage": "evaluate"
+ },
+ "T154": {
+  "evidence-id": "emacs-ee7cfe5286af6bb95e052223196bbbf7",
+  "pattern": "problems/refusal-prediction-error-v1--source-field-missing",
+  "stage": "believe"
+ },
+ "T155": {
+  "evidence-id": "emacs-6c409ec8c0b568f8390d42cc56324351",
+  "pattern": "contracts/holder-states-the-claim",
+  "stage": "assurance"
+ },
+ "T156": {
+  "evidence-id": "emacs-0f16d3e834eae6d0d30acd82fd06ed81",
+  "pattern": "musn/aif-live-scores",
+  "stage": "perceive"
+ },
+ "T157": {
+  "evidence-id": "emacs-88f360be76284a81ca35e7be87baa363",
+  "pattern": "coordination/ARGUMENT",
+  "stage": "coordination"
+ },
+ "T158": {
+  "evidence-id": "emacs-07d2dc5197c5091c94862011f714d12b",
+  "pattern": "problems/refusal-prediction-error-v1--source-field-missing",
+  "stage": "believe"
+ },
+ "T159": {
+  "evidence-id": "emacs-693d007dba1fa793a61a059298932008",
+  "pattern": "problems/r10-scheduled-entrypoint",
+  "stage": "perceive"
+ },
+ "T160": {
+  "evidence-id": "emacs-393cdde2e71608e3779f0a3430473157",
+  "pattern": "cycle-machine/runtime-restoration",
+  "stage": "act"
+ },
+ "T161": {
+  "evidence-id": "emacs-6b3f7514226d434b32dc49d02aebd726",
+  "pattern": "storage/canonical-interface",
+  "stage": "act"
+ },
+ "T162": {
+  "evidence-id": "emacs-bd575afa6725953090a251b6735c1de7",
+  "pattern": "devmap-coherence/ifr-f2-viriya",
+  "stage": "assurance"
+ },
+ "T163": {
+  "evidence-id": "emacs-bf2b70d9474afd140d6a21962f5d5791",
+  "pattern": "war-room/wr-18-war-machine-is-demonstrated-not-hypothesised",
+  "stage": "believe"
+ },
+ "T164": {
+  "evidence-id": "emacs-34f02f6a0c123e2668040bb3686ca4ad",
+  "pattern": "social/ARGUMENT",
+  "stage": "coordination"
+ },
+ "T165": {
+  "evidence-id": "emacs-fab59c3cfaff8e375d0f030ca85ef1e7",
+  "pattern": "relationship-coherence/quote-as-oblique-address",
+  "stage": "coordination"
+ },
+ "T166": {
+  "evidence-id": "emacs-ab787b2100a07ecc1c2f81b5a752b522",
+  "pattern": "test-registry/bind-the-subject",
+  "stage": "assurance"
+ },
+ "T167": {
+  "evidence-id": "emacs-5104df8d0f0c15ff6c44f05c70ef23b6",
+  "pattern": "memory/name-a-reusable-artifact",
+  "stage": "believe"
+ },
+ "T168": {
+  "evidence-id": "emacs-feb22ecef67d5bdd74d6e4fef44b434b",
+  "pattern": "cascade-construction/run-it-on-a-real-case",
+  "stage": "assurance"
+ },
+ "T169": {
+  "evidence-id": "emacs-cf02b55fa4a7c3616bd77be3ec16438d",
+  "pattern": "fulab/session-resume",
+  "stage": "coordination"
+ },
+ "T170": {
+  "evidence-id": "emacs-cb820f1495aac2d43fad7354aab028a7",
+  "pattern": "code-coherence/dead-code-hygiene",
+  "stage": "act"
+ },
+ "T171": {
+  "evidence-id": "emacs-5b770d44eb128fd8fc485e23d5034e00",
+  "pattern": "dsc/evidence-situated-log",
+  "stage": "assurance"
+ },
+ "T172": {
+  "evidence-id": "emacs-c510b697941562e41581f28b33f03d53",
+  "pattern": "pacspine/simple-close",
+  "stage": "act"
+ },
+ "T173": {
+  "evidence-id": "emacs-10185f6a5fed3fc9c479ac5b27ab9630",
+  "pattern": "fulab/session-resume",
+  "stage": "coordination"
+ },
+ "T174": {
+  "evidence-id": "emacs-38bd58afb93434aa43a8e921c202ab14",
+  "pattern": "vsatlatarium/cached-layout-computation",
+  "stage": "act"
+ },
+ "T175": {
+  "evidence-id": "emacs-1d7c8753b5d0014161de9c4026b0e787",
+  "pattern": "agency/invariants",
+  "stage": "assurance"
+ },
+ "T176": {
+  "evidence-id": "emacs-ebac2834d448fe5e3db645c3198927ee",
+  "pattern": "problems/theory-general-enough-to-drive-the-stack",
+  "stage": "none"
+ },
+ "T177": {
+  "evidence-id": "emacs-2d44c0cd23bf0fb71445c5fe2a5f400c",
+  "pattern": "library-coherence/library-evidence-ledger",
+  "stage": "assurance"
+ },
+ "T178": {
+  "evidence-id": "emacs-3d58ee6e3cd682709f299206a0b46054",
+  "pattern": "or2/topology-dungeon-crawl",
+  "stage": "believe"
+ },
+ "T179": {
+  "evidence-id": "emacs-557f8db0bdc6441b45546118220061f7",
+  "pattern": "cascade-construction/lift-when-three-align",
+  "stage": "believe"
+ },
+ "T180": {
+  "evidence-id": "emacs-633f5e8bdf977c8c92b6040dbb300786",
+  "pattern": "war-room/wr-16-operationalised-exploit-loops-are-first-class-observation-channels",
+  "stage": "perceive"
+ },
+ "T181": {
+  "evidence-id": "emacs-fcb60a66ed57d254f7638145e73bd189",
+  "pattern": "cycle-machine/step-machine",
+  "stage": "act"
+ },
+ "T182": {
+  "evidence-id": "emacs-6ae411104f68d9294be09d762c4886ce",
+  "pattern": "cascade-construction/read-what-exists-first",
+  "stage": "perceive"
+ },
+ "T183": {
+  "evidence-id": "emacs-5254fc66c7710ab2d9fad67ae21f43fd",
+  "pattern": "fulab/clock-out",
+  "stage": "assurance"
+ },
+ "T184": {
+  "evidence-id": "emacs-a57fc889900b222643890802c6205de5",
+  "pattern": "inbox-zero/push-the-declared",
+  "stage": "act"
+ },
+ "T185": {
+  "evidence-id": "emacs-9021cea85607c8c412670d084d721c64",
+  "pattern": "test-registry/register-the-run",
+  "stage": "assurance"
+ },
+ "T186": {
+  "evidence-id": "emacs-f7d96efcd14d4daea463138a2ffbceed",
+  "pattern": "process/fake-done-via-binary-closure",
+  "stage": "assurance"
+ },
+ "T187": {
+  "evidence-id": "emacs-add46ba89c36a32d7ce7e34448338fe3",
+  "pattern": "orchestration/recorded-handoff",
+  "stage": "coordination"
+ },
+ "T188": {
+  "evidence-id": "emacs-d44fba885602477a860b971d54224cee",
+  "pattern": "problems/operator-turns-become-inference-observations",
+  "stage": "perceive"
+ },
+ "T189": {
+  "evidence-id": "emacs-4fa85572c8ffeadbe747ab7e78a1f7ae",
+  "pattern": "aif/interoceptive-tripwires",
+  "stage": "evaluate"
+ },
+ "T190": {
+  "evidence-id": "emacs-89e901abac1cb253246475f02637ad17",
+  "pattern": "problems/cycle-model-boundary-gaps",
+  "stage": "none"
+ },
+ "T191": {
+  "evidence-id": "emacs-fa6e9b032ef708eb47a74fc2a80dfb56",
+  "pattern": "workday/single-focus-amidst-agenda",
+  "stage": "select"
+ },
+ "T192": {
+  "evidence-id": "emacs-f26f54144adf11a2a73b5240e2d6f58b",
+  "pattern": "stack-coherence/futon1-determinism",
+  "stage": "assurance"
+ },
+ "T193": {
+  "evidence-id": "emacs-3488cdbec952ce57d5d8f0b92ca5b341",
+  "pattern": "problems/r10-scheduled-entrypoint",
+  "stage": "perceive"
+ },
+ "T194": {
+  "evidence-id": "emacs-c6356ca427d9744ea4387712dc20d8d2",
+  "pattern": "devmap-coherence/ifr-f3-piti",
+  "stage": "assurance"
+ },
+ "T195": {
+  "evidence-id": "emacs-46d9f0b9a3b4ef85aa0a359e032e4672",
+  "pattern": "dsc/evidence-situated-log",
+  "stage": "assurance"
+ },
+ "T196": {
+  "evidence-id": "emacs-04c89890d5e44521f9b678b6f63f06dc",
+  "pattern": "musn/plan-before-tool",
+  "stage": "select"
+ },
+ "T197": {
+  "evidence-id": "emacs-8b7ca042f2297c855215b0e3a30a1119",
+  "pattern": "musn/plan-before-tool",
+  "stage": "select"
+ },
+ "T198": {
+  "evidence-id": "emacs-4751b381d07a7914001165bb0011b81b",
+  "pattern": "futon-theory/mission-interface-signature",
+  "stage": "coordination"
+ },
+ "T199": {
+  "evidence-id": "emacs-5c7698bb7418ffd97fdfb0082841360a",
+  "pattern": "features/operator-turns-enter-the-observation-vector",
+  "stage": "perceive"
+ },
+ "T200": {
+  "evidence-id": "emacs-49f8a0813034f57df685070555ce2047",
+  "pattern": "devmap-coherence/baseline-freeze",
+  "stage": "assurance"
+ },
+ "T201": {
+  "evidence-id": "emacs-615377e16d6b7f41b28b6f5929c78f8d",
+  "pattern": "war-room/wr-3-social-exotype-before-implementation",
+  "stage": "assurance"
+ },
+ "T202": {
+  "evidence-id": "emacs-0aee83c9325f4a42407cd2a586dcc585",
+  "pattern": "futon-theory/coordination-protocol",
+  "stage": "coordination"
+ },
+ "T203": {
+  "evidence-id": "emacs-c83e760572cc92434c0eebbf328cb647",
+  "pattern": "agency/identifier-separation",
+  "stage": "believe"
+ },
+ "T204": {
+  "evidence-id": "emacs-300587a1031ae685c275c3f662fdf34e",
+  "pattern": "apparatus/the-system-stops-on-schedule",
+  "stage": "select"
+ },
+ "T205": {
+  "evidence-id": "emacs-b4669886685f37f3fbca6ba536d3e8db",
+  "pattern": "code-coherence/dead-code-hygiene",
+  "stage": "act"
+ },
+ "T206": {
+  "evidence-id": "emacs-afbbdb11deca1402f2c654d6261ab59f",
+  "pattern": "process-coherence/status-refresh-before-work",
+  "stage": "believe"
+ },
+ "T207": {
+  "evidence-id": "emacs-ad3650bff54cd6d3dfd9a9206fede4ac",
+  "pattern": "memory/verify-in-the-serving-process",
+  "stage": "assurance"
+ },
+ "T208": {
+  "evidence-id": "emacs-23b0273a5e4fa4b17d81bd02c49036c7",
+  "pattern": "war-room/wr-16-operationalised-exploit-loops-are-first-class-observation-channels",
+  "stage": "perceive"
+ },
+ "T209": {
+  "evidence-id": "emacs-349ba048225efe5dcd3170e489e7cdf9",
+  "pattern": "memory/no-tightening-while-held",
+  "stage": "evaluate"
+ },
+ "T210": {
+  "evidence-id": "emacs-d723958f7bcbc69ef88b69eeb028c955",
+  "pattern": "enrichment/ARGUMENT",
+  "stage": "believe"
+ },
+ "T211": {
+  "evidence-id": "emacs-89bfd2d2d28e69d6763b0ed916a35d87",
+  "pattern": "cascade-construction/read-what-exists-first",
+  "stage": "perceive"
+ },
+ "T212": {
+  "evidence-id": "emacs-594f23a57a47f453375cd0a9ffc0295b",
+  "pattern": "agency/delivery-receipt",
+  "stage": "assurance"
+ },
+ "T213": {
+  "evidence-id": "emacs-a8c0b8faa0d74b099a4e32e044aec6cd",
+  "pattern": "cascade-construction/run-it-on-a-real-case",
+  "stage": "assurance"
+ },
+ "T214": {
+  "evidence-id": "emacs-f71aa1717c6cc7e8dd3fc18070ed8fc4",
+  "pattern": "orchestration/recorded-handoff",
+  "stage": "coordination"
+ },
+ "T215": {
+  "evidence-id": "emacs-41fba596509ca3c7b60c46fa64cdc760",
+  "pattern": "test-registry/register-the-run",
+  "stage": "assurance"
+ },
+ "T216": {
+  "evidence-id": "emacs-4f7fe26e7b64f8174ad45207c058c54e",
+  "pattern": "ants/baseline-cyber-ant",
+  "stage": "believe"
+ },
+ "T217": {
+  "evidence-id": "emacs-09b44796275973545045d3377476bcb8",
+  "pattern": "enrichment/ARGUMENT",
+  "stage": "believe"
+ },
+ "T218": {
+  "evidence-id": "emacs-ba24ba9d202f395ebd153b61a9de551a",
+  "pattern": "eight-gates/lean-commit",
+  "stage": "select"
+ },
+ "T219": {
+  "evidence-id": "emacs-bd262db632c4fac3abba7eb5b42de2b8",
+  "pattern": "futon-theory/progress-signal",
+  "stage": "perceive"
+ },
+ "T220": {
+  "evidence-id": "emacs-0855d49db5c759ecb605d522eb640d66",
+  "pattern": "storage/canonical-interface",
+  "stage": "act"
+ },
+ "T221": {
+  "evidence-id": "emacs-345368280a267144f2b5c27950febdbb",
+  "pattern": "process-coherence/status-refresh-before-work",
+  "stage": "believe"
+ },
+ "T222": {
+  "evidence-id": "emacs-1dae70d7e6f0e9591d0b8d66114c5af2",
+  "pattern": "contributing/devmap-contribution-protocol",
+  "stage": "believe"
+ },
+ "T223": {
+  "evidence-id": "emacs-46ff7f0a3ee7dbc3fcec1fcf37c349cb",
+  "pattern": "test-registry/judge-adequacy",
+  "stage": "assurance"
+ },
+ "T224": {
+  "evidence-id": "emacs-6e5d38960a24c1638fc1e2f7137e5656",
+  "pattern": "social/ARGUMENT",
+  "stage": "coordination"
+ },
+ "T225": {
+  "evidence-id": "emacs-3e5c4f8207278319415238ad1f71340f",
+  "pattern": "inbox-zero/promote-at-turn-end",
+  "stage": "act"
+ },
+ "T226": {
+  "evidence-id": "emacs-845be43f74efb968d6b01b41a33b06e5",
+  "pattern": "problems/operator-turns-become-inference-observations",
+  "stage": "perceive"
+ },
+ "T227": {
+  "evidence-id": "emacs-29e368641e8a40a55810e76832180a13",
+  "pattern": "cascade-construction/lift-when-three-align",
+  "stage": "believe"
+ },
+ "T228": {
+  "evidence-id": "emacs-fcdc0ada719c09ca3ad3677c36175e7c",
+  "pattern": "pacspine/frictionless-next",
+  "stage": "coordination"
+ },
+ "T229": {
+  "evidence-id": "emacs-300b007edb140407de9b2902f00938e5",
+  "pattern": "futon-theory/stop-the-line",
+  "stage": "select"
+ },
+ "T230": {
+  "evidence-id": "emacs-5f07d411f8a50476841c10251f2e8484",
+  "pattern": "cycle-machine/runtime-restoration",
+  "stage": "act"
+ },
+ "T231": {
+  "evidence-id": "emacs-aedd1a59cf1bad1e4e31013338b67957",
+  "pattern": "futon-theory/mission-interface-signature",
+  "stage": "coordination"
+ },
+ "T232": {
+  "evidence-id": "emacs-0bdbe5aad52430b7b478357db99e451f",
+  "pattern": "problems/g-over-cascade-is-undefined",
+  "stage": "evaluate"
+ },
+ "T233": {
+  "evidence-id": "emacs-30e42590f8ef8053fd23e59a2a4d5b7c",
+  "pattern": "coordination/ARGUMENT",
+  "stage": "coordination"
+ },
+ "T234": {
+  "evidence-id": "emacs-213b424c625479512a17852cbf864c92",
+  "pattern": "cascade-construction/lift-when-three-align",
+  "stage": "believe"
+ },
+ "T235": {
+  "evidence-id": "emacs-5bc75832b327e6ee59d8dbee4e21e2d0",
+  "pattern": "futon-theory/progress-signal",
+  "stage": "perceive"
+ },
+ "T236": {
+  "evidence-id": "emacs-0fa85132eefb137bbf9fdd5ab2cc3575",
+  "pattern": "features/emit-per-tick-mismatch",
+  "stage": "believe"
+ },
+ "T237": {
+  "evidence-id": "emacs-4abb4161daac949b7345fa50ee10e0ac",
+  "pattern": "iching/hexagram-62-xiaoguo",
+  "stage": "act"
+ },
+ "T238": {
+  "evidence-id": "emacs-720a405f2c64fe74cc6956a59bc6f6fd",
+  "pattern": "futon-theory/progress-signal",
+  "stage": "perceive"
+ },
+ "T239": {
+  "evidence-id": "emacs-4f47e67b84a0f5d938f5fb025e59e265",
+  "pattern": "problems/deliberate-refusals-allude-to-unwritten-patterns",
+  "stage": "believe"
+ },
+ "T240": {
+  "evidence-id": "emacs-393999223de2123a9cc56c6b0a7c7e29",
+  "pattern": "features/operator-turns-enter-the-observation-vector",
+  "stage": "perceive"
+ },
+ "T241": {
+  "evidence-id": "emacs-b28642c8c25f0658cefe99e03fb233b4",
+  "pattern": "data-mining/checkpoint-the-long-run",
+  "stage": "act"
+ },
+ "T242": {
+  "evidence-id": "emacs-f717bbfb1fd5d7390cc5b13c865282ae",
+  "pattern": "eight-gates/lean-commit",
+  "stage": "select"
+ },
+ "T243": {
+  "evidence-id": "emacs-1199656618a65f7868acb52fa6ba0b21",
+  "pattern": "transition/f0-f4-boundary",
+  "stage": "evaluate"
+ },
+ "T244": {
+  "evidence-id": "emacs-4a92951fde52313931fa4f8e08dcf20e",
+  "pattern": "stack-coherence/futon1-determinism",
+  "stage": "assurance"
+ },
+ "T245": {
+  "evidence-id": "emacs-9b696c453e83764e186e9ab64748e07a",
+  "pattern": "futon-theory/mission-lifecycle",
+  "stage": "believe"
+ },
+ "T246": {
+  "evidence-id": "emacs-11765d81f228a59b0db940a2a9ca5dbf",
+  "pattern": "cycle-machine/job-port",
+  "stage": "coordination"
+ },
+ "T247": {
+  "evidence-id": "emacs-f27c6b76233954b1c1324a277aa27b96",
+  "pattern": "storage/canonical-interface",
+  "stage": "act"
+ },
+ "T248": {
+  "evidence-id": "emacs-478f82a2459547a824f7dcb8ad860c28",
+  "pattern": "features/emit-per-tick-mismatch",
+  "stage": "believe"
+ },
+ "T249": {
+  "evidence-id": "emacs-b36320f84dcafd86efe1d85fbe1bfb3c",
+  "pattern": "agency/identifier-separation",
+  "stage": "believe"
+ },
+ "T250": {
+  "evidence-id": "emacs-f799c9cb1f9e0951c453cef7e4e0d00d",
+  "pattern": "cycle-machine/toolchain-port",
+  "stage": "assurance"
+ },
+ "T251": {
+  "evidence-id": "emacs-a11a0262622a92eac5aeeb9f1ff34463",
+  "pattern": "futon-theory/mission-interface-signature",
+  "stage": "coordination"
+ },
+ "T252": {
+  "evidence-id": "emacs-d6cb59b92931bb47fb8299d7e412566a",
+  "pattern": "or2/xiangqi-decorators",
+  "stage": "believe"
+ },
+ "T253": {
+  "evidence-id": "emacs-6f1104c2e82f9c32dd09adf989799308",
+  "pattern": "vsatlatarium/cached-layout-computation",
+  "stage": "act"
+ },
+ "T254": {
+  "evidence-id": "emacs-6193d31efb96e29a694e625d79b3c3f1",
+  "pattern": "code-coherence/dead-code-hygiene",
+  "stage": "act"
+ },
+ "T255": {
+  "evidence-id": "emacs-efa654e6456441cce10e04b3a5b72a7e",
+  "pattern": "peripherals/hot-reload-as-default-fix-path",
+  "stage": "act"
+ },
+ "T256": {
+  "evidence-id": "emacs-92245b7d270c02c928a31deda7cdc77b",
+  "pattern": "relationship-coherence/quote-as-oblique-address",
+  "stage": "coordination"
+ },
+ "T257": {
+  "evidence-id": "emacs-cd41cb1fa1ce15de066247a96aac28a3",
+  "pattern": "contributing/stack-scan-logging-protocol",
+  "stage": "assurance"
+ },
+ "T258": {
+  "evidence-id": "emacs-46ab3e1ee3159f2471dbbe4a502d8193",
+  "pattern": "test-registry/bind-the-subject",
+  "stage": "assurance"
+ },
+ "T259": {
+  "evidence-id": "emacs-4504ca34aa0aa0476174ff42804377d2",
+  "pattern": "iching/hexagram-35-jin",
+  "stage": "act"
+ },
+ "T260": {
+  "evidence-id": "emacs-0441690f89e91db6cf52b82379a096c0",
+  "pattern": "problems/coordination-patterns-derivation",
+  "stage": "coordination"
+ },
+ "T261": {
+  "evidence-id": "emacs-245cdebadc8a0f878b66b0aa5fff424e",
+  "pattern": "test-registry/rerun-when-the-warrant-fails",
+  "stage": "assurance"
+ },
+ "T262": {
+  "evidence-id": "emacs-9beadea2e3c1f266f791e65008572c18",
+  "pattern": "cycle-machine/step-machine",
+  "stage": "act"
+ },
+ "T263": {
+  "evidence-id": "emacs-38a1e9828e7a54fbe31910637d184757",
+  "pattern": "musn/pause-backtrace",
+  "stage": "assurance"
+ },
+ "T264": {
+  "evidence-id": "emacs-e709993cc58d9ec8e722c8286958fcec",
+  "pattern": "devmap-coherence/prototype-alignment-bridge",
+  "stage": "assurance"
+ },
+ "T265": {
+  "evidence-id": "emacs-601db203404ad66e1e4b2060892881e2",
+  "pattern": "inbox-zero/ignore-by-kind",
+  "stage": "act"
+ },
+ "T266": {
+  "evidence-id": "emacs-8fd5c146f0e167e549d8778fa2943269",
+  "pattern": "pacspine/simple-close",
+  "stage": "act"
+ },
+ "T267": {
+  "evidence-id": "emacs-db119acbd202cebf25907a992b46ffb1",
+  "pattern": "devmap-coherence/ifr-f3-piti",
+  "stage": "assurance"
+ },
+ "T268": {
+  "evidence-id": "emacs-9d9a6c4551b4bf8af2c6d11f8784e927",
+  "pattern": "war-room/wr-17-futon0-as-cyborg-futon7-as-markov-blanket",
+  "stage": "select"
+ },
+ "T269": {
+  "evidence-id": "emacs-26fe93ca7cd1ca08859b5ba8ec8a8b9f",
+  "pattern": "iching/hexagram-18-gu",
+  "stage": "act"
+ },
+ "T270": {
+  "evidence-id": "emacs-445e5c5a28f67684237d44c3d294be2e",
+  "pattern": "contributing/devmap-contribution-protocol",
+  "stage": "believe"
+ },
+ "T271": {
+  "evidence-id": "emacs-5abb1c2bdb77e46861a4e1908ca5c53d",
+  "pattern": "cycle-machine/job-port",
+  "stage": "coordination"
+ },
+ "T272": {
+  "evidence-id": "emacs-64800652bec856af7e08a9717ab9cc22",
+  "pattern": "or2/topology-dungeon-crawl",
+  "stage": "believe"
+ },
+ "T273": {
+  "evidence-id": "emacs-dd9b8970eb667e8b0a5bd40641a325b9",
+  "pattern": "devmap-coherence/baseline-freeze",
+  "stage": "assurance"
+ },
+ "T274": {
+  "evidence-id": "emacs-cb1d2cba29fad60448079fec967f7369",
+  "pattern": "stack-coherence/futon-bridge-health",
+  "stage": "assurance"
+ },
+ "T275": {
+  "evidence-id": "emacs-903031dede10fb49050582cd7307ca63",
+  "pattern": "war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch",
+  "stage": "select"
+ },
+ "T276": {
+  "evidence-id": "emacs-e07b037e6e2f0526f5a455d2d79c55c1",
+  "pattern": "problems/cycle-model-boundary-gaps",
+  "stage": "none"
+ },
+ "T277": {
+  "evidence-id": "emacs-c395dc6956719aa8baa975396ccf180c",
+  "pattern": "cascades/on-the-fly-cascade",
+  "stage": "select"
+ },
+ "T278": {
+  "evidence-id": "emacs-2363b36e55c27e1a9c8a5c3294fb7a96",
+  "pattern": "contracts/holder-states-the-claim",
+  "stage": "assurance"
+ },
+ "T279": {
+  "evidence-id": "emacs-a8487cb366e05387068504ff3d437891",
+  "pattern": "memory/licence-to-fail",
+  "stage": "assurance"
+ },
+ "T280": {
+  "evidence-id": "emacs-96ee536c4aa55c72a23bdfc9a1bbbd75",
+  "pattern": "math-formalization/statement-ladder-before-proof-text",
+  "stage": "act"
+ },
+ "T281": {
+  "evidence-id": "emacs-aa9d6fd0a21aeb8a874583c9e7e42514",
+  "pattern": "apparatus/the-system-stops-on-schedule",
+  "stage": "select"
+ },
+ "T282": {
+  "evidence-id": "emacs-2c3b527be5c7130f194746745c939348",
+  "pattern": "devmap-coherence/ifr-f1-dhammavicaya",
+  "stage": "assurance"
+ },
+ "T283": {
+  "evidence-id": "emacs-db8b6e65459e7f1382e0497e8f993a47",
+  "pattern": "futon-theory/proof-path",
+  "stage": "assurance"
+ },
+ "T284": {
+  "evidence-id": "emacs-becca7ac43b32dc56b3cdb371f919ddb",
+  "pattern": "problems/cycle-model-boundary-gaps",
+  "stage": "none"
+ },
+ "T285": {
+  "evidence-id": "emacs-c6f89aeaba14d63aa4bf7e2dd7f4aa7d",
+  "pattern": "devmap-coherence/ifr-f1-dhammavicaya",
+  "stage": "assurance"
+ },
+ "T286": {
+  "evidence-id": "emacs-3b394afe8d516613c2441babd6daff28",
+  "pattern": "devmap-coherence/baseline-freeze",
+  "stage": "assurance"
+ },
+ "T287": {
+  "evidence-id": "emacs-903b074171132d74f74ed524ed02d1c1",
+  "pattern": "ants/baseline-cyber-ant",
+  "stage": "believe"
+ },
+ "T288": {
+  "evidence-id": "emacs-0d528e468ee382314a54c369f4a10d06",
+  "pattern": "or2/xiangqi-decorators",
+  "stage": "believe"
+ },
+ "T289": {
+  "evidence-id": "emacs-826802d8d0b5ac4b4e03fa06e9d3147a",
+  "pattern": "war-room/wr-26-a-capability-switched-off-carries-its-re-arm-condition-in-writing-at-the-switch",
+  "stage": "select"
+ },
+ "T290": {
+  "evidence-id": "emacs-9c194be87d5cb1f7608cf9c19a326ec5",
+  "pattern": "memory/licence-to-fail",
+  "stage": "assurance"
+ },
+ "T291": {
+  "evidence-id": "emacs-5a1e3cbc20d215845a6897636f9d5077",
+  "pattern": "workday/single-focus-amidst-agenda",
+  "stage": "select"
+ },
+ "T292": {
+  "evidence-id": "emacs-c6b3a7480f396f2c5c41a8c787521894",
+  "pattern": "futon-theory/stop-the-line",
+  "stage": "select"
+ },
+ "T293": {
+  "evidence-id": "emacs-4269ae4612c05c42e4e23809df6c1408",
+  "pattern": "inbox-zero/promote-at-turn-end",
+  "stage": "act"
+ },
+ "T294": {
+  "evidence-id": "emacs-3a1a4568b729c4dbf8db0da6e9509577",
+  "pattern": "iching/hexagram-50-ding",
+  "stage": "act"
+ },
+ "T295": {
+  "evidence-id": "emacs-d66fcff8d446073a9ec5d74d78c92b2d",
+  "pattern": "data-mining/checkpoint-the-long-run",
+  "stage": "act"
+ },
+ "T296": {
+  "evidence-id": "emacs-2c0d70c63fc82ee27241f4c41303a3d6",
+  "pattern": "features/operator-turns-enter-the-observation-vector",
+  "stage": "perceive"
+ },
+ "T297": {
+  "evidence-id": "emacs-22966aa657ffb4896aa714605fcc30a6",
+  "pattern": "problems/process-conduct-is-unassured",
+  "stage": "assurance"
+ },
+ "T298": {
+  "evidence-id": "emacs-4da9d64a6ba4eaf7445e47f1d77564e8",
+  "pattern": "musn/aif-live-scores",
+  "stage": "perceive"
+ },
+ "T299": {
+  "evidence-id": "emacs-9161470da9d34c84ee9e271a69789835",
+  "pattern": "problems/process-conduct-is-unassured",
+  "stage": "assurance"
+ },
+ "T300": {
+  "evidence-id": "emacs-279ef069b39e16f62dadc56c0e1efe9a",
+  "pattern": "or2/xiangqi-decorators",
+  "stage": "believe"
+ }
+}
