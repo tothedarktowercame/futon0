@@ -73,6 +73,27 @@ The timer calls `scripts/git_vitality_sync.sh`, which reruns the git-activity
 Python helper followed by `clojure -M:vitality/git-summary` inside `../futon3`
 so the HUD JSON stays fresh without manual steps.
 
+## Inbox-zero gate
+
+Install the gate, its timer, and the delta consumer together.  A committed unit
+that is not installed is not an active check.
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp systemd/user-futon-sync-check-clean.service ~/.config/systemd/user/futon-sync-check-clean.service
+cp systemd/user-futon-sync-check-clean.timer ~/.config/systemd/user/futon-sync-check-clean.timer
+cp systemd/user-futon-sync-delta.service ~/.config/systemd/user/futon-sync-delta.service
+
+systemctl --user daemon-reload
+systemctl --user enable --now futon-sync-check-clean.timer
+systemctl --user start futon-sync-check-clean.service
+```
+
+The final `start` is the activation proof: inspect both the service result and
+the timer's next firing with `systemctl --user status`.  `check-clean` exiting
+nonzero is a successful execution of a failing gate, not a failed installation;
+the service's `OnFailure` path runs the delta consumer in either case.
+
 ## Vitality scanner timer
 
 Use the `user-vitality-scanner.service` + `.timer` pair when you want the
