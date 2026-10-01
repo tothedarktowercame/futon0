@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Joe’s work — a horizontal count integral</title>
+<style>
+:root{color-scheme:light;--surface:#faf9f5;--ink:#242522;--muted:#66665e;--rule:#d6d5cc;--agent:#535750;--perceive:#2a78d6;--believe:#eb6834;--evaluate:#1baf7a;--select:#eda100;--act:#e87ba4;--assurance:#008300;--coordination:#4a3aa7;--none:#99998f}
+:root[data-theme=dark]{color-scheme:dark;--surface:#171b20;--ink:#eeeee7;--muted:#b5b9bd;--rule:#45494e;--agent:#b6bab5;--perceive:#3987e5;--believe:#d95926;--evaluate:#199e70;--select:#c98500;--act:#d55181;--assurance:#008300;--coordination:#9085e9;--none:#898d91}
+*{box-sizing:border-box}body{background:var(--surface);color:var(--ink);font:15px/1.5 system-ui,sans-serif;margin:0;padding:32px 3vw}main{max-width:1550px;margin:auto}header{display:flex;justify-content:space-between;gap:20px;align-items:start}h1{font:normal 36px/1.2 Georgia,serif;margin:0 0 8px}h2{font:normal 23px Georgia,serif}p{margin:8px 0}.subtitle{color:var(--muted);max-width:1020px}button,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:6px 10px;border-radius:3px}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 8px;font-size:13px}.key{display:flex;align-items:center;gap:7px}.swatch{width:18px;height:10px;background:var(--c)}.scroll{overflow-x:auto}svg{display:block;width:100%;min-width:1120px;height:auto}svg text{fill:var(--ink);font:13px system-ui,sans-serif}.small{font-size:11px}.muted{fill:var(--muted)}.heading{font-size:16px;font-weight:600}.direct{font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}.rule{stroke:var(--rule);fill:none}.leader{stroke:var(--muted);stroke-width:1;fill:none}.hit{cursor:crosshair;fill:transparent;stroke:none}.hit:focus{outline:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3}.tooltip{position:fixed;z-index:5;display:none;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--rule);box-shadow:0 2px 12px #0002;padding:10px 12px;max-width:340px;font-size:13px}.notes{border-top:1px solid var(--rule);padding-top:16px;max-width:1180px;font-size:13px}.notes strong{font-weight:600}details{margin-top:18px}summary{cursor:pointer}table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}th,td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}th:first-child,td:first-child{text-align:left}caption{text-align:left;margin:12px 0}a{color:var(--ink)}.readout{font-size:13px;min-height:24px;color:var(--muted)}@media print{body{padding:0}button,select,.tooltip{display:none}svg{min-width:0}details{break-inside:avoid}}
+</style>
+<main>
+<header><div><h1>Joe’s work, and the work that ran on</h1><p class="subtitle">22 August–1 October 2026 · UTC · a horizontal count integral, after Minard</p><p class="subtitle" id="headline"></p></div><label>Appearance <select id="theme" aria-label="Appearance"><option value="auto">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
+<div class="legend" id="legend" aria-label="Stage legend"></div>
+<div class="scroll"><svg id="chart" viewBox="0 0 1450 900" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Stage-labelled operator stream and autonomous Codex activity</title><desc id="chart-desc">A centred, variable-thickness band split by eight stage categories over time. An independent lower panel shows logged token totals in recorded operator gaps. Exact daily data is available below.</desc></svg></div>
+<div class="readout" id="readout" aria-live="polite">Hover a stream or gap, or focus it with the keyboard, for exact values.</div>
+<section class="notes">
+<p><strong>Read the widths carefully.</strong> Upper thickness = stage-labelled rank-one retrieval hits attached to operator turns, not cost. A trailing three-day arithmetic mean uses available days at the left edge (one, then two, then three); the curves linearly join daily means. Dates use the operator-turn timestamp. The faint tick row gives unsmoothed daily totals. Two turns carry multiple retrievals. October 1 is partial, through 21:12 UTC; the previous cutoff of September 21, 17:19 UTC is where the lower panel’s data ends.</p>
+<p><strong>The integral column uses exact raw counts.</strong> Smoothing changes the area inside a finite window; its geometric area is not the count integral. Two-pixel surface-coloured separator strokes are visual cuts, not quantities; very thin slices can be obscured. “None” keeps its measured thickness, in grey, rather than an invented minimum.</p>
+<p><strong>Lower panel:</strong> horizontal length = gap duration; vertical thickness = logged Codex input + output tokens in that entire gap, including cached input. This is <strong>not plan usage, billing, or unique text</strong>. Dashed hairlines mean no retained qualifying token event, not zero. The first gap starts before August 22: its duration is clipped here, but its full-window token total is retained. Bar area is duration × tokens, not a token integral. The forensic token report ends at the September 21 cutoff: the hatched region after that date marks <strong>no token data</strong>, not zero activity. No recorded operator turn is not proof of physical absence, and no connector implies that an upper-stream turn caused a lower-panel job.</p>
+<p><strong>Provisional:</strong> Joe’s 30-card blind check is pending; subject patterns carry topical labels. <span id="coverage-note"></span> Unmatched and ambiguous retrievals are excluded. Dated editorial annotations are supplied by Joe/claude-5 (22 Aug–13 Sep) and claude-17/zai-2 (27 Sep); the forensic source does not independently establish the “unrequested” characterization. Census method change vs 2026-09-21: turns flagged by futon3c/scripts/xiang2000_p6o3.py classify() (kimi notices, inbox-zero reminders, late park-wake variants) are additionally excluded — 92 turns in the 2026-09-21→10-01 window (0 traceable in the earlier window), dropping 75 hits. 153 of the labelled hits ride the 97 provisional Kimi-pack additions.</p>
+<p>Sources: committed pattern-stage EDN (689 labels + 97 provisional additions) + evidence-ID joins; <code>FORENSIC-autopilot-2026-09-21.md</code> (codex-15, initial commit <code>0685ccf</code>), which is also the lower panel’s only token source. Design reference: <a href="https://www.edwardtufte.com/product/napoleons-march/">Minard’s Napoleon’s March, Edward Tufte</a>. No external scripts, fonts, or data requests.</p>
+</section>
+<details><summary>Daily counts by stage — exact, unsmoothed (table view)</summary><div class="scroll" id="daily-table"></div></details>
+<details><summary>Operator-gap windows and logged Codex tokens (table view)</summary><div class="scroll" id="gap-table"></div></details>
+<details><summary>Source fingerprints and regeneration</summary><p>Regenerate with <code>minard_operator_work.py</code> or the sibling <code>minard-operator-work-20260921.py</code> Marimo notebook. Editing the stage EDN changes the next rendering; human blind-check answers are not silently propagated to unreviewed patterns.</p><pre id="provenance" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+</main><div id="tooltip" class="tooltip" role="tooltip"></div>
+<script>
+'use strict';
+const DATA=/*DATA*/;
+const ns='http://www.w3.org/2000/svg', svg=document.getElementById('chart');
+function el(tag,attrs={},parent=svg){const n=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);parent.appendChild(n);return n;}
+function text(x,y,value,cls='',attrs={}){const n=el('text',{x,y,class:cls,...attrs});n.textContent=value;return n;}
+function lines(x,y,values,cls=''){values.forEach((v,i)=>text(x,y+i*17,v,cls));}
+const fmt=n=>n.toLocaleString('en-US'), pct=n=>(100*n).toFixed(2)+'%';
+const x0=74,x1=1134,W=x1-x0,start=Date.parse('2026-08-22T00:00:00Z'),finish=Date.parse('2026-10-02T00:00:00Z'),cutoff=Date.parse(DATA.cutoff);
+const x=t=>x0+W*(t-start)/(finish-start),mid=340,plotScale=2.15;
+const dates=DATA.days.map(d=>Date.parse(d.date+'T12:00:00Z'));
+const ys=DATA.days.map(d=>{const sum=DATA.stages.reduce((n,s)=>n+d.mean[s],0);let y=mid-sum*plotScale/2;return DATA.stages.map(s=>{const a=y;y+=d.mean[s]*plotScale;return[a,y];});});
+const means=DATA.days.map(d=>DATA.stages.reduce((n,s)=>n+d.mean[s],0));
+const defs=el('defs');const clip=el('clipPath',{id:'recorded'},defs);el('rect',{x:x0,y:0,width:x(cutoff)-x0,height:900},clip);
+text(x0,25,'01  THE OPERATOR STREAM','heading');text(x0,46,'Centred thickness · trailing 3-day mean · one scale for every stage','small muted');
+text(1180,197,'COUNT INTEGRAL','heading');text(1180,216,'Exact, unsmoothed shares','small muted');
+const annotations=[
+ {date:'2026-08-30',tx:250,ty:105,words:['30 Aug · facade found','(paper §4)']},
+ {date:'2026-09-05',tx:487,ty:72,words:['05 Sep · Joe flying;','APM/theory set to run']},
+ {date:'2026-09-10',tx:667,ty:126,words:['10 Sep · topology campaign —','automation that went well']},
+ {date:'2026-09-13',tx:945,ty:72,words:['13 Sep · flight NJ→Dallas;','codex-26 builds unrequested','bookkeeping']},
+ {date:'2026-09-27',tx:1010,ty:150,words:['27 Sep · park wake-ups stop','being written as Joe’s turns']}
+];
+for(const a of annotations){const i=DATA.days.findIndex(d=>d.date===a.date),xx=x(dates[i]);lines(a.tx,a.ty,a.words);const route=a.date==='2026-09-13'?`M ${a.tx+6} ${a.ty+a.words.length*17-8} V 177 H ${xx} V ${ys[i][0][0]-9}`:`M ${a.tx+6} ${a.ty+a.words.length*17-8} L ${xx} ${a.ty+a.words.length*17+5} L ${xx} ${ys[i][0][0]-9}`;el('path',{d:route,class:'leader'});el('circle',{cx:xx,cy:ys[i][0][0]-7,r:2,fill:'var(--ink)'});}
+for(let j=0;j<DATA.stages.length;j++){
+ const s=DATA.stages[j], coords=[[x0,...ys[0][j]],...ys.map((y,i)=>[x(dates[i]),...y[j]]),[x(cutoff),...ys.at(-1)[j]]];
+ const path='M '+coords.map(v=>v[0]+','+v[1]).join(' L ')+' L '+coords.slice().reverse().map(v=>v[0]+','+v[2]).join(' L ')+' Z';
+ el('path',{d:path,fill:`var(--${s})`,'clip-path':'url(#recorded)','data-stream':s});const sliceClip=el('clipPath',{id:'slice-'+s},defs);el('path',{d:path},sliceClip);
+ if(j>0)el('path',{d:'M '+coords.map(v=>v[0]+','+v[1]).join(' L '),fill:'none',stroke:'var(--surface)','stroke-width':2,'vector-effect':'non-scaling-stroke','clip-path':'url(#recorded)'});
+ const yy=249+j*29;el('rect',{x:1180,y:yy-10,width:16,height:9,fill:`var(--${s})`});text(1206,yy,s);text(1414,yy,pct((DATA.totals[s]||0)/DATA.hits),'',{'text-anchor':'end'});
+}
+text(1180,510,fmt(DATA.hits)+' hits = 100%','small');
+// Place direct labels only where their own slice is thick enough and stays clear of neighbours.
+for(let j=0;j<7;j++){
+ const choices=ys.map((y,i)=>({i,h:y[j][1]-y[j][0]})).filter(v=>v.i>=2&&v.i<=38&&v.h>=16).sort((a,b)=>b.h-a.h);
+ if(choices.length){const i=choices[0].i; text(x(dates[i]),(ys[i][j][0]+ys[i][j][1])/2+4,DATA.stages[j],'direct',{'text-anchor':'middle','data-direct':DATA.stages[j]});}
+}
+// Independent thickness key: span 100 hits/day, centred like the band.
+const ky=367,kx=30;el('path',{d:`M ${kx+5} ${ky-50*plotScale} H ${kx} V ${ky+50*plotScale} H ${kx+5}`,class:'leader'});text(18,ky,'100 / day','small',{'transform':`rotate(-90 18 ${ky})`,'text-anchor':'middle'});
+text(x0,548,'Raw daily','small muted');
+for(let i=0;i<DATA.days.length;i++){const d=DATA.days[i],xx=x(dates[i]);el('line',{x1:xx,x2:xx,y1:545,y2:545-d.total*.18,stroke:'var(--muted)','stroke-opacity':.35});}
+function axis(y){el('line',{x1:x0,x2:x1,y1:y,y2:y,class:'rule'});for(let i=0;i<DATA.days.length;i++){const xx=x(dates[i]);el('line',{x1:xx,x2:xx,y1:y,y2:y+4,class:'rule'});if([0,4,8,12,16,20,24,28,31,35,38,40].includes(i)){const m=DATA.days[i].date.slice(5,7);text(xx,y+22,DATA.days[i].date.slice(8)+' '+(m==='08'?'Aug':m==='09'?'Sep':'Oct'),'small muted',{'text-anchor':'middle'});}}}
+axis(562);
+text(x0,629,'02  WORK DURING RECORDED OPERATOR GAPS','heading');text(x0,650,'Gap duration on the same clock · thickness = logged Codex tokens, including cached input','small muted');
+const agentMid=751,tokenScale=120/831983803;
+el('line',{x1:x0,x2:x1,y1:agentMid,y2:agentMid,class:'rule'});
+for(const g of DATA.gaps){const left=x(Math.max(start,Date.parse(g.start))),right=x(Math.min(cutoff,Date.parse(g.end))),h=g.tokens===null?0:g.tokens*tokenScale;
+ if(g.tokens===null)el('line',{x1:left,x2:right,y1:agentMid,y2:agentMid,stroke:'var(--agent)','stroke-width':2,'stroke-dasharray':'3 3'});
+ else el('rect',{x:left,y:agentMid-h/2,width:right-left,height:h,fill:'var(--agent)'});
+ const hit=el('rect',{x:left,y:agentMid-Math.max(h,12)/2,width:right-left,height:Math.max(h,12),class:'hit',tabindex:0,'data-gap':g.rank,role:'button'});
+ const description=`${g.start} → ${g.end} · ${g.tokens===null?'No retained token event (not zero)':fmt(g.tokens)+' logged tokens incl. cached input'} · ${g.hours} hours${g.clipped?' · clipped duration; full-window token total':''}`;hit.setAttribute('aria-label',description);bindTip(hit,description);
+ if([1,2,7].includes(g.rank)){text((left+right)/2,agentMid-h/2-10,(g.tokens/1e6).toFixed(1)+'M','small',{'text-anchor':'middle'});}
+}
+text(1180,700,'SEPARATE WIDTH SCALE','small');
+{const hatch=el('pattern',{id:'nodata',width:7,height:7,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);el('rect',{width:7,height:7,fill:'var(--surface)'},hatch);el('line',{x1:0,y1:0,x2:0,y2:7,stroke:'var(--rule)','stroke-width':1.5},hatch);
+ const nl=x(tokenDataEnd),nr=x1;el('rect',{x:nl,y:agentMid-24,width:nr-nl,height:48,fill:'url(#nodata)',stroke:'var(--rule)','stroke-dasharray':'4 3'});
+ text((nl+nr)/2,agentMid-34,'no token data','small muted',{'text-anchor':'middle'});text((nl+nr)/2,agentMid+4,'forensic report ends 2026-09-21','small muted',{'text-anchor':'middle'});}
+for(const [i,n]of [100e6,400e6,800e6].entries()){const h=n*tokenScale,xx=1190+i*75;el('rect',{x:xx,y:779-h/2,width:12,height:h,fill:'var(--agent)'});text(xx+6,855,n/1e6+'M','small',{'text-anchor':'middle'});}
+text(1180,882,'Tokens logged · not plan usage','small muted');axis(839);
+el('line',{x1:x(cutoff),x2:x(cutoff),y1:187,y2:855,stroke:'var(--muted)','stroke-dasharray':'3 4'});text(x(cutoff)-5,884,'21 Sep snapshot · 17:19 UTC','small muted',{'text-anchor':'end'});
+// Transparent daily slice targets retain exact counts; the visible band is interpolated.
+for(let i=0;i<31;i++)for(let j=0;j<8;j++){
+ const d=DATA.days[i],s=DATA.stages[j],left=x(start+i*86400000),right=x(Math.min(start+(i+1)*86400000,cutoff));if(right<=left)continue;
+ const count=d.counts[s],share=d.total?count/d.total:0;
+ const description=`${d.date} · ${s} · ${count} hits attached to turns that day / ${d.total} (${pct(share)}) · trailing mean ${d.mean[s].toFixed(2)} per day`;
+ const hit=el('rect',{x:left,y:145,width:right-left,height:390,'clip-path':'url(#slice-'+s+')',class:'hit',tabindex:0,role:'button','aria-label':description,'data-day':d.date,'data-stage':s});bindTip(hit,description);
+}
+function bindTip(node,description){const tip=document.getElementById('tooltip');function show(e){tip.textContent=description;tip.style.display='block';const r=node.getBoundingClientRect(),cx=e.clientX||r.x,cy=e.clientY||r.y;tip.style.left=Math.max(8,Math.min(innerWidth-350,cx+15))+'px';tip.style.top=Math.min(innerHeight-100,cy+15)+'px';document.getElementById('readout').textContent=description;}node.addEventListener('pointermove',show);node.addEventListener('focus',show);for(const event of ['pointerleave','blur'])node.addEventListener(event,()=>{tip.style.display='none';});}
+for(const s of DATA.stages){const node=document.createElement('span');node.className='key';node.innerHTML=`<span class="swatch" style="--c:var(--${s})"></span>${s}`;document.getElementById('legend').appendChild(node);}
+const coverage=100*DATA.turns/DATA.eligible;document.getElementById('coverage-note').textContent=coverage.toFixed(1)+'% of eligible recorded turns carry a label.';document.getElementById('headline').textContent=`${fmt(DATA.hits)} labelled hits · ${fmt(DATA.turns)} distinct operator turns · ${coverage.toFixed(1)}% of eligible recorded turns`;
+function table(headers,rows,caption){return '<table><caption>'+caption+'</caption><thead><tr>'+headers.map(h=>'<th scope="col">'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map((v,i)=>i===0?'<th scope="row">'+v+'</th>':'<td>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
+document.getElementById('daily-table').innerHTML=table(['Date UTC',...DATA.stages,'Total'],DATA.days.map(d=>[d.date,...DATA.stages.map(s=>d.counts[s]),d.total]),'Daily retrieval-hit counts, assigned to operator-turn dates. September 21 is partial.');
+document.getElementById('gap-table').innerHTML=table(['Start UTC','End UTC','Hours','Logged tokens'],DATA.gaps.map(g=>[g.start,g.end,g.hours,g.tokens===null?'NR — not zero':fmt(g.tokens)]),'All activity-bearing gaps from the forensic table (which ends 2026-09-21) overlapping this window; not a census of every absence. No token data exists after 2026-09-21T17:19:12Z.');
+document.getElementById('provenance').textContent=JSON.stringify(DATA.sourceHashes,null,2);
+const theme=document.getElementById('theme'),mq=matchMedia('(prefers-color-scheme: dark)');function setTheme(){document.documentElement.dataset.theme=theme.value==='auto'?(mq.matches?'dark':'light'):theme.value;}theme.addEventListener('change',setTheme);mq.addEventListener('change',setTheme);setTheme();
+window.MINARD_DATA=DATA;
+</script></html>

@@ -29,26 +29,27 @@ def timestamp(value):
     return datetime.fromisoformat(value.replace('Z', '+00:00'))
 
 
-def gap_rows(report, cutoff):
+def gap_rows(report, cutoff, start=START):
     section = report.split('## All observed activity-bearing gaps', 1)[1].split('\n## ', 1)[0]
     rows = []
     for line in section.splitlines():
         if not re.match(r'^\|\s*\d+\s*\|', line):
             continue
         columns = [c.strip() for c in line.strip('|').split('|')]
-        rank, start, end, hours, tokens = columns[:5]
-        a, b = timestamp(start), timestamp(end)
-        if b <= datetime.combine(START, datetime.min.time(), timezone.utc) or a >= cutoff:
+        rank, start_, end, hours, tokens = columns[:5]
+        a, b = timestamp(start_), timestamp(end)
+        if b <= datetime.combine(start, datetime.min.time(), timezone.utc) or a >= cutoff:
             continue
-        rows.append({'rank': int(rank), 'start': start, 'end': end, 'hours': float(hours),
+        rows.append({'rank': int(rank), 'start': start_, 'end': end, 'hours': float(hours),
                      'tokens': None if tokens == 'NR' else int(tokens.replace(',', '')),
-                     'clipped': a.date() < START or b > cutoff})
+                     'clipped': a.date() < start or b > cutoff})
     if not rows:
         raise ValueError('Forensic source table yielded no overlapping windows.')
     return sorted(rows, key=lambda r: r['start'])
 
 
-def build_data(labels_path, joins_path, report_path, manifest_path):
+def build_data(labels_path, joins_path, report_path, manifest_path,
+               start=START, end=END):
     labels_doc = plain(loads(labels_path.read_text()))
     labels = labels_doc['patterns']
     index = {r['id']: r for r in labels}
@@ -56,8 +57,8 @@ def build_data(labels_path, joins_path, report_path, manifest_path):
         raise ValueError('Duplicate IDs or stage outside the rubric.')
     manifest = json.loads(manifest_path.read_text())
     cutoff = timestamp(manifest['window']['before'])
-    days = [{'date': (START + timedelta(days=i)).isoformat(), 'counts': {s: 0 for s in STAGES}}
-            for i in range((END - START).days + 1)]
+    days = [{'date': (start + timedelta(days=i)).isoformat(), 'counts': {s: 0 for s in STAGES}}
+            for i in range((end - start).days + 1)]
     totals = Counter()
     turns, retrievals = set(), set()
     for line in joins_path.read_text().splitlines():
@@ -71,9 +72,9 @@ def build_data(labels_path, joins_path, report_path, manifest_path):
         if row['rank1-pattern-ids'] != [row['pattern-id']]:
             raise ValueError('Accepted event does not have exactly one rank-one result.')
         day = timestamp(row['turn-at']).date()  # Operator day, not delayed retrieval day.
-        if not START <= day <= END:
+        if not start <= day <= end:
             raise ValueError('Matched operator turn lies outside the chart window.')
-        days[(day - START).days]['counts'][label['stage']] += 1
+        days[(day - start).days]['counts'][label['stage']] += 1
         totals[label['stage']] += 1
         turns.add(row['turn-id'])
     if len(retrievals) != manifest['matched-retrievals'] or len(turns) != manifest['unique-matched-turns']:
@@ -85,15 +86,19 @@ def build_data(labels_path, joins_path, report_path, manifest_path):
     return {'stages': STAGES, 'days': days, 'totals': dict(totals), 'hits': len(retrievals),
             'turns': len(turns), 'cutoff': cutoff.isoformat(),
             'eligible': manifest['statistics']['eligible-user-turns'],
-            'gaps': gap_rows(report_path.read_text(), cutoff),
+            'gaps': gap_rows(report_path.read_text(), cutoff, start),
             'sourceHashes': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                              for p in (labels_path, joins_path, report_path, manifest_path)}}
 
 
-def generate(output, labels=HERE / 'pattern-stages-2026-09-21.edn'):
-    data = build_data(labels, HERE / 'pattern-stage-joins-2026-09-21.jsonl',
-                      HERE / 'FORENSIC-autopilot-2026-09-21.md', HERE / 'pattern-stage-manifest-2026-09-21.json')
-    template = (HERE / 'minard_operator_work.template.html').read_text()
+def generate(output, labels=HERE / 'pattern-stages-2026-09-21.edn',
+             joins=HERE / 'pattern-stage-joins-2026-09-21.jsonl',
+             report=HERE / 'FORENSIC-autopilot-2026-09-21.md',
+             manifest=HERE / 'pattern-stage-manifest-2026-09-21.json',
+             template_path=HERE / 'minard_operator_work.template.html',
+             start=START, end=END):
+    data = build_data(labels, joins, report, manifest, start, end)
+    template = template_path.read_text()
     encoded = json.dumps(data, ensure_ascii=False).replace('<', '\\u003c')
     output.write_text(template.replace('/*DATA*/', encoded))
     return data
@@ -103,6 +108,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=HERE / 'minard-operator-work-2026-09-21.html')
     parser.add_argument('--labels', type=Path, default=HERE / 'pattern-stages-2026-09-21.edn')
+    parser.add_argument('--joins', type=Path, default=HERE / 'pattern-stage-joins-2026-09-21.jsonl')
+    parser.add_argument('--report', type=Path, default=HERE / 'FORENSIC-autopilot-2026-09-21.md')
+    parser.add_argument('--manifest', type=Path, default=HERE / 'pattern-stage-manifest-2026-09-21.json')
+    parser.add_argument('--template', type=Path, default=HERE / 'minard_operator_work.template.html')
+    parser.add_argument('--start', type=lambda v: date.fromisoformat(v), default=START)
+    parser.add_argument('--end', type=lambda v: date.fromisoformat(v), default=END)
     args = parser.parse_args()
-    data = generate(args.output, args.labels)
+    data = generate(args.output, args.labels, args.joins, args.report, args.manifest,
+                    args.template, args.start, args.end)
     print(f'{args.output}: {data["hits"]} hits; {data["turns"]} turns; {len(data["gaps"])} gap windows')

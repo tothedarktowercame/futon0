@@ -1,0 +1,68 @@
+{
+  "schema": "pattern-stage-manifest-fullwindow/v1",
+  "window": {
+    "since": "2026-08-22",
+    "before": "2026-10-01T21:12:00.000000Z"
+  },
+  "statistics": {
+    "joe-not-user-turn": 223,
+    "park-resume-marker": 2428,
+    "eligible-user-turns": 4898,
+    "wake-payload": 16,
+    "wake-payload-turns": 18,
+    "user-turns": 8634,
+    "continuation-payload": 2,
+    "ambiguous-text-prefix": 409,
+    "unmatched": 20163,
+    "park-resume-marker-turns": 3506,
+    "exact-resume-marker-turns": 3626,
+    "continuation-payload-turns": 120,
+    "excluded-all-prefix-candidates-automatic": 1055,
+    "matched": 4062,
+    "xiang-p6o3-excluded-turns": 92,
+    "xiang-p6o3-dropped-hits": 75
+  },
+  "matched-retrievals": 4062,
+  "unique-matched-turns": 4059,
+  "components": [
+    {
+      "manifest": "pattern-stage-manifest-2026-09-21.json"
+    },
+    {
+      "manifest": "pattern-stage-manifest-2026-10-01.json"
+    }
+  ],
+  "census-exclusions": {
+    "09-21-window": {
+      "minard": {
+        "user-turns": 5605,
+        "eligible-user-turns": 3398,
+        "exact-resume-marker-turns": 2205,
+        "park-resume-marker-turns": 2085,
+        "wake-payload-turns": 2,
+        "continuation-payload-turns": 120
+      },
+      "xiang-p6o3-census-level": 0,
+      "xiang-p6o3-transcript-level-candidates": 9,
+      "note": "9 transcript-level candidates (5 late park-wake variants, 4 inbox-zero) were not traceable to census store IDs via the transcript-coverage ledger; census-level subtraction recorded as 0"
+    },
+    "10-01-window": {
+      "minard": {
+        "user-turns": 3029,
+        "eligible-user-turns": 1592,
+        "exact-resume-marker-turns": 1421,
+        "park-resume-marker-turns": 1421,
+        "wake-payload-turns": 16
+      },
+      "xiang-p6o3-turns": 92,
+      "xiang-p6o3-by-rule": {
+        "park-wake": 12,
+        "inbox-zero": 38,
+        "kimi-notice": 42
+      }
+    }
+  },
+  "labels-source": "pattern-stages-2026-10-01.edn (689 original + 97 provisional additions)",
+  "labelled-patterns": 786,
+  "generated-by": "step-3 rebuild; joins = 09-21 ledger + 10-01 ledger minus 75 matched rows on xiang-p6o3-flagged census turns"
+}

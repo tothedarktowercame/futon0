@@ -60,6 +60,30 @@ class EvidenceJoinTests(unittest.TestCase):
         text = "--- CURRENT TURN ---\nFrom: joe\nOrigin: operator\n---\nPlease review this:\nOrigin: agent"
         self.assertIsNone(evidence.exclusion(text))
 
+    def test_census_filter_removes_kimi_notice_and_keeps_ordinary(self):
+        # Census subtraction added 2026-10-01: in addition to the Minard
+        # exclusions, turns flagged by futon3c/scripts/xiang2000_p6o3.py
+        # classify() are removed from the operator census. Both strings below
+        # are planted verbatim from recorded census turns.
+        import importlib.util
+        from pathlib import Path
+        script = Path("/home/joe/code/futon3c/scripts/xiang2000_p6o3.py")
+        if not script.exists():
+            self.skipTest("futon3c scripts not available")
+        spec = importlib.util.spec_from_file_location("xiang2000_p6o3", script)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        kimi = ("You requisitioned kimi-1 for M-futon-seams while clocked on "
+                "M-the-perfect-crime. If your work has moved to M-futon-seams, "
+                "clock in on it so your clock says what you are doing.")
+        ordinary = ("Right, we can stop backfill outside of the pre-August 22nd "
+                    "window for the time being, and do the analysis")
+        # The Minard exclusion alone keeps BOTH; classify() removes the kimi notice.
+        self.assertIsNone(evidence.exclusion(kimi))
+        self.assertIsNone(evidence.exclusion(ordinary))
+        self.assertEqual(module.classify(kimi)["rule"], "kimi-notice")
+        self.assertIsNone(module.classify(ordinary))
+
     def test_embedded_edn_and_resume_envelope(self):
         self.assertEqual(evidence.body({"evidence/body": '{"results" [{:id "x" :rank 1}]}'}),
                          {"results": [{"id": "x", "rank": 1}]})
