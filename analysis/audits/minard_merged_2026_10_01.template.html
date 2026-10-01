@@ -4,18 +4,14 @@
 <style>
 :root{color-scheme:light;--surface:#faf9f5;--ink:#242522;--muted:#66665e;--rule:#d6d5cc;--agent:#535750;--perceive:#2a78d6;--believe:#eb6834;--evaluate:#1baf7a;--select:#eda100;--act:#e87ba4;--assurance:#008300;--coordination:#4a3aa7;--none:#99998f}
 :root[data-theme=dark]{color-scheme:dark;--surface:#171b20;--ink:#eeeee7;--muted:#b5b9bd;--rule:#45494e;--agent:#b6bab5;--perceive:#3987e5;--believe:#d95926;--evaluate:#199e70;--select:#c98500;--act:#d55181;--assurance:#008300;--coordination:#9085e9;--none:#898d91}
-*{box-sizing:border-box}body{background:var(--surface);color:var(--ink);font:15px/1.5 system-ui,sans-serif;margin:0;padding:32px 3vw}main{max-width:1550px;margin:auto}header{display:flex;justify-content:space-between;gap:20px;align-items:start}h1{font:normal 36px/1.2 Georgia,serif;margin:0 0 8px}h2{font:normal 23px Georgia,serif}p{margin:8px 0}.subtitle{color:var(--muted);max-width:1020px}button,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:6px 10px;border-radius:3px}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 8px;font-size:13px}.key{display:flex;align-items:center;gap:7px}.swatch{width:18px;height:10px;background:var(--c)}.scroll{overflow-x:auto}svg{display:block;width:100%;min-width:1120px;height:auto}svg text{fill:var(--ink);font:13px system-ui,sans-serif}.small{font-size:11px}.muted{fill:var(--muted)}.heading{font-size:16px;font-weight:600}.direct{font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}.rule{stroke:var(--rule);fill:none}.leader{stroke:var(--muted);stroke-width:1;fill:none}.hit{cursor:crosshair;fill:transparent;stroke:none}.hit:focus{outline:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3}.tooltip{position:fixed;z-index:5;display:none;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--rule);box-shadow:0 2px 12px #0002;padding:10px 12px;max-width:340px;font-size:13px}.notes{border-top:1px solid var(--rule);padding-top:16px;max-width:1180px;font-size:13px}.notes strong{font-weight:600}details{margin-top:18px}summary{cursor:pointer}table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}th,td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}th:first-child,td:first-child{text-align:left}caption{text-align:left;margin:12px 0}a{color:var(--ink)}.readout{font-size:13px;min-height:24px;color:var(--muted)}path[data-stream]{cursor:pointer}path[data-stream]:focus{outline:none;stroke:var(--ink);stroke-width:1.5}rect.hit[data-stage]{cursor:pointer}.key{cursor:pointer;border:1px solid var(--rule);border-radius:3px;padding:3px 8px}.dimmed{opacity:.18}.fam-head{display:flex;gap:16px;align-items:center;margin:20px 0 2px}#family-panel{margin-bottom:8px}@media print{body{padding:0}button,select,.tooltip{display:none}svg{min-width:0}details{break-inside:avoid}}
+*{box-sizing:border-box}body{background:var(--surface);color:var(--ink);font:15px/1.5 system-ui,sans-serif;margin:0;padding:32px 3vw}main{max-width:1550px;margin:auto}header{display:flex;justify-content:space-between;gap:20px;align-items:start}h1{font:normal 36px/1.2 Georgia,serif;margin:0 0 8px}h2{font:normal 23px Georgia,serif}p{margin:8px 0}.subtitle{color:var(--muted);max-width:1020px}button,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule);padding:6px 10px;border-radius:3px}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 8px;font-size:13px}.key{display:flex;align-items:center;gap:7px}.swatch{width:18px;height:10px;background:var(--c)}.scroll{overflow-x:auto}svg{display:block;width:100%;min-width:1120px;height:auto}svg text{fill:var(--ink);font:13px system-ui,sans-serif}.small{font-size:11px}.muted{fill:var(--muted)}.heading{font-size:16px;font-weight:600}.direct{font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}.rule{stroke:var(--rule);fill:none}.leader{stroke:var(--muted);stroke-width:1;fill:none}.hit{cursor:crosshair;fill:transparent;stroke:none}.hit:focus{outline:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3}.tooltip{position:fixed;z-index:5;display:none;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--rule);box-shadow:0 2px 12px #0002;padding:10px 12px;max-width:340px;font-size:13px}.notes{border-top:1px solid var(--rule);padding-top:16px;max-width:1180px;font-size:13px}.notes strong{font-weight:600}details{margin-top:18px}summary{cursor:pointer}table{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}th,td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}th:first-child,td:first-child{text-align:left}caption{text-align:left;margin:12px 0}a{color:var(--ink)}.readout{font-size:13px;min-height:24px;color:var(--muted)}path[data-stream]{cursor:pointer}path[data-stream]:focus{outline:none;stroke:var(--ink);stroke-width:1.5}rect.hit[data-stage]{cursor:pointer}.key{cursor:pointer;border:1px solid var(--rule);border-radius:3px;padding:3px 8px}.dimmed{opacity:.18}@media print{body{padding:0}button,select,.tooltip{display:none}svg{min-width:0}details{break-inside:avoid}}
 </style>
 <main>
 <header><div><h1>Joe’s work, and the work that ran on</h1><p class="subtitle">22 August–1 October 2026 · UTC · a horizontal count integral, after Minard</p><p class="subtitle" id="headline"></p></div><label>Appearance <select id="theme" aria-label="Appearance"><option value="auto">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
-<div class="legend" id="legend" aria-label="Stage legend"></div>
+<div class="legend" id="legend" aria-label="Stage legend"><button id="back-all" type="button" hidden>← All stages</button></div>
 <div class="scroll"><svg id="chart" viewBox="0 0 1450 900" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Stage-labelled operator stream and autonomous Codex activity</title><desc id="chart-desc">A centred, variable-thickness band split by eight stage categories over time. An independent lower panel shows logged token totals in recorded operator gaps. Exact daily data is available below.</desc></svg></div>
 <div class="readout" id="readout" aria-live="polite">Hover a stream or gap, or focus it with the keyboard, for exact values. Click a stage band (or its legend entry) to open it into its pattern families.</div>
-<div id="family-panel" hidden>
-<div class="fam-head"><button id="back-all" type="button">← All stages</button><strong id="fam-title"></strong></div>
-<div class="scroll"><svg id="fchart" viewBox="0 0 1450 260" role="img" aria-label="Pattern-family breakdown of the opened stage"></svg></div>
-</div>
-<p class="breakout"><strong>Interactive:</strong> clicking (or pressing Enter on) a stage band in the main stream, or its legend entry, opens that stage into its top pattern families directly below the figure — same clock, same thickness scale — with a button back to the all-stages view. The <a href="minard-families-2026-10-01.html">eight standalone family panels</a> remain available as a separate page.</p>
+<p class="breakout"><strong>Interactive:</strong> clicking (or pressing Enter on) a stage band in the main stream, or its legend entry, opens that band <em>in place</em> — the band itself is redrawn as its pattern-family stripes, stacked inside the band's own outline, with the family legend replacing the count-integral column. Click the open band again, press Escape, or use the All stages button to return. The <a href="minard-families-2026-10-01.html">eight standalone family panels</a> remain available as a separate page.</p>
 <section class="notes">
 <p><strong>Read the widths carefully.</strong> Upper thickness = stage-labelled rank-one retrieval hits attached to operator turns, not cost. A trailing three-day arithmetic mean uses available days at the left edge (one, then two, then three); the curves linearly join daily means. Dates use the operator-turn timestamp. The faint tick row gives unsmoothed daily totals. Two turns carry multiple retrievals. October 1 is partial, through 21:12 UTC; the previous cutoff of September 21, 17:19 UTC is where the lower panel’s data ends.</p>
 <p><strong>The integral column uses exact raw counts.</strong> Smoothing changes the area inside a finite window; its geometric area is not the count integral. Two-pixel surface-coloured separator strokes are visual cuts, not quantities; very thin slices can be obscured. “None” keeps its measured thickness, in grey, rather than an invented minimum.</p>
@@ -105,41 +101,51 @@ function table(headers,rows,caption){return '<table><caption>'+caption+'</captio
 document.getElementById('daily-table').innerHTML=table(['Date UTC',...DATA.stages,'Total'],DATA.days.map(d=>[d.date,...DATA.stages.map(s=>d.counts[s]),d.total]),'Daily retrieval-hit counts, assigned to operator-turn dates. September 21 is partial.');
 document.getElementById('gap-table').innerHTML=table(['Start UTC','End UTC','Hours','Logged tokens'],DATA.gaps.map(g=>[g.start,g.end,g.hours,g.tokens===null?'NR — not zero':fmt(g.tokens)]),'All activity-bearing gaps from the forensic table (which ends 2026-09-21) overlapping this window; not a census of every absence. No token data exists after 2026-09-21T17:19:12Z.');
 document.getElementById('provenance').textContent=JSON.stringify(DATA.sourceHashes,null,2);
-// Family breakdown: one stage at a time, opened in place below the main figure.
-const fcut=Date.parse(FDATA.cutoff2),fmid=112,fpx=plotScale;
+// Family breakdown: the opened band decomposes in place, inside #chart, within
+// its own outline; the family legend replaces the count-integral column.
 let openStageName=null;
 function applyDim(stage){for(const n of document.querySelectorAll('#chart path[data-stream],#chart [data-direct]'))n.classList.toggle('dimmed',!!stage&&(n.dataset.stream||n.dataset.direct)!==stage);}
-function renderFamilies(stage){
- const fsvg=document.getElementById('fchart');fsvg.textContent='';
- const p=FDATA.panels.find(q=>q.stage===stage);
- const ft=(x,y,v,c='',a={})=>{const n=el('text',{x,y,class:c,...a},fsvg);n.textContent=v;return n;};
- ft(x0,22,stage.toUpperCase()+' — '+fmt(p.total)+' hits','heading');
- ft(x0,40,'Centred thickness · trailing 3-day mean · same clock and thickness scale as the main band','small muted');
- const fdefs=el('defs',{},fsvg);const fclip=el('clipPath',{id:'rec-open'},fdefs);el('rect',{x:x0,y:0,width:x1-x0,height:260},fclip);
- const bands=p.families.map(()=>[]);
- for(let i=0;i<DATA.days.length;i++){const total=p.families.reduce((n,f)=>n+f.means[i],0)*fpx;let y=fmid-total/2;for(let j=0;j<p.families.length;j++){const h=p.families[j].means[i]*fpx;bands[j].push([y,y+h]);y+=h;}}
+function removeStripes(){for(const id of ['famstripes','famlegend']){const n=document.getElementById(id);if(n)n.remove();}for(const n of svg.querySelectorAll('defs clipPath[data-famclip]'))n.remove();window.__stripes=null;}
+function renderStripes(stage){
+ removeStripes();
+ const j0=DATA.stages.indexOf(stage),p=FDATA.panels.find(q=>q.stage===stage);
+ const g=el('g',{id:'famstripes','data-open-stage':stage});
+ // Per-day stripe extents, stacked from the band's own top edge; family means
+ // sum to the stage mean (pinned by test_minard_families), so stripes fill the band.
+ const dayExtents=[];
+ for(let i=0;i<DATA.days.length;i++){let y=ys[i][j0][0];const row=[];for(let j=0;j<p.families.length;j++){const h=p.families[j].means[i]*plotScale;row.push([y,y+h]);y+=h;}dayExtents.push(row);}
+ const coords=p.families.map((f,j)=>[[x0,...dayExtents[0][j]],...dayExtents.map((row,i)=>[x(dates[i]),...row[j]]),[x(cutoff),...dayExtents.at(-1)[j]]]);
  for(let j=0;j<p.families.length;j++){
-  const f=p.families[j],c=[[x0,...bands[j][0]],...bands[j].map((yy,i)=>[x(dates[i]),...yy])];
+  const f=p.families[j],c=coords[j];
   const d='M '+c.map(v=>v[0]+','+v[1]).join(' L ')+' L '+c.slice().reverse().map(v=>v[0]+','+v[2]).join(' L ')+' Z';
-  el('path',{d,fill:f.color,'clip-path':'url(#rec-open)','data-family-band':f.name},fsvg);
-  if(j>0)el('path',{d:'M '+c.map(v=>v[0]+','+v[1]).join(' L '),fill:'none',stroke:'var(--surface)','stroke-width':1.5,'clip-path':'url(#rec-open)'},fsvg);
+  el('path',{d,fill:f.color,'clip-path':'url(#recorded)','data-family-band':f.name},g);
+  if(j>0)el('path',{d:'M '+c.map(v=>v[0]+','+v[1]).join(' L '),fill:'none',stroke:'var(--surface)','stroke-width':1.5,'clip-path':'url(#recorded)'},g);
+  const fc=el('clipPath',{id:'famclip-'+stage+'-'+j,'data-famclip':j},defs);el('path',{d},fc);
  }
- {const mx=x(fcut);el('line',{x1:mx,x2:mx,y1:52,y2:196,stroke:'var(--ink)','stroke-width':1,'stroke-dasharray':'5 4'},fsvg);ft(mx-6,64,'2026-09-21 · '+FDATA.markerLabel,'small muted',{'text-anchor':'end'});}
- ft(x0,236,'Raw daily','small muted');
- for(let i=0;i<DATA.days.length;i++){const t=p.days[i].total,xx=x(dates[i]);if(t)el('line',{x1:xx,x2:xx,y1:228,y2:228-t*0.16,stroke:'var(--muted)','stroke-opacity':.35},fsvg);}
- el('line',{x1:x0,x2:x1,y1:196,y2:196,class:'rule'},fsvg);
- for(let i=0;i<DATA.days.length;i++){const xx=x(dates[i]);el('line',{x1:xx,x2:xx,y1:196,y2:200,class:'rule'},fsvg);if([0,7,14,21,28,35,40].includes(i)){const m=DATA.days[i].date.slice(5,7);ft(xx,214,DATA.days[i].date.slice(8)+' '+(m==='08'?'Aug':m==='09'?'Sep':'Oct'),'small muted',{'text-anchor':'middle'});}}
- p.families.forEach((f,j)=>{const yy=58+j*17;el('rect',{x:1180,y:yy-9,width:14,height:9,fill:f.color},fsvg);ft(1200,yy,f.name+' · '+fmt(f.hits),'small');});
- // Hover targets tile each family's own slice per day, so thin families stay readable.
+ // Inline labels on the largest stripes, where they are thick enough.
+ const sized=p.families.map((f,j)=>({j,peak:Math.max(...dayExtents.map(row=>row[j][1]-row[j][0]))})).filter(v=>v.peak>=16).sort((a,b)=>b.peak-a.peak).slice(0,3);
+ for(const {j} of sized){let bi=0;dayExtents.forEach((row,i)=>{if(row[j][1]-row[j][0]>dayExtents[bi][j][1]-dayExtents[bi][j][0])bi=i;});
+  const n=el('text',{x:x(dates[bi]),y:(dayExtents[bi][j][0]+dayExtents[bi][j][1])/2+4,class:'direct','text-anchor':'middle','data-family-direct':p.families[j].name},g);n.textContent=p.families[j].name;}
+ // Hover/focus targets: one per family per day, clipped to that family's stripe.
  for(let j=0;j<p.families.length;j++){const f=p.families[j];
-  for(let i=0;i<DATA.days.length;i++){const left=x(start+i*86400000),right=x(Math.min(start+(i+1)*86400000,finish));if(right<=left)continue;
-   const next=bands[j][Math.min(i+1,DATA.days.length-1)],top=Math.min(bands[j][i][0],next[0]),bot=Math.max(bands[j][i][1],next[1]);
+  for(let i=0;i<DATA.days.length;i++){const left=x(start+i*86400000),right=x(Math.min(start+(i+1)*86400000,cutoff));if(right<=left)continue;
    const description=`${stage} · ${f.name} · ${FDATA.days[i]} · ${p.days[i].counts[f.name]} exact hits (3-day mean ${f.means[i].toFixed(2)})`;
-   const hit=el('rect',{x:left,y:top,width:right-left,height:Math.max(bot-top,1),class:'hit',tabindex:0,role:'button','aria-label':description,'data-family':f.name,'data-day':FDATA.days[i]},fsvg);
-   bindTip(hit,description);}}
+   const hit=el('rect',{x:left,y:100,width:right-left,height:480,'clip-path':`url(#famclip-${stage}-${j})`,class:'hit stripe',tabindex:0,role:'button','aria-label':description+'. Activate to close '+stage+'.','data-family':f.name,'data-day':FDATA.days[i]},g);
+   bindTip(hit,description);
+   hit.addEventListener('click',()=>activate(stage));hit.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(stage);}});}}
+ // Right-hand column: family legend covers the count-integral column while open.
+ const lg=el('g',{id:'famlegend'});
+ el('rect',{x:1168,y:185,width:282,height:385,fill:'var(--surface)'},lg);
+ const lt=(x,y,v,c='',a={})=>{const n=el('text',{x,y,class:c,...a},lg);n.textContent=v;return n;};
+ lt(1180,197,stage.toUpperCase()+' BY FAMILY','heading');
+ lt(1180,216,'Exact, unsmoothed shares of the band','small muted');
+ p.families.forEach((f,j)=>{const yy=249+j*29;el('rect',{x:1180,y:yy-10,width:16,height:9,fill:f.color},lg);lt(1206,yy,f.name);lt(1414,yy,pct(f.hits/p.total),'',{'text-anchor':'end'});});
+ lt(1180,520,fmt(p.total)+' hits = 100% of '+stage,'small');
+ // Rendered geometry, exposed for the headless page check.
+ window.__stripes={stage,days:DATA.days.map((d,i)=>({date:d.date,bandTop:ys[i][j0][0],bandBot:ys[i][j0][1],stripes:p.families.map((f,j)=>({family:f.name,top:dayExtents[i][j][0],bot:dayExtents[i][j][1]}))}))};
 }
-function activate(stage){if(openStageName===stage){deactivate();return;}openStageName=stage;renderFamilies(stage);document.getElementById('fam-title').textContent=stage+' opened by pattern family — same clock, same y-scale as the main band';document.getElementById('family-panel').hidden=false;applyDim(stage);}
-function deactivate(){openStageName=null;document.getElementById('family-panel').hidden=true;applyDim(null);}
+function activate(stage){if(openStageName===stage){deactivate();return;}openStageName=stage;renderStripes(stage);applyDim(stage);document.getElementById('back-all').hidden=false;}
+function deactivate(){openStageName=null;removeStripes();applyDim(null);document.getElementById('back-all').hidden=true;}
 document.getElementById('back-all').addEventListener('click',deactivate);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openStageName)deactivate();});
 {const ftb=document.getElementById('family-tables');
