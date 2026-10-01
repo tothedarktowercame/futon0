@@ -1,0 +1,405 @@
+{
+  "schema": "pattern-stage-unlabelled/v1",
+  "window": {
+    "since": "2026-09-21T17:19:12.718167Z",
+    "before": "2026-10-01T21:12:00.000000Z"
+  },
+  "labels-source": "pattern-stages-2026-09-21.edn (689 labelled ids)",
+  "summary": {
+    "hit-patterns": 440,
+    "already-labelled-patterns": 343,
+    "labelled-hits": 1102,
+    "unlabelled-patterns": 97,
+    "unlabelled-hits": 153
+  },
+  "unlabelled": [
+    {
+      "pattern-id": "test-registry/bind-the-subject",
+      "hits": 13
+    },
+    {
+      "pattern-id": "translation/test-by-reproducing-behaviour",
+      "hits": 9
+    },
+    {
+      "pattern-id": "math-strategy/proof-architecture",
+      "hits": 6
+    },
+    {
+      "pattern-id": "test-registry/bind-warrant-to-the-diff",
+      "hits": 5
+    },
+    {
+      "pattern-id": "inbox-zero/escalate-by-who-can-act",
+      "hits": 4
+    },
+    {
+      "pattern-id": "cascades/the-slice-is-the-unit-of-use",
+      "hits": 3
+    },
+    {
+      "pattern-id": "coordination/session-durability-check",
+      "hits": 3
+    },
+    {
+      "pattern-id": "test-registry/warrant-only-the-wires",
+      "hits": 3
+    },
+    {
+      "pattern-id": "agent/hypothetical-proof-architecture",
+      "hits": 2
+    },
+    {
+      "pattern-id": "buffer-cleaner/observe-categories",
+      "hits": 2
+    },
+    {
+      "pattern-id": "capability/capability-signature-vector",
+      "hits": 2
+    },
+    {
+      "pattern-id": "capability/hinge-capability-extraction",
+      "hits": 2
+    },
+    {
+      "pattern-id": "cascade-construction/order-by-what-each-step-needs",
+      "hits": 2
+    },
+    {
+      "pattern-id": "contracts/every-entry-has-a-falsifier",
+      "hits": 2
+    },
+    {
+      "pattern-id": "futon-theory/crime-relocates-to-a-scarcer-witness",
+      "hits": 2
+    },
+    {
+      "pattern-id": "hygiene/classify-by-remedy-judgement",
+      "hits": 2
+    },
+    {
+      "pattern-id": "hygiene/settle-with-meters",
+      "hits": 2
+    },
+    {
+      "pattern-id": "iching/hexagram-15-qian",
+      "hits": 2
+    },
+    {
+      "pattern-id": "iching/hexagram-20-guan",
+      "hits": 2
+    },
+    {
+      "pattern-id": "iching/hexagram-57-xun",
+      "hits": 2
+    },
+    {
+      "pattern-id": "math-formalization/separate-proof-transfer-from-artifact-replay",
+      "hits": 2
+    },
+    {
+      "pattern-id": "pattern-mining/probe-the-claimed-property-not-the-acceptance-proxy",
+      "hits": 2
+    },
+    {
+      "pattern-id": "plos-npt-with-small-n/quote-table-not-quote-flood",
+      "hits": 2
+    },
+    {
+      "pattern-id": "vsat-next/narrative-arc-infographics",
+      "hits": 2
+    },
+    {
+      "pattern-id": "vsatelier/projection-independence",
+      "hits": 2
+    },
+    {
+      "pattern-id": "vsatlas/askew-layer",
+      "hits": 2
+    },
+    {
+      "pattern-id": "ai4ci/pilot-feasibility",
+      "hits": 1
+    },
+    {
+      "pattern-id": "buffer-cleaner/exempt-the-in-use",
+      "hits": 1
+    },
+    {
+      "pattern-id": "cascade-construction/separate-construction-from-meaning-review",
+      "hits": 1
+    },
+    {
+      "pattern-id": "corps/letting-the-trace-teach",
+      "hits": 1
+    },
+    {
+      "pattern-id": "cycle-machine/disruption-soak",
+      "hits": 1
+    },
+    {
+      "pattern-id": "eight-gates/lie-split",
+      "hits": 1
+    },
+    {
+      "pattern-id": "eight-gates/press-mechanism",
+      "hits": 1
+    },
+    {
+      "pattern-id": "enrichment/indentation-as-complexity",
+      "hits": 1
+    },
+    {
+      "pattern-id": "eoi-engine/tension-foreclosure",
+      "hits": 1
+    },
+    {
+      "pattern-id": "exotic/graded-naturality",
+      "hits": 1
+    },
+    {
+      "pattern-id": "futon-theory/baldwin-cycle",
+      "hits": 1
+    },
+    {
+      "pattern-id": "hdm/human-machine-dialogue",
+      "hits": 1
+    },
+    {
+      "pattern-id": "hygiene/receipt-then-gate",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-03-zhun",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-04-meng",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-12-pi",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-21-shihe",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-29-kan",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-34-dazhuang",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-44-gou",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-47-kun",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iching/hexagram-53-jian",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iiching/exotype-092",
+      "hits": 1
+    },
+    {
+      "pattern-id": "iiching/exotype-179",
+      "hits": 1
+    },
+    {
+      "pattern-id": "math-formalization-CA/measure-restrict-simplify",
+      "hits": 1
+    },
+    {
+      "pattern-id": "math-formalization-FA/lf-map-continuity-via-fixed-support-stages",
+      "hits": 1
+    },
+    {
+      "pattern-id": "math-formalization/additive-principal-parts-from-order-germs",
+      "hits": 1
+    },
+    {
+      "pattern-id": "math-formalization/memlp-power-law-scalar-thresholds",
+      "hits": 1
+    },
+    {
+      "pattern-id": "math-informal/work-examples-first",
+      "hits": 1
+    },
+    {
+      "pattern-id": "math-strategy/hypothesis-category-check",
+      "hits": 1
+    },
+    {
+      "pattern-id": "mmca/threshold-shaped-events",
+      "hits": 1
+    },
+    {
+      "pattern-id": "or/overlay-bridges",
+      "hits": 1
+    },
+    {
+      "pattern-id": "or3/sustainability-without-enclosure",
+      "hits": 1
+    },
+    {
+      "pattern-id": "p4ng/five-p-rhythm",
+      "hits": 1
+    },
+    {
+      "pattern-id": "p4ng/harvest-before-close",
+      "hits": 1
+    },
+    {
+      "pattern-id": "p4ng/meta-reflection-loop-agent",
+      "hits": 1
+    },
+    {
+      "pattern-id": "p4ng/pattern-activation",
+      "hits": 1
+    },
+    {
+      "pattern-id": "p4ng/reflect-in-layers",
+      "hits": 1
+    },
+    {
+      "pattern-id": "p4ng/role-reveal-agent",
+      "hits": 1
+    },
+    {
+      "pattern-id": "pacspine/obligations-checker",
+      "hits": 1
+    },
+    {
+      "pattern-id": "pattern-coherence/internal-coherence",
+      "hits": 1
+    },
+    {
+      "pattern-id": "peeragogy/polling-for-ideas",
+      "hits": 1
+    },
+    {
+      "pattern-id": "plos-npt-with-small-n/barrier-enabler-strategy-display",
+      "hits": 1
+    },
+    {
+      "pattern-id": "problems/commitment-temperature-is-instrumented-as-gain",
+      "hits": 1
+    },
+    {
+      "pattern-id": "problems/devmap-self-consistency-standards",
+      "hits": 1
+    },
+    {
+      "pattern-id": "problems/r11-hierarchical-shared-budget",
+      "hits": 1
+    },
+    {
+      "pattern-id": "problems/r3a-prediction-error-projection",
+      "hits": 1
+    },
+    {
+      "pattern-id": "realtime/learn-as-you-go",
+      "hits": 1
+    },
+    {
+      "pattern-id": "sidecar/per-id-audit-timeline-linkage",
+      "hits": 1
+    },
+    {
+      "pattern-id": "snatch/an-unmodelled-response-stops-the-line",
+      "hits": 1
+    },
+    {
+      "pattern-id": "snatch/exchange-when-both-sides-gain",
+      "hits": 1
+    },
+    {
+      "pattern-id": "snatch/mark-without-force",
+      "hits": 1
+    },
+    {
+      "pattern-id": "snatch/price-the-final-round-as-final",
+      "hits": 1
+    },
+    {
+      "pattern-id": "snatch/use-talk-to-make-a-testable-offer",
+      "hits": 1
+    },
+    {
+      "pattern-id": "software-design/agent-command-pattern",
+      "hits": 1
+    },
+    {
+      "pattern-id": "storage/startup-integrity-gate",
+      "hits": 1
+    },
+    {
+      "pattern-id": "system-coherence/argue-empirically-not-persuasively",
+      "hits": 1
+    },
+    {
+      "pattern-id": "t4r/exec-summary",
+      "hits": 1
+    },
+    {
+      "pattern-id": "translation/declare-what-is-lost",
+      "hits": 1
+    },
+    {
+      "pattern-id": "vsat/reflective-container",
+      "hits": 1
+    },
+    {
+      "pattern-id": "vsatelier/cluster-as-agenda",
+      "hits": 1
+    },
+    {
+      "pattern-id": "vsatlas/audience-shift",
+      "hits": 1
+    },
+    {
+      "pattern-id": "vsatlas/isolarion-drift",
+      "hits": 1
+    },
+    {
+      "pattern-id": "vsatlas/offer-ladder",
+      "hits": 1
+    },
+    {
+      "pattern-id": "vsatlas/peeragogical-infrastructures",
+      "hits": 1
+    },
+    {
+      "pattern-id": "war-room/wr-11-external-applications-carry-predecessor-exemplar-relationships",
+      "hits": 1
+    },
+    {
+      "pattern-id": "war-room/wr-22-logic-model-before-code-is-a-sanctioned-verify-method",
+      "hits": 1
+    },
+    {
+      "pattern-id": "writing-coherence/cross-section-claim-drift",
+      "hits": 1
+    },
+    {
+      "pattern-id": "writing-coherence/paraphrase-drift",
+      "hits": 1
+    },
+    {
+      "pattern-id": "\u8c61/\u5236\u5ea6\u6709\u65f6",
+      "hits": 1
+    },
+    {
+      "pattern-id": "\u8c61/\u8a00\u5373\u884c",
+      "hits": 1
+    }
+  ]
+}

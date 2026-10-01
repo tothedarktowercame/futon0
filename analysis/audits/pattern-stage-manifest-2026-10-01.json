@@ -1,0 +1,168 @@
+{
+  "schema": "pattern-stage-manifest/v2",
+  "window": {
+    "since": "2026-09-21T17:19:12.718167Z",
+    "before": "2026-10-01T21:12:00.000000Z"
+  },
+  "statistics": {
+    "user-turns": 3029,
+    "eligible-user-turns": 1592,
+    "exact-resume-marker-turns": 1421,
+    "park-resume-marker-turns": 1421,
+    "wake-payload-turns": 16,
+    "joe-not-user-turn": 42,
+    "unmatched": 5227,
+    "matched": 1255,
+    "park-resume-marker": 1326,
+    "ambiguous-text-prefix": 53,
+    "excluded-all-prefix-candidates-automatic": 28,
+    "wake-payload": 15
+  },
+  "retrieval-pages": [
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-30T08:17:57.492820947Z",
+        "id": "e-260e15e9-9253-4d8f-abe7-c621452ed376"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-30T00:49:20.486385555Z",
+        "id": "e-3219ed3f-44ce-4852-9d00-a7f29fecb9e8"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-29T00:41:12.711926576Z",
+        "id": "e-7278e4e6-8741-4efd-885b-65b3dcc82f79"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-28T03:50:03.722713288Z",
+        "id": "e-99e5acd8-dfbe-453f-9026-77790a2b9eac"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-27T01:45:52.896911915Z",
+        "id": "e-39e91ccc-4fb0-4300-be85-0772e002e402"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-25T22:31:26.649753866Z",
+        "id": "e-cd696827-26de-49f1-88d7-c32501af9dfe"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-24T15:54:04.119639970Z",
+        "id": "e-008ce8cc-cf34-40f2-8cdd-965b113044c1"
+      }
+    },
+    {
+      "count": 904,
+      "limit": 1000,
+      "scanned": 904
+    }
+  ],
+  "joe-pages": [
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-28T20:46:19.533161958Z",
+        "id": "emacs-a464ba967d58513400db77ff3862965b"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-26T03:31:48.836481762Z",
+        "id": "emacs-a2f472064863b210137ff2f39026017b"
+      }
+    },
+    {
+      "count": 1000,
+      "limit": 1000,
+      "scanned": 1000,
+      "next-cursor": {
+        "at": "2026-09-21T21:19:36.009447078Z",
+        "id": "emacs-efa654e6456441cce10e04b3a5b72a7e"
+      }
+    },
+    {
+      "count": 71,
+      "limit": 1000,
+      "scanned": 71
+    }
+  ],
+  "snapshot-sha256": {
+    "retrieval.json": "2eaa8f692badc39ee8f86e5bff8b99624a452e8e1a1a9d7f6fdd91a5a0a2163b",
+    "joe.json": "4b5e90270ea839a27e1a13985c231553fd836035bb2179fba8bbcb307411c8ec"
+  },
+  "retrieval-rows": 7904,
+  "joe-rows": 3071,
+  "matched-retrievals": 1255,
+  "unique-matched-turns": 1255,
+  "labels-source": "pattern-stages-2026-09-21.edn",
+  "labelled-patterns": 689,
+  "hit-patterns": 440,
+  "already-labelled-patterns": 343,
+  "labelled-hits": 1102,
+  "unlabelled-patterns": 97,
+  "unlabelled-hits": 153,
+  "unlabelled-list": "pattern-stage-unlabelled-2026-10-01.json",
+  "xiang-p6o3-comparison": {
+    "classifier": "futon3c/scripts/xiang2000_p6o3.py classify() over the census turns",
+    "census-turns": 3029,
+    "xiang-flags-minard-keeps": 92,
+    "xiang-flags-minard-keeps-by-rule": {
+      "kimi-notice": 42,
+      "inbox-zero": 38,
+      "park-wake": 12
+    },
+    "minard-excludes-xiang-keeps": 0,
+    "both-exclude": 1437
+  },
+  "extraction-timing": {
+    "fetch-seconds": 10
+  },
+  "futon1b-health": {
+    "before": {
+      "heap-used-mb": 2598,
+      "permits-available": 2
+    },
+    "after": {
+      "heap-used-mb": 3718,
+      "permits-available": 3
+    }
+  },
+  "generated-by": "pattern_stage_evidence.py --fetch --since 2026-09-21T17:19:12.718167Z --before 2026-10-01T21:12:00.000000Z",
+  "labelling": "none in this job (step 1: fetch, join, count only)"
+}
