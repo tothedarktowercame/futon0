@@ -1,0 +1,162 @@
+{:agent "kimi-3"
+ :cues
+ [;; ---- R16 Grounded enactment (system-1, creation·doing)
+  {:node "R16" :cue "work through" :turn "T004" :quote "I want you to work through that list in order"}
+  {:node "R16" :cue "start on" :turn "T168" :quote "OK, please start on marking up Basic.c as an example"}
+  {:node "R16" :cue "ship" :turn "T250" :quote "Then we could ship several fixes in one go along with the method."}
+  {:node "R16" :cue "go ahead and do" :turn "T286" :quote "please go ahead and do the run directory and commit path spec fixes"}
+  {:node "R16" :cue "clear up" :turn "T092" :quote "Could you please clear up the terminal repair family and then run C-square"}
+  {:node "R16" :cue "wire it up" :from :general}
+  ;; ---- R10 Scheduled entrypoint (system-1, subsistence·being)
+  {:node "R10" :cue "still going" :turn "T207" :quote "is this still going??"}
+  {:node "R10" :cue "still out" :turn "T281" :quote "Is Kimi still out?"}
+  {:node "R10" :cue "only executes" :turn "T095" :quote "now I see topology-build-loop but it only executes the sleep command"}
+  {:node "R10" :cue "loop has stopped" :turn "T299" :quote "the wm loop has stopped and I dont know if that means it ran out of work or what?"}
+  {:node "R10" :cue "died on a turn boundary" :turn "T023" :quote "I reckon your subagents have either returned or died on a turn boundary"}
+  {:node "R10" :cue "hasn't run for quite a while" :turn "T178" :quote "the topology loop still hasn't run for quite a while"}
+  ;; ---- R11 Hierarchical shared budget (system-2, subsistence·having)
+  {:node "R11" :cue "usage left" :turn "T028" :quote "I've got 3% of my Claude usage left right now"}
+  {:node "R11" :cue "low on ... usage" :turn "T159" :quote "we're very low on Claude usage"}
+  {:node "R11" :cue "usage-aware" :turn "T175" :quote "So I think we need to... Develop a usage-aware loading."}
+  {:node "R11" :cue "using up" :turn "T175" :quote "I'm still not using up my Codex usage"}
+  {:node "R11" :cue "hardly in this dispatch routine" :turn "T175" :quote "zai is hardly in this dispatch routine at all"}
+  ;; ---- R15 Hierarchy and timescale (system-2, freedom·interacting)
+  {:node "R15" :cue "in the next loop" :turn "T004" :quote "we will get it in the next loop"}
+  {:node "R15" :cue "dependency order" :turn "T026" :quote "we should work in the dependency order for maximum reuse"}
+  {:node "R15" :cue "phases" :turn "T236" :quote "we seem to have passed from the solver to promotion to student phases in the APM campaign"}
+  {:node "R15" :cue "every night" :turn "T289" :quote "every night I go to sleep for six or eight hours"}
+  {:node "R15" :cue "order of operations" :from :general}
+  ;; ---- R6 Candidate action space (system-3, freedom·doing)
+  {:node "R6" :cue "either ... or" :turn "T148" :quote "Either we need my \"split up the big file\" or your \"read the diff\""}
+  {:node "R6" :cue "what about" :turn "T062" :quote "what about a button to move to the next demo scene/page ?"}
+  {:node "R6" :cue "we could" :turn "T034" :quote "we could port it to compiled Clojure or whatever makes it fast"}
+  {:node "R6" :cue "rather ... than" :turn "T240" :quote "I would rather try to find the questionmark source in the current map than remap everything"}
+  ;; ---- R14 Commitment temperature (system-3, identity·doing)
+  {:node "R14" :cue "let's go with" :turn "T247" :quote "Let's go with the exporter"}
+  {:node "R14" :cue "hold this thought" :turn "T171" :quote "Let's hold this thought for another day"}
+  {:node "R14" :cue "keep going with" :turn "T286" :quote "just keep going with Codex 6 on one arm in the topo loop"}
+  {:node "R14" :cue "let's commit it" :turn "T079" :quote "Yeah, let's commit it."}
+  {:node "R14" :cue "I can take ... on" :turn "T299" :quote "if the items for me gate work, I can take tgdm on"}
+  ;; ---- GRAIN-GATE (system-3, protection·having)
+  {:node "GRAIN-GATE" :cue "do not" :turn "T028" :quote "Please do not cue things to Claude agents."}
+  {:node "GRAIN-GATE" :cue "don't do anything" :turn "T041" :quote "take care that you don't do anything creative, just use the C/C++ as a guide"}
+  {:node "GRAIN-GATE" :cue "as long as" :turn "T034" :quote "So, agree, as long as it is very fast"}
+  {:node "GRAIN-GATE" :cue "I refuse" :turn "T078" :quote "So, I refuse to wait 8s for anything"}
+  ;; ---- R5 Expected free energy core (system-3-4)
+  {:node "R5" :cue "worth exploring" :turn "T086" :quote "the timing issues between Emacs and JVM are worth exploring"}
+  {:node "R5" :cue "brittle and costly" :turn "T148" :quote "which I think is brittle and costly"}
+  {:node "R5" :cue "warranted" :turn "T047" :quote "if the full indexing of futon1b is warranted we can do that"}
+  {:node "R5" :cue "fast enough" :turn "T034" :quote "If it's not fast enough we could port it to compiled Clojure"}
+  ;; ---- R9 No self-certification (system-3-star, participation·interacting)
+  {:node "R9" :cue "rather than subbing it out" :turn "T125" :quote "can you please monitor it directly rather than subbing it out to claude-10 or others?"}
+  {:node "R9" :cue "laid at ... feet" :turn "T215" :quote "What you're saying about the Test Registry should be laid at claude-12's feet not mine"}
+  {:node "R9" :cue "ask it to look into" :turn "T172" :quote "Can you please bell claude-8 to ask it to look into the confusion?"}
+  {:node "R9" :cue "had verification" :turn "T090" :quote "If the other items had verification, this one should too"}
+  ;; ---- R12 Two-layer calibration (system-3-star, understanding·being)
+  {:node "R12" :cue "permitted weakening" :turn "T223" :quote "sounds sort of like... permitted weakening?  That's concerning, please look into it"}
+  {:node "R12" :cue "count the total" :turn "T280" :quote "We should count the total number of sorries and make it clear that moving them around doesn't change anything"}
+  {:node "R12" :cue "supposedly" :turn "T275" :quote "all of the R-numbers were supposedly \"run-evidenced\""}
+  {:node "R12" :cue "one clear tracker" :turn "T099" :quote "What I'd like would be to have one clear tracker, which is Lean, which tells us exactly what is going on"}
+  ;; ---- R2 Structured observation (system-4, understanding·having, world)
+  {:node "R2" :cue "I still see" :turn "T011" :quote "I still see an HTTP error on https://zone.hyperreal.enterprises/marimo/"}
+  {:node "R2" :cue "I see ... up" :turn "T060" :quote "I see wm-author up 51m35s no session id in voxterm"}
+  {:node "R2" :cue "it still says" :turn "T221" :quote "So I did reload the page, and it still says M02A06 is parked"}
+  {:node "R2" :cue "I ran ... and see" :turn "T162" :quote "I ran futon-active-agents and see only 2 agents invoking"}
+  {:node "R2" :cue "now I see" :turn "T095" :quote "now I see topology-build-loop but it only executes the sleep command"}
+  ;; ---- R1 Belief state (system-4, understanding·having, account)
+  {:node "R1" :cue "I reckon" :turn "T023" :quote "I reckon your subagents have either returned or died on a turn boundary"}
+  {:node "R1" :cue "pretty sure" :turn "T050" :quote "showing a bunch of agents (as flying sources) that I am pretty sure don't exist"}
+  {:node "R1" :cue "I thought we had" :turn "T116" :quote "somewhere I thought we had a detailed survey of what construction targets are needed"}
+  {:node "R1" :cue "my sense" :turn "T162" :quote "my sense, by the way, is that we're not running Zone at anything near capacity"}
+  {:node "R1" :cue "I think we have" :turn "T155" :quote "I think we have it all written down"}
+  ;; ---- R4 Forward model (system-4, understanding·doing, world)
+  {:node "R4" :cue "will drift away" :turn "T242" :quote "any fixes that we make here are effectively hot fixes. That will drift away from the lean model"}
+  {:node "R4" :cue "going to be progressing" :turn "T289" :quote "some kind of guarantee that this work is actually going to be progressing during the"}
+  {:node "R4" :cue "then we could" :turn "T049" :quote "then we could potentially have a (preliminary) operator turn parse before it goes to agent-LLM"}
+  {:node "R4" :cue "we'd be running" :turn "T034" :quote "b/c we'd be running it on every turn"}
+  ;; ---- R3 Belief update (system-4, understanding·doing, account)
+  {:node "R3" :cue "as I thought" :turn "T106" :quote "maybe the code isn't as out of date as I thought!"}
+  {:node "R3" :cue "that changes things" :turn "T152" :quote "OK, that does change things."}
+  {:node "R3" :cue "I just realized" :turn "T291" :quote "I also just realized my percentages didn't actually add up right"}
+  {:node "R3" :cue "I thought you said" :turn "T221" :quote "Whereas I thought you said you had resolved it."}
+  ;; ---- R8 Present-fit mismatch (system-4, understanding·being, world)
+  {:node "R8" :cue "failed" :turn "T112" :quote "topo2 failed due to another ledger error"}
+  {:node "R8" :cue "didn't take" :turn "T237" :quote "The caption width adjustment didn't take"}
+  {:node "R8" :cue "but not" :turn "T212" :quote "it is detecting text but not sending it through nor giving me a preview"}
+  {:node "R8" :cue "doesn't trigger" :turn "T211" :quote "Can you tell me why this doesn't trigger the Inbox Zero process?"}
+  ;; ---- R3a Prediction-error projection (system-4, understanding·being, account)
+  {:node "R3a" :cue "I didn't ask" :turn "T031" :quote "Well I didn't ask to remove the tetrahedron"}
+  {:node "R3a" :cue "I asked for" :turn "T040" :quote "I didn't ask for an \"honest record\" I asked for a fully functional War Machine"}
+  {:node "R3a" :cue "interpret my ask" :turn "T225" :quote "I'm not sure how you managed to interpret my ask so nonstraightforwardly"}
+  ;; ---- R13 Temporal policy depth (system-4, protection·doing)
+  {:node "R13" :cue "backlog" :turn "T277" :quote "we need to start making a backlog of findings"}
+  {:node "R13" :cue "ticket to come back to" :turn "T247" :quote "save it as a ticket to come back to"}
+  {:node "R13" :cue "guarantee ... progressing" :turn "T289" :quote "I'd like to have some kind of guarantee that this work is actually going to be progressing during the… Six or eight hour flight"}
+  {:node "R13" :cue "before it bites" :from :general}
+  ;; ---- R7 Evidence-channel precision (system-4, participation·being)
+  {:node "R7" :cue "varied reads" :turn "T288" :quote "we will likely get some varied reads (which is good, in my opinion)"}
+  {:node "R7" :cue "signal" :turn "T239" :quote "one signal could be if patterns are *retrieved* by the War machine but not *used*"}
+  {:node "R7" :cue "expectations about" :turn "T081" :quote "living up to your expectations about memory use related to the report you wrote?"}
+  ;; ---- R17 Structure learning (system-4, creation·doing)
+  {:node "R17" :cue "supersede" :turn "T226" :quote "we need to supersede it"}
+  {:node "R17" :cue "proforma" :turn "T270" :quote "we just need a proforma"}
+  {:node "R17" :cue "rework" :turn "T176" :quote "to rework the PLOP 2026 paper"}
+  {:node "R17" :cue "new markup system" :turn "T049" :quote "with the new markup system"}
+  ;; ---- R19 Mission preference (system-5, identity·having)
+  {:node "R19" :cue "I want a correct model" :turn "T230" :quote "I want a correct model. I want step-by-step, correct model."}
+  {:node "R19" :cue "my preference" :turn "T291" :quote "that's not my preference. I don't prefer that nothing's delivered"}
+  {:node "R19" :cue "completion requirements" :turn "T176" :quote "what actually our completion requirements are here"}
+  {:node "R19" :cue "approve or decline" :turn "T133" :quote "you should come to me with proposals which I can approve or decline"}
+  ;; ---- CTAU-TOKEN (system-5, identity·interacting, scope token)
+  {:node "CTAU-TOKEN" :cue "focus now on" :turn "T216" :quote "What I think we should do is focus now on the operator-turns-become-inference-observations.flexiarg"}
+  {:node "CTAU-TOKEN" :cue "one problem" :turn "T272" :quote "a deep dive into one problem rather than a global picture across the topology dag"}
+  {:node "CTAU-TOKEN" :cue "this mission" :from :general}
+  ;; ---- CTAU-CLASS (system-5, identity·interacting, scope class)
+  {:node "CTAU-CLASS" :cue "5% each" :turn "T291" :quote "Thirty-five percent. Four. Associated Work. 55% for Focused Work. And 5% each."}
+  {:node "CTAU-CLASS" :cue "global picture" :turn "T272" :quote "a deep dive into one problem rather than a global picture across the topology dag"}
+  {:node "CTAU-CLASS" :cue "overall split" :from :general}
+  ;; ---- R20 Interoceptive tripwires (algedonic)
+  {:node "R20" :cue "Oh no" :turn "T028" :quote "Oh no. Please do not cue things to Claude agents."}
+  {:node "R20" :cue "I can't believe" :turn "T151" :quote "I can't believe what you're telling me."}
+  {:node "R20" :cue "bizarre" :turn "T154" :quote "It is frankly somewhat bizarre that the mission is not being done in order"}
+  {:node "R20" :cue "Tch" :turn "T159" :quote "So the Supervisor is still down for Topo 1. Tch."}
+  {:node "R20" :cue "annoying" :turn "T275" :quote "Again annoying for my paper draft"}
+  {:node "R20" :cue "concerning" :turn "T223" :quote "That's concerning, please look into it"}
+  ;; ---- branches
+  {:node :system-2 :cue "bell them" :turn "T209" :quote "if you bell them the wiring packet, tit will queue"}
+  {:node :system-2 :cue "bells and parks" :turn "T264" :quote "using bells and parks to chain thriugh"}
+  {:node :system-2 :cue "seats" :turn "T282" :quote "can you mind nine seats with identifying names (not codex-N)"}
+  {:node :system-2 :cue "handoffs to the relevant delegates" :turn "T004" :quote "with handoffs to the relevant delegates ad needed"}
+  {:node :system-5 :cue "the point" :turn "T161" :quote "But the \"bare metal\" is the point here."}
+  {:node :none :cue "voice to text spam" :turn "T075" :quote "i think that last message was voice to text spam!"}]
+ :collisions
+ [{:cue "commit" :nodes ["R14" "R16"] :why "T079 \"Yeah, let's commit it.\" is an enactment of a git operation (system-1, creation·doing) but reads as a commitment-temperature marker; the Beer system-1 vs system-3 split fails on the word because git vocabulary is operational, not decisional."}
+  {:cue "usage" :nodes ["R11" "R20"] :why "T028 (\"Oh no. ... I've got 3% of my Claude usage left\") is simultaneously a shared-budget observation (system-2) and an algedonic alarm; the top Beer split between coordination and the alarm channel is not separated by the cue."}
+  {:cue "loop" :nodes ["R10" "R15"] :why "\"the loop has stopped\" (T299, liveness, subsistence·being) vs \"in the next loop\" (T004, scheduling, freedom·interacting); the Max-Neef split at system-1/system-2 does not separate the two readings of 'loop'."}
+  {:cue "check / verify / show me" :nodes ["R2" "R10" "R9" "R12"] :why "The system-3-star audit cues overlap with S4 world-observation (\"I did reload the page, and it still says\") and S1 liveness checks; Beer split 3* vs 4 vs 1 relies on intent (independent audit vs direct look) that the cue words do not mark."}
+  {:cue "I thought / as I thought" :nodes ["R1" "R3"] :why "T106 \"maybe the code isn't as out of date as I thought\" and T221 \"Whereas I thought you said you had resolved it\" mark a held belief and its revision with the same phrase; the :object split inside understanding·having/doing does not separate them — both are account-side and only the update direction differs."}
+  {:cue "guarantee" :nodes ["R13" "R4"] :why "T289 \"some kind of guarantee that this work is actually going to be progressing\" is both a prediction (understanding·doing, world) and a demand for planned protection (protection·doing); the Max-Neef need split fails."}
+  {:cue "we could" :nodes ["R6" "R16" "R4"] :why "T034 \"we could port it to compiled Clojure\" proposes an option, T049 \"then we could potentially have\" predicts, and T250 \"we could ship several fixes\" commits to enactment; neither the Beer S1/S3/S4 split nor the freedom·doing vs creation·doing split is cued by the words."}
+  {:cue "interesting" :nodes ["R5" :none] :why "T024 \"is interesting\" and T283 \"The more interesting question\" can be a value/trade-off appraisal (system-3-4) or pure social acknowledgement; nothing in the cue separates evaluation from politeness."}
+  {:cue "I want" :nodes ["R19" "R16"] :why "T230 \"I want a correct model\" states a preference (identity·having) but T004 \"I want you to work through that list\" commands enactment (creation·doing); the S5/S1 split is not marked by 'I want' itself."}
+  {:cue "shouldn't count as" :nodes ["GRAIN-GATE" "R12"] :why "T280 \"moving a sorry shouldn't count as progress\" is phrased as an admissibility rule (protection·having) but is really a demand for an honest measurement (understanding·being, calibration); the S3 vs S3* split fails on normative phrasing."}
+  {:cue "varied reads" :nodes ["R7" "R2"] :why "T288 \"we will likely get some varied reads\" names both observation events and the weighting of their sources; understanding·having (world) vs participation·being (trust) is not separated by the cue."}]
+ :placement-flags
+ [{:node "R13" :now "system-4 > protection·doing" :suggest "system-3 > protection·doing (or system-3-4)" :why "Temporal policy depth is a SELECT-stage requirement in the catalogue: it concerns how far ahead the here-and-now action choice looks, which is Beer's control function, not S4's outside-and-future intelligence. Joe's planning turns (T277 backlog, T289 overnight guarantees) are about keeping operations on schedule, closer to control than to modelling the environment."}
+  {:node "R7" :now "system-4 > participation·being" :suggest "system-4 > understanding·having" :why "Evidence-channel precision is about how strongly held knowledge weights its sources; 'trust/weight/reliable' (T288, T239) are statements about the epistemic standing of information, not about participation in shared activity. The participation·being cell also fits the published matrix poorly (see :max-neef)."}
+  {:node "CTAU-TOKEN" :now "system-5 > identity·interacting > :split :scope" :suggest "document :scope as a fourth split in the header" :why "The header comment declares three splits (:beer, :max-neef, :object) but the CTAU leaves use an undocumented :split :scope. Not a wrong placement — an undeclared schema extension; check_tree.py and readers of the header will miss it."}]
+ :max-neef
+ [{:cell [:creation :doing] :pairing-ok true :terms ["work" "invent" "build" "design" "compose" "interpret"] :confidence :high :note "Matches the published matrix (Creation/Doing: invent, build, design, work, compose, interpret). The tree's cues (build, design, compose, land it) are near-verbatim. Used for both R16 and R17."}
+  {:cell [:subsistence :being] :pairing-ok true :terms ["physical and mental health" "equilibrium" "sense of humour" "adaptability"] :confidence :medium :note "The published Subsistence/Being cell is about health and equilibrium; the tree's liveness cues (is it alive, heartbeat, stalled) are a fair machine analog of 'health'. Terms don't literally appear in the matrix but the pairing is faithful."}
+  {:cell [:subsistence :having] :pairing-ok true :terms ["food" "shelter" "work"] :confidence :high :note "Published cell is the concrete means of subsistence (food, shelter, work). Budget/quota/tokens are the stack's resource analog; pairing sound, terms necessarily translated."}
+  {:cell [:freedom :doing] :pairing-ok true :terms ["run risks" "choose" "dissent" "disobey" "develop awareness" "be different from" "commit oneself"] :confidence :high :note "Published Freedom/Doing includes choose, run risks, dissent. The tree's cues (choose, alternatives, run the risk) match well for R6."}
+  {:cell [:identity :doing] :pairing-ok true :terms ["commit oneself" "decide on" "get to know oneself" "recognize oneself" "actualize oneself" "grow" "integrate oneself" "confront"] :confidence :high :note "Published Identity/Doing includes commit oneself and decide on; R14's commitment cues (commit, decide, provisionally) sit squarely in this cell."}
+  {:cell [:protection :having] :pairing-ok true :terms ["insurance systems" "savings" "social security" "health systems" "rights" "family" "work"] :confidence :medium :note "Published Protection/Having is institutional safeguards (insurance, social security, rights). The tree's rule/gate/admissible cues are the software analog; pairing plausible but the matrix lists systems and rights, not prohibitions as such."}
+  {:cell [:participation :interacting] :pairing-ok true :terms ["settings of participative interaction" "parties" "associations" "churches" "communities" "neighbourhoods" "family"] :confidence :medium :note "The published cell names interaction settings rather than acts; R9's independent-review cues (someone else, reviewer, second pair of eyes) express participation-in-interaction functionally even though the vocabulary differs."}
+  {:cell [:understanding :being] :pairing-ok true :terms ["critical conscience" "curiosity" "astonishment" "receptiveness" "intuition" "rationality" "discipline"] :confidence :high :note "Published Understanding/Being includes curiosity, astonishment, critical conscience. R8's surprise/confusion cues map to astonishment; R12's calibration cues map to critical conscience. Good pairing."}
+  {:cell [:understanding :having] :pairing-ok true :terms ["literature" "teachers" "method" "educational policies" "communication policies"] :confidence :medium :note "Published cell is the stock of knowledge-bearers (literature, teachers). The tree's 'the facts / information / the state of things' cues are the held-knowledge reading; pairing sound, terms translated."}
+  {:cell [:understanding :doing] :pairing-ok true :terms ["investigate" "study" "experiment" "educate" "analyse" "meditate"] :confidence :high :note "Near-verbatim match: the tree's analyse, investigate, work out, figure out duplicate the published cell."}
+  {:cell [:protection :doing] :pairing-ok true :terms ["cooperate" "prevent" "plan" "take care of" "cure" "help"] :confidence :high :note "Published Protection/Doing includes prevent and plan; the tree's plan ahead / prevent / before it bites match R13's placement in this cell (whatever Beer branch it sits under)."}
+  {:cell [:participation :being] :pairing-ok false :terms ["adaptability" "receptiveness" "dedication" "sense of humour" "respect" "generosity"] :confidence :medium :note "Published Participation/Being is about receptive, dedicated participation; the tree uses the cell for trust/weight/reliability of evidence sources (R7), which is not what the matrix puts here. The pairing exists in the matrix but the italicised sense (trust, weight, noisy source) is an extension, not a match."}
+  {:cell [:identity :having] :pairing-ok true :terms ["symbols" "language" "religion" "habits" "customs" "reference groups" "values" "norms" "historical memory" "work" "sexuality"] :confidence :high :note "Published Identity/Having explicitly lists values and norms; the tree's cues (values, norms, what I want, preference) match R19 well."}
+  {:cell [:identity :interacting] :pairing-ok true :terms ["social rhythms" "daily settings" "setting in which one belongs" "maturation stages"] :confidence :medium :note "Surprisingly good fit: the published cell includes social rhythms and maturation stages, which is exactly what the tree's rhythm/stage/phase cues gesture at for the C_tau schedules. Confidence medium because I am relying on memory of Table 1 and cannot re-check the wording."}]}

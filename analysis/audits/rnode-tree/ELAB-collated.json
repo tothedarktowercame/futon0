@@ -1,0 +1,4342 @@
+{
+ "agents": [
+  "codex",
+  "kimi-3",
+  "zai-4"
+ ],
+ "kept-cues": [
+  {
+   "agent": "codex",
+   "node": "R16",
+   "cue": "please do",
+   "turn": "T014",
+   "quote": "please do",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R16",
+   "cue": "go ahead and do",
+   "turn": "T286",
+   "quote": "please go ahead and do the run directory and commit path spec fixes",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R16",
+   "cue": "build the fix",
+   "turn": "T119",
+   "quote": "then we build the fix",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R10",
+   "cue": "still going",
+   "turn": "T207",
+   "quote": "is this still going??",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R10",
+   "cue": "persist overnight",
+   "turn": "T189",
+   "quote": "the loop did start up but didnt persist overnight",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R10",
+   "cue": "active again",
+   "turn": "T005",
+   "quote": "It seems Kimi would be active again",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R11",
+   "cue": "usage left",
+   "turn": "T028",
+   "quote": "I've got 3% of my Claude usage left right now",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R11",
+   "cue": "usage-aware loading",
+   "turn": "T175",
+   "quote": "Develop a usage-aware loading",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R11",
+   "cue": "cheap enough",
+   "turn": "T288",
+   "quote": "they are all \"cheap enough\"",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R15",
+   "cue": "inner loop",
+   "turn": "T025",
+   "quote": "the inner loop of the war machine basically corresponds to a flight",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R15",
+   "cue": "outer cascade",
+   "turn": "T153",
+   "quote": "the outer cascade should be based on Cascade Live",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R15",
+   "cue": "subtask thereof",
+   "turn": "T055",
+   "quote": "Similarly for a subtask thereof.",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R6",
+   "cue": "either we need",
+   "turn": "T148",
+   "quote": "Either we need my \"split up the big file\" or your \"read the diff\"",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R6",
+   "cue": "things to try",
+   "turn": "T062",
+   "quote": "there are things to try within the scene",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R6",
+   "cue": "other roles",
+   "turn": "T175",
+   "quote": "if we could think of other roles that we want agents to fill",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R14",
+   "cue": "let's go with",
+   "turn": "T247",
+   "quote": "Let's go with the exporter",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R14",
+   "cue": "for now",
+   "turn": "T238",
+   "quote": "let's just take that as written for now",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R14",
+   "cue": "lean towards",
+   "turn": "T187",
+   "quote": "I would lean towards having them be reachable with bells",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "GRAIN-GATE",
+   "cue": "do not",
+   "turn": "T028",
+   "quote": "Please do not cue things to Claude agents.",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "GRAIN-GATE",
+   "cue": "until",
+   "turn": "T191",
+   "quote": "I am not going to greenlight any new things until we actually start to close checklist TODO items",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "GRAIN-GATE",
+   "cue": "should fail",
+   "turn": "T187",
+   "quote": "a bell to an unregistered participant should fail",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R5",
+   "cue": "risk accepted",
+   "turn": "T133",
+   "quote": "I can approve \"risk accepted\" if it is model faithful.",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R5",
+   "cue": "worth",
+   "turn": "T086",
+   "quote": "the timing issues between Emacs and JVM are worth exploring",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R5",
+   "cue": "costly",
+   "turn": "T148",
+   "quote": "which I think is brittle and costly",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R9",
+   "cue": "author is not reviewer",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "R9",
+   "cue": "independently reviewed",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "R9",
+   "cue": "not self-certified",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "R12",
+   "cue": "close or far",
+   "turn": "T021",
+   "quote": "I don't know if the estimated total LOC is \"close\" or \"far\", or \"way under\" or \"way over\"",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R12",
+   "cue": "living up to your expectations",
+   "turn": "T081",
+   "quote": "completed living up to your expectations about memory use",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R12",
+   "cue": "doesn't count as progress",
+   "turn": "T280",
+   "quote": "\"moving a sorry\" shouldn't count as progress",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R2",
+   "cue": "I looked at it",
+   "turn": "T002",
+   "quote": "I looked at it",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R2",
+   "cue": "I still see",
+   "turn": "T011",
+   "quote": "I still see an HTTP error",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R2",
+   "cue": "now I see",
+   "turn": "T095",
+   "quote": "now I see topology-build-loop but it only executes the sleep command",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R2",
+   "cue": "according to my report",
+   "turn": "T223",
+   "quote": "according to my *APM report* we have 111 left",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R1",
+   "cue": "my sense",
+   "turn": "T162",
+   "quote": "my sense, by the way, is that we're not running Zone at anything near capacity",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R1",
+   "cue": "as I understand it",
+   "turn": "T133",
+   "quote": "faithful to the theory as I understand it",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R1",
+   "cue": "I suspect",
+   "turn": "T283",
+   "quote": "I suspect that's less of a reach",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R4",
+   "cue": "would create",
+   "turn": "T203",
+   "quote": "fork session with a new ID would create a cascade of things to fix",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R4",
+   "cue": "then we'd",
+   "turn": "T171",
+   "quote": "then we'd get multiple different label sets",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R4",
+   "cue": "what happens next",
+   "turn": "T025",
+   "quote": "what happens next",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R3",
+   "cue": "that does change things",
+   "turn": "T152",
+   "quote": "OK, that does change things.",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R3",
+   "cue": "actually add up right",
+   "turn": "T291",
+   "quote": "I also just realized my percentages didn't actually add up right",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R3",
+   "cue": "revisited",
+   "turn": "T106",
+   "quote": "we didn't duplicate work, just revisited a survey",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R8",
+   "cue": "still says",
+   "turn": "T221",
+   "quote": "it still says M02A06 is parked",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R8",
+   "cue": "only executes",
+   "turn": "T095",
+   "quote": "it only executes the sleep command",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R8",
+   "cue": "didn't take",
+   "turn": "T237",
+   "quote": "The caption width adjustment didn't take",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R8",
+   "cue": "nonfunctional",
+   "turn": "T072",
+   "quote": "the topology loop is similarly nonfunctional",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R3a",
+   "cue": "I was mistaken",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "R3a",
+   "cue": "my assumption was wrong",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "R3a",
+   "cue": "that undercuts my picture",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "R13",
+   "cue": "in order",
+   "turn": "T004",
+   "quote": "work through that list in order",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R13",
+   "cue": "dependency order",
+   "turn": "T026",
+   "quote": "we should work in the dependency order for maximum reuse",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R13",
+   "cue": "stage this intelligently",
+   "turn": "T148",
+   "quote": "Let's stage this intelligently then.",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R13",
+   "cue": "before we",
+   "turn": "T004",
+   "quote": "39 problems to close before we even have something \"valid\"",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R7",
+   "cue": "varied reads",
+   "turn": "T288",
+   "quote": "we will likely get some varied reads",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R7",
+   "cue": "which one is most relevant",
+   "turn": "T239",
+   "quote": "see which one is most relevant to the prompt",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R7",
+   "cue": "give any confidence",
+   "turn": "T236",
+   "quote": "the visibility that I would need to give any confidence on that",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R17",
+   "cue": "rework",
+   "turn": "T176",
+   "quote": "to rework the PLOP 2026 paper",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R17",
+   "cue": "re-architect",
+   "turn": "T176",
+   "quote": "that's exactly what we're trying to re-architect",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R17",
+   "cue": "new construction",
+   "turn": "T025",
+   "quote": "we would make some changes to exactly how we do that in the new construction",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R19",
+   "cue": "what I want",
+   "turn": "T071",
+   "quote": "guidance on what I want on there",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R19",
+   "cue": "completion requirements",
+   "turn": "T176",
+   "quote": "what actually our completion requirements are here",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R19",
+   "cue": "not a facade",
+   "turn": "T176",
+   "quote": "so that it's not a facade",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "CTAU-TOKEN",
+   "cue": "for this task",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "CTAU-TOKEN",
+   "cue": "this problem's priorities",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "CTAU-TOKEN",
+   "cue": "within this lane",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "codex",
+   "node": "CTAU-CLASS",
+   "cue": "percent for focused work",
+   "turn": "T291",
+   "quote": "55% for Focused Work",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "CTAU-CLASS",
+   "cue": "associated work",
+   "turn": "T291",
+   "quote": "Thirty-five percent. Four. Associated Work.",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "CTAU-CLASS",
+   "cue": "stop the line",
+   "turn": "T291",
+   "quote": "I really value stopping the line when something is going wrong",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R20",
+   "cue": "I refuse",
+   "turn": "T078",
+   "quote": "I refuse to wait 8s for anything",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R20",
+   "cue": "I am so frustrated",
+   "turn": "T193",
+   "quote": "I am so frustrated!",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R20",
+   "cue": "concerning",
+   "turn": "T223",
+   "quote": "That's concerning",
+   "general": false
+  },
+  {
+   "agent": "codex",
+   "node": "R20",
+   "cue": "stop the line",
+   "turn": "T291",
+   "quote": "I really value stopping the line when something is going wrong",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R16",
+   "cue": "work through",
+   "turn": "T004",
+   "quote": "I want you to work through that list in order",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R16",
+   "cue": "start on",
+   "turn": "T168",
+   "quote": "OK, please start on marking up Basic.c as an example",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R16",
+   "cue": "ship",
+   "turn": "T250",
+   "quote": "Then we could ship several fixes in one go along with the method.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R16",
+   "cue": "go ahead and do",
+   "turn": "T286",
+   "quote": "please go ahead and do the run directory and commit path spec fixes",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R16",
+   "cue": "clear up",
+   "turn": "T092",
+   "quote": "Could you please clear up the terminal repair family and then run C-square",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R16",
+   "cue": "wire it up",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R10",
+   "cue": "still going",
+   "turn": "T207",
+   "quote": "is this still going??",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R10",
+   "cue": "still out",
+   "turn": "T281",
+   "quote": "Is Kimi still out?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R10",
+   "cue": "only executes",
+   "turn": "T095",
+   "quote": "now I see topology-build-loop but it only executes the sleep command",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R10",
+   "cue": "loop has stopped",
+   "turn": "T299",
+   "quote": "the wm loop has stopped and I dont know if that means it ran out of work or what?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R10",
+   "cue": "died on a turn boundary",
+   "turn": "T023",
+   "quote": "I reckon your subagents have either returned or died on a turn boundary",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R10",
+   "cue": "hasn't run for quite a while",
+   "turn": "T178",
+   "quote": "the topology loop still hasn't run for quite a while",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R11",
+   "cue": "usage left",
+   "turn": "T028",
+   "quote": "I've got 3% of my Claude usage left right now",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R11",
+   "cue": "low on ... usage",
+   "turn": "T159",
+   "quote": "we're very low on Claude usage",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R11",
+   "cue": "usage-aware",
+   "turn": "T175",
+   "quote": "So I think we need to... Develop a usage-aware loading.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R11",
+   "cue": "using up",
+   "turn": "T175",
+   "quote": "I'm still not using up my Codex usage",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R11",
+   "cue": "hardly in this dispatch routine",
+   "turn": "T175",
+   "quote": "zai is hardly in this dispatch routine at all",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R15",
+   "cue": "in the next loop",
+   "turn": "T004",
+   "quote": "we will get it in the next loop",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R15",
+   "cue": "dependency order",
+   "turn": "T026",
+   "quote": "we should work in the dependency order for maximum reuse",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R15",
+   "cue": "phases",
+   "turn": "T236",
+   "quote": "we seem to have passed from the solver to promotion to student phases in the APM campaign",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R15",
+   "cue": "every night",
+   "turn": "T289",
+   "quote": "every night I go to sleep for six or eight hours",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R15",
+   "cue": "order of operations",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R6",
+   "cue": "either ... or",
+   "turn": "T148",
+   "quote": "Either we need my \"split up the big file\" or your \"read the diff\"",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R6",
+   "cue": "what about",
+   "turn": "T062",
+   "quote": "what about a button to move to the next demo scene/page ?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R6",
+   "cue": "we could",
+   "turn": "T034",
+   "quote": "we could port it to compiled Clojure or whatever makes it fast",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R6",
+   "cue": "rather ... than",
+   "turn": "T240",
+   "quote": "I would rather try to find the questionmark source in the current map than remap everything",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R14",
+   "cue": "let's go with",
+   "turn": "T247",
+   "quote": "Let's go with the exporter",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R14",
+   "cue": "hold this thought",
+   "turn": "T171",
+   "quote": "Let's hold this thought for another day",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R14",
+   "cue": "keep going with",
+   "turn": "T286",
+   "quote": "just keep going with Codex 6 on one arm in the topo loop",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R14",
+   "cue": "let's commit it",
+   "turn": "T079",
+   "quote": "Yeah, let's commit it.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R14",
+   "cue": "I can take ... on",
+   "turn": "T299",
+   "quote": "if the items for me gate work, I can take tgdm on",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "GRAIN-GATE",
+   "cue": "do not",
+   "turn": "T028",
+   "quote": "Please do not cue things to Claude agents.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "GRAIN-GATE",
+   "cue": "don't do anything",
+   "turn": "T041",
+   "quote": "take care that you don't do anything creative, just use the C/C++ as a guide",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "GRAIN-GATE",
+   "cue": "as long as",
+   "turn": "T034",
+   "quote": "So, agree, as long as it is very fast",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "GRAIN-GATE",
+   "cue": "I refuse",
+   "turn": "T078",
+   "quote": "So, I refuse to wait 8s for anything",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R5",
+   "cue": "worth exploring",
+   "turn": "T086",
+   "quote": "the timing issues between Emacs and JVM are worth exploring",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R5",
+   "cue": "brittle and costly",
+   "turn": "T148",
+   "quote": "which I think is brittle and costly",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R5",
+   "cue": "warranted",
+   "turn": "T047",
+   "quote": "if the full indexing of futon1b is warranted we can do that",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R5",
+   "cue": "fast enough",
+   "turn": "T034",
+   "quote": "If it's not fast enough we could port it to compiled Clojure",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R9",
+   "cue": "rather than subbing it out",
+   "turn": "T125",
+   "quote": "can you please monitor it directly rather than subbing it out to claude-10 or others?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R9",
+   "cue": "laid at ... feet",
+   "turn": "T215",
+   "quote": "What you're saying about the Test Registry should be laid at claude-12's feet not mine",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R9",
+   "cue": "ask it to look into",
+   "turn": "T172",
+   "quote": "Can you please bell claude-8 to ask it to look into the confusion?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R9",
+   "cue": "had verification",
+   "turn": "T090",
+   "quote": "If the other items had verification, this one should too",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R12",
+   "cue": "permitted weakening",
+   "turn": "T223",
+   "quote": "sounds sort of like... permitted weakening?  That's concerning, please look into it",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R12",
+   "cue": "count the total",
+   "turn": "T280",
+   "quote": "We should count the total number of sorries and make it clear that moving them around doesn't change anything",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R12",
+   "cue": "supposedly",
+   "turn": "T275",
+   "quote": "all of the R-numbers were supposedly \"run-evidenced\"",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R12",
+   "cue": "one clear tracker",
+   "turn": "T099",
+   "quote": "What I'd like would be to have one clear tracker, which is Lean, which tells us exactly what is going on",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R2",
+   "cue": "I still see",
+   "turn": "T011",
+   "quote": "I still see an HTTP error on https://zone.hyperreal.enterprises/marimo/",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R2",
+   "cue": "I see ... up",
+   "turn": "T060",
+   "quote": "I see wm-author up 51m35s no session id in voxterm",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R2",
+   "cue": "it still says",
+   "turn": "T221",
+   "quote": "So I did reload the page, and it still says M02A06 is parked",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R2",
+   "cue": "I ran ... and see",
+   "turn": "T162",
+   "quote": "I ran futon-active-agents and see only 2 agents invoking",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R2",
+   "cue": "now I see",
+   "turn": "T095",
+   "quote": "now I see topology-build-loop but it only executes the sleep command",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R1",
+   "cue": "I reckon",
+   "turn": "T023",
+   "quote": "I reckon your subagents have either returned or died on a turn boundary",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R1",
+   "cue": "pretty sure",
+   "turn": "T050",
+   "quote": "showing a bunch of agents (as flying sources) that I am pretty sure don't exist",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R1",
+   "cue": "I thought we had",
+   "turn": "T116",
+   "quote": "somewhere I thought we had a detailed survey of what construction targets are needed",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R1",
+   "cue": "my sense",
+   "turn": "T162",
+   "quote": "my sense, by the way, is that we're not running Zone at anything near capacity",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R1",
+   "cue": "I think we have",
+   "turn": "T155",
+   "quote": "I think we have it all written down",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R4",
+   "cue": "will drift away",
+   "turn": "T242",
+   "quote": "any fixes that we make here are effectively hot fixes. That will drift away from the lean model",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R4",
+   "cue": "going to be progressing",
+   "turn": "T289",
+   "quote": "some kind of guarantee that this work is actually going to be progressing during the",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R4",
+   "cue": "then we could",
+   "turn": "T049",
+   "quote": "then we could potentially have a (preliminary) operator turn parse before it goes to agent-LLM",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R4",
+   "cue": "we'd be running",
+   "turn": "T034",
+   "quote": "b/c we'd be running it on every turn",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3",
+   "cue": "as I thought",
+   "turn": "T106",
+   "quote": "maybe the code isn't as out of date as I thought!",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3",
+   "cue": "that changes things",
+   "turn": "T152",
+   "quote": "OK, that does change things.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3",
+   "cue": "I just realized",
+   "turn": "T291",
+   "quote": "I also just realized my percentages didn't actually add up right",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3",
+   "cue": "I thought you said",
+   "turn": "T221",
+   "quote": "Whereas I thought you said you had resolved it.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R8",
+   "cue": "failed",
+   "turn": "T112",
+   "quote": "topo2 failed due to another ledger error",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R8",
+   "cue": "didn't take",
+   "turn": "T237",
+   "quote": "The caption width adjustment didn't take",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R8",
+   "cue": "but not",
+   "turn": "T212",
+   "quote": "it is detecting text but not sending it through nor giving me a preview",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R8",
+   "cue": "doesn't trigger",
+   "turn": "T211",
+   "quote": "Can you tell me why this doesn't trigger the Inbox Zero process?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3a",
+   "cue": "I didn't ask",
+   "turn": "T031",
+   "quote": "Well I didn't ask to remove the tetrahedron",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3a",
+   "cue": "I asked for",
+   "turn": "T040",
+   "quote": "I didn't ask for an \"honest record\" I asked for a fully functional War Machine",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R3a",
+   "cue": "interpret my ask",
+   "turn": "T225",
+   "quote": "I'm not sure how you managed to interpret my ask so nonstraightforwardly",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R13",
+   "cue": "backlog",
+   "turn": "T277",
+   "quote": "we need to start making a backlog of findings",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R13",
+   "cue": "ticket to come back to",
+   "turn": "T247",
+   "quote": "save it as a ticket to come back to",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R13",
+   "cue": "guarantee ... progressing",
+   "turn": "T289",
+   "quote": "I'd like to have some kind of guarantee that this work is actually going to be progressing during the… Six or eight hour flight",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R13",
+   "cue": "before it bites",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R7",
+   "cue": "varied reads",
+   "turn": "T288",
+   "quote": "we will likely get some varied reads (which is good, in my opinion)",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R7",
+   "cue": "signal",
+   "turn": "T239",
+   "quote": "one signal could be if patterns are *retrieved* by the War machine but not *used*",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R7",
+   "cue": "expectations about",
+   "turn": "T081",
+   "quote": "living up to your expectations about memory use related to the report you wrote?",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R17",
+   "cue": "supersede",
+   "turn": "T226",
+   "quote": "we need to supersede it",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R17",
+   "cue": "proforma",
+   "turn": "T270",
+   "quote": "we just need a proforma",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R17",
+   "cue": "rework",
+   "turn": "T176",
+   "quote": "to rework the PLOP 2026 paper",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R17",
+   "cue": "new markup system",
+   "turn": "T049",
+   "quote": "with the new markup system",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R19",
+   "cue": "I want a correct model",
+   "turn": "T230",
+   "quote": "I want a correct model. I want step-by-step, correct model.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R19",
+   "cue": "my preference",
+   "turn": "T291",
+   "quote": "that's not my preference. I don't prefer that nothing's delivered",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R19",
+   "cue": "completion requirements",
+   "turn": "T176",
+   "quote": "what actually our completion requirements are here",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R19",
+   "cue": "approve or decline",
+   "turn": "T133",
+   "quote": "you should come to me with proposals which I can approve or decline",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-TOKEN",
+   "cue": "focus now on",
+   "turn": "T216",
+   "quote": "What I think we should do is focus now on the operator-turns-become-inference-observations.flexiarg",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-TOKEN",
+   "cue": "one problem",
+   "turn": "T272",
+   "quote": "a deep dive into one problem rather than a global picture across the topology dag",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-TOKEN",
+   "cue": "this mission",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-CLASS",
+   "cue": "5% each",
+   "turn": "T291",
+   "quote": "Thirty-five percent. Four. Associated Work. 55% for Focused Work. And 5% each.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-CLASS",
+   "cue": "global picture",
+   "turn": "T272",
+   "quote": "a deep dive into one problem rather than a global picture across the topology dag",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-CLASS",
+   "cue": "overall split",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R20",
+   "cue": "Oh no",
+   "turn": "T028",
+   "quote": "Oh no. Please do not cue things to Claude agents.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R20",
+   "cue": "I can't believe",
+   "turn": "T151",
+   "quote": "I can't believe what you're telling me.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R20",
+   "cue": "bizarre",
+   "turn": "T154",
+   "quote": "It is frankly somewhat bizarre that the mission is not being done in order",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R20",
+   "cue": "Tch",
+   "turn": "T159",
+   "quote": "So the Supervisor is still down for Topo 1. Tch.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R20",
+   "cue": "annoying",
+   "turn": "T275",
+   "quote": "Again annoying for my paper draft",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R20",
+   "cue": "concerning",
+   "turn": "T223",
+   "quote": "That's concerning, please look into it",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "system-2",
+   "cue": "bell them",
+   "turn": "T209",
+   "quote": "if you bell them the wiring packet, tit will queue",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "system-2",
+   "cue": "bells and parks",
+   "turn": "T264",
+   "quote": "using bells and parks to chain thriugh",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "system-2",
+   "cue": "seats",
+   "turn": "T282",
+   "quote": "can you mind nine seats with identifying names (not codex-N)",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "system-2",
+   "cue": "handoffs to the relevant delegates",
+   "turn": "T004",
+   "quote": "with handoffs to the relevant delegates ad needed",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "system-5",
+   "cue": "the point",
+   "turn": "T161",
+   "quote": "But the \"bare metal\" is the point here.",
+   "general": false
+  },
+  {
+   "agent": "kimi-3",
+   "node": "none",
+   "cue": "voice to text spam",
+   "turn": "T075",
+   "quote": "i think that last message was voice to text spam!",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "system-1",
+   "cue": "please continue",
+   "turn": "T054",
+   "quote": "Well, please continue the explorations here because clearly, yeah, it seems like the thing is timing out.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "system-2",
+   "cue": "don't lose pace",
+   "turn": null,
+   "quote": null,
+   "general": true
+  },
+  {
+   "agent": "zai-4",
+   "node": "system-3",
+   "cue": "start on X",
+   "turn": "T168",
+   "quote": "OK, please start on marking up Basic.c as an example",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "system-3-star",
+   "cue": "show me it working",
+   "turn": "T262",
+   "quote": "OK, show me it working via the next dispatch",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "system-4",
+   "cue": "what is the reality?",
+   "turn": "T156",
+   "quote": "so what is the reality?  i thought we were very clear what policies were, how EFE works, that it is the core of AIF",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "algedonic",
+   "cue": "Oh no.",
+   "turn": "T028",
+   "quote": "Oh no. Please do not cue things to Claude agents. Can you cancel those jobs?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "algedonic",
+   "cue": "I am so frustrated",
+   "turn": "T193",
+   "quote": "I am so frustrated!  why should anything here \"await decision\"?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R16",
+   "cue": "let's commit it",
+   "turn": "T079",
+   "quote": "Yeah, let's commit it.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R16",
+   "cue": "I fixed",
+   "turn": "T082",
+   "quote": "I fixed the voice interface, so hopefully we won't run into that problem again. Let's continue,",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R16",
+   "cue": "please set that up again",
+   "turn": "T132",
+   "quote": "please set that up again",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R16",
+   "cue": "write that up as",
+   "turn": "T247",
+   "quote": "let's write that up as T-arxana-direct-reads.md and save it as a ticket to come back to.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R16",
+   "cue": "please start on marking up",
+   "turn": "T168",
+   "quote": "OK, please start on marking up Basic.c as an example",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R16",
+   "cue": "do the analysis",
+   "turn": "T238",
+   "quote": "Codex 14 can not only do the analysis, But add some plots to the Marimo notebook so we can, in principle, even recalculate the plots.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "would be active again",
+   "turn": "T005",
+   "quote": "It seems Kimi would be active again so we can test the system out",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "returned or died on a turn boundary",
+   "turn": "T023",
+   "quote": "I reckon your subagents have either returned or died on a turn boundary",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "didnt persist overnight",
+   "turn": "T189",
+   "quote": "the loop did start up but didnt persist overnight",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "up 51m35s",
+   "turn": "T060",
+   "quote": "I see wm-author up 51m35s no session id in voxterm, and no codex-13 activity though codex has 3% usage remaining",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "is this still going??",
+   "turn": "T207",
+   "quote": "is this still going??",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "Is Kimi still out?",
+   "turn": "T281",
+   "quote": "Is Kimi still out?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "cue": "only executes the sleep command",
+   "turn": "T095",
+   "quote": "now I see topology-build-loop but it only executes the sleep command",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R11",
+   "cue": "3% of my Claude usage left",
+   "turn": "T028",
+   "quote": "I've got 3% of my Claude usage left right now.  Cancel those jobs.  Ah.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R11",
+   "cue": "very low on Claude usage",
+   "turn": "T159",
+   "quote": "we're very low on Claude usage, so could you please ask an associated Codex agent to help sort this out?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R11",
+   "cue": "cheap enough",
+   "turn": "T288",
+   "quote": "We can use zai, kimi, and Sonnet for tagging, they are all \"cheap enough\" and we will likely get some varied reads (which is good, in my opinion).",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R11",
+   "cue": "3% usage remaining",
+   "turn": "T060",
+   "quote": "and no codex-13 activity though codex has 3% usage remaining",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R15",
+   "cue": "every night I go to sleep",
+   "turn": "T289",
+   "quote": "And furthermore, every night I go to sleep for six or eight hours, and I'd like to have some guarantee that this stuff is progressing every night.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R15",
+   "cue": "hold this thought for another day",
+   "turn": "T171",
+   "quote": "Let's hold this thought for another day, and write up an E-象-catchup excursion note.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R15",
+   "cue": "a ticket to come back to",
+   "turn": "T247",
+   "quote": "save it as a ticket to come back to.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R15",
+   "cue": "while we were trying to do a complex orchestration across",
+   "turn": "T019",
+   "quote": "Meanwhile we were trying to do a complex orchestration across Seat A and Seat B, and get them to update the mission carpet.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R15",
+   "cue": "one arm in the topo loop",
+   "turn": "T286",
+   "quote": "So, yes, just keep going with Codex 6 on one arm in the topo loop. You don't need to change anything there.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R15",
+   "cue": "at anything near capacity",
+   "turn": "T162",
+   "quote": "my sense, by the way, is that we're not running Zone at anything near capacity.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R6",
+   "cue": "Either we need my ... or your ...",
+   "turn": "T148",
+   "quote": "Either we need my \"split up the big file\" or your \"read the diff\" (which I think is brittle and costly but if you want to give it one more go you can).",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R6",
+   "cue": "Let's go with the exporter",
+   "turn": "T247",
+   "quote": "Let's go with the exporter, though I think we both had the conception in mind that Arxana would be able to read directly from futon1b",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R6",
+   "cue": "a good candidate for a bg.py task",
+   "turn": "T047",
+   "quote": "I guess if the full indexing of futon1b is warranted we can do that, but it does sound like a good candidate for a bg.py task",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R6",
+   "cue": "other things we could build",
+   "turn": "T203",
+   "quote": "let's not build it right now.  Let's review the McCarthy paper and see what other things we can build.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R6",
+   "cue": "what about a button to move to the next demo scene/page",
+   "turn": "T062",
+   "quote": "so, there are things to try within the scene but what about a button to move to the next demo scene/page ?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R14",
+   "cue": "I would lean towards",
+   "turn": "T187",
+   "quote": "So I would lean towards having them be reachable with bells.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R14",
+   "cue": "I would rather",
+   "turn": "T240",
+   "quote": "Well, given that it ALMOST works, I would rather try to find the questionmark source in the current map than remap everything",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R14",
+   "cue": "let's consider that ... now specified",
+   "turn": "T227",
+   "quote": "OK, let's consider that C is now specified to a level where *something* compatible with my views on the matter can be implemented.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R14",
+   "cue": "I guess this is the only thing we can really do",
+   "turn": "T041",
+   "quote": "I guess this is the only thing we can really do given the complexity of the the situation.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R14",
+   "cue": "if you want to give it one more go",
+   "turn": "T148",
+   "quote": "(which I think is brittle and costly but if you want to give it one more go you can).",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R14",
+   "cue": "OK to ... but",
+   "turn": "T125",
+   "quote": "OK to M-auto-clock in but can you please monitor it directly rather than subbing it out to claude-10 or others?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "GRAIN-GATE",
+   "cue": "guided by faithfulness to the theory",
+   "turn": "T133",
+   "quote": "I am not going to decide things by fiat, but guided by faithfulness to the theory.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "GRAIN-GATE",
+   "cue": "don't do anything creative",
+   "turn": "T041",
+   "quote": "I chatted with Rob today and he said, take care that you don't do anything creative, just use the C/C++ as a guide.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "GRAIN-GATE",
+   "cue": "Please do not cue things to",
+   "turn": "T028",
+   "quote": "Oh no. Please do not cue things to Claude agents.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "GRAIN-GATE",
+   "cue": "not codex-N ... not aliases",
+   "turn": "T282",
+   "quote": "can you mind nine seats with identifying names (not codex-N) and not aliases so that we can track these nine things?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "GRAIN-GATE",
+   "cue": "you should come to me with proposals",
+   "turn": "T133",
+   "quote": "Again, for \"decisions\" you should come to me with proposals which I can approve or decline.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R5",
+   "cue": "as long as it is very fast, b/c",
+   "turn": "T034",
+   "quote": "So, agree, as long as it is very fast, b/c we'd be running it on every turn.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R5",
+   "cue": "I refuse to wait 8s for anything",
+   "turn": "T078",
+   "quote": "So, I refuse to wait 8s for anything",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R5",
+   "cue": "I don't love taking 19 minutes per build",
+   "turn": "T041",
+   "quote": "I don't love taking 19 minutes per build though, so if we can come up with ways to speed that up that would be good, otherwise I worry we'll be there 1000 x 19 minutes or something which is a long time",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R5",
+   "cue": "brittle and costly",
+   "turn": "T148",
+   "quote": "(which I think is brittle and costly but if you want to give it one more go you can).",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R5",
+   "cue": "waiting hours for a fix that takes minutes",
+   "turn": "T289",
+   "quote": "it's just a matter of running them according to a schedule and waiting hours for a fix that takes minutes. Isn't great.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R9",
+   "cue": "monitor it directly rather than subbing it out",
+   "turn": "T125",
+   "quote": "can you please monitor it directly rather than subbing it out to claude-10 or others?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R9",
+   "cue": "spammy or SEO'ed through the graph",
+   "turn": "T239",
+   "quote": "that would suggest they are somehow spammy or SEO'ed through the graph, but not well written.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R9",
+   "cue": "should be laid at ... feet not mine",
+   "turn": "T215",
+   "quote": "What you're saying about the Test Registry should be laid at claude-12's feet not mine",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R9",
+   "cue": "this one should too",
+   "turn": "T090",
+   "quote": "If the other items had verification, this one should too, as well as a valid date",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R12",
+   "cue": "I lack the visibility that I would need",
+   "turn": "T236",
+   "quote": "It's just that I lack the visibility that I would need to give any confidence on that.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R12",
+   "cue": "Visibility on work being done is still poor",
+   "turn": "T162",
+   "quote": "Visibility on work being done is still poor, I ran futon-active-agents and see only 2 agents invoking, even though I know various bells have been sent out to workers.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R12",
+   "cue": "noticing its own mistakes *in turn*",
+   "turn": "T097",
+   "quote": "GLM 5.2 (and maybe latest 5.3) was very good at noticing its own mistakes *in turn* rather than via handoffs.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R12",
+   "cue": "sounds sort of like ... That's concerning",
+   "turn": "T223",
+   "quote": "Your writeup of \"three places where the statement says less than it could, none a defect\" sounds sort of like... permitted weakening?  That's concerning, please look into it",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R12",
+   "cue": "I am pretty sure don't exist",
+   "turn": "T050",
+   "quote": "Right now https://zone.hyperreal.enterprises/wip/mission-efe-field.html is showing a bunch of agents (as flying sources) that I am pretty sure don't exist.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "I still see an HTTP error",
+   "turn": "T011",
+   "quote": "I still see an HTTP error on https://zone.hyperreal.enterprises/marimo/",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "one thing I've noticed is",
+   "turn": "T013",
+   "quote": "Regarding the carpet, one thing I've noticed is that un-ticking the boxes (e.g. \"open\") still shows the missions, just not their scopes.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "it still says X. Whereas I thought",
+   "turn": "T221",
+   "quote": "So I did reload the page, and it still says M02A06 is parked. Whereas I thought you said you had resolved it.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "the map's legend is out of date",
+   "turn": "T106",
+   "quote": "So, the map's legend is out of date, so we didn't duplicate work, just revisited a survey that had been conducted earlier.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "153 ahead (threshold 10)",
+   "turn": "T068",
+   "quote": "futon2-d: 153 ahead (threshold 10) — review and push or explain",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "according to my *APM report*",
+   "turn": "T223",
+   "quote": "So according to my *APM report* we have 111 left as open problems \"Lean, has sorry\".",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R2",
+   "cue": "I ran futon-active-agents and see",
+   "turn": "T162",
+   "quote": "I ran futon-active-agents and see only 2 agents invoking, even though I know various bells have been sent out to workers.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R1",
+   "cue": "The question is whether it's written down in Lean or not",
+   "turn": "T099",
+   "quote": "So I know we have it. The question is whether it's written down in Lean or not.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R1",
+   "cue": "I don't remember right now what",
+   "turn": "T116",
+   "quote": "So, I don't remember right now what the demonstrators were — but somewhere I thought we had a detailed survey of what construction targets are needed",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R1",
+   "cue": "i thought we were very clear",
+   "turn": "T156",
+   "quote": "so what is the reality?  i thought we were very clear what policies were, how EFE works, that it is the core of AIF",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R1",
+   "cue": "I think we have it all written down",
+   "turn": "T155",
+   "quote": "So, regarding hardware) I think we have it all written down (we've been writing code for the superpod for months).",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R1",
+   "cue": "there is a record of... Work that's wanted here",
+   "turn": "T052",
+   "quote": "In the same way, there is a record of... Work that's wanted here in the futon stack, and those are basically named holes.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R1",
+   "cue": "Recorded but never consulted",
+   "turn": "T121",
+   "quote": "So, I think this is another example of Recorded but never consulted. Written but never wired.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R4",
+   "cue": "living up to your expectations",
+   "turn": "T081",
+   "quote": "What are the recent APM frames that have completed living up to your expectations about memory use related to the report you wrote?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R4",
+   "cue": "we'll be there 1000 x 19 minutes",
+   "turn": "T041",
+   "quote": "otherwise I worry we'll be there 1000 x 19 minutes or something which is a long time",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R4",
+   "cue": "if we changed the embedding strategy",
+   "turn": "T238",
+   "quote": "So, for example, if we changed the embedding strategy. Or refine it.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R4",
+   "cue": "presumably ... would complete when",
+   "turn": "T055",
+   "quote": "Presumably focus on a task (mission, excursion, ticket) would complete when that completes.  Similarly for a subtask thereof.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R4",
+   "cue": "If Astra is the key enabler here we may know in about an hour",
+   "turn": "T152",
+   "quote": "OK, that does change things.  If Astra is the key enabler here we may know in about an hour.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3",
+   "cue": "OK, that does change things",
+   "turn": "T152",
+   "quote": "OK, that does change things.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3",
+   "cue": "maybe the code isn't as out of date as I thought",
+   "turn": "T106",
+   "quote": "Except, maybe the code isn't as out of date as I thought!",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3",
+   "cue": "I also just realized",
+   "turn": "T291",
+   "quote": "Oh, I also just realized my percentages didn't actually add up right.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3",
+   "cue": "we seem to have passed from ... to ... phases",
+   "turn": "T236",
+   "quote": "Well, we seem to have passed from the solver to promotion to student phases in the APM campaign.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3",
+   "cue": "that comes up quite a lot",
+   "turn": "T275",
+   "quote": "Hm... \"build and switched off\" comes up quite a lot.  Again annoying for my paper draft in which all of the R-numbers were supposedly \"run-evidenced\".",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3",
+   "cue": "what we're coming to here is",
+   "turn": "T198",
+   "quote": "So, what I'm coming to here is that maybe 象-2000 is useful as a \"specification language\".",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "failed due to another ledger error",
+   "turn": "T112",
+   "quote": "topo2 failed due to another ledger error",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "what led to the >300s wait?",
+   "turn": "T032",
+   "quote": "what led to the >300s wait?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "I don't think I got the report?",
+   "turn": "T202",
+   "quote": "I don't think I got the report?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "didn't take",
+   "turn": "T237",
+   "quote": "The caption width adjustment didn't take",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "is detecting text but not sending it through",
+   "turn": "T212",
+   "quote": "it is detecting text but not sending it through nor giving me a preview",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "the design seems a little bit flawed",
+   "turn": "T054",
+   "quote": "please continue the explorations here because clearly, yeah, it seems like the thing is timing out. The design of the... Promotion package seems a little bit flawed.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R8",
+   "cue": "what's the repro",
+   "turn": "T220",
+   "quote": "Sorry, what's the repro for the 41s endpoint?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3a",
+   "cue": "I can't believe what you're telling me",
+   "turn": "T151",
+   "quote": "I can't believe what you're telling me. Look at the git commits. Look at my history. Look at the work plan.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3a",
+   "cue": "I'm not sure how you managed to interpret my ask so nonstraightforwardly",
+   "turn": "T225",
+   "quote": "I'm not sure how you managed to interpret my ask so nonstraightforwardly.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3a",
+   "cue": "I HAVE NOT BEEN UNCLEAR",
+   "turn": "T266",
+   "quote": "I HAVE NOT BEEN UNCLEAR",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3a",
+   "cue": "I didn't ask for",
+   "turn": "T040",
+   "quote": "I didn't ask for an \"honest record\" I asked for a fully functional War Machine",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3a",
+   "cue": "it turns out that it is something of a blight",
+   "turn": "T071",
+   "quote": "So, firstly, we need to absolutely get rido fo Zulip, it turns out that it is something of a blight.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R3a",
+   "cue": "why should anything here",
+   "turn": "T193",
+   "quote": "I am so frustrated!  why should anything here \"await decision\"?  why has b99A02 not been resolved?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R13",
+   "cue": "according to a schedule",
+   "turn": "T289",
+   "quote": "it's just a matter of running them according to a schedule and waiting hours for a fix that takes minutes.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R13",
+   "cue": "self-steering without requiring ... babysitting",
+   "turn": "T149",
+   "quote": "So, the system is supposed to be self-steering without requiring Codex babysitting on hands-on coordination.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R13",
+   "cue": "enters a queue needing revalidation, then we build the fix",
+   "turn": "T119",
+   "quote": "Whenever we see an error, a park, a missing agent, a dropped packet, that enters a queue needing revalidation, then we build the fix, mint the new certificate and so forth.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R13",
+   "cue": "if a frame can fit within two hours",
+   "turn": "T289",
+   "quote": "And if a frame can fit within two hours, Then it should be fitting in two hours, and if it isn't fitting in two hours, that's an error of a whole other class,",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R13",
+   "cue": "a consistent state so that we stop losing time",
+   "turn": "T295",
+   "quote": "Can you please get this into a consistent state so that we stop losing time over it?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R13",
+   "cue": "hot fixes. That will drift away",
+   "turn": "T242",
+   "quote": "Then any fixes that we make here are effectively hot fixes. That will drift away from the lean model.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R7",
+   "cue": "Claude-4 does not understand geometry",
+   "turn": "T234",
+   "quote": "Claude-4 does not understand geometry.  The patterns exist in an embedding space.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R7",
+   "cue": "we will likely get some varied reads",
+   "turn": "T288",
+   "quote": "they are all \"cheap enough\" and we will likely get some varied reads (which is good, in my opinion).",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R7",
+   "cue": "they haven't necessarily said \"thanks that's super helpful\"",
+   "turn": "T244",
+   "quote": "However, with UKRNS, it's not actually clear that we've really helped them solve a problem — I tried, but they haven't necessarily said \"thanks that's super helpful\".",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R7",
+   "cue": "retrieved ... but not *used*",
+   "turn": "T239",
+   "quote": "one signal could be if patterns are *retrieved* by the War machine but not *used* — that would suggest they are somehow spammy",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R7",
+   "cue": "tends to be very confident about things it knows",
+   "turn": "T097",
+   "quote": "even though codex tends to be very confident about things it knows how to do, it refuses to do things that are unspecified.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R7",
+   "cue": "codex-10 (who is coordinating",
+   "turn": "T149",
+   "quote": "I'd suggest that you bell codex-10 (who is coordinating the APM loop) to see if we can agree a way forward",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "cue": "we need to supersede it",
+   "turn": "T226",
+   "quote": "So not that we need to include it, but we need to supersede it.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "cue": "reinventing that",
+   "turn": "T226",
+   "quote": "it seems as though maybe we are actually in the process of reinventing that.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "cue": "breaking the one \"WIP\" row to a more developed ... board",
+   "turn": "T210",
+   "quote": "breaking the one \"WIP\" row to a more developed PERCEIVE → BELIEVE → EVALUATE → SELECT → ACT kanban board.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "cue": "\"gone means gone\" semantics",
+   "turn": "T013",
+   "quote": "It would be good if there was a \"gone means gone\" semantics by default, and a \"hide scopes only\" option (not by default)",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "cue": "a similar table for",
+   "turn": "T180",
+   "quote": "So, those are good for understanding \"Joe\" turns but we'd want a similar table for understanding \"WM\" acts as well.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "cue": "good case for hierarchical modelling",
+   "turn": "T171",
+   "quote": "The point about aligning intent labels seems like a good case for hierarchical modelling b/c then we'd get multiple different label sets but flow them into an approved core.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R19",
+   "cue": "I am not going to greenlight",
+   "turn": "T191",
+   "quote": "Well I am not going to greenlight any new things until we actually start to close checklist TODO items or until you convince me that these new work items are exactly what's needed to do so",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R19",
+   "cue": "our criteria should probably expand to include",
+   "turn": "T042",
+   "quote": "So, in terms of the 1/23 verified current, our criteria should probably expand to include at least M-futon-problems and M-apm-demonstration",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R19",
+   "cue": "that's not my preference",
+   "turn": "T291",
+   "quote": "which is weird because that's not my preference.  I don't prefer that nothing's delivered.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R19",
+   "cue": "I really value stopping the line",
+   "turn": "T291",
+   "quote": "So, you know, I really value stopping the line when som",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R19",
+   "cue": "supposed to be self-steering",
+   "turn": "T149",
+   "quote": "So, the system is supposed to be self-steering without requiring Codex babysitting on hands-on coordination.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R19",
+   "cue": "what our completion requirements are",
+   "turn": "T176",
+   "quote": "I just want to be clear about what actually our completion requirements are here.  It's to rework the PLOP 2026 paper, which I think I've got about one more week left to work on it, so that it's not a facade.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-TOKEN",
+   "cue": "if the items for me gate work, I can take ... on",
+   "turn": "T299",
+   "quote": "if the items for me gate work, I can take tgdm on, though the wm loop has stopped and I dont know if that means it ran out of work or what?",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-TOKEN",
+   "cue": "I can approve ... if it is model faithful",
+   "turn": "T133",
+   "quote": "Taking the examples you mentioned: I can approve \"risk accepted\" if it is model faithful.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-TOKEN",
+   "cue": "blind labels",
+   "turn": "T238",
+   "quote": "And yes, I can do some blind labels, that's fine.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-CLASS",
+   "cue": "55% for Focused Work",
+   "turn": "T291",
+   "quote": "Allow. Thirty-five percent. Four. Associated Work. 55% for Focused Work.  And 5% each.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-CLASS",
+   "cue": "work through that list in order",
+   "turn": "T004",
+   "quote": "I want you to work through that list in order, with handoffs to the relevant delegates ad needed.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-CLASS",
+   "cue": "we should work in the dependency order",
+   "turn": "T026",
+   "quote": "But we should work in the dependency order for maximum reuse.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "CTAU-CLASS",
+   "cue": "the mission is not being done in order",
+   "turn": "T154",
+   "quote": "It is frankly somewhat bizarre that the mission is not being done in order.  Anyway, I think you should work on these tasks.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R20",
+   "cue": "Cancel those jobs. Ah.",
+   "turn": "T028",
+   "quote": "I've got 3% of my Claude usage left right now.  Cancel those jobs.  Ah.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R20",
+   "cue": "this seems \"crucial\"",
+   "turn": "T046",
+   "quote": "Yes, but this seems \"crucial\" in terms of thinking about how humans, LLMs, and hybrid systems *notice* salience.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R20",
+   "cue": "Tch.",
+   "turn": "T159",
+   "quote": "So the Supervisor is still down for Topo 1. Tch.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R20",
+   "cue": "That's concerning, please look into it",
+   "turn": "T223",
+   "quote": "That's concerning, please look into it",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "R20",
+   "cue": "anyway, it is something of a blight",
+   "turn": "T071",
+   "quote": "we need to absolutely get rido fo Zulip, it turns out that it is something of a blight.",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "none",
+   "cue": "voice to text spam",
+   "turn": "T075",
+   "quote": "i think that last message was voice to text spam!",
+   "general": false
+  },
+  {
+   "agent": "zai-4",
+   "node": "none",
+   "cue": "my friend Charlie is there",
+   "turn": "T071",
+   "quote": "my friend Charlie is there and I'd like to make him a user of the box there.",
+   "general": false
+  }
+ ],
+ "dropped-quote": {
+  "codex": 2,
+  "zai-4": 3
+ },
+ "bad-node": {},
+ "turns-cited-by-2+": 68,
+ "turn-agree": {
+  "T207": {
+   "codex": [
+    "R10"
+   ],
+   "kimi-3": [
+    "R10"
+   ],
+   "zai-4": [
+    "R10"
+   ]
+  },
+  "T189": {
+   "codex": [
+    "R10"
+   ],
+   "zai-4": [
+    "R10"
+   ]
+  },
+  "T005": {
+   "codex": [
+    "R10"
+   ],
+   "zai-4": [
+    "R10"
+   ]
+  },
+  "T028": {
+   "codex": [
+    "GRAIN-GATE",
+    "R11"
+   ],
+   "kimi-3": [
+    "GRAIN-GATE",
+    "R11",
+    "R20"
+   ],
+   "zai-4": [
+    "GRAIN-GATE",
+    "R11",
+    "R20",
+    "algedonic"
+   ]
+  },
+  "T175": {
+   "codex": [
+    "R11",
+    "R6"
+   ],
+   "kimi-3": [
+    "R11"
+   ]
+  },
+  "T288": {
+   "codex": [
+    "R11",
+    "R7"
+   ],
+   "kimi-3": [
+    "R7"
+   ],
+   "zai-4": [
+    "R11",
+    "R7"
+   ]
+  },
+  "T148": {
+   "codex": [
+    "R13",
+    "R5",
+    "R6"
+   ],
+   "kimi-3": [
+    "R5",
+    "R6"
+   ],
+   "zai-4": [
+    "R14",
+    "R5",
+    "R6"
+   ]
+  },
+  "T062": {
+   "codex": [
+    "R6"
+   ],
+   "kimi-3": [
+    "R6"
+   ],
+   "zai-4": [
+    "R6"
+   ]
+  },
+  "T187": {
+   "codex": [
+    "GRAIN-GATE",
+    "R14"
+   ],
+   "zai-4": [
+    "R14"
+   ]
+  },
+  "T086": {
+   "codex": [
+    "R5"
+   ],
+   "kimi-3": [
+    "R5"
+   ]
+  },
+  "T280": {
+   "codex": [
+    "R12"
+   ],
+   "kimi-3": [
+    "R12"
+   ]
+  },
+  "T011": {
+   "codex": [
+    "R2"
+   ],
+   "kimi-3": [
+    "R2"
+   ],
+   "zai-4": [
+    "R2"
+   ]
+  },
+  "T223": {
+   "codex": [
+    "R2",
+    "R20"
+   ],
+   "kimi-3": [
+    "R12",
+    "R20"
+   ],
+   "zai-4": [
+    "R12",
+    "R2",
+    "R20"
+   ]
+  },
+  "T152": {
+   "codex": [
+    "R3"
+   ],
+   "kimi-3": [
+    "R3"
+   ],
+   "zai-4": [
+    "R3",
+    "R4"
+   ]
+  },
+  "T291": {
+   "codex": [
+    "CTAU-CLASS",
+    "R20",
+    "R3"
+   ],
+   "kimi-3": [
+    "CTAU-CLASS",
+    "R19",
+    "R3"
+   ],
+   "zai-4": [
+    "CTAU-CLASS",
+    "R19",
+    "R3"
+   ]
+  },
+  "T106": {
+   "codex": [
+    "R3"
+   ],
+   "kimi-3": [
+    "R3"
+   ],
+   "zai-4": [
+    "R2",
+    "R3"
+   ]
+  },
+  "T237": {
+   "codex": [
+    "R8"
+   ],
+   "kimi-3": [
+    "R8"
+   ],
+   "zai-4": [
+    "R8"
+   ]
+  },
+  "T239": {
+   "codex": [
+    "R7"
+   ],
+   "kimi-3": [
+    "R7"
+   ],
+   "zai-4": [
+    "R7",
+    "R9"
+   ]
+  },
+  "T176": {
+   "codex": [
+    "R17",
+    "R19"
+   ],
+   "kimi-3": [
+    "R17",
+    "R19"
+   ],
+   "zai-4": [
+    "R19"
+   ]
+  },
+  "T168": {
+   "kimi-3": [
+    "R16"
+   ],
+   "zai-4": [
+    "R16",
+    "system-3"
+   ]
+  },
+  "T281": {
+   "kimi-3": [
+    "R10"
+   ],
+   "zai-4": [
+    "R10"
+   ]
+  },
+  "T023": {
+   "kimi-3": [
+    "R1",
+    "R10"
+   ],
+   "zai-4": [
+    "R10"
+   ]
+  },
+  "T159": {
+   "kimi-3": [
+    "R11",
+    "R20"
+   ],
+   "zai-4": [
+    "R11",
+    "R20"
+   ]
+  },
+  "T289": {
+   "kimi-3": [
+    "R13",
+    "R15",
+    "R4"
+   ],
+   "zai-4": [
+    "R13",
+    "R15",
+    "R5"
+   ]
+  },
+  "T034": {
+   "kimi-3": [
+    "GRAIN-GATE",
+    "R4",
+    "R5",
+    "R6"
+   ],
+   "zai-4": [
+    "R5"
+   ]
+  },
+  "T041": {
+   "kimi-3": [
+    "GRAIN-GATE"
+   ],
+   "zai-4": [
+    "GRAIN-GATE",
+    "R14",
+    "R4",
+    "R5"
+   ]
+  },
+  "T125": {
+   "kimi-3": [
+    "R9"
+   ],
+   "zai-4": [
+    "R14",
+    "R9"
+   ]
+  },
+  "T215": {
+   "kimi-3": [
+    "R9"
+   ],
+   "zai-4": [
+    "R9"
+   ]
+  },
+  "T090": {
+   "kimi-3": [
+    "R9"
+   ],
+   "zai-4": [
+    "R9"
+   ]
+  },
+  "T116": {
+   "kimi-3": [
+    "R1"
+   ],
+   "zai-4": [
+    "R1"
+   ]
+  },
+  "T155": {
+   "kimi-3": [
+    "R1"
+   ],
+   "zai-4": [
+    "R1"
+   ]
+  },
+  "T112": {
+   "kimi-3": [
+    "R8"
+   ],
+   "zai-4": [
+    "R8"
+   ]
+  },
+  "T212": {
+   "kimi-3": [
+    "R8"
+   ],
+   "zai-4": [
+    "R8"
+   ]
+  },
+  "T040": {
+   "kimi-3": [
+    "R3a"
+   ],
+   "zai-4": [
+    "R3a"
+   ]
+  },
+  "T225": {
+   "kimi-3": [
+    "R3a"
+   ],
+   "zai-4": [
+    "R3a"
+   ]
+  },
+  "T226": {
+   "kimi-3": [
+    "R17"
+   ],
+   "zai-4": [
+    "R17"
+   ]
+  },
+  "T075": {
+   "kimi-3": [
+    "none"
+   ],
+   "zai-4": [
+    "none"
+   ]
+  }
+ },
+ "turn-differ": {
+  "T286": {
+   "codex": [
+    "R16"
+   ],
+   "kimi-3": [
+    "R14",
+    "R16"
+   ],
+   "zai-4": [
+    "R15"
+   ]
+  },
+  "T119": {
+   "codex": [
+    "R16"
+   ],
+   "zai-4": [
+    "R13"
+   ]
+  },
+  "T055": {
+   "codex": [
+    "R15"
+   ],
+   "zai-4": [
+    "R4"
+   ]
+  },
+  "T247": {
+   "codex": [
+    "R14"
+   ],
+   "kimi-3": [
+    "R13",
+    "R14"
+   ],
+   "zai-4": [
+    "R15",
+    "R16",
+    "R6"
+   ]
+  },
+  "T238": {
+   "codex": [
+    "R14"
+   ],
+   "zai-4": [
+    "CTAU-TOKEN",
+    "R16",
+    "R4"
+   ]
+  },
+  "T191": {
+   "codex": [
+    "GRAIN-GATE"
+   ],
+   "zai-4": [
+    "R19"
+   ]
+  },
+  "T133": {
+   "codex": [
+    "R1",
+    "R5"
+   ],
+   "kimi-3": [
+    "R19"
+   ],
+   "zai-4": [
+    "CTAU-TOKEN",
+    "GRAIN-GATE"
+   ]
+  },
+  "T081": {
+   "codex": [
+    "R12"
+   ],
+   "kimi-3": [
+    "R7"
+   ],
+   "zai-4": [
+    "R4"
+   ]
+  },
+  "T095": {
+   "codex": [
+    "R2",
+    "R8"
+   ],
+   "kimi-3": [
+    "R10",
+    "R2"
+   ],
+   "zai-4": [
+    "R10"
+   ]
+  },
+  "T162": {
+   "codex": [
+    "R1"
+   ],
+   "kimi-3": [
+    "R1",
+    "R2"
+   ],
+   "zai-4": [
+    "R12",
+    "R15",
+    "R2"
+   ]
+  },
+  "T203": {
+   "codex": [
+    "R4"
+   ],
+   "zai-4": [
+    "R6"
+   ]
+  },
+  "T171": {
+   "codex": [
+    "R4"
+   ],
+   "kimi-3": [
+    "R14"
+   ],
+   "zai-4": [
+    "R15",
+    "R17"
+   ]
+  },
+  "T221": {
+   "codex": [
+    "R8"
+   ],
+   "kimi-3": [
+    "R2",
+    "R3"
+   ],
+   "zai-4": [
+    "R2"
+   ]
+  },
+  "T004": {
+   "codex": [
+    "R13"
+   ],
+   "kimi-3": [
+    "R15",
+    "R16",
+    "system-2"
+   ],
+   "zai-4": [
+    "CTAU-CLASS"
+   ]
+  },
+  "T026": {
+   "codex": [
+    "R13"
+   ],
+   "kimi-3": [
+    "R15"
+   ],
+   "zai-4": [
+    "CTAU-CLASS"
+   ]
+  },
+  "T236": {
+   "codex": [
+    "R7"
+   ],
+   "kimi-3": [
+    "R15"
+   ],
+   "zai-4": [
+    "R12",
+    "R3"
+   ]
+  },
+  "T071": {
+   "codex": [
+    "R19"
+   ],
+   "zai-4": [
+    "R20",
+    "R3a",
+    "none"
+   ]
+  },
+  "T078": {
+   "codex": [
+    "R20"
+   ],
+   "kimi-3": [
+    "GRAIN-GATE"
+   ],
+   "zai-4": [
+    "R5"
+   ]
+  },
+  "T193": {
+   "codex": [
+    "R20"
+   ],
+   "zai-4": [
+    "R3a",
+    "algedonic"
+   ]
+  },
+  "T299": {
+   "kimi-3": [
+    "R10",
+    "R14"
+   ],
+   "zai-4": [
+    "CTAU-TOKEN"
+   ]
+  },
+  "T240": {
+   "kimi-3": [
+    "R6"
+   ],
+   "zai-4": [
+    "R14"
+   ]
+  },
+  "T079": {
+   "kimi-3": [
+    "R14"
+   ],
+   "zai-4": [
+    "R16"
+   ]
+  },
+  "T047": {
+   "kimi-3": [
+    "R5"
+   ],
+   "zai-4": [
+    "R6"
+   ]
+  },
+  "T275": {
+   "kimi-3": [
+    "R12",
+    "R20"
+   ],
+   "zai-4": [
+    "R3"
+   ]
+  },
+  "T099": {
+   "kimi-3": [
+    "R12"
+   ],
+   "zai-4": [
+    "R1"
+   ]
+  },
+  "T060": {
+   "kimi-3": [
+    "R2"
+   ],
+   "zai-4": [
+    "R10",
+    "R11"
+   ]
+  },
+  "T050": {
+   "kimi-3": [
+    "R1"
+   ],
+   "zai-4": [
+    "R12"
+   ]
+  },
+  "T242": {
+   "kimi-3": [
+    "R4"
+   ],
+   "zai-4": [
+    "R13"
+   ]
+  },
+  "T151": {
+   "kimi-3": [
+    "R20"
+   ],
+   "zai-4": [
+    "R3a"
+   ]
+  },
+  "T154": {
+   "kimi-3": [
+    "R20"
+   ],
+   "zai-4": [
+    "CTAU-CLASS"
+   ]
+  },
+  "T282": {
+   "kimi-3": [
+    "system-2"
+   ],
+   "zai-4": [
+    "GRAIN-GATE"
+   ]
+  }
+ },
+ "shared-cues": [
+  [
+   "GRAIN-GATE",
+   "do not",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R1",
+   "my sense",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R10",
+   "still going",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R11",
+   "usage left",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R11",
+   "cheap enough",
+   [
+    "codex",
+    "zai-4"
+   ]
+  ],
+  [
+   "R14",
+   "lets go with",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R16",
+   "go ahead and do",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R17",
+   "rework",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R19",
+   "completion requirements",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R2",
+   "i still see",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R2",
+   "now i see",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R20",
+   "concerning",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R20",
+   "tch",
+   [
+    "kimi-3",
+    "zai-4"
+   ]
+  ],
+  [
+   "R5",
+   "brittle and costly",
+   [
+    "kimi-3",
+    "zai-4"
+   ]
+  ],
+  [
+   "R7",
+   "varied reads",
+   [
+    "codex",
+    "kimi-3"
+   ]
+  ],
+  [
+   "R8",
+   "didnt take",
+   [
+    "codex",
+    "kimi-3",
+    "zai-4"
+   ]
+  ],
+  [
+   "none",
+   "voice to text spam",
+   [
+    "kimi-3",
+    "zai-4"
+   ]
+  ]
+ ],
+ "collisions": [
+  {
+   "agent": "codex",
+   "cue": "I think",
+   "nodes": [
+    "R1",
+    "R14",
+    "R3"
+   ],
+   "why": "Epistemic modality can state a standing belief, introduce a revised belief, or soften a commitment. The System 4 object split does not separate commitment temperature, and within System 4 the cue alone does not distinguish having from doing."
+  },
+  {
+   "agent": "codex",
+   "cue": "I don't know",
+   "nodes": [
+    "R1",
+    "R3a",
+    "R6"
+   ],
+   "why": "It can report an uncertain belief, acknowledge that an account failed, or leave the action space open. Neither the Max-Neef nor object split resolves the cue without its complement."
+  },
+  {
+   "agent": "codex",
+   "cue": "I see",
+   "nodes": [
+    "R2",
+    "R8"
+   ],
+   "why": "Direct observation can be neutral evidence or evidence of present-fit mismatch. The understanding having/being split requires mismatch language beyond the evidential marker."
+  },
+  {
+   "agent": "codex",
+   "cue": "it still says",
+   "nodes": [
+    "R2",
+    "R8"
+   ],
+   "why": "It marks a world observation and often also a discrepancy against an expected state. The understanding having/being split is not separable from this phrase alone."
+  },
+  {
+   "agent": "codex",
+   "cue": "test",
+   "nodes": [
+    "R12",
+    "R2",
+    "R9"
+   ],
+   "why": "A test may produce an observation, provide independent audit, or calibrate a score against reality. The Beer split between System 4 and System 3* and the latter's Max-Neef split need context about purpose and independence."
+  },
+  {
+   "agent": "codex",
+   "cue": "verify",
+   "nodes": [
+    "GRAIN-GATE",
+    "R12",
+    "R9"
+   ],
+   "why": "Verification may enforce independent checking, assess calibration, or enforce admissibility. System 3* versus System 3 is not identified by the verb alone."
+  },
+  {
+   "agent": "codex",
+   "cue": "in order",
+   "nodes": [
+    "R13",
+    "R15"
+   ],
+   "why": "It may specify a multi-step policy or a dependency hierarchy across levels. The Beer System 4/System 2 split needs evidence about planning versus coordination."
+  },
+  {
+   "agent": "codex",
+   "cue": "next",
+   "nodes": [
+    "R13",
+    "R14",
+    "R6"
+   ],
+   "why": "It can ask which action is available, identify a planned future step, or commit to one action. The System 3/System 4 split and System 3 Max-Neef split both need more context."
+  },
+  {
+   "agent": "codex",
+   "cue": "go ahead",
+   "nodes": [
+    "R14",
+    "R16"
+   ],
+   "why": "The phrase both commits to an action and authorizes its enactment. The Beer System 3/System 1 split fails unless selection and execution are allowed to co-occur."
+  },
+  {
+   "agent": "codex",
+   "cue": "run",
+   "nodes": [
+    "R10",
+    "R16",
+    "R2"
+   ],
+   "why": "It may concern liveness, command an execution, or report an observation produced by execution. The first Beer split cannot classify the bare verb."
+  },
+  {
+   "agent": "codex",
+   "cue": "work",
+   "nodes": [
+    "R10",
+    "R16",
+    "R17",
+    "R19",
+    "R9"
+   ],
+   "why": "Max-Neef places work in several cells, including creation-doing, subsistence-having, participation-having, identity-having, and creation-having. It is not discriminative at either the Beer or need split."
+  },
+  {
+   "agent": "codex",
+   "cue": "what I want",
+   "nodes": [
+    "R1",
+    "R19"
+   ],
+   "why": "It may express preference or merely describe the operator model. System 5 versus System 4 depends on whether the utterance sets policy or reports a belief about policy."
+  },
+  {
+   "agent": "codex",
+   "cue": "stop the line",
+   "nodes": [
+    "CTAU-CLASS",
+    "GRAIN-GATE",
+    "R20"
+   ],
+   "why": "It can be an alarm, a class-level preference allocation, or an admissibility rule. The Beer split fails without knowing whether the turn signals affect, specifies utility, or constrains support."
+  },
+  {
+   "agent": "codex",
+   "cue": "cheap enough",
+   "nodes": [
+    "R11",
+    "R5"
+   ],
+   "why": "It can describe a shared resource ceiling or an expected-cost trade-off. System 2 versus the System 3–4 homeostat requires the object being costed."
+  },
+  {
+   "agent": "codex",
+   "cue": "rework",
+   "nodes": [
+    "R16",
+    "R17"
+   ],
+   "why": "It can request ordinary implementation or a change to the model's categories and relations. Creation-doing appears under both System 1 and System 4, so the Max-Neef split cannot separate them."
+  },
+  {
+   "agent": "codex",
+   "cue": "phase",
+   "nodes": [
+    "CTAU-CLASS",
+    "R13",
+    "R15"
+   ],
+   "why": "A phase can denote nested timescale, changing whole-system priorities, or a step in a policy. The Beer split needs the role the phase plays."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "commit",
+   "nodes": [
+    "R14",
+    "R16"
+   ],
+   "why": "T079 \"Yeah, let's commit it.\" is an enactment of a git operation (system-1, creation·doing) but reads as a commitment-temperature marker; the Beer system-1 vs system-3 split fails on the word because git vocabulary is operational, not decisional."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "usage",
+   "nodes": [
+    "R11",
+    "R20"
+   ],
+   "why": "T028 (\"Oh no. ... I've got 3% of my Claude usage left\") is simultaneously a shared-budget observation (system-2) and an algedonic alarm; the top Beer split between coordination and the alarm channel is not separated by the cue."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "loop",
+   "nodes": [
+    "R10",
+    "R15"
+   ],
+   "why": "\"the loop has stopped\" (T299, liveness, subsistence·being) vs \"in the next loop\" (T004, scheduling, freedom·interacting); the Max-Neef split at system-1/system-2 does not separate the two readings of 'loop'."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "check / verify / show me",
+   "nodes": [
+    "R10",
+    "R12",
+    "R2",
+    "R9"
+   ],
+   "why": "The system-3-star audit cues overlap with S4 world-observation (\"I did reload the page, and it still says\") and S1 liveness checks; Beer split 3* vs 4 vs 1 relies on intent (independent audit vs direct look) that the cue words do not mark."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "I thought / as I thought",
+   "nodes": [
+    "R1",
+    "R3"
+   ],
+   "why": "T106 \"maybe the code isn't as out of date as I thought\" and T221 \"Whereas I thought you said you had resolved it\" mark a held belief and its revision with the same phrase; the :object split inside understanding·having/doing does not separate them — both are account-side and only the update direction differs."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "guarantee",
+   "nodes": [
+    "R13",
+    "R4"
+   ],
+   "why": "T289 \"some kind of guarantee that this work is actually going to be progressing\" is both a prediction (understanding·doing, world) and a demand for planned protection (protection·doing); the Max-Neef need split fails."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "we could",
+   "nodes": [
+    "R16",
+    "R4",
+    "R6"
+   ],
+   "why": "T034 \"we could port it to compiled Clojure\" proposes an option, T049 \"then we could potentially have\" predicts, and T250 \"we could ship several fixes\" commits to enactment; neither the Beer S1/S3/S4 split nor the freedom·doing vs creation·doing split is cued by the words."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "interesting",
+   "nodes": [
+    "R5",
+    "none"
+   ],
+   "why": "T024 \"is interesting\" and T283 \"The more interesting question\" can be a value/trade-off appraisal (system-3-4) or pure social acknowledgement; nothing in the cue separates evaluation from politeness."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "I want",
+   "nodes": [
+    "R16",
+    "R19"
+   ],
+   "why": "T230 \"I want a correct model\" states a preference (identity·having) but T004 \"I want you to work through that list\" commands enactment (creation·doing); the S5/S1 split is not marked by 'I want' itself."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "shouldn't count as",
+   "nodes": [
+    "GRAIN-GATE",
+    "R12"
+   ],
+   "why": "T280 \"moving a sorry shouldn't count as progress\" is phrased as an admissibility rule (protection·having) but is really a demand for an honest measurement (understanding·being, calibration); the S3 vs S3* split fails on normative phrasing."
+  },
+  {
+   "agent": "kimi-3",
+   "cue": "varied reads",
+   "nodes": [
+    "R2",
+    "R7"
+   ],
+   "why": "T288 \"we will likely get some varied reads\" names both observation events and the weighting of their sources; understanding·having (world) vs participation·being (trust) is not separated by the cue."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "I see",
+   "nodes": [
+    "R10",
+    "R2"
+   ],
+   "why": "T060/T095 use 'I see X running / only executes sleep': world-marking (R2) but the object is liveness of a scheduled entrypoint (R10). The :object split does not exist at system-1, so system-1 :subsistence :being vs system-4 :understanding :having :world is the failing separation."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "is this still going??",
+   "nodes": [
+    "R10",
+    "R13",
+    "R2"
+   ],
+   "why": "T207 reads as liveness check (R10), observation of the loop (R2), and implicitly a schedule-depth complaint (R13)."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "usage / 3% left",
+   "nodes": [
+    "R11",
+    "R20",
+    "R5"
+   ],
+   "why": "T028 and T159 are budget facts (R11) delivered as alarms (R20); T175 turns budget into a value-of-information argument (R5, worth dispatching more). :beer separates them only if read for function, not wording."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "in order",
+   "nodes": [
+    "CTAU-CLASS",
+    "R13",
+    "R15"
+   ],
+   "why": "T004/T026/T154 order over the whole tick's list (CTAU-CLASS), but 'dependency order' is also sequencing policy depth (R13) and running-order across timescales (R15). The :scope split only separates CTAU-TOKEN/CLASS, not these."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "I think / I thought",
+   "nodes": [
+    "R1",
+    "R14",
+    "R3"
+   ],
+   "why": "Epistemic modality marking appears both in belief-state reports (T155 'I think we have it all written down', R1) and in hedged commitments (T041 'I guess this is the only thing', R14), and 'I thought' in T156/T221 marks a belief about to be revised (R3/R3a). The :max-neef split separates them only weakly."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "That's concerning",
+   "nodes": [
+    "R12",
+    "R20",
+    "R8"
+   ],
+   "why": "T223/T159 pair a mismatch in the world (R8) with an affective alarm (R20) and sometimes a calibration complaint (R12). Present-fit mismatch and interoceptive tripwire share wording almost everywhere."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "fast enough / refuse to wait",
+   "nodes": [
+    "R20",
+    "R5"
+   ],
+   "why": "T034 is a considered trade-off (R5); T078 is an alarm phrased identically. :beer (3-4 vs algedonic) is the intended separator but the cue alone underdetermines it."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "verify / should have verification too",
+   "nodes": [
+    "R12",
+    "R9"
+   ],
+   "why": "T090 could be independence of the checker (R9) or calibration of the metric (R12); the :max-neef split (participation·interacting vs understanding·being) is doing all the work."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "don't exist / don't add up",
+   "nodes": [
+    "R12",
+    "R2",
+    "R8"
+   ],
+   "why": "T050 'I am pretty sure don't exist' is an observation whose content is that a representation is miscalibrated — R2 wording, R12 substance."
+  },
+  {
+   "agent": "zai-4",
+   "cue": "monitor it directly rather than subbing it out",
+   "nodes": [
+    "R14",
+    "R9"
+   ],
+   "why": "T125 is independence (R9) but phrased as a scoped commitment choice (R14)."
+  }
+ ],
+ "flags": [
+  {
+   "agent": "codex",
+   "node": "R10",
+   "suggest": "system-3-star > subsistence·being",
+   "why": "A scheduled entrypoint and its liveness evidence monitor whether operations are occurring; they do not themselves perform the primary operation. In VSM terms this resembles intermittent audit more than System 1 work."
+  },
+  {
+   "agent": "codex",
+   "node": "R9",
+   "suggest": "system-3-star > protection·doing",
+   "why": "The Beer placement is apt, but Max-Neef's protection-doing cell explicitly includes taking care, preventing, cooperating, and helping. No-self-certification is an assurance safeguard; participation-interacting emphasizes affiliation and shared civic action."
+  },
+  {
+   "agent": "codex",
+   "node": "R12",
+   "suggest": "system-3-star > understanding·doing",
+   "why": "Calibration is an activity—comparing internal scores with external outcomes—and Max-Neef lists investigate, experiment, study, and analyse under understanding-doing. Understanding-being better describes dispositions such as critical conscience and receptiveness."
+  },
+  {
+   "agent": "codex",
+   "node": "R7",
+   "suggest": "system-4 > understanding·having",
+   "why": "Evidence-channel precision is maintained information about source reliability. Participation-being describes personal dispositions such as receptiveness and respect; it does not naturally denote a weight or reliability estimate."
+  },
+  {
+   "agent": "codex",
+   "node": "R19",
+   "suggest": "system-5 > identity·having, with an explicit note that catalogue-stage PERCEIVE is orthogonal",
+   "why": "The VSM and Max-Neef placement is defensible, but the requirements catalogue labels R19 a click-time extractor in PERCEIVE. Without an orthogonality note, readers may mistake System 5 policy authorship for the computational stage that reads the policy."
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R13",
+   "suggest": "system-3 > protection·doing (or system-3-4)",
+   "why": "Temporal policy depth is a SELECT-stage requirement in the catalogue: it concerns how far ahead the here-and-now action choice looks, which is Beer's control function, not S4's outside-and-future intelligence. Joe's planning turns (T277 backlog, T289 overnight guarantees) are about keeping operations on schedule, closer to control than to modelling the environment."
+  },
+  {
+   "agent": "kimi-3",
+   "node": "R7",
+   "suggest": "system-4 > understanding·having",
+   "why": "Evidence-channel precision is about how strongly held knowledge weights its sources; 'trust/weight/reliable' (T288, T239) are statements about the epistemic standing of information, not about participation in shared activity. The participation·being cell also fits the published matrix poorly (see :max-neef)."
+  },
+  {
+   "agent": "kimi-3",
+   "node": "CTAU-TOKEN",
+   "suggest": "document :scope as a fourth split in the header",
+   "why": "The header comment declares three splits (:beer, :max-neef, :object) but the CTAU leaves use an undocumented :split :scope. Not a wrong placement — an undeclared schema extension; check_tree.py and readers of the header will miss it."
+  },
+  {
+   "agent": "zai-4",
+   "node": "R10",
+   "suggest": "system-3-star > subsistence·being (or its own audit leaf)",
+   "why": "Every R10 cue in the turns (T005, T023, T189, T207, T281) is Joe the auditor sporadically checking whether a scheduled thing ran — System 3* activity, not System 1 operation. The catalogue also bands R10 as :assurance (like R9/R12), which the tree's system-1 placement contradicts in spirit. Structure not changed, flagged only."
+  },
+  {
+   "agent": "zai-4",
+   "node": "R17",
+   "suggest": "system-5 or a system-4/5 boundary",
+   "why": "T226/T171/T013 are re-shapings of the framework's own categories (what the ontology of missions/patterns is), which is closer to System 5 identity work than System 4 intelligence about the environment. The existing split is defensible if 'the model of self' counts as System 4 (Beer does keep the self-model in S4), so this is a soft flag."
+  }
+ ],
+ "max-neef": {
+  "creation·doing": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "work",
+     "invent",
+     "build",
+     "design",
+     "compose",
+     "interpret"
+    ],
+    "note": "The pairing and the draft's work/build/design/compose/invent language match the published cell closely."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "work",
+     "invent",
+     "build",
+     "design",
+     "compose",
+     "interpret"
+    ],
+    "note": "Matches the published matrix (Creation/Doing: invent, build, design, work, compose, interpret). The tree's cues (build, design, compose, land it) are near-verbatim. Used for both R16 and R17."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "work",
+     "invent",
+     "build",
+     "design"
+    ],
+    "note": "Duplicate of the system-1 use; structure-learning (R17) shares the cell with grounded enactment (R16) — the same cell serves both, which the :beer split must carry."
+   }
+  },
+  "subsistence·being": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "physical health",
+     "mental health",
+     "equilibrium",
+     "sense of humour",
+     "adaptability"
+    ],
+    "note": "The pairing exists, but liveness, heartbeat, and scheduled execution are controller metaphors rather than Max-Neef's human qualities in this cell."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "physical and mental health",
+     "equilibrium",
+     "sense of humour",
+     "adaptability"
+    ],
+    "note": "The published Subsistence/Being cell is about health and equilibrium; the tree's liveness cues (is it alive, heartbeat, stalled) are a fair machine analog of 'health'. Terms don't literally appear in the matrix but the pairing is faithful."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "physical health",
+     "mental health"
+    ],
+    "note": "Matrix has subsistence·being as health terms, not liveness per se; the tree borrows the cell metaphorically for 'is it alive'."
+   }
+  },
+  "subsistence·having": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "food",
+     "shelter",
+     "work"
+    ],
+    "note": "The pairing exists, but budgets, quotas, tokens, and allowances are an extrapolation from material means; they are not the matrix's listed terms."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "food",
+     "shelter",
+     "work"
+    ],
+    "note": "Published cell is the concrete means of subsistence (food, shelter, work). Budget/quota/tokens are the stack's resource analog; pairing sound, terms necessarily translated."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "food",
+     "shelter",
+     "work"
+    ],
+    "note": "Classic row; 'budget/allowance' is again a metaphorical extension."
+   }
+  },
+  "freedom·interacting": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "temporal/spatial plasticity"
+    ],
+    "note": "Timescale and later-versus-now are plausible controller interpretations of temporal plasticity. Hierarchy, nesting, and strategic-versus-tactical are not listed terms."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "low",
+    "terms": [
+     "anywhere"
+    ],
+    "note": "My recall of this cell is a single sparse term; the tree's use (hierarchy/timescale of interaction) is not what the matrix cell is about."
+   }
+  },
+  "freedom·doing": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "dissent",
+     "choose",
+     "be different",
+     "run risks",
+     "develop awareness",
+     "commit oneself",
+     "disobey"
+    ],
+    "note": "Choose, alternatives, and run the risk fit directly; candidate enumeration is a reasonable extension."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "run risks",
+     "choose",
+     "dissent",
+     "disobey",
+     "develop awareness",
+     "be different from",
+     "commit oneself"
+    ],
+    "note": "Published Freedom/Doing includes choose, run risks, dissent. The tree's cues (choose, alternatives, run the risk) match well for R6."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "low",
+    "terms": [
+     "choose where to live",
+     "choose one's job",
+     "dissent"
+    ],
+    "note": "Roughly 'choose' terms; candidate-action-space use is metaphorical but coherent (choosing among alternatives)."
+   }
+  },
+  "identity·doing": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "commit oneself",
+     "integrate oneself",
+     "confront",
+     "decide on",
+     "get to know oneself",
+     "recognize oneself",
+     "actualize oneself",
+     "grow"
+    ],
+    "note": "Commit and decide match directly. Firmness, provisionality, and commitment temperature are controller-specific elaborations."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "commit oneself",
+     "decide on",
+     "get to know oneself",
+     "recognize oneself",
+     "actualize oneself",
+     "grow",
+     "integrate oneself",
+     "confront"
+    ],
+    "note": "Published Identity/Doing includes commit oneself and decide on; R14's commitment cues (commit, decide, provisionally) sit squarely in this cell."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "commit oneself",
+     "integrate oneself",
+     "face things",
+     "decide"
+    ],
+    "note": "'commit oneself' directly supports the commitment-temperature leaf; good fit."
+   }
+  },
+  "protection·having": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "insurance systems",
+     "savings",
+     "social security",
+     "health systems",
+     "rights",
+     "family",
+     "work"
+    ],
+    "note": "The pairing exists, but rules, gates, and admissibility constraints resemble institutional protections only indirectly; they are not the published cell terms."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "insurance systems",
+     "savings",
+     "social security",
+     "health systems",
+     "rights",
+     "family",
+     "work"
+    ],
+    "note": "Published Protection/Having is institutional safeguards (insurance, social security, rights). The tree's rule/gate/admissible cues are the software analog; pairing plausible but the matrix lists systems and rights, not prohibitions as such."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "insurance systems",
+     "savings",
+     "social security",
+     "health systems",
+     "rights",
+     "family",
+     "work"
+    ],
+    "note": "The matrix cell is protective assets/institutions; the tree reads it as rules/gates, which is closer to protection·doing ('prevent, plan') or to institutional norms. Cell choice defensible but terms differ."
+   }
+  },
+  "participation·interacting": {
+   "codex": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "settings of participative interaction",
+     "parties",
+     "associations",
+     "churches",
+     "communities",
+     "neighbourhoods",
+     "family"
+    ],
+    "note": "Independent reviewers and second pairs of eyes are interaction settings, but the matrix terms concern social participation rather than separation of author and reviewer."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "settings of participative interaction",
+     "parties",
+     "associations",
+     "churches",
+     "communities",
+     "neighbourhoods",
+     "family"
+    ],
+    "note": "The published cell names interaction settings rather than acts; R9's independent-review cues (someone else, reviewer, second pair of eyes) express participation-in-interaction functionally even though the vocabulary differs."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "low",
+    "terms": [
+     "participation in different interactions that others may have"
+    ],
+    "note": "I do not recall this cell confidently; it is the weakest mapping in the tree (no self-certification is about independence of checker, not participation)."
+   }
+  },
+  "understanding·being": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "critical conscience",
+     "receptiveness",
+     "curiosity",
+     "astonishment",
+     "discipline",
+     "intuition",
+     "rationality"
+    ],
+    "note": "Surprise and astonishment fit R8. Calibration fits less well because it is an operation rather than a way of being."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "critical conscience",
+     "curiosity",
+     "astonishment",
+     "receptiveness",
+     "intuition",
+     "rationality",
+     "discipline"
+    ],
+    "note": "Published Understanding/Being includes curiosity, astonishment, critical conscience. R8's surprise/confusion cues map to astonishment; R12's calibration cues map to critical conscience. Good pairing."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "critical capacity",
+     "curiosity",
+     "intuition"
+    ],
+    "note": "Calibration leaf maps loosely onto 'critical capacity'; matrix terms are capacities, not states of surprise."
+   }
+  },
+  "understanding·having": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "literature",
+     "teachers",
+     "method",
+     "educational policies",
+     "communication policies"
+    ],
+    "note": "The pairing exists, but facts, information, and state are controller analogues, not the matrix's listed satisfiers."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "literature",
+     "teachers",
+     "method",
+     "educational policies",
+     "communication policies"
+    ],
+    "note": "Published cell is the stock of knowledge-bearers (literature, teachers). The tree's 'the facts / information / the state of things' cues are the held-knowledge reading; pairing sound, terms translated."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "literature",
+     "teachers",
+     "policies",
+     "educational methods"
+    ],
+    "note": "Matrix terms are information resources — fits 'what we have on it' for R2/R1 parents."
+   }
+  },
+  "understanding·doing": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "investigate",
+     "study",
+     "experiment",
+     "educate",
+     "analyse",
+     "meditate"
+    ],
+    "note": "Work out, analyse, investigate, and reason through match this cell well."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "investigate",
+     "study",
+     "experiment",
+     "educate",
+     "analyse",
+     "meditate"
+    ],
+    "note": "Near-verbatim match: the tree's analyse, investigate, work out, figure out duplicate the published cell."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "analyse",
+     "study",
+     "investigate",
+     "question",
+     "explore",
+     "interpret"
+    ],
+    "note": "Matches the parent's 'analyse/figure out' cues well."
+   }
+  },
+  "protection·doing": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "cooperate",
+     "prevent",
+     "plan",
+     "take care of",
+     "cure",
+     "help"
+    ],
+    "note": "Plan, prevent, sequence, and looking ahead are close matches, though temporal policy depth is a specialized controller interpretation."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "cooperate",
+     "prevent",
+     "plan",
+     "take care of",
+     "cure",
+     "help"
+    ],
+    "note": "Published Protection/Doing includes prevent and plan; the tree's plan ahead / prevent / before it bites match R13's placement in this cell (whatever Beer branch it sits under)."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "cooperate",
+     "prevent",
+     "plan",
+     "take care of",
+     "help"
+    ],
+    "note": "'prevent' and 'plan' directly support the temporal-policy-depth leaf."
+   }
+  },
+  "participation·being": {
+   "codex": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "adaptability",
+     "receptiveness",
+     "solidarity",
+     "willingness",
+     "determination",
+     "dedication",
+     "respect",
+     "passion",
+     "sense of humour"
+    ],
+    "note": "Trust and receptiveness have some affinity, but source weights, reliability, noise, and precision are not terms in this cell."
+   },
+   "kimi-3": {
+    "ok": false,
+    "conf": "medium",
+    "terms": [
+     "adaptability",
+     "receptiveness",
+     "dedication",
+     "sense of humour",
+     "respect",
+     "generosity"
+    ],
+    "note": "Published Participation/Being is about receptive, dedicated participation; the tree uses the cell for trust/weight/reliability of evidence sources (R7), which is not what the matrix puts here. The pairing exists in the matrix but the italicised sense (trust, weight, noisy source) is an extension, not a match."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "receptiveness",
+     "dedication",
+     "sense of humour"
+    ],
+    "note": "Matrix terms are dispositions, not reliability weightings; the leaf's semantics (precision of a channel) is the tree's own extension."
+   }
+  },
+  "identity·having": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "symbols",
+     "language",
+     "religions",
+     "habits",
+     "customs",
+     "reference groups",
+     "sexuality",
+     "values",
+     "norms",
+     "historical memory",
+     "work"
+    ],
+    "note": "Values and norms match directly. Mission, target, aim, and completion criteria are controller-specific expressions of identity-bearing policy."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "symbols",
+     "language",
+     "religion",
+     "habits",
+     "customs",
+     "reference groups",
+     "values",
+     "norms",
+     "historical memory",
+     "work",
+     "sexuality"
+    ],
+    "note": "Published Identity/Having explicitly lists values and norms; the tree's cues (values, norms, what I want, preference) match R19 well."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "language",
+     "religions",
+     "work",
+     "customs",
+     "values",
+     "norms"
+    ],
+    "note": "'values' and 'norms' are in the cell as I recall it, so mission-preference fits."
+   }
+  },
+  "identity·interacting": {
+   "codex": {
+    "ok": true,
+    "conf": "high",
+    "terms": [
+     "social rhythms",
+     "everyday settings",
+     "settings which one belongs to",
+     "maturation stages"
+    ],
+    "note": "Rhythm and maturation stages match directly. A time-varying preference schedule is a defensible formalization, while per-token versus class scope is not supplied by Max-Neef."
+   },
+   "kimi-3": {
+    "ok": true,
+    "conf": "medium",
+    "terms": [
+     "social rhythms",
+     "daily settings",
+     "setting in which one belongs",
+     "maturation stages"
+    ],
+    "note": "Surprisingly good fit: the published cell includes social rhythms and maturation stages, which is exactly what the tree's rhythm/stage/phase cues gesture at for the C_tau schedules. Confidence medium because I am relying on memory of Table 1 and cannot re-check the wording."
+   },
+   "zai-4": {
+    "ok": true,
+    "conf": "low",
+    "terms": [
+     "one's own social milieu",
+     "rituals",
+     "gatherings",
+     "membership"
+    ],
+    "note": "Low confidence on exact terms; the tree's use (phase/rhythm over time) matches the matrix weakly — phases are not interactions."
+   }
+  }
+ }
+}
