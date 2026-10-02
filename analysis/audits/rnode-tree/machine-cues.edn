@@ -1,0 +1,13 @@
+;; Machine-side cues (claude-17, 2026-10-02): for the six nodes where codex-10's per-node
+;; narrative of click tick-run-record-2026-10-02-1790901017 (futon2/data/wm-runs/) showed the
+;; tree's cues describing a different activity from what the node's code does. Written as
+;; phrasings Joe might use for the MACHINE's version of the activity. Kept separate from the
+;; tree and the agents' elaborations so detection can be compared with and without them.
+{:source "*codex-repl:codex-10* narrative from line 2979, 2026-10-02"
+ :cues
+ {"R10" ["every night" "overnight" "while I'm asleep" "while I'm away" "on a timer" "scheduled" "on its own" "without me" "cron" "keep it going while" "unattended"]
+  "R8"  ["did it actually change" "did the dial move" "did it work" "did that help" "no effect" "made no difference" "nothing changed" "didn't move" "measure whether" "outcome"]
+  "R19" ["unchecked" "checked off" "tick off" "ticked" "still open" "is that done" "already done" "checklist" "the checkbox" "todo items" "mark it done"]
+  "R17" ["that worked" "use it again" "never helps" "keeps working" "worked last time" "didn't help" "which patterns work" "learn from" "what works" "reuse"]
+  "R20" ["health check" "sanity check" "smoke test" "tripwire" "preflight" "red flag" "warning sign" "something is off" "is it healthy"]
+  "R15" ["next time" "carry this forward" "carry over" "next round" "feed back into" "for the next click" "remember this for" "the next run" "from now on"]}}

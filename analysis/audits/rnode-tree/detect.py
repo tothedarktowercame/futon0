@@ -31,6 +31,9 @@ def cues():
     for c in json.loads((HERE / 'ELAB-collated.json').read_text())['kept-cues']:
         if c['node'] in out:            # leaf cues only; branch cues do not name a node
             out[c['node']].add(c['cue'])
+    if MACHINE:
+        for node, cl in edn_format.loads((HERE / 'machine-cues.edn').read_text())[K('cues')].items():
+            out[node].update(cl)
     return out
 
 
@@ -47,6 +50,7 @@ def detect(text, pats):
 
 
 STOP = set()
+MACHINE = False   # add machine-cues.edn (codex-10 narrative) when True
 
 
 def main():
