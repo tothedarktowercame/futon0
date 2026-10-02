@@ -1,0 +1,100 @@
+;; R-node tree, priming draft (claude-17, 2026-10-02) -- to be elaborated by other agents.
+;; Reads an operator turn down to one R-node (or :none) in up to three splits:
+;;   1. :beer     -- which function of a viable system the turn bears on (Beer, VSM)
+;;   2. :max-neef -- which need, in which existential mode, it expresses (Max-Neef,
+;;                   Human Scale Development, 1991; cell terms written from memory,
+;;                   to be checked against his Table 1)
+;;   3. :object   -- only inside the Understanding cells of System 4: is the turn about
+;;                   the world (evidential marking) or about the account of it
+;;                   (epistemic modality)?
+;; Every catalogue node except retired TRACE is exactly one leaf; check_tree.py verifies.
+;; :cues are operator-side keywords/phrasings (what Joe might write), not implementation terms.
+;; A turn may carry several leaves, in order (e.g. R2 then R3 in "I looked, so now I think").
+{:schema :rnode-tree/v1
+ :none {:gloss "The turn bears on no viable-system function: social talk, thanks, pure logistics of the chat itself."}
+ :branches
+ [{:beer :system-1 :gloss "Operations: the primary work itself being done, and kept going."
+   :cues ["do it" "build" "run it" "ship" "make" "implement" "fix" "go ahead" "the actual work" "keep it running"]
+   :split :max-neef
+   :children
+   [{:max-neef [:creation :doing] :cues ["work" "build" "design" "compose" "make it real" "actually change the file" "land it"]
+     :leaf "R16" :label "Grounded enactment"}
+    {:max-neef [:subsistence :being] :cues ["is it alive" "still running" "health" "heartbeat" "did anything change" "stalled" "woke up" "liveness"]
+     :leaf "R10" :label "Scheduled entrypoint"}]}
+
+  {:beer :system-2 :gloss "Coordination: damping clashes and oscillation between parts; sharing out what is common."
+   :cues ["who does what" "don't both" "collide" "lanes" "in what order" "hand-off" "share" "schedule" "back and forth"]
+   :split :max-neef
+   :children
+   [{:max-neef [:subsistence :having] :cues ["budget" "usage" "allowance" "spend" "quota" "how much is left" "cost" "tokens" "cheap enough"]
+     :leaf "R11" :label "Hierarchical shared budget"}
+    {:max-neef [:freedom :interacting] :cues ["timescale" "fast loop" "slow loop" "strategic vs tactical" "level" "nested" "later vs now" "zoom out"]
+     :leaf "R15" :label "Hierarchy and timescale"}]}
+
+  {:beer :system-3 :gloss "Control: here-and-now allocation; which actions are open, which is taken, how firmly."
+   :cues ["options" "which one" "allow" "permit" "priority" "next step" "pick" "commit" "hold off"]
+   :split :max-neef
+   :children
+   [{:max-neef [:freedom :doing] :cues ["choose" "alternatives" "candidates" "what could we do" "run the risk" "option 1/2/3" "other ways"]
+     :leaf "R6" :label "Candidate action space"}
+    {:max-neef [:identity :doing] :cues ["commit" "decide" "firmly" "for now" "provisionally" "lean towards" "until" "come back to this" "not 100% sure"]
+     :leaf "R14" :label "Commitment temperature"}
+    {:max-neef [:protection :having] :cues ["not allowed" "off limits" "only if" "rule" "gate" "admissible" "never do" "must not" "safeguard"]
+     :leaf "GRAIN-GATE" :label "Grain gate (admissible enactments)"}]}
+
+  {:beer :system-3-4 :gloss "The homeostat between control and intelligence: present value against future information."
+   :cues ["worth it" "trade-off" "risk vs payoff" "what do we learn" "is it worth trying" "expected" "gamble"]
+   :leaf "R5" :label "Expected free energy core"}
+
+  {:beer :system-3-star :gloss "Audit: sporadic, independent checking of what operations report."
+   :cues ["check" "verify" "audit" "spot-check" "did it really" "review" "warrant" "show me"]
+   :split :max-neef
+   :children
+   [{:max-neef [:participation :interacting] :cues ["someone else" "independent" "not your own" "reviewer" "author is not reviewer" "second pair of eyes" "self-certified"]
+     :leaf "R9" :label "No self-certification"}
+    {:max-neef [:understanding :being] :cues ["calibrated" "consistent but useless" "internal vs external" "does the score mean anything" "against reality" "honest number"]
+     :leaf "R12" :label "Two-layer calibration"}]}
+
+  {:beer :system-4 :gloss "Intelligence: the outside and the future, and the model of self and environment it keeps."
+   :cues ["what's happening" "out there" "what if" "later" "the picture" "understand" "model" "what do we know"]
+   :split :max-neef
+   :children
+   [{:max-neef [:understanding :having] :split :object
+     :cues ["what is the case" "the facts" "information" "what we have on it" "the state of things"]
+     :children [{:object :world :cues ["I see" "it shows" "the log says" "I ran" "it returned" "here is" "looked at" "reports"]
+                 :leaf "R2" :label "Structured observation"}
+                {:object :account :cues ["I think" "we believe" "my picture" "as I understand it" "the assumption is" "we hold"]
+                 :leaf "R1" :label "Belief state"}]}
+    {:max-neef [:understanding :doing] :split :object
+     :cues ["work out" "reason through" "analyse" "figure out" "investigate" "think it through"]
+     :children [{:object :world :cues ["if we" "will" "would" "then it will" "predict" "expect" "what happens when" "likely"]
+                 :leaf "R4" :label "Forward model"}
+                {:object :account :cues ["so actually" "now I think" "that changes" "I was wrong" "turns out" "update" "revise" "in light of"]
+                 :leaf "R3" :label "Belief update"}]}
+    {:max-neef [:understanding :being] :split :object
+     :cues ["surprise" "confusion" "that's strange" "didn't see that coming" "doesn't add up"]
+     :children [{:object :world :cues ["odd" "weird" "shouldn't have" "unexpected" "doesn't fit" "surprising" "not what I expected"]
+                 :leaf "R8" :label "Present-fit mismatch"}
+                {:object :account :cues ["my assumption was off" "I misread" "we had it wrong" "that undercuts" "the belief doesn't survive"]
+                 :leaf "R3a" :label "Prediction-error projection"}]}
+    {:max-neef [:protection :doing] :cues ["plan ahead" "several steps" "down the line" "prevent" "before it bites" "sequence" "look further than the next step"]
+     :leaf "R13" :label "Temporal policy depth"}
+    {:max-neef [:participation :being] :cues ["whose read" "trust" "weight" "which source" "reliable" "noisy" "listen to" "varied reads"]
+     :leaf "R7" :label "Evidence-channel precision"}
+    {:max-neef [:creation :doing] :cues ["restructure" "reorganise" "new category" "merge" "split" "rethink the shape" "prune" "invent"]
+     :leaf "R17" :label "Structure learning"}]}
+
+  {:beer :system-5 :gloss "Policy and identity: what the whole is for; what it prefers, and in what order over time."
+   :cues ["purpose" "mission" "what matters" "values" "what we're for" "goal" "I want"]
+   :split :max-neef
+   :children
+   [{:max-neef [:identity :having] :cues ["values" "norms" "what I want" "the point" "preference" "aim" "target" "what counts as done"]
+     :leaf "R19" :label "Mission preference"}
+    {:max-neef [:identity :interacting] :split :scope
+     :cues ["rhythm" "stage" "first this, then that" "phase" "as it matures" "order of priorities over time"]
+     :children [{:scope :token :cues ["for this problem" "this lane" "per-task"] :leaf "CTAU-TOKEN" :label "Token C_tau"}
+                {:scope :class :cues ["across the board" "this tick" "overall" "the whole decision"] :leaf "CTAU-CLASS" :label "Class C_tau"}]}]}
+
+  {:beer :algedonic :gloss "The alarm channel: pain or pleasure that bypasses the hierarchy."
+   :cues ["stop" "alarm" "this is bad" "I hate" "red flag" "urgent" "enough" "great, finally" "relief"]
+   :leaf "R20" :label "Interoceptive tripwires"}]}
