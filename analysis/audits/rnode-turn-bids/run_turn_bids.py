@@ -9,6 +9,7 @@ from edn_format import Keyword as K
 
 HERE = Path(__file__).resolve().parent
 PRIOR = HERE.parent / 'rnode-bids'
+LOGS = HERE.parents[2] / 'data' / 'audits' / 'rnode-turn-bids' / 'logs'
 
 
 def notes(node):
@@ -19,7 +20,7 @@ def notes(node):
 
 
 def run(node):
-    out, log = HERE / f'{node["node"]}-turns.edn', HERE / 'logs' / f'{node["node"]}.jsonl'
+    out, log = HERE / f'{node["node"]}-turns.edn', LOGS / f'{node["node"]}.jsonl'
     if out.exists() and out.stat().st_size:
         return node['node'], 'exists'
     prompt = (HERE / 'prompt.md').read_text().replace('{NODE}', node['node']) + notes(node)
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     nodes = json.loads((PRIOR / 'nodes.json').read_text())
     if args:
         nodes = [n for n in nodes if n['node'] in args]
-    (HERE / 'logs').mkdir(exist_ok=True)
+    LOGS.mkdir(parents=True, exist_ok=True)
     with ThreadPoolExecutor(jobs) as ex:
         for name, status in ex.map(run, nodes):
             print(name, status, flush=True)
