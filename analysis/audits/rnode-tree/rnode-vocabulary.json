@@ -1,0 +1,595 @@
+{
+  "version": 1,
+  "sources": {
+    "rnode-tree.edn": "3f48443d6cf457f853bcb183e22e473def87086e19261bec381aa332f75af68b",
+    "ELAB-collated.json": "e7d5633ce3c0bb81b7f08f200875de0af5eab90f86f4d2fb0ea5f37cdc0cab6d",
+    "machine-cues.edn": "0b6c67b423e94775f52e9fdbcaac0152def6cc7f6be8428d4b84c65823148b1d",
+    "control-stages.edn": "9d87c52e1e87f17fd3283a8beb2e73e8ae37852bc78c4ebcaa5f641af20b8f47"
+  },
+  "nodes": [
+    {
+      "id": "CTAU-CLASS",
+      "label": "Class C_tau",
+      "stage": "evaluate",
+      "cues": [
+        "5% each",
+        "55% for focused work",
+        "across the board",
+        "associated work",
+        "global picture",
+        "overall",
+        "overall split",
+        "percent for focused work",
+        "the mission is not being done in order",
+        "the whole decision",
+        "this tick",
+        "we should work in the dependency order",
+        "work through that list in order"
+      ]
+    },
+    {
+      "id": "CTAU-TOKEN",
+      "label": "Token C_tau",
+      "stage": "evaluate",
+      "cues": [
+        "blind labels",
+        "focus now on",
+        "for this problem",
+        "for this task",
+        "i can approve ... if it is model faithful",
+        "if the items for me gate work, i can take ... on",
+        "one problem",
+        "per-task",
+        "this lane",
+        "this mission",
+        "this problem's priorities",
+        "within this lane"
+      ]
+    },
+    {
+      "id": "GRAIN-GATE",
+      "label": "Grain gate (admissible enactments)",
+      "stage": "select",
+      "cues": [
+        "admissible",
+        "as long as",
+        "do not",
+        "don't do anything",
+        "don't do anything creative",
+        "gate",
+        "guided by faithfulness to the theory",
+        "must not",
+        "never do",
+        "not allowed",
+        "not codex-n ... not aliases",
+        "off limits",
+        "only if",
+        "please do not cue things to",
+        "rule",
+        "safeguard",
+        "should fail",
+        "you should come to me with proposals"
+      ]
+    },
+    {
+      "id": "R1",
+      "label": "Belief state",
+      "stage": "believe",
+      "cues": [
+        "as i understand it",
+        "i don't remember right now what",
+        "i reckon",
+        "i suspect",
+        "i think we have",
+        "i think we have it all written down",
+        "i thought we had",
+        "i thought we were very clear",
+        "my picture",
+        "my sense",
+        "pretty sure",
+        "recorded but never consulted",
+        "the assumption is",
+        "the question is whether it's written down in lean or not",
+        "there is a record of... work that's wanted here",
+        "we believe",
+        "we hold"
+      ]
+    },
+    {
+      "id": "R10",
+      "label": "Scheduled entrypoint",
+      "stage": "assurance",
+      "cues": [
+        "active again",
+        "cron",
+        "did anything change",
+        "didnt persist overnight",
+        "died on a turn boundary",
+        "hasn't run for quite a while",
+        "health",
+        "heartbeat",
+        "is it alive",
+        "is kimi still out?",
+        "is this still going??",
+        "keep it going while",
+        "liveness",
+        "loop has stopped",
+        "on a timer",
+        "on its own",
+        "only executes the sleep command",
+        "overnight",
+        "persist overnight",
+        "returned or died on a turn boundary",
+        "scheduled",
+        "stalled",
+        "still going",
+        "still out",
+        "still running",
+        "unattended",
+        "up 51m35s",
+        "while i'm asleep",
+        "while i'm away",
+        "without me",
+        "woke up",
+        "would be active again"
+      ]
+    },
+    {
+      "id": "R11",
+      "label": "Hierarchical shared budget",
+      "stage": "select",
+      "cues": [
+        "3% of my claude usage left",
+        "3% usage remaining",
+        "allowance",
+        "budget",
+        "cheap enough",
+        "cost",
+        "hardly in this dispatch routine",
+        "how much is left",
+        "low on ... usage",
+        "quota",
+        "spend",
+        "tokens",
+        "usage",
+        "usage left",
+        "usage-aware",
+        "usage-aware loading",
+        "using up",
+        "very low on claude usage"
+      ]
+    },
+    {
+      "id": "R13",
+      "label": "Temporal policy depth",
+      "stage": "select",
+      "cues": [
+        "a consistent state so that we stop losing time",
+        "according to a schedule",
+        "backlog",
+        "before it bites",
+        "before we",
+        "down the line",
+        "enters a queue needing revalidation, then we build the fix",
+        "guarantee ... progressing",
+        "hot fixes. that will drift away",
+        "if a frame can fit within two hours",
+        "in order",
+        "look further than the next step",
+        "plan ahead",
+        "prevent",
+        "self-steering without requiring ... babysitting",
+        "sequence",
+        "several steps",
+        "stage this intelligently",
+        "ticket to come back to"
+      ]
+    },
+    {
+      "id": "R14",
+      "label": "Commitment temperature",
+      "stage": "select",
+      "cues": [
+        "come back to this",
+        "commit",
+        "decide",
+        "firmly",
+        "for now",
+        "hold this thought",
+        "i can take ... on",
+        "i guess this is the only thing we can really do",
+        "i would lean towards",
+        "i would rather",
+        "if you want to give it one more go",
+        "keep going with",
+        "lean towards",
+        "let's consider that ... now specified",
+        "let's go with",
+        "not 100% sure",
+        "ok to ... but",
+        "provisionally"
+      ]
+    },
+    {
+      "id": "R15",
+      "label": "Hierarchy and timescale",
+      "stage": "select",
+      "cues": [
+        "a ticket to come back to",
+        "at anything near capacity",
+        "carry over",
+        "carry this forward",
+        "every night i go to sleep",
+        "fast loop",
+        "feed back into",
+        "for the next click",
+        "from now on",
+        "hold this thought for another day",
+        "in the next loop",
+        "inner loop",
+        "later vs now",
+        "nested",
+        "next round",
+        "next time",
+        "one arm in the topo loop",
+        "order of operations",
+        "outer cascade",
+        "phases",
+        "remember this for",
+        "slow loop",
+        "strategic vs tactical",
+        "subtask thereof",
+        "the next run",
+        "timescale",
+        "while we were trying to do a complex orchestration across",
+        "zoom out"
+      ]
+    },
+    {
+      "id": "R16",
+      "label": "Grounded enactment",
+      "stage": "act",
+      "cues": [
+        "actually change the file",
+        "build the fix",
+        "clear up",
+        "compose",
+        "do the analysis",
+        "go ahead and do",
+        "i fixed",
+        "land it",
+        "make it real",
+        "please do",
+        "please set that up again",
+        "please start on marking up",
+        "ship",
+        "start on",
+        "wire it up",
+        "work through",
+        "write that up as"
+      ]
+    },
+    {
+      "id": "R17",
+      "label": "Structure learning",
+      "stage": "assurance",
+      "cues": [
+        "\"gone means gone\" semantics",
+        "a similar table for",
+        "breaking the one \"wip\" row to a more developed ... board",
+        "didn't help",
+        "good case for hierarchical modelling",
+        "invent",
+        "keeps working",
+        "learn from",
+        "merge",
+        "never helps",
+        "new category",
+        "new construction",
+        "new markup system",
+        "proforma",
+        "prune",
+        "re-architect",
+        "reinventing that",
+        "reorganise",
+        "restructure",
+        "rethink the shape",
+        "reuse",
+        "rework",
+        "split",
+        "supersede",
+        "that worked",
+        "use it again",
+        "we need to supersede it",
+        "what works",
+        "which patterns work",
+        "worked last time"
+      ]
+    },
+    {
+      "id": "R2",
+      "label": "Structured observation",
+      "stage": "perceive",
+      "cues": [
+        "153 ahead (threshold 10)",
+        "according to my *apm report*",
+        "according to my report",
+        "here is",
+        "i looked at it",
+        "i ran",
+        "i ran ... and see",
+        "i ran futon-active-agents and see",
+        "i see",
+        "i see ... up",
+        "i still see",
+        "i still see an http error",
+        "it returned",
+        "it shows",
+        "it still says",
+        "it still says x. whereas i thought",
+        "looked at",
+        "now i see",
+        "one thing i've noticed is",
+        "reports",
+        "the log says",
+        "the map's legend is out of date"
+      ]
+    },
+    {
+      "id": "R20",
+      "label": "Interoceptive tripwires",
+      "stage": "assurance",
+      "cues": [
+        "alarm",
+        "annoying",
+        "anyway, it is something of a blight",
+        "bizarre",
+        "cancel those jobs. ah.",
+        "concerning",
+        "great, finally",
+        "health check",
+        "i am so frustrated",
+        "i can't believe",
+        "i hate",
+        "is it healthy",
+        "oh no",
+        "preflight",
+        "red flag",
+        "relief",
+        "sanity check",
+        "smoke test",
+        "something is off",
+        "stop",
+        "tch",
+        "tch.",
+        "that's concerning, please look into it",
+        "this is bad",
+        "this seems \"crucial\"",
+        "tripwire",
+        "urgent",
+        "warning sign"
+      ]
+    },
+    {
+      "id": "R3",
+      "label": "Belief update",
+      "stage": "believe",
+      "cues": [
+        "actually add up right",
+        "as i thought",
+        "i also just realized",
+        "i just realized",
+        "i thought you said",
+        "i was wrong",
+        "in light of",
+        "maybe the code isn't as out of date as i thought",
+        "now i think",
+        "ok, that does change things",
+        "revise",
+        "revisited",
+        "so actually",
+        "that changes",
+        "that changes things",
+        "that comes up quite a lot",
+        "that does change things",
+        "turns out",
+        "update",
+        "we seem to have passed from ... to ... phases",
+        "what we're coming to here is"
+      ]
+    },
+    {
+      "id": "R4",
+      "label": "Forward model",
+      "stage": "evaluate",
+      "cues": [
+        "expect",
+        "going to be progressing",
+        "if astra is the key enabler here we may know in about an hour",
+        "if we changed the embedding strategy",
+        "likely",
+        "predict",
+        "presumably ... would complete when",
+        "then it will",
+        "then we could",
+        "then we'd",
+        "we'd be running",
+        "we'll be there 1000 x 19 minutes",
+        "what happens next",
+        "what happens when",
+        "will drift away",
+        "would create"
+      ]
+    },
+    {
+      "id": "R5",
+      "label": "Expected free energy core",
+      "stage": "evaluate",
+      "cues": [
+        "as long as it is very fast, b/c",
+        "brittle and costly",
+        "costly",
+        "expected",
+        "fast enough",
+        "gamble",
+        "i don't love taking 19 minutes per build",
+        "i refuse to wait 8s for anything",
+        "is it worth trying",
+        "risk accepted",
+        "risk vs payoff",
+        "trade-off",
+        "waiting hours for a fix that takes minutes",
+        "warranted",
+        "what do we learn",
+        "worth",
+        "worth exploring",
+        "worth it"
+      ]
+    },
+    {
+      "id": "R6",
+      "label": "Candidate action space",
+      "stage": "select",
+      "cues": [
+        "a good candidate for a bg.py task",
+        "alternatives",
+        "candidates",
+        "choose",
+        "either ... or",
+        "either we need",
+        "either we need my ... or your ...",
+        "let's go with the exporter",
+        "option 1/2/3",
+        "other roles",
+        "other things we could build",
+        "other ways",
+        "run the risk",
+        "things to try",
+        "what about",
+        "what about a button to move to the next demo scene/page",
+        "what could we do"
+      ]
+    },
+    {
+      "id": "R7",
+      "label": "Evidence-channel precision",
+      "stage": "believe",
+      "cues": [
+        "claude-4 does not understand geometry",
+        "codex-10 (who is coordinating",
+        "expectations about",
+        "give any confidence",
+        "listen to",
+        "noisy",
+        "reliable",
+        "retrieved ... but not *used*",
+        "signal",
+        "tends to be very confident about things it knows",
+        "they haven't necessarily said \"thanks that's super helpful\"",
+        "trust",
+        "varied reads",
+        "we will likely get some varied reads",
+        "weight",
+        "which one is most relevant",
+        "which source",
+        "whose read"
+      ]
+    }
+  ],
+  "excluded": {
+    "generic": [
+      "build",
+      "design",
+      "enough",
+      "i think",
+      "if we",
+      "level",
+      "rather ... than",
+      "until",
+      "we could",
+      "will",
+      "work",
+      "would"
+    ],
+    "collisions": [
+      {
+        "cue": "dependency order",
+        "nodes": [
+          "R13",
+          "R15"
+        ]
+      },
+      {
+        "cue": "every night",
+        "nodes": [
+          "R10",
+          "R15"
+        ]
+      },
+      {
+        "cue": "i refuse",
+        "nodes": [
+          "GRAIN-GATE",
+          "R20"
+        ]
+      },
+      {
+        "cue": "let's commit it",
+        "nodes": [
+          "R14",
+          "R16"
+        ]
+      },
+      {
+        "cue": "living up to your expectations",
+        "nodes": [
+          "R12",
+          "R4"
+        ]
+      },
+      {
+        "cue": "only executes",
+        "nodes": [
+          "R10",
+          "R8"
+        ]
+      },
+      {
+        "cue": "stop the line",
+        "nodes": [
+          "CTAU-CLASS",
+          "R20"
+        ]
+      },
+      {
+        "cue": "until",
+        "nodes": [
+          "GRAIN-GATE",
+          "R14"
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "id": "R12",
+        "reason": "detections close to noise; leave to later 象 step"
+      },
+      {
+        "id": "R19",
+        "reason": "detections close to noise; leave to later 象 step"
+      },
+      {
+        "id": "R3a",
+        "reason": "detections close to noise; leave to later 象 step"
+      },
+      {
+        "id": "R8",
+        "reason": "detections close to noise; leave to later 象 step"
+      },
+      {
+        "id": "R9",
+        "reason": "detections close to noise; leave to later 象 step"
+      }
+    ]
+  }
+}
