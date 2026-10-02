@@ -1,0 +1,187 @@
+;; Elaboration of rnode-tree.edn by zai-4, from dev-turns.json (150 turns).
+;; Quotes are Joe's exact words from the cited turn id.
+{:agent "zai-4"
+ :cues
+ [;; ---- branch-level (general) ----
+  {:node :system-1 :cue "please continue" :turn "T054" :quote "Well, please continue the explorations here because clearly, yeah, it seems like the thing is timing out."}
+  {:node :system-2 :cue "don't lose pace" :from :general}
+  {:node :system-3 :cue "start on X" :turn "T168" :quote "OK, please start on marking up Basic.c as an example"}
+  {:node :system-3-star :cue "show me it working" :turn "T262" :quote "OK, show me it working via the next dispatch"}
+  {:node :system-4 :cue "what is the reality?" :turn "T156" :quote "so what is the reality?  i thought we were very clear what policies were, how EFE works, that it is the core of AIF"}
+  {:node :algedonic :cue "Oh no." :turn "T028" :quote "Oh no. Please do not cue things to Claude agents. Can you cancel those jobs?"}
+  {:node :algedonic :cue "I am so frustrated" :turn "T193" :quote "I am so frustrated!  why should anything here \"await decision\"?"}
+
+  ;; ---- system-1 ----
+  {:node "R16" :cue "let's commit it" :turn "T079" :quote "Yeah, let's commit it."}
+  {:node "R16" :cue "I fixed" :turn "T082" :quote "I fixed the voice interface, so hopefully we won't run into that problem again. Let's continue,"}
+  {:node "R16" :cue "please set that up again" :turn "T132" :quote "please set that up again"}
+  {:node "R16" :cue "write that up as" :turn "T247" :quote "let's write that up as T-arxana-direct-reads.md and save it as a ticket to come back to."}
+  {:node "R16" :cue "please start on marking up" :turn "T168" :quote "OK, please start on marking up Basic.c as an example"}
+  {:node "R16" :cue "do the analysis" :turn "T238" :quote "Codex 14 can not only do the analysis, But add some plots to the Marimo notebook so we can, in principle, even recalculate the plots."}
+  {:node "R10" :cue "would be active again" :turn "T005" :quote "It seems Kimi would be active again so we can test the system out"}
+  {:node "R10" :cue "returned or died on a turn boundary" :turn "T023" :quote "I reckon your subagents have either returned or died on a turn boundary"}
+  {:node "R10" :cue "didnt persist overnight" :turn "T189" :quote "the loop did start up but didnt persist overnight"}
+  {:node "R10" :cue "up 51m35s" :turn "T060" :quote "I see wm-author up 51m35s no session id in voxterm, and no codex-13 activity though codex has 3% usage remaining"}
+  {:node "R10" :cue "is this still going??" :turn "T207" :quote "is this still going??"}
+  {:node "R10" :cue "Is Kimi still out?" :turn "T281" :quote "Is Kimi still out?"}
+  {:node "R10" :cue "only executes the sleep command" :turn "T095" :quote "now I see topology-build-loop but it only executes the sleep command"}
+
+  ;; ---- system-2 ----
+  {:node "R11" :cue "3% of my Claude usage left" :turn "T028" :quote "I've got 3% of my Claude usage left right now.  Cancel those jobs.  Ah."}
+  {:node "R11" :cue "very low on Claude usage" :turn "T159" :quote "we're very low on Claude usage, so could you please ask an associated Codex agent to help sort this out?"}
+  {:node "R11" :cue "not using up my zai usage" :turn "T175" :quote "And I'm still not using up my zai usage on a regular basis, and zai is hardly in this dispatch routine at all."}
+  {:node "R11" :cue "cheap enough" :turn "T288" :quote "We can use zai, kimi, and Sonnet for tagging, they are all \"cheap enough\" and we will likely get some varied reads (which is good, in my opinion)."}
+  {:node "R11" :cue "3% usage remaining" :turn "T060" :quote "and no codex-13 activity though codex has 3% usage remaining"}
+  {:node "R15" :cue "every night I go to sleep" :turn "T289" :quote "And furthermore, every night I go to sleep for six or eight hours, and I'd like to have some guarantee that this stuff is progressing every night."}
+  {:node "R15" :cue "hold this thought for another day" :turn "T171" :quote "Let's hold this thought for another day, and write up an E-象-catchup excursion note."}
+  {:node "R15" :cue "a ticket to come back to" :turn "T247" :quote "save it as a ticket to come back to."}
+  {:node "R15" :cue "while we were trying to do a complex orchestration across" :turn "T019" :quote "Meanwhile we were trying to do a complex orchestration across Seat A and Seat B, and get them to update the mission carpet."}
+  {:node "R15" :cue "one arm in the topo loop" :turn "T286" :quote "So, yes, just keep going with Codex 6 on one arm in the topo loop. You don't need to change anything there."}
+  {:node "R15" :cue "at anything near capacity" :turn "T162" :quote "my sense, by the way, is that we're not running Zone at anything near capacity."}
+
+  ;; ---- system-3 ----
+  {:node "R6" :cue "Either we need my ... or your ..." :turn "T148" :quote "Either we need my \"split up the big file\" or your \"read the diff\" (which I think is brittle and costly but if you want to give it one more go you can)."}
+  {:node "R6" :cue "Let's go with the exporter" :turn "T247" :quote "Let's go with the exporter, though I think we both had the conception in mind that Arxana would be able to read directly from futon1b"}
+  {:node "R6" :cue "a good candidate for a bg.py task" :turn "T047" :quote "I guess if the full indexing of futon1b is warranted we can do that, but it does sound like a good candidate for a bg.py task"}
+  {:node "R6" :cue "other things we could build" :turn "T203" :quote "let's not build it right now.  Let's review the McCarthy paper and see what other things we can build."}
+  {:node "R6" :cue "what about a button to move to the next demo scene/page" :turn "T062" :quote "so, there are things to try within the scene but what about a button to move to the next demo scene/page ?"}
+  {:node "R14" :cue "I would lean towards" :turn "T187" :quote "So I would lean towards having them be reachable with bells."}
+  {:node "R14" :cue "I would rather" :turn "T240" :quote "Well, given that it ALMOST works, I would rather try to find the questionmark source in the current map than remap everything"}
+  {:node "R14" :cue "let's consider that ... now specified" :turn "T227" :quote "OK, let's consider that C is now specified to a level where *something* compatible with my views on the matter can be implemented."}
+  {:node "R14" :cue "I guess this is the only thing we can really do" :turn "T041" :quote "I guess this is the only thing we can really do given the complexity of the the situation."}
+  {:node "R14" :cue "if you want to give it one more go" :turn "T148" :quote "(which I think is brittle and costly but if you want to give it one more go you can)."}
+  {:node "R14" :cue "OK to ... but" :turn "T125" :quote "OK to M-auto-clock in but can you please monitor it directly rather than subbing it out to claude-10 or others?"}
+  {:node "GRAIN-GATE" :cue "guided by faithfulness to the theory" :turn "T133" :quote "I am not going to decide things by fiat, but guided by faithfulness to the theory."}
+  {:node "GRAIN-GATE" :cue "don't do anything creative" :turn "T041" :quote "I chatted with Rob today and he said, take care that you don't do anything creative, just use the C/C++ as a guide."}
+  {:node "GRAIN-GATE" :cue "Please do not cue things to" :turn "T028" :quote "Oh no. Please do not cue things to Claude agents."}
+  {:node "GRAIN-GATE" :cue "not codex-N ... not aliases" :turn "T282" :quote "can you mind nine seats with identifying names (not codex-N) and not aliases so that we can track these nine things?"}
+  {:node "GRAIN-GATE" :cue "you should come to me with proposals" :turn "T133" :quote "Again, for \"decisions\" you should come to me with proposals which I can approve or decline."}
+
+  ;; ---- system-3-4 / 3-star ----
+  {:node "R5" :cue "as long as it is very fast, b/c" :turn "T034" :quote "So, agree, as long as it is very fast, b/c we'd be running it on every turn."}
+  {:node "R5" :cue "I refuse to wait 8s for anything" :turn "T078" :quote "So, I refuse to wait 8s for anything"}
+  {:node "R5" :cue "I don't love taking 19 minutes per build" :turn "T041" :quote "I don't love taking 19 minutes per build though, so if we can come up with ways to speed that up that would be good, otherwise I worry we'll be there 1000 x 19 minutes or something which is a long time"}
+  {:node "R5" :cue "brittle and costly" :turn "T148" :quote "(which I think is brittle and costly but if you want to give it one more go you can)."}
+  {:node "R5" :cue "waiting hours for a fix that takes minutes" :turn "T289" :quote "it's just a matter of running them according to a schedule and waiting hours for a fix that takes minutes. Isn't great."}
+  {:node "R9" :cue "monitor it directly rather than subbing it out" :turn "T125" :quote "can you please monitor it directly rather than subbing it out to claude-10 or others?"}
+  {:node "R9" :cue "spammy or SEO'ed through the graph" :turn "T239" :quote "that would suggest they are somehow spammy or SEO'ed through the graph, but not well written."}
+  {:node "R9" :cue "should be laid at ... feet not mine" :turn "T215" :quote "What you're saying about the Test Registry should be laid at claude-12's feet not mine"}
+  {:node "R9" :cue "this one should too" :turn "T090" :quote "If the other items had verification, this one should too, as well as a valid date"}
+  {:node "R9" :cue "regular review sending work back to the author" :turn "T018" :quote "That's ordinary review sending work back to the author, not a failure."}
+  {:node "R12" :cue "I lack the visibility that I would need" :turn "T236" :quote "It's just that I lack the visibility that I would need to give any confidence on that."}
+  {:node "R12" :cue "Visibility on work being done is still poor" :turn "T162" :quote "Visibility on work being done is still poor, I ran futon-active-agents and see only 2 agents invoking, even though I know various bells have been sent out to workers."}
+  {:node "R12" :cue "noticing its own mistakes *in turn*" :turn "T097" :quote "GLM 5.2 (and maybe latest 5.3) was very good at noticing its own mistakes *in turn* rather than via handoffs."}
+  {:node "R12" :cue "sounds sort of like ... That's concerning" :turn "T223" :quote "Your writeup of \"three places where the statement says less than it could, none a defect\" sounds sort of like... permitted weakening?  That's concerning, please look into it"}
+  {:node "R12" :cue "I am pretty sure don't exist" :turn "T050" :quote "Right now https://zone.hyperreal.enterprises/wip/mission-efe-field.html is showing a bunch of agents (as flying sources) that I am pretty sure don't exist."}
+
+  ;; ---- system-4 ----
+  {:node "R2" :cue "I still see an HTTP error" :turn "T011" :quote "I still see an HTTP error on https://zone.hyperreal.enterprises/marimo/"}
+  {:node "R2" :cue "one thing I've noticed is" :turn "T013" :quote "Regarding the carpet, one thing I've noticed is that un-ticking the boxes (e.g. \"open\") still shows the missions, just not their scopes."}
+  {:node "R2" :cue "it still says X. Whereas I thought" :turn "T221" :quote "So I did reload the page, and it still says M02A06 is parked. Whereas I thought you said you had resolved it."}
+  {:node "R2" :cue "the map's legend is out of date" :turn "T106" :quote "So, the map's legend is out of date, so we didn't duplicate work, just revisited a survey that had been conducted earlier."}
+  {:node "R2" :cue "153 ahead (threshold 10)" :turn "T068" :quote "futon2-d: 153 ahead (threshold 10) — review and push or explain"}
+  {:node "R2" :cue "according to my *APM report*" :turn "T223" :quote "So according to my *APM report* we have 111 left as open problems \"Lean, has sorry\"."}
+  {:node "R2" :cue "I ran futon-active-agents and see" :turn "T162" :quote "I ran futon-active-agents and see only 2 agents invoking, even though I know various bells have been sent out to workers."}
+  {:node "R1" :cue "The question is whether it's written down in Lean or not" :turn "T099" :quote "So I know we have it. The question is whether it's written down in Lean or not."}
+  {:node "R1" :cue "I don't remember right now what" :turn "T116" :quote "So, I don't remember right now what the demonstrators were — but somewhere I thought we had a detailed survey of what construction targets are needed"}
+  {:node "R1" :cue "i thought we were very clear" :turn "T156" :quote "so what is the reality?  i thought we were very clear what policies were, how EFE works, that it is the core of AIF"}
+  {:node "R1" :cue "I think we have it all written down" :turn "T155" :quote "So, regarding hardware) I think we have it all written down (we've been writing code for the superpod for months)."}
+  {:node "R1" :cue "there is a record of... Work that's wanted here" :turn "T052" :quote "In the same way, there is a record of... Work that's wanted here in the futon stack, and those are basically named holes."}
+  {:node "R1" :cue "Recorded but never consulted" :turn "T121" :quote "So, I think this is another example of Recorded but never consulted. Written but never wired."}
+  {:node "R4" :cue "living up to your expectations" :turn "T081" :quote "What are the recent APM frames that have completed living up to your expectations about memory use related to the report you wrote?"}
+  {:node "R4" :cue "we'll be there 1000 x 19 minutes" :turn "T041" :quote "otherwise I worry we'll be there 1000 x 19 minutes or something which is a long time"}
+  {:node "R4" :cue "what happens next" :turn "T025" :quote "But I don't know how that corresponds to our number nodes, or kind of what the entry point is once you've put in a mission, what happens next."}
+  {:node "R4" :cue "if we changed the embedding strategy" :turn "T238" :quote "So, for example, if we changed the embedding strategy. Or refine it."}
+  {:node "R4" :cue "presumably ... would complete when" :turn "T055" :quote "Presumably focus on a task (mission, excursion, ticket) would complete when that completes.  Similarly for a subtask thereof."}
+  {:node "R4" :cue "If Astra is the key enabler here we may know in about an hour" :turn "T152" :quote "OK, that does change things.  If Astra is the key enabler here we may know in about an hour."}
+  {:node "R3" :cue "OK, that does change things" :turn "T152" :quote "OK, that does change things."}
+  {:node "R3" :cue "maybe the code isn't as out of date as I thought" :turn "T106" :quote "Except, maybe the code isn't as out of date as I thought!"}
+  {:node "R3" :cue "I also just realized" :turn "T291" :quote "Oh, I also just realized my percentages didn't actually add up right."}
+  {:node "R3" :cue "we seem to have passed from ... to ... phases" :turn "T236" :quote "Well, we seem to have passed from the solver to promotion to student phases in the APM campaign."}
+  {:node "R3" :cue "that comes up quite a lot" :turn "T275" :quote "Hm... \"build and switched off\" comes up quite a lot.  Again annoying for my paper draft in which all of the R-numbers were supposedly \"run-evidenced\"."}
+  {:node "R3" :cue "what we're coming to here is" :turn "T198" :quote "So, what I'm coming to here is that maybe 象-2000 is useful as a \"specification language\"."}
+  {:node "R8" :cue "failed due to another ledger error" :turn "T112" :quote "topo2 failed due to another ledger error"}
+  {:node "R8" :cue "what led to the >300s wait?" :turn "T032" :quote "what led to the >300s wait?"}
+  {:node "R8" :cue "I don't think I got the report?" :turn "T202" :quote "I don't think I got the report?"}
+  {:node "R8" :cue "didn't take" :turn "T237" :quote "The caption width adjustment didn't take"}
+  {:node "R8" :cue "is detecting text but not sending it through" :turn "T212" :quote "it is detecting text but not sending it through nor giving me a preview"}
+  {:node "R8" :cue "the design seems a little bit flawed" :turn "T054" :quote "please continue the explorations here because clearly, yeah, it seems like the thing is timing out. The design of the... Promotion package seems a little bit flawed."}
+  {:node "R8" :cue "what's the repro" :turn "T220" :quote "Sorry, what's the repro for the 41s endpoint?"}
+  {:node "R3a" :cue "I can't believe what you're telling me" :turn "T151" :quote "I can't believe what you're telling me. Look at the git commits. Look at my history. Look at the work plan."}
+  {:node "R3a" :cue "I'm not sure how you managed to interpret my ask so nonstraightforwardly" :turn "T225" :quote "I'm not sure how you managed to interpret my ask so nonstraightforwardly."}
+  {:node "R3a" :cue "I HAVE NOT BEEN UNCLEAR" :turn "T266" :quote "I HAVE NOT BEEN UNCLEAR"}
+  {:node "R3a" :cue "I didn't ask for" :turn "T040" :quote "I didn't ask for an \"honest record\" I asked for a fully functional War Machine"}
+  {:node "R3a" :cue "it turns out that it is something of a blight" :turn "T071" :quote "So, firstly, we need to absolutely get rido fo Zulip, it turns out that it is something of a blight."}
+  {:node "R3a" :cue "why should anything here" :turn "T193" :quote "I am so frustrated!  why should anything here \"await decision\"?  why has b99A02 not been resolved?"}
+  {:node "R13" :cue "according to a schedule" :turn "T289" :quote "it's just a matter of running them according to a schedule and waiting hours for a fix that takes minutes."}
+  {:node "R13" :cue "self-steering without requiring ... babysitting" :turn "T149" :quote "So, the system is supposed to be self-steering without requiring Codex babysitting on hands-on coordination."}
+  {:node "R13" :cue "enters a queue needing revalidation, then we build the fix" :turn "T119" :quote "Whenever we see an error, a park, a missing agent, a dropped packet, that enters a queue needing revalidation, then we build the fix, mint the new certificate and so forth."}
+  {:node "R13" :cue "if a frame can fit within two hours" :turn "T289" :quote "And if a frame can fit within two hours, Then it should be fitting in two hours, and if it isn't fitting in two hours, that's an error of a whole other class,"}
+  {:node "R13" :cue "a consistent state so that we stop losing time" :turn "T295" :quote "Can you please get this into a consistent state so that we stop losing time over it?"}
+  {:node "R13" :cue "hot fixes. That will drift away" :turn "T242" :quote "Then any fixes that we make here are effectively hot fixes. That will drift away from the lean model."}
+  {:node "R7" :cue "Claude-4 does not understand geometry" :turn "T234" :quote "Claude-4 does not understand geometry.  The patterns exist in an embedding space."}
+  {:node "R7" :cue "we will likely get some varied reads" :turn "T288" :quote "they are all \"cheap enough\" and we will likely get some varied reads (which is good, in my opinion)."}
+  {:node "R7" :cue "they haven't necessarily said \"thanks that's super helpful\"" :turn "T244" :quote "However, with UKRNS, it's not actually clear that we've really helped them solve a problem — I tried, but they haven't necessarily said \"thanks that's super helpful\"."}
+  {:node "R7" :cue "retrieved ... but not *used*" :turn "T239" :quote "one signal could be if patterns are *retrieved* by the War machine but not *used* — that would suggest they are somehow spammy"}
+  {:node "R7" :cue "tends to be very confident about things it knows" :turn "T097" :quote "even though codex tends to be very confident about things it knows how to do, it refuses to do things that are unspecified."}
+  {:node "R7" :cue "codex-10 (who is coordinating" :turn "T149" :quote "I'd suggest that you bell codex-10 (who is coordinating the APM loop) to see if we can agree a way forward"}
+  {:node "R17" :cue "we need to supersede it" :turn "T226" :quote "So not that we need to include it, but we need to supersede it."}
+  {:node "R17" :cue "reinventing that" :turn "T226" :quote "it seems as though maybe we are actually in the process of reinventing that."}
+  {:node "R17" :cue "breaking the one \"WIP\" row to a more developed ... board" :turn "T210" :quote "breaking the one \"WIP\" row to a more developed PERCEIVE → BELIEVE → EVALUATE → SELECT → ACT kanban board."}
+  {:node "R17" :cue "\"gone means gone\" semantics" :turn "T013" :quote "It would be good if there was a \"gone means gone\" semantics by default, and a \"hide scopes only\" option (not by default)"}
+  {:node "R17" :cue "a similar table for" :turn "T180" :quote "So, those are good for understanding \"Joe\" turns but we'd want a similar table for understanding \"WM\" acts as well."}
+  {:node "R17" :cue "good case for hierarchical modelling" :turn "T171" :quote "The point about aligning intent labels seems like a good case for hierarchical modelling b/c then we'd get multiple different label sets but flow them into an approved core."}
+
+  ;; ---- system-5 ----
+  {:node "R19" :cue "I am not going to greenlight" :turn "T191" :quote "Well I am not going to greenlight any new things until we actually start to close checklist TODO items or until you convince me that these new work items are exactly what's needed to do so"}
+  {:node "R19" :cue "our criteria should probably expand to include" :turn "T042" :quote "So, in terms of the 1/23 verified current, our criteria should probably expand to include at least M-futon-problems and M-apm-demonstration"}
+  {:node "R19" :cue "that's not my preference" :turn "T291" :quote "which is weird because that's not my preference.  I don't prefer that nothing's delivered."}
+  {:node "R19" :cue "I really value stopping the line" :turn "T291" :quote "So, you know, I really value stopping the line when som"}
+  {:node "R19" :cue "supposed to be self-steering" :turn "T149" :quote "So, the system is supposed to be self-steering without requiring Codex babysitting on hands-on coordination."}
+  {:node "R19" :cue "what our completion requirements are" :turn "T176" :quote "I just want to be clear about what actually our completion requirements are here.  It's to rework the PLOP 2026 paper, which I think I've got about one more week left to work on it, so that it's not a facade."}
+  {:node "CTAU-TOKEN" :cue "if the items for me gate work, I can take ... on" :turn "T299" :quote "if the items for me gate work, I can take tgdm on, though the wm loop has stopped and I dont know if that means it ran out of work or what?"}
+  {:node "CTAU-TOKEN" :cue "I can approve ... if it is model faithful" :turn "T133" :quote "Taking the examples you mentioned: I can approve \"risk accepted\" if it is model faithful."}
+  {:node "CTAU-TOKEN" :cue "blind labels" :turn "T238" :quote "And yes, I can do some blind labels, that's fine."}
+  {:node "CTAU-CLASS" :cue "55% for Focused Work" :turn "T291" :quote "Allow. Thirty-five percent. Four. Associated Work. 55% for Focused Work.  And 5% each."}
+  {:node "CTAU-CLASS" :cue "work through that list in order" :turn "T004" :quote "I want you to work through that list in order, with handoffs to the relevant delegates ad needed."}
+  {:node "CTAU-CLASS" :cue "we should work in the dependency order" :turn "T026" :quote "But we should work in the dependency order for maximum reuse."}
+  {:node "CTAU-CLASS" :cue "the mission is not being done in order" :turn "T154" :quote "It is frankly somewhat bizarre that the mission is not being done in order.  Anyway, I think you should work on these tasks."}
+  {:node "R20" :cue "Cancel those jobs. Ah." :turn "T028" :quote "I've got 3% of my Claude usage left right now.  Cancel those jobs.  Ah."}
+  {:node "R20" :cue "this seems \"crucial\"" :turn "T046" :quote "Yes, but this seems \"crucial\" in terms of thinking about how humans, LLMs, and hybrid systems *notice* salience."}
+  {:node "R20" :cue "Tch." :turn "T159" :quote "So the Supervisor is still down for Topo 1. Tch."}
+  {:node "R20" :cue "That's concerning, please look into it" :turn "T223" :quote "That's concerning, please look into it"}
+  {:node "R20" :cue "anyway, it is something of a blight" :turn "T071" :quote "we need to absolutely get rido fo Zulip, it turns out that it is something of a blight."}
+  {:node :none :cue "voice to text spam" :turn "T075" :quote "i think that last message was voice to text spam!"}
+  {:node :none :cue "my friend Charlie is there" :turn "T071" :quote "my friend Charlie is there and I'd like to make him a user of the box there."}
+  ]
+ :collisions
+ [{:cue "I see" :nodes ["R2" "R10"] :why "T060/T095 use 'I see X running / only executes sleep': world-marking (R2) but the object is liveness of a scheduled entrypoint (R10). The :object split does not exist at system-1, so system-1 :subsistence :being vs system-4 :understanding :having :world is the failing separation."}
+  {:cue "is this still going??" :nodes ["R10" "R2" "R13"] :why "T207 reads as liveness check (R10), observation of the loop (R2), and implicitly a schedule-depth complaint (R13)."}
+  {:cue "usage / 3% left" :nodes ["R11" "R5" "R20"] :why "T028 and T159 are budget facts (R11) delivered as alarms (R20); T175 turns budget into a value-of-information argument (R5, worth dispatching more). :beer separates them only if read for function, not wording."}
+  {:cue "in order" :nodes ["CTAU-CLASS" "R13" "R15"] :why "T004/T026/T154 order over the whole tick's list (CTAU-CLASS), but 'dependency order' is also sequencing policy depth (R13) and running-order across timescales (R15). The :scope split only separates CTAU-TOKEN/CLASS, not these."}
+  {:cue "I think / I thought" :nodes ["R1" "R14" "R3"] :why "Epistemic modality marking appears both in belief-state reports (T155 'I think we have it all written down', R1) and in hedged commitments (T041 'I guess this is the only thing', R14), and 'I thought' in T156/T221 marks a belief about to be revised (R3/R3a). The :max-neef split separates them only weakly."}
+  {:cue "That's concerning" :nodes ["R8" "R20" "R12"] :why "T223/T159 pair a mismatch in the world (R8) with an affective alarm (R20) and sometimes a calibration complaint (R12). Present-fit mismatch and interoceptive tripwire share wording almost everywhere."}
+  {:cue "fast enough / refuse to wait" :nodes ["R5" "R20"] :why "T034 is a considered trade-off (R5); T078 is an alarm phrased identically. :beer (3-4 vs algedonic) is the intended separator but the cue alone underdetermines it."}
+  {:cue "verify / should have verification too" :nodes ["R9" "R12"] :why "T090 could be independence of the checker (R9) or calibration of the metric (R12); the :max-neef split (participation·interacting vs understanding·being) is doing all the work."}
+  {:cue "don't exist / don't add up" :nodes ["R2" "R8" "R12"] :why "T050 'I am pretty sure don't exist' is an observation whose content is that a representation is miscalibrated — R2 wording, R12 substance."}
+  {:cue "monitor it directly rather than subbing it out" :nodes ["R9" "R14"] :why "T125 is independence (R9) but phrased as a scoped commitment choice (R14)."}]
+ :placement-flags
+ [{:node "R10" :now "system-1 > subsistence·being" :suggest "system-3-star > subsistence·being (or its own audit leaf)" :why "Every R10 cue in the turns (T005, T023, T189, T207, T281) is Joe the auditor sporadically checking whether a scheduled thing ran — System 3* activity, not System 1 operation. The catalogue also bands R10 as :assurance (like R9/R12), which the tree's system-1 placement contradicts in spirit. Structure not changed, flagged only."}
+  {:node "R17" :now "system-4 > creation·doing" :suggest "system-5 or a system-4/5 boundary" :why "T226/T171/T013 are re-shapings of the framework's own categories (what the ontology of missions/patterns is), which is closer to System 5 identity work than System 4 intelligence about the environment. The existing split is defensible if 'the model of self' counts as System 4 (Beer does keep the self-model in S4), so this is a soft flag."}]
+ :max-neef
+ [{:cell [:subsistence :being] :pairing-ok true :terms ["physical health" "mental health"] :confidence :medium :note "Matrix has subsistence·being as health terms, not liveness per se; the tree borrows the cell metaphorically for 'is it alive'."}
+  {:cell [:subsistence :having] :pairing-ok true :terms ["food" "shelter" "work"] :confidence :high :note "Classic row; 'budget/allowance' is again a metaphorical extension."}
+  {:cell [:creation :doing] :pairing-ok true :terms ["work" "invent" "build" "design"] :confidence :high :note "These are the matrix terms as I recall them; the tree's cues match."}
+  {:cell [:freedom :interacting] :pairing-ok true :terms ["anywhere"] :confidence :low :note "My recall of this cell is a single sparse term; the tree's use (hierarchy/timescale of interaction) is not what the matrix cell is about."}
+  {:cell [:freedom :doing] :pairing-ok true :terms ["choose where to live" "choose one's job" "dissent"] :confidence :low :note "Roughly 'choose' terms; candidate-action-space use is metaphorical but coherent (choosing among alternatives)."}
+  {:cell [:identity :doing] :pairing-ok true :terms ["commit oneself" "integrate oneself" "face things" "decide"] :confidence :medium :note "'commit oneself' directly supports the commitment-temperature leaf; good fit."}
+  {:cell [:protection :having] :pairing-ok true :terms ["insurance systems" "savings" "social security" "health systems" "rights" "family" "work"] :confidence :medium :note "The matrix cell is protective assets/institutions; the tree reads it as rules/gates, which is closer to protection·doing ('prevent, plan') or to institutional norms. Cell choice defensible but terms differ."}
+  {:cell [:understanding :being] :pairing-ok true :terms ["critical capacity" "curiosity" "intuition"] :confidence :medium :note "Calibration leaf maps loosely onto 'critical capacity'; matrix terms are capacities, not states of surprise."}
+  {:cell [:understanding :having] :pairing-ok true :terms ["literature" "teachers" "policies" "educational methods"] :confidence :medium :note "Matrix terms are information resources — fits 'what we have on it' for R2/R1 parents."}
+  {:cell [:understanding :doing] :pairing-ok true :terms ["analyse" "study" "investigate" "question" "explore" "interpret"] :confidence :medium :note "Matches the parent's 'analyse/figure out' cues well."}
+  {:cell [:protection :doing] :pairing-ok true :terms ["cooperate" "prevent" "plan" "take care of" "help"] :confidence :medium :note "'prevent' and 'plan' directly support the temporal-policy-depth leaf."}
+  {:cell [:participation :being] :pairing-ok true :terms ["receptiveness" "dedication" "sense of humour"] :confidence :medium :note "Matrix terms are dispositions, not reliability weightings; the leaf's semantics (precision of a channel) is the tree's own extension."}
+  {:cell [:participation :interacting] :pairing-ok true :terms ["participation in different interactions that others may have"] :confidence :low :note "I do not recall this cell confidently; it is the weakest mapping in the tree (no self-certification is about independence of checker, not participation)."}
+  {:cell [:identity :having] :pairing-ok true :terms ["language" "religions" "work" "customs" "values" "norms"] :confidence :medium :note "'values' and 'norms' are in the cell as I recall it, so mission-preference fits."}
+  {:cell [:identity :interacting] :pairing-ok true :terms ["one's own social milieu" "rituals" "gatherings" "membership"] :confidence :low :note "Low confidence on exact terms; the tree's use (phase/rhythm over time) matches the matrix weakly — phases are not interactions."}
+  {:cell [:creation :doing] :pairing-ok true :terms ["work" "invent" "build" "design"] :confidence :high :note "Duplicate of the system-1 use; structure-learning (R17) shares the cell with grounded enactment (R16) — the same cell serves both, which the :beer split must carry."}]}
