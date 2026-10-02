@@ -110,7 +110,6 @@
         "heartbeat",
         "is it alive",
         "is kimi still out?",
-        "is this still going??",
         "keep it going while",
         "liveness",
         "loop has stopped",
@@ -143,7 +142,6 @@
         "3% usage remaining",
         "allowance",
         "budget",
-        "cheap enough",
         "cost",
         "hardly in this dispatch routine",
         "how much is left",
@@ -151,7 +149,6 @@
         "quota",
         "spend",
         "tokens",
-        "usage",
         "usage left",
         "usage-aware",
         "usage-aware loading",
@@ -174,7 +171,6 @@
         "guarantee ... progressing",
         "hot fixes. that will drift away",
         "if a frame can fit within two hours",
-        "in order",
         "look further than the next step",
         "plan ahead",
         "prevent",
@@ -191,7 +187,6 @@
       "stage": "select",
       "cues": [
         "come back to this",
-        "commit",
         "decide",
         "firmly",
         "for now",
@@ -295,7 +290,6 @@
         "restructure",
         "rethink the shape",
         "reuse",
-        "rework",
         "split",
         "supersede",
         "that worked",
@@ -319,13 +313,11 @@
         "i ran",
         "i ran ... and see",
         "i ran futon-active-agents and see",
-        "i see",
         "i see ... up",
         "i still see",
         "i still see an http error",
         "it returned",
         "it shows",
-        "it still says",
         "it still says x. whereas i thought",
         "looked at",
         "now i see",
@@ -487,7 +479,6 @@
         "tends to be very confident about things it knows",
         "they haven't necessarily said \"thanks that's super helpful\"",
         "trust",
-        "varied reads",
         "we will likely get some varied reads",
         "weight",
         "which one is most relevant",
@@ -513,6 +504,20 @@
     ],
     "collisions": [
       {
+        "cue": "cheap enough",
+        "nodes": [
+          "R11",
+          "R5"
+        ]
+      },
+      {
+        "cue": "commit",
+        "nodes": [
+          "R14",
+          "R16"
+        ]
+      },
+      {
         "cue": "dependency order",
         "nodes": [
           "R13",
@@ -534,6 +539,43 @@
         ]
       },
       {
+        "cue": "i see",
+        "nodes": [
+          "R2",
+          "R8"
+        ]
+      },
+      {
+        "cue": "i think",
+        "nodes": [
+          "R1",
+          "R14",
+          "R3"
+        ]
+      },
+      {
+        "cue": "in order",
+        "nodes": [
+          "R13",
+          "R15"
+        ]
+      },
+      {
+        "cue": "is this still going??",
+        "nodes": [
+          "R10",
+          "R13",
+          "R2"
+        ]
+      },
+      {
+        "cue": "it still says",
+        "nodes": [
+          "R2",
+          "R8"
+        ]
+      },
+      {
         "cue": "let's commit it",
         "nodes": [
           "R14",
@@ -548,10 +590,24 @@
         ]
       },
       {
+        "cue": "monitor it directly rather than subbing it out",
+        "nodes": [
+          "R14",
+          "R9"
+        ]
+      },
+      {
         "cue": "only executes",
         "nodes": [
           "R10",
           "R8"
+        ]
+      },
+      {
+        "cue": "rework",
+        "nodes": [
+          "R16",
+          "R17"
         ]
       },
       {
@@ -566,6 +622,45 @@
         "nodes": [
           "GRAIN-GATE",
           "R14"
+        ]
+      },
+      {
+        "cue": "usage",
+        "nodes": [
+          "R11",
+          "R20"
+        ]
+      },
+      {
+        "cue": "varied reads",
+        "nodes": [
+          "R2",
+          "R7"
+        ]
+      },
+      {
+        "cue": "we could",
+        "nodes": [
+          "R16",
+          "R4",
+          "R6"
+        ]
+      },
+      {
+        "cue": "what i want",
+        "nodes": [
+          "R1",
+          "R19"
+        ]
+      },
+      {
+        "cue": "work",
+        "nodes": [
+          "R10",
+          "R16",
+          "R17",
+          "R19",
+          "R9"
         ]
       }
     ],

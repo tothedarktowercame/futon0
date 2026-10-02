@@ -57,3 +57,16 @@ def test_three_cue_fixture_by_hand(tmp_path):
         {"id": "B", "label": "Beta", "stage": "assurance", "cues": []},
     ]
     assert doc["excluded"]["collisions"] == [{"cue": "shared", "nodes": ["A", "B"]}]
+
+
+def test_agent_named_collisions_are_excluded():
+    """A cue an elaborating agent flagged as colliding is excluded even if listed under one node."""
+    import json
+    from pathlib import Path
+    here = Path(__file__).resolve().parent
+    vocab = json.loads((here / "rnode-vocabulary.json").read_text())
+    kept = {c for n in vocab["nodes"] for c in n["cues"]}
+    named = {c["cue"].lower() for c in json.loads((here / "ELAB-collated.json").read_text())["collisions"]}
+    for cue in ("commit", "usage"):
+        assert cue in named
+        assert cue not in kept

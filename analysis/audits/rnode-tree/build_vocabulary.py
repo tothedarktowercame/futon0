@@ -73,6 +73,13 @@ def build(tree_path, elaboration_path, machine_path, stages_path):
             cue_nodes[cue].add(node)
     collisions = {cue: sorted(nodes) for cue, nodes in cue_nodes.items()
                   if len(nodes) >= 2}
+    # Cues an elaborating agent named as colliding between nodes ("commit": R14 vs a git
+    # commit; "usage": R11 vs an alarm) tag nothing on their own either, even though the
+    # string is listed under one node only.
+    for item in elaboration.get("collisions", []):
+        cue = normalized(item["cue"])
+        if cue in cue_nodes and cue not in collisions:
+            collisions[cue] = sorted(set(item["nodes"]) | cue_nodes[cue])
 
     nodes = []
     for node in sorted(catalogue):
