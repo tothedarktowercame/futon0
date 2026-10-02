@@ -1,0 +1,103 @@
+joe: OK, now I have an idea.  The War Machine's agents should have self-talk or exchanges between them.  If we can find those transcripts, we should be able to figure out what they are doing in their turns and how *they* talk about activities that are strictly correlated with R-numbers due to the construction of the programme
+
+claude: 
+[Bash] cd /home/joe/code/futon2; head -c 1500 holes/labs/wm-contract/wm-click-acts.edn; echo; grep -c ':act/id' holes/labs/wm-c
+
+[Bash] cd /home/joe/code/futon2; ls data/wm-runs | wc -l; ls -t data/wm-runs | head -3; f=data/wm-runs/$(ls -t data/wm-runs | g
+
+[Bash] curl -s "localhost:7070/api/alpha/invoke/jobs?limit=5" | head -c 600; echo; ls /home/joe/code/futon3c/data 2>/dev/null |
+
+[Bash] curl -s "localhost:7070/api/alpha/invoke/jobs?limit=20000" -o /tmp/jobs.json; python3 - <<'EOF'
+import json,collections
+d=
+
+[Bash] python3 - <<'EOF'
+import json,collections,re
+js=json.load(open('/tmp/jobs.json'))['jobs']
+for caller in ['wm-flight','wm-fu
+
+[Bash] cd /home/joe/code/futon2; python3 - <<'EOF'
+import edn_format
+from edn_format import Keyword as K
+d=edn_format.loads(open('
+
+[Bash] cd ~/.codex/sessions; grep -l -m1 'wm-author\|wm-reviewer\|wm-repair-reviewer' 2026/09/*/*.jsonl 2026/10/*/*.jsonl 2>/de
+㊥ (the War Machine's own agents) The transcripts exist, but only four R-nodes have speakers. In the War Machine's act vocabulary (`futon2/holes/labs/wm-contract/wm-click-acts.edn`, 17 acts, each tagged with its R-node), most acts run as plain code with no agent talking. Only these dispatch an agent:
+- **dispatch-author:** R16;
+- **dispatch-reviewer and verify-review:** R9;
+- **request-interpretation:** R7;
+- **repair dispatches from the click-repair loop:** R17.
+
+For those four, every word the agent writes falls under that R-node by the way the programme is built, so we get labelled examples without any judging.
+
+㊢ (what's retained) There are two sources:
+- **Agency job store:** 6,134 jobs. The War Machine's own callers are `wm-flight` (85 jobs), `wm-full-loop` (39) and `wm-click` (15). Their prompts and replies are often not kept, though. About 30 full-loop jobs have the agent's working text, including 10 independent reviews and the author jobs. 11 interpretation jobs have both the request and the reply.
+- **Codex session logs:** these hold the agents' full working text. 22 logs name a wm-author or wm-reviewer seat, 33 contain a full-loop independent review, and 8 contain an interpretation request. The click-repair loop dispatches as `wm-click-loop` through `agency_send`, so its R17 repair jobs are in the job store too.
+
+🖖 (how I'd use it) The useful contrast is author against reviewer on the same target: same mission, same code, different R-node. That should remove most of the subject matter (clj-kondo, the repo, the mission). What's left should be how R16 talk differs from R9 talk. Interpretation (R7) and repair (R17) contrast against the pooled rest. The steps:
+1. Build the corpus: one file per R-node with the agents' own text, prompts excluded, from both sources.
+2. Extract the words each node uses distinctively, by log-odds against the other nodes, keeping only words that occur on several targets.
+3. Add those as cues for R16, R9, R7 and R17, and rerun the held-out detection on your turns against the turn bids, as before.
+
+It could fill the gap the last test exposed: R9 fired on only 7 of your turns. We'd learn whether you talk the way the reviewers do when you're checking something.
+
+㊟ (limits) This covers 4 of the 23 nodes. The other 19 have no agent talking: their work is in-process code, so the War Machine gives us no examples of their language. The amounts are also modest, dozens of transcripts per node, not thousands. Enough to find distinctive words, not to train anything.
+
+🈸 (go-ahead) Shall I build the corpus and run the contrast?
+
+Cooked for 1m 01s · ~$1.50 (8 calls · ctx 323k · opus x1) · session $14 · pouch →  Compaction recommended (C-c C-z)
+──────────────────────────────────────────── *M-aif-over-the-operator*
+joe: No, let's try a different approach.  I've asked codex-10 (*codex-repl:codex-10* line 2947) to run the machine in a stepper/debugger and narrate what comes out in careful detail (following lines, work in progress now, just entering preflight)
+
+claude: 
+[Bash] emacsclient --eval '(with-current-buffer "*codex-repl:codex-10*" (save-excursion (goto-char (point-min)) (forward-line 2
+㊥ (codex-10 narrating a click) That covers what the transcripts couldn't. Narrating per node from a stepped run puts English on the 19 nodes that are only code. I've read the start in `*codex-repl:codex-10*`:
+- **Preflight:** 13 of 13 tripwires clear, with 18 open stop-line obligations recorded as input.
+- **The click:** one click is now running with wm-author, wm-reviewer, and codex-13 as repair reviewer.
+- **Codex's undertaking:** it will keep agent activity, in-process computation, nodes that don't apply, and gaps apart, and won't invent activity for nodes the run doesn't reach.
+
+🖖 (what I'll do with the narration when it lands) Three things:
+1. **Check it against the run record.** Each node's paragraph should match what the click's receipt shows for that node, such as the selected policy for R6 or the posterior for R14. I'll mark any paragraph the receipt can't support.
+2. **Take the words.** For each node, I'll pull out the verbs and nouns the narration uses for what the node does. These are a second cue source next to the agents' cues, and tied to observed computation, not to imagined dialogue. I'll keep them separate so the two can be compared.
+3. **Rerun detection** on the held-out turns against the turn bids, with and without the narration cues. That shows whether the machine's own description of each step matches how you talk.
+
+㊟ (one thing to watch) A single click only covers the nodes that click actually reaches. Codex-10 has said it will mark the others "not applicable" rather than describe them. If important nodes are skipped, such as R12 calibration or R20 tripwires when nothing trips, a second click on a different target may be needed.
+
+I'm not parked on this, since it's codex-10's REPL and not an Agency job. Tell me when the narrative is complete, or I'll pick it up from the buffer when you next mention it.
+
+Cooked for 16s · ~$0.37 (2 calls · ctx 325k · opus x1) · session $14 · pouch →  Compaction recommended (C-c C-z)
+────────────────────────────────────────────── *M-aif-over-the-operator*
+joe: What will be particularly interesting will be any places where there *isn't* good alignment.  There's a narrative from line 2979 (although the run was defective)
+
+claude: 
+[Bash] emacsclient --eval '(with-current-buffer "*codex-repl:codex-10*" (save-excursion (goto-char (point-min)) (forward-line 2
+㊥ (where the narrative and the tree disagree) Codex-10's narrative shows that for six nodes the tree's cues describe a different activity from what the machine's node actually does. The clearest is R10. The cues ("is it still going?") treat it as you checking liveness. In the machine, R10 is about who starts the click: a schedule rather than you. Your version of that is "keep it progressing every night while I'm on the flight", and kimi-3 had filed that turn under R15. For the other 17 nodes, the narrative and the tree describe roughly the same activity.
+
+㊢ (the six misaligned nodes)
+
+| Node | What the machine does (narrative) | What the tree's cues capture | Your words that would match the machine |
+|---|---|---|---|
+| R10 | starts a click on a schedule, not on your trigger | "still going", "stalled" | "every night", "while I'm asleep", "on a timer" |
+| R8 | measures whether the predicted outcome happened (four post-action tokens, all `:measurement-unavailable` here) | surprise: "odd", "weird" | "did it actually change anything", "did the dial move" |
+| R19 | reads checked and unchecked boxes from mission files into wants (defective here: `[x]` items read as unmet) | values: "what I want", "the point" | "what's still unchecked", "is that done or not" |
+| R17 | learns which patterns worked, from use feedback | reshaping: "restructure", "new category" | "that worked, use it again", "this never helps" |
+| R20 | routine health checks: 13/13 tripwires clear at preflight, findings Q1–Q10 at close | alarm: "Oh no", "I hate" | "health check", "sanity check", and also the alarm words |
+| R15 | one click's outcome changing what the next click reads (refused here: no two-tick correspondence) | "fast loop / slow loop", "zoom out" | "carry this forward", "next time round" |
+
+In each case, the cues match the node's name or catalogue gloss, not what its code computes. The tree's R20 follows Beer's algedonic channel, while the machine's R20 is closer to a routine health check. Both are reasonable readings, but they predict different words.
+
+🖖 (a pattern the narrative shows) For five nodes, the work happened but the formal record of it didn't hold:
+- **R9:** the reviewer really was independent, rejected the first commit and approved the fix, but the certificate was refused because an authorization receipt wasn't kept.
+- **R16:** the code is committed, but grounding couldn't be certified.
+- **GRAIN-GATE:** the cascade was admitted, but no receipt was kept.
+- **R12:** no Layer-2 receipt.
+- **TRACE:** `traceWritten false`.
+
+That gap is what many of your audit turns are about ("show me", "did it really"). In the machine it sits on TRACE and on certificates, which the tree doesn't treat as a node of its own. That may be why R9 and R12 hardly fire on your turns: your checking is about whether the record exists, not about independence or calibration.
+
+㊟ (caveats) The run was defective, as you say. For R14, CTAU-CLASS, R13 and R6, the narrative describes declared machinery that this click didn't exercise. So for those nodes, "aligned" means only that what the code says it does matches the cues, not that we watched it. R11 and R10 didn't apply to this click at all.
+
+㊭ (next step) I'd add a third cue set, written from the machine side, for the six misaligned nodes, using wording like the last column of the table. I'd keep it separate from the agents' cues and rerun the held-out detection with and without it. Whether R10, R8, R17 and R19 start agreeing with the turn bids will show which reading of each node matches how you talk. It's a small, local change. Shall I?
+
+Cooked for 42s · ~$0.46 (2 calls · ctx 330k · opus x1) · session $15 · pouch →  Compaction recommended (C-c C-z)
+────────────────────────────────────────────── *M-aif-over-the-operator*
