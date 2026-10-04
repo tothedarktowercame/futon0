@@ -159,7 +159,8 @@
 	"../futon4/dev/arxana-browser-essays-wikibooks.el"
 	"../futon3c/emacs/mission-mode.el"
 	"../futon3c/emacs/session-overview.el"
-	"../futon3c/emacs/session-mode.el"))
+	"../futon3c/emacs/session-mode.el"
+	"../futon3c/emacs/turn-stepper.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
@@ -211,6 +212,7 @@
 (require 'mission-mode)   ; live mission scope view (M-x mission-mode) — donor for session-mode
 (require 'session-overview)   ; live session weak-scope view (M-x session-overview)
 (require 'session-mode)       ; deterministic NNexus markup of the live buffer (M-x session-mode)
+(require 'turn-stepper)       ; 象 stepper side window (M-x turn-stepper in a REPL buffer)
 
 ;; Shared Agency WS observer (single socket, one ordered reader): HUD +
 ;; completion bubbles + park-ready fast-path.  Connects as the `emacs-hud'
