@@ -160,7 +160,9 @@
 	"../futon3c/emacs/mission-mode.el"
 	"../futon3c/emacs/session-overview.el"
 	"../futon3c/emacs/session-mode.el"
-	"../futon3c/emacs/turn-stepper.el"))
+	"../futon3c/emacs/turn-stepper.el"
+	"../futon3c/emacs/xiang-trace.el"
+	"../futon3c/emacs/xiaoxiang-preview.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
@@ -213,6 +215,8 @@
 (require 'session-overview)   ; live session weak-scope view (M-x session-overview)
 (require 'session-mode)       ; deterministic NNexus markup of the live buffer (M-x session-mode)
 (require 'turn-stepper)       ; 象 stepper side window (M-x turn-stepper in a REPL buffer)
+(require 'xiang-trace)        ; 象 lifecycle trace; violations show beside the 象 lighter
+(require 'xiaoxiang-preview)  ; 小象 draft preview (M-x xiaoxiang-preview)
 
 ;; Shared Agency WS observer (single socket, one ordered reader): HUD +
 ;; completion bubbles + park-ready fast-path.  Connects as the `emacs-hud'
