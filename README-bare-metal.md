@@ -36,9 +36,53 @@ back as "more cores than you specified" is wrong and confusing — check `lscpu`
 
 **Check RAM against what was ordered.** On zone-joe `MemTotal` came to 123.4 GiB against
 a commissioned 256 GB. `sudo dmidecode -t memory | grep -E "Size:|Locator:|Maximum"`
-showed **2 × 64 GB installed, 2 slots empty, `Maximum Capacity: 128 GB`** — i.e. the
-board caps at half the ordered amount, so it was not a missing-sticks problem but an
-undeliverable spec. Worth raising with the provider; `dmidecode` needs root.
+showed **2 × 64 GB installed, 2 slots empty**. It looked like an undeliverable spec, but
+it was a fitting fault: the provider had not installed or not properly seated the
+missing DIMMs, and fixed it once told. Raise it with the provider rather than diagnosing
+around it, and re-run `free -g` afterwards. `dmidecode` needs root.
+
+**Check the disk is new and healthy.** On 2026-10-06, about two months in, zone-joe's
+drive failed outright and the box went dark: no ICMP, no TCP, nothing to log in to. Two
+early hardware faults (RAM, then disk) from one provider is reason enough to check every
+drive on arrival, including replacements:
+
+```bash
+ssh zone-joe '
+  lsblk -d -o NAME,MODEL,SERIAL,SIZE,ROTA,TYPE
+  cat /proc/mdstat 2>/dev/null          # any software RAID?
+  command -v smartctl >/dev/null || sudo apt-get install -y -qq smartmontools
+  for d in $(lsblk -dn -o NAME,TYPE | awk "\$2==\"disk\"{print \$1}"); do
+    echo "== /dev/$d"; sudo smartctl -H -A /dev/$d
+  done'
+```
+
+What to read:
+
+| field | NVMe | SATA | a new drive shows |
+|---|---|---|---|
+| overall health | `SMART overall-health ... PASSED` | same | `PASSED` |
+| age | `Power On Hours` | `Power_On_Hours` (attr 9) | tens of hours at most |
+| writes | `Data Units Written` (×512 kB) | `Total_LBAs_Written` (attr 241) | close to zero |
+| wear | `Percentage Used` | `Wear_Leveling_Count` / `Media_Wearout_Indicator` | 0% used |
+| damage | `Media and Data Integrity Errors` | `Reallocated_Sector_Ct` (5), `Current_Pending_Sector` (197) | 0 |
+
+**Thousands of power-on hours or terabytes already written means a used or
+refurbished drive.** Ask the provider whether that is what was sold. Any non-zero
+damage counter on a box you are about to trust with long runs: ask for a swap now,
+not after it fails.
+
+Then keep watching, so the next failure comes with a warning:
+
+```bash
+ssh zone-joe '
+  echo "DEVICESCAN -a -o on -S on -n standby,q -s (S/../.././02|L/../../6/03) -m root" |
+    sudo tee /etc/smartd.conf
+  sudo systemctl enable --now smartmontools'
+```
+
+`-m root` only helps if root's mail goes somewhere you read. Otherwise poll
+`smartctl -H` from another machine. A single disk has no redundancy at all, so ask
+for a second drive in RAID1 if the work on the box is not all pushed elsewhere.
 
 ### Check service ports before choosing or installing a unit
 
@@ -780,7 +824,8 @@ half-finished checkpoint file is often the most valuable thing on the box.
 | symptom | cause | fix |
 |---|---|---|
 | `nproc` disagrees with the spec | it counts threads | read `lscpu` `Core(s) per socket` |
-| RAM far below what was ordered | DIMMs unpopulated, or board caps below spec | `sudo dmidecode -t memory`; check `Maximum Capacity` |
+| RAM far below what was ordered | DIMMs missing or not seated (zone-joe, 2026-08) | `sudo dmidecode -t memory`; report to the provider |
+| box goes dark: no ping, every port silently dropped | dead disk (zone-joe, 2026-10-06), or firewall / null route | ask the provider for a console screenshot *before* a reset; SMART-check every drive on arrival (§0) |
 | Clojure install 403s | `download.clojure.org` blocked, no proxy | fetch `linux-install.sh` from GitHub releases |
 | `apt-get` sits with no download progress | configured Ubuntu archive is stalling | probe it and a signed Ubuntu mirror; preserve and change the source only after confirming (§2) |
 | `Local lib X not found` | `:local/root` deps are **transitive** | compute the closure (§3), do not chase one at a time |
