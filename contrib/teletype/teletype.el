@@ -1,10 +1,15 @@
 ;;; teletype.el --- type on one terminal frame, act in another  -*- lexical-binding: t; -*-
 
 ;; One keyboard, two screens.  Phone A has the keyboard, phone B drives a second
-;; monitor; both are `emacsclient -t' frames on the same Emacs daemon.  In A, run
-;; `teletype-connect': from then on every key typed on A is executed in B's
-;; selected window, and A's screen shows a running printout of what was sent.
-;; C-] (telnet's escape) ends the session.
+;; monitor; both are `emacsclient -t' frames on the same Emacs daemon.
+;;
+;; Window-manager style (`teletype-wm-mode'): frames get positions, left and
+;; right.  In the keyboard's frame, C-c <left> sends the keyboard to the left
+;; monitor, C-c <right> brings it home, and C-] toggles.  The focused monitor's
+;; mode line is highlighted.  While focus is home nothing is relayed at all.
+;;
+;; One-shot style: `teletype-connect' relays to another frame and turns this
+;; screen into a running printout of what was sent; C-] ends it.
 ;;
 ;; No network layer: the shared daemon already is the switchboard.
 
@@ -25,6 +30,16 @@
 
 (defvar teletype--source nil
   "Frame whose keyboard is being relayed.")
+
+(defvar teletype-wm-mode)               ; defined by `define-minor-mode' below
+(defvar teletype-wm-mode-map)
+
+(defvar teletype--home nil
+  "In `teletype-wm-mode', the frame on the terminal that has the keyboard.")
+
+(defface teletype-focus
+  '((t :background "green4" :foreground "white" :weight bold :inverse-video nil))
+  "Mode line of the frame that currently receives the keyboard.")
 
 (defconst teletype--buffer-name "*teletype*")
 
@@ -147,8 +162,11 @@ bindings."
     (unwind-protect
         (progn
           (setq keys (teletype--read-sequence start win))
-          (if (equal keys (vconcat teletype-escape-key))
-              (setq cmd 'teletype--escape)
+          (let ((wm (and teletype-wm-mode (lookup-key teletype-wm-mode-map keys))))
+            (cond ((commandp wm) (setq cmd (cons 'teletype--wm wm)))
+                  ((equal keys (vconcat teletype-escape-key))
+                   (setq cmd 'teletype--escape))))
+          (unless cmd
             (setq cmd (with-selected-window win (key-binding keys t)))
             (teletype--print "%s" (teletype--describe keys))
             (if (not (commandp cmd))
@@ -164,9 +182,9 @@ bindings."
                        (teletype--print "‹%s›" (error-message-string err)))))
                 (teletype--advise nil)))))
       ;; Back on the source frame: re-arm the relay unless we were told to stop.
-      (if (eq cmd 'teletype--escape)
-          (teletype-disconnect)
-        (when teletype--target (teletype--install t)))))
+      (cond ((eq cmd 'teletype--escape) (teletype-disconnect))
+            ((eq (car-safe cmd) 'teletype--wm) (call-interactively (cdr cmd)))
+            (teletype--target (teletype--install t)))))
   (redisplay t))
 
 (defun teletype-relay ()
@@ -213,7 +231,114 @@ bindings."
   (when (and teletype--source (frame-live-p teletype--source))
     (with-selected-frame teletype--source (teletype--install nil)))
   (setq teletype--target nil)
+  (teletype--update-indicators)
   (message "teletype: disconnected"))
+
+;;;; Window-manager layer
+
+(defun teletype--frame-at (position)
+  "The live frame whose teletype position is POSITION, or nil."
+  (seq-find (lambda (f) (and (frame-live-p f)
+                             (eq (frame-parameter f 'teletype-position) position)))
+            (frame-list)))
+
+(defun teletype--focused-frame ()
+  (if (frame-live-p teletype--target) teletype--target teletype--home))
+
+(defun teletype--update-indicators ()
+  "Highlight the mode line of the frame that has the keyboard's focus."
+  (dolist (f (frame-list))
+    (when (frame-live-p f)
+      (face-spec-recalc 'mode-line f)
+      (face-spec-recalc 'mode-line-active f)))
+  (let ((f (teletype--focused-frame)))
+    (when (and teletype-wm-mode (frame-live-p f))
+      (dolist (face '(mode-line mode-line-active))
+        (set-face-attribute face f :inherit 'teletype-focus
+                            :background 'unspecified :foreground 'unspecified
+                            :inverse-video 'unspecified))))
+  (force-mode-line-update t)
+  (redisplay t))
+
+(defun teletype--lighter ()
+  "Mode-line text for the frame being drawn."
+  (when teletype-wm-mode
+    (let ((f (selected-frame)))
+      (cond ((eq f (teletype--focused-frame)) " ◆typing here◆")
+            ((and (eq f teletype--home) (frame-live-p teletype--target))
+             (format " [keys → %s]"
+                     (or (frame-parameter teletype--target 'teletype-position) "other")))))))
+
+(defun teletype-set-position (position)
+  "Name this frame's place on the desk: `left' or `right'."
+  (interactive (list (intern (completing-read "Position: " '("left" "right") nil t))))
+  (set-frame-parameter nil 'teletype-position position)
+  (teletype--update-indicators))
+
+(defun teletype-focus (position)
+  "Send the keyboard to the frame at POSITION.
+The keyboard's own frame means home: stop relaying."
+  (unless (frame-live-p teletype--home)
+    (user-error "teletype: no keyboard frame; run `teletype-wm-start' there"))
+  (let ((frame (teletype--frame-at position)))
+    (cond
+     ((null frame) (message "teletype: no %s monitor" position))
+     ((eq frame teletype--home)
+      (with-selected-frame teletype--home (teletype--install nil))
+      (setq teletype--target nil)
+      (message "teletype: keyboard on %s (home)" position))
+     (t
+      (setq teletype--target frame
+            teletype--source teletype--home)
+      (with-selected-frame teletype--home (teletype--install t))
+      (teletype--print "\n[focus → %s]\n" position)
+      (message "teletype: keyboard on %s" position))))
+  (teletype--update-indicators))
+
+(defun teletype-focus-left ()  (interactive) (teletype-focus 'left))
+(defun teletype-focus-right () (interactive) (teletype-focus 'right))
+
+(defun teletype-focus-toggle ()
+  "Toggle the keyboard between home and the other monitor."
+  (interactive)
+  (if (frame-live-p teletype--target)
+      (teletype-focus (frame-parameter teletype--home 'teletype-position))
+    (let ((other (seq-find (lambda (f) (and (frame-parameter f 'teletype-position)
+                                            (not (eq f teletype--home))))
+                           (frame-list))))
+      (if other
+          (teletype-focus (frame-parameter other 'teletype-position))
+        (message "teletype: no other monitor")))))
+
+(defvar teletype-wm-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c <left>")  #'teletype-focus-left)
+    (define-key map (kbd "C-c <right>") #'teletype-focus-right)
+    (define-key map teletype-escape-key #'teletype-focus-toggle)
+    map)
+  "Focus keys.  Also honoured while relaying: they are never sent across.")
+
+(define-minor-mode teletype-wm-mode
+  "Two monitors, one keyboard: move the keyboard's focus between frames."
+  :global t
+  :keymap teletype-wm-mode-map
+  (if teletype-wm-mode
+      (add-to-list 'global-mode-string '(:eval (teletype--lighter)) t)
+    (when (frame-live-p teletype--home)
+      (with-selected-frame teletype--home (teletype--install nil)))
+    (setq teletype--target nil)
+    (setq global-mode-string (delete '(:eval (teletype--lighter)) global-mode-string)))
+  (teletype--update-indicators))
+
+;;;###autoload
+(defun teletype-wm-start (&optional position)
+  "Make this frame the keyboard's home at POSITION (default `right')."
+  (interactive)
+  (setq teletype--home (selected-frame))
+  (set-frame-parameter nil 'teletype-position (or position 'right))
+  (teletype-wm-mode 1)
+  (message "teletype: home is %s.  C-c <left>/<right> or C-] to move the keyboard"
+           (or position 'right)))
 
 (provide 'teletype)
 ;;; teletype.el ends here

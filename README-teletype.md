@@ -23,7 +23,36 @@ emacsclient -t frame  ── keys ──▶  teletype-relay ── runs in ─�
 *teletype* printout   ◀── log ──                                  shows the result
 ```
 
-## Use
+## Window-manager mode: left and right monitors
+
+The everyday way to use it. Each frame is given its place on the desk, and the
+keyboard's focus moves between them like a window manager's:
+
+| key (on the keyboard phone) | effect |
+|---|---|
+| `C-c <left>` | keyboard goes to the **left** monitor: everything typed runs there |
+| `C-c <right>` | keyboard comes home to the **right**: nothing is relayed |
+| `C-]` | toggle between the two |
+
+The focused monitor's mode line turns green and says `◆typing here◆`. While the
+keyboard is away, the home frame's mode line says `[keys → left]`. At home,
+teletype does nothing at all, and the right frame is an ordinary Emacs frame. Focus
+keys are never relayed. The printout is still logged, in the background, to
+`*teletype*`.
+
+```elisp
+;; in the frame on the monitor without a keyboard
+(teletype-set-position 'left)
+;; in the frame of the phone with the keyboard
+(teletype-wm-start 'right)
+```
+
+Tried on the two phones with DeX on 2026-10-07 (phone1 right with the keyboard,
+phone2 left), through `contrib/teletype/tt-frame` (installed as `~/bin/tt-frame` on lucy, with `teletype.el` beside it): `tt-frame left` / `tt-frame right`
+(aliases `screen` / `keyboard`), called from each phone by `sh tt-demo.sh [keyboard]` (`contrib/teletype/tt-demo.sh`, which goes phone → metameso → lucy).
+Start the left frame first, on a freshly started daemon.
+
+## One-shot mode
 
 On the daemon, once (e.g. in the init file of `emacs-graph.service`):
 
@@ -74,17 +103,25 @@ contrib/teletype/test-teletype.sh
 
 Needs `emacs` and `tmux`. Two tmux sessions play the two phones, attached as
 `emacsclient -t` frames to a private `emacs -Q` daemon, so your own Emacs is not
-touched. It checks: typing plus `C-a`; `M-x upcase-word`; query-replace with
-`y n !`; `C-x`, a 2-second pause, then `C-w` to write B's buffer; arrow-key decoding;
-and `C-]`. Last run: all 6 pass (Emacs 29.3 on lucy, 2026-10-07).
+touched.
+
+- One-shot relay: typing plus `C-a`; `M-x upcase-word`; query-replace with `y n !`;
+  `C-x`, a 2-second pause, then `C-w` to write B's buffer; arrow-key decoding; `C-]`.
+- Window-manager mode: typing stays home; `C-c <left>` sends it left; both mode
+  lines show the focus; `C-]` toggles; `C-c <right>` comes home and is not relayed.
+
+Last run: all 12 pass (Emacs 29.3 on lucy, 2026-10-07).
 
 ## Not yet / known limits
 
-- **Not yet tried on the real phones with DeX.** The test uses tmux terminals.
-- One session at a time (the target is global), and A → B only, not both ways.
+- One keyboard at a time (the home and target are global), and the keyboard's
+  home is fixed by `teletype-wm-start`.
 - Mouse and touch on B are not relayed (B's own touch input still works locally).
 - Echo-area messages from relayed commands show on B's frame. Prompts show on A.
 - Commands that create new frames, or wait for input through means other than the
   advised primitives, have not been tested.
-- Ideas: `teletype-swap` (flip direction), naming frames by phone, and an Agency
-  hook so an agent can "type" into a screen the same way.
+- A daemon that was not started cleanly can hang. That happened once, after
+  loading new code into a daemon with an old relay active. Kill it and start fresh.
+- Future work: have `tt-frame` detect an unresponsive daemon (say after 5 s) and
+  restart it; more than two monitors; an Agency hook so an agent can "type" into
+  a screen the same way.

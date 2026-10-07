@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Open a teletype frame on the shared "tt" Emacs daemon (starts it if needed).
+#   tt-frame left   (or: screen)    the monitor with no keyboard
+#   tt-frame right  (or: keyboard)  the keyboard's home; C-c <left>/<right> or C-] move the keyboard
+# Loads the dev copy ~/bin/teletype.el each time, so a running daemon picks up changes.
+EL="$HOME/bin/teletype.el"
+emacsclient -s tt -e t >/dev/null 2>&1 || emacs --daemon=tt >/dev/null 2>&1
+emacsclient -s tt -e "(load \"$EL\" nil t)" >/dev/null
+case "${1:-left}" in
+  right|keyboard)
+    exec emacsclient -s tt -t -e '(progn (switch-to-buffer "*right*")
+       (when (= (buffer-size) 0) (insert "RIGHT monitor: the keyboard lives here.\nC-c <left> or C-] sends the keyboard left; C-c <right> or C-] brings it back.\n\n"))
+       (teletype-wm-start (quote right)))' ;;
+  *)
+    exec emacsclient -s tt -t -e '(progn (switch-to-buffer "*left*")
+       (when (= (buffer-size) 0) (insert "LEFT monitor.  Typing lands here when the keyboard is sent left.\n\n"))
+       (teletype-set-position (quote left)))' ;;
+esac

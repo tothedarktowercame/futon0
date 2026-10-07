@@ -45,5 +45,27 @@ check "arrow keys decode (<up>)"          'hell0 ^from ph0ne A' "$(line 2)"
 $A C-]; sleep 0.4; $A -l local; sleep 0.4
 check "C-] stops relaying"                'hell0 ^from ph0ne A' "$(line 2)"
 
+# ---- Phase 2: window-manager focus (left / right) ---------------------------
+emacsclient -s "$D" -e '(kill-emacs)' >/dev/null 2>&1
+tmux kill-session -t "${D}A" 2>/dev/null; tmux kill-session -t "${D}B" 2>/dev/null; sleep 0.5
+emacs -Q --daemon="$D" -l "$HERE/teletype.el" >/dev/null 2>&1
+tmux new-session -d -s "${D}B" -x 100 -y 12 \
+  "TERM=xterm-256color emacsclient -s $D -t -e '(progn (switch-to-buffer \"left\") (teletype-set-position (quote left)))'"; sleep 1.5
+tmux new-session -d -s "${D}A" -x 100 -y 12 \
+  "TERM=xterm-256color emacsclient -s $D -t -e '(progn (switch-to-buffer \"right\") (teletype-wm-start))'"; sleep 1.5
+aline() { tmux capture-pane -p -t "${D}A" | sed -n "$1p"; }
+modeline() { tmux capture-pane -p -t "$1" | grep -E -- '-{3,}' | tail -1; }
+
+$A -l 'home'; sleep 0.5
+check "wm: at home, typing stays on right"  'home|'          "$(aline 2)|$(line 2)"
+$A C-c Left; sleep 0.5; $A -l 'L1'; sleep 0.5
+check "wm: C-c <left> sends keys left"      'home|L1'        "$(aline 2)|$(line 2)"
+check "wm: left mode line says typing here" 1 "$(modeline "${D}B" | grep -c 'typing here')"
+check "wm: right mode line says keys → left" 1 "$(modeline "${D}A" | grep -c 'keys → left')"
+$A C-]; sleep 0.5; $A -l '+R'; sleep 0.5
+check "wm: C-] toggles home"                'home+R|L1'      "$(aline 2)|$(line 2)"
+$A C-]; sleep 0.5; $A -l '2'; sleep 0.4; $A C-c Right; sleep 0.5; $A -l '!'; sleep 0.5
+check "wm: C-] again goes left; C-c <right> comes home, not relayed" 'home+R!|L12' "$(aline 2)|$(line 2)"
+
 [ $fail = 0 ] && echo "all teletype tests passed" || echo "teletype tests FAILED"
 exit $fail
