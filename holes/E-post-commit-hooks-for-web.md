@@ -7,6 +7,8 @@
 `zone.hyperreal.enterprises/wip/` by hand.
 **Relates to:** `M-futon-problems` (G1, D7) · `war-room/wr-8-typed-files-are-sources-of-truth`
 
+**VERDICT (2026-10-09, provisional):** ABANDONED — Deliberately not built at Joe's instruction ('let's not do it yet') with hooks deferred until the invoked tooling stops moving; parked indefinitely with only a 'when it is time' note. _(WM status classification by zai-1, medium confidence; not yet confirmed by the author.)_
+
 ---
 
 ## The idea

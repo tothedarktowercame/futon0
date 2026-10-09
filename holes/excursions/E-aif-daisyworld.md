@@ -12,6 +12,8 @@ reward (G-REWARD)**; coupling gives an **adversary**; so it's where the closed l
 open FutonZero question tested (cf. `futon6/holes/excursions/E-learning-as-we-go-vs-futonzero.md`). Ties:
 [[project_futonzero_generative_steering]], M-G-over-cascades (κ/L morphogenesis), Ostrom IAD (heat-commons).
 
+**VERDICT (2026-10-09, provisional):** OPEN — Phases 1-3a done and 3b'/3b recorded, but the charter's closing question (held-out coupled homeostasis test) remains unanswered; no work since 2026-06-24. _(WM status classification by zai-2, medium confidence; not yet confirmed by the author.)_
+
 ## Log
 
 - **Phase 1 — simulator (DONE).** `daisyworld.clj`: faithful Clojure port of the Agents.jl Daisyworld
