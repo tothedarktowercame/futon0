@@ -335,6 +335,30 @@
                           :fix "no recurring job yet; basis futon3c/scripts/backup_evidence.sh")
       :else (pass-r ages))))
 
+(defn tmp-worktrees
+  "Linked worktrees of repos under code-dir that live in /tmp: [repo path] pairs."
+  [code-dir]
+  (for [dir (main-checkouts code-dir)
+        l (lines (:out (sh "git" "-C" (str dir) "worktree" "list" "--porcelain")))
+        :let [[_ p] (re-find #"^worktree (/tmp/.*)$" l)]
+        :when (and p (fs/exists? p))]
+    [(str (fs/file-name dir)) p]))
+
+;; /tmp is emptied at every boot (tmpfiles "D /tmp") and nothing backs it up. On
+;; 2026-10-07 the boot after the drive failure took 278 mfuton worktrees and the
+;; uncommitted progress tooling (rowtree.py, ACCEPTED.tsv) with it.
+(defn check-work-in-tmp []
+  (let [wts (tmp-worktrees code-dir)
+        repos (->> (lines (:out (sh "find" "/tmp" "-maxdepth" "3" "-name" ".git" "-user" (System/getProperty "user.name"))))
+                   (map #(str (fs/parent %)))
+                   (remove (set (map second wts))))]
+    (if (and (empty? wts) (empty? repos))
+      (pass-r "no git work in /tmp")
+      (fail-r (str (+ (count wts) (count repos)) " git checkout(s) in /tmp, which every boot erases")
+              :items (vec (concat (map (fn [[r p]] (str r " worktree " p)) wts)
+                                  (map #(str "repo " %) repos)))
+              :fix "move under ~/worktrees/<repo>/ (git worktree move), or commit, push and remove"))))
+
 (defn check-pass-store []
   (let [store (str home "/.password-store")
         n (count (filter #(str/ends-with? (str %) ".gpg") (file-seq (fs/file store))))
@@ -396,6 +420,7 @@
    ["inbox-zero"          "inbox zero running and passing"                 check-inbox-zero]
    ["inbox-zero-coverage" "zone-only work is inside inbox zero's manifest" check-inbox-zero-coverage]
    ["side-branches"       "manifest repos' side branches are on a remote"  check-side-branches]
+   ["work-in-tmp"         "no git checkouts in /tmp"                       check-work-in-tmp]
    ["git-hub-backup"      "nightly zone-git-backup ran in the last 26 h"   check-git-backup]
    ["evidence-backup"     "off-box evidence copy on both hubs, under 7 days" check-evidence-backup]
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]
