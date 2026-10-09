@@ -269,6 +269,50 @@
                                                  :fix (str "see " log))
       :else (pass-r (str "last good hub backup " (quot (- (now-s) t) 3600) " h ago")))))
 
+;; Inbox zero checks only each manifest repo's default branch, so a side branch
+;; that never left zone is invisible to it. Joe 2026-10-09: these stay failing
+;; until each is merged, pushed or retired.
+(defn summarize-branches
+  "One line per branch for a repo with a few; prefix counts for a repo with many
+  (apm-lean keeps hundreds of exp/ run branches)."
+  [repo described]
+  (if (<= (count described) 5)
+    (mapv #(str repo " " %) described)
+    [(str repo ": " (count described) " branches ("
+          (->> described (map #(if-let [[_ p] (re-find #"^([^/]+)/" %)] (str p "/*") %))
+               frequencies (sort-by (comp - val))
+               (map (fn [[k n]] (str n " " k)))
+               (str/join ", "))
+          ")")]))
+
+(defn describe-branch [dir b]
+  (let [default (not-empty (:out (sh "git" "-C" (str dir) "symbolic-ref" "--short" "refs/remotes/origin/HEAD")))
+        unique (when default
+                 (count (filter #(str/starts-with? % "+")
+                                (lines (:out (sh "git" "-C" (str dir) "cherry" default b))))))]
+    (str b (cond (nil? default) ""
+                 (zero? unique) ": already on the default branch (safe to delete)"
+                 :else (str ": " unique " commit(s) not on " default)))))
+
+;; Inbox zero checks only each manifest repo's default branch, so a side branch
+;; that never left zone is invisible to it. Joe 2026-10-09: these stay failing
+;; until each is merged, pushed or retired.
+(defn check-side-branches []
+  (let [manifest (manifest-paths)
+        per-repo (for [dir (main-checkouts code-dir)
+                       :when (manifest (str (fs/normalize dir)))
+                       :let [{:keys [repo zone-only]} (repo-state dir)]
+                       :when (seq zone-only)]
+                   [repo (if (<= (count zone-only) 5)
+                           (mapv #(describe-branch dir %) zone-only)
+                           zone-only)])
+        total (reduce + (map (comp count second) per-repo))]
+    (if (zero? total)
+      (pass-r "no side branch of a manifest repo lives only on zone")
+      (fail-r (str total " side branch(es) of manifest repos on no remote")
+              :items (vec (mapcat (fn [[repo ds]] (summarize-branches repo ds)) per-repo))
+              :fix "Joe: merge, push, or retire each (zone-git-backup copies them nightly meanwhile)"))))
+
 (defn newest-offbox-evidence
   "Newest off-box copy of the evidence store on a hub: [epoch-s path], or nil.
   Counts the recovery extract and any later backup under ~/backups/evidence."
@@ -351,6 +395,7 @@
    ["recovery-image"      "2 TB recovery image cleaned up"                 check-recovery-image]
    ["inbox-zero"          "inbox zero running and passing"                 check-inbox-zero]
    ["inbox-zero-coverage" "zone-only work is inside inbox zero's manifest" check-inbox-zero-coverage]
+   ["side-branches"       "manifest repos' side branches are on a remote"  check-side-branches]
    ["git-hub-backup"      "nightly zone-git-backup ran in the last 26 h"   check-git-backup]
    ["evidence-backup"     "off-box evidence copy on both hubs, under 7 days" check-evidence-backup]
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]

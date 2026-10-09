@@ -43,6 +43,11 @@
   (is (str/includes? (hub-relation true false true) "ahead"))
   (is (str/includes? (hub-relation false false false) "never fetched")))
 
+(deftest summarize-branches-groups-many
+  (is (= ["r a" "r b"] (summarize-branches "r" ["a" "b"])))
+  (is (= ["r: 6 branches (4 exp/*, 1 probe/*, 1 main)"]
+         (summarize-branches "r" ["exp/1" "exp/2" "exp/3" "exp/4" "probe/x" "main"]))))
+
 (deftest main-checkouts-counts-a-repo-once
   (let [dir (fs/create-temp-dir)
         git (fn [& args] (apply proc/shell {:out :string :err :string :dir (str dir)} "git" args))]
