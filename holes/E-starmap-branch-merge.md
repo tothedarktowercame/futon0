@@ -22,3 +22,10 @@ Closing the mission with the branch unmerged would strand the work off `main`.
 
 `wm-outing/2026-06-07`'s star-map work is on `main` (or explicitly abandoned with a recorded reason),
 and `git branch --merged` confirms it.
+
+## Closure criteria (provisional, 2026-10-09)
+
+_Drafted from this document's own stated goals during the War Machine status classification (zai-5, high confidence); not yet confirmed by the author._
+
+- [ ] Merge or cherry-pick wm-outing/2026-06-07 into main with the usual gates; record what landed
+- [ ] Confirm via git branch --merged, or record an explicit abandonment reason

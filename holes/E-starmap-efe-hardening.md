@@ -23,3 +23,10 @@ robust across the full range of inputs.
 ## Exit condition
 
 The EFE body-term + decompose pass adversarial tests and hold INV-G across the hardened input range.
+
+## Closure criteria (provisional, 2026-10-09)
+
+_Drafted from this document's own stated goals during the War Machine status classification (zai-5, high confidence); not yet confirmed by the author._
+
+- [ ] Harden the EFE body-term and decompose step across edge cases, degenerate graphs and scale, keeping INV-G intact
+- [ ] Add adversarial tests (logic-model-before-code discipline) that the hardened body-term and decompose pass

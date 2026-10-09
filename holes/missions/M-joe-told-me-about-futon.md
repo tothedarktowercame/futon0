@@ -1936,3 +1936,12 @@ the behaviour of other organized and organizational entities."*
   test is held-out prediction: fit on part of the logs, predict something in
   the rest (e.g. where the operator intervenes next) and beat the plain
   counts. Until then this stays at P1 in the pitch (§6.1).
+
+## Closure criteria (provisional, 2026-10-09)
+
+_Drafted from this document's own stated goals during the War Machine status classification (zai-5, high confidence); not yet confirmed by the author._
+
+- [ ] Answer Q-install in the newcomer's voice: a user other than Joe can install and run FUTON following public docs, evidenced by one such user or a trial run
+- [ ] Answer Q-bother with a stated value case grounded in the §2b value work, not glibness
+- [ ] INSTANTIATE (§6, open since 2026-09-27): run the campaign as a lightweight active-inference model and record Checkpoints beyond 1-3
+- [ ] Before pitching the AIF story beyond P1: pass a held-out prediction test (fit on part of the logs, predict e.g. operator interventions, beat plain counts)

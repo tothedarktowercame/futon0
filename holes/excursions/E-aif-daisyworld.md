@@ -80,3 +80,10 @@ the full apparatus, and κ/L · cascade-rollout · coupled-exogenous-reward · m
 
 Does the closed loop (R2-trained pattern-prior over the microcosm) beat a frozen prior + the hand heuristic on
 *held-out coupled homeostasis* (the grounded yardstick)? If not, record it honestly — as 3b already did.
+
+## Closure criteria (provisional, 2026-10-09)
+
+_Drafted from this document's own stated goals during the War Machine status classification (zai-1, medium confidence); not yet confirmed by the author._
+
+- [ ] Run the carried falsifiable test: R2-trained pattern-prior vs frozen prior plus hand heuristic on held-out coupled homeostasis
+- [ ] Record the result either way (a negative is recorded as such, per the 3b precedent)

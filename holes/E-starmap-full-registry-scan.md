@@ -25,3 +25,10 @@ set; generalising to the whole mission registry is unverified.
 
 The star-map is grounded on the full registry, with the curated-vs-full divergence characterised and
 the keystone re-confirmed (or its limits at full scale recorded).
+
+## Closure criteria (provisional, 2026-10-09)
+
+_Drafted from this document's own stated goals during the War Machine status classification (zai-5, high confidence); not yet confirmed by the author._
+
+- [ ] Run the pipeline over the full registry; confirm EFE still top-ranks an applicable leaf with no cherry-pick at full scale
+- [ ] Record curated-vs-full divergence; re-confirm the keystone or record its limits at full scale
