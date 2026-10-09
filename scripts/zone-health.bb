@@ -36,7 +36,9 @@
 (def disk-watch-max-age-s (* 30 60))
 (def disk-temp-max-c 75)
 (def backup-max-age-s (* 26 3600))
-(def evidence-backup-log (str home "/.local/state/evidence-backup.log"))
+;; Joe 2026-10-09: a copy made the same day is not overdue. There is no recurring
+;; job yet, so this check goes red when the newest copy passes a week.
+(def evidence-copy-max-age-s (* 7 86400))
 (def recovery-image "/recovery/old-root.img")
 
 ;; ---------------------------------------------------------------- plumbing
@@ -212,19 +214,49 @@
        (filter #(fs/directory? (fs/path % ".git")))
        (sort-by str)))
 
-(defn check-repos-pushed []
-  (let [states (map repo-state (main-checkouts code-dir))
-        bad (for [s states :let [k (repo-liability s)] :when (#{:no-remote :unpushed-branches} k)]
+;; Pushing is inbox zero's job (futon-sync check-clean, README-inbox-zero.md):
+;; it fetches and checks the manifest repos hourly. The scan checks that inbox
+;; zero is actually running and passing, and separately which repos holding
+;; zone-only work it does not cover at all.
+
+(defn manifest-paths []
+  (let [base (str code-dir "/futon0/data")]
+    (->> (:repos (json/parse-string (slurp (str base "/git_sources.json")) true))
+         (map #(str (fs/normalize (fs/path base (:path %)))))
+         set)))
+
+(defn check-inbox-zero []
+  (let [timer (:out (sh "systemctl" "--user" "is-active" "futon-sync-check-clean.timer"))
+        props (into {} (for [l (lines (:out (sh "systemctl" "--user" "show" "futon-sync-check-clean.service"
+                                                "-p" "Result,ExecMainExitTimestamp" "--timestamp=unix")))]
+                         (str/split l #"=" 2)))
+        ran (some->> (get props "ExecMainExitTimestamp") (re-find #"\d+") parse-long)]
+    (cond
+      (not= "active" timer) (fail-r "inbox-zero timer is not running, so nothing checks that repos are pushed"
+                                    :fix "Joe: futon-sync-check-clean.timer is one of the parked timers")
+      (nil? ran) (fail-r "inbox zero has not run since boot")
+      (> (- (now-s) ran) (* 2 3600)) (fail-r (str "inbox zero last ran " (quot (- (now-s) ran) 3600) " h ago"))
+      (not= "success" (get props "Result")) (fail-r "inbox zero's last run failed"
+                                                     :fix "journalctl --user -u futon-sync-check-clean.service")
+      :else (pass-r (str "last run passed " (quot (- (now-s) ran) 60) " min ago")))))
+
+(defn check-inbox-zero-coverage []
+  (let [manifest (manifest-paths)
+        outside (->> (main-checkouts code-dir)
+                     (remove #(manifest (str (fs/normalize %))))
+                     (map repo-state))
+        bad (for [s outside :let [k (repo-liability s)] :when (#{:no-remote :unpushed-branches} k)]
               (case k
                 :no-remote (str (:repo s) ": no remote at all")
                 :unpushed-branches (str (:repo s) ": " (count (:zone-only s)) " branch(es) on no remote"
                                         (when (<= (count (:zone-only s)) 3)
                                           (str " " (str/join " " (:zone-only s)))))))]
     (if (empty? bad)
-      (pass-r (str (count states) " repos, every branch on a remote"))
-      (fail-r (str (count bad) " of " (count states) " repos have work only zone (and the backup hubs) hold")
+      (pass-r "every repo holding zone-only work is in the inbox-zero manifest")
+      (fail-r (str (count bad) " repos hold zone-only work outside inbox zero's manifest")
               :items (vec bad)
-              :fix "push to a real remote, or create one; the nightly hub backup is a stopgap, not a home"))))
+              :fix (str "Joe: add each to futon0/data/git_sources.json with a remote, or say it stays "
+                        "hub-backup-only (zone-git-backup copies it nightly)")))))
 
 (defn check-git-backup []
   (let [log (str home "/.local/state/zone-git-backup.log")
@@ -237,14 +269,27 @@
                                                  :fix (str "see " log))
       :else (pass-r (str "last good hub backup " (quot (- (now-s) t) 3600) " h ago")))))
 
+(defn newest-offbox-evidence
+  "Newest off-box copy of the evidence store on a hub: [epoch-s path], or nil.
+  Counts the recovery extract and any later backup under ~/backups/evidence."
+  [url]
+  (let [[_ host port] (re-find #"ssh://([^:]+):(\d+)" url)
+        {:keys [out]} (sh "ssh" "-o" "BatchMode=yes" "-o" "ConnectTimeout=5" "-p" port host
+                          "find ~/recovery ~/backups/evidence -maxdepth 1 \\( -name 'zone-extract-*' -o -name 'evidence-*' \\) -printf '%T@ %p\\n' 2>/dev/null | sort -n | tail -1")]
+    (when-let [[_ t p] (re-find #"^(\d+)\S* (\S+)" out)] [(parse-long t) p])))
+
 (defn check-evidence-backup []
-  (let [t (last-log-ok (try (slurp evidence-backup-log) (catch Exception _ "")))]
+  (let [copies (into {} (for [[h url] hubs] [h (newest-offbox-evidence url)]))
+        missing (for [[h c] copies :when (nil? c)] h)
+        stale (for [[h [t _]] copies :when (and t (> (- (now-s) t) evidence-copy-max-age-s))]
+                (str h ": " (quot (- (now-s) t) 86400) " days old"))
+        ages (str/join ", " (for [[h [t p]] copies :when t]
+                              (str h " " (quot (- (now-s) t) 3600) " h (" (fs/file-name p) ")")))]
     (cond
-      (nil? t) (fail-r "no off-box evidence-store backup exists yet"
-                       :fix (str "build the nightly job (basis: futon3c/scripts/backup_evidence.sh); "
-                                 "it must log 'TIMESTAMP ok: ...' to " evidence-backup-log))
-      (> (- (now-s) t) backup-max-age-s) (fail-r (str "last evidence backup " (quot (- (now-s) t) 3600) " h ago"))
-      :else (pass-r (str "last evidence backup " (quot (- (now-s) t) 3600) " h ago")))))
+      (seq missing) (fail-r "no off-box evidence copy found" :items (vec missing))
+      (seq stale) (fail-r "off-box evidence copy older than 7 days" :items (vec stale)
+                          :fix "no recurring job yet; basis futon3c/scripts/backup_evidence.sh")
+      :else (pass-r ages))))
 
 (defn check-pass-store []
   (let [store (str home "/.password-store")
@@ -304,9 +349,10 @@
    ["disk-space"          "/ below 80%"                                    check-disk-space]
    ["old-image-readonly"  "/mnt/old never writable"                        check-old-image-readonly]
    ["recovery-image"      "2 TB recovery image cleaned up"                 check-recovery-image]
-   ["repos-pushed"        "no work lives only on zone"                     check-repos-pushed]
+   ["inbox-zero"          "inbox zero running and passing"                 check-inbox-zero]
+   ["inbox-zero-coverage" "zone-only work is inside inbox zero's manifest" check-inbox-zero-coverage]
    ["git-hub-backup"      "nightly zone-git-backup ran in the last 26 h"   check-git-backup]
-   ["evidence-backup"     "nightly off-box evidence-store copy"            check-evidence-backup]
+   ["evidence-backup"     "off-box evidence copy on both hubs, under 7 days" check-evidence-backup]
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]
    ["pass-hubs-agree"     "zone and metameso pass stores agree"            check-pass-hubs]
    ["parked-timers"       "every parked timer decided by Joe"              check-parked-timers]])
