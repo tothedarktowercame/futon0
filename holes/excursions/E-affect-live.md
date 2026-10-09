@@ -1,5 +1,7 @@
 # Excursion: E-affect-live
 
+**VERDICT (2026-10-09, provisional):** DONE — Its bounded scope — clearing the stale feed blocker and wiring live read-only affect — is stated as achieved, with boundaries to other work explicitly excluded. _(WM status classification by zai-3, medium confidence; not yet confirmed by the author.)_
+
 **Date:** 2026-06-09
 **Owner:** codex-4
 **Scope:** clear stale affect-feed remarks and wire live affect material into `M-pudding-peradams` without

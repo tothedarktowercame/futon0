@@ -1,5 +1,7 @@
 # Excursion: Current Usage Report — Claude + Codex token burndown
 
+**VERDICT (2026-10-09, provisional):** DONE — All three layers of the usage-report tooling were built and wired into the HUD, with the closing commit on 2026-05-03. _(WM status classification by zai-5, high confidence; not yet confirmed by the author.)_
+
 **Date opened:** 2026-04-25
 **Entry point:** alongside `algorithms/apm-daily-batch.md`, the recurring
 question "do I have budget headroom to slip in another APM problem?" had no

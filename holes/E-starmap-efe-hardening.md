@@ -1,5 +1,7 @@
 # Excursion: E-starmap-efe-hardening
 
+**VERDICT (2026-10-09, provisional):** OPEN — Close-caveat spun out of M-capability-star-map with owner TBD and an unmet exit condition; dormant since 2026-06-10 but never stated as dropped. _(WM status classification by zai-3, low confidence; not yet confirmed by the author.)_
+
 **Type:** E-prefix excursion (bounded scope-out, single-agent-owned end-to-end).
 **Spawned:** 2026-06-10, on the **close of `M-capability-star-map`** (operator decision by Joe via
 WM pilot cycle #1; pilot claude-3) — one of the four close-caveats spun out so the mission could

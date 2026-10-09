@@ -9,6 +9,8 @@ change. The proposed extension is to retain enough provenance to remind the
 right live session about its uncommitted files without issuing a bell for every
 save.
 
+**VERDICT (2026-10-09, provisional):** DONE — Commits log slices A-I with a closing act, closing the excursion; remaining items are framed as future open decisions, not unfinished deliverables. _(WM status classification by zai-5, medium confidence; not yet confirmed by the author.)_
+
 ## Goal
 
 Maintain a durable, inspectable association among working-tree files, agent
