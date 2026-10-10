@@ -861,3 +861,21 @@ https://nonprofitquarterly.org/the-ballad-of-the-rcc-or-nice-try-now-try-again/ 
 https://wfmynews2.com/article/news/greensboro-community-grocery-store-that-opened-nearly-3-years-ago-to-close/83-d6296585-6d10-4242-9c28-0b8c2d938a48 ;
 https://ucanr.edu/sites/default/files/2025-09/Saba%20Case%20Study%20Brief.pdf ;
 https://stern.nyu.edu/sites/default/files/2024-11/2b_FoodMapNY_ProjectReport_HealthyFoodinRetail_112224.pdf
+
+**Joe, fourteenth turn:**
+
+> Saba is probably one of the inspiring examples for the person I talked with
+> b/c he is Oakland based. Broadly what's key here is the "demand side". So, of
+> course, if what people want is liquor, beer, wine, video games and casinos,
+> tobacco, etc., then, within reasonable limits of regulation, that's what they
+> are going to get.
+
+*Reading:* this restates the §3.4 filter at the scale of a neighbourhood. Tooling
+can change how an intent is carried out, but it cannot supply the intent. A store
+stocks what sells, so the owner's C (margin) follows the residents' C (wants).
+Regulation is R9's limit on that. A co-op does not change this, but it changes
+*whose* C governs. In a consumer co-op, the residents' preferences are the ones
+that count, and outsiders' views of what they ought to want do not. So "is it in
+demand?" is an inner-loop question. It is answered by asking residents and by
+sales records, before anything is built. This is the corner-store version of
+"solution in search of a problem" (§3.7).
