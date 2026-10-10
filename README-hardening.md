@@ -96,8 +96,8 @@ The outage showed that zone could go dark with no way to look at its console.
 - **Per-device credentials, authorised server-side.** This is the rule in
   `README-secrets.md` §1. An *audit of access* (§2), meaning which keys each server
   accepts, is an idea worth repeating after the rebuild.
-- **pass on every device, kept in sync.** The phones, metameso and lucy decrypt the
-  store. zone's copy and the metameso hub have diverged (3 Linode root-password
+- **pass on every device, kept in sync.** Every entry is encrypted to three keys
+  (zone, phone1, phone2). During the outage metameso served as the hub. zone's copy and the metameso hub have diverged (3 Linode root-password
   commits on one side only). *Open:* merge them, make zone a second hub, and
   automate sync (Joe, 10-07: "the federation of passwords should also be set up").
 - **Linode root passwords** were reset during the outage. Check that the new ones
