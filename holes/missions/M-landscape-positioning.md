@@ -473,3 +473,49 @@ The subject is *the operator* throughout and is omitted from the table.
   spending restricted by a limit.
 - Vendor words cluster on the *subject* slot ("the agent decides / learns /
   steers"). Rule 1 removes all of them without loss.
+
+## 3.1 Toward client problems (Joe, 2026-10-10, seventh turn)
+
+> What starts to become interesting is what actual customer or client problems
+> any of this might solve for anyone. Asking that could explain why some of the
+> verbs are more interesting than others. [...] a given company out there in
+> middle America or wherever is going to be turning to AI/tech/agents/etc. to
+> solve some actual problem for themselves or their clients. And in principle
+> having a model of how the space works should allow us to help them solve it
+> faster or better. Now, some problems are totally "human" problems, e.g.
+> managers that don't listen to their employees won't be "solved" with
+> Elephant-2000 methods for example.
+
+> [the War Machine] as a model of the way people and organisations work, it
+> seems like a great schematic. (Presumably whatever list of verbs we find or
+> come up with can be fitted to the PBASE and R-number outlines that describe
+> War Machine.)
+
+**A filter that follows from the SVO form (proposed, not accepted):** a tool can
+only change the *via* column, which is how faithfully an intent is carried. If a
+client's problem lies in the **S or V**, meaning nobody holds the intent (the
+manager has no intent to *collect* what employees report), then no improvement in
+fidelity will fix it. It is a human problem. If the intent is present but is
+carried badly or slowly, it is open to tooling. Many real problems are mixed.
+
+**Fitting the triples to the War Machine (first reading, unchecked against the
+Lean spec):**
+
+| triple rows | WM node |
+|---|---|
+| 1, 2 delegate · task | R10 (commissioned and dispatched) |
+| 6 verify by a second process | R9 (no self-certification) |
+| 3 constrain responses to calibrated typed answers | R12 (two-layer calibration) |
+| 13, 18 constrain token spend / payment | R11 (hierarchical shared budget) |
+| 16 defer a follow-up | R16 (grounded actuation; parked and surfaced) |
+| 10 report-problem · regressions | R20 (interoceptive tripwires) |
+| prioritize / constrain · what matters | R19 (preference C-vector), which is set by people. This is where the "human problem" boundary sits in WM terms |
+
+The three *constrain* rows with no FUTON counterpart (3, 8, 18) fall on R11 and
+R12. Those are WM nodes, so the War Machine has a specification for them even
+where the stack has no tool.
+
+**Prior work to reuse:** `M-joe-told-me-about-futon.md` §2c already collected
+public pain signals (clusters C1–C6). They are almost all *developer* pain. The
+client in middle America is a different population, and that pass has not been
+done.
