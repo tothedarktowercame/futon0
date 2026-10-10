@@ -23,6 +23,22 @@ Joe, 2026-10-10:
 > or if they are open source, reuse them, or if they are interesting but
 > non-open, replicate them.
 
+Joe, 2026-10-10 (fifth turn: intents vs actions):
+
+> people use very anthropogenic terms like "memory" (I do this too) when in fact
+> the reality is a bit different (graph database plus injected context into an
+> agent session or something). Possibly the list I was thinking of was a list of
+> "intents" that the agents could carry out on behalf of their operator, but,
+> really, it is the operator's intent that is being carried out (for better or
+> worse and with more or less fidelity) through the tool. This seems to be a
+> common theme that the various different service providers are circling here,
+> so it may be that there's no one "best" list. But I think we should be careful
+> to distinguish between intents (per speech act) and, let's say, actions (like
+> "query database").
+
+(Fourth turn, in brief: apply Cognisee's idea and make a small ontology of "what
+people do when they do tech".)
+
 Joe, 2026-10-10 (third turn: the review format and the thesis):
 
 > we could do a kind of Consumer Reports approach to these things: can we get
@@ -354,6 +370,22 @@ words appear on both lists (delegate, verify), and those words connect speech
 to work. Adding tool verbs to the same list would put two kinds of thing on one
 menu. A separate operation vocabulary, linked to the marks only where they share a
 verb, keeps the marks as they are. MAP collects the verbs. This choice is DERIVE's.
+
+**T8 — three layers that the vendors' vocabulary merges (Joe, fifth turn).**
+1. **Intent**: the operator's, as a speech act (the 象 marks: delegate,
+   verify, constrain, …). The intent belongs to the operator, not to the agent.
+2. **Action**: what the tool mechanically does ("query database", "inject
+   retrieved text into the session", "open a NATS subscription").
+3. **Vendor word**: the human-sounding name for (2) that the product sells
+   ("memory", "learns", "decides", "steers"). Joe uses these words too.
+
+A tool *carries* an intent through actions, with more or less fidelity. So the
+question to ask of a tool is not "which intents does it have?" but "which
+operator intents can it carry, through which actions, and how would anyone tell
+whether they were carried faithfully?" No list is likely to be "best": every
+vendor is circling the intent layer with a list of its own.
+`landscape/GLOSS.md` mixes layers 2 and 3 (e.g. "remember", "learn"). It is a
+translation aid, not the ontology. T7 is a special case of T8.
 
 ## Explicitly NOT decided here
 

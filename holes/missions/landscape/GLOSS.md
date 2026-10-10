@@ -4,6 +4,11 @@ Each entry gets a few verbs and their object, which is what the thing does. The 
 are named by their leading verb. Read this table to look up a name; the batch
 files hold the evidence.
 
+**Caveat (T8 in the mission):** many of these verbs are the vendors'
+human-sounding words ("remember", "learn", "decide"). They are not the
+mechanism, and they are not the operator's intent. Read "remember" as "store
+facts in a graph or vector DB and inject the matches into the session".
+
 Open: **✓** open and self-hostable · **½** open SDK/library, closed service ·
 **✗** closed or paid · **?** unclear.
 
