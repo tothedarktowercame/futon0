@@ -609,3 +609,52 @@ What the framing gives the survey (proposed):
 Per client problem, record: the in-state (the problem as the client states it),
 the out-channels and who is on each, a measurable out-state per channel, and which
 bounces each tool touches.
+
+## 3.4 Client problems as scatterings (first pass, 2026-10-10)
+
+Source: `landscape/client-problems-kernel.md`, published customer stories for
+the companies in groups B–D (four sub-agents). **All numbers there are
+vendor-reported.** Most stories are anonymised. Tatras Data (the consultancy Joe
+met, §1) gave the most, about 50 stories, and AIUC-1 gave the most named ones.
+Tool vendors that sell to builders (Composio, Braintrust, Judgment) show end-client
+problems only second-hand.
+
+The verbs below are the client's intents (the subject is the client organisation,
+omitted). Kind: **T** tooling (the intent is present but carried slowly or
+badly), **H** human (the intent or the trust is missing), **M** mixed.
+
+| # | in-state (client's problem) | verb · object | out-channels (who) | kind | source |
+|---|---|---|---|---|---|
+| 1 | thousands of complaint tickets a day, read, routed and answered by hand under regulatory rules | delegate · routing; verify · rule compliance | complainant (time, outcome); regulator; staff load | T | Tatras (insurer) |
+| 2 | paper invoices checked by hand against contract clauses held elsewhere | verify · invoice against contract | supplier (paid correctly); finance | T | Tatras |
+| 3 | hail-damage claims assessed from photos: slow and inconsistent | delegate · assessment; constrain · consistency | claimant; insurer loss ratio | T | Tatras |
+| 4 | field staff search 200-page manuals; veterans skim five per question | explore · manuals | plant uptime; staff | T | Tatras |
+| 5 | corrosion samples wait 7+ days for lab results before treatment changes | delegate · measurement | plant; water users | T | Tatras |
+| 6 | ad spend not linked to footfall, so staffing is guesswork | collect · linked data; prioritize · staffing | shoppers; staff hours | T | Tatras |
+| 7 | staff log into 32k partner studios' booking systems by hand to check schedules | collect · schedules | customers (accurate classes); studios | T | TinyFish (ClassPass) |
+| 8 | 90 reps need roleplay practice; managers' time is the bottleneck | delegate · practice; verify · call quality | prospects; reps' pay; managers | M | Hyperbound |
+| 9 | an AI mandate with no map of how work is done; weeks of sticky-note workshops | collect · how work is done | employees; leadership | M (mandate before map) | Scribe (TXNM Energy) |
+| 10 | 4x ROI demanded before automation; baselines from memory proved wrong | verify · baseline | the business case; staff | M | Scribe (Compare Club) |
+| 11 | lawyers re-check agent output by hand, which uses up the time saved | verify · agent output | clients; lawyers' hours | T (bounces cancel, §3.3) | Judgment (anon.) |
+| 12 | an agent approves privileged access on SOX systems; the auditor asks "can you prove it does what the policy says?" | verify + constrain · agent conduct, for an auditor | auditor; the firm's licence | H/M (trust between organisations) | AIUC-1 (MSCI) |
+| 13 | enterprise deals stall at the buyer's security sign-off; nobody is clearly liable | verify · conduct, for a buyer; delegate · liability | buyer; insurer | H | AIUC-1 (Lovable, ElevenLabs) |
+| 14 | a brand about to pivot "based on a hunch"; surveys can't show who is changing behaviour | explore · who changes behaviour | customers; the brand's margins | M (acting on a hunch) | o-machine (anon.) |
+| 15 | incident investigations on paper forms with incomplete witness statements; incidents repeat | collect · accounts; report-problem · root cause | workers' safety | M (*inference:* witnesses may hold back) | Tatras |
+
+**What the pass shows (provisional):**
+
+- **The verbs clients need are *verify* and *collect*.** Twelve of the 15 rows
+  use one or both. *Delegate* appears mostly as "delegate the reading". The
+  verbs SF sells most (orchestrate, coordinate) do not appear as client intents
+  at all. They are internal bounces.
+- **The common in-state is documents in a different format from every source,
+  checked by hand** (rows 1–5, 15). The tooling exists. What varies is fidelity:
+  consistency (3) and whether the check can be trusted (11).
+- **The human problems sit at boundaries between organisations or levels**:
+  auditor and firm, buyer and vendor, leadership and staff (9, 12, 13). In scattering
+  terms, the output has to pass through someone else's verification. Groups A and
+  B do not address that channel. Group D (Proof-of-Control, AIUC-1) does. So do
+  the FUTON evidence store and the audit offer.
+- **Row 11 is a warning for the War Machine.** If a factory's output still needs
+  full human review, nothing reaches the out-channel. R9 (no self-certification)
+  helps only if the second check costs less than the first.
