@@ -747,3 +747,49 @@ client to drop that component tend to fail. Tools that build a new assembly
 around it, as Joe's stack did with a 26-year-old keyboard, have a better chance.
 In scattering terms (§3.3), the long-lived components shape the in-state before
 any new tool is involved.
+
+## 3.7 A co-op that helps create co-ops (Joe, 2026-10-10, twelfth turn)
+
+> one approach I heard about at SF Tech Week (which I liked) was to focus on
+> building a co-op that would help people create other co-ops. So, the "inner
+> loop" here might be about solving some real-world problems, the "outer loop"
+> would be about enabling that on a technical basis. The only challenge with this
+> is that, if we come at it from a purely technical perspective, we'd be coming
+> with a solution (outer loop) in search of a problem. That said, there may well
+> be lots of real-world problems that are amenable to good solutions at the co-op
+> level that are not being developed *because* technology is a barrier [...]
+> vibe-coding plus an SF stack or a FUTON stack might help lower the
+> energy-threshold that's needed. [...] it seems plausible that the person I was
+> talking to about this is [in touch with inner-loop problems], and I could help
+> with the technical delivery side. But it'd be good to know more about the
+> concrete examples (even if hypothetical to start with)
+
+**Why co-ops fit what this mission has found so far:** §3.4–§3.5 placed the
+human problems where several parties' preferences (C, R19) meet. A co-op is an
+institution built for exactly that meeting: the members are the people on the
+out-channels (§3.3). Tooling cannot create the trust. It can lower the cost of
+carrying out what the members decide (*collect* and *verify*, §3.4) so that the
+co-op can afford to exist.
+
+**Hypothetical inner-loop cases (from memory; being verified in
+`landscape/coop-cases.md`):**
+
+| inner loop (the real problem) | the long-lived component (§3.6) | where tech is the barrier | intents |
+|---|---|---|---|
+| couriers own the delivery platform (the DoorDash case, §3.3) | restaurants' order flow; city labour rules | dispatch, payments, onboarding; CoopCycle exists for this | delegate · dispatch; verify · pay |
+| home-care workers' co-op | Medicaid billing and care-plan paperwork | scheduling, billing, compliance records | collect · visit records; verify · claims |
+| small farms pooling food-safety traceability (FSMA 204) | the federal record-keeping rule | each farm can't afford its own records system | collect · lot records; verify · compliance |
+| a retiring owner sells the business to its staff | the books, the valuation, the bank | bookkeeping and governance handover | collect · how the business runs (cf. Scribe, §3.4 row 9); verify · valuation |
+| gig workers pool their own data to see their true pay | each platform's opaque pay rules | collecting and analysing the data | collect · earnings; explore · pay rules |
+| freelancers share invoicing and social insurance | national tax and insurance rules | invoicing, contracts, compliance | verify · invoices against contracts (§3.4 row 2) |
+
+**Outer loop (the co-op that makes co-ops), in FUTON terms:** a reusable
+assembly (Arthur, §3.6) of what every new co-op needs to start: members'
+decisions, records, compliance checks, money. Most of it is *collect* and
+*verify* carried out for several parties at once, so that a new co-op's activation
+energy is mostly its inner-loop work. Existing examples of an outer loop to check:
+Co-op Cloud (shared hosting for co-ops), Start.coop, Platform Cooperativism
+Consortium, Project Equity.
+
+**Open:** who the person Joe met is, and which inner-loop problems they have in
+hand. Their list beats this table.
