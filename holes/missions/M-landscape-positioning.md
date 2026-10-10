@@ -988,3 +988,30 @@ them, but the moves of an argument that a paper does not state are tacit in the
 same sense. That is the layer futon6's argument mining goes after. So arXiv mining
 already sits in this survey as the Cognisee row, with an input that is easier to
 get at scale.
+
+## 3.12 What would a better memory store solve for Joe? (Joe, eighteenth turn)
+
+> War Machine would be our "software factory" with Futon1b as the "memory store";
+> [...] there would be a lot of things to learn from these SF folks *on a
+> technical level* about how to run a good memory store, but that could be copied
+> on a "best of" basis [...] it remains an interesting question what problems a
+> better memory store would solve *for me*.
+
+Candidate answers, in SVO form (operator intent · object), each tied to
+something that actually happened:
+
+| intent · object | what happened | fidelity check |
+|---|---|---|
+| collect · prior analysis, across hosts | **This mission's first step (today):** the 10-08 Tech Week analysis existed only in a Claude transcript on metameso and was found by grepping JSONL over ssh. The July landscape TNs were found by `ls`. Neither came from futon1b. | asking "have we looked at X before?" returns the earlier work, wherever it was done |
+| constrain · later responses (don't redo work) | the same: without that grep, the 10 lookups would have been redone | repeated research falls |
+| verify · a claim against the record | the JevOps/TypeSafe misreading (§2.1) was caught by reading code, not by any recorded prior | a claim can be traced to its source in one step |
+| explore · the store, cheaply | futon1b outages (09-29 lock, 09-30 504 storm; memory notes) came from reads the store could not bound | ordinary queries never take the service down |
+| collect · non-text evidence | the room's 8 photos and the Cotal screenshot are still unread | images are indexed with what they show |
+
+*Reading:* for Joe, the first two rows are the problem. A better memory store
+would mostly be about **recall across where work happened**: other hosts, other
+agents' transcripts, Matrix rooms. Storing more, or storing it more cleverly,
+matters less. That is a *collect* problem before it is a database problem. Of the
+SF entries, HydraDB (time-ordered facts) and ApertureData (images and their
+metadata in one place) bear on rows 1 and 5. futon1b's XTDB is already
+bitemporal.
