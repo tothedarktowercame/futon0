@@ -793,3 +793,71 @@ Consortium, Project Equity.
 
 **Open:** who the person Joe met is, and which inner-loop problems they have in
 hand. Their list beats this table.
+
+## 3.8 Worked case: "we bring food to your neighbourhood" (Joe, 2026-10-10, thirteenth turn)
+
+> Instead of "we bring food to your house", how about simply "we bring food to
+> your neighbourhood". That's what corner shops do. And yet in plenty of urban
+> settings there are "food deserts" where people don't have access to healthy
+> food and where people don't know where a tomato comes from or what one looks
+> like. So, possibly a "corner store co-op" would be in-demand in these
+> neighbourhoods (and possibly not).
+
+**Evidence for "and possibly not" (checked 2026-10-10):**
+- **Allcott, Diamond & Dubé** (NBER w24094; *QJE* 2019): supermarket entry and
+  households moving to healthier neighbourhoods had no meaningful effect on
+  healthy eating. Giving low-income households the availability and prices that
+  high-income households get closes **9%** of the nutrition gap. The other 91% is
+  demand. In R-node terms, the gap is mostly in C (preferences, habits,
+  knowledge: "what a tomato looks like"), not in the supply path.
+- **Renaissance Community Co-op, Greensboro NC**: a community-owned grocery in a
+  food desert. It opened in October 2016 after 18 years without a store and
+  raised $1.2M from members plus city and county grants. It closed in January
+  2019 because sales were too low. "People had developed other habits." Nonprofit
+  Quarterly ran a post-mortem webinar on it.
+- **Against that, at store level:** healthy-corner-store programmes report that
+  when stores carry more fresh produce, customers buy more fruit and vegetables and
+  fewer sugary drinks. The NYU Stern FoodMapNY report surveys these programmes. The
+  two findings can both hold: a store-level effect can be real and still close
+  little of the population gap.
+
+**Two different co-ops hide in "corner store co-op":**
+
+| | consumer co-op store (Renaissance model) | purchasing co-op of existing corner stores (Saba model) |
+|---|---|---|
+| long-lived component (§3.6) | replaced: a new store | **kept**: the bodega and its owner (NYC has 14,000+, about 12 per grocery store) |
+| the hard part it pools | everything: capital, lease, staff, demand | distributors' minimum orders, refrigeration, small deliveries |
+| example | Renaissance (closed 2019) | Saba Grocers Initiative, Oakland (nonprofit, founded 2020): refrigeration plus collective purchasing so stores can order below wholesale minimums; 3 pilot stores → 14 by July 2025 |
+
+The purchasing co-op follows the advice of §3.6: build around the component that
+has lasted.
+
+**As a scattering:**
+- *In-state:* a neighbourhood with corner stores and no fresh food on the shelves.
+- *Out-channels:* residents (diet, price, distance); store owners (margin,
+  spoilage); distributors (order size); the city (health costs).
+- *R-nodes:*
+  - o: sales by item; spoilage
+  - C: residents' habits. **Most of the gap is here, per Allcott.**
+  - R11: owners' cash and shelf space, and the cold chain
+  - R9: SNAP/WIC retailer rules, health inspection
+- *Kind:* **M**. Supply (pooled ordering, refrigeration) is a tooling problem.
+  Demand (C) is a human one, so stocking alone will not move it. Moving it needs
+  people: cooking, tasting, trust in the shop owner.
+
+**Where an outer loop (§3.7) would help:**
+- *collect*: pooled orders across stores; item-level sales and spoilage per store
+- *verify*: SNAP/WIC stocking rules; delivered against ordered
+- *prioritize*: what to stock next, from what actually sold
+
+This is small, cheap software: purchasing, inventory and spoilage records shared
+across stores. FUTON's evidence-store habit of keeping the record would also show
+which demand-side efforts move sales and which do not. That is the 91% question,
+asked store by store.
+
+Sources: https://www.nber.org/digest/feb18/eliminating-food-deserts-wont-cure-nutritional-inequality ;
+https://www.gsb.stanford.edu/faculty-research/working-papers/geography-poverty-nutrition-food-deserts-food-choices-across-united ;
+https://nonprofitquarterly.org/the-ballad-of-the-rcc-or-nice-try-now-try-again/ ;
+https://wfmynews2.com/article/news/greensboro-community-grocery-store-that-opened-nearly-3-years-ago-to-close/83-d6296585-6d10-4242-9c28-0b8c2d938a48 ;
+https://ucanr.edu/sites/default/files/2025-09/Saba%20Case%20Study%20Brief.pdf ;
+https://stern.nyu.edu/sites/default/files/2024-11/2b_FoodMapNY_ProjectReport_HealthyFoodinRetail_112224.pdf
