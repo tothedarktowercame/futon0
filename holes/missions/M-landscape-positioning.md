@@ -202,14 +202,17 @@ repos. Nothing here has been run.
     dispatch + worktrees + gates (clj-kondo, invariant checkers) + the
     warrant/test registry. FUTON's gates are mostly linters and tests, while his
     route admission through prover receipts.
-  - **`JevOps`**: "TypeSafe / Jev **kernel**, split from Lean Refactor Arena".
-    This links him to the **TypeSafe AI "System One / Jev"** entry in the room log
-    (10-06), so those two entries are one lead. The kernel is "a gate, not a proof
-    authority". Autoencoder and refactoring modules propose Lean candidates, and only
-    Lean/Lake admits them. There is also an explicit Lean IR autoencoder, MAB tactic
-    selection and a proof-carrying cellular automaton. Its current application is
-    US federal law, with source-locked legal theorems (the "Lean and law" from the
-    talk).
+  - **`JevOps`** (AGPL-3.0): a Lean refactoring and agent-loop kernel. Autoencoder
+    and refactoring modules propose Lean candidates, and only Lean/Lake admits
+    them ("a gate, not a proof authority"). It also has a Lean IR autoencoder, MAB
+    tactic selection and a proof-carrying cellular automaton. Its current
+    application is US federal law, with source-locked legal theorems (the "Lean
+    and law" from the talk). **Correction (batch C, 2026-10-10):** "TypeSafe / Jev
+    kernel" in its README names the *API it calls*
+    (`jevops/typesafe_inference.py` → `api.typesafe.ai/v1/systemone`, used as an
+    advisor whose answers are "never proof evidence"), not its authorship.
+    Barber is a TypeSafe *customer*. The two log entries are linked, but they are
+    not one lead, contrary to what this file said earlier.
   - **`Mcp-Plus-Plus`**: a spec for MCP execution profiles: content-addressed
     contracts, an immutable event DAG for audit and replay, capability delegation
     chains, and temporal deontic policy. *Problem:* making a multi-agent tool call
@@ -237,6 +240,69 @@ repos. Nothing here has been run.
   RadixArk, Vercel, Command Code, Kylon, MiniMax, TinyFish, Zed, Zoowork
 - 8 photos (10-04, 10-05), possibly slides
 - tailwindcss: almost certainly ignore
+
+# 2. MAP — first pass (2026-10-10)
+
+Consumer Reports entries for 54 log items, written by three research subagents
+and filed by batch:
+- `landscape/batch-A.md`: harnesses and coordination (18)
+- `landscape/batch-B.md`: evals, verification and protocols (18)
+- `landscape/batch-C.md`: memory, models and kin (18)
+
+Each entry gives the problem in plain words, get / build / use with licences checked
+against the repos, the tool's own verbs, and search seeds. These entries are web
+reading only. Nothing has been installed or run, and the FUTON counterparts are not
+yet filled in. `landscape/hackathon-TOOLS-2026-10-07.md` is a copy of the metameso
+sponsor-tool notes.
+
+## 2.1 Surprises — recorded before DERIVE
+
+- **Kin by vocabulary.** p2r, the hackathon's report format (BSD-3, Charlie
+  Danoff), uses Peeragogy vocabulary (`decide/create/review/coordinate/reflect`).
+- **Reticle's verification spec** (Apache-2.0) has four verdicts: yes / no /
+  unknown / no-fault. It keeps "could not see" apart from "did not happen" and
+  refuses actions that were not declared in advance. This is close to FUTON's
+  evidence/claim discipline. Read it in full.
+- **Cotal** is an Apache-2.0 NATS spec with work leases and fencing tokens. Its
+  verbs are call / cast / watch / claim / scatter. **Kylon's** follow-up rule (a
+  promise counts only once it exists with an id) is FUTON's park rule.
+- **Advanced AI Society** has a draft standard for evidence of what agents did:
+  8 checkpoints in an agent's run × 4 verdicts (allow / deny / modify / escalate).
+  It bears on the evidence store and the audit offer.
+- **TypeSafe's typed-decision API already has an open substitute.** SGLang copied
+  `/v1/systemone` (2026-09-25) and serves Cloudflare's Apache-2.0 Clef decision
+  models (2026-10-09). It needs a GPU.
+- **o-machine's "86%"** is its best round. The aggregate is 71% vs Opus and 62% vs
+  Gemini, judged by an LLM panel on rounds of questions o-machine chose itself,
+  and nothing is published that would let anyone rerun it. The Scholar profile is
+  Martin Trajkow, co-founder.
+- **Same company, different names:** CopilotKit = AG-UI + aimock; Delegance =
+  Alinery; Germ is an atproto app; trysolid = Codapt; BAND = formerly Thenvoi;
+  TinyFish = AgentQL; Zeroshot = The Open Engine; Finch = FinChip + AgentOn (crypto
+  skill tokens; identification not confirmed with the organisers). merlin.build and
+  Tinder's Merlin are unrelated.
+- **Agent memory is one idea sold several times.** HydraDB, ZeroDB, ApertureData and
+  Cognisee all sell graph plus vectors. ZeroDB's GitHub looks mass-generated, and
+  Cognisee is mostly a white paper.
+- **Unidentified:** tracn (invite-only waitlist).
+
+## 2.2 Verb lists worth harvesting (input to T7)
+
+Cotal; Smithers (plan, approve, run; it separates cancel, signal and steer; fork and
+rewind); Hermes Agent (~110 slash commands + kanban); Reticle's spec; Prelint's 21
+MCP tools for a record of team decisions; AG-UI's 31 event types; atproto (every
+verb typed as query, procedure, subscription or record); Alinery (16 workflows, 103
+steps with human checkpoints); Immersive Commons (273 tools); Advanced AI Society's
+checkpoint × verdict grid.
+
+## 2.3 Still open in MAP
+
+- FUTON counterpart and a get/build/use verdict for each entry (Joe's call where it
+  is a judgement)
+- the serious investigation of `ipfs_accelerate_py`'s agent supervisor (code, not
+  READMEs)
+- the 8 photos; the Cotal screenshot
+- one wider search per problem cluster, using the search seeds (T6)
 
 ## Carried-forward tensions
 
@@ -274,6 +340,16 @@ still come from one city in one week, so the *problems* found will be the ones
 SF startups were pitching that week. Whether the keyword searches move far enough
 from where they started is something MAP has to check, not assume. T1 asks the
 same question.
+
+**T7 — speech acts vs operations.** The 象 marks
+(`futon3c/emacs/xiaoxiang-preview.el`, `xiaoxiang-mark-keys`: 23 intents, each
+assigned a PBASE stage from perceive to act) are *speech acts*: what a paragraph of a
+turn does in the conversation (report, propose, delegate, verify). The tools' verbs
+are mostly *operations on work*: spawn, hand off, lease, admit, merge, replay. A few
+words appear on both lists (delegate, verify), and those words connect speech
+to work. Adding tool verbs to the same list would put two kinds of thing on one
+menu. A separate operation vocabulary, linked to the marks only where they share a
+verb, keeps the marks as they are. MAP collects the verbs. This choice is DERIVE's.
 
 ## Explicitly NOT decided here
 
