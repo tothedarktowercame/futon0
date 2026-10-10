@@ -912,3 +912,32 @@ standard open source).
 co-ops**, not building apps. That is a small fixed set of *collect/verify*
 duties, kept running. It matches the War Machine's shape: a factory whose output
 has to stay correct over time.
+
+## 3.10 What "futonic" adds (Joe, 2026-10-10, fifteenth turn)
+
+> coming from the UK where "the Co-op" is a known national brand (but from a food
+> standpoint certainly no better than any other grocery chain) it seems clear
+> that the co-op aspect is possible. A Saba in every city would be the same kind
+> of thing. And if it makes money, great. But I think the "futonic" ideas would
+> indeed be a bit about helping people realise some of their own potential,
+> whether that's for business or education or just eating healthier food or
+> having more fun or whatever. And it remains a good question about which aspects
+> of that technology can really help with. [...] technology could help me learn
+> mathematics "faster" or at least "better"... but learning mathematics seems
+> like something of a niche interest. [...] UK-based research that said that most
+> people don't like learning at all (though I'm not sure if they counted young
+> people learning football statistics).
+
+**The UK figure (Learning and Work Institute, Adult Participation in Learning
+Survey 2025):** 42% of adults report learning in the last three years, down
+from 52% in 2024, and 21% are learning now. Half of those who left school at 16
+or younger have not taken part in learning since. Leaving school at 18 rather than
+16 makes adult learning 20% more likely. These are *self-reported* figures, so
+they count what people call "learning". Football statistics, betting odds and
+game strategy would mostly not be called that.
+
+*Reading:* the same demand-side point as §3.8 applies. Learning that people
+want often goes by another name, inside things they already do. The futonic
+question is therefore less "how can tech make people learn" than "how can tech
+carry what people already want to get better at": the inner loop again, with
+people's own C setting the direction.
