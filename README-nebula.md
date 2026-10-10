@@ -31,7 +31,7 @@ somewhere and no star covers it.
   that has lasted for decades (M-landscape-positioning §3.6, after W. Brian
   Arthur).
 - **Notes:** `README-android.md`, `README-termux.md`, `README-kinesis.md`,
-  `README-teletype.md`, `DEX-SETUP.md`.
+  `README-teletype.md`; `~/code/DEX-SETUP.md`.
 
 ### Infrastructure that survives failure
 - **Effort:** the 2026-10-06 drive failure and the zone 1.1 rebuild.
