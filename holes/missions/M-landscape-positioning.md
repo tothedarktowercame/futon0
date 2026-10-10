@@ -1118,3 +1118,61 @@ have a mission and star associated, but maybe right now they are more like
 fodder for a futon0/README-nebula.md b/c they are a bit nebulous and stars might
 form there." Done: futon0 `README-nebula.md` holds them. An entry leaves the
 nebula when a mission opens for it.
+
+---
+
+# 5. The alternative backlog (Joe, 2026-10-10, twenty-second turn)
+
+> what if I use this as a kind of "alternative backlog". So if I run into
+> technical problems myself I would be able to query the "alternative backlog"
+> and find out what methods would help me do things better or faster. That may
+> just be for me as a technologist, rather than me as a business-innovator or
+> whatever. So, for example, if I keep having to remind claude agents to use
+> bg.py surely there must be a "tool" or "skill" or MCP or somesuch that I could
+> get them to use, all of that seems quite standard among the various
+> technologies that I looked at and probably the fact that I've rolled my own
+> REPL is the only thing to "blame" here.
+
+**How it is queried.** By *problem*, written as an operator intent (verb ·
+object, §3). The survey is already indexed this way: the §3 triples, the GLOSS
+groups, and the "could help" column of §4.1. A query is "I keep having to
+⟨verb⟩ ⟨object⟩ by hand". The answer is the methods in the survey, or in standard
+practice, that carry that intent.
+
+**Entry format:**
+
+    ### <recurring problem, in Joe's words>
+    - intent: <verb · object>
+    - methods: <what the survey or standard practice offers; open? local?>
+    - fits FUTON how: <where it would plug in>
+    - status: idea | tried | adopted | rejected (why)
+
+## Entries
+
+### "I keep having to remind Claude agents to use bg.py"
+- **intent:** constrain · how agents start long-running work (durable work goes
+  through `futon3c/scripts/bg.py`, not `run_in_background`, `&`, `nohup` or
+  `setsid`; rule in `futon3c/CLAUDE.md` §"Durable background work").
+- **Why a reminder fails:** the rule lives in prose in CLAUDE.md, and the model
+  reads it or misses it. The same thing happens with every prose rule; it is not
+  peculiar to the hand-made REPL.
+- **Methods, from strongest to weakest:**
+  1. **A hook**, which runs deterministically. A Claude Code `PreToolUse`
+     hook on `Bash` sees each command before it runs. If the command sets
+     `run_in_background` or uses `nohup`, `setsid` or a trailing `&`, the hook
+     denies it with a message telling the agent to use `scripts/bg.py launch "<cmd>"
+     --agent <id>`. Agency's pouches run `claude --print` with no
+     `--setting-sources` restriction (`agent_pouch.clj`), so a hook in user
+     settings would apply to them. Hooks can deny even under
+     `bypassPermissions`. *(Verify on one pouch before relying on this.)*
+  2. **A skill** (`SKILL.md`): the procedure, loaded when its description
+     matches the task. The model still has to choose it, so it is weaker than a
+     hook.
+  3. **An MCP tool or a native tool** (`bg_launch`): the right action becomes the
+     easy one, but nothing stops `&`.
+  4. Prose in CLAUDE.md: the current state.
+- **Survey parallels:** this is *constrain* enforced at the action layer, the
+  same move as Reticle's refusal of actions that were not declared in advance and
+  Agentic Fabriq's scoping. Hermes Agent and merlin.build ship hooks for this
+  kind of thing.
+- **status:** idea (proposed 2026-10-10).
