@@ -879,3 +879,36 @@ that count, and outsiders' views of what they ought to want do not. So "is it in
 demand?" is an inner-loop question. It is answered by asking residents and by
 sales records, before anything is built. This is the corner-store version of
 "solution in search of a problem" (§3.7).
+
+## 3.9 Co-op cases, checked (2026-10-10)
+
+Full write-up: `landscape/coop-cases.md` (12 cases; it corrects §3.7's
+from-memory table: Resonate closed in 2024, Driver's Seat is effectively
+inactive, and CoopCycle's licence limits commercial use to co-ops, so it is not
+standard open source).
+
+- **A shared stack that many small co-ops reuse is what has worked:** CoopCycle
+  (≈85 co-ops in 2022; €49/month in year one, then 2% of revenue), Up & Go (built
+  by the CoLab tech co-op and copied to Philadelphia and Detroit), Smart's central
+  admin, Co-op Cloud. Drivers Co-op Colorado rented an existing app (TADA, ≈$0.60
+  a ride).
+- **Failures come from *keeping* the software running, not from launching it.**
+  Resonate closed. Driver's Seat's app went stale. Drivers Co-op Colorado stopped
+  in April 2025 over app problems. NYC's Drivers Cooperative started only because
+  a founder personally guaranteed a $400k credit line.
+- **Compliance software cannot be opted out of:** ride-hail fare apps; NY
+  home-care electronic visit verification; FDA food traceability (enforcement
+  pushed to 20 July 2028; FDA cost estimate $570M a year).
+- **Capital comes first, then admin:** Euricse (December 2025) ranks finance as the
+  top challenge, finds 41% of platform co-ops hit legal barriers, and counts 64
+  failed or inactive, mostly delivery and taxi. The US worker co-op census (2025)
+  finds 36% struggling with admin and 39% needing marketing help.
+- **No one is building shared back-office software for co-ops, with AI or
+  without.** The co-op developers (Start.coop, Project Equity, DAWI, PCC) offer
+  coaching, legal templates, finance and research. No named co-op is building
+  its software with agents.
+
+*Reading:* the outer loop's job is **maintenance and compliance across many
+co-ops**, not building apps. That is a small fixed set of *collect/verify*
+duties, kept running. It matches the War Machine's shape: a factory whose output
+has to stay correct over time.
