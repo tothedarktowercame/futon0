@@ -574,3 +574,38 @@ expert. In D, the subject is an organisation with several people who hold
 intents, and they may disagree. That is also where the human problems are (the
 manager who does not listen). This section is input for the client-problem pass
 (`landscape/client-problems-kernel.md`, in progress).
+
+## 3.3 Scattering (Joe, 2026-10-10, ninth turn)
+
+> I'm thinking this is a kind of scattering theory problem. We put a real problem
+> in on one side. In the middle, it might bounce around inside the tech world for
+> a while, with handoffs, factories, verification, etc., and then out the other
+> side comes a concrete solution of some kind to a real problem. For example,
+> consider Doordash or delivery. "We bring food to your house" solves a real
+> human problem. Inside, no doubt, there's lots of tech involved, and as Doordash
+> improves its operations, even more tech. But is it on the way to solving real
+> human needs better or faster?
+
+What the framing gives the survey (proposed):
+
+- **Judge by in-state → out-state, not by the bounces.** In scattering, internal
+  detail matters only through what comes out. A tool earns its place if there is
+  a traceable path from the bounce it changes to a change in an out-state.
+  Most of group A (§3.2) changes only internal bounces: a developer's context,
+  review and handoffs.
+- **There are several out-channels, not one.** DoorDash's out-state for the
+  customer is food arrived, how fast, at what cost and correct. The same scattering
+  also has out-channels for couriers (pay, hours) and restaurants (margin). "Better
+  or faster" can improve one channel at another's expense, so the question
+  "better for whom?" belongs in the out-state.
+- **Bounces can cancel.** Judgment Labs' clients found that reviewing agent output
+  used up the time the agent saved (client-problems-kernel.md). Each bounce was
+  carried out faithfully (T8), and the out-state did not change. Fidelity per
+  bounce does not add up to an end-to-end gain.
+- **War Machine reading.** The R-nodes are internal bounces. "Grounded in the
+  way an organisation works" would mean the WM's observations (R2, `o`) are taken
+  from the organisation's out-channels, not from its own internal steps.
+
+Per client problem, record: the in-state (the problem as the client states it),
+the out-channels and who is on each, a measurable out-state per channel, and which
+bounces each tool touches.
