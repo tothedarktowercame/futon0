@@ -1032,3 +1032,82 @@ different dream on the other). Each checks in with zone, which acts as the
 co-op of co-ops (§3.7). The experiment would exercise cross-host recall (§3.12
 row 1), the outer loop's maintenance and compliance duties (§3.9), and the
 §3.11 question in simulation before a real person tries it.
+
+---
+
+# 4. Joe's own problems (Joe, 2026-10-10, twentieth turn)
+
+> if I set out to maintain a free/open clone of whatever is coming out of SF these
+> days, that *could* be useful for people IF they could run it on their hardware
+> [...] some of the items I found, like Mastra, are already open source, and also,
+> I'm not actually *that* keen on creating open source material that I don't
+> personally find useful. So, maybe rather than trying to discover the problems
+> that Oakland residents might be trying to solve, I can leave that to my friend,
+> and think about the problems that I personally am trying to solve, many of which
+> are written down in capability stars, and see whether any of the technology I
+> learned about could help me with any of those problems. It may also be a good
+> time to do some introspection and think about whether I have a full list of
+> problems-to-solve and capabilities-to-gain for myself or if my list is somewhat
+> prejudiced.
+
+The client-problem line (§3.4–§3.9) is handed to Joe's Oakland contact. This
+section turns the survey on Joe.
+
+## 4.1 The held stars, and what from the survey could help
+
+Source: `M-capability-star-map.graph.edn` has 36 capabilities, 22 satisfied, 13
+held and 1 active. The rows below are the held and active ones. "Could help"
+names survey entries (batch files) that bear on the star, and says whether that
+help is something to **take** (open, self-hostable) or to **learn from** (closed).
+
+| star (region) | what it needs | could help | kind |
+|---|---|---|---|
+| `wm-overnight-unsupervised` | to trust the stack to code while Joe sleeps | Reticle's verdict spec (yes/no/unknown/no-fault; refuses undeclared actions); Zeroshot's separate review-and-repair loop; Smithers' durable runs with rewind; Cotal's leases with fencing tokens | take (all open) |
+| `efe-trustworthy-over-starmap` | a ranking whose confidence means something | typed decisions with calibrated probabilities (TypeSafe API; open route via SGLang + Clef, GPU); Braintrust-style A/B comparison | take (Clef) / learn |
+| `full-arxiv-mining` | harvest and represent at scale | Crawlee (harvest); HydraDB (time-ordered facts); SGLang (serve open models locally); Paritok (fewer tokens) | take |
+| `ai-passes-prelims` | compute, and admission of answers by a checker | SGLang/RadixArk (open-model serving); JevOps' Lean-gate pattern; Artificial Analysis (choosing a model) | take / learn |
+| `hypergraph-operator` (t5) | a person-facing capability model | Cognisee (tacit know-how, attributed); Scribe Optimize (mining what people actually do); p2r (self-reported contribution) | learn; talk to Cognisee |
+| `symbol-grounding` (t5) | categorical wiring vocabulary, vision | nothing in the survey | — |
+| `kit-outbox`, `kit-intake`, `kit-cadence` | the outreach pipeline wired end to end | Composio (mail access); Querit/Apify (lead foraging); Glasser (company and people lookups) | learn; mostly paid |
+| `cold-eoi-authored-outbox`, `cold-eoi-sent`, `cold-send-response`, `cold-response-conversion` (t2) | send a cold expression of interest; get a reply; convert it | Hyperbound (practice conversations), and little else | see below |
+| `distributed-proofreaders` (active, t3) | structure-first recognition and QA over the maths corpus | Reticle-style verdicts for QA | take (spec) |
+
+**What the table shows:**
+- The survey helps most with `wm-overnight-unsupervised`. That fits §3.2: the SF
+  crowd is densest on *check* and *orchestrate*, which are exactly that star's
+  needs, and the strongest entries there are open.
+- **The t2 chain is stuck at its first link** (`cold-eoi-sent`: "the crux,
+  n=0"). By the §3.4 filter, a chain at n=0 is probably not a tooling gap. No tool
+  in the survey would send the first email. It is a question of intent, or of
+  something blocking it, and only Joe can say which.
+
+## 4.2 Is the list prejudiced? (introspection, offered as evidence, not a verdict)
+
+**How stars get onto the map.** Capabilities are *minted* by missions, and the
+pudding-prover is the registry (star-map §"Capabilities are MINTED"). So only
+something that already has a mission can become a star. That is the same
+selection effect as T1: the July probe drew competitors by field, and the star
+map draws Joe's goals from the apparatus that already exists. All 36 stars sit in
+five regions: the War Machine, mathematics (t3), the hypergraph and interest
+network (t5), revenue (t2), and the pudding-prover kit.
+
+**Things Joe has put real effort into recently that have no star** (from session
+memory and notes, not from the map):
+
+| candidate | evidence of effort |
+|---|---|
+| **Joe learns mathematics faster or better** | said today (§3.10). The map has "AI passes prelims" but nothing about Joe learning |
+| a working physical setup: phone as workstation, the Kinesis, DeX, voxterm | many sessions (memory: phone-as-primary-workstation, Kinesis, voxterm, phone SSD) |
+| infrastructure that survives failure | the 10-06 outage; `README-hardening.md` |
+| money: taxes, filings, the Ltd vs sole-trader question, an income after December | four money repos; 10-08: "full time until the end of the year and then need to make a call" |
+| teaching and workshops; Peeragogy | 10-08: "lots of workshop experience"; p2r uses Peeragogy vocabulary |
+| writing and publishing: the futon7a site, the MMCA paper, papers with Rob | futon7a publish workflow; mmca-clj |
+| fun and play | ChipWits port (playable); "or having more fun" (§3.10) |
+| friends' projects (the Oakland co-op) | this mission, §3.7–§3.9 |
+
+The first row is the plainest case. Joe wants tech to help *him* learn
+mathematics, and what the map records is the stack learning it.
+
+**Question for Joe:** which of these are real goals, and which are maintenance or
+pastimes that need no star? Only rows Joe confirms should be minted. The rest
+stay here as a record that the question was asked.
