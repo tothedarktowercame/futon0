@@ -519,3 +519,58 @@ where the stack has no tool.
 public pain signals (clusters C1–C6). They are almost all *developer* pain. The
 client in middle America is a different population, and that pass has not been
 done.
+
+## 3.2 The kernel sorted by who the work is for (2026-10-10, eighth turn)
+
+Joe:
+
+> It seemed to me that in many cases they are solving tech problems for tech
+> people (e.g. Mastra seems like a great example of this)... being good at
+> managing context for developer sessions or software factories does not
+> immediately in my mind translate into solving non-technical problems. Whereas
+> a possible distinction with the War Machine is that, yes, technically it is a
+> kind of "software factory" but it is a software factory that can be grounded in
+> the way an actual organisation works.
+
+Sorted from the batch files by whose problem the product addresses:
+
+**A. Tech for tech people (≈36 of 54).** Kylon, BAND, RocketRide, AdaL,
+merlin.build, Tinder's Merlin, Smithers, Zeroshot, Agent Deck, Mastra, Cotal,
+Composio, Command Code, TinyFish, Judgment, Braintrust, Prelint, Reticle,
+Meticulous, AG-UI, CopilotKit, aimock, Paritok, Tenki, Artificial Analysis,
+Querit, Apify, HydraDB, ApertureData, ZeroDB, TypeSafe, InstaCloud, RadixArk,
+Glasser, Finch, Hermes. The buyer is a developer, and the problem is the
+developer's own (context, drift, review, cost, plumbing).
+
+**B. Doing a non-technical worker's task (≈5).** Solid (a business task run end to
+end), Hyperbound (sales practice and call scoring), Voiskey (dictation into
+finished text), MiniMax Agent (job → slides/spreadsheet/video), o-machine
+(analyst "why did this happen"). The client's problem appears directly, but the
+organisation does not. Each serves one worker and one task.
+
+**C. Capturing an expert's know-how (2).** ZooWork (expert → deployable agent),
+Cognisee (tacit decision-making, with attribution and consent).
+
+**D. Making an organisation's working visible to itself or to outsiders (≈5).**
+Scribe Optimize (what employees actually do, mined from their clicks), Agentic
+Fabriq (whose authority an agent acts under), AIUC-1 (what an insurer or buyer may
+rely on), Proof-of-Control (what outsiders can check), p2r (each participant's
+own contribution in a mixed human/AI cycle).
+
+**E. Not products:** Plank (rents engineers), Tatras (consultancy),
+Immersive Commons (a place), atproto/Germ (social infrastructure).
+
+**Reading (provisional).** Joe's distinction puts the War Machine nearest to **D**.
+A software factory "grounded in the way an actual organisation works" needs what
+D sells: a record of what people actually do (Scribe), under whose authority
+(Fabriq), and checkable from outside (Proof-of-Control, AIUC-1). It also needs
+what A sells, which is the factory itself. None of the D vendors builds the
+factory, and none of the A vendors models the organisation. B products fix one
+person's task without modelling the organisation. C products capture what one
+expert knows, which in WM terms would be one source of preferences (R19).
+
+In SVO terms, A's subject is a developer. B's and C's subject is a worker or an
+expert. In D, the subject is an organisation with several people who hold
+intents, and they may disagree. That is also where the human problems are (the
+manager who does not listen). This section is input for the client-problem pass
+(`landscape/client-problems-kernel.md`, in progress).
