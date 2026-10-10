@@ -1175,4 +1175,13 @@ practice, that carry that intent.
   same move as Reticle's refusal of actions that were not declared in advance and
   Agentic Fabriq's scoping. Hermes Agent and merlin.build ship hooks for this
   kind of thing.
-- **status:** idea (proposed 2026-10-10).
+- **Evidence (claude-11, 2026-10-10):** its Lean session servers, started with
+  `run_in_background`, died at pouch teardown. claude-11 first blamed "a 30-minute
+  timeout". Joe corrected it, and from then on it used bg.py. Its own memory note
+  says Monitor watches die with the pouch as well.
+- **status:** **adopted 2026-10-10 as a warning.** `futon3c/scripts/claude-hooks/bg_warn.py`,
+  wired in `~/.claude/settings.json` (PreToolUse, `Bash|Monitor`). It warns pouch
+  agents only (`FUTON_AGENT_ID` set) through `additionalContext` and never denies.
+  The pipe test covered 8 cases (`2>&1`, `&&` and bg.py commands stay silent).
+  Proven live: it fired on claude-13's own `sleep 0.1 &`. Next step, if warnings
+  turn out not to be enough: deny `run_in_background` only.
