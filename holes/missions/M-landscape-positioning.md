@@ -1017,7 +1017,7 @@ metadata in one place) bear on rows 1 and 5. futon1b's XTDB is already
 bitemporal.
 
 **Joe, nineteenth turn:** fixing metameso recall "isn't a priority right now, I'd
-fit that under M-hardening.md". *Deferred.* No `M-hardening.md` exists yet. The
+fit that under M-hardening.md". *Deferred.* No `M-hardening.md` or `README-hardening.md` exists, and neither ever did (checked futon0 history 2026-10-10). Related: futon0 `README-firewall.md` (design only), `README-secrets.md`, `README-bare-metal.md`, and zone `~/README-ZONE-1.1.md`. The
 nearest existing mission is `futon3c/holes/missions/M-federated-agency-hardening.md`
 (cross-box federation, OPEN). Row 1 of the table above, whether metameso
 transcripts reach futon1b, is the item to carry over.
