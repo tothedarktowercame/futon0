@@ -455,7 +455,7 @@ The subject is *the operator* throughout and is omitted from the table.
 | 17 | constrain + verify · agent conduct, for outside parties | sign attestations at checkpoints (allow/deny/modify/escalate) | Proof-of-Control, AIUC-1, Mcp++ | "trustworthy AI", "governance" | evidence store; commit trailers | an outsider can check the record without trusting the operator |
 | 18 | delegate · payment | spend from a funded wallet up to a limit | Solid, Finch | "agent with its own budget" | none | spending stays within the limit, and each purchase traces to a task |
 | 19 | report · one's own contribution | fill in a fixed schema; validate it | p2r | "participation review" | scribe; evidence store | a reader can check the report against the work |
-| 20 | collect · tacit know-how, with attribution | record it; store it with consent and source metadata | Cognisee | "wisdom vault", "tacit reasoner" | pattern library | attribution survives reuse |
+| 20 | collect · tacit know-how, with attribution | record it; store it with consent and source metadata | Cognisee | "wisdom vault", "tacit reasoner" | pattern library; **futon6 arXiv mining** (same intent, with papers as input instead of interviews; Joe, 2026-10-10) | attribution survives reuse |
 
 ## Verb gaps (needed, not in the 象 intents)
 
@@ -979,3 +979,12 @@ inner-loop question in two arms, raw Claude and the FUTON discipline. Each arm
 is judged on the out-channel (§3.3): did the person understand their problem
 better, decide faster, act? The judging is not done on the artefacts produced.
 The judge should be the person, plus someone who did not see which arm was which.
+
+**Joe, seventeenth turn:** "Arxiv mining is kind of Cognisee just with papers
+rather than interviews as inputs." This adds futon6 to triple row 20 (collect ·
+know-how, with attribution). The difference is the input. Interviews capture what
+was never written down. Papers are written down, and citations already attribute
+them, but the moves of an argument that a paper does not state are tacit in the
+same sense. That is the layer futon6's argument mining goes after. So arXiv mining
+already sits in this survey as the Cognisee row, with an input that is easier to
+get at scale.
