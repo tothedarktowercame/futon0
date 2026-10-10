@@ -398,3 +398,78 @@ translation aid, not the ontology. T7 is a special case of T8.
 
 - Room log pulled 2026-10-10 via the fumarimo token on zone (132 m.room.message events).
 - 10-08 analysis extracted from metameso session `e13cc12c…` by claude-13, 2026-10-10.
+
+---
+
+# 3. DERIVE (draft, 2026-10-10): operator intents as SVO
+
+Joe, 2026-10-10 (sixth turn):
+
+> the "tool" layer is really just part of an SVO triple where the verbs are
+> already part of our intent layer. So, e.g., "ask, constrain responses" might
+> be an example. The point is to try to make the human side reasonably familiar
+> without anthropomorphising the agent or tool. Even in a case where we might
+> "delegate" the act of paying to an agent or subagent, I think it would be a bit
+> silly to talk about them "forming an opinion" or whatever. I might use that
+> kind of language informally to get my point across *to* an agent, but for the
+> ontology, it's much more cut-and-dried.
+
+## Rules
+
+1. **Subject**: always the operator (or another named person). An agent or tool
+   is never the subject of an intent.
+2. **Verb**: drawn only from the 象 intents (`xiaoxiang-mark-keys`: approve,
+   disagree, clarify, report, report-problem, verify, retract, withdraw, propose,
+   qualify, explain, constrain, ask-action, delegate, prioritize, collect, extend,
+   continue, defer, redirect, explore). A needed verb that is missing goes to
+   *Verb gaps* below. It is not invented in the row.
+3. **Object**: what the intent acts on (a task, responses, a change, access, …).
+4. **Via**: the tool's *actions*, described mechanically (T8 layer 2). This is
+   where the tool appears, as an instrument.
+5. **Vendor words** (T8 layer 3) are recorded only so the names can be looked up.
+   They never appear in the S, V or O columns.
+6. **Fidelity**: how anyone could tell that the action carried the intent.
+
+## Triples (first draft: 20 rows, drawn from GLOSS)
+
+The subject is *the operator* throughout and is omitted from the table.
+
+| # | verb · object | via (actions) | tools | vendor words | FUTON | fidelity check |
+|---|---|---|---|---|---|---|
+| 1 | delegate · a coding task | post the task to a queue; an agent process takes it in a worktree; a completion event is emitted | Kylon, Smithers, merlin, Hermes, MiniMax | "AI teammate", "works while you sleep" | Agency bell; War Machine | the returned diff does what the task said (review) |
+| 2 | delegate · tasks across agents from several vendors | pub/sub on a message bus; leases with fencing tokens | Cotal, BAND | "agent team", "collaboration" | roster + bells/whistles | one record shows who held each lease; no task is done twice |
+| 3 | ask-action + constrain · responses to a fixed set of typed answers | call a classifier that returns label + probability | TypeSafe; Clef via SGLang | "System One", "fast thinking" | none (full LLM calls) | stated probabilities match observed frequencies |
+| 4 | collect · facts and decisions; constrain · later responses | write to a graph/vector store; retrieve by similarity; inject the matches into the prompt | HydraDB, ZeroDB, ApertureData, Mastra, Hermes | "memory", "learns", "second brain" | futon1b; memory files | retrieval returns what it should, and the injected text changes later output as intended |
+| 5 | verify · a change in the running app | drive a browser; capture network/console/state; return yes/no/unknown/no-fault | Reticle, Meticulous, Tinder's Merlin | "self-verifying" | fucodex Playwright, by hand | an unseen outcome comes back as *unknown*, not as a pass |
+| 6 | verify · a change, by a second process; report-problem · back to its author | run a separate reviewer; on failure, return the work with a limit on retries | Zeroshot | "won't let broken work ship" | author ≠ reviewer; warrants | the reviewer did not share the author's context |
+| 7 | verify + constrain · admission of a change | run Lean/Lake or a type checker; merge only on a receipt | ipfs_accelerate, JevOps | "proof-carrying" | clj-kondo/invariant gates; futon6 Lean | the receipt names the exact sha that was checked |
+| 8 | constrain · what an agent may access, and on whose behalf | broker OAuth tokens; per-user scopes; log each call | Agentic Fabriq, Composio | "agent identity", "trust" | none (no per-agent scoping) | the log shows each call under that person's scope |
+| 9 | verify · a change against earlier decisions | compare the diff with decision records; flag mismatches | Prelint | "remembers what your team decided" | mission-wholeness; invariant checkers | flagged mismatches are real ones |
+| 10 | explore · outputs across many runs; report-problem · regressions | collect traces; cluster failures; score against a rubric | Judgment, Braintrust | "observability", "evals" | evidence store + 象-2000 | a regression is caught before release |
+| 11 | explore · the web | call a search API; crawl; drive a headless browser | Querit, Apify, TinyFish | "agentic browsing" | none | each result can be cited; page content is what was served |
+| 12 | delegate · running untrusted code | start a disposable VM/container; snapshot, fork | Tenki, InstaCloud | "sandbox" | worktrees; disposable Linodes | the host is unchanged after the run |
+| 13 | constrain · token spend | compress the prompt with a small model; cache | Paritok | "context compression" | `compact_session.py` | same task outcome at a lower token count |
+| 14 | collect · run events; explore · run state as it changes | stream typed events from the agent process to a UI | AG-UI, CopilotKit | "copilot", "generative UI" | Matrix + Element fork + fumarimo | every state change in the run reaches the UI |
+| 15 | redirect / approve · a running workflow | pause at a checkpoint; resume with the operator's input; rewind to a step | Smithers, Alinery | "steer", "align" | ground control; park/wake; 象 rewind | the resumed run uses the input given and does not guess a fresh one |
+| 16 | defer · a follow-up | create a scheduled job with an id | Kylon | "follows up" | park with deadline | the promise exists as an id, or it is not a promise |
+| 17 | constrain + verify · agent conduct, for outside parties | sign attestations at checkpoints (allow/deny/modify/escalate) | Proof-of-Control, AIUC-1, Mcp++ | "trustworthy AI", "governance" | evidence store; commit trailers | an outsider can check the record without trusting the operator |
+| 18 | delegate · payment | spend from a funded wallet up to a limit | Solid, Finch | "agent with its own budget" | none | spending stays within the limit, and each purchase traces to a task |
+| 19 | report · one's own contribution | fill in a fixed schema; validate it | p2r | "participation review" | scribe; evidence store | a reader can check the report against the work |
+| 20 | collect · tacit know-how, with attribution | record it; store it with consent and source metadata | Cognisee | "wisdom vault", "tacit reasoner" | pattern library | attribution survives reuse |
+
+## Verb gaps (needed, not in the 象 intents)
+
+- **compare** (Braintrust: variant A vs B). Row 10 uses *explore*, which loses the
+  pairing.
+- *pay* is not missing: row 18 treats payment as the object of *delegate*. That
+  is in line with Joe's example.
+
+## What the draft shows (provisional)
+
+- Ten tools from GLOSS fit under **delegate** or **verify**. Those are the two
+  intents the SF market is selling against.
+- Rows **3, 8 and 18** are the ones where FUTON has no counterpart. Each is a
+  *constrain*: answers restricted to typed choices, access restricted by scope,
+  spending restricted by a limit.
+- Vendor words cluster on the *subject* slot ("the agent decides / learns /
+  steers"). Rule 1 removes all of them without loss.
