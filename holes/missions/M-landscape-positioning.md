@@ -941,3 +941,41 @@ want often goes by another name, inside things they already do. The futonic
 question is therefore less "how can tech make people learn" than "how can tech
 carry what people already want to get better at": the inner loop again, with
 people's own C setting the direction.
+
+## 3.11 The hyperreal bet, and who it is proven for (Joe, 2026-10-10, sixteenth turn)
+
+> the "hyperreal" bet (after Baudrillard but not obsequiously) is that suitable
+> technologies can help people *understand* stuff better, including themselves
+> and how to realise some of their dreams. [...] my idea to data mine the Arxiv
+> is now proven out "in principle" and what remains is hooking all of that up.
+> [...] someone else may have a different dream. And they might find that Claude
+> or Claude Code or Mastra or whatever helps them realize it. If so, great,
+> again. But my guess is that the FUTON stack would help a lot more than a "raw"
+> Claude, and I've tried to make myself a proof point of that, much as Rob has
+> made Mfuton a proof point for his work. We're both pretty convinced but we're
+> coming at this from an already technical, already mathematical perspective. If
+> someone's dream is to make more money as a financial trader or to open a
+> grocery store, I don't know for sure that FUTON can help them.
+
+**Candidate question for IDENTIFY:** does FUTON help someone whose dream is not
+technical more than raw Claude does? The two existing proof points (Joe, Rob)
+both have the same starting point, so they cannot answer it. This is the July
+probe's held-out-control lesson applied to users, not competitors.
+
+**Which parts of FUTON could carry over (to test, not assume):**
+- *Probably domain-general:* the mission lifecycle (HEAD keeps the person's own
+  words; MAP before design); keeping the record; *verify* as a habit; patterns as
+  reusable answers to tensions. These serve the "understand" half of the bet. Note
+  that this session is itself a small instance: a non-technical question (food
+  deserts, co-ops) worked through with the mission discipline. But the user was
+  still Joe.
+- *Probably tech-for-tech:* Agency's dispatch and bells, the War Machine's
+  plumbing, Lean. These are bounces (§3.3) and only matter through what they
+  deliver.
+
+**A test that could answer it (sketch):** one person with a non-technical dream
+(e.g. Joe's Oakland contact and a Saba-style project) works on the same
+inner-loop question in two arms, raw Claude and the FUTON discipline. Each arm
+is judged on the out-channel (§3.3): did the person understand their problem
+better, decide faster, act? The judging is not done on the artefacts produced.
+The judge should be the person, plus someone who did not see which arm was which.
