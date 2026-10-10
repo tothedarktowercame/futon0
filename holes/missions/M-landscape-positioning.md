@@ -658,3 +658,46 @@ badly), **H** human (the intent or the trust is missing), **M** mixed.
 - **Row 11 is a warning for the War Machine.** If a factory's output still needs
   full human review, nothing reaches the out-channel. R9 (no self-certification)
   helps only if the second check costs less than the first.
+
+## 3.5 R-nodes as the internal factors; scale (Joe, 2026-10-10, tenth turn)
+
+> to use the R-nodes as internal factors, since we've already done the analysis
+> of its adjacency matrix, indeed, our work has somewhat turned Friston's physics
+> into a physics-inspired ontology, though it's an "abstract ontology" rather than
+> a lexical one. And because AIF is what it is, the system is somewhat scale
+> free. So, "we bring food to your house" scales up to "the trade deficit with
+> Mexico" or whatever.
+
+**Two ontologies, joined by the fit in §3.1.** The SVO triples (§3) are the
+*lexical* side: what people say they intend. The R-nodes are the *abstract* side:
+the factors of the scattering. The fit in §3.1 (delegate → R10, verify by a second
+process → R9, constrain spend → R11, …) is what joins them.
+
+**Where the abstract side lives:**
+- `futon3c/holes/labs/M-wm-wiring/wm-adjacency.edn`: the wiring matrix
+  (104 wires at last count, PROOF-2a log 2026-09-26; 0 verified live, 2 hermetic)
+- `futon2/holes/labs/wm-contract/aif-equations.edn`: the equation DAG
+  (37 dependency edges after WM-EQUATIONS-APPLY-I)
+- `futon2/holes/aif-r1-r16-pattern-map.md`: each R-node as a pattern, with
+  its real status
+
+Honest status: the schematic is specified, but its wires are almost all
+unverified live. Using it as an ontology does not depend on the wires carrying
+values. Using it as a *model* of a client does.
+
+**Scale: one scattering at three sizes (illustration, not analysis).**
+
+| factor | household: "food to your house" | city: restaurant delivery market | nation: food trade deficit with Mexico |
+|---|---|---|---|
+| o (R2) observations | the order arrived, when, and whether it was right | delivery times, courier churn, restaurant margins | import/export volumes, prices, border wait times |
+| C (R19) preferences, set by people | hungry, cheap, now | city: congestion and labour rules; platform: growth | food security, farm incomes, consumer prices: contested |
+| π, G (R6, R5) policies and their scoring | which app, which restaurant | fees, courier dispatch, restaurant onboarding | tariffs, subsidies, inspection regimes |
+| R11 shared budget | the household's money and time | courier hours; platform burn | fiscal, and the inspectors' capacity at the border |
+| R9 no self-certification | the customer rates the order | health inspectors; reviews | USDA/FDA inspection; trade-dispute panels |
+| out-channels | the eater | eaters, couriers, restaurants | consumers, farmers on both sides, two governments |
+
+The factor names stay the same at every scale. What grows is the number of parties
+holding preferences (C), and how far apart those preferences are. That matches
+§3.4: the human problems sit where several parties' C meet. In that sense the
+system is scale-free in its *form*, and the parties holding preferences are what
+make the difference between scales.
