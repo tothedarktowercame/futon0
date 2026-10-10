@@ -1102,7 +1102,8 @@ memory and notes, not from the map):
 | money: taxes, filings, the Ltd vs sole-trader question, an income after December | four money repos; 10-08: "full time until the end of the year and then need to make a call" |
 | teaching and workshops; Peeragogy | 10-08: "lots of workshop experience"; p2r uses Peeragogy vocabulary |
 | writing and publishing: the futon7a site, the MMCA paper, papers with Rob | futon7a publish workflow; mmca-clj |
-| fun and play | ChipWits port (playable); "or having more fun" (§3.10) |
+| ChipWits | port (playable). *Joe:* not just fun; it was a source of icons used in Xiang-2000, and a way to think about controlling an agent system |
+| fun and play | "or having more fun" (§3.10) |
 | friends' projects (the Oakland co-op) | this mission, §3.7–§3.9 |
 
 The first row is the plainest case. Joe wants tech to help *him* learn
@@ -1111,3 +1112,9 @@ mathematics, and what the map records is the stack learning it.
 **Question for Joe:** which of these are real goals, and which are maintenance or
 pastimes that need no star? Only rows Joe confirms should be minted. The rest
 stay here as a record that the question was asked.
+
+**Joe, twenty-first turn:** no new stars yet. "Most of the other items *should*
+have a mission and star associated, but maybe right now they are more like
+fodder for a futon0/README-nebula.md b/c they are a bit nebulous and stars might
+form there." Done: futon0 `README-nebula.md` holds them. An entry leaves the
+nebula when a mission opens for it.
