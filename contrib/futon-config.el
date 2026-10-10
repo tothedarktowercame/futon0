@@ -18,6 +18,9 @@
 (add-to-list 'load-path "/home/joe/code/futon3c/emacs/")
 (add-to-list 'load-path "/home/joe/code/futon7/holes/")
 
+;; M-x report-futon-bug: one-line bug report with context gathered for you.
+(autoload 'report-futon-bug "report-futon-bug" nil t)
+
 ;; Stack HUD entry point.
 (require 'stack-entry)
 (require 'stack-hud)

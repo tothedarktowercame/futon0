@@ -1212,9 +1212,24 @@ practice, that carry that intent.
   somewhere every host can pull, and it is belled with `--mode work`
   (memory: a bell without it runs nothing but still reports done) to a triage
   agent whose brief is: reproduce, locate, propose a fix, bell back.
-- **Constraint found:** zone-health shows federation peers **unreachable from
-  zone** right now, and the roster here lists no remote agents. So a bell to lucy
-  or metameso would fail today. In a first version the self-contained file *is*
-  the transport (git); the bell goes to a local seat. Federation repair is in
-  `README-hardening.md` §6.
-- **status:** idea.
+- **Routing (corrected 2026-10-10):** the roster here *does* list remote
+  proxies (`chi-claude-1` and `chi-codex-1` for metameso, `ams-claude-1`). An
+  earlier note in this entry said it listed none, which was wrong. zone-health
+  still reports the federation peers' `/health` unreachable from zone, so whether
+  a bell to a `chi-*` proxy reaches metameso is untested. Joe: "we can sort out
+  the routing later".
+- **status:** **built 2026-10-10** (Joe: "build it directly"). It consists of:
+  - `futon3c/emacs/report-futon-bug.el` (`M-x report-futon-bug`, autoloaded from
+    `futon0/contrib/futon-config.el`)
+  - `futon3c/scripts/futon_bug_report.py`
+
+  Reports go to `~/notes/futon-bugs/` (outside any repo, so they are never
+  published by accident). The prompt offers roster agents, and leaving it empty
+  sends nothing. A bell carries the whole report with `--mode work`, from
+  `futon-bug`.
+
+  Tested: a batch end-to-end run (≈24 s, mostly zone-health); planted secrets
+  scrubbed (GitHub, bearer, `*_TOKEN=`, JSON `access_token`, `sk-`); bell
+  arguments checked with `--dry-run`. A real bell has not been sent yet.
+  A bug found in testing and fixed: the context was read from inside the temp
+  buffer.
