@@ -701,3 +701,49 @@ holding preferences (C), and how far apart those preferences are. That matches
 §3.4: the human problems sit where several parties' C meet. In that sense the
 system is scale-free in its *form*, and the parties holding preferences are what
 make the difference between scales.
+
+## 3.6 Problems before tech; assemblies with a history (Joe, 2026-10-10, eleventh turn)
+
+> this points to a whole class of problems that are not really "tech" problems,
+> but, say, "economics" or "data analysis" problems. Those could become part of a
+> tech solution, i.e., if we understand a range of topics well, look at how they
+> hook together, build a model of that, and then look for ways in which that
+> model could run differently, we may put ourselves into a position to build a
+> technical solution. But that comes rather late in the game from a logical
+> standpoint.
+
+> my tech stack. I'm using a Kinesis Advantage2 keyboard, but in the old days I
+> was using a Kinesis Classic that I got around 2001. The next thing in the chain
+> is a Dell deck that allows the keyboard to talk to my phone. The phone is a
+> Samsung. The next things after that are the OS and software like Termux [...]
+> from which it reaches Zone. Now, that's a "technical" diagram, but you could
+> also look at an historical diagram in which Zone's GNU/Linux Ubuntu system and
+> the Android OS share some common heredity. [...] inspired by W Brian Arthur
+> [...] these are not "random" assemblages of things at all. Even just the
+> keyboard I have been "carrying around" for 26 years, just without the
+> high-powered server to connect it to.
+
+**The order Joe gives:** understand the topics → see how they hook together →
+model that → look for ways the model could run differently → *then* a technical
+solution. Tooling comes last. The SF kernel (§3.2 group A) starts at the last step.
+
+**Arthur, briefly (*The Nature of Technology*, 2009):** a technology is a
+combination of earlier technologies. Each component is itself a technology, so
+the structure is recursive. New technologies come from combining existing ones,
+and the economy is "an expression of its technologies". Two diagrams follow from
+this, and Joe's stack shows both:
+
+| diagram | Joe's stack |
+|---|---|
+| **assembly** (what plugs into what, now) | Kinesis → Dell dock → Samsung/DeX → Android → Termux → 4G → zone (Ubuntu) |
+| **heredity** (what descends from what) | the Linux kernel in both Android and Ubuntu; Kinesis Classic (≈2001) → Advantage2; ssh/mosh/tmux, older than the phone |
+
+**What this suggests for the client pass (proposed):** for each client problem,
+draw both diagrams and ask *which component has persisted longest*. That
+component is the client's "keyboard". Its constraints have outlasted every
+assembly built around it. In §3.4 these would be the paper invoice, the 200-page
+manual, the regulator's rule and the auditor's question. Tools that ask the
+client to drop that component tend to fail. Tools that build a new assembly
+around it, as Joe's stack did with a 26-year-old keyboard, have a better chance.
+In scattering terms (§3.3), the long-lived components shape the in-state before
+any new tool is involved.
