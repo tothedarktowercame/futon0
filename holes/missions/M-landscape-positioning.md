@@ -1015,3 +1015,20 @@ matters less. That is a *collect* problem before it is a database problem. Of th
 SF entries, HydraDB (time-ordered facts) and ApertureData (images and their
 metadata in one place) bear on rows 1 and 5. futon1b's XTDB is already
 bitemporal.
+
+**Joe, nineteenth turn:** fixing metameso recall "isn't a priority right now, I'd
+fit that under M-hardening.md". *Deferred.* No `M-hardening.md` exists yet. The
+nearest existing mission is `futon3c/holes/missions/M-federated-agency-hardening.md`
+(cross-box federation, OPEN). Row 1 of the table above, whether metameso
+transcripts reach futon1b, is the item to carry over.
+
+> if I was running a virtual startup on Metameso and one on Lucy then eventually
+> they could check in here for example, that could be an interesting way to go
+> about playing with some of these ideas.
+
+*Recorded as an experiment shape:* two simulated ventures, each on its own box
+with its own inner loop (e.g. a Saba-style purchasing co-op on one and a
+different dream on the other). Each checks in with zone, which acts as the
+co-op of co-ops (§3.7). The experiment would exercise cross-host recall (§3.12
+row 1), the outer loop's maintenance and compliance duties (§3.9), and the
+§3.11 question in simulation before a real person tries it.
