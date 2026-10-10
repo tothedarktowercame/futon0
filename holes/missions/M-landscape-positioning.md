@@ -1185,3 +1185,36 @@ practice, that carry that intent.
   The pipe test covered 8 cases (`2>&1`, `&&` and bg.py commands stay silent).
   Proven live: it fired on claude-13's own `sleep 0.1 &`. Next step, if warnings
   turn out not to be enough: deny `run_in_background` only.
+
+### "I don't want to think about bugs, just bell them out" (Joe, 2026-10-10)
+- **Joe:** "maybe I should create a variant of report-emacs-bug, like
+  report-futon-bug that would log context etc so I don't have to think about the
+  bugs, I could just bell them out. that could even go to an agent on lucy or
+  metameso, so the bug report would have to be relatively self contained"
+- **intent:** delegate · triage of a bug; collect · the context automatically.
+- **Methods:** `report-emacs-bug` (Emacs collects its own state into a mail
+  buffer); Sentry/Judgment-style capture of traces and breadcrumbs; Meticulous
+  replays the session. Nearby in the stack:
+  `futon3c/emacs/session-turn-analysis.el` already dispatches through
+  `agency_send.py` from Emacs.
+- **Design sketch (not built):** `M-x report-futon-bug` asks for one line (typed
+  or dictated) and then gathers:
+  - the region or the tail of the current REPL buffer
+  - `*Messages*`, and `*Backtrace*` if present
+  - recent `journalctl --user` lines for futon3c, futon1b and emacs-graph
+  - Agency and futon1b health
+  - a zone-health summary
+  - HEAD sha and dirty status of the futon repos
+  - host, time, and Emacs version
+
+  It writes all of that to one self-contained markdown file, **with secrets
+  scrubbed** (tokens appear in environments and logs). The file is committed
+  somewhere every host can pull, and it is belled with `--mode work`
+  (memory: a bell without it runs nothing but still reports done) to a triage
+  agent whose brief is: reproduce, locate, propose a fix, bell back.
+- **Constraint found:** zone-health shows federation peers **unreachable from
+  zone** right now, and the roster here lists no remote agents. So a bell to lucy
+  or metameso would fail today. In a first version the self-contained file *is*
+  the transport (git); the bell goes to a local seat. Federation repair is in
+  `README-hardening.md` §6.
+- **status:** idea.
