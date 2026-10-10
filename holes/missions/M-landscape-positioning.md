@@ -243,6 +243,10 @@ repos. Nothing here has been run.
 
 # 2. MAP — first pass (2026-10-10)
 
+`landscape/GLOSS.md` translates every name into a few plain verbs, grouped by
+leading verb (coordinate, orchestrate, check, evaluate, govern, decide, remember,
+connect, host, …). Start there.
+
 Consumer Reports entries for 54 log items, written by three research subagents
 and filed by batch:
 - `landscape/batch-A.md`: harnesses and coordination (18)
