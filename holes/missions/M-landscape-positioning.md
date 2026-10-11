@@ -1316,3 +1316,33 @@ from the goal. Q4 asks whether the reference can simply be run: Mastra and
 Alinery are both Apache-2.0, and Mastra is runnable on this server. Q8 asks for
 a route falsifier for "build our own". This is also a first test of the
 algorithm on a case that is not code porting; record what does not carry over.
+
+**Joe, 2026-10-11 (after Mastra won the small memory test):**
+
+> so, it is unsurprising that mastra won as of now, given that minus40 is still
+> being developed! my goal is to learn from the best, and if we can use ideas
+> from these projects to improve FUTON we should do so.
+
+This settles the intake's Q1: the goal is to *improve FUTON with the best ideas
+found*, and demonstrations are a means to that, not the goal. The deep dives'
+borrow lists (`deep-mastra.md` §5 B1–B12, `deep-alinery.md` §5 1–11) merge into
+one ranked list below. Ranking puts known FUTON pain first, then the cheapest
+change. Ideas are free to take. Code is borrowable only outside Mastra `ee/`,
+and since FUTON is Clojure/Python/Elisp, we take formats rather than code.
+
+| # | Idea (source) | Lands in | Known pain it addresses | Who can do it |
+|---|---|---|---|---|
+| 1 | Typed suspend/resume payload; claim-on-resume refuses a second resume (Mastra B3; tested T-M1) | Agency park/wake | memory `park-needs-session-id`: a park missing `session` strands its wake | Claude; Joe restarts :7070 |
+| 2 | Permission ≠ acceptance ≠ completion ≠ shutdown as separate job states (Alinery 2) | Agency job states, `agency_send` | memory `agency-send-mode-brief-trap`: a bell that runs nothing reports done | Claude; Joe restarts |
+| 3 | Two timestamps per extracted fact (said / refers to); consolidate, don't drop (Mastra B8; seen working in T-M3/T-M4) | minus40 ingest → `:hx/valid-time` | minus40 has valid-time from file history, not from what a fact *refers to* | minus40 lane |
+| 4 | LongMemEval harness; the T-M3 corner-store script as a standing comparison (Mastra B9) | minus40 milestone 5 (measures fixed in advance) | "is minus40 better yet?" has no fixed test | minus40 lane |
+| 5 | Verdict `passed / scored / failed`, no verdict when nothing could be scored (Mastra B6) | `warrant_suite.py` output | a green run that scored nothing (memory `slow-tagged-tests-hide`) | Claude |
+| 6 | Strict parsing: unknown fields rejected at save time (Alinery 5; Mastra B4 coded issues with repair hints) | flexiarg parser | memory `flexiarg-directive-misuse`: half the pattern graph dangles on prose | Claude (investigation first) |
+| 7 | Reachability check at save time ("every input has a producer or is the seed") | flexiarg / cascade checks; offered upstream to Alinery | the check their validator lacks (intake T-A1) is one we should have too | Claude |
+| 8 | Runnable meta-process with a human gate at save (Alinery 4, `build-playbook`) | `futon3/library/cascade-construction/` | cascade construction is prose-only | design first |
+| 9 | Matched examples: one shared literature-review fixture, FUTON cascade as a fifth column (Alinery 6) | demonstration for the TN sibling packet | no public side-by-side exists | Claude |
+| 10 | Run claims + write fencing on restart (Mastra B1) | WM flight runner; Agency jobs | memories `apm-restart-freeze`, `wm-restart-debugger` | WM part: Codex only (hand back); Agency part: Claude |
+| 11 | Trace intelligence: cluster runs by goal / behaviour / outcome over time (Mastra `ee/`, so the idea only) | 象 marks as the tags; futon1b as the store | turns are tagged but never aggregated | design first |
+
+Proposed start: #1. It closes a bug we already hit, and T-M1 has shown the
+behaviour to copy.

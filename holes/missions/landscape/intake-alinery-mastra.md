@@ -29,7 +29,7 @@ Handed over with the request: the 10-08 triage rule ("ignore / reuse if open /
 replicate if interesting but closed"), and the deep-dive method (read their code,
 map concepts, design demonstrations).
 
-## Q1 Goal (INFERRED, not yet confirmed by Joe)
+## Q1 Goal (INFERRED; superseded by Joe's answer below)
 
 Draft acceptance check: *for each neighbour, at least one demonstration has
 actually been run, and its result can be shown to a third party. The
@@ -306,3 +306,17 @@ leave list.
     during the run. The algorithm allows this (it is recorded as inferred), but
     it means the route choice is provisional.
 - One observation, not yet a pattern (the rule is three sessions).
+
+## Q1 answered by Joe (2026-10-11)
+
+> my goal is to learn from the best, and if we can use ideas from these projects
+> to improve FUTON we should do so.
+
+The acceptance check moves from "a demonstration shown to a third party" to
+*FUTON changed by an adopted idea, with the problem it fixes named*.
+Demonstrations become tests that an adopted idea works. Q7 (the third party)
+lapses. The ranked list is in M-landscape-positioning §6.
+
+**On the algorithm:** the inferred Q1 put the *requester's means* (demonstrate)
+in place of the goal (improve). That is the failure the algorithm warns against
+(Q2), turning up in Q1 itself. Asking the requester settled it in one turn.
