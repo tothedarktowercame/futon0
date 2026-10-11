@@ -165,13 +165,67 @@ needed a display was wrong).
   harness and a model.
 - Files: `repo/.alinery/playbooks/bh-*/playbook.md`, `save-reqs.jsonl`.
 
-**T-M2: BLOCKED on access (as guessed).**
+**T-M2: BLOCKED on access (as guessed); unblocked later the same day, see below.**
 - No model API key in this environment.
 - A bridge exists: `@mastra/claude` (`mastra/agent-sdks/claude`) wraps the
   Claude Agent SDK, which signs in the way Claude Code does, so it might run on the
   existing subscription. Untested.
 - Whether to spend subscription quota on Mastra experiments is Joe's call.
   Routed to Joe (stop condition 2).
+
+## T-M2 unblocked (Joe, 2026-10-11: "you can use the claude credentials to test mastra")
+
+Same scratch dir `~/code/external/try-mastra`. No API key: everything goes
+through the Claude Agent SDK on the subscription (claude-haiku-5-5).
+
+**T-M2a: `@mastra/claude` (Mastra's own wrapper): PASS but narrow.** One
+`generate()` returned `"pong"` in 2.6 s. However, `ClaudeSDKAgent` bypasses
+Mastra's agent loop: `supportsMemory()` returns false, and no processors,
+tripwires or scorers run inside it. It is a Claude Code run with Mastra
+tracing around it. Each call carried about 14k tokens of the Claude Code
+system prompt.
+
+**T-M2b: Mastra's *native* Agent on the subscription: PASS.**
+- `sdk-model.mjs` is a 60-line AI-SDK `LanguageModelV2` whose calls go to
+  the Agent SDK. It passes text in and text out, with no tool calls.
+- With it, Mastra's own loop runs with LibSQL message-history memory, across two processes: B recalled
+  A's "23rd Street, beer and chips". That took about 600 tokens per call.
+- **Adapter trap (mine, fixed):** without `strictMcpConfig: true` and
+  `ENABLE_CLAUDEAI_MCP_SERVERS=false`, the SDK loaded Joe's claude.ai connectors
+  (Drive, Gmail…). That made each call about 42k tokens, and the agent offered to "search your
+  Drive". An instruction I had appended also overrode Mastra's observer prompt, so
+  no observations were written. The first OM run (268k tokens) is void for that reason.
+
+**T-M3: Observational Memory, facts that change over time: Mastra wins.**
+- Five dated notes about a corner store (stock changes, a move from 23rd St to
+  40th and Telegraph). With `lastMessages: 2`, the raw notes drop out of context.
+  Then four as-of questions were asked.
+- All four were answered correctly from OM's observations.
+- The observer wrote both times, as the deep dive described:
+  `(10:19) User noted 2 June …: … greens dropped. (meaning June 2, 2026)`.
+- 10 calls, 20.6k tokens. Script `t-m3-om.mjs`; calls logged in `m3-calls.json`.
+
+**T-M4: the same, with reflection forced (`observationTokens: 200`): Mastra
+still wins.**
+- Reflection ran twice (generations 1 and 2 in `mastra_observational_memory`). The
+  reflector *consolidated* the notes into a dated timeline rather than dropping the
+  superseded ones. All four as-of answers were still correct.
+- Each reflection took several attempts (calls 8–11, 13–17), as it compressed by
+  levels. 19 calls, 120k tokens.
+
+**What this does to deep-mastra D3.** The demonstration as designed
+("minus40 as-of queries beat an OM summary") **failed at this scale**. That is
+the deep dive's predicted "Mastra might win" case, and it came out that way.
+- OM keeps dated history well when the operator *dates every statement*.
+- Where valid-time storage should matter is narrower, and still untested:
+  - *undated* supersession ("we sell greens now"), where the date is only the
+    turn time;
+  - facts that reflection merges silently;
+  - "what did the memory *say* on 1 August?", which is the system-time side. OM has
+    generations but no as-of read of them, though
+    `getObservationalMemoryHistory` lists them.
+- That is the refined D3, not run. The honest summary so far is that Mastra's
+  prompt-level approach to time is good enough for dated notes.
 
 ## What the tests change
 
