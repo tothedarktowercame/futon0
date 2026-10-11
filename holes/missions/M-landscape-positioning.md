@@ -1332,7 +1332,7 @@ and since FUTON is Clojure/Python/Elisp, we take formats rather than code.
 
 | # | Idea (source) | Lands in | Known pain it addresses | Who can do it |
 |---|---|---|---|---|
-| 1 | Typed suspend/resume payload; claim-on-resume refuses a second resume (Mastra B3; tested T-M1) | Agency park/wake | memory `park-needs-session-id`: a park missing `session` strands its wake | Claude; Joe restarts :7070 |
+| 1 | ~~Typed suspend/resume payload;~~ *(in place: see below)* claim-on-resume refuses a second resume (Mastra B3; tested T-M1) | Agency park/wake | memory `park-needs-session-id`: a park missing `session` strands its wake | Claude; Joe restarts :7070 |
 | 2 | Permission ≠ acceptance ≠ completion ≠ shutdown as separate job states (Alinery 2) | Agency job states, `agency_send` | memory `agency-send-mode-brief-trap`: a bell that runs nothing reports done | Claude; Joe restarts |
 | 3 | Two timestamps per extracted fact (said / refers to); consolidate, don't drop (Mastra B8; seen working in T-M3/T-M4) | minus40 ingest → `:hx/valid-time` | minus40 has valid-time from file history, not from what a fact *refers to* | minus40 lane |
 | 4 | LongMemEval harness; the T-M3 corner-store script as a standing comparison (Mastra B9) | minus40 milestone 5 (measures fixed in advance) | "is minus40 better yet?" has no fixed test | minus40 lane |
@@ -1346,3 +1346,25 @@ and since FUTON is Clojure/Python/Elisp, we take formats rather than code.
 
 Proposed start: #1. It closes a bug we already hit, and T-M1 has shown the
 behaviour to copy.
+
+**Checked against the code before starting (2026-10-11).** Joe: "it is worth
+noting typed-bells already exist". #1 turned out to be largely in place already.
+My memory note on it predates the fix.
+- **Sessionless park is refused.** `POST /api/alpha/park` refuses a park from an emacs*
+  surface with no session (`session-required-for-buffer-park`, futon3c
+  25021681, 2026-10-01). `agency_send --park` refuses a sender with no session-id.
+- **Single fire and redelivery are there.** A resume fires exactly once (`swap-vals!`,
+  parked_on.clj R1); a popped resume is leased and redelivered unless acked.
+- **Typed bells are live** (`FUTON3C_TYPED_BELLS=true` on :7070). Bells carry an
+  IAT speech-act type, and TB-3 says an `:answer` must carry a `:ref` to its
+  query. That is the counterpart of Mastra's typed resume. It was checked as a
+  core.logic model (`logic/typed_bells_invariants.clj`, TB-1..7) *before* the code
+  was written. Mastra has a zod schema on the resume payload, so here FUTON is
+  ahead in rigour, not behind.
+- **#2 is partly in place.** Jobs already record `execution {:executed :tool-events}`
+  beside `state`, so "accepted" and "work done" are distinguishable by a reader
+  who looks. The remaining gap is that `state: done` does not say which. Alinery's
+  lesson would be to make it a state of its own.
+
+*Lesson for the borrow list:* check each row against current code before ranking
+it by "known pain". Two of the top two were already addressed.
