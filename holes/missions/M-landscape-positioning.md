@@ -348,7 +348,8 @@ Clojure/Elisp/Python. Reusing Smithers or RocketRide may really mean
 
 **T4 — samey vs starred.** Joe found the scene "samey samey", yet starred Mastra,
 Cognisee and ZeroDB. The stars are the operator's own signal, and only Cognisee's
-has an explanation so far.
+has an explanation so far. *(10-11: Mastra's star now has one: open source and
+solving War Machine problems in a different way. See §6.)*
 
 **T5 — market signal vs product signal.** The most decision-relevant entry
 (Tatras: consulting is harder to sell because client teams now self-serve) is not
@@ -1233,3 +1234,53 @@ practice, that carry that intent.
   arguments checked with `--dry-run`. A real bell has not been sent yet.
   A bug found in testing and fixed: the context was read from inside the temp
   buffer.
+
+---
+
+# 6. Deep dives: Alinery and Mastra (Joe, 2026-10-11)
+
+> With regard to M-landscape-positioning, I was thinking, Alinery and Mastra are
+> probably the two projects that are most worth doing a deep dive on. Alinery is
+> "a little bit like" what I'm doing with the design pattern cascades, insofar as
+> it produces graphs that govern workflows and I similarly am creating graphs (or
+> semilattices / CT diagrams) that act as "policies" that regulate workflows.
+> It's kind of the same thing with a different terminological paint job, but
+> what's interesting about this is not just the similarity but the fact that I
+> didn't see that many other people talking about similar things, whereas much of
+> SF Tech Week was samey-samey. As for Mastra, it is YC backed and very snazzy,
+> but at least a lot of it is open source and it looks like they are solving some
+> of the same problems as the War Machine, albeit in a different way. So, my
+> overall sense is that I have been coming at similar problems to SF folks, but
+> with a much more theory-heavy approach (Category Theory & Active Inference) and
+> that I want to be able to demonstrate what's good about my approach while
+> learning from theirs.
+
+This changes the survey from *acquaintance* to *positioning by demonstration*:
+two neighbours, each read closely enough to say where the paint job is only
+paint and where the theory does work the neighbour's representation cannot.
+
+| | Neighbour | FUTON counterpart | Write-up |
+|---|---|---|---|
+| A | Alinery: playbooks of steps with gates and artifacts | pattern cascades as policies (futon3 library, flexiarg) | `landscape/deep-alinery.md` |
+| B | Mastra: workflows, memory, scorers, tracing (TS) | War Machine R-nodes; Agency; futon1b / minus40 | `landscape/deep-mastra.md` |
+
+Clones (read-only, outside the futon repos): `~/code/external/alinery`
+(cfc0d1e, 2026-10-10), `~/code/external/mastra` (ebe143c4, 2026-10-11).
+
+Each write-up ends in *demonstrations*: an input, a procedure, and what counts as
+failure, including at least one where the neighbour is expected to win. The
+Alinery dive is also a down payment on the parked sibling packet in
+`~/code/TN-deep-research-landscape-position-2026-07.md` (where auditable
+pattern-cascade learning sits in the agent/dev-tooling landscape).
+
+War Machine is Codex-only for now. The Mastra comparison reads WM files and
+changes none.
+
+**Intake (2026-10-11).** Before either dive: `landscape/intake-alinery-mastra.md`,
+a run of `~/code/algorithms/conduct-problem-intake-with-route-questions.md`. It
+treats the counterpart table above as one candidate route rather than the frame,
+takes each neighbour's problem from its users rather than its docs, and runs each
+neighbour once before reading its architecture. First evidence: Mastra's
+most-upvoted issues are about integrating agents into TypeScript apps, which
+predicts its problem is not the War Machine's; Alinery has no users in its repo,
+so its problem comes from its founders.
