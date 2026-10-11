@@ -1389,3 +1389,30 @@ re-belled both jobs to claude-15 with design notes
   corner-store test exists. **Declined:** nothing.
 - **Results:** none yet for minus40. Mastra OM's 4/4 (and 4/4 after reflection) is
   the baseline. claude-16 will bell claude-13 with the table and the commit shas.
+
+**Rows 3 and 4: results (claude-15 built, claude-16 reviewed, 2026-10-11).**
+- **Row 3: built** (minus40 5dfccf4). In the live hook, each line of a new memory
+  version becomes a `:memory/fact` edge carrying `:said-at` and `:referent`, the
+  date the line states. Valid time is the referent where it is known. Otherwise it
+  is the said time, with the unknown kept explicit as a gap. Tested in
+  `scripts/test_crystallise.py`.
+- **Row 4: benchmark run.**
+  - Measures were committed before the run (minus40
+    `docs/BENCHMARK-corner-store-measures.md`, ed5911b). They cover the five notes
+    plus two more: an undated "greens again now", and a correction to 15 April.
+  - There are eight questions. Results are in `docs/BENCHMARK-corner-store-results.md`.
+  - **Mastra OM 8/8, minus40 7/8.** Mastra used 52 calls, 436k tokens and 343 s.
+    minus40 used 8 answering calls plus its background worker, and took 155 s.
+  - minus40's miss (Q3, the June location) is in the *read*, not the store.
+    "Facts referring to D or earlier" is a list, not the state at D. Next step: an
+    as-of read returning the latest fact per subject at or before D.
+  - **A cost on Mastra's side that the score does not show.** Its reflector merged
+    the 15 April correction into the 15 April line, so the log no longer shows that
+    the correction was learned later. It also stored the benchmark questions as
+    observations. A single valid-time label would miss this; minus40's
+    said-at/referent split keeps it.
+  - Recorded deviations: a harness bug on C3 was fixed and all eight re-asked, with
+    the first-pass answers kept; notes were appended, not replaced.
+- **Declined for now:** LongMemEval, because the dataset licence is unchecked.
+  Also declined: backfilling facts for the 294 existing memories. That is easy if
+  Joe wants it.
