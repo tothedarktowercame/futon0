@@ -1368,3 +1368,24 @@ My memory note on it predates the fix.
 
 *Lesson for the borrow list:* check each row against current code before ranking
 it by "known pain". Two of the top two were already addressed.
+
+**Rows 3 and 4 handed off (2026-10-11).** Joe asked for these to be belled to claude-16
+(job `invoke-1791715588861-5127-28ef4c7e`). claude-16's correction: it owns
+M-象-2000, which 40ºBelowDB consumes, but **claude-15 builds minus40**. So it
+re-belled both jobs to claude-15 with design notes
+(`invoke-1791715675235-5137-962a66e1`) and parked on that job.
+- **Row 3: adopted.** minus40's valid time is currently the version's *write* time.
+  That is "time said" standing in for "time referred to". The referent date goes in
+  at the crystallise pass that landed today, the first point where facts are
+  extracted:
+  - `:hx/valid-time` comes from a date the text states (the files carry about
+    1,005 ISO dates);
+  - otherwise the write time is used, plus an explicit unknown-referent property
+    recorded as an open hole.
+  - Mastra's consolidate-not-drop is already how minus40's version history behaves.
+- **Row 4: adopted.** Measures and expected answers are committed before any run.
+  The corner-store test becomes standing, with the three added cases.
+- **Deferred:** LongMemEval, until the dataset's licence is checked and the
+  corner-store test exists. **Declined:** nothing.
+- **Results:** none yet for minus40. Mastra OM's 4/4 (and 4/4 after reflection) is
+  the baseline. claude-16 will bell claude-13 with the table and the commit shas.
