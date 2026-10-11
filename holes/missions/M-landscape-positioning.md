@@ -502,15 +502,21 @@ carried badly or slowly, it is open to tooling. Many real problems are mixed.
 **Fitting the triples to the War Machine (first reading, unchecked against the
 Lean spec):**
 
+*Correction, 2026-10-11 (the Mastra deep dive checked this against
+`p4ng/sec-catalog.tex`):* three glosses below were wrong and are struck through.
+Also, the `r9-`/`r10-`/`r11-` prefixes in `wm-adjacency.edn` are row numbers in
+the wiring inventory, not catalogue R-numbers. See the opening caveat of
+`landscape/deep-mastra.md`.
+
 | triple rows | WM node |
 |---|---|
-| 1, 2 delegate · task | R10 (commissioned and dispatched) |
+| 1, 2 delegate · task | ~~R10~~ → selection (R5/R6) plus the `dispatch!` box, which has no R-number. *Corrected 10-11:* R10 is Scheduled Observer Entrypoint |
 | 6 verify by a second process | R9 (no self-certification) |
 | 3 constrain responses to calibrated typed answers | R12 (two-layer calibration) |
 | 13, 18 constrain token spend / payment | R11 (hierarchical shared budget) |
-| 16 defer a follow-up | R16 (grounded actuation; parked and surfaced) |
+| 16 defer a follow-up | ~~R16~~ → no R-node; Agency park (`parked_on.clj`). *Corrected 10-11:* R16 is Grounded Actuation, and "parked" is only a lifecycle cell its code fills |
 | 10 report-problem · regressions | R20 (interoceptive tripwires) |
-| prioritize / constrain · what matters | R19 (preference C-vector), which is set by people. This is where the "human problem" boundary sits in WM terms |
+| prioritize / constrain · what matters | C, the preference vector ("R19" in generated sections only; the catalogue gives C no R-number), which is set by people. This is where the "human problem" boundary sits in WM terms |
 
 The three *constrain* rows with no FUTON counterpart (3, 8, 18) fall on R11 and
 R12. Those are WM nodes, so the War Machine has a specification for them even
@@ -671,7 +677,7 @@ badly), **H** human (the intent or the trust is missing), **M** mixed.
 
 **Two ontologies, joined by the fit in §3.1.** The SVO triples (§3) are the
 *lexical* side: what people say they intend. The R-nodes are the *abstract* side:
-the factors of the scattering. The fit in §3.1 (delegate → R10, verify by a second
+the factors of the scattering. The fit in §3.1 (delegate → selection/dispatch, *corrected 10-11*; verify by a second
 process → R9, constrain spend → R11, …) is what joins them.
 
 **Where the abstract side lives:**
@@ -1284,3 +1290,29 @@ neighbour once before reading its architecture. First evidence: Mastra's
 most-upvoted issues are about integrating agents into TypeScript apps, which
 predicts its problem is not the War Machine's; Alinery has no users in its repo,
 so its problem comes from its founders.
+
+**Joe, 2026-10-11 (on the deep dives):**
+
+> Yeah this is the right way to go here. I'm not convinced yet that I should be
+> *using* their code, and similarly for any of the other stuff, but I'm also not
+> convinced that I should *not* be. If these go well we could research Cognisee
+> and "hydra" in particular, since Hydra is slated to become a new Apache tool.
+> But two deep dives is enough for now.
+
+- *Use their code?* Still undecided, on purpose. Each write-up lists what could
+  be borrowed, but no item is adopted until Joe has assessed it.
+- *Queued, not started:* Cognisee; "Hydra" (Joe: due to become a new Apache
+  tool; unverified, and not yet known whether this is HydraDB from the MAP, row 4,
+  or another Hydra). Cap: two deep dives at a time.
+
+**Joe, 2026-10-11:** "We can test out the
+~/code/algorithms/conduct-problem-intake-with-route-questions.md on this
+material at a suitable juncture, perhaps when the writeups are ready."
+
+*Planned juncture:* once both write-ups have landed, run the intake in live
+mode with Joe as requester, once per neighbour. It fits the open question above.
+Q2 separates the method that came with the request ("replicate / reuse / ignore")
+from the goal. Q4 asks whether the reference can simply be run: Mastra and
+Alinery are both Apache-2.0, and Mastra is runnable on this server. Q8 asks for
+a route falsifier for "build our own". This is also a first test of the
+algorithm on a case that is not code porting; record what does not carry over.
