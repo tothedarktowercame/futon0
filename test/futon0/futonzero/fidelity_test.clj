@@ -12,3 +12,11 @@
   (let [entry (-> (sut/read-contract) :capabilities last (assoc :rationale ""))]
     (is (= [":mission-control-writeback needs a disposition rationale"]
            (sut/entry-errors entry)))))
+
+(deftest missing-source-is-an-invalid-contract-not-an-exception
+  (let [contract (update (sut/read-contract) :capabilities
+                         #(assoc % 0 (dissoc (first %) :source)))
+        result (sut/validate-contract contract)]
+    (is (false? (:valid? result)))
+    (is (= [":structured-evidence-observation needs a pinned source"]
+           (-> result :entry-results first :errors)))))

@@ -71,6 +71,10 @@
           (fn [{:keys [capability/id source]}]
             (let [{:keys [path] expected-sha :sha256} source]
               (cond
+                (not (and (map? source)
+                          (string? path)
+                          (re-matches #"[0-9a-f]{64}" (or expected-sha ""))))
+                []
                 (not (.exists (io/file path))) [(str id " source is missing: " path)]
                 (not= expected-sha (sha256 path))
                 [(str id " source hash does not match: " path)]
