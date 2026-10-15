@@ -71,7 +71,7 @@ that produces two visible products for First Proof:
 
 - [ ] **G5 Task Specification:** task schema, rubric versioning, and discipline metric definitions are explicit.
 - [ ] **G4 Agent Authorization:** monitored agents and task sources are explicitly listed.
-- [ ] **GF Fidelity Contract:** baseline capabilities and preserve/adapt/drop decisions are recorded below.
+- [x] **GF Fidelity Contract:** baseline capabilities and preserve/adapt/drop decisions are recorded below.
 - [ ] **G3 Pattern Reference:** PSR pattern choices for architecture and scheduling are recorded before implementation.
 - [ ] **G2 Execution:** code + tests implemented in futon0.
 - [ ] **GD Document:** mission updates + docs + hypergraph plan/defer note captured.
@@ -79,6 +79,14 @@ that produces two visible products for First Proof:
 - [ ] **G0 Evidence Durability:** report artifacts and PAR notes are persisted.
 
 ## Fidelity Contract (GF)
+
+The complete, source-pinned contract is
+`resources/futonzero/fidelity-contract-v1.edn`; validate it with
+`clojure -M -m futon0.futonzero.fidelity check`. Its thirteen entries inventory
+the implemented monitor and its negative authority boundaries. Each entry has
+exactly one preserve/adapt/drop disposition, concrete MVP behavior, rationale,
+fidelity conditions, and an observable check. The prose below is a summary,
+not a second contract.
 
 ### Baseline Capability Inventory
 

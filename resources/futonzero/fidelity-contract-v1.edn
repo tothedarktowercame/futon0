@@ -1,0 +1,95 @@
+{:schema :futonzero/fidelity-contract-v1
+ :mission/id "M-futonzero-mvp"
+ :baseline "Implemented FutonZero capability monitor plus its declared read-only boundary"
+ :capabilities
+ [{:capability/id :structured-evidence-observation
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/observe.clj" :sha256 "474aed4c7777616a5de03d9dff0a8823cefff6c9e8d1312ae0cd5e7aa0b9f41a"}
+   :concrete-behavior "MVP observation continues to derive typed functionings from existing evidence without inventing parallel evidence records."
+   :rationale "Evidence-derived functionings are the implemented monitor's primary observation substrate."
+   :fidelity-conditions ["Evidence identity, author, session, timestamp, and claim semantics remain unchanged." "Unavailable evidence classes are reported rather than synthesized."]
+   :observable-check {:kind :source-hash :expect "Pinned observer source exists with matching SHA-256."}}
+  {:capability/id :hyperedge-observation
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/observe.clj" :sha256 "474aed4c7777616a5de03d9dff0a8823cefff6c9e8d1312ae0cd5e7aa0b9f41a"}
+   :concrete-behavior "MVP monitoring retains read-only hyperedge observation for infrastructure functionings."
+   :rationale "The baseline combines evidence and substrate observations without changing either authority."
+   :fidelity-conditions ["Hyperedges are queried through existing interfaces." "Observation never writes to the hyperedge store."]
+   :observable-check {:kind :source-hash :expect "Pinned observer source exists with matching SHA-256."}}
+  {:capability/id :agent-discovery
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/cli.clj" :sha256 "29c14bf688b827094091ea97c6ff896b275af1ec3b4874c23bd312db839b6b9b"}
+   :concrete-behavior "Agents remain discovered from evidence in the requested window rather than from a closed enumeration."
+   :rationale "Open agent discovery prevents the MVP tutor from silently excluding new agents."
+   :fidelity-conditions ["Agent identity remains a string supplied by evidence." "Sparse agents remain visible with their actual observation density."]
+   :observable-check {:kind :source-hash :expect "Pinned CLI source retains the agents command."}}
+  {:capability/id :capability-profile
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/profile.clj" :sha256 "534e3d4e7edb4c4a818a3160c1e22cbccb0f76c6d39b1f0c7e8c75706cc1894e"}
+   :concrete-behavior "Profiles continue to distinguish observed functionings from reproducible capabilities across sessions."
+   :rationale "That distinction is the baseline's operational use of Sen's capability approach."
+   :fidelity-conditions ["A capability requires evidence across at least two sessions." "Counts retain their observation-window denominator."]
+   :observable-check {:kind :source-hash :expect "Pinned profile implementation exists with matching SHA-256."}}
+  {:capability/id :discipline-profile
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/profile.clj" :sha256 "534e3d4e7edb4c4a818a3160c1e22cbccb0f76c6d39b1f0c7e8c75706cc1894e"}
+   :concrete-behavior "PSR, PUR, PAR, and continuity readings remain separately available in monitor and MVP reports."
+   :rationale "The MVP must measure discipline adaptation without collapsing it into task success."
+   :fidelity-conditions ["Each evidence class carries an availability flag." "Missing classes do not become zero-valued observations without qualification."]
+   :observable-check {:kind :source-hash :expect "Pinned profile implementation exists with matching SHA-256."}}
+  {:capability/id :trajectory-comparison
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/trajectory.clj" :sha256 "f37caa6be3254e21a6f84a680d43c00628f1f18c51df7424890491fc644595a5"}
+   :concrete-behavior "Baseline and current windows continue to expose expansion, persistence, regression, and observation gaps."
+   :rationale "Capability change, rather than an isolated score, is the monitor's central product."
+   :fidelity-conditions ["Compared windows are explicit and non-overlapping." "An empty baseline is reported as insufficient evidence."]
+   :observable-check {:kind :source-hash :expect "Pinned trajectory implementation exists with matching SHA-256."}}
+  {:capability/id :durable-reports
+   :disposition :preserve
+   :source {:path "scripts/futon0/futonzero/report.clj" :sha256 "d11de593dc598cd7b8005f76092bcfa2cc3970a5fff4e0ec281c1b4d55178b53"}
+   :concrete-behavior "Human-readable and machine-readable reports remain durable local artifacts."
+   :rationale "Review and later comparison require reports that survive the producing process."
+   :fidelity-conditions ["Markdown and structured report forms describe the same trajectory." "Writes remain local and inspectable."]
+   :observable-check {:kind :source-hash :expect "Pinned report implementation exists with matching SHA-256."}}
+  {:capability/id :read-only-observer
+   :disposition :adapt
+   :source {:path "holes/missions/M-futonzero-capability.md" :sha256 "b99739dfb719d216c4eee5ad25748c930971db5657cada15243647564e401e6e"}
+   :concrete-behavior "Monitoring stays read-only; coaching is isolated as a local recommendation artifact that requires a visible relay and never mutates evidence, missions, or schedules remotely."
+   :rationale "The MVP adds advice, but direct intervention would contradict D-I5 and make evaluation self-confirming."
+   :fidelity-conditions ["Observation namespaces perform no network writes." "Coach output names its relay surface and remains advisory." "Task selection consumes coaching only through an explicit local decision record."]
+   :observable-check {:kind :contract-assertion :expect "Coach integration test shows recommendation artifact creation without a stack write."}}
+  {:capability/id :cli-surface
+   :disposition :adapt
+   :source {:path "scripts/futon0/futonzero/cli.clj" :sha256 "29c14bf688b827094091ea97c6ff896b275af1ec3b4874c23bd312db839b6b9b"}
+   :concrete-behavior "Existing observe/profile/trajectory/report/agents commands remain available while task import, practice, and export are added as explicit commands."
+   :rationale "Task practice extends the operator surface; replacing the monitor commands would erase working baseline capability."
+   :fidelity-conditions ["Existing command names and meanings remain stable." "New commands use explicit domain and output roots."]
+   :observable-check {:kind :cli-acceptance :expect "CLI help lists baseline commands and each new MVP command without aliases changing baseline behavior."}}
+  {:capability/id :scheduling-and-coaching
+   :disposition :adapt
+   :source {:path "holes/missions/M-futonzero-capability.md" :sha256 "b99739dfb719d216c4eee5ad25748c930971db5657cada15243647564e401e6e"}
+   :concrete-behavior "The baseline's no-scheduler boundary becomes a deterministic local practice scheduler whose outputs are append-only proposals; visible coaching may alter a later local selection through a recorded choice."
+   :rationale "First Proof requires practice selection, but preserving read-only stack observation forbids hidden or remote control."
+   :fidelity-conditions ["Scheduler inputs, seed, weights, and selected tasks are recorded." "Coaching influence is visible in a before/after selection record." "No scheduler operation writes to futon1a or futon3c."]
+   :observable-check {:kind :contract-assertion :expect "Known-case test reproduces the due/review/edge/probe selection and its coaching-induced change."}}
+  {:capability/id :rich-interactive-ui
+   :disposition :drop
+   :source {:path "holes/missions/M-futonzero-capability.md" :sha256 "b99739dfb719d216c4eee5ad25748c930971db5657cada15243647564e401e6e"}
+   :concrete-behavior "MVP exposes CLI and artifact files only; it adds no interactive graphical interface."
+   :rationale "A UI is unnecessary to validate the capability and discipline loop and would enlarge the MVP before its measures are stable."
+   :fidelity-conditions ["All acceptance behavior is reachable from documented CLI commands." "The reduction remains visible in this contract."]
+   :observable-check {:kind :scope-check :expect "No UI deliverable is required by the MVP acceptance checklist."}}
+  {:capability/id :llm-generated-hints
+   :disposition :drop
+   :source {:path "holes/missions/M-futonzero-capability.md" :sha256 "b99739dfb719d216c4eee5ad25748c930971db5657cada15243647564e401e6e"}
+   :concrete-behavior "Core task evaluation and scheduling use deterministic rules; the MVP does not generate hints with an LLM."
+   :rationale "Generated hints would couple the evaluator to an unpinned model and obscure whether capability changed."
+   :fidelity-conditions ["Core evaluation runs without network or model access." "A future hint adapter must remain separate from scoring."]
+   :observable-check {:kind :scope-check :expect "Offline acceptance tests complete without an LLM dependency."}}
+  {:capability/id :mission-control-writeback
+   :disposition :drop
+   :source {:path "holes/missions/M-futonzero-capability.md" :sha256 "b99739dfb719d216c4eee5ad25748c930971db5657cada15243647564e401e6e"}
+   :concrete-behavior "MVP reports and coaching artifacts do not update mission-control state or create a new transport substrate."
+   :rationale "Writeback is outside the local capability-loop proof and would violate the monitor's read-only authority boundary."
+   :fidelity-conditions ["Mission and evidence authorities remain unchanged." "Re-entry requires stable monitor output across at least two weekly windows."]
+   :observable-check {:kind :scope-check :expect "Network-write probe observes no writes to mission-control or evidence services."}}]}
