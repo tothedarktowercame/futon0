@@ -36,7 +36,7 @@
    "AI passes UT-Austin prelims — compute-gated held claim above the shipped corpus/tutor substrate",
    :status :held,
    :scope [:apm-prelim-corpus-substrate],
-   :minted-by [],
+   :minted-by ["M-apm-solutions"],
    :pre-registered? true,
    :frontier true,
    :compute-gated true,
