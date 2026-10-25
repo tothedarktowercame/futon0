@@ -117,3 +117,22 @@ Held stars of note:
 | `M-canon-fingerprint-store` | futon6 | open | 2026-09-30 |
 | `M-differentiable-math` | futon6 | open | 2026-09-30 |
 
+
+## Review corrections (claude-11, 2026-10-25)
+
+- **"Live" is mostly the 2026-09-30 bulk edit.** 275 of the 422 docs have their last commit on 2026-09-30, the day of the bulk rewrite of holes/ (about 330 files), and 119 have no commit at all. Excluding commits that touch more than 25 mission files, **only 13 missions have a commit since 2026-10-01**:
+  - futon5a: M-war-machine-wiring, M-self-improvement-loop, M-stack-geometry
+  - futon0: M-futonzero-mvp, M-landscape-positioning, M-joe-told-me-about-futon
+  - futon5: M-categorical-code
+  - futon3c: M-象-2000, M-象-cascade, M-aif-over-the-operator, M-diagramprover, M-autonomous-pattern-lifecycle
+  - futon7: M-daily-scan
+
+  Of these 13, one has a declared star (M-stack-geometry → `stack-stereolithography-substrate`). The live-per-star column above should be read with this in mind.
+- **The inferred links pass the quote check but are often not about the star.** The check confirms only that the quote exists in the mission; it does not confirm that the quote is about the star. Examples:
+  - `ai-passes-prelims` ← M-IRC-stability, M-kangaroo, M-agency-forum;
+  - M-aif-over-the-operator → `warm-customer-pays`.
+
+  Treat the inferred links as unreviewed candidates, not as evidence of a link.
+- **The "wants" column counts unchecked `- [ ]` task lines,** not stated outcomes. "Admitted" is therefore a statement about tasks.
+
+Recomputed data: ~/notes/experiments/2026-10-25-mission-star-audit/missions-reallast.json
