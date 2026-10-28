@@ -475,10 +475,14 @@ if [[ -z "${sid}" ]]; then
 {"agent-id":"$(json_escape "${aid}")","prompt":"$(json_escape "${inhabit_prompt}")","caller":"cr","surface":"emacs-claude-repl"}
 BELL
 )"
-  bell_result="$(curl -sS --max-time 5 \
+  # Non-fatal: under set -e a curl timeout here ended the script before the
+  # REPL buffer was opened (2026-10-28, claude-16: Agency took ~9 s to answer
+  # while futon1b was busy; the turn still ran, but Joe got no buffer). The
+  # buffer must not depend on how fast the inhabitation bell is acknowledged.
+  bell_result="$(curl -sS --max-time 15 \
     -H "Content-Type: application/json" \
     -X POST -d "${bell_payload}" \
-    "${evidence_base%/}/api/alpha/bell" 2>&1)"
+    "${evidence_base%/}/api/alpha/bell" 2>&1)" || true
   echo "Inhabitation: ${bell_result}"
 fi
 
