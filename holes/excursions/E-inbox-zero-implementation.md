@@ -1,6 +1,6 @@
 # Excursion: E-inbox-zero-implementation
 
-**Status:** IDENTIFY — data specification before implementation  
+**Status:** DONE — confirmed 2026-10-29 (Giraffe closing check): Implementation slices A-I were logged with commits and a closing act (epoch amnesty executed, unattributed 107 to 3), leaving only future open decisions rather than unfinished deliverables. Evidence: 2b82dc21, c4922353.
 **Date opened:** 2026-08-21  
 **Entry point:** [`README-inbox-zero.md`](../../README-inbox-zero.md) identifies
 turn-end promotion as the missing mechanism for real uncommitted work. The

@@ -1,4 +1,5 @@
 # Excursion: Current Usage Report — Claude + Codex token burndown
+**Status:** DONE — confirmed 2026-10-29 (Giraffe closing check): The three-layer usage burndown tooling (bb script, elisp glue, Stack HUD + Arxana Browser surfaces) was built and committed on 2026-05-03; all named files exist. Evidence: 53f3ee0, /home/joe/code/futon0/contrib/current-usage-report.bb.
 
 **VERDICT (2026-10-09, provisional):** DONE — All three layers of the usage-report tooling were built and wired into the HUD, with the closing commit on 2026-05-03. _(WM status classification by zai-5, high confidence; not yet confirmed by the author.)_
 

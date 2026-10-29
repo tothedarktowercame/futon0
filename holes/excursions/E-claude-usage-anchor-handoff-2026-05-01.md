@@ -1,4 +1,5 @@
 # Claude Review Handoff: usage-report Claude anchors
+**Status:** DONE — confirmed 2026-10-29 (Giraffe closing check): The manual-anchor Claude usage estimation was implemented in usage-report.el, ERT tests passed, a live anchor seeded, and the handoff plus code committed on 2026-05-03. Evidence: 53f3ee0, /home/joe/code/futon0/contrib/test/usage-report-test.el.
 
 **VERDICT (2026-10-09, provisional):** DONE — Handoff document describes implemented and verified changes with a follow-up git commit; it is a completed review handoff, though the review reply is not recorded. _(WM status classification by zai-5, medium confidence; not yet confirmed by the author.)_
 
