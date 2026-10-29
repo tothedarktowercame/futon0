@@ -1,4 +1,5 @@
 # Excursion: E-affect-live
+**Status:** DONE — confirmed 2026-10-29 (Giraffe closing check): Live read-only affect wiring was built and validated 2026-06-09, including the per-turn runner, Emacs hook, resolver, and materialised feed. Evidence: /home/joe/code/futon0/scripts/futon0/rhythm/affect.clj, /home/joe/code/storage/futon0/vitality/affect.jsonl, /home/joe/code/futon3c/emacs/agent-chat.el.
 
 **VERDICT (2026-10-09, provisional):** DONE — Its bounded scope — clearing the stale feed blocker and wiring live read-only affect — is stated as achieved, with boundaries to other work explicitly excluded. _(WM status classification by zai-3, medium confidence; not yet confirmed by the author.)_
 
