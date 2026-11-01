@@ -1,0 +1,59 @@
+{:schema "wm/mathematical-capability-packet.v1"
+ :version 1
+ :description "Normative schema for a mathematical capability packet distilled from a checked APM bundle and proof revision. Draft derivation for M-apm-capability-ratchet; status transitions are machine-checked by validate_packet.py."
+ :fields
+ {:packet/id
+  {:type "keyword" :required true
+   :pattern "^apm/[A-Za-z0-9-]+/packet/[a-z0-9-]+$"
+   :doc "Stable packet identity: apm/<problem-or-family>/packet/<slug>."}
+  :packet/version
+  {:type "integer" :required true :min 1
+   :doc "Packet schema/content version, monotonically increasing."}
+  :packet/problem-id
+  {:type "string" :required true
+   :doc "The APM problem id this capability was distilled from (e.g. a94J05)."}
+  :packet/status
+  {:type "keyword" :required true :enum :statuses
+   :doc "Current lifecycle status; must equal the head of :packet/status-history."}
+  :packet/created-at
+  {:type "string" :required true :pattern "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+   :doc "UTC ISO-8601 creation instant."}
+  :packet/provenance
+  {:type "map" :required true
+   :fields {:bundle-sha256 {:type "string" :required true :pattern "^[0-9a-f]{64}$"
+                            :doc "sha256 of the checked evidence bundle."}
+            :proof-revision {:type "string" :required true
+                             :doc "Full git revision of the checked proof, never a branch or HEAD."}}
+  }
+  :packet/applicability
+  {:type "vector" :required true :min-length 1 :item-type "map"
+   :item-fields {:boundary {:type "string" :required true}
+                 :rationale {:type "string" :required true}}
+   :doc "Applicability boundaries: each entry names one boundary and why it holds."}
+  :packet/semantics
+  {:type "map" :required true
+   :fields {:capability-statement {:type "string" :required true
+                                   :doc "What mathematical capability the packet carries, as a checkable statement."}
+            :theorem-meaning {:type "string" :required true
+                              :doc "The formal meaning of the underlying theorem in the problem's terms."}}}
+  :packet/status-history
+  {:type "vector" :required true :min-length 1 :item-type "map"
+   :item-fields {:status {:type "keyword" :required true :enum :statuses}
+                 :at {:type "string" :required true
+                      :pattern "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"}}
+   :doc "Transition history; head equals :packet/status; consecutive entries must follow :status-transitions."}}
+ :statuses #{:draft :candidate :sealed :promoted :revise :split :reject}
+ :status-transitions
+ {:draft #{:candidate}
+  :candidate #{:sealed :revise}
+  :sealed #{:promoted :revise :split :reject}
+  :revise #{:candidate}
+  :promoted #{}
+  :split #{}
+  :reject #{}}
+ :invariants
+ [:head-of-status-history-equals-status
+  :every-history-transition-allowed
+  :terminal-statuses-have-no-outgoing-edges
+  :closed-world-no-unknown-top-level-fields
+  :provenance-digests-are-full-value-sha256]}

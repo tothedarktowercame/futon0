@@ -1,0 +1,12 @@
+{:packet/id :apm/a94J05/packet/negative-unknown-field
+ :packet/version 1
+ :packet/problem-id "a94J05"
+ :packet/status :candidate
+ :packet/created-at "2026-10-16T00:00:00Z"
+ :packet/provenance {:bundle-sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                     :proof-revision "2058bfc9816b4afe4cdd7114624945d36486dabb"}
+ :packet/applicability [{:boundary "b" :rationale "r"}]
+ :packet/semantics {:capability-statement "c" :theorem-meaning "t"}
+ :packet/status-history [{:status :draft :at "2026-10-15T00:00:00Z"}
+                         {:status :candidate :at "2026-10-16T00:00:00Z"}]
+ :packet/promise "an unaudited free-text claim riding inside a sealed packet"}

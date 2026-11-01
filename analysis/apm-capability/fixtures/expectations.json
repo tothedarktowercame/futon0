@@ -1,0 +1,9 @@
+{
+  "fixtures/negative-01-missing-provenance.edn": "missing-required-field",
+  "fixtures/negative-02-short-digest.edn": "pattern-mismatch",
+  "fixtures/negative-03-illegal-transition.edn": "illegal-status-transition",
+  "fixtures/negative-04-unknown-status.edn": "enum-mismatch",
+  "fixtures/negative-05-empty-applicability.edn": "min-length-violation",
+  "fixtures/negative-06-unknown-field.edn": "unknown-field",
+  "fixtures/negative-07-head-mismatch.edn": "history-head-mismatch"
+}

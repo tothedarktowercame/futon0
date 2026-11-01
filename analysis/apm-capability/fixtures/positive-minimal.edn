@@ -1,0 +1,13 @@
+{:packet/id :apm/a94J05/packet/example-minimal
+ :packet/version 1
+ :packet/problem-id "a94J05"
+ :packet/status :candidate
+ :packet/created-at "2026-10-16T00:00:00Z"
+ :packet/provenance {:bundle-sha256 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                     :proof-revision "2058bfc9816b4afe4cdd7114624945d36486dabb"}
+ :packet/applicability [{:boundary "problems reducible to a bounded exhaustive search over a finite candidate set"
+                         :rationale "the distilled tactic only terminates when the candidate set is finite and explicitly enumerable"}]
+ :packet/semantics {:capability-statement "construct and discharge a bounded exhaustive search over an enumerated candidate set"
+                    :theorem-meaning "the theorem asserts every element of the finite candidate set was examined and none satisfies the negated goal"}
+ :packet/status-history [{:status :draft :at "2026-10-15T00:00:00Z"}
+                         {:status :candidate :at "2026-10-16T00:00:00Z"}]}

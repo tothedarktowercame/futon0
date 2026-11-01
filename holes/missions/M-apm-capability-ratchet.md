@@ -771,12 +771,12 @@ These checkboxes are the charter's machine-visible open state.
   do not extend the live ingestor opportunistically.
 - [ ] Produce the first `a94J05` topology crosswalk using accepted `pca3-v1`
   assignments rather than hand labels.
-- [ ] Audit existing task/run/evidence schemas before defining packet and run
+- [x] Audit existing task/run/evidence schemas before defining packet and run
   manifests.
 - [ ] DERIVE `mathematical-capability-packet.v1` and its status-transition
   rules.
 - [ ] Decide the initial APM-side packet path and cross-repo stable-ID shape.
-- [ ] Implement a deterministic schema validator with negative fixtures.
+- [x] Implement a deterministic schema validator with negative fixtures.
 - [ ] Distil the `a94J05` candidate packet from the checked bundle and proof
   revision.
 - [ ] Freeze and validate the first transfer probes and sealed reference
