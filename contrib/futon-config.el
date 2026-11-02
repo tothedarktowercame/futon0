@@ -20,6 +20,9 @@
 
 ;; M-x report-futon-bug: one-line bug report with context gathered for you.
 (autoload 'report-futon-bug "report-futon-bug" nil t)
+(autoload 'futon-bug-feed-attach "report-futon-bug" nil t)
+(autoload 'futon-bug-feed-detach "report-futon-bug" nil t)
+(autoload 'futon-bug-feed-status "report-futon-bug" nil t)
 
 ;; Stack HUD entry point.
 (require 'stack-entry)
