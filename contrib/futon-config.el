@@ -23,6 +23,9 @@
 (autoload 'futon-bug-feed-attach "report-futon-bug" nil t)
 (autoload 'futon-bug-feed-detach "report-futon-bug" nil t)
 (autoload 'futon-bug-feed-status "report-futon-bug" nil t)
+;; The attached agent's REPL pocket calls `futon-bug-feed-segment', so load the
+;; small subscription layer at startup rather than waiting for the first report.
+(require 'report-futon-bug)
 
 ;; Stack HUD entry point.
 (require 'stack-entry)
