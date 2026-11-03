@@ -339,7 +339,8 @@
 
 (defn newest-offbox-evidence
   "Newest off-box copy of the evidence store on a hub: [epoch-s path], or nil.
-  Counts the recovery extract and any later backup under ~/backups/evidence."
+  Counts the recovery extract and the evidence-verified marker that
+  scripts/evidence-backup.sh touches after a restic check passes."
   [url]
   (let [[_ host port] (re-find #"ssh://([^:]+):(\d+)" url)
         {:keys [out]} (sh "ssh" "-o" "BatchMode=yes" "-o" "ConnectTimeout=5" "-p" port host
@@ -356,7 +357,7 @@
     (cond
       (seq missing) (fail-r "no off-box evidence copy found" :items (vec missing))
       (seq stale) (fail-r "off-box evidence copy older than 7 days" :items (vec stale)
-                          :fix "no recurring job yet; basis futon3c/scripts/backup_evidence.sh")
+                          :fix "journalctl --user -u evidence-backup (nightly 03:30, scripts/evidence-backup.sh)")
       :else (pass-r ages))))
 
 (defn tmp-worktrees
