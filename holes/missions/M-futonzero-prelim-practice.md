@@ -540,7 +540,7 @@ Read against the design sketch:
 
 A plausible reason the Codex→Zai transfer stalled: GLM's state was visible
 only through its outputs. A human learner can say why they are stuck, which
-is richer evidence. Caveat: the operator built the system, so his being the
+is richer evidence. Caveat: the operator built the system, so the operator being the
 learner tests the mechanics, not whether the tutor works (tension 2).
 
 ### Work in flight
