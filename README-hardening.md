@@ -121,3 +121,47 @@ metameso, and this file's main source was a notes file there.
   index, …). The list is in `~/.config/systemd/enabled-before-outage/`. Joe
   decides each one: re-enable or retire.
 - **The Arxana Clock does not show parked timers.** *Idea:* make it show them.
+
+### Turn-back-on conditions (draft, claude-16, 2026-11-03; Joe decides)
+
+Each timer was parked on 10-06 with nothing written about when to turn it back on.
+A condition below is a proposal. Once Joe rules, the ruling goes beside the symlink
+in `~/.config/systemd/enabled-before-outage/` so that the next reader finds it at
+the switch.
+
+| Timer | Cadence | What reads its output | Turn back on when | Proposal |
+|---|---|---|---|---|
+| `futon-sync-check-clean` | hourly | the inbox-zero way's monitor (reads "off" because of this) | its notice goes somewhere that acts on it, not an hourly repeat of 11 dirty repos | on, after routing |
+| `wip-cascade-snapshot` | 30 min | Cascade Live; the way probes run inside it (about 70 s, 62 s of it zone-health) | now: the page is otherwise refreshed only by hand | on |
+| `warrant-rerun-worker` | 5 min, 2 in parallel | records-carry-warrant | a warrant rerun is queued and not drained | on if the queue is non-empty |
+| `futon-pattern-index` | daily 05:30 | pattern retrieval (the patterns shown at the head of each turn) | patterns have changed since the last index | on |
+| `mission-wholeness` | 15 min | live-C harmony for the WM | WM clicks resume (Joe's hold) | with clicks |
+| `wm-visibility-projector` | 60 s | voxterm WM run view | WM clicks resume | with clicks |
+| `mana-snapshot` | 5 min | not checked | a reader is named | ask |
+| `futon1b-metaspace-sampler` | hourly | metaspace diagnosis | futon1b metaspace growth comes back | off until then |
+| `wip-efe-field` | 6 h, heavy | `mission-efe-field.html` | someone reads that page | ask |
+| `proof-2a-figures` | 30 s | p4ng PROOF-2a figures | PROOF-2a writing is active | off until then |
+| `apm-land-certified` | 30 min | APM solver landing | APM runs resume | retire unless APM resumes |
+| `apm-axiom-audit` | 2 h | APM axiom sweep | its script is restored: it was `/tmp/axiom_audit.py`, erased at the reboot | retire |
+
+## 8. Readings, 2026-11-03
+
+- zone-health: 9 of 19 checks pass. Since 11-03 the 13 checks that bear on
+  machines, copies and access feed the "stays alive and paid" way on Cascade Live
+  (`futon3c/scripts/ways-of-working-probe.py`, probe `zone-health`). Bills and
+  runway are not covered.
+- **Drive writes have not settled.** 10.5 TB were written in about 27 days, around
+  0.39 TB a day, with one day at 0.68 TB. The old drive took about 0.28 TB a day
+  (33.5 TB in 4 months) before it failed.
+- **/tmp holds test fixtures, not work.** 4,927 git checkouts and 26 GB: 9,901
+  `wm-production-repair*` and 9,202 `wm-runner-repair-*` entries made by WM tests
+  that never remove them. The work-in-tmp check counts them as stranded work, and
+  they add to the drive writes. The fix is in the tests (WM field).
+- **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
+  still billed (g6-standard-2, $24 a month). Its full backup on zone
+  (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
+  chicago-store) matches its sha256. It is encrypted to zone's key and both phones.
+  zone's key needs its passphrase, so a test restore was not run. The backup
+  excludes `/var/lib/docker` (the old Zulip images); the 2021 Zulip backups in
+  `/root` are included.
+
