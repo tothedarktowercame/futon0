@@ -171,6 +171,10 @@ the switch.
   changed. Each Emacs REPL buffer polls that every 3 s.
   *Fixed 11-03* (futon3c `7876d59b8`, reloaded live): the JVM's forced writes fell
   from about 7 a second to 0.1 a second.
+- **inbox-zero `state.edn` rewrites stopped 11-03** (Joe: a waste while the system
+  does not work). The watcher was restarted live without its inbox-zero phase, and
+  `FUTON3C_INBOX_ZERO_ENABLED` now defaults to false in `futon3c/scripts/dev-zone-env`
+  (`25017e286`). The 643 MB file is left in place.
 - **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
   still billed (g6-standard-2, $24 a month). Its full backup on zone
   (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
