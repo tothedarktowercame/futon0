@@ -1,0 +1,12 @@
+[Unit]
+Description=Create /dev/shm/codex for Codex's derived databases and cache (symlinked from ~/.codex; claude-16 + Joe 2026-11-03)
+DefaultDependencies=no
+Before=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/mkdir -p -m 700 /dev/shm/codex/cache
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
