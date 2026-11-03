@@ -38,7 +38,15 @@ The outage showed that zone could go dark with no way to look at its console.
 - **Serial console:** `console=ttyS0,115200` on the kernel cmdline, so
   serial-over-LAN captures boot. *Not done.*
 - **Persistent journal:** journald `Storage=persistent`, so `journalctl -b -1`
-  survives a crash. *Not checked.*
+  survives a crash. *Checked 11-03 (claude-5):* `/var/log/journal` exists,
+  but the default 4G cap held only 6 days (oldest entry 10-28, up since
+  10-20). In the 24 h to 11-03 22:55, `vsat-reader`'s crash loop wrote 1.06M
+  of 1.54M lines; it is fixed (§4). Next loudest: `wip-scope-ledger` 172k,
+  `futon1b-zone` 170k (a start and end line per request). Now
+  `SystemMaxUse=20G`, `MaxRetentionSec=90day` in
+  `/etc/systemd/journald.conf.d/zone-retention.conf` (tracked copy
+  `system/zone/etc/journald-zone-retention.conf`). *Open:* quieten
+  futon1b's per-request logging.
 - **dropbear-initramfs**, only if the root disk is ever LUKS: SSH in to unlock
   after a reboot, so the box never waits silently on a passphrase. *Not applicable
   now.*
