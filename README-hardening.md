@@ -157,12 +157,13 @@ the switch.
   `wm-production-repair*` and 9,202 `wm-runner-repair-*` entries made by WM tests
   that never remove them. The work-in-tmp check counts them as stranded work. The
   fix is in the tests (WM field).
-- **The writes come from the futon3c JVM, not the fixtures** (correction from
-  claude-2, checked in `/proc/<pid>/io`, 11-03). The futon3c JVM has written 973 GB
-  in 3.7 days of uptime, about 260 of the 390 GB a day. The futon1b JVM has written
-  134 GB in 5.8 days. claude-2's candidate cause is the 640 MB inbox-zero state
-  file, which is rewritten whole on promotion; one rewrite every three to four
-  minutes would match the rate. Not yet confirmed.
+- **Where the writes come from** (claude-16, 11-03, after a correction from
+  claude-2; details in `~/notes/disk-writes/FINDINGS-2026-11-03.md`). The futon3c
+  JVM's counter (973 GB in 3.7 days) includes every child it has reaped, so it
+  covers the whole agent tree. Two sources of duplicate writing were found:
+  Codex's sqlite copy of its own session logs (writing 18 to 114 times what it
+  records), and the 643 MB inbox-zero `state.edn`, which is rewritten whole.
+  Lean builds and futon1b account for real work.
 - **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
   still billed (g6-standard-2, $24 a month). Its full backup on zone
   (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
