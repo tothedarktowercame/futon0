@@ -164,6 +164,11 @@ the switch.
   Codex's sqlite copy of its own session logs (writing 18 to 114 times what it
   records), and the 643 MB inbox-zero `state.edn`, which is rewritten whole.
   Lean builds and futon1b account for real work.
+- **About 114 GB a day is kernel-level** (ext4 journal and metadata, plus swap),
+  charged to no unit in cgroup io.stat. Nearly all journal commits are forced by
+  fsync. The main source found: Agency's followup queue rewrites and fsyncs
+  `/tmp/futon3c-followups.edn` on every `GET /followups/ready`, even when nothing
+  changed. Each Emacs REPL buffer polls that every 3 s.
 - **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
   still billed (g6-standard-2, $24 a month). Its full backup on zone
   (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
