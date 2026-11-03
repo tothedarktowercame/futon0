@@ -174,6 +174,30 @@
           (fail-r "drive health" :items (cond-> problems (not= "active" (:out smart)) (conj "smartd not active"))
                   :detail detail))))))
 
+(def write-gb-per-hour-max 11) ; Joe 2026-11-03: warn above 11 GB in an hour (280 GB/day amortised)
+
+(defn written-since
+  "TB written between the newest CSV row at least SECS old and the latest row."
+  [rows now secs]
+  (let [tb #(parse-double (nth (str/split % #",") 2))
+        t #(parse-long (first (str/split % #",")))
+        old (last (filter #(<= (t %) (- now secs)) rows))]
+    (when old (- (tb (last rows)) (tb old)))))
+
+(defn check-write-rate []
+  (let [rows (rest (lines (try (slurp "/var/log/disk-watch.csv") (catch Exception _ ""))))
+        now (now-s)
+        h (written-since rows now 3600)
+        d (written-since rows now 86400)]
+    (cond
+      (nil? h) (fail-r "not enough disk-watch history" :fix "systemctl status disk-watch.timer")
+      (> (* 1000 h) write-gb-per-hour-max)
+      (fail-r (format "%.1f GB written in the last hour (limit %d GB)" (* 1000 h) write-gb-per-hour-max)
+              :items [(format "last 24 h: %.0f GB" (* 1000 (or d 0)))]
+              :fix "see /var/log/disk-watch-hot/*-writes.txt for what was writing")
+      :else (pass-r (format "%.1f GB last hour, %.0f GB last 24 h (limit %d GB/h)"
+                            (* 1000 h) (* 1000 (or d 0)) write-gb-per-hour-max)))))
+
 (defn check-disk-space []
   (let [pct (some->> (:out (sh "df" "--output=pcent" "/")) lines last str/trim (re-find #"\d+") parse-long)]
     (if (and pct (< pct disk-pct-max))
@@ -414,6 +438,7 @@
    ["federation"          "metameso and lucy Agency reachable"             check-federation]
    ["firewall"            "ufw on, deny incoming by default"              check-firewall]
    ["drive-health"        "disk-watch samples and smartd"                  check-disk-hardware]
+   ["write-rate"          "drive writes per hour below the limit"          check-write-rate]
    ["disk-space"          "/ below 80%"                                    check-disk-space]
    ["old-image-readonly"  "/mnt/old never writable"                        check-old-image-readonly]
    ["recovery-image"      "2 TB recovery image cleaned up"                 check-recovery-image]

@@ -1,0 +1,44 @@
+#!/bin/sh
+# disk-watch: log NVMe health every run (timer: 10 min) and alert on trouble.
+# CSV: time,temp_c,written_tb,power_on_h,media_errors,pct_used,crit_warning,warn_temp_min
+set -eu
+DEV=${DEV:-/dev/nvme0n1}
+CSV=/var/log/disk-watch.csv
+TEMP_MAX=75          # drive's own warning threshold is 87 C
+TB_PER_DAY_MAX=1     # sustained >1 TB/day of writes is worth knowing about
+GB_PER_HOUR_MAX=11   # Joe 2026-11-03: warn above 11 GB in one hour (280 GB/day amortised)
+[ -s "$CSV" ] || echo "time,temp_c,written_tb,power_on_h,media_errors,pct_used,crit_warning,warn_temp_min" > "$CSV"
+J=$(smartctl -j -A "$DEV" | jq -r '.nvme_smart_health_information_log
+  | [.temperature, (.data_units_written*512000/1e12), .power_on_hours, .media_errors,
+     .percentage_used, .critical_warning, .warning_temp_time] | @csv')
+NOW=$(date +%s)
+echo "$NOW,$J" >> "$CSV"
+IFS=, read -r T W H ME PU CW WT <<END
+$J
+END
+# On a hot reading, record what was doing the IO (io-top: 5 s sample); the
+# full table (top 8) goes under HOT_DIR and a one-line summary into the alert.
+if [ "$T" -ge "$TEMP_MAX" ]; then
+  HOT_DIR=/var/log/disk-watch-hot; mkdir -p "$HOT_DIR"
+  SNAP="$HOT_DIR/$(date -u +%Y%m%dT%H%M%SZ).txt"
+  TOP=$(DEV="$DEV" /usr/local/sbin/io-top --oneline --save "$SNAP" 5 8 | cut -c1-600) || TOP="io-top failed"
+  zone-notify "disk hot" "$DEV ${T}C (limit ${TEMP_MAX}C) | $TOP | $SNAP"
+fi
+[ "$ME" -gt 0 ] && zone-notify "disk media errors" "$DEV media_errors=$ME"
+[ "$CW" -ne 0 ] && zone-notify "disk critical warning" "$DEV critical_warning=$CW"
+# writes over the last 24 h, from the oldest CSV row at least 24 h old
+OLD=$(awk -F, -v c=$((NOW-86400)) 'NR>1 && $1<=c {w=$3} END {print w}' "$CSV")
+if [ -n "$OLD" ]; then
+  awk -v a="$OLD" -v b="$W" -v m="$TB_PER_DAY_MAX" 'BEGIN {exit !(b-a > m)}' &&
+    ZN_COOLDOWN=86400 zone-notify "disk heavy writes" "$DEV $(awk -v a="$OLD" -v b="$W" 'BEGIN{printf "%.2f", b-a}') TB in 24h"
+fi
+# writes over the last hour, from the newest CSV row at least 1 h old
+OLD1=$(awk -F, -v c=$((NOW-3600)) 'NR>1 && $1<=c {w=$3} END {print w}' "$CSV")
+if [ -n "$OLD1" ] && awk -v a="$OLD1" -v b="$W" -v m="$GB_PER_HOUR_MAX" 'BEGIN {exit !((b-a)*1000 > m)}'; then
+  GB=$(awk -v a="$OLD1" -v b="$W" 'BEGIN{printf "%.1f", (b-a)*1000}')
+  HOT_DIR=/var/log/disk-watch-hot; mkdir -p "$HOT_DIR"
+  SNAP="$HOT_DIR/$(date -u +%Y%m%dT%H%M%SZ)-writes.txt"
+  TOP=$(DEV="$DEV" /usr/local/sbin/io-top --oneline --save "$SNAP" 10 8 | cut -c1-600) || TOP="io-top failed"
+  ZN_COOLDOWN=3600 zone-notify "disk write rate" "$DEV ${GB} GB written in the last hour (limit ${GB_PER_HOUR_MAX} GB) | $TOP | $SNAP"
+fi
+exit 0
