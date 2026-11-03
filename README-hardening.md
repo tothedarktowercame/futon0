@@ -25,7 +25,7 @@ Sources gathered here:
 
 Two readings worth recording:
 - `evidence-backup` passes only because the one-off 10-08 extract is 27 h old.
-  There is still no nightly evidence backup.
+  (10-10.) The nightly evidence backup was added 11-03, see §4.
 - `drive-health` shows 3.54 TB written on the new drive about two days after
   install, mostly the restore. Watch whether the daily rate settles.
 
@@ -77,10 +77,26 @@ The outage showed that zone could go dark with no way to look at its console.
 - **Zone-only git work.** *Done 10-08:* `zone-git-backup.timer` (02:30 nightly)
   pushes branches, tags and a `refs/backup/wip` snapshot of every repo with
   zone-only work to bare repos on metameso and lucy.
-- **Evidence store, nightly, off-box.** *Not done.* Start from
-  `futon3c/scripts/backup_evidence.sh` or the live-copy pattern in
-  `~/code/storage/backups/futon1b-2026-09-28/copy.sh`. Keep a few days; do a test
-  restore weekly.
+- **Evidence store, nightly, off-box.** *Done 11-03 (claude-5, `fa1618c`):*
+  `evidence-backup.timer` (03:30 nightly) runs `scripts/evidence-backup.sh`,
+  restic over sftp to `~/backups/evidence/restic` on metameso and lucy.
+  Incremental: the XTDB log is append-only and table files never change, so a
+  night sends the new log tail and new tables only (dry run: 64.3 GiB stored as
+  5.7 GiB per hub). The fts5 sidecar is derived and not copied. Each run reads
+  back a rotating 1/30 of the data; only a passing check touches
+  `evidence-verified`, which zone-health reads. Keeps 7 daily, 4 weekly,
+  12 monthly. Password: `pass zone/evidence-backup-restic` (Joe confirmed it
+  decrypts). *Open:* a test restore on a hub. The middle ground until Joe
+  decides whether fully streamed federated evidence is worth building.
+- **VSATARCS reader database lost.** The public demos
+  (`/vsatarcs` → `:8443/demos/`) are static and work again (11-03: the unit now
+  runs from `~/worktrees/vsat/futon-zone-reader` on `demo/futon-zone`, so a
+  branch switch in `~/vsat` cannot break it). The `/story/` pages render empty:
+  the Compose PostgreSQL container and its volume are gone from zone, probably
+  in the 10-06 drive failure. Rebuild per `docs/zone-demos.md` (compose db,
+  migrations, `data/zone-futon-profile.json`, `vsat_reader` role,
+  `scripts/zone/verify-reader.mjs`). *Deferred (Joe, 11-03):* wanted for more
+  VSAT work, below hardening and the Ways of Working.
 - **`~/code/storage`** (442 GB of experiment data) is still single-copy on
   zone, apart from Joe's Lenovo external drive. Writing to that drive via the
   phone was the snag (it is not FAT). *Needs a decision.*
@@ -97,9 +113,9 @@ The outage showed that zone could go dark with no way to look at its console.
   `README-secrets.md` §1. An *audit of access* (§2), meaning which keys each server
   accepts, is an idea worth repeating after the rebuild.
 - **pass on every device, kept in sync.** Every entry is encrypted to three keys
-  (zone, phone1, phone2). During the outage metameso served as the hub. zone's copy and the metameso hub have diverged (3 Linode root-password
-  commits on one side only). *Open:* merge them, make zone a second hub, and
-  automate sync (Joe, 10-07: "the federation of passwords should also be set up").
+  (zone, phone1, phone2). During the outage metameso served as the hub. *Merged 11-03 (claude-5):* zone's store and the metameso hub had
+  each only added entries; merged as `fadbad9` and pushed to both (zone-health
+  `pass-store`, `pass-hubs-agree` pass). *Open:* lucy has no store; automate sync (Joe, 10-07: "the federation of passwords should also be set up").
 - **Linode root passwords** were reset during the outage. Check that the new ones
   are what the store holds.
 
