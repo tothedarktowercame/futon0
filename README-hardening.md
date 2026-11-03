@@ -175,6 +175,10 @@ the switch.
   does not work). The watcher was restarted live without its inbox-zero phase, and
   `FUTON3C_INBOX_ZERO_ENABLED` now defaults to false in `futon3c/scripts/dev-zone-env`
   (`25017e286`). The 643 MB file is left in place.
+- **Codex, 11-03.** Two orphaned Agency `codex exec` processes (from 10-20 and
+  10-23, unknown to Agency) were stopped. Codex's derived history and log databases
+  (4.8 GB) were moved to `~/backups/codex-home/20261103T2110Z`, and Codex recreated
+  them. *Idea:* a zone-health check for agent processes that Agency no longer knows.
 - **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
   still billed (g6-standard-2, $24 a month). Its full backup on zone
   (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
