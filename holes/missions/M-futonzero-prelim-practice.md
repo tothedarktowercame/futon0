@@ -487,6 +487,87 @@ it would need the text-based map instead.
 - Superpod reading of the informal-solution LaTeX (futon6), when a suitable
   moment comes — the conceptual-interpretation stage does not need Lean.
 
+## Checkpoint — 2026-11-03 (claude-14): the tutor builds a theory of the student from mined moves
+
+### What happened
+
+Since 11-02 the operator and claude-14 have closed one APM problem per session
+and written each up as a lesson showing how the problem was broken down
+(`apm-lean/holes/labs/tutor/lessons/`): lesson 1 `a96A07`, lesson 2 `t98J02`,
+lesson 3 `t03J02`. Two of those (`t98J02`, `t03J02`) had blueprints calling
+them library-scale (1,500–3,500 lines for one t98J02 piece); both closed in an
+evening. The proofs came from a *move*, not a library: find a quantity that is
+locally constant off an embedded curve and control its jump there.
+
+### What the lessons found about the star map
+
+Each lesson checks what the prelim star map (`apm-lean/holes/labs/star-map/`)
+offered. Its tags are clusters of the rare Mathlib constants a proof's closure
+cites (`cluster.py`). In both lessons 1 and 2 only one tag (connectedness)
+pointed at anything the proof used, and no tag suggested the count. The
+tags record *what a proof cited*, not *why that tool was picked up*. The
+rationale in every lesson came from the moves section.
+
+This makes the 09-28 distinction above concrete. A learner model over
+constants can detect a **missing morphism** (concept never met). Only a model
+over moves can detect a **missing composition** (concept met, not used), and
+that is the gap patterns are supposed to fix.
+
+### The operator's framing (2026-11-03)
+
+> the tutoring programme could be a good case of the kind of thing that I'm
+> looking at in other concurrent work, about assembling a theory from mined
+> patterns. Specifically in this case, the tutor would be assembling a
+> "theory-of-mind" about the student, so the pattern cascade — which we tried
+> something related to in an earlier round of "transfer" experiments from
+> Codex to Zai GLM 5.2 (not making much progress) would be brought back into
+> the frame here.
+
+Read against the design sketch:
+
+- **Mined patterns = moves.** A move is one decision in a solution, stated with
+  when and why it applies ("turn a question about preimages into an integer
+  that is locally constant"). Moves are mined from worked solutions (the
+  lessons now; informal solutions and Lean proofs later), not from constant
+  co-occurrence.
+- **A solution = a cascade**: the ordered moves it applies.
+- **The theory of the student = per-move evidence**: offered, used
+  unprompted, used after a hint, failed. This is the learner log's
+  `encountered(..., how)` with moves as well as concepts as its objects.
+- **A stuck point = the first move in the cascade with no evidence yet.** The
+  tutor offers that move at that point. This is the "Zai memory, human
+  version" paragraph above, now with a defined object to record.
+
+A plausible reason the Codex→Zai transfer stalled: GLM's state was visible
+only through its outputs. A human learner can say why they are stuck, which
+is richer evidence. Caveat: the operator built the system, so his being the
+learner tests the mechanics, not whether the tutor works (tension 2).
+
+### Work in flight
+
+- **Moves file (Codex task, dispatched 2026-11-03):**
+  `apm-lean/holes/labs/tutor/moves.edn`, one entry per move mined from the
+  three lessons (id, statement, when it applies, problems using it, the
+  constants it needs, source lesson section), and an empty student-record
+  schema whose evidence is the operator's answers to lesson exercises. First
+  test: do moves describe the three lessons better than the constant tags do?
+- **More lessons:** `t02A03`, `t97A03`, `t03J03` (started 2026-11-03). They
+  share two moves: collapse a concrete space onto a wedge and read π₁ and
+  homology off banked theorems (t02A03, t97A03), and classify double covers
+  by monodromy (t97A03, t03J03). Shared moves across lessons are what the
+  cross-link pilot above needs.
+
+### Open, for the pattern-mining agents
+
+12. **Can moves be mined rather than hand-written?** The lessons' moves are
+    written by the agent that did the proof. Is there a recurring sub-structure
+    in the Lean proofs or informal solutions that recovers them?
+13. **Move granularity.** "Replace a global invariant by a count" and "count
+    fibre points on one side of the lift" are the same move at two
+    resolutions. Which resolution does a stuck learner need?
+14. **Evidence from a learner.** What does a single recorded stuck point look
+    like in practice? The masked-attempt pilot above is the first test.
+
 ## Next
 
 Sequenced after `ai-passes-prelims` (operator, 2026-09-28). Scheduling is the
