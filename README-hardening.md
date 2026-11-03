@@ -169,6 +169,8 @@ the switch.
   fsync. The main source found: Agency's followup queue rewrites and fsyncs
   `/tmp/futon3c-followups.edn` on every `GET /followups/ready`, even when nothing
   changed. Each Emacs REPL buffer polls that every 3 s.
+  *Fixed 11-03* (futon3c `7876d59b8`, reloaded live): the JVM's forced writes fell
+  from about 7 a second to 0.1 a second.
 - **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
   still billed (g6-standard-2, $24 a month). Its full backup on zone
   (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
