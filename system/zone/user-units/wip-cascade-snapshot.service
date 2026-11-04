@@ -5,5 +5,5 @@ Description=Publish the live cascade snapshot to the Zone WIP docroot
 Type=oneshot
 WorkingDirectory=/home/joe/code/futon3c
 Environment=PATH=/usr/local/bin:/usr/bin:/bin
-TimeoutStartSec=300
+TimeoutStartSec=120
 ExecStart=/home/joe/code/p4ng/publish-job.py wip-cascade-snapshot -- /home/joe/code/futon3c/scripts/publish-cascade-snapshot.sh
