@@ -1078,3 +1078,20 @@ with a manifest; and report live-ledger and orphaned-filesystem counts
 separately. The checkpoint remains open until the producer-consumer contract,
 the orphan reconciliation, and the health invariant are implemented and a
 subsequent scheduled check holds at zero.
+
+### Repair checkpoint — 2026-11-04
+
+The producer side is repaired in futon3c `1b038af95`. Agency now recognises
+`wm-full-loop` as a machine caller which consumes the original invoke-job's
+terminal result by polling, and suppresses the redundant completion bellback
+before it can become an inbox file. Other pull-only callers retain their atomic
+completion-inbox delivery. Focused tests cover both sides of that distinction
+(2/2 and 7/7 assertions).
+
+This stops new debt once the serving JVM loads the commit; it deliberately does
+not erase old debt. Immediately before the repair, the filesystem held 549
+`wm-full-loop` inbox files while `/health` reported only 314 unconsumed
+deliveries, a 235-file authority gap consistent with the original checkpoint.
+Reconciliation and the health invariant remain open: ledger-backed files must
+be acknowledged normally, orphaned files archived with a manifest, and the
+filesystem/ledger split exposed in health before Inbox Zero can be claimed.
