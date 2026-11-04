@@ -3,7 +3,7 @@ Description=Refresh pipeline-pattern-cascade.html on a bounded freshness cadence
 
 [Timer]
 OnBootSec=8min
-OnUnitActiveSec=1min
+OnUnitActiveSec=5min
 Persistent=true
 Unit=wip-cascade-snapshot.service
 
