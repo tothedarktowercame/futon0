@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh the per-way ways-of-working probe result files
+
+[Service]
+Type=oneshot
+Nice=10
+WorkingDirectory=/home/joe/code/futon3c
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+TimeoutStartSec=180
+ExecStart=/usr/bin/bash /home/joe/code/futon3c/scripts/run-declared-probes.sh

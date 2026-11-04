@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh pipeline-pattern-cascade.html on a bounded freshness cadence
+
+[Timer]
+OnBootSec=8min
+OnUnitActiveSec=1min
+Persistent=true
+Unit=wip-cascade-snapshot.service
+
+[Install]
+WantedBy=timers.target

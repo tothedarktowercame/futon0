@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh ways-of-working probe results on a bounded cadence
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Persistent=true
+Unit=ways-of-working-probes.service
+
+[Install]
+WantedBy=timers.target
