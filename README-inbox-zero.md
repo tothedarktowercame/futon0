@@ -1041,3 +1041,40 @@ ahead threshold of 10, 32 h old) have no sensitivity-screen record, so the
 automatic push path has nothing to act on — matching the gate, where they are
 still unpushed. Whether ordinary repos get screened and pushed outside a
 turn-end boundary is the same question as repair 1.
+
+## Checkpoint 2026-11-04 — a durable inbox without a consumer is not a facility
+
+The same invariant failed outside Git. Agency health reported 293 unconsumed
+deliveries for `wm-full-loop`, the oldest about 14.6 days old. The durable
+filesystem inbox actually held 528 files and no `consumed/` directory or files;
+new completion bellbacks were still arriving.
+
+`wm-full-loop` is registered as a pull-only inbox seat so author and reviewer
+jobs can reply to their machine caller. The current click runner dispatches
+those jobs and consumes their terminal results, but it does not poll or
+acknowledge the completion deliveries. The old standalone `wm-full-loop`
+process is explicitly retired for clicks. Registration therefore repaired lost
+replies by making them durable, but supplied no consumer to move them to a
+terminal state. It turned message loss into accumulation.
+
+The reported count also understated the durable state. Agency health counts
+current invoke-ledger jobs in `delivered` state, whereas files survive in the
+inbox across ledger epochs. A recent file still named a live delivered job and
+could be acknowledged normally; the oldest file's job endpoint returned
+`invoke-job-not-found`. Thus 235 files were invisible to the health count, and
+even a future ledger count of zero would not prove that the inbox was empty.
+
+This is the 08-31 finding in another substrate: a producer and a durable record
+are not an Inbox Zero facility. The loop needs an owned consumer, a terminal
+acknowledgement, and a census whose authority includes the durable residue. For
+a machine caller whose runner already consumes the terminal job result, the
+smallest honest repair is to acknowledge that corresponding delivery at the
+same boundary, or explicitly suppress the redundant inbox delivery. A generic
+drainer would lower the number without clarifying who consumed the message.
+
+The existing backlog requires reconciliation rather than deletion: acknowledge
+ledger-backed deliveries through the normal endpoint; archive orphaned files
+with a manifest; and report live-ledger and orphaned-filesystem counts
+separately. The checkpoint remains open until the producer-consumer contract,
+the orphan reconciliation, and the health invariant are implemented and a
+subsequent scheduled check holds at zero.
