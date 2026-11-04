@@ -162,7 +162,7 @@ the switch.
 | Timer | Cadence | What reads its output | Turn back on when | Proposal |
 |---|---|---|---|---|
 | `futon-sync-check-clean` | hourly | the inbox-zero way's monitor (reads "off" because of this) | its notice goes somewhere that acts on it, not an hourly repeat of 11 dirty repos | on, after routing |
-| `wip-cascade-snapshot` | 30 min | Cascade Live; the way probes run inside it (about 70 s, 62 s of it zone-health) | now: the page is otherwise refreshed only by hand | on |
+| `wip-cascade-snapshot` | 5 min | Cascade Live | *On 11-04 (Joe).* Probes moved to `ways-of-working-probes.timer` (5 min); the publish assembles their results. 1 min once the cascade graph endpoint is cached | on |
 | `warrant-rerun-worker` | 5 min, 2 in parallel | records-carry-warrant | a warrant rerun is queued and not drained | on if the queue is non-empty |
 | `futon-pattern-index` | daily 05:30 | pattern retrieval (the patterns shown at the head of each turn) | patterns have changed since the last index | on |
 | `mission-wholeness` | 15 min | live-C harmony for the WM | WM clicks resume (Joe's hold) | with clicks |
