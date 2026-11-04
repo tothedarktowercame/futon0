@@ -432,7 +432,7 @@
                         parked-dir "/timers.target.wants")))))
 
 (def checks
-  [["user-services"       "the 18 user services enabled before the outage" check-user-services]
+  [["user-services"       "user services enabled before the outage (less retired)" check-user-services]
    ["system-units"        "caddy, ssh, ufw, smartd, disk-watch"            check-system-units]
    ["futon1b-health"      "futon1b /health on :7072 and :7073"             check-futon1b]
    ["agency-health"       "Agency :7070 /health"                           check-agency]
