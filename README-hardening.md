@@ -94,7 +94,13 @@ The outage showed that zone could go dark with no way to look at its console.
   back a rotating 1/30 of the data; only a passing check touches
   `evidence-verified`, which zone-health reads. Keeps 7 daily, 4 weekly,
   12 monthly. Password: `pass zone/evidence-backup-restic` (Joe confirmed it
-  decrypts). *Open:* a test restore on a hub. The middle ground until Joe
+  decrypts). *Test restore 11-04 (claude-16):* from metameso's repository, snapshot
+  `ba64f16b` (11-04 03:31), 5 table files and `write-log.edn` restored
+  byte-identical to the live store, and the first 2 GiB of `log/LOG`
+  streamed back with `restic dump` matched too (sha256). Run from zone with
+  the hub as storage; a restore on a hub alone would need the password
+  typed there, since the hubs cannot decrypt the pass store. Sample list:
+  `~/notes/disk-writes/restore-sample.txt`. The middle ground until Joe
   decides whether fully streamed federated evidence is worth building.
 - **VSATARCS reader database lost.** The public demos
   (`/vsatarcs` → `:8443/demos/`) are static and work again (11-03: the unit now
