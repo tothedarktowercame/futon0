@@ -1,4 +1,4 @@
-# /tmp in RAM: prepared, not applied (claude-16 + Joe, 2026-11-03)
+# /tmp in RAM: APPLIED 2026-11-04 ~16:20Z, live (claude-16 + Joe)
 
 Why: /tmp takes the test fixtures (48,604 entries, ~25 GB on 11-03) and most of the
 futon3c JVM's own file writes (followup queue, invoke-jobs journal, promise chains).
@@ -35,3 +35,17 @@ meaning. The box has 251 GB of RAM, ~210 GB available.
   so fixtures cannot fill RAM between reboots.
 - Watch `df -h /tmp`; the 64G size is a ceiling, not a reservation.
 - Old disk /tmp (route 2): clean through /mnt/oldtmp, then `sudo umount /mnt/oldtmp`.
+
+## Applied 2026-11-04
+- First live run failed: /tmp sits on the shared root mount, so the tmpfs propagated onto
+  /mnt/oldtmp and hid the old files; the socket dirs were bound back empty. Undone with
+  `umount -l /tmp` within minutes (tmux, X99 and Agency checked afterwards). Agency writes
+  made during those minutes went to the detached tmpfs and are gone.
+- Fixed in the script (`mount --make-private /mnt/oldtmp`), tested on a scratch dir, re-run:
+  tmpfs on /tmp (404 MB copied), sockets bound from disk, Agency 200, X99 ok, jcmd attach
+  ok, codex-19 resumed its session.
+- Route 1 installed too: /etc/systemd/system/tmp.mount (+ tmp.mount.d/size.conf) enabled,
+  /etc/tmpfiles.d/tmp.conf installed.
+- Still to do: the old disk /tmp (~25 GB, 49,092 entries, mostly fixtures) is reachable
+  only at /mnt/oldtmp; delete there, then `sudo umount /mnt/oldtmp`. Until a reboot the
+  socket dirs stay bound from it, so unmount it only after a reboot or after moving them.

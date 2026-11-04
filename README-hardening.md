@@ -203,6 +203,8 @@ the switch.
   10-23, unknown to Agency) were stopped. Codex's derived history and log databases
   (4.8 GB) were moved to `~/backups/codex-home/20261103T2110Z`, and Codex recreated
   them. *Idea:* a zone-health check for agent processes that Agency no longer knows.
+- **/tmp is in RAM from 11-04** (tmpfs, 64 GB ceiling; enabled for boots too). Details and
+  the cleanup still owed: `system/zone/tmp-in-ram/README.md`.
 - **Old metameso (Linode 7925)** has been offline since the 09-29 cutover and is
   still billed (g6-standard-2, $24 a month). Its full backup on zone
   (`~/backups/linode-migration/metameso/20260914/data/`, 14 GB, plus the 1.4 GB
