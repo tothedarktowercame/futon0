@@ -47,5 +47,6 @@ meaning. The box has 251 GB of RAM, ~210 GB available.
 - Route 1 installed too: /etc/systemd/system/tmp.mount (+ tmp.mount.d/size.conf) enabled,
   /etc/tmpfiles.d/tmp.conf installed.
 - Still to do: the old disk /tmp (~25 GB, 49,092 entries, mostly fixtures) is reachable
-  only at /mnt/oldtmp; delete there, then `sudo umount /mnt/oldtmp`. Until a reboot the
-  socket dirs stay bound from it, so unmount it only after a reboot or after moving them.
+  only at /mnt/oldtmp; delete there, then `sudo umount /mnt/oldtmp`. Do not delete
+  `tmux-1000/`, `.X11-unix/` or `.java_pid*` there: the live sockets are bound from them
+  until the next reboot (the binds are separate mounts, so unmounting /mnt/oldtmp is fine).
