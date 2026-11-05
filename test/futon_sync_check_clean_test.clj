@@ -10,7 +10,8 @@
 ;; being read. The order matters: load-file's defs replace these unbound vars,
 ;; so declaring after it would leave them unbound.
 (declare repo-status fetch? clean-verdict cmd-check-clean inventory-report
-         repair-fixture-audit scratch-report cmd-scratch trash-path! cmd-hygiene)
+         repair-fixture-audit scratch-report cmd-scratch trash-path! cmd-hygiene
+         maintain-repo!)
 
 ;; Resolve the script relative to THIS file rather than by absolute path, so
 ;; the test travels with the repo instead of only working on one box. The
@@ -396,6 +397,33 @@
     (is (true? (get-in unavailable [:worktrees 0 :ephemeral-path])))
     (is (false? (get-in unavailable [:worktrees 1 :ephemeral-path])))
     (is (= [live-tmp] (mapv :path (:worktrees ephemeral))))))
+
+(deftest maintain-clean-configures-existing-upstream-and-pushes
+  (let [root (fs/create-temp-dir {:prefix "inbox-maintain-"})]
+    (try
+      (let [remote (fs/path root "remote.git")
+            seed (init-repo! root "seed" false)
+            repo (fs/path root "checkout")]
+        (git! root "init" "--bare" (str remote))
+        (git! seed "remote" "add" "origin" (str remote))
+        (git! seed "push" "-u" "origin" "main")
+        (git! root "clone" "-q" "-b" "main" (str remote) (str repo))
+        (git! repo "config" "user.email" "fixture@test")
+        (git! repo "config" "user.name" "fixture")
+        ;; Remove only the local tracking relation; origin/main remains fetched,
+        ;; making its restoration unambiguous.
+        (git! repo "branch" "--unset-upstream")
+        (commit! repo "locally committed")
+        (let [result (with-redefs [fetch? false]
+                       (maintain-repo! {:label "fixture" :abs-path (str repo)}))]
+          (is (= :pushed (:outcome result)))
+          (is (:upstream-configured? result))
+          (is (= "origin/main"
+                 (str/trim (:out (sh repo "git" "rev-parse"
+                                     "--abbrev-ref" "--symbolic-full-name" "@{u}")))))
+          (is (= (str/trim (:out (sh repo "git" "rev-parse" "HEAD")))
+                 (str/trim (:out (sh remote "git" "rev-parse" "refs/heads/main")))))))
+      (finally (fs/delete-tree root)))))
 
 (defn- make-repair-fixture! [root name]
   (let [repo (fs/path root name)

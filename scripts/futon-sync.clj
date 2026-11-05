@@ -12,6 +12,7 @@
 ;;   futon-sync review   — show dirty/untracked file details for cleanup triage
 ;;   futon-sync pull     — bulk pull --rebase --autostash
 ;;   futon-sync push     — push all repos ahead of origin (with confirmation)
+;;   futon-sync maintain-clean — configure evident upstreams and push safely
 ;;   futon-sync park     — stash dirty/untracked changes across repos
 ;;     --dry-run         — preview what would be stashed
 ;;     --yes             — skip confirmation prompt
@@ -931,6 +932,80 @@
                           (c ansi-dim (first (str/split-lines (:err r))))))))
             (println "Aborted.")))))))
 
+(defn- remote-tracking-branch-exists? [path branch]
+  (zero? (:exit (git path "show-ref" "--verify" "--quiet"
+                     (str "refs/remotes/origin/" branch)))))
+
+(defn maintain-repo!
+  "Make the mechanical, non-destructive part of one repository current.
+
+   An upstream is configured only when the declared/default local branch and
+   its fetched origin counterpart both already exist.  A missing remote branch,
+   divergence, fetch failure, or push failure is retained as a typed hold.
+   This function never pulls, rebases, creates a remote branch, or force-pushes."
+  [repo]
+  (if-not (repo-checkout-present? repo)
+    {:repo (:label repo) :outcome :held :reason :repository-unavailable}
+    (let [before (repo-status repo)
+          path (:abs-path repo)
+          branch (:default-branch before)
+          configured (when (and (:no-upstream before)
+                                branch
+                                (remote-tracking-branch-exists? path branch))
+                       (git path "branch" "--set-upstream-to"
+                            (str "origin/" branch) branch))
+          status (if (and configured (zero? (:exit configured)))
+                   (repo-status repo)
+                   before)]
+      (cond
+        (:fetch-error status)
+        {:repo (:label repo) :outcome :held :reason :fetch-failed
+         :error (:fetch-error status)}
+
+        (nil? branch)
+        {:repo (:label repo) :outcome :held :reason :default-branch-unresolved}
+
+        (and configured (not (zero? (:exit configured))))
+        {:repo (:label repo) :outcome :held :reason :upstream-configuration-failed
+         :branch branch :error (:err configured)}
+
+        (:no-upstream status)
+        {:repo (:label repo) :outcome :held :reason :upstream-missing
+         :branch branch}
+
+        (pos? (:behind status))
+        {:repo (:label repo) :outcome :held :reason :behind-or-diverged
+         :branch branch :ahead (:ahead status) :behind (:behind status)}
+
+        (pos? (:ahead status))
+        (let [pushed (git path "push" "origin" (str branch ":" branch))]
+          (if (zero? (:exit pushed))
+            {:repo (:label repo) :outcome :pushed :branch branch
+             :commits (:ahead status)
+             :upstream-configured? (boolean configured)}
+            {:repo (:label repo) :outcome :held :reason :push-failed
+             :branch branch :error (:err pushed)}))
+
+        :else
+        {:repo (:label repo) :outcome :current :branch branch
+         :upstream-configured? (boolean configured)}))))
+
+(defn cmd-maintain-clean [repos {:keys [json?]}]
+  (let [results (mapv maintain-repo! repos)
+        held (filterv #(= :held (:outcome %)) results)
+        report {:ok (empty? held)
+                :at (str (java.time.Instant/now))
+                :results results}]
+    (if json?
+      (println (json/generate-string report))
+      (doseq [{:keys [repo outcome reason commits]} results]
+        (println (format " %-14s %-8s%s"
+                         repo (name outcome)
+                         (cond commits (str " " commits " commit(s)")
+                               reason (str " " (name reason))
+                               :else "")))))
+    (:ok report)))
+
 ;; ── Hygiene command ──────────────────────────────────────────────────────────
 
 (def ^:private repair-fixture-prefix ".repair-limbs-fixture-")
@@ -1190,6 +1265,9 @@
       ("review" "rv") (cmd-review repos)
       "pull"          (cmd-pull repos)
       "push"          (cmd-push repos)
+      "maintain-clean" (when-not (cmd-maintain-clean (manifest-repos)
+                                                       {:json? (some #{"--json"} args)})
+                         (System/exit 1))
       "park"          (cmd-park repos {:dry-run? (some #{"--dry-run"} args)
                                        :yes? (some #{"--yes"} args)
                                        :message (parse-park-message args)})
@@ -1197,5 +1275,5 @@
                           (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
                           (when-not (cmd-scratch args) (System/exit 1)))
       (do (println (str "Unknown command: " cmd))
-          (println "Usage: futon-sync [inventory [--root PATH] [--json]|scratch [--root PATH] [--json] [--trash --yes]|status|check-clean [--json] [--no-fetch]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix] [--trash --yes]]")
+          (println "Usage: futon-sync [inventory [--root PATH] [--json]|scratch [--root PATH] [--json] [--trash --yes]|status|check-clean [--json] [--no-fetch]|maintain-clean [--json]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix] [--trash --yes]]")
           (System/exit 1)))))
