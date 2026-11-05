@@ -1,5 +1,5 @@
 [Unit]
-Description=FUTON inbox-zero cleanliness gate (futon-sync check-clean)
+Description=FUTON publication and two-hub recovery cleanliness gate
 ConditionPathExists=%h/code/futon0/scripts/futon-sync.clj
 # Audit 2026-09-12: the gate had failed 248 consecutive hours into journald
 # with OnFailure empty -- a permanently red lamp nobody watched. The delta
@@ -11,4 +11,4 @@ OnFailure=futon-sync-delta.service
 [Service]
 Type=oneshot
 WorkingDirectory=%h/code/futon0
-ExecStart=/usr/local/bin/bb %h/code/futon0/scripts/futon-sync.clj check-clean
+ExecStart=/usr/bin/python3 %h/code/futon0/scripts/futon-clean-check.py
