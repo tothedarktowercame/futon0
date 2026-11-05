@@ -51,4 +51,10 @@
     (is (= :fail (:status r)))
     (is (= ["phone2: 8 days since last sync"] (:items r)))))
 
+(deftest chrome-import-this-month-passes
+  (is (= :pass (:status (chrome-import-verdict (- now (* 10 86400)) now)))))
+
+(deftest chrome-import-overdue-fails
+  (is (= :fail (:status (chrome-import-verdict (- now (* 40 86400)) now)))))
+
 (let [{:keys [fail error]} (run-tests)] (System/exit (if (zero? (+ fail error)) 0 1)))

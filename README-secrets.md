@@ -248,7 +248,10 @@ Export passwords, which asks for the screen lock) and writes a plaintext
 `pass-import-browser-csv "<path>"` (`futon0/system/phones/`): new logins become
 `chrome/<host>/<username>`, existing names are never overwritten, and the CSV
 is shredded once every insert succeeded. Termux reaches Downloads only after
-`termux-setup-storage` has been granted once.
+`termux-setup-storage` has been granted once. First import 2026-11-05: 51 logins (53 rows, 2 without
+password or repeated). Joe: repeat monthly. After each import, write the stamp on
+zone (`date +%s > ~/.local/state/pass-sync/chrome-import.last-ok`); zone-health
+`chrome-import` fails after 35 days.
 
 If a backup exclude list contains `/snap/` or `/var/lib/flatpak`, check what
 credentials live under it before trusting the backup.

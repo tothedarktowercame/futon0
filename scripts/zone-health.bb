@@ -511,6 +511,23 @@
       :else (pass-r (str "last run " (quot (- now last-run) 60) " min ago; "
                          (str/join ", " (for [[p t] (sort phones)] (str p " " (age t) " h"))))))))
 
+;; Chrome on phone2 keeps its own passwords; they reach pass only by a manual
+;; export + import (README-secrets §8). Joe, 2026-11-05: repeat monthly. The stamp
+;; is written by hand after each import.
+(def chrome-import-max-age-s (* 35 86400))
+
+(defn chrome-import-verdict [last-import now]
+  (cond
+    (nil? last-import) (fail-r "no Chrome password import recorded")
+    (> (- now last-import) chrome-import-max-age-s)
+    (fail-r (str "Chrome passwords last imported into pass " (quot (- now last-import) 86400) " days ago")
+            :fix "phone2: Chrome export to Downloads, then pass-import-browser-csv; then date +%s > ~/.local/state/pass-sync/chrome-import.last-ok on zone")
+    :else (pass-r (str "last import " (quot (- now last-import) 86400) " days ago"))))
+
+(defn check-chrome-import []
+  (let [f (fs/file home ".local/state/pass-sync/chrome-import.last-ok")]
+    (chrome-import-verdict (when (fs/exists? f) (parse-long (str/trim (slurp f)))) (now-s))))
+
 (defn check-pass-sync []
   (let [dir (str home "/.local/state/pass-sync")
         read-t #(let [f (fs/file dir %)] (when (fs/exists? f) (parse-long (str/trim (slurp f)))))]
@@ -552,6 +569,7 @@
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]
    ["pass-hubs-agree"     "zone, metameso and lucy pass stores agree"     check-pass-hubs]
    ["pass-sync"           "pass store synced in the last hour; each phone within 7 days" check-pass-sync]
+   ["chrome-import"       "phone2's Chrome passwords imported into pass within 35 days" check-chrome-import]
    ["parked-timers"       "every parked timer decided by Joe"              check-parked-timers]])
 
 (defn run-check [[id what f]]
