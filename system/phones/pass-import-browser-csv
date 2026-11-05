@@ -19,11 +19,14 @@ CSV is shredded; with --dry-run nothing is written or shredded.
 import csv, os, subprocess, sys, urllib.parse
 
 def entry_name(prefix, url, user):
+    url = url.strip()
     if url.startswith("android://"):
         host = url.rstrip("/").rsplit("@", 1)[-1]
     else:
         host = urllib.parse.urlsplit(url if "://" in url else "https://" + url).hostname or "unknown-host"
-    user = (user or "nouser").strip().replace("/", "_") or "nouser"
+    clean = lambda x: "_".join(x.strip().replace("/", "_").split())
+    host = clean(host) or "unknown-host"
+    user = clean(user or "") or "nouser"
     return f"{prefix}/{host}/{user}"
 
 def main(argv):
