@@ -24,3 +24,9 @@ and the star-map INSTANTIATE work has left it stale.
 ## Exit condition
 
 VSATARCS reflects the star-map's landed state; the doc-gap is closed.
+
+## Completion criteria
+
+- VSATARCS output contains a scene reflecting the star-map's capability-graph and keystone landed state — check: `grep -ci 'star-map\|capability graph' /srv/hel-staging/vsatarcs.html` returns >= 1 (today 0) **Not met.**
+- The generating story file(s) under `futon5a/holes/stories/` name the star-map content VSATARCS renders — check: `grep -ril 'star-map' /home/joe/code/futon5a/holes/stories/` non-empty (today empty) **Not met.**
+- The Operator's Foreword in the regenerated VSATARCS still points correctly — check: manual read of the Foreword section of `/srv/hel-staging/vsatarcs.html` after regeneration **Not started.**

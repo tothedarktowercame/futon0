@@ -115,3 +115,10 @@ installing once the thing they invoke has stopped moving.
 **Next step when it is time:** the fifth `DOCS_SPEC` field (per-document
 preload), because every other wrinkle has a known answer and that one is a
 blocker.
+
+## Completion criteria
+
+- Joe decides the idea's fate explicitly: build it, or retire it with a successor note — check: a dated decision recorded in this item or a successor item **Not started.**
+- If built: a post-commit/post-receive hook in the publishing repos rebuilds and republishes only the documents that repo owns — check: /home/joe/code/p4ng/.git/hooks/post-commit (or futon5 equivalent) exists and fires **Not started.**
+- If built: the published page carries a visible build stamp (source sha, build time) and failures are loud, per the item's failure-mode section — check: footer of a page under zone.hyperreal.enterprises/wip/ names its source sha **Not started.**
+- The named blocker is resolved: DOCS_SPEC carries a per-document preload field — check: the DOCS_SPEC definition in the build pipeline has a preload field **Not started.**
