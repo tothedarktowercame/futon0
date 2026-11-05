@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync the pass store between zone, both hubs and reachable phones
+
+[Service]
+Type=oneshot
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+TimeoutStartSec=600
+ExecStart=/home/joe/code/futon0/system/zone/pass-sync

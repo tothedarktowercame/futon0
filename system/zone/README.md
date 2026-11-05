@@ -20,3 +20,6 @@ Installed copies live in `/usr/local/sbin/` (root). Edit here, then
   10 min by metameso. See README-hardening §1 and `../metameso/`.
 - `ufw-safe` (installed in `/usr/local/sbin/`): firewall changes that undo
   themselves unless confirmed. See README-hardening §2.
+- `pass-sync` (run by `user-units/pass-sync.{service,timer}`, every 15 min): the
+  pass store kept level on zone, metameso, lucy and whichever phones are reachable.
+  See README-hardening §5.

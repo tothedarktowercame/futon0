@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# pass-sync: keep the pass store the same on zone, both hubs and both phones
+# (README-hardening §5; Joe 10-07: "the federation of passwords should also be
+# set up"). Runs on zone every 15 min (pass-sync.timer).
+#
+# zone is the merge point. Each run:
+#   1. fetches master from the hubs (metameso, lucy) and from each phone that is
+#      reachable (phones are reachable only while Joe's reverse tunnel to that
+#      phone is open: zone 127.0.0.1:2222 -> phone1, :2223 -> phone2);
+#   2. merges each into zone's master (pass stores only add or remove whole
+#      files, so merges are almost always clean). A conflict aborts the merge,
+#      pushes nothing, and fails the run;
+#   3. pushes master to zone's bare repo and both hubs;
+#   4. has each reachable phone fast-forward from zone.
+# A phone that is unreachable is skipped, not a failure; its last successful
+# sync time is kept under $STATE and zone-health reports its age.
+# Nothing is ever decrypted: this moves encrypted files only.
+set -uo pipefail
+
+STORE=${PASSWORD_STORE_DIR:-$HOME/.password-store}
+STATE=${PASS_SYNC_STATE:-$HOME/.local/state/pass-sync}
+HUBS=(metameso lucy)                      # git remotes in $STORE
+PHONES=(phone1 phone2)                    # ssh hosts (~/.ssh/config)
+PHONE_STORE=/data/data/com.termux/files/home/.password-store
+
+say() { echo "pass-sync: $*"; }
+mkdir -p "$STATE"
+cd "$STORE" || { say "FAIL: no store at $STORE"; exit 1; }
+[ -z "$(git status --porcelain)" ] || { say "FAIL: zone's store has uncommitted changes"; exit 1; }
+
+failed=0
+sources=()
+for hub in "${HUBS[@]}"; do
+  if git fetch -q "$hub" master 2>/dev/null; then sources+=("$hub/master")
+  else say "FAIL: cannot fetch from hub $hub"; failed=1; fi
+done
+reachable=()
+for p in "${PHONES[@]}"; do
+  if timeout 20 git fetch -q "ssh://$p$PHONE_STORE" "master:refs/remotes/$p/master" 2>/dev/null; then
+    sources+=("$p/master"); reachable+=("$p")
+  else say "skip: $p not reachable (tunnel closed?)"; fi
+done
+
+for src in "${sources[@]}"; do
+  git merge-base --is-ancestor "$src" master && continue
+  if git merge -q --no-edit "$src" -m "pass-sync: merge $src" >/dev/null 2>&1; then
+    say "merged $src"
+  else
+    git merge --abort 2>/dev/null
+    say "FAIL: merging $src conflicts; nothing pushed. Resolve by hand in $STORE"
+    exit 1
+  fi
+done
+
+git push -q origin master 2>/dev/null || { say "FAIL: push to zone's bare repo"; failed=1; }
+for hub in "${HUBS[@]}"; do
+  git push -q "$hub" master 2>/dev/null || { say "FAIL: push to hub $hub"; failed=1; }
+done
+
+head=$(git rev-parse master)
+for p in "${reachable[@]}"; do
+  got=$(timeout 60 ssh -o BatchMode=yes "$p" \
+        "cd $PHONE_STORE && git pull -q --ff-only origin master >/dev/null 2>&1; git rev-parse HEAD" 2>/dev/null)
+  if [ "$got" = "$head" ]; then
+    date +%s > "$STATE/$p.last-ok"; say "ok: $p at ${head:0:7}"
+  else
+    say "FAIL: $p did not reach ${head:0:7} (has ${got:0:7}; local changes on the phone?)"; failed=1
+  fi
+done
+
+[ "$failed" = 0 ] || exit 1
+date +%s > "$STATE/last-ok"
+say "ok: zone, ${HUBS[*]}${reachable:+, ${reachable[*]}} at ${head:0:7}"

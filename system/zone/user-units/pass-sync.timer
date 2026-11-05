@@ -1,0 +1,9 @@
+[Unit]
+Description=Every 15 minutes, sync the pass store
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+
+[Install]
+WantedBy=timers.target

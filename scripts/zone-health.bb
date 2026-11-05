@@ -465,7 +465,7 @@
 (defn check-pass-hubs []
   (let [store (str home "/.password-store")
         heads (into {"zone" (:out (sh "git" "-C" store "rev-parse" "HEAD"))}
-                    (for [[h url] (select-keys hubs ["metameso"])]
+                    (for [[h url] hubs]
                       [h (first (str/split (:out (sh "git" "ls-remote" (str url home "/git/password-store.git")
                                                      "refs/heads/master"))
                                            #"\s"))]))
@@ -484,7 +484,39 @@
       (seq diverged) (fail-r "pass hubs disagree with zone"
                              :items (vec diverged)
                              :fix "merge the two histories (pass git pull, then pass git push), then make zone a second hub")
-      :else (pass-r "zone and metameso pass stores agree"))))
+      :else (pass-r "zone, metameso and lucy pass stores agree"))))
+
+;; system/zone/pass-sync (pass-sync.timer, every 15 min) merges the hubs and any
+;; reachable phone into zone and pushes back out. Phones are reachable only while
+;; Joe's reverse tunnel to that phone is open, so a phone is allowed to lag for
+;; days; the run itself is not (2026-11-05).
+(def pass-sync-max-age-s 3600)
+(def pass-phone-max-age-s (* 7 86400))
+
+(defn pass-sync-verdict
+  "last-run: epoch of the last fully successful run, or nil.
+  phones: {phone epoch-or-nil} of each phone's last successful sync."
+  [last-run phones now]
+  (let [age #(quot (- now %) 3600)
+        lagging (sort (for [[p t] phones :when (or (nil? t) (> (- now t) pass-phone-max-age-s))]
+                        (str p ": " (if t (str (quot (- now t) 86400) " days since last sync") "never synced"))))]
+    (cond
+      (or (nil? last-run) (> (- now last-run) pass-sync-max-age-s))
+      (fail-r (str "pass-sync has not completed in the last hour"
+                   (when last-run (str " (last " (age last-run) " h ago)")))
+              :fix "journalctl --user -u pass-sync (a merge conflict needs resolving by hand in ~/.password-store)")
+      (seq lagging)
+      (fail-r "a phone's pass store has not synced in over 7 days" :items (vec lagging)
+              :fix "open that phone's reverse tunnel; pass-sync picks it up within 15 min")
+      :else (pass-r (str "last run " (quot (- now last-run) 60) " min ago; "
+                         (str/join ", " (for [[p t] (sort phones)] (str p " " (age t) " h"))))))))
+
+(defn check-pass-sync []
+  (let [dir (str home "/.local/state/pass-sync")
+        read-t #(let [f (fs/file dir %)] (when (fs/exists? f) (parse-long (str/trim (slurp f)))))]
+    (pass-sync-verdict (read-t "last-ok")
+                       {"phone1" (read-t "phone1.last-ok") "phone2" (read-t "phone2.last-ok")}
+                       (now-s))))
 
 (defn check-parked-timers []
   (let [parked (->> (fs/list-dir (str parked-dir "/timers.target.wants")) (map fs/file-name) sort)
@@ -518,7 +550,8 @@
    ["reverse-tunnel"      "metameso gets back into zone through the tunnel, under 30 min" check-reverse-tunnel]
    ["site-backup"         "Caddyfile and docroots on both hubs, under 36 h" check-site-backup]
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]
-   ["pass-hubs-agree"     "zone and metameso pass stores agree"            check-pass-hubs]
+   ["pass-hubs-agree"     "zone, metameso and lucy pass stores agree"     check-pass-hubs]
+   ["pass-sync"           "pass store synced in the last hour; each phone within 7 days" check-pass-sync]
    ["parked-timers"       "every parked timer decided by Joe"              check-parked-timers]])
 
 (defn run-check [[id what f]]

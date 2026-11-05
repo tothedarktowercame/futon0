@@ -37,4 +37,18 @@
 (deftest tunnel-never-used-fails
   (is (= :fail (:status (tunnel-verdict true nil now)))))
 
+(deftest pass-sync-current-passes
+  (is (= :pass (:status (pass-sync-verdict (- now 600) {"phone1" (- now 3600) "phone2" (- now 86400)} now)))))
+
+(deftest pass-sync-stopped-fails
+  (is (= :fail (:status (pass-sync-verdict (- now 7200) {"phone1" (- now 600) "phone2" (- now 600)} now)))))
+
+(deftest pass-sync-never-ran-fails
+  (is (= :fail (:status (pass-sync-verdict nil {"phone1" (- now 600) "phone2" (- now 600)} now)))))
+
+(deftest a-phone-lagging-a-week-fails
+  (let [r (pass-sync-verdict (- now 600) {"phone1" (- now 600) "phone2" (- now (* 8 86400))} now)]
+    (is (= :fail (:status r)))
+    (is (= ["phone2: 8 days since last sync"] (:items r)))))
+
 (let [{:keys [fail error]} (run-tests)] (System/exit (if (zero? (+ fail error)) 0 1)))

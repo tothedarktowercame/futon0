@@ -168,7 +168,19 @@ The outage showed that zone could go dark with no way to look at its console.
 - **pass on every device, kept in sync.** Every entry is encrypted to three keys
   (zone, phone1, phone2). During the outage metameso served as the hub. *Merged 11-03 (claude-5):* zone's store and the metameso hub had
   each only added entries; merged as `fadbad9` and pushed to both (zone-health
-  `pass-store`, `pass-hubs-agree` pass). *Open:* lucy has no store; automate sync (Joe, 10-07: "the federation of passwords should also be set up").
+  `pass-store`, `pass-hubs-agree` pass). *Done 11-05 (claude-16):* lucy is a
+  second hub (`~/git/password-store.git`), and `system/zone/pass-sync` runs every
+  15 min (`pass-sync.timer`). zone is the merge point: it fetches both hubs and
+  any phone whose reverse tunnel is open, merges, pushes to its bare repo and
+  both hubs, and has each reachable phone fast-forward. A merge conflict aborts
+  the run with nothing pushed (tested: the same entry added differently on both
+  phones). An entry added on phone2 reached zone, both hubs and phone1 in one run
+  (tested, then removed). Nothing is decrypted; only encrypted files move. Both
+  phones were 5 and 7 commits behind and are now level (67 entries; recent entries
+  encrypted to all three keys). zone-health: `pass-hubs-agree` now covers lucy;
+  `pass-sync` fails if no run has completed in an hour or a phone has not synced
+  in 7 days (open its tunnel). phone1 also pushes to metameso by itself after a
+  `pass insert`; that is harmless, since the next run merges it.
 - **Linode root passwords** were reset during the outage. Check that the new ones
   are what the store holds.
 
