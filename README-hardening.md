@@ -113,9 +113,23 @@ The outage showed that zone could go dark with no way to look at its console.
   VSAT work, below hardening and the Ways of Working.
 - **`~/code/storage`** (442 GB of experiment data) is still single-copy on
   zone, apart from Joe's Lenovo external drive. Writing to that drive via the
-  phone was the snag (it is not FAT). *Needs a decision.*
-- **The WIP web exhibit** (`/var/www/.../wip/`) and the main Caddy site block
-  are not in git. *Idea:* an offline copy of the website and its data (Joe, 10-07).
+  phone was the snag (it is not FAT). *Needs a decision.* Joe, 11-05: the 2 TB
+  SSD is mostly empty, so 447 GB fits; options are reformatting it, or adding a
+  partition Android can write, and first checking how much of `storage` is
+  needed at all. (termux-usb has read ext4 without root before, see the
+  phone2 notes.) Ranked below the no-cost items in §1–§2 and §7.
+- **The web site and its Caddy config.** *Done 11-05 (claude-16):*
+  `system/zone/zone-site-backup`, nightly at 02:50 (`zone-site-backup.timer`),
+  copies `/etc/caddy/Caddyfile`, `/var/www/zone.hyperreal.enterprises` and
+  `/srv/{xiang-chat,rebecca-brief,hel-staging}` to `~/backups/zone-site/<date>/`
+  on metameso and lucy, 14 dated snapshots hard-linked to each other (519 MB
+  the first night, about 3 MB for an unchanged one). Not in git, because the
+  Caddyfile holds bcrypt password hashes and futon0 is public on GitHub. A hub's
+  snapshot gets a `.verified` marker only when its Caddyfile's sha256 matches
+  the live one; zone-health check `site-backup` fails if either hub has no
+  verified copy under 36 h old (tests: `scripts/zone-health_site-backup_test.bb`).
+  Not copied: `/srv/futon-element-current` (a symlink to a built Element bundle,
+  rebuildable).
 - **Hygiene that makes backups smaller:** pushing work (inbox-zero), side
   branches, and no work in `/tmp` (see the CLAUDE.md rule). These are failing
   zone-health checks.

@@ -39,6 +39,7 @@
 ;; Joe 2026-10-09: a copy made the same day is not overdue. There is no recurring
 ;; job yet, so this check goes red when the newest copy passes a week.
 (def evidence-copy-max-age-s (* 7 86400))
+(def site-copy-max-age-s (* 36 3600)) ; zone-site-backup runs nightly
 (def recovery-image "/recovery/old-root.img")
 
 ;; ---------------------------------------------------------------- plumbing
@@ -371,6 +372,34 @@
                           :fix "journalctl --user -u evidence-backup (nightly 03:30, scripts/evidence-backup.sh)")
       :else (pass-r ages))))
 
+;; The Caddyfile and the docroots are in no git repo (the Caddyfile holds
+;; password hashes and futon0 is public), so system/zone/zone-site-backup copies
+;; them nightly to ~/backups/zone-site/<date>/ on each hub and writes .verified
+;; there only after the hub's Caddyfile matches the live one (2026-11-05).
+(defn newest-site-copy
+  "Epoch seconds of the newest verified site snapshot on a hub, or nil."
+  [url]
+  (let [[_ host port] (re-find #"ssh://([^:]+):(\d+)" url)
+        {:keys [out]} (sh "ssh" "-o" "BatchMode=yes" "-o" "ConnectTimeout=5" "-p" port host
+                          "find ~/backups/zone-site -mindepth 2 -maxdepth 2 -name .verified -printf '%T@\\n' 2>/dev/null | sort -n | tail -1")]
+    (some-> (re-find #"^\d+" out) parse-long)))
+
+(defn site-backup-verdict
+  "copies: {hub epoch-or-nil}. Missing or older than site-copy-max-age-s fails."
+  [copies now]
+  (let [missing (sort (for [[h t] copies :when (nil? t)] h))
+        stale (sort (for [[h t] copies :when (and t (> (- now t) site-copy-max-age-s))]
+                      (str h ": " (quot (- now t) 3600) " h old")))]
+    (cond
+      (seq missing) (fail-r "no verified site copy found" :items (vec missing)
+                            :fix "run system/zone/zone-site-backup; nightly via zone-site-backup.timer")
+      (seq stale) (fail-r "site copy older than 36 h" :items (vec stale)
+                          :fix "journalctl --user -u zone-site-backup")
+      :else (pass-r (str/join ", " (for [[h t] (sort copies)] (str h " " (quot (- now t) 3600) " h")))))))
+
+(defn check-site-backup []
+  (site-backup-verdict (into {} (for [[h url] hubs] [h (newest-site-copy url)])) (now-s)))
+
 (defn tmp-worktrees
   "Linked worktrees of repos under code-dir that live in /tmp: [repo path] pairs."
   [code-dir]
@@ -460,6 +489,7 @@
    ["work-in-tmp"         "no git checkouts in /tmp"                       check-work-in-tmp]
    ["git-hub-backup"      "nightly zone-git-backup ran in the last 26 h"   check-git-backup]
    ["evidence-backup"     "off-box evidence copy on both hubs, under 7 days" check-evidence-backup]
+   ["site-backup"         "Caddyfile and docroots on both hubs, under 36 h" check-site-backup]
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]
    ["pass-hubs-agree"     "zone and metameso pass stores agree"            check-pass-hubs]
    ["parked-timers"       "every parked timer decided by Joe"              check-parked-timers]])

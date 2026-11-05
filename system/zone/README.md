@@ -12,3 +12,6 @@ Installed copies live in `/usr/local/sbin/` (root). Edit here, then
   `~/.codex/logs_2.sqlite` and `~/.codex/cache` are symlinks into it (2026-11-03):
   rebuildable Codex data kept in RAM. The drop-in
   `user-units/futon3c-zone.service.d-codex-shm.conf` orders Agency after it.
+- `zone-site-backup` (run from here by `user-units/zone-site-backup.{service,timer}`,
+  symlinked into `~/.config/systemd/user/`, nightly 02:50): verified off-box copy of
+  the Caddyfile and docroots to both hubs. See README-hardening §4.

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# zone-site-backup: nightly off-box copy of the zone web site and its Caddy config.
+#
+# Why (README-hardening §4, 2026-11-05): the Caddyfile and the docroots were in
+# no git repo and no backup. The Caddyfile holds bcrypt password hashes, so it
+# cannot go into futon0 (public on GitHub); it goes only to the two hubs, which
+# are ours.
+#
+# Each hub gets a dated snapshot under ~/backups/zone-site/<UTC date>/, hard-linked
+# against the previous one (rsync --link-dest), so an unchanged night costs
+# almost no space. KEEP snapshots are kept per hub.
+#
+# A night counts as good only if every hub received the snapshot AND the hub's
+# copy of the Caddyfile has the same sha256 as the live one. Only then is
+# $STAMP touched, and a .verified marker is written in the hub's snapshot;
+# zone-health reads the marker's age on each hub.
+set -euo pipefail
+
+HUBS=(${HUBS:-joe@172.236.108.82 joe@172.236.28.208})
+PORT=${PORT:-2222}
+KEEP=${KEEP:-14}
+SOURCES=(
+  /etc/caddy/Caddyfile
+  /var/www/zone.hyperreal.enterprises
+  /srv/xiang-chat
+  /srv/rebecca-brief
+  /srv/hel-staging
+)
+STAMP=${STAMP:-$HOME/.local/state/zone-site-backup/last-ok}
+DEST=backups/zone-site
+today=${TODAY:-$(date -u +%Y-%m-%d)}
+ssh_cmd="ssh -p $PORT -o BatchMode=yes -o ConnectTimeout=20"
+
+say() { echo "zone-site-backup: $*"; }
+
+for src in "${SOURCES[@]}"; do
+  [ -r "$src" ] || { say "FAIL: source not readable: $src"; exit 1; }
+done
+want=$(sha256sum /etc/caddy/Caddyfile | cut -d' ' -f1)
+
+failed=0
+for hub in "${HUBS[@]}"; do
+  prev=$($ssh_cmd "$hub" "ls -1d $DEST/20??-??-?? 2>/dev/null | grep -v '/$today\$' | tail -1" || true)
+  link=()
+  [ -n "$prev" ] && link=(--link-dest="../$(basename "$prev")")
+  if ! $ssh_cmd "$hub" "mkdir -p $DEST/$today" \
+     || ! rsync -a --delete --relative -e "$ssh_cmd" "${link[@]}" \
+            "${SOURCES[@]}" "$hub:$DEST/$today/"; then
+    say "FAIL: copy to $hub"; failed=1; continue
+  fi
+  got=$($ssh_cmd "$hub" "sha256sum $DEST/$today/etc/caddy/Caddyfile" | cut -d' ' -f1)
+  if [ "$got" != "$want" ]; then
+    say "FAIL: Caddyfile on $hub does not match the live one"; failed=1; continue
+  fi
+  # zone-health (check site-backup) reads the age of the newest .verified marker.
+  $ssh_cmd "$hub" "touch $DEST/$today/.verified; ls -1d $DEST/20??-??-?? | head -n -$KEEP | xargs -r rm -rf"
+  say "ok: $hub $DEST/$today${prev:+ (linked to $(basename "$prev"))}"
+done
+
+[ "$failed" = 0 ] || exit 1
+mkdir -p "$(dirname "$STAMP")"
+touch "$STAMP"
+say "ok: ${#HUBS[@]} hubs"

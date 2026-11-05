@@ -1,0 +1,9 @@
+[Unit]
+Description=Copy the zone Caddyfile and web docroots to metameso and lucy (verified)
+
+[Service]
+Type=oneshot
+Nice=10
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+TimeoutStartSec=1800
+ExecStart=/home/joe/code/futon0/system/zone/zone-site-backup
