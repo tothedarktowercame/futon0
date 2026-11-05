@@ -329,6 +329,34 @@
                        (:next-action missing))))))))
       (finally (fs/delete-tree root)))))
 
+(deftest unavailable-checkouts-remain-in-the-authoritative-census
+  (let [root (fs/create-temp-dir {:prefix "inbox-unavailable-"})]
+    (try
+      (with-redefs [fetch? false]
+        (let [repo (init-repo! root "owner" true)
+              gone (fs/path root "gone-worktree")
+              absent (fs/path root "absent-repository")]
+          (git! repo "worktree" "add" "-b" "gone" (str gone) "main")
+          (fs/delete-tree gone)
+          (let [repos [{:label "owner" :abs-path (str repo)}
+                       {:label "absent" :abs-path (str absent)}]
+                json-out (with-out-str
+                           (cmd-check-clean repos {:json? true}))
+                parsed (json/parse-string json-out true)
+                by-name (into {} (map (juxt :repo identity) (:repos parsed)))
+                owner-failure (first (get-in by-name ["owner" :failures]))
+                absent-failure (first (get-in by-name ["absent" :failures]))
+                human (with-out-str (cmd-check-clean repos {}))]
+            (is (false? (:clean parsed)))
+            (is (= "worktree-unavailable" (:reason owner-failure)))
+            (is (= (str gone) (get-in owner-failure [:worktrees 0 :path])))
+            (is (true? (get-in owner-failure [:worktrees 0 :checkout-missing])))
+            (is (= "repository-unavailable" (:reason absent-failure)))
+            (is (false? (get-in by-name ["absent" :available])))
+            (is (re-find #"owner review before prune" human))
+            (is (re-find #"unavailable: .*absent-repository" human)))))
+      (finally (fs/delete-tree root)))))
+
 (defn- make-repair-fixture! [root name]
   (let [repo (fs/path root name)
         paths ["holes/tickets/T-repair-occ-444fb018cbbb656d09b8f4f67c063f1d51a1932a9b1c281d999c567cf22a2ade.md"

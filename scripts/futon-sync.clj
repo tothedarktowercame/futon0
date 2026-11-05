@@ -39,6 +39,9 @@
 (defn load-repos []
   (filterv #(fs/exists? (fs/path (:abs-path %) ".git")) (manifest-repos)))
 
+(defn- repo-checkout-present? [repo]
+  (fs/exists? (fs/path (:abs-path repo) ".git")))
+
 ;; ── Noise patterns ───────────────────────────────────────────────────────────
 
 (def noise-patterns
@@ -260,13 +263,38 @@
              :unmatched-commits (count (filter #(str/starts-with? % "+ ") lines))
              :merge-commits (count (remove str/blank? (str/split-lines (:out merges))))}))))))
 
+(defn- worktree-gate-integration
+  "Cheap classification sufficient for a durable off-tree checkout.
+
+   The clean gate only needs to distinguish an already-integrated ancestor
+   from live work. Patch-equivalence is a retirement question for `inventory`;
+   running `git cherry` for hundreds of durable frame checkouts made the gate
+   take longer than fifteen minutes."
+  [repo-path default head]
+  (if-not (and default head)
+    {:integration "unknown" :integration-error "missing comparison ref"}
+    (let [target (git repo-path "rev-parse" "--verify" default)
+          ancestor (when (zero? (:exit target))
+                     (git repo-path "merge-base" "--is-ancestor" head (:out target)))]
+      (cond
+        (or (not (zero? (:exit target))) (not (#{0 1} (:exit ancestor))))
+        {:integration "unknown" :integration-error (or (:err ancestor) (:err target))}
+
+        (zero? (:exit ancestor))
+        {:integration "ancestor" :comparison-head (:out target)}
+
+        :else
+        {:integration "unmerged" :comparison-head (:out target)}))))
+
 (defn- extra-worktrees
   "Classify every linked checkout except the repository's main checkout.
 
    An ancestor is already merged. Patch-equivalent branches are separate
    retirement review candidates, never labelled merged. Branch attachment
    is irrelevant; unique merges and failed comparisons cannot prove redundancy."
-  [repo-path default now-ms]
+  ([repo-path default now-ms]
+   (extra-worktrees repo-path default now-ms false))
+  ([repo-path default now-ms full-retirement-analysis?]
   (let [root (str (fs/normalize (fs/real-path repo-path)))
         sibling-parent (str (fs/parent root))]
     (->> (worktree-records repo-path)
@@ -275,7 +303,16 @@
                  (let [normalized (str (fs/normalize (fs/path path)))
                        checkout-present? (fs/exists? normalized)
                        sibling? (= sibling-parent (str (fs/parent normalized)))
-                       integration (worktree-integration repo-path default head)]
+                       integration (cond
+                                     (not checkout-present?)
+                                     {:integration "unavailable"
+                                      :integration-error "linked checkout is missing"}
+
+                                     (or sibling? full-retirement-analysis?)
+                                     (worktree-integration repo-path default head)
+
+                                     :else
+                                     (worktree-gate-integration repo-path default head))]
                    (merge integration {:path normalized
                     :branch (or branch "detached")
                     :locked locked :prunable prunable
@@ -288,7 +325,7 @@
                               (worktree-newest-commit normalized now-ms)
                               {:age-unknown true :error "linked checkout is missing"})
                     :dirty-count (when checkout-present?
-                                   (worktree-dirty-count normalized))})))))))
+                                   (worktree-dirty-count normalized))}))))))))
 
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
@@ -421,7 +458,8 @@
                                  (str/starts-with? (str (:path w))
                                                    (str tmp-root "/"))))
          ephemeral-worktrees (filterv ephemeral? worktrees)
-         off-tree-info (filterv #(and (not (:sibling %))
+         off-tree-info (filterv #(and (not (:checkout-missing %))
+                                      (not (:sibling %))
                                       (not (ephemeral? %)))
                                 worktrees)
          ;; Relocation is the settlement action for preserved worktrees. Once a
@@ -429,18 +467,24 @@
          ;; but its age or patch relationship must not keep the canonical repo
          ;; red. Sibling checkouts still block retirement, and /tmp still fails
          ;; separately because it is not durable storage.
-         dead-worktrees (filterv #(and (:sibling %) (:dead %)) worktrees)
+         unavailable-worktrees (filterv :checkout-missing worktrees)
+         available-worktrees (remove :checkout-missing worktrees)
+         dead-worktrees (filterv #(and (:sibling %) (:dead %)) available-worktrees)
          equivalent-worktrees (filterv #(and (:sibling %)
                                              (= "patch-equivalent" (:integration %)))
-                                       worktrees)
+                                       available-worktrees)
          unknown-worktrees (filterv #(and (:sibling %)
                                           (= "unknown" (:integration %)))
-                                    worktrees)
+                                    available-worktrees)
          live-worktrees (filterv #(and (:default-branch status)
                                       (not (:dead %)) (:sibling %)
                                       (not (#{"patch-equivalent" "unknown"} (:integration %))))
-                                 worktrees)
+                                 available-worktrees)
          failures (cond-> []
+                    (seq unavailable-worktrees)
+                    (conj {:clause 5 :reason "worktree-unavailable"
+                           :worktrees unavailable-worktrees})
+
                     (seq old-files)
                     (conj {:clause 1 :reason "stale-working-tree"
                            :files old-files})
@@ -540,15 +584,32 @@
                "dead-worktree" "dead worktree"
                "patch-equivalent-worktree" "patch-equivalent worktree (review retirement)"
                "worktree-comparison-failed" "worktree comparison failed"
+               "worktree-unavailable" "registered worktree checkout unavailable (owner review before prune)"
                "worktree on an ephemeral path")
              " (" n "): "
              (str/join ", " (map worktree-id shown))
              (when (> n (count shown))
                (str ", +" (- n (count shown)) " more (--json for the full list)"))))))
 
+(defn- unavailable-repo-verdict [repo]
+  {:repo (:label repo)
+   :path (:abs-path repo)
+   :available false
+   :clean false
+   :comparison "unavailable"
+   :failures [{:clause 0
+               :reason "repository-unavailable"
+               :path (:abs-path repo)
+               :message "registered repository checkout is unavailable"}]
+   :info []})
+
 (defn cmd-check-clean [repos {:keys [json? now-ms]
                               :or {now-ms (System/currentTimeMillis)}}]
-  (let [verdicts (mapv #(clean-verdict (repo-status %) now-ms) repos)
+  (let [verdicts (mapv #(if (repo-checkout-present? %)
+                          (assoc (clean-verdict (repo-status %) now-ms)
+                                 :available true)
+                          (unavailable-repo-verdict %))
+                       repos)
         clean? (every? :clean verdicts)
         basis (if fetch?
                 "freshly fetched refs (fetch failures are marked per repo)"
@@ -564,7 +625,10 @@
             (do
               (printf " %-14s FAIL%n" repo)
               (doseq [failure failures]
-                (println (str "   " (failure-str failure))))))
+                (println (str "   "
+                              (if (zero? (:clause failure))
+                                (str "unavailable: " (:path failure))
+                                (failure-str failure)))))))
           (doseq [{:keys [message]} info]
             (println (str "   INFO: " message)))
           (when fetch-error
@@ -1024,7 +1088,8 @@
                                (map #(assoc % :repo (:label repo))
                                     (extra-worktrees (:abs-path repo)
                                                      (push-branch repo (:abs-path repo))
-                                                     (System/currentTimeMillis)))) present))
+                                                     (System/currentTimeMillis)
+                                                     true))) present))
         linked (set (map :path worktrees))
         scans (mapv (fn [root]
                       (try
@@ -1108,7 +1173,7 @@
       ("status" "st") (cmd-status repos)
       "inventory" (when-not (cmd-inventory (manifest-repos) args) (System/exit 1))
       "scratch" (when-not (cmd-scratch args) (System/exit 1))
-      "check-clean" (when-not (cmd-check-clean repos
+      "check-clean" (when-not (cmd-check-clean (manifest-repos)
                                                 {:json? (some #{"--json"} args)})
                       (System/exit 1))
       ("review" "rv") (cmd-review repos)
