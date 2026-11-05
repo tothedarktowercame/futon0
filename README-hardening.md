@@ -52,8 +52,22 @@ The outage showed that zone could go dark with no way to look at its console.
   now.*
 - **systemd watchdog:** `RuntimeWatchdogSec` in `/etc/systemd/system.conf`, to
   reboot on a hard hang. *Not done.*
-- **Reverse tunnel out from zone** to a Linode (e.g. `box`), so a mistake in the
-  inbound firewall cannot lock everyone out. *Not done.*
+- **Reverse tunnel out from zone** to a Linode, so a mistake in the inbound
+  firewall cannot lock everyone out. *Done 11-05 (claude-16):*
+  `zone-reverse-tunnel.service` (user unit, restarts itself) holds
+  metameso `127.0.0.1:2224` → zone `:22`. To get in when zone's inbound path is
+  broken: `ssh metameso`, then `ssh -p 2224 joe@127.0.0.1` with a key zone
+  already accepts (Joe's keys work through it; the from= pins on the hub keys do
+  not, because the connection arrives from 127.0.0.1).
+  The tunnel is kept honest by use, not only kept for emergencies (Joe, 11-05):
+  every 10 min metameso's `zone-tunnel-check` goes back through it with the key
+  `~/.ssh/zone-tunnel`, which zone's authorized_keys restricts
+  (`from="127.0.0.1,::1",restrict,command=system/zone/tunnel-serve`) to `ping`
+  and a read-only rsync of the web docroot; it mirrors the site to
+  `~/mirror/zone-www` on metameso (409 MB), ready for static failover. Shell and
+  writes through that key are refused (tested). zone-health check
+  `reverse-tunnel` fails if the unit is down or metameso has not got through in
+  30 min (tested live by stopping the unit). metameso side: `system/metameso/`.
 
 ## 2. Firewall
 
@@ -127,7 +141,7 @@ The outage showed that zone could go dark with no way to look at its console.
   Caddyfile holds bcrypt password hashes and futon0 is public on GitHub. A hub's
   snapshot gets a `.verified` marker only when its Caddyfile's sha256 matches
   the live one; zone-health check `site-backup` fails if either hub has no
-  verified copy under 36 h old (tests: `scripts/zone-health_site-backup_test.bb`).
+  verified copy under 36 h old (tests: `scripts/zone-health_backup-paths_test.bb`).
   Not copied: `/srv/futon-element-current` (a symlink to a built Element bundle,
   rebuildable).
 - **Hygiene that makes backups smaller:** pushing work (inbox-zero), side

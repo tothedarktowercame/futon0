@@ -1,0 +1,12 @@
+[Unit]
+Description=Reverse SSH tunnel: metameso 127.0.0.1:2224 -> zone :22 (a way back in if zone's inbound path breaks)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ssh -N -p 2222 -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -R 127.0.0.1:2224:127.0.0.1:22 joe@172.236.108.82
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Use the reverse tunnel into zone: ping, then mirror zone's web docroot
+
+[Service]
+Type=oneshot
+Nice=10
+TimeoutStartSec=1200
+ExecStart=%h/bin/zone-tunnel-check

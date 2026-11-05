@@ -40,6 +40,7 @@
 ;; job yet, so this check goes red when the newest copy passes a week.
 (def evidence-copy-max-age-s (* 7 86400))
 (def site-copy-max-age-s (* 36 3600)) ; zone-site-backup runs nightly
+(def tunnel-use-max-age-s (* 30 60)) ; metameso uses the tunnel every 10 min
 (def recovery-image "/recovery/old-root.img")
 
 ;; ---------------------------------------------------------------- plumbing
@@ -400,6 +401,31 @@
 (defn check-site-backup []
   (site-backup-verdict (into {} (for [[h url] hubs] [h (newest-site-copy url)])) (now-s)))
 
+;; zone holds a reverse tunnel open to metameso (zone-reverse-tunnel.service),
+;; and metameso uses it every 10 min to ping zone and mirror the docroot
+;; (futon0 system/metameso/zone-tunnel-check), touching a stamp only when both
+;; work. Joe, 2026-11-05: the way back in is kept honest by daily use.
+(defn tunnel-verdict
+  "unit-active?: zone's tunnel unit is active. used-at: epoch of metameso's last
+  successful use through the tunnel, or nil."
+  [unit-active? used-at now]
+  (cond
+    (not unit-active?) (fail-r "zone-reverse-tunnel.service is not active"
+                               :fix "systemctl --user status zone-reverse-tunnel")
+    (nil? used-at) (fail-r "metameso has never used the tunnel successfully"
+                           :fix "on metameso: ~/bin/zone-tunnel-check")
+    (> (- now used-at) tunnel-use-max-age-s)
+    (fail-r (str "metameso last got through the tunnel " (quot (- now used-at) 60) " min ago")
+            :fix "on metameso: journalctl --user -u zone-tunnel-check")
+    :else (pass-r (str "metameso got through " (quot (- now used-at) 60) " min ago"))))
+
+(defn check-reverse-tunnel []
+  (let [active? (= "active" (str/trim (:out (sh "systemctl" "--user" "is-active" "zone-reverse-tunnel.service"))))
+        [_ host port] (re-find #"ssh://([^:]+):(\d+)" (hubs "metameso"))
+        {:keys [out]} (sh "ssh" "-o" "BatchMode=yes" "-o" "ConnectTimeout=5" "-p" port host
+                          "stat -c %Y ~/.local/state/zone-tunnel/last-ok 2>/dev/null")]
+    (tunnel-verdict active? (some-> (re-find #"^\d+" out) parse-long) (now-s))))
+
 (defn tmp-worktrees
   "Linked worktrees of repos under code-dir that live in /tmp: [repo path] pairs."
   [code-dir]
@@ -489,6 +515,7 @@
    ["work-in-tmp"         "no git checkouts in /tmp"                       check-work-in-tmp]
    ["git-hub-backup"      "nightly zone-git-backup ran in the last 26 h"   check-git-backup]
    ["evidence-backup"     "off-box evidence copy on both hubs, under 7 days" check-evidence-backup]
+   ["reverse-tunnel"      "metameso gets back into zone through the tunnel, under 30 min" check-reverse-tunnel]
    ["site-backup"         "Caddyfile and docroots on both hubs, under 36 h" check-site-backup]
    ["pass-store"          "pass store and key on zone, pushed"             check-pass-store]
    ["pass-hubs-agree"     "zone and metameso pass stores agree"            check-pass-hubs]

@@ -1,0 +1,9 @@
+[Unit]
+Description=Every 10 minutes, use the way back into zone
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# zone-tunnel-check (runs on metameso every 10 min): use the way back into zone.
+#
+# Goes through the reverse tunnel zone keeps open (metameso 127.0.0.1:2224 ->
+# zone :22) with the restricted key ~/.ssh/zone-tunnel, which zone allows only
+# `ping` and a read-only rsync of its web docroot (zone: system/zone/tunnel-serve).
+# Mirroring the site through the tunnel is the point (Joe, 2026-11-05): the way
+# in is exercised by real work, so a broken tunnel shows up within minutes, and
+# metameso always holds a current copy of the site.
+#
+# The stamp is touched only when the ping AND the mirror both succeed; zone-health
+# (check reverse-tunnel) reads the stamp's age from zone.
+set -euo pipefail
+KEY=$HOME/.ssh/zone-tunnel
+MIRROR=$HOME/mirror/zone-www
+STAMP=$HOME/.local/state/zone-tunnel/last-ok
+SSH="ssh -i $KEY -p 2224 -o BatchMode=yes -o ConnectTimeout=20"
+
+reply=$($SSH joe@127.0.0.1 ping)
+case "$reply" in ok\ *) ;; *) echo "zone-tunnel-check: FAIL ping: $reply"; exit 1 ;; esac
+mkdir -p "$MIRROR" "$(dirname "$STAMP")"
+rsync -a --delete -e "$SSH" joe@127.0.0.1:/ "$MIRROR/"
+touch "$STAMP"
+echo "zone-tunnel-check: ok: $reply; mirror $(du -sh "$MIRROR" | cut -f1)"

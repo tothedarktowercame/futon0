@@ -15,3 +15,6 @@ Installed copies live in `/usr/local/sbin/` (root). Edit here, then
 - `zone-site-backup` (run from here by `user-units/zone-site-backup.{service,timer}`,
   symlinked into `~/.config/systemd/user/`, nightly 02:50): verified off-box copy of
   the Caddyfile and docroots to both hubs. See README-hardening §4.
+- `user-units/zone-reverse-tunnel.service` (symlinked, enabled) and `tunnel-serve`
+  (forced command for metameso's tunnel key): the way back into zone, used every
+  10 min by metameso. See README-hardening §1 and `../metameso/`.

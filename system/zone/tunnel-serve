@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# tunnel-serve: the only command metameso's tunnel key may run on zone.
+#
+# metameso reaches zone back through the reverse tunnel (zone-reverse-tunnel:
+# metameso 127.0.0.1:2224 -> zone :22) with a key that authorized_keys pins to
+#   from="127.0.0.1,::1",restrict,command="<this script>"
+# so the key gives no shell. It exists so the way back in is used every few
+# minutes (Joe, 2026-11-05: a path only kept for emergencies is not known to work):
+#   ping                  -> proves tunnel + sshd + key auth; prints host and time
+#   rsync (read-only)     -> mirrors the public web docroot onto metameso
+set -euo pipefail
+cmd=${SSH_ORIGINAL_COMMAND:-}
+case "$cmd" in
+  ping)
+    echo "ok $(hostname) $(date -u +%Y-%m-%dT%H:%M:%SZ) up $(cut -d' ' -f1 /proc/uptime)s" ;;
+  "rsync --server --sender "*)
+    SSH_ORIGINAL_COMMAND="$cmd" exec /usr/bin/rrsync -ro /var/www/zone.hyperreal.enterprises ;;
+  *)
+    echo "tunnel-serve: refused: ${cmd:-<no command>}" >&2; exit 1 ;;
+esac
