@@ -10,7 +10,7 @@
 ;; being read. The order matters: load-file's defs replace these unbound vars,
 ;; so declaring after it would leave them unbound.
 (declare repo-status fetch? clean-verdict cmd-check-clean inventory-report
-         repair-fixture-audit scratch-report cmd-scratch trash-path!)
+         repair-fixture-audit scratch-report cmd-scratch trash-path! cmd-hygiene)
 
 ;; Resolve the script relative to THIS file rather than by absolute path, so
 ;; the test travels with the repo instead of only working on one box. The
@@ -371,6 +371,17 @@
           (fs/delete-tree review)
           (with-redefs [trash-path! (fn [_] {:exit 0 :out "" :err ""})]
             (is (true? (cmd-scratch ["--root" (str root) "--trash" "--yes"]))))))
+      (finally (fs/delete-tree root)))))
+
+(deftest hygiene-does-not-run-the-worktree-census
+  (let [root (fs/create-temp-dir {:prefix "inbox-hygiene-fast-"})]
+    (try
+      (let [repo (init-repo! root "canonical" true)]
+        (with-redefs [repo-status (fn [_]
+                                   (throw (ex-info "full census must not run" {})))]
+          (is (string? (with-out-str
+                         (cmd-hygiene [{:label "canonical" :abs-path (str repo)}]
+                                      {:fix? false}))))))
       (finally (fs/delete-tree root)))))
 
 (let [{:keys [fail error]} (run-tests)]

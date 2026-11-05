@@ -957,8 +957,25 @@
                    (filter :safe-to-trash (:rows result)))
            (empty? (:rows result))))))
 
+(defn- hygiene-status
+  "Read only the canonical working tree state needed by hygiene.
+
+  Hygiene does not compare linked worktrees, branches or remotes. Those
+  expensive checks belong to inventory/check-clean; coupling them here made
+  a scratch-residue probe spend minutes in `git cherry` before printing."
+  [repo]
+  (let [r (git (:abs-path repo) "status" "--porcelain=v1" "-uall")
+        lines (if (zero? (:exit r)) (str/split-lines (:out r)) [])
+        untracked (mapv #(subs % 3) (filterv #(str/starts-with? % "??") lines))
+        noisy-files (filterv noisy? untracked)]
+    (assoc repo
+           :status-error (when-not (zero? (:exit r)) (:err r))
+           :untracked untracked
+           :noisy-files noisy-files
+           :noisy-suggestions (into #{} (keep noisy?) noisy-files))))
+
 (defn cmd-hygiene [repos {:keys [fix?]}]
-  (let [statuses (mapv repo-status repos)
+  (let [statuses (mapv hygiene-status repos)
         ;; Collect {repo-path #{suggestions}}
         suggestions (into {}
                       (comp
