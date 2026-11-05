@@ -48,6 +48,11 @@ def discover(code: Path):
         common = git(path, "rev-parse", "--path-format=absolute", "--git-common-dir")
         if common.returncode:
             continue
+        bare = git(path, "rev-parse", "--is-bare-repository")
+        # Match the former zone-git-backup scope: working checkouts under
+        # ~/code, not bare mirrors which have no uncommitted work to recover.
+        if bare.returncode or bare.stdout.strip() == "true":
+            continue
         key = str(Path(common.stdout.strip()).resolve())
         groups.setdefault(key, path)
     return list(groups.values())
