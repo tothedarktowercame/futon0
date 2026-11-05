@@ -107,9 +107,13 @@ The outage showed that zone could go dark with no way to look at its console.
 
 ## 4. Backups
 
-- **Zone-only git work.** *Done 10-08:* `zone-git-backup.timer` (02:30 nightly)
-  pushes branches, tags and a `refs/backup/wip` snapshot of every repo with
-  zone-only work to bare repos on metameso and lucy.
+- **Zone-only git work.** *Done 11-05:* the unified `futon-clean-worker.timer`
+  runs at most every 15 minutes (plus post-commit requests), publishes Clean
+  branches, and copies branches, tags, and per-worktree WIP refs to bare repos
+  on metameso and lucy.  Successful recovery fingerprints let unchanged repos
+  skip object construction and pushes; changed or failed repos take the full
+  path, and a full reconciliation runs at least daily.  The 02:30 timer invokes
+  this same worker as a backstop.
 - **Evidence store, nightly, off-box.** *Done 11-03 (claude-5, `fa1618c`):*
   `evidence-backup.timer` (03:30 nightly) runs `scripts/evidence-backup.sh`,
   restic over sftp to `~/backups/evidence/restic` on metameso and lucy.
@@ -269,4 +273,3 @@ the switch.
   zone's key needs its passphrase, so a test restore was not run. The backup
   excludes `/var/lib/docker` (the old Zulip images); the 2021 Zulip backups in
   `/root` are included.
-

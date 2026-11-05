@@ -65,6 +65,66 @@ class RecoveryBackupTest(unittest.TestCase):
                              report["repos"][0]["untracked-cutoff-bytes"])
             self.assertTrue(report["repos"][0]["legacy-wip-migrated"])
 
+    def test_successful_unchanged_repo_skips_but_changed_wip_and_full_do_not(self):
+        with tempfile.TemporaryDirectory(prefix="recovery-skip-") as td:
+            root = Path(td)
+            code, repo = root / "code", root / "code" / "project"
+            code.mkdir()
+            sh("git", "init", "-b", "main", str(repo))
+            sh("git", "config", "user.name", "Fixture", cwd=repo)
+            sh("git", "config", "user.email", "fixture@example.invalid", cwd=repo)
+            (repo / "tracked").write_text("base\n")
+            sh("git", "add", "tracked", cwd=repo)
+            sh("git", "commit", "-m", "base", cwd=repo)
+            (repo / "wip").write_text("one\n")
+            hubs = [root / "hub1", root / "hub2"]
+            state, receipt = root / "state.json", root / "receipt.json"
+
+            def invoke(*extra):
+                sh("python3", str(SCRIPT), "--code", str(code),
+                   "--hub", str(hubs[0]), "--hub", str(hubs[1]),
+                   "--state", str(state), "--receipt", str(receipt), *extra)
+                return json.loads(receipt.read_text())
+
+            first = invoke()
+            self.assertEqual("full", first["repos"][0]["recovery-mode"])
+            second = invoke()
+            self.assertEqual("incremental", second["reconciliation"])
+            self.assertEqual("unchanged-skip", second["repos"][0]["recovery-mode"])
+
+            (repo / "wip").write_text("two\n")
+            changed = invoke()
+            self.assertEqual("full", changed["repos"][0]["recovery-mode"])
+            forced = invoke("--full")
+            self.assertEqual("full", forced["reconciliation"])
+            self.assertEqual("full", forced["repos"][0]["recovery-mode"])
+
+    def test_failed_hub_receipt_is_never_reused_for_skip(self):
+        with tempfile.TemporaryDirectory(prefix="recovery-failed-") as td:
+            root = Path(td)
+            code, repo = root / "code", root / "code" / "project"
+            code.mkdir()
+            sh("git", "init", "-b", "main", str(repo))
+            sh("git", "config", "user.name", "Fixture", cwd=repo)
+            sh("git", "config", "user.email", "fixture@example.invalid", cwd=repo)
+            (repo / "tracked").write_text("base\n")
+            sh("git", "add", "tracked", cwd=repo)
+            sh("git", "commit", "-m", "base", cwd=repo)
+            bad_hub = root / "not-a-directory"
+            bad_hub.write_text("occupied\n")
+            state, receipt = root / "state.json", root / "receipt.json"
+            args = ["python3", str(SCRIPT), "--code", str(code),
+                    "--hub", str(root / "hub1"), "--hub", str(bad_hub),
+                    "--state", str(state), "--receipt", str(receipt)]
+            for expected_reconciliation in ("full", "incremental"):
+                result = subprocess.run(args, text=True, stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE)
+                self.assertNotEqual(0, result.returncode)
+                report = json.loads(receipt.read_text())
+                self.assertEqual(expected_reconciliation, report["reconciliation"])
+                self.assertEqual("full", report["repos"][0]["recovery-mode"])
+                self.assertFalse(report["repos"][0]["ok"])
+
 
 if __name__ == "__main__":
     unittest.main()

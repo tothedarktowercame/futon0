@@ -26,6 +26,7 @@ DEFAULT_HUBS = [
 ]
 EXCLUDE = {"storage", "lean4"}
 MAX_UNTRACKED_BYTES = 20 * 1024 * 1024
+FULL_RECONCILE_SECONDS = 24 * 60 * 60
 
 
 def run(args, cwd=None, env=None, check=False):
@@ -71,6 +72,38 @@ def ref_key(path: Path):
 
 def dirty(path: Path):
     return bool(git(path, "status", "--porcelain=v1", "-uall").stdout)
+
+
+def recovery_fingerprint(repo: Path, hubs, cutoff: int):
+    """Hash everything whose recovery image can change, without writing Git objects."""
+    digest = hashlib.sha256()
+    digest.update(json.dumps({"hubs": hubs, "cutoff": cutoff}, sort_keys=True).encode())
+    refs = git(repo, "for-each-ref", "--format=%(refname)%00%(objectname)",
+               "refs/heads", "refs/tags", check=True).stdout
+    digest.update(refs.encode())
+    for wt in worktrees(repo):
+        digest.update(str(wt.resolve()).encode())
+        digest.update(b"\0")
+        if not wt.exists():
+            digest.update(b"unavailable\0")
+            continue
+        status = git(wt, "status", "--porcelain=v1", "-z", "-uall", check=True).stdout
+        digest.update(status.encode())
+        # This includes staged and unstaged tracked content.  Hashing the patch
+        # reads WIP but does not populate the object store or a temporary index.
+        patch = git(wt, "diff", "HEAD", "--binary", "--no-ext-diff", check=True).stdout
+        digest.update(patch.encode())
+        untracked = git(wt, "ls-files", "-z", "-o", "--exclude-standard",
+                        check=True).stdout
+        for name in filter(None, untracked.split("\0")):
+            candidate = wt / name
+            if candidate.is_file() and candidate.stat().st_size <= cutoff:
+                digest.update(name.encode())
+                digest.update(b"\0")
+                with candidate.open("rb") as stream:
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                        digest.update(chunk)
+    return digest.hexdigest()
 
 
 def snapshot(path: Path, ref: str, cutoff: int):
@@ -130,11 +163,20 @@ def ensure_hub(hub: str, name: str):
     return f"{hub}/~/git/zone-backup/{name}.git"
 
 
-def backup_repo(repo: Path, hubs, cutoff):
+def backup_repo(repo: Path, hubs, cutoff, cached=None, force_full=False):
     name = repo.name
     common = Path(git(repo, "rev-parse", "--path-format=absolute", "--git-common-dir",
                       check=True).stdout.strip())
     hook = common / "hooks" / "post-commit"
+    fingerprint = recovery_fingerprint(repo, hubs, cutoff)
+    if (not force_full and cached and cached.get("ok")
+            and cached.get("fingerprint") == fingerprint):
+        row = dict(cached["row"])
+        row.update(path=str(repo))
+        row["recovery-mode"] = "unchanged-skip"
+        row["recovery-fingerprint"] = fingerprint
+        row["post-commit-hook-installed"] = hook.exists() and os.access(hook, os.X_OK)
+        return row
     rows, active_refs = [], []
     legacy = git(repo, "rev-parse", "-q", "--verify", "refs/backup/wip")
     migrated_legacy = legacy.returncode == 0
@@ -196,7 +238,32 @@ def backup_repo(repo: Path, hubs, cutoff):
             "untracked-cutoff-bytes": cutoff,
             "excluded-tags": excluded_tags,
             "legacy-wip-migrated": migrated_legacy,
+            "recovery-mode": "full",
+            "recovery-fingerprint": fingerprint,
             "post-commit-hook-installed": hook.exists() and os.access(hook, os.X_OK)}
+
+
+def read_cache(path: Path):
+    try:
+        return json.loads(path.read_text())
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {"repos": {}}
+
+
+def write_cache(path: Path, report, last_full_at):
+    state = {"version": 1, "last-full-at": last_full_at, "repos": {}}
+    for row in report["repos"]:
+        state["repos"][row["path"]] = {
+            "fingerprint": row["recovery-fingerprint"],
+            "ok": row["ok"],
+            "row": row,
+        }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile("w", dir=path.parent, delete=False) as stream:
+        json.dump(state, stream, indent=2, sort_keys=True)
+        stream.write("\n")
+        tmp = Path(stream.name)
+    tmp.replace(path)
 
 
 def main():
@@ -204,15 +271,31 @@ def main():
     ap.add_argument("--code", type=Path, default=Path.home() / "code")
     ap.add_argument("--hub", action="append", dest="hubs")
     ap.add_argument("--receipt", type=Path)
+    ap.add_argument("--state", type=Path,
+                    default=Path.home() / ".local/state/futon-clean/recovery-cache.json")
+    ap.add_argument("--full", action="store_true")
     ap.add_argument("--max-untracked-bytes", type=int, default=MAX_UNTRACKED_BYTES)
     args = ap.parse_args()
     hubs = args.hubs or DEFAULT_HUBS
-    rows = [backup_repo(repo, hubs, args.max_untracked_bytes)
+    cache = read_cache(args.state)
+    now = datetime.now(timezone.utc)
+    try:
+        last_full = datetime.fromisoformat(cache["last-full-at"])
+    except (KeyError, TypeError, ValueError):
+        last_full = None
+    force_full = (args.full or last_full is None
+                  or (now - last_full).total_seconds() >= FULL_RECONCILE_SECONDS)
+    rows = [backup_repo(repo, hubs, args.max_untracked_bytes,
+                        cache.get("repos", {}).get(str(repo)), force_full)
             for repo in discover(args.code)]
     report = {"ok": all(r["ok"] for r in rows),
-              "at": datetime.now(timezone.utc).isoformat(),
+              "at": now.isoformat(),
               "scope": "all-immediate-code-git-repositories-plus-linked-worktrees",
+              "reconciliation": "full" if force_full else "incremental",
+              "full-reconcile-seconds": FULL_RECONCILE_SECONDS,
               "repos": rows}
+    write_cache(args.state, report,
+                now.isoformat() if force_full else cache.get("last-full-at"))
     encoded = json.dumps(report, indent=2, sort_keys=True)
     if args.receipt:
         args.receipt.parent.mkdir(parents=True, exist_ok=True)
