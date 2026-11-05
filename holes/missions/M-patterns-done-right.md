@@ -84,9 +84,9 @@ A pattern is honestly applied when there's a verifiable receipt linking the code
 **Why this is the long-arc payoff**: patterns become *measurable* — the IFR's "demonstrable value" property (M-pattern-application-diagnostic) graduates from claim to data. Mining + Haiku give per-turn evidence; receipts give per-commit evidence; together they triangulate which patterns the codebase *actually* embodies vs which are well-intentioned text.
 
 **What's missing for Level-4 completion**:
-- Footer parser (the pattern Joe already has in `M-bounded-in-flight-state` for `Block:` is the prior art — same shape: `^Pattern: <ns>/<name>$`, last occurrence wins).
+- ~~Footer parser~~ — shipped 2026-11-05 as `futon0/scripts/futon0/report/pattern_receipts.clj` (`parse-pattern-footers`, `^Pattern: <ns>/<name>$`, last occurrence wins; tests in `futon0/test/futon0/report/pattern_receipts_test.clj` against a real git fixture).
 - Commit-time advisory: pre-commit hook warns when committing in a region without a Pattern footer.
-- Verify invariant + evidence emission.
+- ~~Verify invariant~~ — `invariant-pattern-receipts-resolve` shipped 2026-11-05 in the same namespace: checks every commit since a stated cutover that touches the pattern-claimed region (`library/**/*.flexiarg`, v1) carries a footer and every footer's pattern-ref resolves to a library file. Diagnostic run over futon3's whole library history: 465 claimed commits, 406 without footer (all pre-cutover, as expected), 59 already footered, 0 unresolvable refs. Evidence emission per commit still owed.
 - Geometric receipt: `T-before / T-after` derivation at commit time; line-integral check against the pattern's claim.
 - Cutover discipline: receipts from this date forward; historical commits stay as they are.
 
