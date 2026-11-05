@@ -453,7 +453,12 @@
          ;; real stack.
          ephemeral-applies? (not (str/starts-with? (str (:abs-path status))
                                                    (str tmp-root "/")))
+         ;; An absent checkout is already represented by the stronger typed
+         ;; unavailable finding below.  Its old pathname may still be under
+         ;; /tmp, but there is no ephemeral checkout left to classify; counting
+         ;; both obscures the one owner action (review, then prune registration).
          ephemeral? (fn [w] (and ephemeral-applies?
+                                 (not (:checkout-missing w))
                                  (not (:sibling w))
                                  (str/starts-with? (str (:path w))
                                                    (str tmp-root "/"))))

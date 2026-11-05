@@ -357,6 +357,27 @@
             (is (re-find #"unavailable: .*absent-repository" human)))))
       (finally (fs/delete-tree root)))))
 
+(deftest absent-ephemeral-worktree-has-one-typed-failure
+  (let [tmp-root (str (fs/path (System/getProperty "java.io.tmpdir")))
+        status {:label "owner"
+                ;; Keep the canonical checkout durable so the /tmp worktree
+                ;; policy applies, without creating or pruning a registration.
+                :abs-path "/home/joe/code/owner"
+                :dirty-files []
+                :untracked []
+                :ahead 0
+                :behind 0
+                :branch "main"
+                :default-branch "main"
+                :worktrees [{:path (str (fs/path tmp-root "vanished-review"))
+                             :checkout-missing true
+                             :sibling false
+                             :prunable "gitdir file points to non-existent location"}]}
+        failures (:failures (clean-verdict status 0))]
+    (is (= ["worktree-unavailable"] (mapv :reason failures)))
+    (is (= (str (fs/path tmp-root "vanished-review"))
+           (get-in failures [0 :worktrees 0 :path])))))
+
 (defn- make-repair-fixture! [root name]
   (let [repo (fs/path root name)
         paths ["holes/tickets/T-repair-occ-444fb018cbbb656d09b8f4f67c063f1d51a1932a9b1c281d999c567cf22a2ade.md"
