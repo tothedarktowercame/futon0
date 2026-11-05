@@ -42,8 +42,10 @@ class RecoveryBackupTest(unittest.TestCase):
                 sh("git", "push", str(bare),
                    "+refs/backup/wip:refs/backup/wip", cwd=repo)
             receipt = tmp_path / "receipt.json"
+            state = tmp_path / "state.json"
             sh("python3", str(SCRIPT), "--code", str(code),
-               "--hub", str(hub1), "--hub", str(hub2), "--receipt", str(receipt))
+               "--hub", str(hub1), "--hub", str(hub2),
+               "--state", str(state), "--receipt", str(receipt))
             report = json.loads(receipt.read_text())
             rows = report["repos"][0]["worktrees"]
             refs = {row["ref"] for row in rows}
