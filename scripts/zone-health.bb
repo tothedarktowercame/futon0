@@ -35,7 +35,6 @@
 (def disk-pct-max 80)
 (def disk-watch-max-age-s (* 30 60))
 (def disk-temp-max-c 75)
-(def backup-max-age-s (* 26 3600))
 ;; Joe 2026-10-09: a copy made the same day is not overdue. There is no recurring
 ;; job yet, so this check goes red when the newest copy passes a week.
 (def evidence-copy-max-age-s (* 7 86400))
@@ -96,13 +95,6 @@
     (seq zone-only) :unpushed-branches
     (pos? dirty) :uncommitted
     :else nil))
-
-(defn last-log-ok
-  "Latest 'TIMESTAMP ok: ...' line of a backup log -> epoch seconds, or nil."
-  [log-text]
-  (some->> (lines log-text) reverse (filter #(re-find #"^\S+ ok:" %)) first
-           (re-find #"^\S+") (java.time.OffsetDateTime/parse)
-           (.toEpochSecond)))
 
 (defn hub-relation
   "How a hub's head relates to zone's. known: zone has the hub's commit;
@@ -295,16 +287,28 @@
               :fix (str "Joe: add each to futon0/data/git_sources.json with a remote, or say it stays "
                         "hub-backup-only (zone-git-backup copies it nightly)")))))
 
+(def clean-worker-max-age-s (* 45 60)) ; timer every 15 min; a run takes ~6 min
+
+(defn git-backup-verdict
+  "receipt: the unified Inbox Zero worker's latest.json (parsed), or nil.
+  From 2026-11-05 the worker (futon-clean-worker, every 15 min, plus the 02:30
+  backstop) owns both publication and the two-hub recovery copy; the old
+  zone-git-backup log is no longer written."
+  [receipt receipt-epoch now]
+  (cond
+    (nil? receipt) (fail-r "no unified worker receipt" :fix "systemctl --user status futon-clean-worker")
+    (> (- now receipt-epoch) clean-worker-max-age-s)
+    (fail-r (str "last worker receipt " (quot (- now receipt-epoch) 60) " min old")
+            :fix "journalctl --user -u futon-clean-worker")
+    (not (zero? (get receipt "recovery_exit" 1)))
+    (fail-r "last worker run failed the two-hub recovery copy"
+            :fix "see ~/.local/state/futon-clean/latest.json")
+    :else (pass-r (str "two-hub recovery copy " (quot (- now receipt-epoch) 60) " min ago"))))
+
 (defn check-git-backup []
-  (let [log (str home "/.local/state/zone-git-backup.log")
-        t (last-log-ok (try (slurp log) (catch Exception _ "")))
-        timer (:out (sh "systemctl" "--user" "is-active" "zone-git-backup.timer"))]
-    (cond
-      (not= "active" timer) (fail-r "zone-git-backup.timer not active")
-      (nil? t) (fail-r "zone-git-backup has never succeeded" :fix (str "see " log))
-      (> (- (now-s) t) backup-max-age-s) (fail-r (str "last good hub backup " (quot (- (now-s) t) 3600) " h ago")
-                                                 :fix (str "see " log))
-      :else (pass-r (str "last good hub backup " (quot (- (now-s) t) 3600) " h ago")))))
+  (let [f (fs/file home ".local/state/futon-clean/latest.json")
+        receipt (when (fs/exists? f) (try (json/parse-string (slurp f)) (catch Exception _ nil)))]
+    (git-backup-verdict receipt (when receipt (quot (.lastModified f) 1000)) (now-s))))
 
 ;; Inbox zero checks only each manifest repo's default branch, so a side branch
 ;; that never left zone is invisible to it. Joe 2026-10-09: these stay failing
@@ -562,7 +566,7 @@
    ["inbox-zero-coverage" "zone-only work is inside inbox zero's manifest" check-inbox-zero-coverage]
    ["side-branches"       "manifest repos' side branches are on a remote"  check-side-branches]
    ["work-in-tmp"         "no git checkouts in /tmp"                       check-work-in-tmp]
-   ["git-hub-backup"      "nightly zone-git-backup ran in the last 26 h"   check-git-backup]
+   ["git-hub-backup"      "Inbox Zero worker copied zone-only work to both hubs, under 45 min" check-git-backup]
    ["evidence-backup"     "off-box evidence copy on both hubs, under 7 days" check-evidence-backup]
    ["reverse-tunnel"      "metameso gets back into zone through the tunnel, under 30 min" check-reverse-tunnel]
    ["site-backup"         "Caddyfile and docroots on both hubs, under 36 h" check-site-backup]

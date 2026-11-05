@@ -57,4 +57,16 @@
 (deftest chrome-import-overdue-fails
   (is (= :fail (:status (chrome-import-verdict (- now (* 40 86400)) now)))))
 
+(deftest git-backup-fresh-receipt-passes
+  (is (= :pass (:status (git-backup-verdict {"recovery_exit" 0} (- now 600) now)))))
+
+(deftest git-backup-stale-receipt-fails
+  (is (= :fail (:status (git-backup-verdict {"recovery_exit" 0} (- now 7200) now)))))
+
+(deftest git-backup-failed-recovery-fails
+  (is (= :fail (:status (git-backup-verdict {"recovery_exit" 1} (- now 600) now)))))
+
+(deftest git-backup-no-receipt-fails
+  (is (= :fail (:status (git-backup-verdict nil nil now)))))
+
 (let [{:keys [fail error]} (run-tests)] (System/exit (if (zero? (+ fail error)) 0 1)))
