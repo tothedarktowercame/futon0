@@ -1,0 +1,8 @@
+[Unit]
+Description=Publish Clean branches and copy Zone-only Git work to both hubs
+
+[Service]
+Type=oneshot
+ExecStart=%h/code/futon0/scripts/futon-clean-worker
+Nice=10
+IOSchedulingClass=idle

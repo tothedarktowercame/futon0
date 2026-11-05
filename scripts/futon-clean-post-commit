@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# A commit must never wait for, or fail because of, fleet maintenance.
+systemctl --user start --no-block futon-clean-worker.service >/dev/null 2>&1 || true
+exit 0

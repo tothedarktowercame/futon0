@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# One coalesced Inbox Zero worker: upstream publication plus two-hub recovery.
+set -uo pipefail
+
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+STATE=${FUTON_CLEAN_STATE_DIR:-$HOME/.local/state/futon-clean}
+mkdir -p "$STATE"
+exec 9>"$STATE/worker.lock"
+flock -n 9 || exit 0
+
+publication_tmp=$(mktemp "$STATE/publication.XXXXXX")
+recovery_tmp=$(mktemp "$STATE/recovery.XXXXXX")
+cleanup() { rm -f "$publication_tmp" "$recovery_tmp"; }
+trap cleanup EXIT
+
+publication_rc=0
+bb "$ROOT/scripts/futon-sync.clj" maintain-clean --json >"$publication_tmp" || publication_rc=$?
+recovery_rc=0
+python3 "$ROOT/scripts/futon-recovery-backup.py" \
+  --receipt "$recovery_tmp" "$@" >/dev/null || recovery_rc=$?
+
+jq -n \
+  --arg at "$(date -Is)" \
+  --argjson publication "$(cat "$publication_tmp")" \
+  --argjson recovery "$(cat "$recovery_tmp")" \
+  --argjson publication_exit "$publication_rc" \
+  --argjson recovery_exit "$recovery_rc" \
+  '{at:$at, ok:($publication_exit == 0 and $recovery_exit == 0),
+    publication_exit:$publication_exit, recovery_exit:$recovery_exit,
+    publication:$publication, recovery:$recovery}' \
+  >"$STATE/latest.json.new"
+mv "$STATE/latest.json.new" "$STATE/latest.json"
+
+exit $(( publication_rc != 0 || recovery_rc != 0 ))

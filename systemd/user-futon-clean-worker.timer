@@ -1,0 +1,11 @@
+[Unit]
+Description=Bounded recovery trigger for Inbox Zero publication and recovery
+
+[Timer]
+OnBootSec=5min
+OnUnitInactiveSec=15min
+AccuracySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
