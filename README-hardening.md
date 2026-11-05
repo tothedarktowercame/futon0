@@ -56,9 +56,11 @@ The outage showed that zone could go dark with no way to look at its console.
   firewall cannot lock everyone out. *Done 11-05 (claude-16):*
   `zone-reverse-tunnel.service` (user unit, restarts itself) holds
   metameso `127.0.0.1:2224` → zone `:22`. To get in when zone's inbound path is
-  broken: `ssh metameso`, then `ssh -p 2224 joe@127.0.0.1` with a key zone
-  already accepts (Joe's keys work through it; the from= pins on the hub keys do
-  not, because the connection arrives from 127.0.0.1).
+  broken, from a device whose key zone accepts without a from= pin (Joe's own
+  devices): `ssh -J joe@172.236.108.82:2222 -p 2224 joe@127.0.0.1`. The jump
+  makes the device's own key do the login. The hubs' keys cannot be used: zone
+  pins them with from=<hub IP>, and through the tunnel the connection arrives
+  from 127.0.0.1. *Not yet tried from a phone.*
   The tunnel is kept honest by use, not only kept for emergencies (Joe, 11-05):
   every 10 min metameso's `zone-tunnel-check` goes back through it with the key
   `~/.ssh/zone-tunnel`, which zone's authorized_keys restricts
