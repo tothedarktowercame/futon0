@@ -123,6 +123,11 @@ def backup_repo(repo: Path, hubs, cutoff):
                       check=True).stdout.strip())
     hook = common / "hooks" / "post-commit"
     rows, active_refs = [], []
+    legacy = git(repo, "rev-parse", "-q", "--verify", "refs/backup/wip")
+    migrated_legacy = legacy.returncode == 0
+    if migrated_legacy:
+        git(repo, "update-ref", "refs/backup/wip-legacy", legacy.stdout.strip(), check=True)
+        git(repo, "update-ref", "-d", "refs/backup/wip", check=True)
     for wt in worktrees(repo):
         row = {"path": str(wt), "key": ref_key(wt)}
         ref = f"refs/backup/wip/{row['key']}"
@@ -142,6 +147,13 @@ def backup_repo(repo: Path, hubs, cutoff):
     for hub in hubs:
         try:
             remote = ensure_hub(hub, name)
+            if migrated_legacy:
+                # A scalar refs/backup/wip and child refs cannot coexist.
+                # Preserve the former snapshot under a non-conflicting name,
+                # then free the namespace before pushing per-worktree refs.
+                git(repo, "push", remote,
+                    "+refs/backup/wip-legacy:refs/backup/wip-legacy",
+                    ":refs/backup/wip")
             p = git(repo, "push", "--prune", remote, *specs)
             outcomes.append({"hub": hub, "ok": p.returncode == 0,
                              "error": p.stderr.strip() if p.returncode else None})
@@ -150,6 +162,7 @@ def backup_repo(repo: Path, hubs, cutoff):
     return {"repo": name, "path": str(repo), "worktrees": rows,
             "hubs": outcomes, "ok": all(x["ok"] for x in outcomes),
             "untracked-cutoff-bytes": cutoff,
+            "legacy-wip-migrated": migrated_legacy,
             "post-commit-hook-installed": hook.exists() and os.access(hook, os.X_OK)}
 
 

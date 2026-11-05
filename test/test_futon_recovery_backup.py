@@ -34,6 +34,13 @@ class RecoveryBackupTest(unittest.TestCase):
             (wt1 / "one-wip.txt").write_text("one\n")
             (wt2 / "two-wip.txt").write_text("two\n")
             hub1, hub2 = tmp_path / "hub1", tmp_path / "hub2"
+            legacy = sh("git", "rev-parse", "HEAD", cwd=repo)
+            sh("git", "update-ref", "refs/backup/wip", legacy, cwd=repo)
+            for hub in (hub1, hub2):
+                bare = hub / "project.git"
+                sh("git", "init", "--bare", str(bare))
+                sh("git", "push", str(bare),
+                   "+refs/backup/wip:refs/backup/wip", cwd=repo)
             receipt = tmp_path / "receipt.json"
             sh("python3", str(SCRIPT), "--code", str(code),
                "--hub", str(hub1), "--hub", str(hub2), "--receipt", str(receipt))
@@ -48,8 +55,15 @@ class RecoveryBackupTest(unittest.TestCase):
                 backed = set(sh("git", "for-each-ref", "--format=%(refname)",
                                 "refs/backup/wip", cwd=bare).splitlines())
                 self.assertEqual(refs, backed)
+                self.assertEqual(legacy, sh("git", "rev-parse",
+                                            "refs/backup/wip-legacy", cwd=bare))
+                missing_legacy_name = subprocess.run(
+                    ["git", "rev-parse", "-q", "--verify", "refs/backup/wip"],
+                    cwd=bare).returncode
+                self.assertNotEqual(0, missing_legacy_name)
             self.assertEqual(20 * 1024 * 1024,
                              report["repos"][0]["untracked-cutoff-bytes"])
+            self.assertTrue(report["repos"][0]["legacy-wip-migrated"])
 
 
 if __name__ == "__main__":
