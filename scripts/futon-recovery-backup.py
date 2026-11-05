@@ -157,9 +157,18 @@ def backup_repo(repo: Path, hubs, cutoff):
             row.update(status="clean")
         rows.append(row)
     outcomes = []
+    tags = git(repo, "for-each-ref", "--format=%(refname)", "refs/tags",
+               check=True).stdout.splitlines()
+    readable_tags, excluded_tags = [], []
+    for tag in tags:
+        if git(repo, "cat-file", "-e", f"{tag}^{{}}").returncode == 0:
+            readable_tags.append(tag)
+        else:
+            excluded_tags.append({"ref": tag, "reason": "target-object-unavailable"})
     specs = ["+refs/heads/*:refs/backup/branches/*",
-             "+refs/tags/*:refs/backup/tags/*",
-             "+refs/backup/wip/*:refs/backup/wip/*"]
+             "+refs/backup/wip/*:refs/backup/wip/*",
+             *[f"+{tag}:refs/backup/tags/{tag.removeprefix('refs/tags/')}"
+               for tag in readable_tags]]
     for hub in hubs:
         try:
             remote = ensure_hub(hub, name)
@@ -185,6 +194,7 @@ def backup_repo(repo: Path, hubs, cutoff):
             "ok": (all(x["ok"] for x in outcomes)
                    and not any(x["status"] == "held" for x in rows)),
             "untracked-cutoff-bytes": cutoff,
+            "excluded-tags": excluded_tags,
             "legacy-wip-migrated": migrated_legacy,
             "post-commit-hook-installed": hook.exists() and os.access(hook, os.X_OK)}
 
