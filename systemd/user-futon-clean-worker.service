@@ -6,3 +6,5 @@ Type=oneshot
 ExecStart=%h/code/futon0/scripts/futon-clean-worker
 Nice=10
 IOSchedulingClass=idle
+MemoryMax=4G
+TimeoutStartSec=20min

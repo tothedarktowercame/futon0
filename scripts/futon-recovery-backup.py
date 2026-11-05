@@ -80,7 +80,13 @@ def snapshot(path: Path, ref: str, cutoff: int):
     with tempfile.NamedTemporaryFile() as idx:
         env = dict(os.environ, GIT_INDEX_FILE=idx.name)
         git(path, "read-tree", "HEAD", env=env, check=True)
-        git(path, "add", "-u", ".", env=env, check=True)
+        changed_raw = git(path, "diff", "HEAD", "--name-only", "-z", check=True).stdout
+        changed = list(filter(None, changed_raw.split("\0")))
+        # Never ask Git to walk the whole working tree merely to update a
+        # temporary index.  Some linked worktrees contain large ignored build
+        # trees; explicit changed paths keep snapshot cost proportional to WIP.
+        if changed:
+            git(path, "add", "-u", "--", *changed, env=env, check=True)
         raw = git(path, "ls-files", "-z", "-o", "--exclude-standard", check=True).stdout
         included, excluded = [], []
         for name in filter(None, raw.split("\0")):
@@ -139,8 +145,11 @@ def backup_repo(repo: Path, hubs, cutoff):
         if not wt.exists():
             row.update(status="unavailable")
         elif dirty(wt):
-            row.update(snapshot(wt, ref, cutoff))
-            active_refs.append(ref)
+            try:
+                row.update(snapshot(wt, ref, cutoff))
+                active_refs.append(ref)
+            except Exception as exc:
+                row.update(status="held", reason="snapshot-failed", error=str(exc))
         else:
             git(repo, "update-ref", "-d", ref)
             row.update(status="clean")
@@ -165,7 +174,9 @@ def backup_repo(repo: Path, hubs, cutoff):
         except Exception as exc:
             outcomes.append({"hub": hub, "ok": False, "error": str(exc)})
     return {"repo": name, "path": str(repo), "worktrees": rows,
-            "hubs": outcomes, "ok": all(x["ok"] for x in outcomes),
+            "hubs": outcomes,
+            "ok": (all(x["ok"] for x in outcomes)
+                   and not any(x["status"] == "held" for x in rows)),
             "untracked-cutoff-bytes": cutoff,
             "legacy-wip-migrated": migrated_legacy,
             "post-commit-hook-installed": hook.exists() and os.access(hook, os.X_OK)}
