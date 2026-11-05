@@ -241,6 +241,15 @@ Two operational facts:
   **[verified]** 61 entries imported to `pass` as `firefox/<host>/<username>`,
   all 61 confirmed encrypted to the new cv25519 subkey, then the CSV shredded.
 
+**Chrome on phone2 (2026-11-05).** Joe's daily browser is now Chrome on phone2.
+Its export is also GUI-only (Chrome → Settings → Password Manager → settings →
+Export passwords, which asks for the screen lock) and writes a plaintext
+`Chrome Passwords.csv` to Downloads. Import it on the phone itself with
+`pass-import-browser-csv "<path>"` (`futon0/system/phones/`): new logins become
+`chrome/<host>/<username>`, existing names are never overwritten, and the CSV
+is shredded once every insert succeeded. Termux reaches Downloads only after
+`termux-setup-storage` has been granted once.
+
 If a backup exclude list contains `/snap/` or `/var/lib/flatpak`, check what
 credentials live under it before trusting the backup.
 

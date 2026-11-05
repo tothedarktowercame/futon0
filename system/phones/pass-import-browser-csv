@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""pass-import-browser-csv: add a browser's exported passwords to pass, then shred the CSV.
+
+Usage (on the phone, in Termux):
+    pass-import-browser-csv [--prefix chrome] [--dry-run] "<path to Chrome Passwords.csv>"
+
+Reads Chrome's export columns (name,url,username,password[,note]); Firefox's
+(url,username,password,...) works too. Each login becomes
+    <prefix>/<host>/<username>      (username "nouser" when empty)
+containing the password on line 1, then "login: ..." and "url: ..." lines, the
+same layout as the 2026-08 Firefox import (README-secrets §8). Android app
+logins (android://...@com.example.app/) use the package name as the host.
+
+It never overwrites: an entry that already exists under the prefix is left
+alone and counted. It only encrypts (pass insert uses the public keys in
+.gpg-id), so it needs no passphrase. When the import finishes without error the
+CSV is shredded; with --dry-run nothing is written or shredded.
+"""
+import csv, os, subprocess, sys, urllib.parse
+
+def entry_name(prefix, url, user):
+    if url.startswith("android://"):
+        host = url.rstrip("/").rsplit("@", 1)[-1]
+    else:
+        host = urllib.parse.urlsplit(url if "://" in url else "https://" + url).hostname or "unknown-host"
+    user = (user or "nouser").strip().replace("/", "_") or "nouser"
+    return f"{prefix}/{host}/{user}"
+
+def main(argv):
+    prefix, dry, paths = "chrome", False, []
+    it = iter(argv)
+    for a in it:
+        if a == "--prefix": prefix = next(it)
+        elif a == "--dry-run": dry = True
+        else: paths.append(a)
+    if len(paths) != 1:
+        sys.exit(__doc__)
+    path = paths[0]
+    store = os.environ.get("PASSWORD_STORE_DIR", os.path.expanduser("~/.password-store"))
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        rows = list(csv.DictReader(f))
+    added, existing, skipped, failed, seen = [], [], 0, [], set()
+    for r in rows:
+        url, user, pw = r.get("url", ""), r.get("username", ""), r.get("password", "")
+        if not pw:
+            skipped += 1; continue
+        name = entry_name(prefix, url, user)
+        if name in seen:            # same site+user twice in one export: keep the first
+            skipped += 1; continue
+        seen.add(name)
+        if os.path.exists(os.path.join(store, name + ".gpg")):
+            existing.append(name); continue
+        if dry:
+            added.append(name); continue
+        body = f"{pw}\nlogin: {user}\nurl: {url}\n"
+        p = subprocess.run(["pass", "insert", "-m", name], input=body, text=True,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        (added if p.returncode == 0 else failed).append(name)
+    print(f"{len(rows)} rows: {len(added)} {'would be ' if dry else ''}added, "
+          f"{len(existing)} already in pass, {skipped} skipped (no password or duplicate), "
+          f"{len(failed)} failed")
+    for n in added: print("  +", n)
+    for n in failed: print("  FAILED", n)
+    if failed:
+        sys.exit("not shredding the CSV because some entries failed")
+    if not dry:
+        subprocess.run(["shred", "-u", "-n", "3", path], check=True)
+        print(f"shredded {path}")
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
