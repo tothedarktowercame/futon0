@@ -359,6 +359,9 @@
 
 (deftest absent-ephemeral-worktree-has-one-typed-failure
   (let [tmp-root (str (fs/path (System/getProperty "java.io.tmpdir")))
+        vanished-tmp (str (fs/path tmp-root "vanished-review"))
+        live-tmp (str (fs/path tmp-root "live-review"))
+        vanished-durable "/home/joe/worktrees/apm-lean/vanished-review"
         status {:label "owner"
                 ;; Keep the canonical checkout durable so the /tmp worktree
                 ;; policy applies, without creating or pruning a registration.
@@ -369,14 +372,30 @@
                 :behind 0
                 :branch "main"
                 :default-branch "main"
-                :worktrees [{:path (str (fs/path tmp-root "vanished-review"))
+                :worktrees [{:path vanished-tmp
                              :checkout-missing true
                              :sibling false
-                             :prunable "gitdir file points to non-existent location"}]}
-        failures (:failures (clean-verdict status 0))]
-    (is (= ["worktree-unavailable"] (mapv :reason failures)))
-    (is (= (str (fs/path tmp-root "vanished-review"))
-           (get-in failures [0 :worktrees 0 :path])))))
+                             :prunable "gitdir file points to non-existent location"}
+                            {:path live-tmp
+                             :checkout-missing false
+                             :sibling false}
+                            {:path vanished-durable
+                             :checkout-missing true
+                             :sibling false}]}
+        verdict (clean-verdict status 0)
+        failures (:failures verdict)
+        unavailable (some #(when (= "worktree-unavailable" (:reason %)) %)
+                          failures)
+        ephemeral (some #(when (= "worktree-on-ephemeral-path" (:reason %)) %)
+                        failures)]
+    (is (false? (:clean verdict)))
+    (is (= ["worktree-unavailable" "worktree-on-ephemeral-path"]
+           (mapv :reason failures)))
+    (is (= [vanished-tmp vanished-durable]
+           (mapv :path (:worktrees unavailable))))
+    (is (true? (get-in unavailable [:worktrees 0 :ephemeral-path])))
+    (is (false? (get-in unavailable [:worktrees 1 :ephemeral-path])))
+    (is (= [live-tmp] (mapv :path (:worktrees ephemeral))))))
 
 (defn- make-repair-fixture! [root name]
   (let [repo (fs/path root name)

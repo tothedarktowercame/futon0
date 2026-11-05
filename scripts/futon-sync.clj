@@ -438,7 +438,6 @@
                                  (> (:age-ms %) clean-window-ms))
                             aged)
          oldest (oldest-unpushed status now-ms)
-         worktrees (:worktrees status)
          ;; Only an EPHEMERAL path is a failure. /tmp does not survive a reboot,
          ;; so a checkout there is work that exists in one place and is scheduled
          ;; for deletion -- the same cost clause 3 is about. A worktree merely
@@ -447,6 +446,14 @@
          ;; failing all of them would condemn ordinary practice, which is the
          ;; mistake clause 4 already made once.
          tmp-root (str (fs/path (System/getProperty "java.io.tmpdir")))
+         ;; Preserve pathname provenance even when a vanished /tmp checkout is
+         ;; classified only as unavailable.  That lets the owner distinguish
+         ;; volatile, probably unrecoverable registrations from durable paths
+         ;; that may merely have moved, without double-counting a failure.
+         worktrees (mapv #(assoc % :ephemeral-path
+                                (str/starts-with? (str (:path %))
+                                                  (str tmp-root "/")))
+                         (:worktrees status))
          ;; ...unless the main checkout is ITSELF under the temp dir, which is
          ;; what a test fixture looks like. Without this guard the rule fires on
          ;; every scaffolded repo and the check can only be exercised against the
@@ -460,8 +467,7 @@
          ephemeral? (fn [w] (and ephemeral-applies?
                                  (not (:checkout-missing w))
                                  (not (:sibling w))
-                                 (str/starts-with? (str (:path w))
-                                                   (str tmp-root "/"))))
+                                 (:ephemeral-path w)))
          ephemeral-worktrees (filterv ephemeral? worktrees)
          off-tree-info (filterv #(and (not (:checkout-missing %))
                                       (not (:sibling %))
