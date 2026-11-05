@@ -1,0 +1,8 @@
+[Unit]
+Description=Nightly backstop for the unified Inbox Zero worker
+
+[Service]
+Type=oneshot
+ExecStart=%h/code/futon0/scripts/futon-clean-worker
+Nice=10
+IOSchedulingClass=idle
