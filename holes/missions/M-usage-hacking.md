@@ -205,8 +205,8 @@ view, not a replacement for the original measurement.
       special cases.
 - [ ] The all-agent burndown renders recorded history and reset boundaries.
 - [ ] Foreground versus unattended usage attribution limits are documented.
-- [ ] The Zai 13–18 July example can be replayed from durable observations.
-- [ ] At least two candidate policies—including the current fixed 50% control—
+- [x] The Zai 13–18 July example can be replayed from durable observations.
+- [x] At least two candidate policies—including the current fixed 50% control—
       produce explainable decisions in replay.
 - [ ] Joe explicitly authorises any transition from shadow recommendations to
       automatic adaptive scheduling.
@@ -229,6 +229,6 @@ view, not a replacement for the original measurement.
 - [ ] A versioned append-only ledger durably records Claude, Codex, and Zai native usage windows, reset times, provenance, and measurement certainty.
 - [ ] The all-agent burndown displays recorded usage history, reset boundaries, burn-rate forecasts, and forecast error without replacing provider-native measurements.
 - [ ] Durable evidence distinguishes foreground and unattended consumption and joins APM usage to clean, partial, failed, and attempted proof outcomes.
-- [ ] A deterministic replay reproduces the Zai 13–18 July window and explains decisions from both the fixed 50% policy and at least one adaptive candidate policy.
-- [ ] Missing provider evidence refuses adaptive spending, and replay tests show that every active window and configured foreground reserve remain enforced.
+- [x] A deterministic replay reproduces the Zai 13–18 July window and explains decisions from both the fixed 50% policy and at least one adaptive candidate policy.
+- [x] Missing provider evidence refuses adaptive spending, and replay tests show that every active window and configured foreground reserve remain enforced.
 - [ ] Any adaptive scheduling integration remains recommendation-only until Joe's explicit authorization is recorded.

@@ -1,0 +1,48 @@
+{:schema "futon0.usage-observation/1"
+ :provider :zai
+ :account "zai-apm-formal"
+ :observed-at "2026-07-13T20:00:00Z"
+ :source "stack-hud usage-report (mission M-usage-hacking §3.2, row 'Before closure')"
+ :window [{:id :zai-5h :duration-h 5 :free 58 :next-reset "2026-07-14T01:00:00Z" :certainty :provider-reported}
+         {:id :zai-weekly :duration-h 168 :free 51 :next-reset "2026-07-18T08:48:00Z" :certainty :provider-reported}]
+ :certainty :provider-reported
+ :invocations 1
+ :workload :unattended
+ :outcome-links [{:ref "futon3c/.state/apm-formal-zai/formal-progress.jsonl"
+                  :at "2026-07-13T20:00:00Z"
+                  :lean-attempts 96 :clean-proofs 60 :partial-proofs 36 :open-sorries 111}]}
+{:schema "futon0.usage-observation/1"
+ :provider :zai
+ :account "zai-apm-formal"
+ :observed-at "2026-07-13T22:30:00Z"
+ :source "stack-hud usage-report (mission M-usage-hacking §3.2, row '22:30 UTC')"
+ :window [{:id :zai-5h :duration-h 5 :free 49 :next-reset "2026-07-14T01:00:00Z" :certainty :provider-reported}
+         {:id :zai-weekly :duration-h 168 :free 49 :next-reset "2026-07-18T08:48:00Z" :certainty :provider-reported}]
+ :certainty :provider-reported
+ :invocations 1
+ :workload :unattended
+ :outcome-links [{:ref "futon3c/.state/apm-formal-zai/formal-progress.jsonl"
+                  :at "2026-07-13T22:30:00Z"
+                  :lean-attempts 104 :clean-proofs 60 :partial-proofs 44 :open-sorries 133}]}
+{:schema "futon0.usage-observation/1"
+ :provider :zai
+ :account "zai-apm-formal"
+ :observed-at "2026-07-14T04:15:00Z"
+ :source "stack-hud usage-report (mission M-usage-hacking §3.2, row '04:15 UTC, after short-window reset')"
+ :window [{:id :zai-5h :duration-h 5 :free 99 :next-reset "2026-07-14T09:15:00Z" :certainty :provider-reported}
+         {:id :zai-weekly :duration-h 168 :free 45 :next-reset "2026-07-18T08:48:00Z" :certainty :provider-reported}]
+ :certainty :provider-reported
+ :invocations 1
+ :workload :unattended
+ :outcome-links []}
+{:schema "futon0.usage-observation/1"
+ :provider :zai
+ :account "zai-apm-formal"
+ :observed-at "2026-07-14T08:00:00Z"
+ :source "stack-hud usage-report (mission M-usage-hacking §3.2, row 'Morning of 14 July')"
+ :window [{:id :zai-5h :duration-h 5 :free 91 :next-reset "2026-07-14T13:00:00Z" :certainty :provider-reported}
+         {:id :zai-weekly :duration-h 168 :free 42 :next-reset "2026-07-18T08:48:00Z" :certainty :provider-reported}]
+ :certainty :provider-reported
+ :invocations 1
+ :workload :unattended
+ :outcome-links []}
