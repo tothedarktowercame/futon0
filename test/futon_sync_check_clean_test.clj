@@ -9,7 +9,8 @@
 ;; runtime load-file -- and a linter that is permanently red on a file stops
 ;; being read. The order matters: load-file's defs replace these unbound vars,
 ;; so declaring after it would leave them unbound.
-(declare repo-status fetch? clean-verdict cmd-check-clean inventory-report)
+(declare repo-status fetch? clean-verdict cmd-check-clean inventory-report
+         repair-fixture-audit scratch-report cmd-scratch trash-path!)
 
 ;; Resolve the script relative to THIS file rather than by absolute path, so
 ;; the test travels with the repo instead of only working on one box. The
@@ -315,7 +316,61 @@
           (testing "unique merge commits prevent patch-equivalence classification"
             (git! wt "reset" "--hard" "HEAD~1")
             (git! wt "merge" "--no-ff" "main" "-m" "unique merge")
-            (is (= "unmerged" (:integration (first (:worktrees (status repo "main-repo")))))))))
+            (is (= "unmerged" (:integration (first (:worktrees (status repo "main-repo")))))))
+          (testing "a vanished linked checkout is a typed census finding"
+            (let [gone (fs/path root "vanished-agent-copy")]
+              (git! repo "worktree" "add" "-b" "vanished-agent-copy" (str gone) "main")
+              (fs/delete-tree gone)
+              (let [report (inventory-report repos [(str root)])
+                    missing (some #(when (= (str gone) (:path %)) %)
+                                  (:missing-worktrees report))]
+                (is (:checkout-missing missing))
+                (is (= "prune stale worktree registration after owner review"
+                       (:next-action missing))))))))
+      (finally (fs/delete-tree root)))))
+
+(defn- make-repair-fixture! [root name]
+  (let [repo (fs/path root name)
+        paths ["holes/tickets/T-repair-occ-444fb018cbbb656d09b8f4f67c063f1d51a1932a9b1c281d999c567cf22a2ade.md"
+               "resources/wm/eig/held-out-calibration.edn"
+               "resources/wm/eig/held-out-observations.edn"
+               "resources/wm/eig/held-out-split.edn"]]
+    (fs/create-dirs repo)
+    (git! repo "init" "-q")
+    (doseq [path paths]
+      (fs/create-dirs (fs/parent (fs/path repo path)))
+      (spit (str (fs/path repo path)) path))
+    (git! repo "add" "-A")
+    (git! repo "-c" "user.name=fixture" "-c" "user.email=fixture@test"
+          "commit" "-q" "-m" "fixture: post-repair state")
+    repo))
+
+(deftest scratch-residue-audit-and-explicit-remedy
+  (let [root (fs/create-temp-dir {:prefix "inbox-scratch-residue-"})]
+    (try
+      (let [safe (make-repair-fixture! root ".repair-limbs-fixture-safe")
+            review (make-repair-fixture! root ".repair-limbs-fixture-review")]
+        (spit (str (fs/path review "unexpected.txt")) "preserve me")
+        (testing "the producer contract distinguishes safe residue from anomaly"
+          (is (:safe-to-trash (repair-fixture-audit (str safe))))
+          (is (false? (:safe-to-trash (repair-fixture-audit (str review)))))
+          (is (= [1 1] ((juxt :safe-count :review-count)
+                        (scratch-report [(str root)])))))
+        (testing "trashing requires explicit confirmation"
+          (let [called (atom [])]
+            (with-redefs [trash-path! (fn [path]
+                                        (swap! called conj path)
+                                        {:exit 0 :out "" :err ""})]
+              (is (false? (cmd-scratch ["--root" (str root) "--trash"])))
+              (is (empty? @called))
+              (is (false? (cmd-scratch ["--root" (str root) "--trash" "--yes"])))
+              (is (= [(str safe)] @called)))))
+        (testing "an anomalous fixture is retained for review"
+          (is (fs/exists? review)))
+        (testing "a confirmed all-safe population clears the hygiene gate"
+          (fs/delete-tree review)
+          (with-redefs [trash-path! (fn [_] {:exit 0 :out "" :err ""})]
+            (is (true? (cmd-scratch ["--root" (str root) "--trash" "--yes"]))))))
       (finally (fs/delete-tree root)))))
 
 (let [{:keys [fail error]} (run-tests)]

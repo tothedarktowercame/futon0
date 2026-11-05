@@ -5,6 +5,7 @@
 ;;   futon-sync          — status dashboard (default)
 ;;   futon-sync status   — same as above
 ;;   futon-sync inventory — directory census and worktree retirement review
+;;   futon-sync scratch   — audit known scratch residues; optionally trash safe ones
 ;;     --root PATH       — repeat to select roots (default: home and code)
 ;;     --all / --json    — include every path (human output otherwise capped)
 ;;   futon-sync check-clean — gate the five-clause inbox-zero definition
@@ -272,6 +273,7 @@
          (remove #(= root (str (fs/normalize (fs/path (:path %))))))
          (mapv (fn [{:keys [path head branch locked prunable]}]
                  (let [normalized (str (fs/normalize (fs/path path)))
+                       checkout-present? (fs/exists? normalized)
                        sibling? (= sibling-parent (str (fs/parent normalized)))
                        integration (worktree-integration repo-path default head)]
                    (merge integration {:path normalized
@@ -280,9 +282,13 @@
                     :head head
                     :head-short (when head (subs head 0 (min 12 (count head))))
                     :sibling sibling?
+                    :checkout-missing (not checkout-present?)
                     :dead (= "ancestor" (:integration integration))
-                    :newest (worktree-newest-commit normalized now-ms)
-                    :dirty-count (worktree-dirty-count normalized)})))))))
+                    :newest (if checkout-present?
+                              (worktree-newest-commit normalized now-ms)
+                              {:age-unknown true :error "linked checkout is missing"})
+                    :dirty-count (when checkout-present?
+                                   (worktree-dirty-count normalized))})))))))
 
 (defn- repo-status [repo]
   (let [path (:abs-path repo)
@@ -852,6 +858,105 @@
 
 ;; ── Hygiene command ──────────────────────────────────────────────────────────
 
+(def ^:private repair-fixture-prefix ".repair-limbs-fixture-")
+
+(def ^:private repair-fixture-paths
+  #{"holes/tickets/T-repair-occ-444fb018cbbb656d09b8f4f67c063f1d51a1932a9b1c281d999c567cf22a2ade.md"
+    "resources/wm/eig/held-out-calibration.edn"
+    "resources/wm/eig/held-out-observations.edn"
+    "resources/wm/eig/held-out-split.edn"})
+
+(defn repair-fixture-audit
+  "Prove whether PATH is a closed-producer repair-limbs residue.
+
+  Safe means more than matching a name: a clean Git repository, exactly one
+  fixture-authored commit, the expected branch and exactly the four generated
+  contract paths. Any mismatch is retained for human review."
+  [path]
+  (let [path (str (fs/normalize (fs/absolutize path)))
+        name (str (fs/file-name path))
+        inside (git path "rev-parse" "--is-inside-work-tree")
+        status (when (zero? (:exit inside)) (git path "status" "--porcelain=v1" "-uall"))
+        count-r (when (zero? (:exit inside)) (git path "rev-list" "--count" "--all"))
+        author (when (zero? (:exit inside)) (git path "log" "-1" "--format=%an <%ae>"))
+        subject (when (zero? (:exit inside)) (git path "log" "-1" "--format=%s"))
+        branch (when (zero? (:exit inside)) (git path "branch" "--show-current"))
+        paths-r (when (zero? (:exit inside)) (git path "ls-tree" "-r" "--name-only" "HEAD"))
+        paths (set (remove str/blank? (str/split-lines (or (:out paths-r) ""))))
+        checks {:known-name (str/starts-with? name repair-fixture-prefix)
+                :git-repository (and inside (zero? (:exit inside)))
+                :clean (and status (zero? (:exit status)) (str/blank? (:out status)))
+                :one-commit (= "1" (:out count-r))
+                :fixture-author (= "fixture <fixture@test>" (:out author))
+                :fixture-subject (= "fixture: post-repair state" (:out subject))
+                :fixture-branch (= "master" (:out branch))
+                :expected-paths (= repair-fixture-paths paths)}]
+    {:path path :producer :repair-limbs-fixture
+     :safe-to-trash (every? true? (vals checks))
+     :checks checks :tracked-paths (vec (sort paths))}))
+
+(defn scratch-report
+  "Audit immediate known scratch residues under ROOTS."
+  [roots]
+  (let [scan-errors (atom [])
+        rows (->> roots
+                  (mapcat (fn [root]
+                            (try
+                              (->> (fs/list-dir root)
+                                   (filter fs/directory?)
+                                   (filter #(str/starts-with? (str (fs/file-name %))
+                                                             repair-fixture-prefix))
+                                   (map #(repair-fixture-audit (str %)))
+                                   doall)
+                              (catch Exception e
+                                (swap! scan-errors conj {:root root :error (ex-message e)})
+                                []))))
+                  (sort-by :path) vec)]
+    {:roots (vec roots) :rows rows
+     :safe-count (count (filter :safe-to-trash rows))
+     :review-count (count (remove :safe-to-trash rows))
+     :scan-errors @scan-errors}))
+
+(defn trash-path!
+  "Move one already-audited path to the OS trash."
+  [path]
+  (proc/shell {:out :string :err :string :continue true} "gio" "trash" "--" path))
+
+(defn cmd-scratch [args]
+  (let [explicit (map second (filter #(= "--root" (first %)) (partition 2 1 args)))
+        roots (mapv #(str (fs/normalize (fs/absolutize %)))
+                    (if (seq explicit) explicit ["/home/joe/code"]))
+        trash? (boolean (some #{"--trash"} args))
+        yes? (boolean (some #{"--yes"} args))
+        json? (boolean (some #{"--json"} args))
+        report (scratch-report roots)
+        refused? (and trash? (not yes?))
+        actions (when (and trash? yes?)
+                  (mapv (fn [{:keys [path]}]
+                          (let [r (trash-path! path)]
+                            {:path path :trashed (zero? (:exit r))
+                             :error (when-not (zero? (:exit r)) (:err r))}))
+                        (filter :safe-to-trash (:rows report))))
+        result (assoc report :trash-requested trash? :confirmation yes?
+                       :refused refused? :actions (or actions []))]
+    (if json?
+      (println (json/generate-string result))
+      (do
+        (println "Inbox Zero scratch-residue audit")
+        (println "Safe to trash:" (:safe-count result) "Review:" (:review-count result))
+        (doseq [row (:rows result)]
+          (println (if (:safe-to-trash row) " SAFE " " REVIEW") (:path row)))
+        (when refused?
+          (println "REFUSED: --trash requires --yes; no path was changed."))
+        (doseq [a actions]
+          (println (if (:trashed a) " TRASHED" " FAILED ") (:path a)))))
+    (and (not refused?) (empty? (:scan-errors result))
+         (empty? (remove :safe-to-trash (:rows result)))
+         (if trash?
+           (every? #(some (fn [a] (and (= (:path %) (:path a)) (:trashed a))) actions)
+                   (filter :safe-to-trash (:rows result)))
+           (empty? (:rows result))))))
+
 (defn cmd-hygiene [repos {:keys [fix?]}]
   (let [statuses (mapv repo-status repos)
         ;; Collect {repo-path #{suggestions}}
@@ -918,11 +1023,17 @@
                                           (fs/sym-link? path) "symlink"
                                           (canonical path) "manifest-repository"
                                           (linked path) "linked-worktree"
+                                          (str/starts-with? (str (fs/file-name path))
+                                                            repair-fixture-prefix)
+                                          (if (:safe-to-trash (repair-fixture-audit path))
+                                            "known-scratch-residue"
+                                            "scratch-residue-review")
                                           (fs/exists? (fs/path path ".git")) "unlisted-git-checkout"
                                           :else "unclassified-directory")})))
         rows (mapv (fn [w]
                      (assoc w :next-action
                             (cond
+                              (:checkout-missing w) "prune stale worktree registration after owner review"
                               (:locked w) "resolve worktree lock with owner"
                               (:prunable w) "inspect missing checkout and registration"
                               (nil? (:dirty-count w)) "inspect unreadable checkout"
@@ -933,6 +1044,7 @@
                               :else "review unmatched commits for consolidation"))) worktrees)]
     {:roots roots :scan-errors (filterv :error scans)
      :missing-repositories (filterv #(not (fs/exists? (fs/path (:abs-path %) ".git"))) repos)
+     :missing-worktrees (filterv :checkout-missing rows)
      :directory-counts (frequencies (map :kind directories))
      :worktree-counts (frequencies (map :integration rows))
      :worktrees rows :directories directories}))
@@ -963,8 +1075,11 @@
         (doseq [r (:missing-repositories report)]
           (println "MISSING manifest repository:" (:abs-path r)))
         (doseq [r (:scan-errors report)]
-          (println "SCAN FAILED:" (:root r) (:error r)))))
-    (and (empty? (:scan-errors report)) (empty? (:missing-repositories report)))))
+          (println "SCAN FAILED:" (:root r) (:error r)))
+        (doseq [w (:missing-worktrees report)]
+          (println "MISSING linked worktree:" (:path w) "—" (:repo w)))))
+    (and (empty? (:scan-errors report)) (empty? (:missing-repositories report))
+         (empty? (:missing-worktrees report)))))
 
 ;; ── Main ─────────────────────────────────────────────────────────────────────
 
@@ -975,6 +1090,7 @@
     (case cmd
       ("status" "st") (cmd-status repos)
       "inventory" (when-not (cmd-inventory (manifest-repos) args) (System/exit 1))
+      "scratch" (when-not (cmd-scratch args) (System/exit 1))
       "check-clean" (when-not (cmd-check-clean repos
                                                 {:json? (some #{"--json"} args)})
                       (System/exit 1))
@@ -984,7 +1100,9 @@
       "park"          (cmd-park repos {:dry-run? (some #{"--dry-run"} args)
                                        :yes? (some #{"--yes"} args)
                                        :message (parse-park-message args)})
-      "hygiene"       (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
+      "hygiene"       (do
+                          (cmd-hygiene repos {:fix? (some #{"--fix"} args)})
+                          (when-not (cmd-scratch args) (System/exit 1)))
       (do (println (str "Unknown command: " cmd))
-          (println "Usage: futon-sync [inventory [--root PATH] [--json]|status|check-clean [--json] [--no-fetch]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix]]")
+          (println "Usage: futon-sync [inventory [--root PATH] [--json]|scratch [--root PATH] [--json] [--trash --yes]|status|check-clean [--json] [--no-fetch]|review|pull|push|park [--dry-run] [--yes] [--message TEXT]|hygiene [--fix] [--trash --yes]]")
           (System/exit 1)))))
