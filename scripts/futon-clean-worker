@@ -21,13 +21,13 @@ python3 "$ROOT/scripts/futon-recovery-backup.py" \
 
 jq -n \
   --arg at "$(date -Is)" \
-  --argjson publication "$(cat "$publication_tmp")" \
-  --argjson recovery "$(cat "$recovery_tmp")" \
+  --slurpfile publication "$publication_tmp" \
+  --slurpfile recovery "$recovery_tmp" \
   --argjson publication_exit "$publication_rc" \
   --argjson recovery_exit "$recovery_rc" \
   '{at:$at, ok:($publication_exit == 0 and $recovery_exit == 0),
     publication_exit:$publication_exit, recovery_exit:$recovery_exit,
-    publication:$publication, recovery:$recovery}' \
+    publication:$publication[0], recovery:$recovery[0]}' \
   >"$STATE/latest.json.new"
 mv "$STATE/latest.json.new" "$STATE/latest.json"
 
