@@ -176,27 +176,38 @@
 
 (def write-gb-per-hour-max 11) ; Joe 2026-11-03: warn above 11 GB in an hour (280 GB/day amortised)
 
-(defn written-since
-  "TB written between the newest CSV row at least SECS old and the latest row."
-  [rows now secs]
+(defn write-rate-verdict
+  "Evaluate disk-watch rows (header excluded) for the write-rate check.
+  A newest sample older than disk-watch-max-age-s fails here: a stopped
+  disk-watch would otherwise read as a zero-delta pass (zai-7 audit, 2026-11-04)."
+  [rows now]
   (let [tb #(parse-double (nth (str/split % #",") 2))
         t #(parse-long (first (str/split % #",")))
-        old (last (filter #(<= (t %) (- now secs)) rows))]
-    (when old (- (tb (last rows)) (tb old)))))
+        newest (last rows)
+        age (when newest (- now (t newest)))
+        old-h (last (filter #(<= (t %) (- now 3600)) rows))
+        old-d (last (filter #(<= (t %) (- now 86400)) rows))
+        h (when old-h (- (tb newest) (tb old-h)))
+        d (when old-d (- (tb newest) (tb old-d)))
+        over (> (* 1000 (or h 0)) write-gb-per-hour-max)
+        problems (cond-> []
+                  (empty? rows) (conj "no disk-watch samples")
+                  (and age (> age disk-watch-max-age-s))
+                  (conj (format "newest sample %d min old (disk-watch stopped?)" (quot age 60)))
+                  (and (seq rows) (nil? old-h)) (conj "no sample at least 1 h old")
+                  over (conj (format "%.1f GB written in the last hour (limit %d GB)" (* 1000 h) write-gb-per-hour-max)))]
+    {:problems problems
+     :fix (if over "see /var/log/disk-watch-hot/*-writes.txt for what was writing"
+              "systemctl status disk-watch.timer")
+     :detail (format "%.1f GB last hour, %.0f GB last 24 h (limit %d GB/h)"
+                     (* 1000.0 (or h 0)) (* 1000.0 (or d 0)) write-gb-per-hour-max)}))
 
 (defn check-write-rate []
   (let [rows (rest (lines (try (slurp "/var/log/disk-watch.csv") (catch Exception _ ""))))
-        now (now-s)
-        h (written-since rows now 3600)
-        d (written-since rows now 86400)]
-    (cond
-      (nil? h) (fail-r "not enough disk-watch history" :fix "systemctl status disk-watch.timer")
-      (> (* 1000 h) write-gb-per-hour-max)
-      (fail-r (format "%.1f GB written in the last hour (limit %d GB)" (* 1000 h) write-gb-per-hour-max)
-              :items [(format "last 24 h: %.0f GB" (* 1000 (or d 0)))]
-              :fix "see /var/log/disk-watch-hot/*-writes.txt for what was writing")
-      :else (pass-r (format "%.1f GB last hour, %.0f GB last 24 h (limit %d GB/h)"
-                            (* 1000 h) (* 1000 (or d 0)) write-gb-per-hour-max)))))
+        {:keys [problems detail fix]} (write-rate-verdict rows (now-s))]
+    (if (empty? problems)
+      (pass-r detail)
+      (fail-r (str/join "; " problems) :detail detail :fix fix))))
 
 (defn check-disk-space []
   (let [pct (some->> (:out (sh "df" "--output=pcent" "/")) lines last str/trim (re-find #"\d+") parse-long)]
