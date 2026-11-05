@@ -77,9 +77,17 @@ The outage showed that zone could go dark with no way to look at its console.
 - **Host firewall on zone.** *Done 10-08:* ufw default-deny. Open ports are 22,
   80/443, mosh 60000–61000/udp, and 7070 from metameso and lucy only. Before the
   outage, 7070/7072/7073 were open to the internet.
-- **Safety net when editing rules remotely:** `iptables-apply`, or an
-  `at now + 10 minutes` flush, plus a permanent allow rule for a second host.
-  *Not done.*
+- **Safety net when editing rules remotely.** *Done 11-05 (claude-16):* change
+  the firewall with `sudo ufw-safe <ufw args>` instead of `ufw`. It saves
+  `/etc/ufw`'s rule files, arms a transient timer, then makes the change; unless
+  `sudo ufw-safe confirm` runs within 5 min (`-m N` to change), the timer puts
+  the files back and reloads ufw. A second change while one is pending is
+  refused, so the saved copy is always the last confirmed state. Log:
+  `/var/log/ufw-safe.log`; source `system/zone/ufw-safe`, installed in
+  `/usr/local/sbin/`. Tested on a harmless rule (deny 9/tcp): left alone it
+  was removed after 1 min; confirmed, it stayed; then removed with the tool.
+  The "second host" half is the reverse tunnel (§1), which does not depend on
+  zone's inbound rules at all. Plain `ufw` still works and has no undo.
 - **Mesh-wide firewall** for the other nodes (metameso, lucy, the mail box), per
   `README-firewall.md`. *Design only.* The 08-13 scan found Agency's 7070
   publicly reachable on more than one node.

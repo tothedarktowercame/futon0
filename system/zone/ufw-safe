@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# ufw-safe: change zone's firewall with an automatic undo (README-hardening §2).
+#
+#   sudo ufw-safe [-m MINUTES] <ufw arguments...>   e.g. sudo ufw-safe deny 8443/tcp
+#   sudo ufw-safe confirm                           keep the change
+#   sudo ufw-safe status
+#
+# Before running `ufw <arguments>` it saves /etc/ufw's rule files, then starts a
+# transient systemd timer (ufw-safe-revert) that puts them back and reloads ufw
+# after MINUTES (default 5). If the change locked you out, wait: it undoes
+# itself. If you can still get in, run `ufw-safe confirm` to keep it. A second
+# change while one is pending is refused, so the saved state is always the
+# last known-good one. (If zone's inbound path is broken anyway, the reverse
+# tunnel through metameso is the other way in, §1.)
+#
+# Installed copy: /usr/local/sbin/ufw-safe (sudo install -m 755 system/zone/ufw-safe /usr/local/sbin/).
+set -euo pipefail
+
+STATE=${UFW_SAFE_STATE:-/var/lib/ufw-safe}
+UNIT=ufw-safe-revert
+FILES=(user.rules user6.rules before.rules before6.rules after.rules after6.rules ufw.conf)
+LOG=/var/log/ufw-safe.log
+
+log() { echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $*" | tee -a "$LOG"; }
+[ "$(id -u)" = 0 ] || { echo "ufw-safe: run with sudo" >&2; exit 1; }
+
+pending() { systemctl is-active --quiet "$UNIT.timer"; }
+
+case "${1:-}" in
+  confirm)
+    pending || { echo "ufw-safe: nothing pending"; exit 0; }
+    systemctl stop "$UNIT.timer"
+    log "confirmed: $(cat "$STATE/pending/command")"
+    rm -rf "$STATE/pending"
+    exit 0 ;;
+  status)
+    if pending; then
+      echo "pending: $(cat "$STATE/pending/command")"
+      systemctl list-timers "$UNIT.timer" --no-pager | sed -n 2p
+    else echo "nothing pending"; fi
+    exit 0 ;;
+  revert)  # called by the timer
+    [ -d "$STATE/pending" ] || { log "revert: nothing saved"; exit 1; }
+    for f in "${FILES[@]}"; do cp -p "$STATE/pending/$f" "/etc/ufw/$f"; done
+    ufw reload >/dev/null
+    log "reverted (not confirmed in time): $(cat "$STATE/pending/command")"
+    mv "$STATE/pending" "$STATE/reverted-$(date -u +%Y%m%dT%H%M%SZ)"
+    exit 0 ;;
+  "") echo "usage: sudo ufw-safe [-m MINUTES] <ufw args> | confirm | status" >&2; exit 2 ;;
+esac
+
+minutes=5
+if [ "$1" = "-m" ]; then minutes=$2; shift 2; fi
+[ $# -gt 0 ] || { echo "ufw-safe: no ufw arguments" >&2; exit 2; }
+if pending; then
+  echo "ufw-safe: a change is already pending ($(cat "$STATE/pending/command")); confirm it or let it revert first" >&2
+  exit 1
+fi
+
+rm -rf "$STATE/pending"; mkdir -p "$STATE/pending"
+for f in "${FILES[@]}"; do cp -p "/etc/ufw/$f" "$STATE/pending/$f"; done
+echo "ufw $*" > "$STATE/pending/command"
+# Arm the undo BEFORE changing anything, so a change that hangs or kills the
+# session is still undone.
+systemd-run --quiet --unit="$UNIT" --on-active="${minutes}min" "$(readlink -f "$0")" revert
+if ! ufw "$@"; then
+  log "ufw $* failed; reverting now"
+  systemctl stop "$UNIT.timer"; "$(readlink -f "$0")" revert; exit 1
+fi
+log "applied: ufw $* (reverts in ${minutes} min unless confirmed)"
+echo "ufw-safe: run 'sudo ufw-safe confirm' within ${minutes} min to keep this change"

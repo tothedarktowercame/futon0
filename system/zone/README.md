@@ -18,3 +18,5 @@ Installed copies live in `/usr/local/sbin/` (root). Edit here, then
 - `user-units/zone-reverse-tunnel.service` (symlinked, enabled) and `tunnel-serve`
   (forced command for metameso's tunnel key): the way back into zone, used every
   10 min by metameso. See README-hardening §1 and `../metameso/`.
+- `ufw-safe` (installed in `/usr/local/sbin/`): firewall changes that undo
+  themselves unless confirmed. See README-hardening §2.
