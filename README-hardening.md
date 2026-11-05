@@ -60,7 +60,8 @@ The outage showed that zone could go dark with no way to look at its console.
   devices): `ssh -J joe@172.236.108.82:2222 -p 2224 joe@127.0.0.1`. The jump
   makes the device's own key do the login. The hubs' keys cannot be used: zone
   pins them with from=<hub IP>, and through the tunnel the connection arrives
-  from 127.0.0.1. *Not yet tried from a phone.*
+  from 127.0.0.1. *Tried 11-05 by Joe from his phone: after accepting the
+  host key, he got a shell on zone.*
   The tunnel is kept honest by use, not only kept for emergencies (Joe, 11-05):
   every 10 min metameso's `zone-tunnel-check` goes back through it with the key
   `~/.ssh/zone-tunnel`, which zone's authorized_keys restricts
