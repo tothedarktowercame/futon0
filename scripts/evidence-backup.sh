@@ -52,6 +52,13 @@ for hub in "${HUBS[@]}"; do
     echo "$hub: BACKUP FAILED rc=$rc" >&2; rc_all=1; continue
   fi
   [ -n "$DRY" ] && continue
+  # A killed restic process can leave a stale repository lock. `unlock`
+  # removes only locks whose owning process is no longer alive; active locks
+  # remain protected. Without this, a snapshot can be saved successfully for
+  # nights while every subsequent exclusive `check` fails on the old lock.
+  if ! restic -r "$repo" unlock; then
+    echo "$hub: STALE-LOCK CLEANUP FAILED" >&2; rc_all=1; continue
+  fi
   # Read back a rotating thirtieth of the data, so a month reads all of it.
   if restic -r "$repo" check --read-data-subset="$(( $(date +%-d) % 30 + 1 ))/30"; then
     ssh -o BatchMode=yes "$hub" "touch $REMOTE_DIR/evidence-verified"
