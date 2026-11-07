@@ -99,7 +99,16 @@ def _check_const(c, op):
 
 
 def _fm_sat(rows):
-    """Fourier-Motzkin satisfiability over rational linear constraints."""
+    """Fourier-Motzkin satisfiability over rational linear constraints.
+    All arithmetic is exact: coefficients and constants are coerced to
+    Fraction on entry (int/int true division elsewhere in this function
+    once produced floats, and float cancellation manufactured rows like
+    x = 0 that contradicted x > 0 — a false 'unsat' that made every
+    entailment hold vacuously; regression: euclid_search_test.py)."""
+    def frac(x):
+        return x if isinstance(x, Fraction) else Fraction(x)
+    rows = [(tuple((at, frac(co)) for at, co in items), frac(c), op)
+            for items, c, op in rows]
     rows = list(rows)
     # equalities: eliminate by substitution
     changed = True
@@ -159,7 +168,13 @@ def _fm_sat(rows):
 
 
 def _subst_rows(rows, var, sub_co, sub_c):
-    """Substitute var = sum(sub_co) + sub_c in all rows. sub_co: dict."""
+    """Substitute var = sum(sub_co) + sub_c in all rows. sub_co: dict.
+    A row v*var + S + c ~ 0 becomes v*(sub_co) + S + (c + v*sub_c) ~ 0.
+    (The old code wrote c - v*sub_c — a sign error that only bites once a
+    previous substitution makes sub_c nonzero, i.e. exactly in multi-step
+    substitution chains; replay constants were all 0, so it hid until the
+    search layered circle equalities. Regression: euclid_search_test.py
+    test_engine_regression_no_line_names_as_points.)"""
     out = []
     for items, c, op in rows:
         co = dict(items)
@@ -167,7 +182,7 @@ def _subst_rows(rows, var, sub_co, sub_c):
             v = co.pop(var)
             for at, w in sub_co.items():
                 co[at] = co.get(at, 0) + v * w
-            c = c - v * sub_c
+            c = c + v * sub_c
         items2, c2 = norm(co, c)
         if items2:
             out.append((items2, c2, op))
@@ -435,11 +450,30 @@ def close(s):
 
 
 def _all_points(s):
+    """Point names, classified by USAGE (a name in a line or circle slot of
+    any fact is not a point — e.g. the given line 'BC' in I.2, or the given
+    line 'C' in I.3). The old version scanned fact[1:] of every fact and so
+    admitted line names as points; closure then tied them into metric rows
+    (classify/poc_onlyif) and could make the store inconsistent, after which
+    every entailment holds vacuously. Regression: see euclid_search_test.py
+    test_engine_regression_no_line_names_as_points."""
     pts = set()
     for fact in s.facts:
-        for x in fact[1:]:
-            if isinstance(x, str) and not x.startswith(("L$", "C$")):
-                pts.add(x)
+        k = fact[0]
+        if k in ("on_line", "not_on_line", "on_circle", "inside", "outside",
+                 "not_outside", "centre"):
+            pts.add(fact[1])
+        elif k in ("between",):
+            pts.update(fact[1:4])
+        elif k == "neq":
+            pts.update(fact[1:3])
+        elif k in ("dpl", "opposing_sides"):
+            pts.update(fact[1:3])
+        elif k in ("pos_len", "len_sum", "eq_len"):
+            pts.update(fact[1:])
+        elif k == "radii":
+            pts.update(fact[2:4])
+        # intersects_cc: circle names only
     return pts
 
 
