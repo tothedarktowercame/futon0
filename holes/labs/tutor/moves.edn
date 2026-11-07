@@ -1,0 +1,143 @@
+{:moves
+ [{:id :move/find-counterexample-to-simplification
+   :statement "Find the example that kills the tempting simplification."
+   :when "A plausible proof route adds regularity or geometry not present in the statement."
+   :why "A small boundary case rules out an entire family of proofs before it is developed."
+   :problems ["a96A07"]
+   :sources [{:lesson "a96A07" :section "1. Try to break it"}]
+   :needs ["analytic function" "critical point" "simple closed curve"]
+   :coarser nil
+   :star-map-tags []}
+
+  {:id :move/replace-counting-question-by-locally-constant-integer
+   :statement "Replace a counting question by an integer-valued continuous function."
+   :when "The conclusion asks whether a map is one-to-one or onto, hence how many preimages a value has."
+   :why "The integer is constant on each connected piece, turning pointwise preimage questions into a regional calculation."
+   :problems ["a96A07"]
+   :sources [{:lesson "a96A07" :section "2. Turn the question into a number"}]
+   :needs ["argument principle" "zero count with multiplicity" "connected component" "locally constant function"]
+   :coarser :move/replace-global-invariant-by-count
+   :star-map-tags ["Argument principle and Rouché" "Connectedness"]}
+
+  {:id :move/resolve-sign-by-positivity
+   :statement "When a sign is in doubt, look for positivity."
+   :when "A topological or orientation argument determines a value only up to sign, while the same value has a counting interpretation."
+   :why "Nonnegativity selects the sign without an additional orientation argument."
+   :problems ["a96A07"]
+   :sources [{:lesson "a96A07" :section "3. The textbook finish, and three repairs"}]
+   :needs ["zero count with multiplicity" "winding number"]
+   :coarser nil
+   :star-map-tags ["Winding numbers and the index of a curve" "Argument principle and Rouché"]}
+
+  {:id :move/extract-needed-consequence-from-big-theorem
+   :statement "Before importing a big theorem, write down the one consequence you actually use."
+   :when "A standard proof invokes a theorem much stronger than the target argument appears to need."
+   :why "The needed consequence may admit a short direct proof even when the full theorem is absent or expensive."
+   :problems ["a96A07"]
+   :sources [{:lesson "a96A07" :section "4. The Jordan theorem is the wrong size"}]
+   :needs ["Jordan curve theorem" "open mapping theorem" "zero count with multiplicity"]
+   :coarser nil
+   :star-map-tags ["Jordan curve theorem and simple closed curves" "Complex open mapping theorem"]}
+
+  {:id :move/cancel-two-obstructions
+   :statement "Combine two integer obstructions so that their mismatches cancel."
+   :when "Two objects each carry an integer-valued obstruction to gluing local logarithms across the same two joins."
+   :why "A linear combination removes the join mismatch and forces the original obstructions to vanish."
+   :problems ["a96A07"]
+   :sources [{:lesson "a96A07" :section "5. Getting N ≤ 1 directly"}]
+   :needs ["continuous logarithm" "Borsuk's criterion" "bounded component of a complement"]
+   :coarser nil
+   :star-map-tags []}
+
+  {:id :move/replace-global-invariant-by-count
+   :statement "Replace a global invariant by a count."
+   :when "A yes-or-no separation question has finite fibres whose points can be counted on one side."
+   :why "A locally constant count answers the question with less machinery than homology."
+   :problems ["t98J02"]
+   :sources [{:lesson "t98J02" :section "Moves"}]
+   :needs ["finite covering map" "locally constant function" "connected complement"]
+   :coarser nil
+   :star-map-tags ["Connectedness"]}
+
+  {:id :move/assign-each-hypothesis-a-job
+   :statement "Say where each hypothesis acts in the argument."
+   :when "A proof uses several structural hypotheses whose individual roles are not yet visible."
+   :why "Localising each hypothesis exposes unnecessary assumptions and the exact failure mode of nearby counterexamples."
+   :problems ["t98J02"]
+   :sources [{:lesson "t98J02" :section "Moves"}]
+   :needs ["connected space" "finite covering map" "nonseparating curve"]
+   :coarser nil
+   :star-map-tags ["Connectedness"]}
+
+  {:id :move/check-wild-curve
+   :statement "Check that the argument still works for a wild curve."
+   :when "The statement assumes only an embedded circle but the proof may be importing unstated local smoothness."
+   :why "It isolates the one local fact actually needed instead of silently assuming a collar or smooth model."
+   :problems ["t98J02"]
+   :sources [{:lesson "t98J02" :section "Moves"}]
+   :needs ["embedded circle" "empty interior" "intermediate value theorem"]
+   :coarser nil
+   :star-map-tags ["Jordan curve theorem and simple closed curves"]}
+
+  {:id :move/choose-counterexample-with-function
+   :statement "A counterexample only needs one model, so choose the one with a function on it."
+   :when "A universal claim is false and several quotient-surface counterexamples are available."
+   :why "An invariant continuous function proves separation directly and avoids costly quotient charts."
+   :problems ["t98J02"]
+   :sources [{:lesson "t98J02" :section "Part (b): pick the small example"}]
+   :needs ["torus" "Klein bottle" "quotient map" "continuous function"]
+   :coarser nil
+   :star-map-tags ["Surfaces and classification"]}
+
+  {:id :move/ask-what-tool-needs
+   :statement "Ask what the tool needs, and move to a homotopy-equivalent model that supplies it."
+   :when "Van Kampen or Mayer–Vietoris needs a tractable open cover that is hard to construct on the given space."
+   :why "The invariant may be computed on a better model, so the original space need not carry the cover itself."
+   :problems ["t03J02"]
+   :sources [{:lesson "t03J02" :section "Moves"}]
+   :needs ["van Kampen theorem" "Mayer-Vietoris sequence" "homotopy equivalence"]
+   :coarser nil
+   :star-map-tags ["Van Kampen" "Homology and exact sequences" "Homotopy and retractions"]}
+
+  {:id :move/build-model-where-cover-is-coordinate
+   :statement "Build the model where the cover is a coordinate."
+   :when "A glued space needs an open cover with controlled pieces and intersection."
+   :why "Adding a height coordinate makes the cover inequalities explicit and its homotopies linear."
+   :problems ["t03J02"]
+   :sources [{:lesson "t03J02" :section "Moves"}]
+   :needs ["double mapping cylinder" "open cover" "homotopy"]
+   :coarser :move/ask-what-tool-needs
+   :star-map-tags ["Van Kampen" "Homology and exact sequences" "Homotopy and retractions"]}
+
+  {:id :move/separate-what-curve-must-give
+   :statement "Separate out the one deformation the curve must provide."
+   :when "A proof seems to require a collar of a possibly wild embedded curve."
+   :why "A deformation fixing the curve and retracting only a neighbourhood is weaker than a collar and survives wild embeddings."
+   :problems ["t03J02"]
+   :sources [{:lesson "t03J02" :section "Moves"}]
+   :needs ["deformation" "Tietze extension theorem" "null-homotopic curve"]
+   :coarser :move/extract-needed-consequence-from-big-theorem
+   :star-map-tags ["Homotopy and retractions" "Jordan curve theorem and simple closed curves"]}
+
+  {:id :move/split-deformation-into-stages
+   :statement "Do the deformation in two stages: move the point at fixed height, then change the height."
+   :when "Changing a point and an auxiliary coordinate simultaneously creates a reparametrisation discontinuous on the glued curve."
+   :why "Separating the changes makes each homotopy continuous."
+   :problems ["t03J02"]
+   :sources [{:lesson "t03J02" :section "Moves"}]
+   :needs ["homotopy" "continuity" "double mapping cylinder"]
+   :coarser nil
+   :star-map-tags ["Homotopy and retractions"]}]
+
+ :student-record
+ {:schema :prelim-tutor/student-record-v1
+  :event-schema
+  {:learner "learner identifier"
+   :move "one :move/... id from :moves"
+   :problem "lesson problem id"
+   :exercise "lesson exercise number"
+   :evidence #{:offered :used-unprompted :used-after-hint :failed}
+   :valid-time "when the learner evidence was true or observed"
+   :record-time "when this event was recorded"
+   :note "free-text evidence note"}
+  :events []}}

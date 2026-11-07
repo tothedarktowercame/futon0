@@ -4,7 +4,7 @@
 **Date:** 2026-11-07
 **Owner:** claude-9 with Joe
 **Relates to:** `holes/missions/M-futonzero-prelim-practice.md` (the prelim tutor; its lessons live in
-`apm-lean/holes/labs/tutor/`), `futon2/docs/futonzero-alphazero.md` (FutonZero v1 and Fable's
+`holes/labs/tutor/`, moved from apm-lean 2026-11-07), `futon2/docs/futonzero-alphazero.md` (FutonZero v1 and Fable's
 review), `futon6/holes/missions/M-futonzero-grounding.md` (why self-graded loops self-confirm).
 **Why futon0 and not apm-lean:** apm-lean is public and is about the proofs. Tutor work lives here
 (Joe, 2026-11-07).
@@ -143,7 +143,7 @@ this design does not require.
 - What should the first small build be: the fast proof engine for Book I, or a step-sequence mine of
   the 557 steps for technique candidates? The mine is cheaper and feeds both the clones and the hint
   ladder.
-- Does the existing prelim tutor (`apm-lean/holes/labs/tutor/`) move to futon0 too, or stay where it
-  is because its lessons are about apm-lean's problems?
+- ~~Does the existing prelim tutor move to futon0?~~ Yes (Joe, 2026-11-07): now
+  `holes/labs/tutor/`.
 - Euclid → the 17-gon: the course's later part needs field-theory moves (Gauss periods, quadratic
   towers). Out of scope until Book I works.

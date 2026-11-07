@@ -493,7 +493,7 @@ it would need the text-based map instead.
 
 Since 11-02 the operator and claude-14 have closed one APM problem per session
 and written each up as a lesson showing how the problem was broken down
-(`apm-lean/holes/labs/tutor/lessons/`): lesson 1 `a96A07`, lesson 2 `t98J02`,
+(`futon0/holes/labs/tutor/lessons/`, moved from apm-lean 2026-11-07): lesson 1 `a96A07`, lesson 2 `t98J02`,
 lesson 3 `t03J02`. Two of those (`t98J02`, `t03J02`) had blueprints calling
 them library-scale (1,500–3,500 lines for one t98J02 piece); both closed in an
 evening. The proofs came from a *move*, not a library: find a quantity that is
@@ -546,7 +546,7 @@ learner tests the mechanics, not whether the tutor works (tension 2).
 ### Work in flight
 
 - **Moves file (Codex task, dispatched 2026-11-03):**
-  `apm-lean/holes/labs/tutor/moves.edn`, one entry per move mined from the
+  `futon0/holes/labs/tutor/moves.edn`, one entry per move mined from the
   three lessons (id, statement, when it applies, problems using it, the
   constants it needs, source lesson section), and an empty student-record
   schema whose evidence is the operator's answers to lesson exercises. First
