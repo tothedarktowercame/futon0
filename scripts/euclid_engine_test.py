@@ -519,38 +519,22 @@ def test_contradictory_fmtoolarge_is_undecided(monkeypatch):
     assert eng.contradictory(s) == (False, None)
 
 
-PROP6_EXCLUDE_I18 = {"side_gt_angle_gt [SMT-bridge, Euclid I.18]"}
-
-
 def test_prop6_replay():
-    """I.6 replays the Lean way: side_gt_angle_gt (Book I.18 as a closure
-    rule) excluded; each by_contra branch closes by sum_angles_onlyif
-    (Transfer.lean:90) splitting the base angle around d plus angle_pos."""
+    """I.6 replays the Lean way; the side_gt_angle_gt closure rule (Book
+    I.18 as a closure rule) has left default closure entirely
+    (E-kimi-task-389), so no exclusion is needed. Each by_contra branch
+    closes by sum_angles_onlyif (Transfer.lean:90) splitting the base
+    angle around d plus angle_pos."""
     s, rep = eng.replay(eng.PROP6_HYPS_DATA, eng.PROP6_STEPS_DATA,
-                        [("_eq_len", "a", "b", "a", "c")],
-                        exclude_rules=PROP6_EXCLUDE_I18)
+                        [("_eq_len", "a", "b", "a", "c")])
     assert eng.la_entails_eq(s.la, "a", "b", "a", "c")
     assert rep[-1]["final"]
 
 
-def test_prop6_never_calls_side_gt_angle_gt(monkeypatch):
-    """Swap r_side_gt_angle_gt for a raiser: the I.6 replay (with the rule
-    also excluded) must never invoke it."""
-    def boom(s):
-        raise AssertionError("side_gt_angle_gt called during I.6 replay")
-    monkeypatch.setattr(eng, "FORWARD_RULES",
-                        [(n, boom if n in PROP6_EXCLUDE_I18 else f)
-                         for n, f in eng.FORWARD_RULES])
-    s, rep = eng.replay(eng.PROP6_HYPS_DATA, eng.PROP6_STEPS_DATA,
-                        [("_eq_len", "a", "b", "a", "c")],
-                        exclude_rules=PROP6_EXCLUDE_I18)
-    assert rep[-1]["final"]
-
-
 def test_prop6_control_dropped_sum_angles():
-    """Drop the sum_angles_onlyif step from branch 1: with I.18 excluded the
-    branch can no longer reach its contradiction -> ByContraFailure naming
-    that branch."""
+    """Drop the sum_angles_onlyif step from branch 1: the branch can no
+    longer reach its contradiction -> ByContraFailure naming that
+    branch."""
     steps = [("by_contra", [
         ([("gt_len", "a", "b", "a", "c")], [
             ("proposition_3", ("b", "a", "a", "c", "AB", "AC"), {"q": "d"}),
@@ -562,8 +546,7 @@ def test_prop6_control_dropped_sum_angles():
     ], eng.PROP6_STEPS_DATA[0][2])]
     with pytest.raises(eng.ByContraFailure) as ei:
         eng.replay(eng.PROP6_HYPS_DATA, steps,
-                   [("_eq_len", "a", "b", "a", "c")],
-                   exclude_rules=PROP6_EXCLUDE_I18)
+                   [("_eq_len", "a", "b", "a", "c")])
     assert ei.value.branch == [("gt_len", "a", "b", "a", "c")]
 
 
@@ -574,54 +557,87 @@ def test_prop6_control_dropped_equal_angles():
     hyps = [h for h in eng.PROP6_HYPS_DATA
             if h[0] != ("eq_ang", "a", "b", "c", "a", "c", "b")]
     with pytest.raises(eng.ByContraFailure) as ei:
-        eng.replay(hyps, eng.PROP6_STEPS_DATA, [("_eq_len", "a", "b", "a", "c")],
-                   exclude_rules=PROP6_EXCLUDE_I18)
+        eng.replay(hyps, eng.PROP6_STEPS_DATA, [("_eq_len", "a", "b", "a", "c")])
     assert "stuck" in str(ei.value)
 
 
-PROP18_EXCLUDE_I18 = {"side_gt_angle_gt [SMT-bridge, Euclid I.18]"}
-
-
 def test_prop18_replay():
-    """I.18 replays the Lean way with its own closure rule
-    (side_gt_angle_gt) excluded: proposition_3 cuts |a-d| = |a-b| off
+    """I.18 replays the Lean way: proposition_3 cuts |a-d| = |a-b| off
     |a-c|, proposition_16 gives the exterior angle of triangle b c d at d,
     proposition_5' the isosceles equality, and sum_angles_onlyif
     (Transfer.lean:90 — not Lean's sum_angles_if; its same-side conclusion
     is already closure here and it makes no metric row) splits ∠a:b:c
     around d. euclid_finish's chain: ∠a:b:c > ∠a:b:d = ∠a:d:b > ∠d:c:b =
-    ∠b:c:a."""
+    ∠b:c:a. The side_gt_angle_gt closure rule (I.18 itself) is out of
+    default closure (E-kimi-task-389), so no exclusion is needed."""
     s, rep = eng.replay(eng.PROP18_HYPS_DATA, eng.PROP18_STEPS_DATA,
-                        eng.PROP18_GOAL, exclude_rules=PROP18_EXCLUDE_I18)
+                        eng.PROP18_GOAL)
     assert eng.la_entails_gt_ang(s.la, "a", "b", "c", "b", "c", "a")
     assert rep[-1]["final"]
 
 
 def test_prop18_hyps_alone_do_not_entail_goal():
-    """The I.18 hypotheses alone, with side_gt_angle_gt excluded, do NOT
-    entail ∠a:b:c > ∠b:c:a — the cited steps carry the proof.
-    Note (E-kimi-task-389): nor do they entail it WITH the rule, and the
-    reason is not the packet's expectation. With the rule active, closure
-    adds the row ∠a:b:c < ∠b:c:a — the rule has been sign-INVERTED
-    relative to its own docstring and to I.18 since introduction. Every
-    historical use (I.6's by_contra branches) paired the row with an
-    angle equality, where either strict direction reaches the same unsat,
-    so the inversion was invisible. The rule is deleted (it IS I.18), not
-    patched; this test pins only the direction-independent half, so it
-    survives the deletion."""
+    """The I.18 hypotheses alone do NOT entail ∠a:b:c > ∠b:c:a — the
+    cited steps carry the proof. Historical note (E-kimi-task-389): with
+    the old side_gt_angle_gt closure rule they did not entail it either —
+    the rule added the row ∠a:b:c < ∠b:c:a, sign-INVERTED relative to its
+    own docstring and to I.18 since introduction. Every historical use
+    (I.6's by_contra branches) paired the row with an angle equality,
+    where either strict direction reaches the same unsat, so the
+    inversion was invisible until this replay. The rule was deleted (it
+    IS I.18), not patched; the deleted-rule direction is unpinnable, so
+    only the negative is pinned."""
     s = eng.State()
-    s.exclude_rules = frozenset(PROP18_EXCLUDE_I18)
     for f, w in eng.PROP18_HYPS_DATA:
         eng._assume_metric_or_fact(s, f, w)
     eng.close(s)
     assert not eng.la_entails_gt_ang(s.la, "a", "b", "c", "b", "c", "a")
-    # ... and with the rule in closure they still do not (it derives the
-    # negation, per the docstring).
-    s2 = eng.State()
+
+
+def test_prop18_control_dropped_proposition_16():
+    """Drop proposition_16: without the exterior-angle inequality
+    ∠a:d:b > ∠d:c:b the chain from ∠a:b:c to ∠b:c:a breaks -> the goal
+    is not entailed."""
+    steps = [st for st in eng.PROP18_STEPS_DATA if st[0] != "proposition_16"]
+    with pytest.raises(AssertionError, match="conclusion not entailed"):
+        eng.replay(eng.PROP18_HYPS_DATA, steps, eng.PROP18_GOAL)
+
+
+def test_prop18_control_dropped_proposition_5p():
+    """Drop proposition_5': without the isosceles equality ∠a:b:d =
+    ∠a:d:b the exterior-angle inequality does not reach ∠a:b:d -> the
+    goal is not entailed."""
+    steps = [st for st in eng.PROP18_STEPS_DATA if st[0] != "proposition_5'"]
+    with pytest.raises(AssertionError, match="conclusion not entailed"):
+        eng.replay(eng.PROP18_HYPS_DATA, steps, eng.PROP18_GOAL)
+
+
+def test_proposition_18_citation_refused_wrong_way():
+    """CONSTRUCTIONS['proposition_18'] cited with the length comparison
+    the wrong way (|a-c| < |a-b| instead of >) is refused: the gt_len
+    entailment premise fails."""
+    s = eng.State()
     for f, w in eng.PROP18_HYPS_DATA:
-        eng._assume_metric_or_fact(s2, f, w)
-    eng.close(s2)
-    assert not eng.la_entails_gt_ang(s2.la, "a", "b", "c", "b", "c", "a")
+        if f[0] == "gt_len":
+            f = ("gt_len", "a", "b", "a", "c")   # |a-b| > |a-c|, reversed
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_18",
+                       ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert "gt_len" in str(ei.value.premise)
+
+
+def test_proposition_18_citation_fires():
+    """The cited lemma makes exactly the _gt_ang conclusion (the rule it
+    replaces, now proved)."""
+    s = eng.State()
+    for f, w in eng.PROP18_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_18",
+                   ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert eng.la_entails_gt_ang(s.la, "a", "b", "c", "b", "c", "a")
 
 
 def test_prop7_replay():
@@ -794,17 +810,22 @@ def test_replay_fact_set_footprints():
     kimi-4's edit): I.5 (442, 227) -> (394, 203), I.9 (236, 93) -> (224, 87),
     I.10 (163, 51) -> (161, 50), I.11 (318, 158) -> (298, 148),
     I.12 (178, 68) -> (174, 66). Every main() goal still holds.
-    I.6 runs with side_gt_angle_gt [SMT-bridge, Euclid I.18] excluded
+    I.6 ran with side_gt_angle_gt [SMT-bridge, Euclid I.18] excluded
     (E-kimi-task-388, the Lean way: sum_angles_onlyif around d); its
-    footprint is unchanged at (41, 11) — the branch work happens on
-    by_contra copies, so the final outer state is identical."""
+    footprint was unchanged at (41, 11) — the branch work happens on
+    by_contra copies, so the final outer state is identical.
+    E-kimi-task-389 removed side_gt_angle_gt (= Book I.18) from default
+    closure and added the I.18 replay. Only I.9's footprint changed:
+    (224, 87) -> (223, 86) — the one angord marker/row the rule had been
+    adding there is gone. Every other replay is unchanged and every
+    main() goal still holds. I.18 joins the pin at (97, 32)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
-                "8": (210, 82), "9": (224, 87), "10": (161, 50),
+                "8": (210, 82), "9": (223, 86), "10": (161, 50),
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
-                "16a": (546, 281), "17": (70, 24)}
+                "16a": (546, 281), "17": (70, 24), "18": (97, 32)}
     got = {}
     old_argv = sys.argv
     try:
@@ -865,32 +886,11 @@ def test_bridge_angle_pos_counterexamples():
                    for _ in [0])
 
 
-def test_bridge_side_gt_angle_gt_counterexample():
-    """I.18 bridge: |p-r| > |p-q| ⇒ ∠(p,q,r) > ∠(q,r,p). Dropping the length
-    premise (no comparison entailed) the rule must add nothing — with equal
-    lengths the conclusion is false (∠(p,q,r) = ∠(q,r,p))."""
-    # equal lengths: no strict row between the two angles
-    s = _line_state(
-        [("neq", "p", "q"), ("neq", "q", "r"), ("neq", "p", "r")],
-        [({eng.len_atom("p", "q"): 1, eng.len_atom("p", "r"): -1}, 0, "="),
-         # both angles under discussion, equal
-         ({eng.ang_atom("p", "q", "r"): 1, eng.ang_atom("q", "r", "p"): -1},
-          0, "=")])
-    assert not s.la.entails({eng.ang_atom("p", "q", "r"): 1,
-                             eng.ang_atom("q", "r", "p"): -1}, 0, "<")
-    assert eng.contradictory(s) == (False, None)
-    # with the length premise the two conclusions clash -> unsat.
-    # Review fix (claude-9): r off line PQ. Without a triangle this state is
-    # realisable (q-p-r collinear: both angles 0), so unsat was wrong there.
-    s2 = _line_state(
-        [("neq", "p", "q"), ("neq", "q", "r"), ("neq", "p", "r"),
-         ("on_line", "p", "PQ"), ("on_line", "q", "PQ"),
-         ("not_on_line", "r", "PQ")],
-        [({eng.len_atom("p", "q"): 1, eng.len_atom("p", "r"): -1}, 0, "<"),
-         ({eng.ang_atom("p", "q", "r"): 1, eng.ang_atom("q", "r", "p"): -1},
-          0, "=")])
-    ok, w = eng.contradictory(s2)
-    assert ok and w[0] == "store-unsat"
+# (The side_gt_angle_gt bridge counterexample tests were removed with the
+# rule itself at E-kimi-task-389: the rule IS Book I.18 and is now the
+# cited lemma CONSTRUCTIONS["proposition_18"]; its non-vacuity guards are
+# test_prop18_control_dropped_proposition_16/5p and
+# test_proposition_18_citation_refused_wrong_way above.)
 
 
 def test_bridge_off_line_pair_same_side_counterexamples():
@@ -918,27 +918,6 @@ def test_bridge_off_line_pair_same_side_counterexamples():
                        [({eng.len_atom("p", "c"): 1,
                           eng.len_atom("p", "d"): -1}, 0, "<")])
     assert not s_ne.has(("not_on_line", "p", "M"))
-
-
-def test_bridge_side_gt_angle_gt_rejects_collinear():
-    """Review (claude-9): q-p-r collinear with |pr| > |pq| is realisable; both
-    angles are 0, so the I.18 bridge must not fire. Before the fix this state
-    was reported contradictory (store-unsat)."""
-    s = eng.State()
-    for f in [("on_line", "q", "L"), ("on_line", "p", "L"), ("on_line", "r", "L"),
-              ("between", "q", "p", "r"), ("neq", "p", "q"), ("neq", "q", "r"),
-              ("neq", "p", "r"), ("neq", "q", "p"), ("neq", "r", "q"),
-              ("neq", "r", "p")]:
-        s.assume(f)
-    s.la.add({eng.len_atom("p", "q"): 1}, 1, "=")   # |pq| = 1
-    s.la.add({eng.len_atom("p", "r"): 1}, 2, "=")   # |pr| = 2
-    s.la.add({eng.ang_atom("p", "q", "r"): 1}, 0, ">=")
-    s.la.add({eng.ang_atom("q", "r", "p"): 1}, 0, ">=")
-    assert eng.contradictory(s) == (False, None)
-    # and the unfixed rule's conclusion is false here (sanity: not vacuous)
-    s.la.add({eng.ang_atom("p", "q", "r"): 1,
-              eng.ang_atom("q", "r", "p"): -1}, 0, ">")
-    assert eng.contradictory(s)[0] is True
 
 
 def test_entails_memo_not_stale_after_rows_replaced():
