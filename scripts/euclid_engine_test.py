@@ -579,6 +579,51 @@ def test_prop6_control_dropped_equal_angles():
     assert "stuck" in str(ei.value)
 
 
+PROP18_EXCLUDE_I18 = {"side_gt_angle_gt [SMT-bridge, Euclid I.18]"}
+
+
+def test_prop18_replay():
+    """I.18 replays the Lean way with its own closure rule
+    (side_gt_angle_gt) excluded: proposition_3 cuts |a-d| = |a-b| off
+    |a-c|, proposition_16 gives the exterior angle of triangle b c d at d,
+    proposition_5' the isosceles equality, and sum_angles_onlyif
+    (Transfer.lean:90 — not Lean's sum_angles_if; its same-side conclusion
+    is already closure here and it makes no metric row) splits ∠a:b:c
+    around d. euclid_finish's chain: ∠a:b:c > ∠a:b:d = ∠a:d:b > ∠d:c:b =
+    ∠b:c:a."""
+    s, rep = eng.replay(eng.PROP18_HYPS_DATA, eng.PROP18_STEPS_DATA,
+                        eng.PROP18_GOAL, exclude_rules=PROP18_EXCLUDE_I18)
+    assert eng.la_entails_gt_ang(s.la, "a", "b", "c", "b", "c", "a")
+    assert rep[-1]["final"]
+
+
+def test_prop18_hyps_alone_do_not_entail_goal():
+    """The I.18 hypotheses alone, with side_gt_angle_gt excluded, do NOT
+    entail ∠a:b:c > ∠b:c:a — the cited steps carry the proof.
+    Note (E-kimi-task-389): nor do they entail it WITH the rule, and the
+    reason is not the packet's expectation. With the rule active, closure
+    adds the row ∠a:b:c < ∠b:c:a — the rule has been sign-INVERTED
+    relative to its own docstring and to I.18 since introduction. Every
+    historical use (I.6's by_contra branches) paired the row with an
+    angle equality, where either strict direction reaches the same unsat,
+    so the inversion was invisible. The rule is deleted (it IS I.18), not
+    patched; this test pins only the direction-independent half, so it
+    survives the deletion."""
+    s = eng.State()
+    s.exclude_rules = frozenset(PROP18_EXCLUDE_I18)
+    for f, w in eng.PROP18_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_gt_ang(s.la, "a", "b", "c", "b", "c", "a")
+    # ... and with the rule in closure they still do not (it derives the
+    # negation, per the docstring).
+    s2 = eng.State()
+    for f, w in eng.PROP18_HYPS_DATA:
+        eng._assume_metric_or_fact(s2, f, w)
+    eng.close(s2)
+    assert not eng.la_entails_gt_ang(s2.la, "a", "b", "c", "b", "c", "a")
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))
