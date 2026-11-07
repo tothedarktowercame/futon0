@@ -799,6 +799,13 @@ def verify12(xy):
          off_line(xy["h"]) < EPS),
         ("I.12: |h-e| = |h-g|", abs(dist("h", "e") - dist("h", "g")) < EPS),
         ("I.12: |c-e| = |c-g|", abs(dist("c", "e") - dist("c", "g")) < EPS),
+        # review fix (claude-9): e, g on circle EFG (centre c through d) and
+        # on AB; without these, e and g pushed out symmetrically along AB
+        # passed every check.
+        ("I.12: e on circle EFG (|c-e| = |c-d|)",
+         abs(dist("c", "e") - dist("c", "d")) < EPS),
+        ("I.12: e, g on AB", off_line(xy["e"]) < EPS and off_line(xy["g"]) < EPS),
+        ("I.12: e != g", dist("e", "g") > EPS),
         ("I.12: angle e-h-c is right",
          abs(_ang(xy, "e", "h", "c") - math.pi / 2) < EPS),
         ("I.12: c and d on opposite sides of AB",

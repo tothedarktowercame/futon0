@@ -445,3 +445,15 @@ def test_bad_case_prop12_d_on_cs_side_fails():
     x["d"] = (xy["d"][0], -xy["d"][1])  # reflected onto c's side of AB
     fails = [d for d, ok in tr.verify12(x) if not ok]
     assert any("opposite sides" in d for d in fails), fails
+
+
+def test_bad_case_prop12_e_g_off_the_circle_fails():
+    """Review fix (claude-9): e and g pushed outward along AB, symmetric
+    about h, keep h the midpoint and the angle right; they must still fail
+    because they are no longer on circle EFG."""
+    bad = json.loads(json.dumps(TR12["placement"]))
+    h = bad["h"]
+    for k in ("e", "g"):
+        bad[k] = [h[0] + 1.5 * (bad[k][0] - h[0]), h[1] + 1.5 * (bad[k][1] - h[1])]
+    fails = [d for d, ok in tr.verify12(bad) if not ok]
+    assert fails == ["I.12: e on circle EFG (|c-e| = |c-d|)"], fails
