@@ -56,7 +56,7 @@ def test_case_props_reach_goal():
     """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (6, 10, 13, 14, 19, 21):
+    for n in (6, 7, 10, 13, 14, 19, 21):
         steps = tr.hyps_and_steps(n)[1]
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
@@ -161,7 +161,7 @@ def test_catalogue_splits_covered():
     """Every engine case split in the catalogue (I.10, 13, 14, 19, 21,
     nested blocks included) is covered; record the family each matched."""
     table = []
-    for n in (10, 13, 14, 19, 21):
+    for n in (6, 7, 10, 13, 14, 19, 21):
         s = ep._start_state(n)
         found = []
         _walk_case_blocks(n, s, tr.hyps_and_steps(n)[1], (), found)
@@ -219,8 +219,11 @@ def test_coverage_family_edge_cases():
                       [])
     assert not cov["covered"]
     assert cov["family"] is not None
-    assert [("opposing_sides", "d", "g", "EF"), ("on_line", "d", "EF"),
-            ("on_line", "g", "EF")] == [tuple(m) for m in cov["missing"]]
+    # the referee reports the family with the fewest missing members:
+    # since b3ef275's follow-up that is "same side or not" (P or not P),
+    # one member, rather than the four-way sides family's three
+    assert [("not_same_side", "d", "g", "EF")] == \
+        [tuple(m) for m in cov["missing"]]
     cov2 = ep.coverage(s, "by_cases", [[("dpl", "a", "b", "L")]],
                        [("on_line", "x", "M")])
     assert not cov2["covered"]
@@ -399,19 +402,25 @@ def test_case_block_with_no_cases_is_refused():
     assert r["goal_reached"] is False
 
 
-def test_engine_i7_split_not_covered_until_its_side_facts_are_derived():
-    # Review (claude-9): the engine's I.7 cases assume side facts beyond
-    # the two split facts, and none is entailed (E-kimi-task-420 derives
-    # them). The referee must refuse that split: a case covers a
-    # possibility only if the possibility entails every case hypothesis.
-    # When 420 lands, I.7 goes back into test_case_props_reach_goal and
-    # this test is deleted.
-    steps = tr.hyps_and_steps(7)[1]
-    res = ep.play(7, [_engine_step_to_move(st) for st in steps])
-    if res["goal_reached"]:
-        pytest.skip("I.7's cases no longer carry unentailed assumptions")
-    bad = [m for m in res["moves"] if not m["ok"]]
-    assert bad and bad[0]["error"] == "missing case", bad
+def test_crossed_split_missing_case_is_the_pair():
+    # I.7's split is a vs CD crossed with d vs AC (four cases). Review
+    # (claude-9): with 4b7a2ea its cases are exactly the split facts and
+    # it is covered as a crossed family; dropping one case reports the
+    # missing CONJUNCTION, which the page opens as one two-fact case.
+    moves = [_engine_step_to_move(st) for st in tr.hyps_and_steps(7)[1]]
+    i = next(k for k, m in enumerate(moves) if m["rule"] == "by_contra")
+    x = copy.deepcopy(moves)
+    dropped = x[i]["branches"].pop(1)["hyps"]
+    r = ep.play(7, x)
+    assert r["moves"][i]["error"] == "missing case"
+    (pair,) = r["moves"][i]["missing_case"]["missing"]
+    norm = lambda f: (f[0], *sorted(f[1:3]), f[3])
+    assert sorted(map(norm, pair)) == sorted(map(norm, dropped))
+    x[i]["branches"][0]["hyps"].append(["same_side", "c", "a", "DB"])
+    x[i]["branches"].insert(1, {"hyps": dropped, "moves":
+                                moves[i]["branches"][1]["moves"]})
+    r = ep.play(7, x)
+    assert r["moves"][i]["error"] == "missing case"  # the old extra fact
 
 
 def test_case_with_extra_assumption_does_not_cover():
@@ -436,3 +445,26 @@ def test_palette_7():
     assert "proposition_7" not in pal
     assert "proposition_10" not in pal
     assert "line_from_points" in pal
+
+
+def test_engine_i24_i25_splits_covered():
+    # Review (claude-9): I.24 and I.25 are not in the play catalogue yet,
+    # but their engine splits must pass the referee too: I.24's
+    # elimination of proposition_23''s left disjunct is covered by the
+    # stored "either" fact, and its closing same_side / not_same_side
+    # by_cases by the P-or-not-P family.
+    for n, hyps, steps in ((24, eng.PROP24A_HYPS_DATA, eng.PROP24_STEPS_DATA),
+                           (25, eng.PROP25_HYPS_DATA, eng.PROP25_STEPS_DATA)):
+        s = eng.State()
+        for f, w in hyps:
+            eng._assume_metric_or_fact(s, f, w)
+        eng.close(s)
+        found = []
+        _walk_case_blocks(n, s, steps, (), found)
+        assert found
+        for rule, mv, bs, refuted in found:
+            cov = ep.coverage(
+                bs, rule, [[tuple(f) for f in b["hyps"]]
+                           for b in mv["branches"]],
+                [tuple(c) for c in mv["conclusion"]], refuted)
+            assert cov["covered"], (n, rule, mv["branches"], cov)

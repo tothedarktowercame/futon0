@@ -680,8 +680,11 @@ function showTutorQuestion(mc) {
   for (const f of mc.missing) {
     const row = document.createElement("div");
     const q = document.createElement("span");
+    // f is one fact, or (a crossed split) a list of facts to conjoin
+    const conj = Array.isArray(f[0]) ? f : [f];
     q.textContent = "What about the case where " +
-      factEnglish(f).replace(/^./, c => c.toLowerCase()) + "?";
+      conj.map(g => factEnglish(g).replace(/^./, c => c.toLowerCase()))
+        .join(" and ") + "?";
     const btn = document.createElement("button");
     btn.textContent = "add this case";
     btn.onclick = () => addMissingCase(f, btn);
@@ -694,7 +697,8 @@ function showTutorQuestion(mc) {
 async function addMissingCase(f, btn) {
   const b = openBlock();
   if (!b) { hideTutorQuestion(); return; }
-  b.branches.push({ hyps: [f.slice()], moves: [] });
+  const conj = Array.isArray(f[0]) ? f : [f];
+  b.branches.push({ hyps: conj.map(g => g.slice()), moves: [] });
   const res = await postPlay(cur.n, moves);
   const ent = responseEntryFor(res, b);
   if (ent && ent.ok && (ent.branches || []).length === b.branches.length) {

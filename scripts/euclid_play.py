@@ -300,6 +300,11 @@ def _holds(s, f):
     f = tuple(f)
     if f[0] == "peq_line":
         return _peq_line_holds(s, f[1], f[2])
+    if f[0] in ("opposing_sides", "same_side", "not_same_side"):
+        # symmetric in the two points (Relations.lean:13-14 for
+        # opposing); the engine's closure symmetrizes same_side only
+        return eng._fact_holds(s, f) or \
+            eng._fact_holds(s, (f[0], f[2], f[1], f[3]))
     if f[0] == "lt_len":  # |x-y| < |u-v| as _gt_len u v x y
         return eng._fact_holds(s, ("_gt_len", f[3], f[4], f[1], f[2]))
     return eng._fact_holds(s, (_METRIC_HOLDS.get(f[0], f[0]),) + f[1:])
@@ -442,6 +447,13 @@ def _families(rule, cases, conclusion):
                 [("same_side", a, b, L), ("opposing_sides", a, b, L),
                  ("on_line", a, L), ("on_line", b, L)],
                 ("sides", a, b, L))
+            if k in ("same_side", "not_same_side"):
+                # a fact and its negation (not_same_side: kimi-4's fact
+                # kind for Lean's literal negation, I.24)
+                add("whether %s and %s are on the same side of %s"
+                    % (a, b, L),
+                    [("same_side", a, b, L), ("not_same_side", a, b, L)],
+                    ("ss", a, b, L))
         elif k in ("eq_len", "_eq_len", "gt_len", "_gt_len", "lt_len"):
             s1, s2 = _seg(f[1], f[2]), _seg(f[3], f[4])
             add("|%s%s| against |%s%s|" % (s1 + s2),
@@ -484,7 +496,28 @@ def coverage(s, rule, cases, conclusion, refuted=()):
     catch_all = rule == "by_cases" and any(not c for c in cases) \
         and any(c for c in cases)
 
-    def member_covered(m):
+    def member_covered(m, extra=()):
+        # extra: the other coordinates of a product member (a 2x2 split
+        # such as I.7's, a vs CD crossed with d vs AC)
+        if extra:
+            ms = [m] + list(extra)
+            tp = _probe(s, ms, enrich=False)
+            if eng.contradictory(tp)[0]:
+                return True
+            tm = _probe(s, ms)
+            probes = [tp] + ([] if eng.contradictory(tm)[0] else [tm])
+            for t in probes:
+                for hyps in cases:
+                    if hyps and all(_holds(t, h) for h in hyps):
+                        return True
+                if rule == "by_contra" and concl and \
+                        all(_holds(t, c) for c in concl):
+                    return True
+            if refuted:
+                for r in refuted:
+                    if r and all(_holds(tm, f) for f in r):
+                        return True
+            return False
         # A case covers member m when m (with the state) entails EVERY
         # hypothesis of the case, i.e. the case is no stronger than m.
         # Review (claude-9): the converse test (case entails m) let a case
@@ -534,8 +567,15 @@ def coverage(s, rule, cases, conclusion, refuted=()):
                     return True
         return False
 
-    matching = [(name, members) for name, members in
-                _families(rule, cases, concl)
+    fams = _families(rule, cases, concl)
+    # a disjunction already in the state is itself an exhaustive family
+    # (e.g. proposition_23''s "f on AB, or on x's side", used by I.24)
+    for f in s.facts:
+        if f[0] == "either":
+            fams.append(("the known disjunction: %s or %s"
+                         % (" ".join(f[1]), " ".join(f[2])),
+                         [tuple(f[1]), tuple(f[2])]))
+    matching = [(name, members) for name, members in fams
                 if any(_norm(m) in norm_pool for m in members)]
     if not matching:
         return {"covered": False, "missing": [], "family": None}
@@ -548,6 +588,26 @@ def coverage(s, rule, cases, conclusion, refuted=()):
             return {"covered": True, "missing": [], "family": name}
         if best is None or len(missing) < len(best[1]):
             best = (name, missing)
+    # product splits: every case a conjunction of one member from each of
+    # two families (I.7: a vs CD crossed with d vs AC)
+    # A missing product member is reported as a LIST of facts (the
+    # conjunction); the page phrases it with "and" and opens it as one
+    # case with both hypotheses.
+    if not catch_all and cases and all(len(c) == 2 for c in cases):
+        best_prod = None
+        for i1, (n1, mem1) in enumerate(matching):
+            for n2, mem2 in matching[i1 + 1:]:
+                missing = [[list(m1), list(m2)]
+                           for m1 in mem1 for m2 in mem2
+                           if not member_covered(m1, (m2,))]
+                name = "%s, crossed with %s" % (n1, n2)
+                if not missing:
+                    return {"covered": True, "missing": [], "family": name}
+                if best_prod is None or len(missing) < len(best_prod[1]):
+                    best_prod = (name, missing)
+        if best_prod is not None:
+            return {"covered": False, "missing": best_prod[1],
+                    "family": best_prod[0]}
     return {"covered": False, "missing": best[1], "family": best[0]}
 
 
