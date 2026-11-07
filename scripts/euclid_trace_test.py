@@ -1323,7 +1323,14 @@ def test_prop7_lean_lines_cover_the_split_and_apply_lines():
     linked = []
     for s in TR7["steps"]:
         ln = s["lean"]["line"]
-        assert ln is not None, s  # every step linked (split included)
+        if s["rule"] in ("triple_incidence_1", "triple_incidence_2",
+                         "pasch_3_opposing",
+                         "opposing_opposing_same_side"):
+            # engine-only side-fact derivations (E-kimi-task-420):
+            # Lean's euclid_finish discharges them silently
+            assert ln is None and "engine-only" in s["lean_note"], s
+            continue
+        assert ln is not None, s
         line = lines[ln - 1]
         if s["rule"] == "by_contra":
             # the engine's by_contra renders Lean's 2x2 by_cases line
@@ -1374,7 +1381,15 @@ def test_prop7_cases_recorded():
     """Every branch step says which refuted case assumption it runs
     under; the split row carries the exhaustiveness note."""
     branch = [s for s in TR7["steps"][2:]]
-    assert len(branch) == 20
+    # 6 + 7 + 14 + 13: Lean-facing steps plus the in-branch side-fact
+    # derivations (E-kimi-task-420)
+    assert len(branch) == 40
+    # every derivation step is engine-only (no euclid_apply line)
+    derived = [s for s in branch if s["lean"]["line"] is None]
+    assert len(derived) == 20
+    assert {s["rule"] for s in derived} == \
+        {"triple_incidence_1", "triple_incidence_2", "pasch_3_opposing",
+         "opposing_opposing_same_side"}
     for s in branch:
         assert s.get("case"), s
         assert s["case"] in s["placement_decision"], s

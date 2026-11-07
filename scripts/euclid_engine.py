@@ -3155,8 +3155,20 @@ PROP6_STEPS_DATA = [
 # Book I.7 (Book/Prop07.lean): conclusion False. After CD is drawn, the two
 # nested by_cases (a vs CD, d vs AC) give four branches; a,b are off CD and
 # b,d off AC (derived in-state), so sameSide vs opposingSides is exhaustive
-# (Relations.lean:13-14). Side facts the branch steps need beyond the case
-# fact are carried as explicit branch assumptions (see comments in the test).
+# (Relations.lean:13-14). Each branch's hypotheses are EXACTLY the two split
+# facts; every further side fact the angle steps need (what Lean's
+# euclid_finish derives silently) is derived inside the branch by cited
+# System E diagrammatic axioms — triple_incidence_1/2
+# (Diagrammatic.lean:187,201), pasch_3_opposing (Diagrammatic.lean:161) and
+# opposing_opposing_same_side (derived, Diagrammatic.lean:127 double
+# contrapositive). E-kimi-task-420: the four branches previously ASSUMED
+# extra side facts (the old `extra` argument); review found none of them
+# entailed. Two of them (same_side c a DB in branches 2 and 3) are worse
+# than unentailed: their negation opposing_sides c a DB is DERIVABLE in
+# those branches (triple_incidence_1 (CB,DB,AB) from the derived
+# same_side d a CB / a d CB), so the old replay trusted the diagram for a
+# fact false in the case. No branch step ever needed it; branches 2 and 3
+# drop it, branches 1 and 4 derive the facts they do need.
 PROP7_HYPS_DATA = [
     (("dpl", "a", "b", "AB"), "h"),
     (("dpl", "a", "c", "AC"), "h"),
@@ -3170,56 +3182,104 @@ PROP7_HYPS_DATA = [
 ]
 
 
-def _prop7_branch(case_a, case_d, extra, steps):
+def _prop7_branch(case_a, case_d, steps):
+    # Hypotheses are EXACTLY the two split facts (a vs CD, d vs AC); every
+    # other side fact is derived by a cited step inside the branch.
     return ([("same_side" if case_a else "opposing_sides", "a", "b", "CD"),
-             ("same_side" if case_d else "opposing_sides", "d", "b", "AC")]
-            + extra, steps)
+             ("same_side" if case_d else "opposing_sides", "d", "b", "AC")],
+            steps)
 
 
 PROP7_STEPS_DATA = [
     ("line_from_points", ("c", "d"), {"L": "CD"}),
     ("by_contra", [
         # branch 1: a sameSide b CD, d sameSide b AC
-        _prop7_branch(True, True,
-                      [("same_side", "c", "a", "DB")], [
+        _prop7_branch(True, True, [
+            # c~a DB: c opposes b across AD (triple_incidence_1 over
+            # AC/AD/AB at a: d~b AC is the case fact, c~d AB a hyp), then
+            # triple_incidence_2 over CD/AD/DB at d turns a~b CD (case)
+            # and c opposing b AD into c~a DB.
+            ("triple_incidence_1", ("AC", "AD", "AB", "a", "c", "d", "b"),
+             {}),
+            ("triple_incidence_2", ("CD", "AD", "DB", "d", "c", "a", "b"),
+             {}),
             ("proposition_5'", ("a", "c", "d", "AC", "CD", "AD"), {}),
             ("sum_angles_onlyif", ("d", "c", "b", "a", "CD", "DB"), {}),
             ("proposition_5'", ("b", "c", "d", "CB", "CD", "DB"), {}),
             ("sum_angles_onlyif", ("c", "a", "d", "b", "AC", "CD"), {}),
         ]),
         # branch 2: a sameSide b CD, d opposingSides b AC
-        _prop7_branch(True, False,
-                      [("same_side", "c", "a", "DB"),
-                       ("same_side", "d", "a", "CB"),
-                       ("same_side", "c", "b", "AD")], [
+        _prop7_branch(True, False, [
+            # d~a CB: triple_incidence_2 over CD/AC/CB at c from a~b CD
+            # (case) and d opposing b AC (case). c~b AD: opposing c a DB
+            # (triple_incidence_1 over CB/DB/AB at b from d~a CB and the
+            # c~d AB hyp), then triple_incidence_2 over CD/DB/AD at d.
+            ("triple_incidence_2", ("CD", "AC", "CB", "c", "d", "a", "b"),
+             {}),
+            ("triple_incidence_1", ("CB", "DB", "AB", "b", "c", "d", "a"),
+             {}),
+            ("triple_incidence_2", ("CD", "DB", "AD", "d", "c", "b", "a"),
+             {}),
             ("proposition_5'", ("a", "d", "c", "AD", "CD", "AC"), {}),
             ("sum_angles_onlyif", ("c", "d", "b", "a", "CD", "CB"), {}),
             ("proposition_5'", ("b", "d", "c", "DB", "CD", "CB"), {}),
             ("sum_angles_onlyif", ("d", "a", "c", "b", "AD", "CD"), {}),
         ]),
         # branch 3: a opposingSides b CD, d sameSide b AC
-        _prop7_branch(False, True,
-                      [("same_side", "c", "a", "DB"),
-                       ("same_side", "e", "b", "CD"),
-                       ("same_side", "c", "f", "DB"),
-                       ("same_side", "b", "f", "CD")], [
+        _prop7_branch(False, True, [
             ("extend_point_not_on_line", ("AC", "CD", "a", "c"), {"x": "e"}),
             ("extend_point_not_on_line", ("AD", "CD", "a", "d"), {"x": "f"}),
-            ("proposition_5", ("a", "c", "d", "e", "f", "AC", "CD", "AD"), {}),
+            # b~e CD: e opposes a across CD (pasch_3_opposing on
+            # between a c e, c on CD); b also opposes a (case), so b~e
+            # (opposing_opposing_same_side). b~f CD likewise from
+            # between a d f.
+            ("pasch_3_opposing", ("a", "c", "e", "CD"), {}),
+            ("opposing_opposing_same_side", ("b", "a", "e", "CD"), {}),
+            ("pasch_3_opposing", ("a", "d", "f", "CD"), {}),
+            ("opposing_opposing_same_side", ("b", "a", "f", "CD"), {}),
+            # c~f DB: a~d CB (triple_incidence_2 over AC/CD/CB at c from
+            # d~b AC (case) and a opposing b CD (case)), so c opposes a
+            # across DB (triple_incidence_1 over CB/DB/AB at b); f also
+            # opposes a across DB (pasch_3_opposing on between a d f), so
+            # c~f (opposing_opposing_same_side).
+            ("triple_incidence_2", ("AC", "CD", "CB", "c", "a", "d", "b"),
+             {}),
+            ("triple_incidence_1", ("CB", "DB", "AB", "b", "c", "d", "a"),
+             {}),
+            ("pasch_3_opposing", ("a", "d", "f", "DB"), {}),
+            ("opposing_opposing_same_side", ("c", "a", "f", "DB"), {}),
+            ("proposition_5", ("a", "c", "d", "e", "f", "AC", "CD", "AD"),
+             {}),
             ("sum_angles_onlyif", ("c", "e", "d", "b", "AC", "CD"), {}),
             ("proposition_5'", ("b", "c", "d", "CB", "CD", "DB"), {}),
             ("sum_angles_onlyif", ("d", "c", "b", "f", "CD", "DB"), {}),
         ]),
         # branch 4: a opposingSides b CD, d opposingSides b AC
-        _prop7_branch(False, False,
-                      [("same_side", "c", "a", "DB"),
-                       ("same_side", "f", "b", "CD"),
-                       ("same_side", "c", "b", "AD"),
-                       ("same_side", "d", "e", "CB"),
-                       ("same_side", "b", "e", "CD")], [
+        _prop7_branch(False, False, [
             ("extend_point_not_on_line", ("AC", "CD", "a", "c"), {"x": "e"}),
             ("extend_point_not_on_line", ("AD", "CD", "a", "d"), {"x": "f"}),
-            ("proposition_5", ("a", "c", "d", "e", "f", "AC", "CD", "AD"), {}),
+            # b~e CD: e opposes a across CD (pasch_3_opposing), b opposes
+            # a (case), so b~e (opposing_opposing_same_side).
+            ("pasch_3_opposing", ("a", "c", "e", "CD"), {}),
+            ("opposing_opposing_same_side", ("b", "a", "e", "CD"), {}),
+            # d~e CB: triple_incidence_2 over CD/AC/CB at c from b~e CD
+            # (just derived) and d opposing b AC (case).
+            ("triple_incidence_2", ("CD", "AC", "CB", "c", "d", "e", "b"),
+             {}),
+            # c~b AD: b opposes d across AC (triple_incidence_1 over
+            # CB/AC/CD at c from d~e CB and b~e CD) — the case fact in the
+            # order triple_incidence_2 needs — then triple_incidence_2 over
+            # AB/AC/AD at a with the c~d AB hyp.
+            ("triple_incidence_1", ("CB", "AC", "CD", "c", "b", "e", "d"),
+             {}),
+            ("triple_incidence_2", ("AB", "AC", "AD", "a", "b", "c", "d"),
+             {}),
+            # b~f CD: f opposes a across CD (pasch_3_opposing on
+            # between a d f), b opposes a (case), so b~f.
+            ("pasch_3_opposing", ("a", "d", "f", "CD"), {}),
+            ("opposing_opposing_same_side", ("b", "a", "f", "CD"), {}),
+            ("proposition_5", ("a", "c", "d", "e", "f", "AC", "CD", "AD"),
+             {}),
             ("sum_angles_onlyif", ("d", "f", "c", "b", "AD", "CD"), {}),
             ("proposition_5'", ("b", "d", "c", "DB", "CD", "CB"), {}),
             ("sum_angles_onlyif", ("c", "d", "b", "e", "CD", "CB"), {}),

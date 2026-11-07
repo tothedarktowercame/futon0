@@ -2134,8 +2134,11 @@ def build_trace7_rows(hyps, steps):
     """I.7's engine proof is line_from_points (CD) then a by_contra
     whose four branches are Lean's 2x2 side split (see PROP7_STEPS_DATA;
     Lean's goal IS False, so the by_contra is the engine's rendering of
-    the two nested by_cases — both case facts and the side facts the
-    branches need are carried as explicit branch assumptions). The trace
+    the two nested by_cases). Each branch's hypotheses are exactly the
+    two case facts; the further side facts the angle steps need are
+    derived in-branch by cited diagrammatic axioms (E-kimi-task-420) —
+    those steps have no euclid_apply line (Lean's euclid_finish does
+    them silently) and get the generic engine-only Lean link. The trace
     flattens it: the CD step (Lean's line_from_points line), the split
     (Lean's by_cases line), then all four branches' steps, each replayed
     on a state copy and exhibited contradictory. Returns rows of
@@ -2174,12 +2177,19 @@ def build_trace7_rows(hyps, steps):
              "refuted (a by_cases branch must ENTAIL, not contradict). "
              "Exhaustiveness: a, b are off CD and d, b off AC (derived "
              "in-state), so System E's trichotomy (Relations.lean:13-14) "
-             "leaves exactly the four branches. The branch assumptions "
-             "beyond the two case facts are the in-state side "
-             "derivations, carried explicitly; " + DRAWN7)]
+             "leaves exactly the four branches. Each branch's hypotheses "
+             "are exactly the two case facts; the side facts the angle "
+             "steps need are derived in-branch by cited diagrammatic "
+             "axioms (E-kimi-task-420), shown as engine-only steps; "
+             + DRAWN7)]
     flat = [(r, a, b) for _assume, bsteps in branches for r, a, b in
             bsteps]
-    assert len(applies) == len(flat), (len(applies), len(flat))
+    # Only the Lean-facing steps (extend/proposition_5/sum_angles) have
+    # euclid_apply lines; the side-fact derivations are engine-only.
+    lean_facing = {"extend_point_not_on_line", "proposition_5",
+                   "proposition_5'", "sum_angles_onlyif"}
+    assert len(applies) == sum(1 for r, _a, _b in flat if r in
+                               lean_facing), (len(applies), len(flat))
     EXT_NOTE = ("note: Lean's line %d cites extend_point (extend the "
                 "line past the endpoint); the engine's "
                 "extend_point_not_on_line additionally lands the point "
@@ -2191,9 +2201,12 @@ def build_trace7_rows(hyps, steps):
         ok, _w = eng.contradictory(bstate)
         assert ok, "I.7 branch must end contradictory"
         for (r, a, b), rep in zip(bsteps, reps):
-            ln = applies.pop(0)
-            loc = ((rel, ln, EXT_NOTE % ln)
-                   if r == "extend_point_not_on_line" else (rel, ln))
+            if r in lean_facing:
+                ln = applies.pop(0)
+                loc = ((rel, ln, EXT_NOTE % ln)
+                       if r == "extend_point_not_on_line" else (rel, ln))
+            else:
+                loc = None  # euclid_finish does this silently in Lean
             rows.append((r, a, b, rep, loc, note))
     return rows, s
 

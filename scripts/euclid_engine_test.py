@@ -3683,3 +3683,65 @@ def test_proposition_25_citation_refused_wrong_way():
                        ("a", "b", "c", "d", "e", "f",
                         "AB", "BC", "AC", "DE", "EF", "DF"), {})
     assert "gt_len" in str(ei.value.premise)
+
+
+def _prop7_case_assumptions(steps_data):
+    """The assumption-fact lists of I.7's four by_contra branches."""
+    entry = [st for st in steps_data if st[0] == "by_contra"]
+    assert len(entry) == 1
+    return [facts for facts, _ in entry[0][1]]
+
+
+def _check_prop7_case_assumptions(steps_data):
+    """E-kimi-task-420: each I.7 case's hypotheses are EXACTLY the two
+    split facts (a vs CD, d vs AC). Every other side fact the branch steps
+    need must be derived by a cited System E step inside the branch, not
+    assumed."""
+    expected = [
+        [("same_side", "a", "b", "CD"), ("same_side", "d", "b", "AC")],
+        [("same_side", "a", "b", "CD"), ("opposing_sides", "d", "b", "AC")],
+        [("opposing_sides", "a", "b", "CD"), ("same_side", "d", "b", "AC")],
+        [("opposing_sides", "a", "b", "CD"),
+         ("opposing_sides", "d", "b", "AC")],
+    ]
+    assert _prop7_case_assumptions(steps_data) == expected
+
+
+def test_prop7_case_hypotheses_are_exactly_the_split_facts():
+    _check_prop7_case_assumptions(eng.PROP7_STEPS_DATA)
+    # and the replay still refutes every case
+    s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA,
+                        [("false",)])
+    assert s.has(("false",))
+    assert rep[-1]["final"]
+
+
+def test_prop7_case_hypotheses_catch_readded_assumption():
+    """The exact-hypotheses check catches an unentailed extra assumption
+    re-added to a case (the E-kimi-task-420 bad case: branch 1 previously
+    assumed same_side c a DB, entailed in no case)."""
+    tampered = [st for st in eng.PROP7_STEPS_DATA]
+    bc = tampered[1]
+    facts, steps = bc[1][0]
+    bad_facts = facts + [("same_side", "c", "a", "DB")]
+    tampered[1] = ("by_contra", [(bad_facts, steps)] + bc[1][1:], bc[2])
+    with pytest.raises(AssertionError):
+        _check_prop7_case_assumptions(tampered)
+
+
+def test_prop7_derived_side_facts_not_entailed_without_derivation():
+    """Each derived side fact is NOT already entailed by the case facts
+    alone: drop the derivation steps from branch 1 and the replay STUCKs
+    on the sum_angles_onlyif premise same_side c a DB (the exact bad case
+    the old data papered over by assuming it)."""
+    bc = eng.PROP7_STEPS_DATA[1]
+    facts, steps = bc[1][0]
+    stripped = [st for st in steps if st[0] != "triple_incidence_1"
+                and st[0] != "triple_incidence_2"]
+    tampered = [eng.PROP7_STEPS_DATA[0],
+                ("by_contra", [(facts, stripped)] + bc[1][1:], bc[2])]
+    with pytest.raises(eng.ByContraFailure) as ei:
+        eng.replay(eng.PROP7_HYPS_DATA, tampered, [("false",)])
+    kind, payload = ei.value.witness
+    assert kind == "stuck"
+    assert payload == ("same_side", "c", "a", "DB")
