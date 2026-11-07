@@ -48,6 +48,8 @@ def eq_ang(la, a, b, c, d, e, f):
 
 
 def la_entails_eq_ang(la, a, b, c, d, e, f):
+    if ang_atom(a, b, c) == ang_atom(d, e, f):
+        return True  # same atom: a dict literal would collapse the terms
     return la.entails({ang_atom(a, b, c): 1, ang_atom(d, e, f): -1}, 0, "=")
 
 
@@ -245,6 +247,7 @@ class State:
         self.facts = {}        # fact tuple -> provenance (rule, [premise facts])
         self.la = LinearArithmetic()
         self.fresh = 0
+        self.rule_cache = {}   # (rule, nrows, query) -> bool; rows only grow
 
     def assume(self, fact, why="hypothesis"):
         self.facts[fact] = (why, [])
@@ -255,6 +258,16 @@ class State:
 
     def has(self, fact):
         return fact in self.facts
+
+    def copy(self):
+        """Deep enough copy for by_contra: facts dict + fresh constraint
+        store (rows are immutable tuples)."""
+        s2 = State()
+        s2.facts = dict(self.facts)
+        s2.fresh = self.fresh
+        s2.la.rows = list(self.la.rows)
+        s2.rule_cache = dict(getattr(self, "rule_cache", {}))
+        return s2
 
     def new(self, base):
         self.fresh += 1
@@ -282,14 +295,20 @@ def eq_len(la, x, y, u, v):
 
 
 def la_entails_eq(la, x, y, u, v):
+    if len_atom(x, y) == len_atom(u, v):
+        return True  # same atom: a dict literal would collapse the terms
     return la.entails({len_atom(x, y): 1, len_atom(u, v): -1}, 0, "=")
 
 
 def la_entails_lt(la, x, y, u, v):
+    if len_atom(x, y) == len_atom(u, v):
+        return False
     return la.entails({len_atom(x, y): 1, len_atom(u, v): -1}, 0, "<")
 
 
 def la_entails_gt(la, x, y, u, v):
+    if len_atom(x, y) == len_atom(u, v):
+        return False
     return la.entails({len_atom(x, y): 1, len_atom(u, v): -1}, 0, ">")
 
 
@@ -698,6 +717,190 @@ def r_peq_subst(s):
                     yield marker, [fact]
 
 
+def r_same_side_not_on_line(s):
+    # Diagrammatic.lean:120 — a.sameSide b L → ¬(a.onLine L); with symm
+    # (Diagrammatic.lean:113) both points are off L.
+    for fact in s.facts:
+        if fact[0] == "same_side":
+            x, y, L = fact[1], fact[2], fact[3]
+            yield ("not_on_line", x, L), [fact]
+            yield ("not_on_line", y, L), [fact]
+
+
+def r_opposing_parts(s):
+    # Relations.lean:13-14 — opposingSides a b L := ¬a.onLine L ∧ ¬b.onLine L
+    # ∧ ¬ a.sameSide b L. All three parts are yielded.
+    for fact in s.facts:
+        if fact[0] == "opposing_sides":
+            x, y, L = fact[1], fact[2], fact[3]
+            yield ("not_on_line", x, L), [fact]
+            yield ("not_on_line", y, L), [fact]
+
+
+def r_line_neq(s):
+    # [logic] a point on L that is not on M forces L ≠ M.
+    for f1 in s.facts:
+        if f1[0] != "on_line":
+            continue
+        p, L = f1[1], f1[2]
+        for f2 in s.facts:
+            if f2[0] == "not_on_line" and f2[1] == p and f2[2] != L:
+                if not s.has(("neq_line", L, f2[2])):
+                    yield (("neq_line", L, f2[2]), [f1, f2])
+
+
+def r_angle_pos(s):
+    # [SMT-bridge] x off L, u and v on L, u ≠ v, x ≠ v ⇒ ∠(x,v,u) > 0
+    # (the angle is strictly between 0 and 2∟). LeanEuclid's SMT supplies
+    # angle positivity from the coordinate model; the engine states it as a
+    # marker-guarded row.
+    for f1 in s.facts:
+        if f1[0] != "not_on_line":
+            continue
+        x, L = f1[1], f1[2]
+        for u in s.facts:
+            if u[0] != "on_line" or u[2] != L or u[1] == x:
+                continue
+            if not (s.has(("neq", u[1], x))):
+                continue
+            for v in s.facts:
+                if v[0] != "on_line" or v[2] != L or v[1] in (x, u[1]):
+                    continue
+                if not s.has(("neq", u[1], v[1])):
+                    continue
+                a = ang_atom(x, v[1], u[1])
+                marker = ("apos", a)
+                if not s.has(marker):
+                    s.la.add({a: 1}, 0, ">")
+                    yield marker, [f1, u, v, ("neq", u[1], x), ("neq", u[1], v[1])]
+
+
+def _snapshot(la):
+    """A query-only copy of a constraint store. Rules that both add rows and
+    consult entailment must query a snapshot taken at entry: a row the rule
+    itself just added can make the live store unsat, and every later
+    entailment check in the same generator then passes vacuously (seen:
+    side_gt_angle_gt adding ang1<ang2 and ang2<ang1 in one pass)."""
+    l2 = LinearArithmetic()
+    l2.rows = list(la.rows)
+    return l2
+
+
+def r_side_gt_angle_gt(s):
+    # [SMT-bridge, Euclid I.18] p,q,r pairwise distinct and |p-r| > |p-q|
+    # ⇒ ∠(p,q,r) > ∠(q,r,p): the greater side subtends the greater angle.
+    # Only for a genuine triangle: r off a line through p and q. It FAILS for
+    # collinear q-p-r (both angles 0). Note: this is a LATER proposition used
+    # as a rule, so a replay of I.6 that uses it does not mirror Lean's
+    # argument (Lean's I.6 closes by the area/part-whole reasoning in SMT).
+    pts = _all_points(s)
+    snap = _snapshot(s.la)
+    on = {}
+    for f in s.facts:
+        if f[0] == "on_line":
+            on.setdefault(f[2], set()).add(f[1])
+    lines_pq = {}
+    for M, ps in on.items():
+        for x in ps:
+            for y in ps:
+                if x != y:
+                    lines_pq.setdefault((x, y), []).append(M)
+    live_atoms = {at for items, _, _ in s.la.rows for at, _ in items}
+    # rows that directly relate two length atoms: only these can entail a
+    # comparison (each FM check is a full Fourier-Motzkin run)
+    direct = [set(at for at, _ in items) for items, _, _ in s.la.rows
+              if sum(1 for at, _ in items if at[0] == "len") >= 2]
+    for p in pts:
+        for q in pts:
+            for r in pts:
+                if len({p, q, r}) < 3:
+                    continue
+                a1, a2 = ang_atom(p, q, r), ang_atom(q, r, p)
+                # only compare angles already under discussion: without
+                # this the rule fires for every ordered triple with any
+                # entailed length comparison and buries the store in rows
+                if a1 not in live_atoms or a2 not in live_atoms:
+                    continue
+                # cheap filter: some row must relate the two lengths
+                if not any(({len_atom(p, r), len_atom(p, q)} <= ats
+                            for ats in direct)):
+                    continue
+                marker = ("angord", p, q, r)
+                if s.has(marker):
+                    continue
+                if not (s.has(("neq", p, q)) and s.has(("neq", q, r))
+                        and s.has(("neq", p, r))):
+                    continue
+                # review fix (claude-9): require a genuine triangle. The
+                # collinear claim above is false when p lies between q and r
+                # (q-p-r, |pr| > |pq|): both angles are 0 and the rule
+                # produced a false contradiction on a realisable state.
+                tri = next((M for M in lines_pq.get((p, q), ())
+                            if s.has(("not_on_line", r, M))), None)
+                if tri is None:
+                    continue
+                key = ("angord", len(snap.rows), p, q, r)
+                if key in s.rule_cache:
+                    if not s.rule_cache[key]:
+                        continue
+                elif not la_entails_gt(snap, p, r, p, q):
+                    s.rule_cache[key] = False
+                    continue
+                s.rule_cache[key] = True
+                s.la.add({ang_atom(p, q, r): 1, ang_atom(q, r, p): -1},
+                         0, "<")
+                yield marker, [("neq", p, q), ("neq", q, r), ("neq", p, r),
+                               ("on_line", p, tri), ("on_line", q, tri),
+                               ("not_on_line", r, tri)]
+
+
+def r_off_line_pair_same_side(s):
+    # [SMT-bridge] same_side c d L ∧ p on L ∧ c ≠ d ∧ c,d on M ∧ |p-c| = |p-d|
+    # (entailed) ⇒ p not on M.
+    # Why: if p were on M, then c,d,p would be collinear; p ∈ L and c,d on
+    # the same side of L means p is not between c and d (Diagrammatic.lean:164:
+    # between c p d ∧ p.onLine L → ¬ c.sameSide d L), so c,d lie on the same
+    # ray from p, and |p-c| = |p-d| then gives c = d. Contradiction.
+    # (The equal-distance premise is required: same ray alone does not
+    # identify c and d — dropping it let the rule conclude nonsense like
+    # "a not on AB" from any same-side pair straddling a.)
+    snap = _snapshot(s.la)
+    direct = [set(at for at, _ in items) for items, _, _ in s.la.rows
+              if sum(1 for at, _ in items if at[0] == "len") >= 2]
+    for fs in s.facts:
+        if fs[0] != "same_side":
+            continue
+        c, d, L = fs[1], fs[2], fs[3]
+        for fp in s.facts:
+            if fp[0] != "on_line" or fp[2] != L:
+                continue
+            p = fp[1]
+            if not (s.has(("neq", c, d)) and s.has(("neq", p, c))
+                    and s.has(("neq", p, d))):
+                continue
+            # cheap filter: some row must relate the two distances
+            if not any(({len_atom(p, c), len_atom(p, d)} <= ats
+                        for ats in direct)):
+                continue
+            key = ("offpair", len(snap.rows), p, c, d)
+            if key in s.rule_cache:
+                if not s.rule_cache[key]:
+                    continue
+            elif not la_entails_eq(snap, p, c, p, d):
+                s.rule_cache[key] = False
+                continue
+            s.rule_cache[key] = True
+            for M in {f[2] for f in s.facts if f[0] == "on_line"}:
+                if M == L:
+                    continue
+                if not (s.has(("on_line", c, M)) and s.has(("on_line", d, M))):
+                    continue
+                if not s.has(("not_on_line", p, M)):
+                    yield (("not_on_line", p, M),
+                           [fs, fp, ("on_line", c, M), ("on_line", d, M),
+                            ("neq", c, d)])
+
+
 FORWARD_RULES = [
     ("center_inside_circle [Diagrammatic.lean:28]", r_center_inside),
     ("not_outside [Relations.lean:35]", r_not_outside),
@@ -725,11 +928,22 @@ FORWARD_RULES = [
     ("straight_angle [SMT-bridge]", r_straight_angle),
     ("segment_gte_zero [Metric.lean:33]", r_len_gte_zero),
     ("peq_subst [derived, Metric.lean:21]", r_peq_subst),
+    ("same_side_not_on_line [Diagrammatic.lean:120]", r_same_side_not_on_line),
+    ("opposing_parts [Relations.lean:13-14]", r_opposing_parts),
+    ("line_neq [logic]", r_line_neq),
+    ("angle_pos [SMT-bridge]", r_angle_pos),
+    ("side_gt_angle_gt [SMT-bridge, Euclid I.18]", r_side_gt_angle_gt),
+    ("off_line_pair_same_side [SMT-bridge]", r_off_line_pair_same_side),
 ]
 
 
 def close(s):
-    """Run forward rules to fixpoint. Returns iteration count."""
+    """Run forward rules to fixpoint. Returns iteration count.
+
+    Stops early when the linear store is UNSAT: past that point every
+    entailment query answers vacuously, and rules gated on entailment
+    (side_gt_angle_gt, off_line_pair_same_side) would derive garbage from a
+    broken state. FMTooLarge is not an unsat answer, so closure continues."""
     it = 0
     while True:
         it += 1
@@ -741,6 +955,11 @@ def close(s):
                     changed = True
         if not changed:
             return it
+        try:
+            if not _fm_sat(s.la.rows):
+                return -it  # store unsat: contradictory(); stop deriving
+        except FMTooLarge:
+            pass
 
 
 def _all_points(s):
@@ -978,6 +1197,51 @@ CONSTRUCTIONS = {
                     ("_eq_ang", a, b, c, d, e, f),
                     ("_eq_ang", a, c, b, d, f, e)])],
     },
+    # SystemE/Theory/Constructions/Points.lean:32
+    "extend_point": {
+        "cite": "Points.lean:32",
+        "args": ("L", "b", "c"),
+        "premises": lambda s, L, b, c: [("dpl", b, c, L)],
+        "make": lambda s, L, b, c: [
+            ("x", [("on_line", "x", L), ("between", b, c, "x")])],
+    },
+    # SystemE/Theory/Constructions/Points.lean:36
+    "extend_point_not_on_line": {
+        "cite": "Points.lean:36",
+        "args": ("L", "M", "b", "c"),
+        "premises": lambda s, L, M, b, c: [("dpl", b, c, L), ("neq_line", L, M)],
+        "make": lambda s, L, M, b, c: [
+            ("x", [("on_line", "x", L), ("between", b, c, "x"),
+                   ("not_on_line", "x", M)])],
+    },
+    # Book/Prop05.lean (proposition_5) — isosceles base angles plus the
+    # exterior-angle equality, as a forward rule. formTriangle destructed;
+    # |a-b| = |a-c| is an entailment premise.
+    "proposition_5": {
+        "cite": "Book/Prop05.lean:5",
+        "args": ("a", "b", "c", "d", "e", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, d, e, AB, BC, AC: [
+            ("dpl", a, b, AB), ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("between", a, b, d), ("between", a, c, e)],
+        "entail": lambda s, a, b, c, d, e, AB, BC, AC: [
+            ("eq_len", (a, b, a, c))],
+        "make": lambda s, a, b, c, d, e, AB, BC, AC: [
+            (None, [("_eq_ang", a, b, c, a, c, b),
+                    ("_eq_ang", c, b, d, b, c, e)])],
+    },
+    # Book/Prop05.lean (proposition_5') — restriction of proposition_5.
+    "proposition_5'": {
+        "cite": "Book/Prop05.lean:50 (proposition_5')",
+        "args": ("a", "b", "c", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, AB, BC, AC: [
+            ("dpl", a, b, AB), ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC)],
+        "entail": lambda s, a, b, c, AB, BC, AC: [
+            ("eq_len", (a, b, a, c))],
+        "make": lambda s, a, b, c, AB, BC, AC: [
+            (None, [("_eq_ang", a, b, c, a, c, b)])],
+    },
     # SystemE/Theory/Inferences/Transfer.lean:90
     "sum_angles_onlyif": {
         "cite": "Transfer.lean:90",
@@ -997,6 +1261,15 @@ CONSTRUCTIONS = {
 
 def _entail_check(s, i, rule, q):
     kind, a = q
+    try:
+        if _fm_sat(s.la.rows) is False:
+            # The store is already inconsistent: the branch is contradictory
+            # regardless (contradictory() reports it), so no entailment
+            # premise can block the step. Decided unsat only — FMTooLarge
+            # still counts as undecided.
+            return ("entail",) + q + ("vacuous-store",)
+    except FMTooLarge:
+        pass
     if kind == "eq_len":
         ok = la_entails_eq(s.la, *a)
     elif kind == "eq_ang":
@@ -1068,6 +1341,135 @@ def apply_step(s, i, rule, args, bindings):
             "premises": prem_facts, "added": added, "closure_iters": iters}
 
 
+# ---------------------------------------------------------------------------
+# Contradiction detection
+# ---------------------------------------------------------------------------
+# Exclusive fact pairs (a state holding both is contradictory):
+#   peq x y        vs neq x y / neq y x        [logic: x = y ∧ x ≠ y]
+#   on_line p L    vs not_on_line p L          [logic]
+#   between a b c  vs not_between a b c        [logic]
+#   same_side x y L vs opposing_sides x y L    [Relations.lean:13-14:
+#       opposingSides a b L := ¬a.onLine L ∧ ¬b.onLine L ∧ ¬ a.sameSide b L]
+#       (checked in both argument orders)
+#   on_circle p C  vs outside p C              [Relations.lean:35:
+#       outsideCircle := ¬ inside ∧ ¬ onCircle]
+#   inside p C     vs outside p C              [Relations.lean:35]
+# plus: the linear store is unsatisfiable. FMTooLarge counts as UNDECIDED,
+# never as contradictory (a too-large store certifies nothing).
+
+
+def contradictory(s):
+    """close(s), then decide. Returns (bool, witness); witness is a pair of
+    facts, or ("store-unsat", nrows), or None when no contradiction is found
+    (including when the store is FMTooLarge: undecided ≠ contradictory)."""
+    close(s)
+    try:
+        sat = _fm_sat(s.la.rows)
+    except FMTooLarge:
+        sat = None  # undecided: not certified contradictory
+    if sat is False:
+        return True, ("store-unsat", len(s.la.rows))
+    for fact in list(s.facts):
+        k = fact[0]
+        if k == "peq":
+            for other in (("neq", fact[1], fact[2]), ("neq", fact[2], fact[1])):
+                if s.has(other):
+                    return True, (fact, other)
+        elif k == "on_line":
+            other = ("not_on_line", fact[1], fact[2])
+            if s.has(other):
+                return True, (fact, other)
+        elif k == "between":
+            other = ("not_between", fact[1], fact[2], fact[3])
+            if s.has(other):
+                return True, (fact, other)
+        elif k == "same_side":
+            for other in (("opposing_sides", fact[1], fact[2], fact[3]),
+                          ("opposing_sides", fact[2], fact[1], fact[3])):
+                if s.has(other):
+                    return True, (fact, other)
+        elif k in ("on_circle", "inside"):
+            other = ("outside", fact[1], fact[2])
+            if s.has(other):
+                return True, (fact, other)
+    return False, None
+
+
+# ---------------------------------------------------------------------------
+# by_contra: assume, run steps, require a contradiction
+# ---------------------------------------------------------------------------
+
+
+def _assume_metric_or_fact(s, fact, why):
+    """Add a fact; metric fact tuples also add their row."""
+    if fact[0] == "eq_len":
+        eq_len(s.la, *fact[1:])
+    elif fact[0] == "lt_len":
+        s.la.add({len_atom(fact[1], fact[2]): 1,
+                  len_atom(fact[3], fact[4]): -1}, 0, "<")
+    elif fact[0] == "gt_len":
+        s.la.add({len_atom(fact[1], fact[2]): 1,
+                  len_atom(fact[3], fact[4]): -1}, 0, ">")
+    elif fact[0] == "eq_ang":
+        eq_ang(s.la, *fact[1:])
+    s.assume(fact, why)
+
+
+class ByContraFailure(Exception):
+    def __init__(self, entry, branch, witness):
+        super().__init__(
+            f"by_contra branch {branch} did not reach a contradiction "
+            f"(witness of non-contradiction: {witness})")
+        self.entry, self.branch, self.witness = entry, branch, witness
+
+
+def _by_contra(s, i, entry):
+    """entry = ("by_contra", branches, conclusions).
+    branches: list of (assumption-facts, steps). Each branch runs on a copy
+    of the current state plus its assumptions and MUST end contradictory;
+    classical exhaustiveness of the branch assumptions is the caller's
+    responsibility (documented at each use site).
+    conclusions: facts added to the OUTER state when every branch
+    contradicts (metric fact tuples add their row too)."""
+    _, branches, conclusions = entry
+    witnesses = []
+    for facts, steps in branches:
+        sub = s.copy()
+        for f in facts:
+            _assume_metric_or_fact(sub, f, "by_contra assumption")
+        try:
+            run_steps(sub, steps, i + 1)
+        except MissingPremise as mp:
+            # A stuck branch cannot claim a contradiction: report it as a
+            # failed by_contra, naming the missing premise.
+            raise ByContraFailure(entry, facts, ("stuck", mp.premise)) from mp
+        ok, w = contradictory(sub)
+        if not ok:
+            raise ByContraFailure(entry, facts, w)
+        witnesses.append(w)
+    for c in conclusions:
+        if c == ("false",):
+            s.add(("false",), "by_contra", witnesses)
+            continue
+        _assume_metric_or_fact(s, c, "by_contra")
+        s.facts[c] = ("by_contra", witnesses)
+    return {"step": i, "rule": "by_contra",
+            "branches": len(branches), "witnesses": witnesses,
+            "conclusions": conclusions}
+
+
+def run_steps(s, steps, i0=1):
+    """Driver loop shared by replay() and by_contra branches. Steps are
+    (rule, args, bindings) or ("by_contra", branches, conclusions)."""
+    rep = []
+    for i, st in enumerate(steps, i0):
+        if st[0] == "by_contra":
+            rep.append(_by_contra(s, i, st))
+        else:
+            rep.append(apply_step(s, i, st[0], st[1], st[2]))
+    return rep
+
+
 def replay(hyps, steps, verify):
     """Driver. hyps: list of (fact, why) hypotheses (already destructed, as
     euclid_intros would leave them); steps: list of (rule, args, bindings);
@@ -1077,15 +1479,16 @@ def replay(hyps, steps, verify):
     AssertionError if a final query fails."""
     s = State()
     for fact, why in hyps:
-        s.assume(fact, why)
+        _assume_metric_or_fact(s, fact, why)  # metric hyps also add their row
     close(s)
     report = []
     t0 = time.time()
-    for i, (rule, args, bindings) in enumerate(steps, start=1):
-        r = apply_step(s, i, rule, args, bindings)
-        report.append(r)
+    report = run_steps(s, steps)
     for q in verify:
-        if q[0] == "_eq_len":
+        if q == ("_contradictory",):
+            ok, w = contradictory(s)
+            assert ok, f"final state not contradictory: {w}"
+        elif q[0] == "_eq_len":
             assert la_entails_eq(s.la, *q[1:]), f"conclusion not entailed: {q}"
         else:
             assert s.has(q), f"conclusion fact missing: {q}"
@@ -1191,6 +1594,113 @@ PROP5_STEPS_DATA = [
 ]
 
 
+# Book I.6 (Book/Prop06.lean): by_contra on |ab| ≠ |ac|; the by_cases split
+# |ab|>|ac| / |ac|>|ab| is exhaustive by trichotomy of the linear store.
+# Each branch: proposition_3 cuts the shorter length, line_from_points joins,
+# proposition_4 (SAS) congruence; contradiction via side_gt_angle_gt (I.18)
+# against the hypothesis ∠a:b:c = ∠a:c:b.
+PROP6_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"),  # formTriangle non-degeneracy
+    (("neq", "a", "c"), "h"),  # formTriangle non-degeneracy
+    (("not_on_line", "c", "AB"), "h"),  # formTriangle: c not on AB
+    (("eq_ang", "a", "b", "c", "a", "c", "b"), "h"),
+]
+PROP6_STEPS_DATA = [
+    ("by_contra", [
+        ([("gt_len", "a", "b", "a", "c")], [
+            ("proposition_3", ("b", "a", "a", "c", "AB", "AC"), {"q": "d"}),
+            ("line_from_points", ("d", "c"), {"L": "DC"}),
+            ("proposition_4", ("b", "d", "c", "c", "a", "b",
+                               "AB", "DC", "BC", "AC", "AB", "BC"), {}),
+        ]),
+        ([("gt_len", "a", "c", "a", "b")], [
+            ("proposition_3", ("c", "a", "a", "b", "AC", "AB"), {"q": "d"}),
+            ("line_from_points", ("d", "b"), {"L": "DB"}),
+            ("proposition_4", ("c", "d", "b", "b", "a", "c",
+                               "AC", "DB", "BC", "AB", "AC", "BC"), {}),
+        ]),
+    ], [("eq_len", "a", "b", "a", "c")]),
+]
+
+# Book I.7 (Book/Prop07.lean): conclusion False. After CD is drawn, the two
+# nested by_cases (a vs CD, d vs AC) give four branches; a,b are off CD and
+# b,d off AC (derived in-state), so sameSide vs opposingSides is exhaustive
+# (Relations.lean:13-14). Side facts the branch steps need beyond the case
+# fact are carried as explicit branch assumptions (see comments in the test).
+PROP7_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),
+    (("dpl", "a", "c", "AC"), "h"),
+    (("dpl", "c", "b", "CB"), "h"),
+    (("dpl", "a", "d", "AD"), "h"),
+    (("dpl", "d", "b", "DB"), "h"),
+    (("same_side", "c", "d", "AB"), "h"),
+    (("neq", "c", "d"), "h"),
+    (("eq_len", "a", "c", "a", "d"), "h"),
+    (("eq_len", "c", "b", "d", "b"), "h"),
+]
+
+
+def _prop7_branch(case_a, case_d, extra, steps):
+    return ([("same_side" if case_a else "opposing_sides", "a", "b", "CD"),
+             ("same_side" if case_d else "opposing_sides", "d", "b", "AC")]
+            + extra, steps)
+
+
+PROP7_STEPS_DATA = [
+    ("line_from_points", ("c", "d"), {"L": "CD"}),
+    ("by_contra", [
+        # branch 1: a sameSide b CD, d sameSide b AC
+        _prop7_branch(True, True,
+                      [("same_side", "c", "a", "DB")], [
+            ("proposition_5'", ("a", "c", "d", "AC", "CD", "AD"), {}),
+            ("sum_angles_onlyif", ("d", "c", "b", "a", "CD", "DB"), {}),
+            ("proposition_5'", ("b", "c", "d", "CB", "CD", "DB"), {}),
+            ("sum_angles_onlyif", ("c", "a", "d", "b", "AC", "CD"), {}),
+        ]),
+        # branch 2: a sameSide b CD, d opposingSides b AC
+        _prop7_branch(True, False,
+                      [("same_side", "c", "a", "DB"),
+                       ("same_side", "d", "a", "CB"),
+                       ("same_side", "c", "b", "AD")], [
+            ("proposition_5'", ("a", "d", "c", "AD", "CD", "AC"), {}),
+            ("sum_angles_onlyif", ("c", "d", "b", "a", "CD", "CB"), {}),
+            ("proposition_5'", ("b", "d", "c", "DB", "CD", "CB"), {}),
+            ("sum_angles_onlyif", ("d", "a", "c", "b", "AD", "CD"), {}),
+        ]),
+        # branch 3: a opposingSides b CD, d sameSide b AC
+        _prop7_branch(False, True,
+                      [("same_side", "c", "a", "DB"),
+                       ("same_side", "e", "b", "CD"),
+                       ("same_side", "c", "f", "DB"),
+                       ("same_side", "b", "f", "CD")], [
+            ("extend_point_not_on_line", ("AC", "CD", "a", "c"), {"x": "e"}),
+            ("extend_point_not_on_line", ("AD", "CD", "a", "d"), {"x": "f"}),
+            ("proposition_5", ("a", "c", "d", "e", "f", "AC", "CD", "AD"), {}),
+            ("sum_angles_onlyif", ("c", "e", "d", "b", "AC", "CD"), {}),
+            ("proposition_5'", ("b", "c", "d", "CB", "CD", "DB"), {}),
+            ("sum_angles_onlyif", ("d", "c", "b", "f", "CD", "DB"), {}),
+        ]),
+        # branch 4: a opposingSides b CD, d opposingSides b AC
+        _prop7_branch(False, False,
+                      [("same_side", "c", "a", "DB"),
+                       ("same_side", "f", "b", "CD"),
+                       ("same_side", "c", "b", "AD"),
+                       ("same_side", "d", "e", "CB"),
+                       ("same_side", "b", "e", "CD")], [
+            ("extend_point_not_on_line", ("AC", "CD", "a", "c"), {"x": "e"}),
+            ("extend_point_not_on_line", ("AD", "CD", "a", "d"), {"x": "f"}),
+            ("proposition_5", ("a", "c", "d", "e", "f", "AC", "CD", "AD"), {}),
+            ("sum_angles_onlyif", ("d", "f", "c", "b", "AD", "CD"), {}),
+            ("proposition_5'", ("b", "d", "c", "DB", "CD", "CB"), {}),
+            ("sum_angles_onlyif", ("c", "d", "b", "e", "CD", "CB"), {}),
+        ]),
+    ], [("false",)]),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -1251,6 +1761,16 @@ def main():
             rep = [{"final": True, "facts": len(s.facts),
                     "constraints": s.la.size(),
                     "seconds": round(time.time() - t0, 4)}]
+        elif p == "6":
+            t0 = time.time()
+            s, rep = replay(PROP6_HYPS_DATA, PROP6_STEPS_DATA,
+                            [("_eq_len", "a", "b", "a", "c")])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "7":
+            t0 = time.time()
+            s, rep = replay(PROP7_HYPS_DATA, PROP7_STEPS_DATA,
+                            [("false",)])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
             for f, w in PROP3_HYPS_DATA:

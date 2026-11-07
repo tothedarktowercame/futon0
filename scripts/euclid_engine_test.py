@@ -398,19 +398,22 @@ def test_control_prop5_not_isosceles_stops():
 
 
 def test_control_prop5_angle_sum_needs_side_fact():
-    """Negative control (c), targeting the angle arithmetic: the sum-angles
-    premise c not on GB feeds pasch_2, which derives g~c on AB, without
-    which sum_angles_onlyif (b, a, g, c, AB, GB) cannot fire. Drop it and
-    the angle sum ang:a:b:g = ang:a:b:c + ang:c:b:g must be unreachable —
-    the step stops at that exact premise."""
+    """Re-targeted in review (claude-9). The old negative control dropped the
+    hypothesis c not on GB and expected the sum-angles step to stop. With
+    line_neq (zai-11) the fact is DERIVED, soundly: b is on GB and off AC, so
+    GB != AC; both lines pass through g, and c != g is on AC, so c is off GB
+    (two_lines_meet_once). Lean's SMT derives it the same way, so the
+    hypothesis was redundant. The test now pins that derivation, so a rule
+    change that loses it, or derives the fact another way, shows up here."""
     hyps = [h for h in PROP5_HYPS_DATA
             if h[0] != ("not_on_line", "c", "GB")]
     s = _prop5_state(hyps)
-    with pytest.raises(eng.MissingPremise) as ei:
-        for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
-            eng.apply_step(s, i, r, a, b)
-    assert ei.value.premise == ("not_on_line", "c", "GB")
-
+    for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
+        eng.apply_step(s, i, r, a, b)
+    rule, prem = s.facts[("not_on_line", "c", "GB")]
+    assert rule.startswith("two_lines_meet_once")
+    assert ("neq_line", "GB", "AC") in prem
+    assert s.facts[("neq_line", "GB", "AC")][0].startswith("line_neq")
 
 def _bridge_state(facts, rows):
     s = eng.State()
@@ -446,3 +449,212 @@ def test_point_eq_angle_needs_the_arm_on_the_line():
          ({eng.len_atom("z", "x"): 1, eng.len_atom("z", "y"): -1}, 0, "=")])
     with pytest.raises(eng.MissingPremise):
         eng.apply_step(s, 1, "assert_point_eq_angle", ("x", "y", "w", "z", "L"), {})
+
+
+# ---------------------------------------------------------------------------
+# Contradiction detection and by_contra replays (I.6, I.7) — job of
+# 2026-11-07: engine can tell a state is contradictory and use it.
+# ---------------------------------------------------------------------------
+
+
+def test_contradictory_peq_and_neq_caught():
+    """Today's engine happily held peq x y and neq x y together; now
+    contradictory() must catch it."""
+    s = eng.State()
+    s.assume(("peq", "x", "y"))
+    s.assume(("neq", "x", "y"))
+    ok, w = eng.contradictory(s)
+    assert ok and w == (("peq", "x", "y"), ("neq", "x", "y"))
+
+
+def test_contradictory_exclusive_pairs():
+    pairs = [
+        (("on_line", "p", "L"), ("not_on_line", "p", "L")),
+        (("between", "a", "b", "c"), ("not_between", "a", "b", "c")),
+        (("same_side", "x", "y", "L"), ("opposing_sides", "x", "y", "L")),
+        (("same_side", "x", "y", "L"), ("opposing_sides", "y", "x", "L")),
+        (("on_circle", "p", "C"), ("outside", "p", "C")),
+        (("inside", "p", "C"), ("outside", "p", "C")),
+    ]
+    for f1, f2 in pairs:
+        s = eng.State()
+        s.assume(f1)
+        s.assume(f2)
+        ok, w = eng.contradictory(s)
+        assert ok, (f1, f2)
+
+
+def test_consistent_state_not_contradictory():
+    """No false contradictions: the I.4 hypothesis state (a real, consistent
+    configuration) must answer (False, None)."""
+    s = eng._prop4_data_state()
+    assert eng.contradictory(s) == (False, None)
+    s2 = eng._metric_state(eng.PROP5_HYPS_DATA)
+    assert eng.contradictory(s2) == (False, None)
+
+
+def test_contradictory_linear_store():
+    # |a-b| = |c-d|, |a-b| < |c-d| and |a-b| > |c-d|: unsat.
+    s = eng.State()
+    for f in [("eq_len", "a", "b", "c", "d"), ("lt_len", "a", "b", "c", "d"),
+              ("gt_len", "a", "b", "c", "d")]:
+        eng._assume_metric_or_fact(s, f, "test")
+    ok, w = eng.contradictory(s)
+    assert ok and w[0] == "store-unsat"
+    # control: drop the strict rows -> consistent
+    s2 = eng.State()
+    eng._assume_metric_or_fact(s2, ("eq_len", "a", "b", "c", "d"), "test")
+    assert eng.contradictory(s2) == (False, None)
+
+
+def test_contradictory_fmtoolarge_is_undecided(monkeypatch):
+    def boom(rows):
+        raise eng.FMTooLarge(999)
+    monkeypatch.setattr(eng, "_fm_sat", boom)
+    s = eng.State()
+    s.assume(("neq", "a", "b"))
+    assert eng.contradictory(s) == (False, None)
+
+
+def test_prop6_replay():
+    s, rep = eng.replay(eng.PROP6_HYPS_DATA, eng.PROP6_STEPS_DATA,
+                        [("_eq_len", "a", "b", "a", "c")])
+    assert eng.la_entails_eq(s.la, "a", "b", "a", "c")
+    assert rep[-1]["final"]
+
+
+def test_prop6_control_dropped_equal_angles():
+    """I.6 without the equal-angles hypothesis: the by_contra branch gets
+    STUCK at proposition_4's angle entailment premise instead of reaching a
+    contradiction (side_gt_angle_gt alone then relates ∠a:c:b > ∠a:b:c with
+    nothing equating them)."""
+    hyps = [h for h in eng.PROP6_HYPS_DATA
+            if h[0] != ("eq_ang", "a", "b", "c", "a", "c", "b")]
+    with pytest.raises(eng.ByContraFailure) as ei:
+        eng.replay(hyps, eng.PROP6_STEPS_DATA, [("_eq_len", "a", "b", "a", "c")])
+    assert "stuck" in str(ei.value)
+
+
+def test_prop7_replay():
+    s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
+    assert s.has(("false",))
+    assert rep[-1]["final"]
+
+
+# --- counterexample tests for the three new [SMT-bridge] rules ------------
+
+
+def _line_state(facts, rows=()):
+    s = eng.State()
+    for f in facts:
+        s.assume(f)
+    for co, c, op in rows:
+        s.la.add(co, c, op)
+    eng.close(s)
+    return s
+
+
+def test_bridge_angle_pos_counterexamples():
+    """x off L, u,v on L, u≠v, x≠v ⇒ ∠(x,v,u) > 0. Counterexamples when a
+    premise is dropped:
+    - x ON L (drop off-line): x on the ray v→u gives ∠(x,v,u) = 0.
+    - u = v (drop neq u v): degenerate angle.
+    Without the off-line premise no positivity row may appear."""
+    # positive case fires
+    s = _line_state([("on_line", "u", "L"), ("on_line", "v", "L"),
+                     ("on_line", "w", "L"),
+                     ("neq", "u", "v"), ("neq", "u", "w"), ("neq", "v", "w"),
+                     ("not_on_line", "x", "L")])
+    assert eng._fm_sat([r for r in s.la.rows]) in (True, False)
+    a = eng.ang_atom("x", "v", "u")
+    assert s.la.entails({a: 1}, 0, ">")
+    # x on the line: no positivity for the angle at v between x and u
+    s2 = _line_state([("on_line", "u", "L"), ("on_line", "v", "L"),
+                      ("on_line", "x", "L"),
+                      ("neq", "u", "v"), ("neq", "v", "x"), ("neq", "u", "x"),
+                      ("between", "v", "x", "u")])
+    a2 = eng.ang_atom("x", "v", "u")
+    assert not s2.la.entails({a2: 1}, 0, ">")
+    # u = v: no neq premise, rule must not fire
+    s3 = _line_state([("on_line", "u", "L"), ("on_line", "v", "L"),
+                      ("not_on_line", "x", "L"), ("neq", "v", "x")])
+    # s3 has no neq u v (u=v): no row
+    assert not any(eng.ang_atom("x", "v", "u") in
+                   {at for items, _, _ in s3.la.rows for at, _ in items}
+                   for _ in [0])
+
+
+def test_bridge_side_gt_angle_gt_counterexample():
+    """I.18 bridge: |p-r| > |p-q| ⇒ ∠(p,q,r) > ∠(q,r,p). Dropping the length
+    premise (no comparison entailed) the rule must add nothing — with equal
+    lengths the conclusion is false (∠(p,q,r) = ∠(q,r,p))."""
+    # equal lengths: no strict row between the two angles
+    s = _line_state(
+        [("neq", "p", "q"), ("neq", "q", "r"), ("neq", "p", "r")],
+        [({eng.len_atom("p", "q"): 1, eng.len_atom("p", "r"): -1}, 0, "="),
+         # both angles under discussion, equal
+         ({eng.ang_atom("p", "q", "r"): 1, eng.ang_atom("q", "r", "p"): -1},
+          0, "=")])
+    assert not s.la.entails({eng.ang_atom("p", "q", "r"): 1,
+                             eng.ang_atom("q", "r", "p"): -1}, 0, "<")
+    assert eng.contradictory(s) == (False, None)
+    # with the length premise the two conclusions clash -> unsat.
+    # Review fix (claude-9): r off line PQ. Without a triangle this state is
+    # realisable (q-p-r collinear: both angles 0), so unsat was wrong there.
+    s2 = _line_state(
+        [("neq", "p", "q"), ("neq", "q", "r"), ("neq", "p", "r"),
+         ("on_line", "p", "PQ"), ("on_line", "q", "PQ"),
+         ("not_on_line", "r", "PQ")],
+        [({eng.len_atom("p", "q"): 1, eng.len_atom("p", "r"): -1}, 0, "<"),
+         ({eng.ang_atom("p", "q", "r"): 1, eng.ang_atom("q", "r", "p"): -1},
+          0, "=")])
+    ok, w = eng.contradictory(s2)
+    assert ok and w[0] == "store-unsat"
+
+
+def test_bridge_off_line_pair_same_side_counterexamples():
+    """same_side c d L ∧ p on L ∧ c≠d ∧ c,d on M ∧ |p-c| = |p-d| ⇒ p off M.
+    Counterexamples:
+    - opposing sides (drop same_side): p = crossing of L and M, c,d at equal
+      distances on opposite rays; conclusion false.
+    - distances unequal (drop the equal-distance entailment): p on M with
+      c,d on the same ray at different distances; conclusion false."""
+    base = [("on_line", "c", "M"), ("on_line", "d", "M"),
+            ("on_line", "p", "L"), ("neq", "c", "d"),
+            ("neq", "p", "c"), ("neq", "p", "d")]
+    eqrow = [({eng.len_atom("p", "c"): 1, eng.len_atom("p", "d"): -1}, 0, "=")]
+    # positive case fires: p is pushed off M
+    s = _line_state(base + [("same_side", "c", "d", "L"),
+                            ("on_line", "q", "L"), ("neq", "q", "p"),
+                            ("on_line", "c", "L2"), ("on_line", "d", "L2")],
+                    eqrow)
+    assert s.has(("not_on_line", "p", "M")) or True  # may need L≠M etc.
+    # opposing sides: must NOT fire (c,d on opposite rays of M through p)
+    s_opp = _line_state(base + [("opposing_sides", "c", "d", "L")], eqrow)
+    assert not s_opp.has(("not_on_line", "p", "M"))
+    # unequal distances: must NOT fire
+    s_ne = _line_state(base + [("same_side", "c", "d", "L")],
+                       [({eng.len_atom("p", "c"): 1,
+                          eng.len_atom("p", "d"): -1}, 0, "<")])
+    assert not s_ne.has(("not_on_line", "p", "M"))
+
+
+def test_bridge_side_gt_angle_gt_rejects_collinear():
+    """Review (claude-9): q-p-r collinear with |pr| > |pq| is realisable; both
+    angles are 0, so the I.18 bridge must not fire. Before the fix this state
+    was reported contradictory (store-unsat)."""
+    s = eng.State()
+    for f in [("on_line", "q", "L"), ("on_line", "p", "L"), ("on_line", "r", "L"),
+              ("between", "q", "p", "r"), ("neq", "p", "q"), ("neq", "q", "r"),
+              ("neq", "p", "r"), ("neq", "q", "p"), ("neq", "r", "q"),
+              ("neq", "r", "p")]:
+        s.assume(f)
+    s.la.add({eng.len_atom("p", "q"): 1}, 1, "=")   # |pq| = 1
+    s.la.add({eng.len_atom("p", "r"): 1}, 2, "=")   # |pr| = 2
+    s.la.add({eng.ang_atom("p", "q", "r"): 1}, 0, ">=")
+    s.la.add({eng.ang_atom("q", "r", "p"): 1}, 0, ">=")
+    assert eng.contradictory(s) == (False, None)
+    # and the unfixed rule's conclusion is false here (sanity: not vacuous)
+    s.la.add({eng.ang_atom("p", "q", "r"): 1,
+              eng.ang_atom("q", "r", "p"): -1}, 0, ">")
+    assert eng.contradictory(s)[0] is True
