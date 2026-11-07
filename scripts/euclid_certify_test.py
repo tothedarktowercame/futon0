@@ -268,8 +268,11 @@ def test_negative_engine_i11_false_hsm_assert():
              if r_ == "euclid_assert" else (r_, a, b)
              for (r_, a, b) in cert.engine_steps("I.11")]
     assert any(r_ == "euclid_assert" for (r_, _a, _b) in steps)
-    r = cert.check_lean(_i11_src(steps), "test_neg_I11_hsm", timeout=120)
+    r = cert.check_lean(_i11_src(steps), "test_neg_I11_hsm", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I11_hsm.lean"],
@@ -324,8 +327,11 @@ def test_negative_engine_i12_perpendicular_if_wrong_foot():
              if r_ == "perpendicular_if" else (r_, a, b)
              for (r_, a, b) in cert.engine_steps("I.12")]
     r = cert.check_lean(cert.emit_proof("I.12-engine", steps, "h"),
-                        "test_neg_I12_foot", timeout=120)
+                        "test_neg_I12_foot", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I12_foot.lean"],
@@ -422,6 +428,9 @@ def test_negative_prop5_swapped_sas_times_out_and_leaves_no_lean():
     r = cert.check_lean(cert.emit_proof("I.5", steps, None),
                         "test_neg_prop5_swap", timeout=30)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     # SIGKILL delivery is asynchronous: allow a few seconds for the group to
     # go (one suite run saw a failure here that did not reproduce in 3 reruns)
     import time
@@ -493,8 +502,11 @@ def test_negative_engine_i13_false_case_fact():
     bad = src.replace("euclid_assert a.sameSide d BE",
                       "euclid_assert a.sameSide c BE")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I13_casefact", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I13_casefact", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I13_casefact.lean"],
@@ -570,8 +582,11 @@ def test_negative_engine_i14_false_asserted_fact():
     bad = src.replace("euclid_assert d.sameSide e AB",
                       "euclid_assert e.sameSide c AB")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I14_assert", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I14_assert", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I14_assert.lean"],
@@ -590,8 +605,11 @@ def test_negative_engine_i14_no_by_contra():
     src = cert.emit_proof14()
     bad = src.replace("  by_contra\n", "")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I14_nocontra", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I14_nocontra", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I14_nocontra.lean"],
@@ -657,8 +675,11 @@ def test_negative_engine_i15_false_asserted_fact():
     bad = src.replace("  euclid_apply (between_symm a e b)\n",
                       "  euclid_assert between a b e\n")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I15_assert", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I15_assert", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f",
@@ -679,8 +700,11 @@ def test_negative_engine_i15_dropped_proposition_13():
     src = cert.emit_proof("I.15-engine", cert.engine_steps("I.15"), None)
     bad = src.replace("  euclid_apply (proposition_13 c e a b CD AB)\n", "")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I15_drop13", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I15_drop13", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I15_drop13.lean"],
@@ -765,8 +789,11 @@ def test_negative_engine_i16b_false_same_side_assert():
     bad = src.replace("  euclid_assert d.sameSide f AC\n",
                       "  euclid_assert a.sameSide f AC\n")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I16b_assert", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I16b_assert", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f",
@@ -787,8 +814,11 @@ def test_negative_engine_i16b_dropped_proposition_4():
     bad = src.replace(
         "  euclid_apply (proposition_4 e b a e f c BE AB AC BE FC AC)\n", "")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I16b_drop4", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I16b_drop4", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I16b_drop4.lean"],
@@ -860,8 +890,11 @@ def test_negative_engine_i17_false_angle_assert():
         "  euclid_assert ∠ a:c:d < ∠ a:b:c\n"
         "  euclid_apply (proposition_13 a c b d AC BC)\n")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I17_assert", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I17_assert", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f",
@@ -882,8 +915,11 @@ def test_negative_engine_i17_dropped_proposition_13():
     src = cert.emit_proof("I.17-engine", cert.engine_steps("I.17"), None)
     bad = src.replace("  euclid_apply (proposition_13 a c b d AC BC)\n", "")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I17_drop13", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I17_drop13", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run([("pgrep"), "-f", "test_neg_I17_drop13.lean"],
@@ -959,8 +995,11 @@ def test_negative_engine_i18_false_angle_assert():
         "  euclid_assert ∠ a:b:d < ∠ a:d:b\n"
         "  euclid_apply (sum_angles_onlyif b a c d AB BC)\n")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I18_assert", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I18_assert", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f",
@@ -981,8 +1020,11 @@ def test_negative_engine_i18_dropped_proposition_16():
     src = cert.emit_proof("I.18-engine", cert.engine_steps("I.18"), None)
     bad = src.replace("  euclid_apply (proposition_16 b c d a BC AC BD)\n", "")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I18_drop16", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I18_drop16", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run([("pgrep"), "-f", "test_neg_I18_drop16.lean"],
@@ -1058,8 +1100,11 @@ def test_negative_engine_i19_dropped_proposition_18():
     bad = src.replace(
         "    euclid_apply (proposition_18 a c b AC BC AB)\n", "")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I19_drop18", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I19_drop18", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I19_drop18.lean"],
@@ -1083,8 +1128,11 @@ def test_negative_engine_i19_false_assert_branch1():
         "  . euclid_assert ∠ a:b:c < ∠ b:c:a\n"
         "    euclid_apply (proposition_5' a b c AB BC AC)\n")
     assert bad != src
-    r = cert.check_lean(bad, "test_neg_I19_assert", timeout=120)
+    r = cert.check_lean(bad, "test_neg_I19_assert", timeout=600)
     assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
     import time
     for _ in range(50):
         left = subprocess.run(["pgrep", "-f", "test_neg_I19_assert.lean"],
