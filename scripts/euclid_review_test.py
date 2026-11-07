@@ -335,3 +335,22 @@ def test_i12_still_keyerror():
     import pytest
     with pytest.raises(KeyError):
         rv.review("I.12", [])
+
+
+def test_i10_goal_needs_the_last_proposition_4():
+    """Review fix (claude-9): goal_prop10 is not vacuous. Without the final
+    proposition_4 (which gives |a-d| = |d-b|) every step still applies but
+    the goal does not hold."""
+    steps = list(rv.eng.PROP10_STEPS_DATA)
+    last = max(i for i, s in enumerate(steps) if s[0] == "proposition_4")
+    rep = rv.review("I.10", steps[:last] + steps[last + 1:], **I10_I11_BUDGET)
+    assert rep["invalid_steps"] == 0
+    assert rep["goal_held"] is False
+
+
+def test_default_review_uses_the_props_time_budget():
+    """Review fix (claude-9): review("I.10", steps) with no budget given took
+    361 s for three steps; Distance now falls back to the prop's own."""
+    assert rv.Distance("I.10").time_budget == 5.0
+    assert rv.Distance("I.11").time_budget == 5.0
+    assert rv.Distance("I.10", time_budget=1.0).time_budget == 1.0

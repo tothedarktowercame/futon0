@@ -68,7 +68,10 @@ class Distance:
         # costs minutes, because each node applies every legal move with
         # full closure. A cut-off returns None = "unknown", never a
         # fabricated distance.
-        self.time_budget = time_budget
+        # review fix (claude-9): with no explicit budget, use the prop's own
+        # (I.10/I.11: 5 s). Unbudgeted, review("I.10", steps[:3]) took 361 s.
+        self.time_budget = (time_budget if time_budget is not None
+                            else kw.get("time_budget"))
         self._cache = {}
         self._tainted = set()
         self.errors = []  # (rule, args, repr(exc)) of moves that CRASHED:
