@@ -2160,6 +2160,38 @@ CONSTRUCTIONS = {
                    ("_eq_ang", "f", a, b, d, c, e)])],
     },
 
+    # Book/Prop24.lean:12 — proposition_24 verbatim (the hinge theorem):
+    #   forall (a b c d e f : Point) (AB BC AC DE EF DF : Line),
+    #   formTriangle a b c AB BC AC /\ formTriangle d e f DE EF DF /\
+    #   (|(a-b)| = |(d-e)|) /\ (|(a-c)| = |(d-f)|) /\ (ang b:a:c > ang e:d:f) ->
+    #   |(b-c)| > |(e-f)|
+    # Cited as a lemma (the engine's own I.24 replay, PROP24_STEPS_DATA, is
+    # the proof — BOTH branches of the by_cases on d.sameSide g EF).
+    # formTriangle destructured as at proposition_17; the two length
+    # equalities and the angle comparison are entailment premises (metric
+    # queries, as at proposition_19). The conclusion is the metric tuple
+    # _gt_len. No fresh objects, forward-style citation.
+    "proposition_24": {
+        "cite": "Book/Prop24.lean:12 (proposition_24)",
+        "args": ("a", "b", "c", "d", "e", "f",
+                 "AB", "BC", "AC", "DE", "EF", "DF"),
+        "premises": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB),
+            _dpl_either(s, d, e, DE),
+            ("on_line", e, EF), ("on_line", f, EF),
+            ("on_line", f, DF), ("on_line", d, DF),
+            ("neq", e, f), ("neq", d, f),
+            ("not_on_line", f, DE)],
+        "entail": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            ("eq_len", (a, b, d, e)), ("eq_len", (a, c, d, f)),
+            ("gt_ang", (b, a, c, e, d, f))],
+        "make": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            (None, [("_gt_len", b, c, e, f)])],
+    },
     # Book/Prop22.lean:58 — proposition_22'' verbatim (the same-side
     # variant I.23' cites): proposition_22' plus a point x off FE and the
     # extra conclusion k.sameSide x FE —

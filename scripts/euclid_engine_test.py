@@ -3545,3 +3545,33 @@ def test_prop24_final_state_not_contradictory():
                       eng.PROP24_GOAL)
     contra, witness = eng.contradictory(s)
     assert not contra, witness
+
+
+def test_proposition_24_citation_fires():
+    """The cited lemma (Prop24.lean:12-16) applies on the I.24 hypotheses
+    and makes exactly the _gt_len conclusion PROP24_STEPS_DATA proves."""
+    s = eng.State()
+    for f, w in eng.PROP24A_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_24",
+                   ("a", "b", "c", "d", "e", "f",
+                    "AB", "BC", "AC", "DE", "EF", "DF"), {})
+    assert eng.la_entails_gt(s.la, "b", "c", "e", "f")
+
+
+def test_proposition_24_citation_refused_wrong_way():
+    """Cited with the angle hypothesis REVERSED (ang e:d:f > ang b:a:c)
+    proposition_24 is refused: the gt_ang entailment premise fails (and
+    the conclusion would be false — the hinge opens the other way)."""
+    s = eng.State()
+    for f, w in eng.PROP24A_HYPS_DATA:
+        if f[0] == "gt_ang":
+            f = ("gt_ang", "e", "d", "f", "b", "a", "c")  # reversed
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_24",
+                       ("a", "b", "c", "d", "e", "f",
+                        "AB", "BC", "AC", "DE", "EF", "DF"), {})
+    assert "gt_ang" in str(ei.value.premise)
