@@ -1,0 +1,542 @@
+{
+ "prop": 4,
+ "title": "Elements I.4 (LeanEuclid Book/Prop04.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "EF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "e",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "b'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "c'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "BC'",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b'",
+     "c'"
+    ]
+   },
+   "def_step": 1
+  },
+  {
+   "name": "AC'",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "c'"
+    ]
+   },
+   "def_step": 1
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "superposition",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "AB",
+    "BC",
+    "AC",
+    "DE"
+   ],
+   "bindings": {
+    "b'": "b'",
+    "c'": "c'",
+    "BC'": "BC'",
+    "AC'": "AC'"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b'",
+     "DE"
+    ],
+    [
+     "not_between",
+     "b'",
+     "d",
+     "e"
+    ],
+    [
+     "same_side",
+     "c'",
+     "f",
+     "DE"
+    ],
+    [
+     "dpl",
+     "b'",
+     "c'",
+     "BC'"
+    ],
+    [
+     "dpl",
+     "d",
+     "c'",
+     "AC'"
+    ],
+    [
+     "eq_ang",
+     "b",
+     "a",
+     "c",
+     "b'",
+     "d",
+     "c'"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "b",
+     "d",
+     "c'",
+     "b'"
+    ],
+    [
+     "eq_ang",
+     "c",
+     "b",
+     "a",
+     "c'",
+     "b'",
+     "d"
+    ],
+    [
+     "eq_len",
+     "a",
+     "b",
+     "d",
+     "b'"
+    ],
+    [
+     "eq_len",
+     "b",
+     "c",
+     "b'",
+     "c'"
+    ],
+    [
+     "eq_len",
+     "c",
+     "a",
+     "c'",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop04.lean",
+    "line": 11
+   },
+   "placement_decision": "rigid motion mapping a->d, b->e: b' lands exactly on e (asserted in step 2), c' is the image of c; the primed triangle is triangle abc carried onto d e f",
+   "superposition": {
+    "triangles": [
+     [
+      "a",
+      "b",
+      "c"
+     ],
+     [
+      "d",
+      "e",
+      "f"
+     ]
+    ],
+    "correspondence": [
+     [
+      "a",
+      "d"
+     ],
+     [
+      "b",
+      "e"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 2,
+   "rule": "assert_point_eq_on_ray",
+   "args": [
+    "b'",
+    "e",
+    "d",
+    "DE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "peq",
+     "b'",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b'",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "not_between",
+     "b'",
+     "d",
+     "e"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', \"b'\", 'd', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop04.lean",
+    "line": 12
+   },
+   "placement_decision": "forward-closure step (no new objects): assert_point_eq_on_ray only adds facts to the engine state"
+  },
+  {
+   "n": 3,
+   "rule": "assert_point_eq_angle",
+   "args": [
+    "c'",
+    "f",
+    "e",
+    "d",
+    "DE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "peq",
+     "c'",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "same_side",
+     "c'",
+     "f",
+     "DE"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "neq",
+     "d",
+     "e"
+    ],
+    [
+     "neq",
+     "d",
+     "c'"
+    ],
+    [
+     "neq",
+     "d",
+     "f"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('e', 'd', \"c'\", 'e', 'd', 'f')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', \"c'\", 'd', 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop04.lean",
+    "line": 13
+   },
+   "placement_decision": "forward-closure step (no new objects): assert_point_eq_angle only adds facts to the engine state"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   2.0,
+   0.0
+  ],
+  "c": [
+   0.6,
+   1.2
+  ],
+  "d": [
+   3.4,
+   0.2
+  ],
+  "e": [
+   5.2126155740733,
+   1.045236523481399
+  ],
+  "f": [
+   3.4366427581331505,
+   1.5411403014883993
+  ],
+  "b'": [
+   5.2126155740733,
+   1.0452365234813992
+  ],
+  "c'": [
+   3.4366427581331505,
+   1.5411403014883995
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.4: |b-c| = |e-f|",
+   "ok": true
+  },
+  {
+   "check": "I.4: b' coincides with e",
+   "ok": true
+  },
+  {
+   "check": "I.4: c' coincides with f (after the two asserts)",
+   "ok": true
+  },
+  {
+   "check": "I.4: \u2220abc = \u2220def",
+   "ok": true
+  },
+  {
+   "check": "I.4: \u2220acb = \u2220dfe",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop04.lean",
+ "lean_text": [
+  "import SystemE",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_4 : \u2200 (a b c d e f : Point) (AB BC AC DE EF DF : Line),",
+  "  formTriangle a b c AB BC AC \u2227 formTriangle d e f DE EF DF \u2227",
+  "  |(a\u2500b)| = |(d\u2500e)| \u2227 |(a\u2500c)| = |(d\u2500f)| \u2227 (\u2220 b:a:c = \u2220 e:d:f) \u2192",
+  "  |(b\u2500c)| = |(e\u2500f)| \u2227 (\u2220 a:b:c = \u2220 d:e:f) \u2227 (\u2220 a:c:b = \u2220 d:f:e) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (superposition a b c d e f AB BC AC DE) as (b', c', BC', DC')",
+  "  euclid_assert b' = e",
+  "  euclid_assert \u2220 e:d:c' = \u2220 e:d:f",
+  "  euclid_assert DC' = DF",
+  "  euclid_assert c' = f",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

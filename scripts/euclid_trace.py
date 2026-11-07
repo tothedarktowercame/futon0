@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Trace generator for the E-euclid-tutor viewer.
 
-Runs the existing euclid_engine replays of Book I.1-I.3 (imported
+Runs the existing euclid_engine replays of Book I.1-I.5 (imported
 read-only) and writes one JSON trace per proposition under
 holes/excursions/E-euclid-tutor-data/viewer/traces/prop0N.json:
 
@@ -49,14 +49,48 @@ def lean_apply_lines(filename):
     return out
 
 
+def lean_assert_lines(filename):
+    """[(line_no, text)] of every euclid_assert line, in order. The engine's
+    assert_point_eq_* steps correspond to these Lean lines, not to
+    euclid_apply lines (Prop04.lean asserts b' = e and the apex angle)."""
+    out = []
+    with open(filename) as fh:
+        for i, line in enumerate(fh, start=1):
+            if "euclid_assert" in line:
+                out.append((i, line))
+    return out
+
+
 def lean_lines_for(prop, rule_names):
     """Sequentially match each engine rule to the first unconsumed
-    euclid_apply line that names it. Returns [(file, line)]."""
+    euclid_apply line that names it. assert_point_eq_* rules match the
+    euclid_assert lines instead (point equality: the line without an
+    angle sign; angle equality: the line with one). Returns [(file, line)].
+    """
     fname = os.path.join(LEAN_DIR, "Book", "Prop%02d.lean" % prop)
     lines = lean_apply_lines(fname)
+    asserts = lean_assert_lines(fname)
     rel = os.path.join("Book", "Prop%02d.lean" % prop)
-    res, k = [], 0
+    res, k, ka = [], 0, 0
     for rule in rule_names:
+        if rule == "assert_point_eq_on_ray":
+            while ka < len(asserts) and "∠" in asserts[ka][1]:
+                ka += 1
+            if ka >= len(asserts):
+                raise AssertionError(
+                    "no euclid_assert point line found in %s" % fname)
+            res.append((rel, asserts[ka][0]))
+            ka += 1
+            continue
+        if rule == "assert_point_eq_angle":
+            while ka < len(asserts) and "∠" not in asserts[ka][1]:
+                ka += 1
+            if ka >= len(asserts):
+                raise AssertionError(
+                    "no euclid_assert angle line found in %s" % fname)
+            res.append((rel, asserts[ka][0]))
+            ka += 1
+            continue
         while k < len(lines) and rule not in lines[k][1]:
             k += 1
         if k >= len(lines):
@@ -165,12 +199,24 @@ def choose(cands, facts, obj, name):
 # ---------------------------------------------------------------------------
 
 # free sample points (fixed; nothing reads the engine's coordinate-free
-# state, and the engine never reads these)
+# state, and the engine never reads these). I.2: a is kept well away from
+# the |bc|-circle around it (|ba| ≈ 1.3 vs |bc| = 1) so the diagram does
+# not look degenerate (review, claude-9).
 FREE = {
     1: {"a": (0.0, 0.0), "b": (1.0, 0.0)},
-    2: {"a": (0.3, 0.9), "b": (0.0, 0.0), "c": (1.0, 0.0)},
+    2: {"a": (-0.5, 1.2), "b": (0.0, 0.0), "c": (1.0, 0.0)},
     3: {"a": (0.0, 0.0), "b": (5.0, 0.0), "c0": (0.0, 1.0), "c1": (2.0, 1.0)},
+    # I.4: the second triangle is a rigid copy (rotation 25 degrees) of the
+    # first, so the hypothesis metric facts hold to float precision.
+    4: {"a": (0.0, 0.0), "b": (2.0, 0.0), "c": (0.6, 1.2),
+        "d": (3.4, 0.2)},
+    # I.5: isosceles (|ab| = |ac|), d and e produced past b and c by the
+    # same factor 1.4 so |bd| = |ce|.
+    5: {"a": (0.0, 1.2), "b": (-0.7, 0.0), "c": (0.7, 0.0)},
 }
+
+PROP4_ROT = math.radians(25.0)
+PROP5_EXTEND = 1.4
 
 
 def hyps_and_steps(prop):
@@ -178,7 +224,30 @@ def hyps_and_steps(prop):
         return eng._prop1()[0], list(eng.PROP1_STEPS_DATA)
     if prop == 2:
         return list(eng.PROP2_HYPS_DATA), list(eng.PROP2_STEPS_DATA)
+    if prop == 4:
+        return list(eng.PROP4_HYPS_DATA), list(eng.PROP4_STEPS_DATA)
+    if prop == 5:
+        return list(eng.PROP5_HYPS_DATA), list(eng.PROP5_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
+
+
+def derived_free_points(prop, xy):
+    """Sample coordinates for hypothesis points that are constructed in the
+    Book proof's setup but free in the engine's hypothesis data."""
+    if prop == 4:
+        # e, f: rigid copy of b, c under the rotation taking (a->d)
+        cs, sn = math.cos(PROP4_ROT), math.sin(PROP4_ROT)
+        rot = lambda p: (cs * p[0] - sn * p[1], sn * p[0] + cs * p[1])
+        for src, name in (("b", "e"), ("c", "f")):
+            v = _sub(xy[src], xy["a"])
+            w = rot(v)
+            xy[name] = _add(xy["d"], w)
+    if prop == 5:
+        # d, e: produced past b and c on AB, AC by the same factor
+        for src, name in (("b", "d"), ("c", "e")):
+            v = _sub(xy[src], xy["a"])
+            xy[name] = _add(xy["a"], _mul(v, PROP5_EXTEND))
+
 
 
 def objects_from_hyps(prop):
@@ -196,6 +265,21 @@ def objects_from_hyps(prop):
                  "def_step": 0} for n in ("a", "b", "c")] + [
                 {"name": "BC", "kind": "line", "jsx": {"type": "line",
                   "p": ["b", "c"]}, "def_step": 0, "hyp": True}]
+    if prop == 4:
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d", "e", "f")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")), ("DE", ("d", "e")),
+                              ("EF", ("e", "f")), ("DF", ("d", "f")))]
+    if prop == 5:
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d", "e")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -303,11 +387,105 @@ dragging)" % (a, b)
         return ("free parameter of the existential step: sample direction "
                 "chosen (no fact decides it); glider on a circle of dynamic "
                 "radius |b-c| preserves |a-d| = |b-c| under dragging")
+    if rule == "superposition":
+        # rigid motion taking a->d and b->e (|ab| = |de| by hypothesis):
+        # b' = T(b) = e exactly, c' = T(c). Drawn at the sample placement;
+        # the coincidences b' = e and c' = f are what steps 2-3 assert.
+        (a, b, c, d, e, f, AB, BC, AC, DE), B = args, bindings
+        bp, cp = B["b'"], B["c'"]
+        ab = _sub(xy[b], xy[a])
+        de = _sub(xy[e], xy[d])
+        ang = math.atan2(de[1], de[0]) - math.atan2(ab[1], ab[0])
+        cs, sn = math.cos(ang), math.sin(ang)
+        rot = lambda p: (cs * p[0] - sn * p[1], sn * p[0] + cs * p[1])
+        xy[bp] = _add(xy[d], rot(ab))
+        xy[cp] = _add(xy[d], rot(_sub(xy[c], xy[a])))
+        assert _norm(_sub(xy[bp], xy[e])) < EPS, "superposition: b' must be e"
+        objects.append({"name": bp, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        objects.append({"name": cp, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        objects.append({"name": bindings["BC'"], "kind": "line",
+                        "jsx": {"type": "line", "p": [bp, cp]},
+                        "def_step": None})
+        objects.append({"name": bindings["AC'"], "kind": "line",
+                        "jsx": {"type": "line", "p": [d, cp]},
+                        "def_step": None})
+        return ("rigid motion mapping a->d, b->e: b' lands exactly on e "
+                "(asserted in step 2), c' is the image of c; the primed "
+                "triangle is triangle abc carried onto d e f")
+    if rule == "point_between_points_shorter_than":
+        # f on line L with between b f d and |bf| < |ce| (rule args
+        # (L, b, c, u, v) with u,v naming the |u-v| bound); any shorter
+        # sample works — half the bound is chosen.
+        (L, b, c, u, v), name = args, bindings["a"]
+        bound = _norm(_sub(xy[v], xy[u]))
+        seg = _sub(xy[c], xy[b])
+        assert bound < 2 * _norm(seg), "sample needs |uv|/2 < |bc|"
+        xy[name] = _add(xy[b], _mul(_unit(seg), bound / 2))
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("sample: |b-%s| = |%s-%s|/2 (any length shorter than the "
+                "bound satisfies the step; the engine places no coordinate)"
+                % (name, u, v))
+    if rule == "proposition_3":
+        # q on segment a-b with |a-q| = |c0-c1| (rule args
+        # (a, b, c0, c1, AB, C)); |a-b| > |c0-c1| is an entailment premise.
+        (a, b, c0, c1, AB, C), name = args, bindings["q"]
+        r = _norm(_sub(xy[c1], xy[c0]))
+        ab = _norm(_sub(xy[b], xy[a]))
+        assert r < ab, "proposition_3 premise |a-b| > |c0-c1| must hold"
+        xy[name] = _add(xy[a], _mul(_unit(_sub(xy[b], xy[a])), r))
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("cut |%s-%s| off segment %s-%s from %s; sample direction "
+                "along the segment" % (c0, c1, a, b, a))
+    if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
+                "proposition_4", "sum_angles_onlyif"):
+        # forward-closure / cited steps: no new objects, no coordinates
+        return ("forward-closure step (no new objects): %s only adds facts "
+                "to the engine state" % rule)
     raise AssertionError("no numeric placement for rule %r" % rule)
 
 
 # auxiliary circle names for the proposition_1 sub-construction inside I.2
 CIRC_AUX = {"d": ("aux_da", "aux_db")}
+
+
+def _ang(xy, p, q, r):
+    """angle p-q-r at vertex q, in radians."""
+    u = _unit(_sub(xy[p], xy[q]))
+    v = _unit(_sub(xy[r], xy[q]))
+    cos = max(-1.0, min(1.0, u[0] * v[0] + u[1] * v[1]))
+    return math.acos(cos)
+
+
+def verify4(xy):
+    ok = abs(_norm(_sub(xy["b"], xy["c"]))
+             - _norm(_sub(xy["e"], xy["f"]))) < EPS
+    checks = [("I.4: |b-c| = |e-f|", ok)]
+    # superposition coincidences: b' = e exactly, c' = f after the asserts
+    checks.append(("I.4: b' coincides with e",
+                   _norm(_sub(xy["b'"], xy["e"])) < EPS))
+    checks.append(("I.4: c' coincides with f (after the two asserts)",
+                   _norm(_sub(xy["c'"], xy["f"])) < EPS))
+    for (p, q, r, s, t, u_, desc) in (
+            ("a", "b", "c", "d", "e", "f", "I.4: ∠abc = ∠def"),
+            ("a", "c", "b", "d", "f", "e", "I.4: ∠acb = ∠dfe")):
+        checks.append((desc, abs(_ang(xy, p, q, r) - _ang(xy, s, t, u_))
+                       < EPS))
+    return checks
+
+
+def verify5(xy):
+    checks = []
+    for (p, q, r, s, t, u_, desc) in (
+            ("a", "b", "c", "a", "c", "b", "I.5: base angles ∠abc = ∠acb"),
+            ("c", "b", "d", "b", "c", "e",
+             "I.5: exterior ∠cbd = ∠bce")):
+        checks.append((desc, abs(_ang(xy, p, q, r) - _ang(xy, s, t, u_))
+                       < EPS))
+    return checks
 
 
 def verify(prop, xy):
@@ -319,9 +497,13 @@ def verify(prop, xy):
                 ("I.1: |c-b| = |a-b|", abs(d("c", "b") - d("a", "b")) < EPS)]
     if prop == 2:
         return [("I.2: |a-l| = |b-c|", abs(d("a", "l") - d("b", "c")) < EPS)]
+    if prop == 4:
+        return verify4(xy)
+    if prop == 5:
+        return verify5(xy)
+    a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
-    a, e, b = xy["a"], xy["e"], xy["b"]
     ab = _norm(_sub(b, a))
     ae = _norm(_sub(e, a))
     eb = _norm(_sub(b, e))
@@ -331,10 +513,14 @@ def verify(prop, xy):
 
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
-    # engine replay (premises checked, facts collected)
-    s = eng.State()
-    for f, w in hyps:
-        s.assume(f, w)
+    # engine replay (premises checked, facts collected); props 4-5 have
+    # metric hypotheses (eq_len / eq_ang) that must enter the linear store
+    if prop in (4, 5):
+        s = eng._metric_state(hyps)
+    else:
+        s = eng.State()
+        for f, w in hyps:
+            s.assume(f, w)
     if prop == 3:
         s.la.add({eng.len_atom("a", "b"): 1,
                   eng.len_atom("c0", "c1"): -1}, 0, ">")
@@ -346,6 +532,7 @@ def build_trace(prop):
 
     objects = objects_from_hyps(prop)
     xy = {k: v for k, v in FREE[prop].items()}
+    derived_free_points(prop, xy)
     trace_steps = []
     for i, ((rule, args, bindings), rep, (lf, ll)) in enumerate(
             zip(steps, reports, lean), 1):
@@ -354,14 +541,22 @@ def build_trace(prop):
         for o in objects:
             if o["def_step"] is None:
                 o["def_step"] = i
-        trace_steps.append({
+        entry = {
             "n": i, "rule": rule, "args": list(args),
             "bindings": bindings,
             "facts_added": [list(map(str, f)) for f in rep["added"]],
             "premises": [list(map(str, f)) for f in rep["premises"]],
             "lean": {"file": lf, "line": ll},
             "placement_decision": why,
-        })
+        }
+        if rule == "superposition":
+            # viewer hint: both triangles highlighted as a colour pair and
+            # the correspondence shown in the fact panel
+            entry["superposition"] = {
+                "triangles": [["a", "b", "c"], ["d", "e", "f"]],
+                "correspondence": [["a", "d"], ["b", "e"], ["c", "f"]],
+            }
+        trace_steps.append(entry)
 
     placement = {k: (list(v) if v is not None else None)
                  for k, v in xy.items()}

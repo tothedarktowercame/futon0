@@ -87,6 +87,7 @@ function draw() {
   board.resizeContainer(box.clientWidth, box.clientHeight);
   board.setBoundingBox([-2.5, 3.5, 7, -3], true);
   built = {};
+  extras = [];
   const showAux = document.getElementById("toggle-aux").checked;
   for (const o of trace.objects) {
     if (o.def_step > cur) continue;
@@ -125,9 +126,13 @@ function mk(o, aux) {
         return board.create("point",
           [trace.placement[o.name][0], trace.placement[o.name][1]],
           Object.assign(base, {fillColor: "#3366aa",
-                                highlightFillColor: HI}));
+                                highlightFillColor: HI, fixed: false}));
       }
-      return board.create("point", [0, 0], Object.assign(base, {fillColor: "#3366aa"}));
+      // constructed point: drawn at the recorded sample placement and
+      // fixed — it is a child of the construction, not a free input
+      return board.create("point",
+        [trace.placement[o.name][0], trace.placement[o.name][1]],
+        Object.assign(base, {fillColor: "#3366aa", fixed: true}));
     case "line":
       return board.create("line", [built[j.p[0]], built[j.p[1]]],
                           Object.assign(base, {strokeColor: o.hyp ? "#999" : "#3366aa"}));
@@ -169,6 +174,49 @@ function mk(o, aux) {
 
 // ---------------------------------------------------------------- hover
 
+let extras = [];  // angle sectors / highlight polygons added on hover
+
+function clearExtras() {
+  for (const el of extras) { try { board.removeObject(el); } catch (e) {} }
+  extras = [];
+}
+
+function eqAngFacts(step) {
+  return (step.facts_added || [])
+    .filter(f => f[0] === "eq_ang" && f.length === 7)
+    .map(f => [[f[1], f[2], f[3]], [f[4], f[5], f[6]]]);
+}
+
+function drawAngles(pairs) {
+  for (const [[p1, apex, p2], [q1, qex, q2]] of pairs) {
+    for (const tri of [[p1, apex, p2], [q1, qex, q2]]) {
+      const ps = tri.map(n => built[n]);
+      if (ps.some(x => !x)) continue;
+      const el = board.create("angle", ps,
+        {radius: 0.9, type: "sector", fillColor: HI, fillOpacity: 0.35,
+         strokeColor: HI, strokeWidth: 2, withLabel: false, fixed: true,
+         highlightFillColor: HI, visible: true});
+      extras.push(el);
+    }
+  }
+}
+
+function drawSuperposition(sup) {
+  const colors = ["#4aa3ff", "#7ddb6e"];
+  sup.triangles.forEach((tri, i) => {
+    const ps = tri.map(n => built[n]);
+    if (ps.some(x => !x)) return;
+    const el = board.create("polygon", ps,
+      {fillColor: colors[i], fillOpacity: 0.25,
+       strokeColor: colors[i], strokeWidth: 3, withLines: true,
+       vertices: {withLabel: false, visible: false, fixed: true},
+       borders: {strokeColor: colors[i], strokeWidth: 3, highlight: false},
+       withLabel: false, fixed: true, highlight: false});
+    extras.push(el);
+    (el.borders || []).forEach(b => extras.push(b));
+  });
+}
+
 function stepObjects(n) {
   return trace.objects.filter(o => o.def_step === n);
 }
@@ -177,6 +225,11 @@ function hoverStep(n, on) {
   const step = trace.steps.find(s => s.n === n);
   if (step && els[step.lean.line])
     els[step.lean.line].classList.toggle("hover", on);
+  clearExtras();
+  if (on && step) {
+    if (step.superposition) drawSuperposition(step.superposition);
+    drawAngles(eqAngFacts(step));
+  }
   for (const o of stepObjects(n)) {
     const el = built[o.name];
     if (!el) continue;
@@ -206,11 +259,18 @@ function showInfo(step) {
   }
   const facts = step.facts_added.map(f =>
     "<span class='fact'>" + f.join(" ") + "</span>").join("");
+  let extra = "";
+  if (step.superposition) {
+    extra = "<br>superposition correspondence: " +
+      step.superposition.correspondence.map(p => p[0] + " → " + p[1])
+        .join(", ") +
+      " (triangle abc carried onto triangle def; both highlighted)";
+  }
   info.innerHTML =
     "<b>step " + step.n + "</b> <code>" + step.rule + "("
     + step.args.join(", ") + ")</code> → "
     + "<code>" + step.lean.file + ":" + step.lean.line + "</code> — "
-    + facts + "<br>placement: " + step.placement_decision;
+    + facts + "<br>placement: " + step.placement_decision + extra;
 }
 
 function setStep(n) {

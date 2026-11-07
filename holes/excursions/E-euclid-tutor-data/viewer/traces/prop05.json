@@ -1,0 +1,796 @@
+{
+ "prop": 5,
+ "title": "Elements I.5 (LeanEuclid Book/Prop05.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "g",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "FC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "f"
+    ]
+   },
+   "def_step": 3
+  },
+  {
+   "name": "GB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "g"
+    ]
+   },
+   "def_step": 4
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "point_between_points_shorter_than",
+   "args": [
+    "AB",
+    "b",
+    "d",
+    "c",
+    "e"
+   ],
+   "bindings": {
+    "a": "f"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "AB"
+    ],
+    [
+     "between",
+     "b",
+     "f",
+     "d"
+    ],
+    [
+     "lt_len",
+     "b",
+     "f",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "d",
+     "AB"
+    ],
+    [
+     "entail",
+     "pos_len",
+     "('c', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 13
+   },
+   "placement_decision": "sample: |b-f| = |c-e|/2 (any length shorter than the bound satisfies the step; the engine places no coordinate)"
+  },
+  {
+   "n": 2,
+   "rule": "proposition_3",
+   "args": [
+    "a",
+    "e",
+    "f",
+    "a",
+    "AC",
+    "AB"
+   ],
+   "bindings": {
+    "q": "g"
+   },
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "g",
+     "e"
+    ],
+    [
+     "eq_len",
+     "a",
+     "g",
+     "f",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "e",
+     "AC"
+    ],
+    [
+     "dpl",
+     "f",
+     "a",
+     "AB"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('a', 'e', 'f', 'a')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 14
+   },
+   "placement_decision": "cut |f-a| off segment a-e from a; sample direction along the segment"
+  },
+  {
+   "n": 3,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "f"
+   ],
+   "bindings": {
+    "L": "FC"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "FC"
+    ],
+    [
+     "on_line",
+     "f",
+     "FC"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "f"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 15
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 4,
+   "rule": "line_from_points",
+   "args": [
+    "b",
+    "g"
+   ],
+   "bindings": {
+    "L": "GB"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b",
+     "GB"
+    ],
+    [
+     "on_line",
+     "g",
+     "GB"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 16
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 5,
+   "rule": "proposition_4",
+   "args": [
+    "a",
+    "f",
+    "c",
+    "a",
+    "g",
+    "b",
+    "AB",
+    "FC",
+    "AC",
+    "AC",
+    "GB",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "f",
+     "c",
+     "g",
+     "b"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "f",
+     "c",
+     "a",
+     "g",
+     "b"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "f",
+     "a",
+     "b",
+     "g"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "f",
+     "AB"
+    ],
+    [
+     "on_line",
+     "f",
+     "FC"
+    ],
+    [
+     "on_line",
+     "c",
+     "FC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "dpl",
+     "a",
+     "g",
+     "AC"
+    ],
+    [
+     "on_line",
+     "g",
+     "GB"
+    ],
+    [
+     "on_line",
+     "b",
+     "GB"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'f', 'a', 'g')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'a', 'b')"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('f', 'a', 'c', 'g', 'a', 'b')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 17
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_4 only adds facts to the engine state"
+  },
+  {
+   "n": 6,
+   "rule": "proposition_4",
+   "args": [
+    "f",
+    "b",
+    "c",
+    "g",
+    "c",
+    "b",
+    "AB",
+    "BC",
+    "FC",
+    "AC",
+    "BC",
+    "GB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "b",
+     "c",
+     "c",
+     "b"
+    ],
+    [
+     "eq_ang",
+     "f",
+     "b",
+     "c",
+     "g",
+     "c",
+     "b"
+    ],
+    [
+     "eq_ang",
+     "f",
+     "c",
+     "b",
+     "g",
+     "b",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "f",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "FC"
+    ],
+    [
+     "on_line",
+     "f",
+     "FC"
+    ],
+    [
+     "dpl",
+     "g",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "GB"
+    ],
+    [
+     "on_line",
+     "g",
+     "GB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('f', 'b', 'g', 'c')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('f', 'c', 'g', 'b')"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('b', 'f', 'c', 'c', 'g', 'b')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 18
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_4 only adds facts to the engine state"
+  },
+  {
+   "n": 7,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "a",
+    "g",
+    "c",
+    "AB",
+    "GB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "b",
+     "g",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "GB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "g",
+     "GB"
+    ],
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "neq",
+     "b",
+     "g"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "GB"
+    ],
+    [
+     "neq_line",
+     "AB",
+     "GB"
+    ],
+    [
+     "same_side",
+     "a",
+     "c",
+     "GB"
+    ],
+    [
+     "same_side",
+     "g",
+     "c",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 19
+   },
+   "placement_decision": "forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state"
+  },
+  {
+   "n": 8,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "a",
+    "f",
+    "b",
+    "AC",
+    "FC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "c",
+     "f",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "FC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "f",
+     "FC"
+    ],
+    [
+     "neq",
+     "c",
+     "a"
+    ],
+    [
+     "neq",
+     "c",
+     "f"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "FC"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "FC"
+    ],
+    [
+     "same_side",
+     "a",
+     "b",
+     "FC"
+    ],
+    [
+     "same_side",
+     "f",
+     "b",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop05.lean",
+    "line": 20
+   },
+   "placement_decision": "forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   1.2
+  ],
+  "b": [
+   -0.7,
+   0.0
+  ],
+  "c": [
+   0.7,
+   0.0
+  ],
+  "d": [
+   -0.9799999999999999,
+   -0.48
+  ],
+  "e": [
+   0.9799999999999999,
+   -0.48
+  ],
+  "f": [
+   -0.8399999999999999,
+   -0.24
+  ],
+  "g": [
+   0.84,
+   -0.24
+  ],
+  "FC": null,
+  "GB": null
+ },
+ "verification": [
+  {
+   "check": "I.5: base angles \u2220abc = \u2220acb",
+   "ok": true
+  },
+  {
+   "check": "I.5: exterior \u2220cbd = \u2220bce",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop05.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop03",
+  "import Book.Prop04",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_5 : \u2200 (a b c d e : Point) (AB BC AC : Line),",
+  "  formTriangle a b c AB BC AC \u2227 (|(a\u2500b)| = |(a\u2500c)|) \u2227",
+  "  (between a b d) \u2227 (between a c e) \u2192",
+  "  (\u2220 a:b:c = \u2220 a:c:b) \u2227 (\u2220 c:b:d = \u2220 b:c:e) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (point_between_points_shorter_than AB b d (c\u2500e)) as f",
+  "  euclid_apply (proposition_3 a e f a AC AB) as g",
+  "  euclid_apply (line_from_points c f) as FC",
+  "  euclid_apply (line_from_points b g) as GB",
+  "  euclid_apply (proposition_4 a f c a g b AB FC AC AC GB AB)",
+  "  euclid_apply (proposition_4 f b c g c b AB BC FC AC BC GB)",
+  "  euclid_apply (sum_angles_onlyif b a g c AB GB)",
+  "  euclid_apply (sum_angles_onlyif c a f b AC FC)",
+  "  euclid_finish",
+  "",
+  "/--",
+  "A restriction of proposition_5.",
+  "-/",
+  "theorem proposition_5' : \u2200 (a b c : Point) (AB BC AC : Line),",
+  "  formTriangle a b c AB BC AC \u2227 (|(a\u2500b)| = |(a\u2500c)|) \u2192",
+  "  (\u2220 a:b:c = \u2220 a:c:b) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (extend_point AB a b) as d",
+  "  euclid_apply (extend_point AC a c) as e",
+  "  euclid_apply (proposition_5 a b c d e AB BC AC)",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

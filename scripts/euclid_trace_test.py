@@ -28,12 +28,14 @@ def load(prop):
 
 
 TR1, TR2, TR3 = load(1), load(2), load(3)
+TR4, TR5 = load(4), load(5)
+ALL = (TR1, TR2, TR3, TR4, TR5)
 
 
 # -- (i) Lean alignment -----------------------------------------------------
 
 def test_every_step_has_lean_line():
-    for t in (TR1, TR2, TR3):
+    for t in ALL:
         for s in t["steps"]:
             assert s["lean"]["file"].startswith("Book/Prop")
             assert isinstance(s["lean"]["line"], int)
@@ -41,29 +43,45 @@ def test_every_step_has_lean_line():
 
 
 def test_lean_line_really_contains_the_rule():
-    for t in (TR1, TR2, TR3):
+    """euclid_apply lines must name the rule; assert_point_eq_* steps match
+    Prop04.lean's euclid_assert lines instead (point equality / the apex
+    angle), which is checked by their asserted content."""
+    for t in ALL:
         path = os.path.join(LEAN_DIR, t["lean_file"])
         with open(path) as fh:
             lines = fh.read().splitlines()
         for s in t["steps"]:
             line = lines[s["lean"]["line"] - 1]
-            assert "euclid_apply" in line, (s, line)
-            assert s["rule"] in line, (s, line)
+            if s["rule"] == "assert_point_eq_on_ray":
+                assert "euclid_assert" in line and "=" in line, (s, line)
+                assert "∠" not in line, (s, line)
+            elif s["rule"] == "assert_point_eq_angle":
+                assert "euclid_assert" in line and "∠" in line, (s, line)
+            else:
+                assert "euclid_apply" in line, (s, line)
+                assert s["rule"] in line, (s, line)
 
 
 def test_lean_lines_are_distinct_and_in_order():
-    for t in (TR1, TR2, TR3):
+    for t in ALL:
         lines = [s["lean"]["line"] for s in t["steps"]]
         assert lines == sorted(lines)
         assert len(set(lines)) == len(lines)
 
 
 def test_traces_on_disk_match_rebuild():
-    for prop, t in ((1, TR1), (2, TR2), (3, TR3)):
+    for prop, t in ((1, TR1), (2, TR2), (3, TR3), (4, TR4), (5, TR5)):
         rebuilt = tr.build_trace(prop)
         assert rebuilt["placement"] == t["placement"]
         assert [s["rule"] for s in rebuilt["steps"]] == \
             [s["rule"] for s in t["steps"]]
+
+
+def test_prop2_a_is_clear_of_the_bc_circle():
+    # review, claude-9: keep a away from the circle of radius |bc| around
+    # itself so the diagram does not look degenerate
+    assert abs(dist(TR2, "b", "a") - dist(TR2, "b", "c")) > 0.2
+    assert dist(TR2, "b", "c") < 1.5 * dist(TR2, "b", "a")
 
 
 # -- (ii) metric facts of the placement --------------------------------------
@@ -95,8 +113,76 @@ def test_prop3_cut_off_to_1e_9():
 
 
 def test_recorded_verification_all_ok():
-    for t in (TR1, TR2, TR3):
+    for t in ALL:
         assert all(c["ok"] for c in t["verification"]), t["verification"]
+
+
+# -- (ii) metric facts of I.4 / I.5 ------------------------------------------
+
+def ang(t, p, q, r):
+    a, b, c = (t["placement"][k] for k in (p, q, r))
+    u = (a[0] - b[0], a[1] - b[1])
+    v = (c[0] - b[0], c[1] - b[1])
+    nu, nv = math.hypot(*u), math.hypot(*v)
+    cos = max(-1.0, min(1.0, (u[0] * v[0] + u[1] * v[1]) / (nu * nv)))
+    return math.acos(cos)
+
+
+def test_prop4_sas_facts_to_1e_9():
+    assert abs(dist(TR4, "b", "c") - dist(TR4, "e", "f")) < 1e-9
+    assert abs(ang(TR4, "a", "b", "c") - ang(TR4, "d", "e", "f")) < 1e-9
+    assert abs(ang(TR4, "a", "c", "b") - ang(TR4, "d", "f", "e")) < 1e-9
+    # superposition coincidences
+    assert dist(TR4, "b'", "e") < 1e-9
+    assert dist(TR4, "c'", "f") < 1e-9
+    sup = next(s for s in TR4["steps"] if s["rule"] == "superposition")
+    assert sup["superposition"]["correspondence"] == \
+        [["a", "d"], ["b", "e"], ["c", "f"]]
+
+
+def test_prop5_isosceles_facts_to_1e_9():
+    assert abs(dist(TR5, "a", "b") - dist(TR5, "a", "c")) < 1e-9
+    assert abs(ang(TR5, "a", "b", "c") - ang(TR5, "a", "c", "b")) < 1e-9
+    assert abs(ang(TR5, "c", "b", "d") - ang(TR5, "b", "c", "e")) < 1e-9
+    # constructed points sit where the steps put them
+    assert abs(dist(TR5, "a", "g") - dist(TR5, "a", "f")) < 1e-9
+    f_step = next(s for s in TR5["steps"]
+                  if s["rule"] == "point_between_points_shorter_than")
+    assert any(x[0] == "between" and x[1:4] == ["b", "f", "d"]
+               for x in f_step["facts_added"])
+    # f really is between b and d
+    b, f, d = (TR5["placement"][k] for k in ("b", "f", "d"))
+    bf = math.hypot(f[0] - b[0], f[1] - b[1])
+    fd = math.hypot(d[0] - f[0], d[1] - f[1])
+    bd = math.hypot(d[0] - b[0], d[1] - b[1])
+    assert abs(bf + fd - bd) < 1e-9
+
+
+# -- (iii) bad cases for I.4 / I.5 --------------------------------------------
+
+def test_bad_case_prop4_moved_f_breaks_sas():
+    bad = json.loads(json.dumps(TR4["placement"]))
+    bad["f"] = [bad["f"][0] + 0.5, bad["f"][1] - 0.3]
+    b, c, e, f = (bad[k] for k in ("b", "c", "e", "f"))
+    bc = math.hypot(c[0] - b[0], c[1] - b[1])
+    ef = math.hypot(f[0] - e[0], f[1] - e[1])
+    assert abs(bc - ef) >= 1e-9, "moving f must break |b-c| = |e-f|"
+    t2 = dict(TR4)
+    t2 = json.loads(json.dumps(TR4))
+    t2["placement"] = bad
+    assert abs(ang(t2, "a", "c", "b") - ang(t2, "d", "f", "e")) >= 1e-9
+
+
+def test_bad_case_prop5_moved_f_breaks_isosceles():
+    bad = json.loads(json.dumps(TR5["placement"]))
+    bad["f"] = [bad["f"][0] - 0.4, bad["f"][1] + 0.1]
+    # |a-g| = |a-f| is the proposition_3 fact; moving f breaks it
+    assert abs(dist(TR5, "a", "g") - math.hypot(
+        bad["a"][0] - bad["f"][0], bad["a"][1] - bad["f"][1])) >= 1e-9
+    # and the eq_len fact the step recorded names exactly those points
+    p3 = next(s for s in TR5["steps"] if s["rule"] == "proposition_3")
+    assert any(x[0] == "eq_len" and x[1:5] == ["a", "g", "f", "a"]
+               for x in p3["facts_added"])
 
 
 # -- (iii) bad case: the wrong intersection point must fail ------------------
