@@ -616,6 +616,68 @@ def test_peq_subst_diagram():
     assert not s2.has(("on_line", "y", "L"))
 
 
+# --- I.9 (Book/Prop09.lean) -------------------------------------------------
+
+
+def test_prop9_replay():
+    """Angle bisection: ∃ f, f ≠ v ∧ ∠b:v:f = ∠c:v:f."""
+    s, rep = eng.replay(eng.PROP9_HYPS_DATA, eng.PROP9_STEPS_DATA,
+                        [("_eq_ang", "b", "v", "f", "c", "v", "f"),
+                         ("neq", "v", "f")])
+    assert eng.la_entails_eq_ang(s.la, "b", "v", "f", "c", "v", "f")
+    assert s.has(("neq", "v", "f"))  # opposing_sides f v DE yields it
+    assert rep[-1]["final"]
+
+
+def test_prop9_control_dropped_off_line_f():
+    """I.9 without ¬(f.onLine AB) (one of Lean's two inline "have" proofs,
+    stated as an SMT-sourced input here): the replay STUCKs at
+    proposition_8's formTriangle premise — no forward rule derives it."""
+    hyps = [h for h in eng.PROP9_HYPS_DATA
+            if h[0] != ("not_on_line", "f", "AB")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP9_STEPS_DATA,
+                   [("_eq_ang", "b", "v", "f", "c", "v", "f")])
+    assert ei.value.rule == "proposition_8"
+    assert ei.value.premise == ("not_on_line", "f", "AB")
+
+
+def test_prop8_rule_lengths_needed():
+    """proposition_8 as a rule: breaking the third length congruence (SSS →
+    SSA) must stop the application at its entailment premise."""
+    hyps = [h for h in eng.PROP8_HYPS_DATA
+            if h[0] != ("eq_len", "b", "c", "e", "f")]
+    hyps.append((("eq_len", "b", "c", "e", "g"), "h"))
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_8",
+                       ("a", "b", "c", "d", "e", "f", "AB", "BC", "AC",
+                        "DE", "EF", "DF"), {})
+    assert ei.value.rule == "proposition_8"
+    assert "eq_len" in str(ei.value.premise)
+
+
+def test_proposition_1_prime_opposite_side():
+    """proposition_1' yields the equilateral lengths and the opposing-sides
+    fact, which expands to not_on_line both ways plus neq (the I.9 witness
+    distinctness)."""
+    s = eng.State()
+    for f in [("dpl", "d", "e", "DE"), ("not_on_line", "v", "DE")]:
+        s.assume(f)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_1'", ("d", "e", "v", "DE"),
+                   {"c": "f"})
+    eng.close(s)
+    assert eng.la_entails_eq(s.la, "f", "d", "d", "e")
+    assert eng.la_entails_eq(s.la, "f", "e", "d", "e")
+    assert s.has(("opposing_sides", "f", "v", "DE"))
+    assert s.has(("not_on_line", "f", "DE"))
+    assert s.has(("neq", "v", "f"))
+
+
 def test_by_contra_conclusion_reaches_closure():
     """A by_contra conclusion (peq) must be closed: the peq substitution
     rules fire on it in the same step (regression: I.8's final angle needed

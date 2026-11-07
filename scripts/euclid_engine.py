@@ -734,12 +734,14 @@ def r_same_side_not_on_line(s):
 
 def r_opposing_parts(s):
     # Relations.lean:13-14 — opposingSides a b L := ¬a.onLine L ∧ ¬b.onLine L
-    # ∧ ¬ a.sameSide b L. All three parts are yielded.
+    # ∧ ¬ a.sameSide b L. All three parts are yielded, and the pair itself
+    # yields a ≠ b (a point is never on the opposing side of itself).
     for fact in s.facts:
         if fact[0] == "opposing_sides":
             x, y, L = fact[1], fact[2], fact[3]
             yield ("not_on_line", x, L), [fact]
             yield ("not_on_line", y, L), [fact]
+            yield ("neq", x, y), [fact]
 
 
 def r_line_neq(s):
@@ -1295,6 +1297,38 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, d, AB, AC, CB, AD, DB: [
             (None, [("false",)])],
     },
+    # Book/Prop01.lean:18 (proposition_1') — equilateral construction on the
+    # side of AB opposite x (existential conclusion: construction when
+    # cited). Its non-degeneracy premise ¬x.onLine AB mirrors Lean's.
+    "proposition_1'": {
+        "cite": "Book/Prop01.lean:18",
+        "args": ("a", "b", "x", "AB"),
+        "premises": lambda s, a, b, x, AB: [
+            ("dpl", a, b, AB), ("not_on_line", x, AB)],
+        "make": lambda s, a, b, x, AB: [
+            ("c", [("_eq_len", "c", a, a, b), ("_eq_len", "c", b, a, b),
+                   ("opposing_sides", "c", x, AB)])],
+    },
+    # Book/Prop08.lean:5 — SSS as a forward rule (the engine's own I.8 replay
+    # stands behind the citation). formTriangles destructed; the three length
+    # congruences are entailment premises.
+    "proposition_8": {
+        "cite": "Book/Prop08.lean:5",
+        "args": ("a", "b", "c", "d", "e", "f", "AB", "BC", "AC",
+                 "DE", "EF", "DF"),
+        "premises": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            ("dpl", a, b, AB), ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("not_on_line", c, AB),
+            ("dpl", d, e, DE), ("on_line", e, EF), ("on_line", f, EF),
+            ("on_line", f, DF), ("on_line", d, DF),
+            ("not_on_line", f, DE)],
+        "entail": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            ("eq_len", (a, b, d, e)), ("eq_len", (a, c, d, f)),
+            ("eq_len", (b, c, e, f))],
+        "make": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            (None, [("_eq_ang", b, a, c, e, d, f)])],
+    },
     # SystemE/Theory/Inferences/Transfer.lean:90
     "sum_angles_onlyif": {
         "cite": "Transfer.lean:90",
@@ -1802,6 +1836,40 @@ PROP8_STEPS_DATA = [
 ]
 
 
+# Book I.9 (Book/Prop09.lean): bisect an angle (vertex renamed v: the
+# construction point_between_points_shorter_than introduces a base name "a"
+# that would collide). d on AB inside with
+# |a-d| < |a-c|; e on AC with |a-e| = |a-d| (proposition_3); f the
+# equilateral apex on DE opposite a (proposition_1'); proposition_8 (SSS)
+# gives ∠d:a:f = ∠e:a:f, and angle_ray_eq transports it to ∠b:a:f = ∠c:a:f.
+# SMT-sourced diagrammatic facts Lean's euclid_finish/SMT supplies (flagged
+# in the bell-back): the witness d is chosen non-degenerate (a ≠ d) and
+# d ≠ e; and Lean's two inline "have ¬(f.onLine AB/AC)" proofs (proposition_5'
+# + proposition_5 + ray case analysis) are stated as inputs — the engine's
+# bridges do not cover the ray-side split at d.
+PROP9_HYPS_DATA = [
+    (("dpl", "v", "b", "AB"), "h"),  # formRectilinearAngle b v c AB AC
+    (("dpl", "v", "c", "AC"), "h"),
+    (("neq_line", "AB", "AC"), "h"),
+    (("neq", "v", "d"), "h-sm"),     # witness choice (see comment)
+    (("neq", "d", "e"), "h-sm"),     # derivable by contra; SMT-sourced
+    (("not_on_line", "f", "AB"), "h-sm"),  # Lean's inline have #1
+    (("not_on_line", "f", "AC"), "h-sm"),  # Lean's inline have #2
+]
+PROP9_STEPS_DATA = [
+    ("point_between_points_shorter_than", ("AB", "v", "b", "v", "c"),
+     {"a": "d"}),
+    ("proposition_3", ("v", "c", "v", "d", "AC", "AB"), {"q": "e"}),
+    ("line_from_points", ("d", "e"), {"L": "DE"}),
+    ("proposition_1'", ("d", "e", "v", "DE"), {"c": "f"}),
+    ("line_from_points", ("f", "e"), {"L": "FE"}),
+    ("line_from_points", ("f", "d"), {"L": "FD"}),
+    ("line_from_points", ("v", "f"), {"L": "AF"}),
+    ("proposition_8", ("v", "d", "f", "v", "e", "f", "AB", "FD", "AF",
+                       "AC", "FE", "AF"), {}),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -1876,6 +1944,12 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP8_HYPS_DATA, PROP8_STEPS_DATA,
                             [("_eq_ang", "b", "a", "c", "e", "d", "f")])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "9":
+            t0 = time.time()
+            s, rep = replay(PROP9_HYPS_DATA, PROP9_STEPS_DATA,
+                            [("_eq_ang", "b", "v", "f", "c", "v", "f"),
+                             ("neq", "v", "f")])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
