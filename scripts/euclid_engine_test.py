@@ -1218,6 +1218,38 @@ def test_proposition_22p_citation_refused_without_inequality():
         "entail", "gt_sum_len", ("b", "b'", "c", "c'", "a", "a'"))
 
 
+def test_proposition_23_citation_fires():
+    """The cited lemma makes exactly the I.23 conclusions over the fresh
+    witness f (the theorem PROP23_STEPS_DATA replays): f ≠ a and
+    ∠f:a:b = ∠d:c:e."""
+    s = eng.State()
+    for f, w in eng.PROP23_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    rep = eng.apply_step(
+        s, 1, "proposition_23",
+        ("a", "b", "c", "d", "e", "AB", "CD", "CE"), {"f": "f"})
+    assert rep["rule"].startswith("proposition_23")
+    assert s.has(("neq", "f", "a"))
+    assert eng.la_entails_eq_ang(s.la, "f", "a", "b", "d", "c", "e")
+
+
+def test_proposition_23_citation_refused_without_angle_side():
+    """formRectilinearAngle d c e CD CE is two distinctPointsOnLine
+    premises (Relations.lean:64); with the dpl for CD missing the
+    citation is refused at that premise."""
+    hyps = [h for h in eng.PROP23_HYPS_DATA
+            if h[0] != ("dpl", "d", "c", "CD")]
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise):
+        eng.apply_step(
+            s, 1, "proposition_23",
+            ("a", "b", "c", "d", "e", "AB", "CD", "CE"), {"f": "f"})
+
+
 def test_proposition_21_citation_fires():
     """The cited lemma makes exactly the two I.21 conclusions (the
     theorem PROP21_STEPS_DATA proves): the strict rows plus the

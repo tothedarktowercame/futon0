@@ -2076,6 +2076,24 @@ CONSTRUCTIONS = {
             ("g", [("on_line", "g", FE), ("not_between", "g", f, e),
                    ("_eq_len", f, "g", b, b2)])],
     },
+    # Book/Prop23.lean:8 — proposition_23 verbatim: copy an angle onto a
+    # given line at a given point —
+    #   ∀ (a b c d e : Point) (AB CD CE : Line),
+    #     distinctPointsOnLine a b AB ∧ formRectilinearAngle d c e CD CE →
+    #       ∃ f : Point, f ≠ a ∧ (∠ f:a:b = ∠ d:c:e)
+    # formRectilinearAngle destructures (Relations.lean:64) to dpl d c CD
+    # ∧ dpl c e CE. An existential construction: it makes the witness f.
+    # The theorem PROP23_STEPS_DATA replays.
+    "proposition_23": {
+        "cite": "Book/Prop23.lean:8 (proposition_23)",
+        "args": ("a", "b", "c", "d", "e", "AB", "CD", "CE"),
+        "premises": lambda s, a, b, c, d, e, AB, CD, CE: [
+            _dpl_either(s, a, b, AB), _dpl_either(s, d, c, CD),
+            _dpl_either(s, c, e, CE)],
+        "make": lambda s, a, b, c, d, e, AB, CD, CE: [
+            ("f", [("neq", "f", a),
+                   ("_eq_ang", "f", a, b, d, c, e)])],
+    },
     # SystemE/Theory/Inferences/Transfer.lean:124 — flat_angle_onlyif
     # verbatim: between a b c → ∠a:b:c = ∟ + ∟ (the straight angle).
     # Cited per use. First use: Book I.23's degenerate branch, where the
