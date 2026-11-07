@@ -9,6 +9,7 @@ when LeanEuclid or its built oleans are absent.
 import importlib.util
 from pathlib import Path
 import shutil
+import subprocess
 import pytest
 
 spec = importlib.util.spec_from_file_location(
@@ -176,3 +177,14 @@ def test_found_sequence_i1_certifies():
     witness = list(path[-1][2].values())[-1]
     r = cert.check_lean(cert.emit_proof("I.1", path, witness), "test_found_I1")
     assert r["certified"], r["output"]
+
+
+def test_check_lean_timeout_is_not_certified(monkeypatch):
+    # review (claude-9): a false step can leave the SMT search running past
+    # the timeout; that must come back as a refusal, not an exception
+    def fake_run(*a, **kw):
+        raise subprocess.TimeoutExpired(cmd="lean", timeout=kw.get("timeout"))
+    monkeypatch.setattr(cert.subprocess, "run", fake_run)
+    r = cert.check_lean("-- anything", "test_timeout", timeout=7)
+    assert r["certified"] is False
+    assert r["reason"] == "timeout after 7 s"

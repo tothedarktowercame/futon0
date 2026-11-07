@@ -223,7 +223,7 @@ def env():
     return e
 
 
-def check_lean(source, name):
+def check_lean(source, name, timeout=600):
     """Run `lake env lean` on the emitted proof.
 
     Returns dict(certified, rc, wall_s, reason, output). Certified iff
@@ -233,10 +233,20 @@ def check_lean(source, name):
     path = SCRATCH / f"{name}.lean"
     path.write_text(source)
     t0 = time.perf_counter()
-    proc = subprocess.run(
-        ["lake", "env", "lean", str(path)],
-        cwd=str(LEAN_EUCLID), env=env(), capture_output=True, text=True,
-        timeout=600)
+    try:
+        proc = subprocess.run(
+            ["lake", "env", "lean", str(path)],
+            cwd=str(LEAN_EUCLID), env=env(), capture_output=True, text=True,
+            timeout=timeout)
+    except subprocess.TimeoutExpired as e:
+        # review (claude-9): a solver that never answers is a refusal to
+        # certify, not a crash of the certifier
+        out = ((e.stdout or b"").decode(errors="replace")
+               if isinstance(e.stdout, bytes) else (e.stdout or ""))
+        return {"certified": False, "rc": None,
+                "wall_s": round(time.perf_counter() - t0, 2),
+                "reason": f"timeout after {timeout} s", "output": out,
+                "path": str(path)}
     wall = time.perf_counter() - t0
     out = (proc.stdout + proc.stderr).strip()
     reasons = []
