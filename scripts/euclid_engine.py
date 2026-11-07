@@ -32,6 +32,25 @@ import time
 # ---------------------------------------------------------------------------
 
 
+def ang_atom(a, b, c):
+    """Canonical atom for ∠(a:b:c) (vertex b). Sorting the legs applies
+    angle_symm (SystemE/Theory/Inferences/Metric.lean:46, ∠a:b:c = ∠c:b:a)."""
+    x, y = sorted((a, c))
+    return ("ang", x, b, y)
+
+
+RT = ("rt",)  # the right angle, a constant atom in the arithmetic store
+
+
+def eq_ang(la, a, b, c, d, e, f):
+    """Add ∠(a:b:c) = ∠(d:e:f)."""
+    la.add({ang_atom(a, b, c): 1, ang_atom(d, e, f): -1}, 0, "=")
+
+
+def la_entails_eq_ang(la, a, b, c, d, e, f):
+    return la.entails({ang_atom(a, b, c): 1, ang_atom(d, e, f): -1}, 0, "=")
+
+
 def len_atom(a, b):
     """Canonical atom for |(a-b)|. Sorting the pair applies segment_symmetric
     (SystemE/Theory/Inferences/Metric.lean:41, |a-b| = |b-a|) as a rewrite."""
@@ -420,17 +439,278 @@ def r_pos_neq(s):
                         yield (("neq", *pair), [("pos_len", a, b), ("pos_len", b, a)])
 
 
+def r_dpl_parts(s):
+    # Relations.lean:6 (definition) — dpl p q L gives on_line p L, on_line q L.
+    for fact in s.facts:
+        if fact[0] == "dpl":
+            yield ("on_line", fact[1], fact[3]), [fact]
+            yield ("on_line", fact[2], fact[3]), [fact]
+
+
+def r_between_symm(s):
+    # Diagrammatic.lean:45 — between a b c ⇒ between c b a.
+    for fact in s.facts:
+        if fact[0] == "between":
+            yield ("between", fact[3], fact[2], fact[1]), [fact]
+
+
+def r_between_same_line_out(s):
+    # Diagrammatic.lean:53 — between a b c, a and b on L ⇒ c on L.
+    lines = {}
+    for fact in s.facts:
+        if fact[0] == "on_line":
+            lines.setdefault(fact[2], set()).add(fact[1])
+    for fact in s.facts:
+        if fact[0] == "between":
+            a, b, c = fact[1], fact[2], fact[3]
+            for L, pts in lines.items():
+                if a in pts and b in pts and c not in pts:
+                    yield ("on_line", c, L), [fact, ("on_line", a, L),
+                                              ("on_line", b, L)]
+
+
+def r_between_same_line_in(s):
+    # Diagrammatic.lean:61 — between a b c, a and c on L ⇒ b on L.
+    lines = {}
+    for fact in s.facts:
+        if fact[0] == "on_line":
+            lines.setdefault(fact[2], set()).add(fact[1])
+    for fact in s.facts:
+        if fact[0] == "between":
+            a, b, c = fact[1], fact[2], fact[3]
+            for L, pts in lines.items():
+                if a in pts and c in pts and b not in pts:
+                    yield ("on_line", b, L), [fact, ("on_line", a, L),
+                                              ("on_line", c, L)]
+
+
+def r_between_trans_in(s):
+    # Diagrammatic.lean:69 — between a b c ∧ between a d b ⇒ between a d c.
+    bt = {f for f in s.facts if f[0] == "between"}
+    for f1 in bt:
+        a, b, c = f1[1], f1[2], f1[3]
+        for f2 in bt:
+            if f2[0] == "between" and f2[1] == a and f2[3] == b:
+                if not s.has(("between", a, f2[2], c)):
+                    yield (("between", a, f2[2], c), [f1, f2])
+
+
+def r_same_side_symm(s):
+    # Diagrammatic.lean:112 — same side is symmetric.
+    for fact in s.facts:
+        if fact[0] == "same_side":
+            yield ("same_side", fact[2], fact[1], fact[3]), [fact]
+
+
+def r_same_side_trans(s):
+    # Diagrammatic.lean:127 — a~b and a~c on L ⇒ b~c on L.
+    ss = [f for f in s.facts if f[0] == "same_side"]
+    for f1 in ss:
+        for f2 in ss:
+            if f1[1] == f2[1] and f1[3] == f2[3] and f1[2] != f2[2]:
+                if not s.has(("same_side", f1[2], f2[2], f1[3])):
+                    yield (("same_side", f1[2], f2[2], f1[3]), [f1, f2])
+
+
+def r_pasch_2(s):
+    # Diagrammatic.lean:153 — between a b c, a on L, b not on L ⇒ b~c on L.
+    for fact in s.facts:
+        if fact[0] != "between":
+            continue
+        a, b, c = fact[1], fact[2], fact[3]
+        for f2 in s.facts:
+            if f2[0] == "on_line" and f2[1] == a and \
+                    s.has(("not_on_line", b, f2[2])):
+                if not s.has(("same_side", b, c, f2[2])):
+                    yield (("same_side", b, c, f2[2]),
+                           [fact, f2, ("not_on_line", b, f2[2])])
+
+
+def r_off_line_neq(s):
+    # [logic] a point off a line differs from every point on it.
+    for f1 in s.facts:
+        if f1[0] != "not_on_line":
+            continue
+        x, L = f1[1], f1[2]
+        for f2 in s.facts:
+            if f2[0] == "on_line" and f2[2] == L:
+                for pair in ((x, f2[1]), (f2[1], x)):
+                    if not s.has(("neq", *pair)):
+                        yield (("neq", *pair), [f1, f2])
+
+
+def r_two_lines_meet_once(s):
+    # [SMT-bridge, from two_points_determine_line Diagrammatic.lean:14]
+    # x on M, L ≠ M, p on both L and M, x ≠ p ⇒ x not on L (two distinct
+    # lines share at most one point). Lean's SMT closes such cases; the
+    # engine states the contrapositive directly.
+    for fL in s.facts:
+        if fL[0] != "neq_line":
+            continue
+        L, M = fL[1], fL[2]
+        for fp in s.facts:
+            if fp[0] != "on_line" or fp[2] != L or not s.has(("on_line", fp[1], M)):
+                continue
+            p = fp[1]
+            for fx in s.facts:
+                if fx[0] == "on_line" and fx[2] == M and fx[1] != p and \
+                        s.has(("neq", fx[1], p)) and \
+                        not s.has(("not_on_line", fx[1], L)):
+                    yield (("not_on_line", fx[1], L),
+                           [fL, fp, ("on_line", fx[1], M), ("neq", fx[1], p)])
+
+
+def r_degenerated_angle(s):
+    # Transfer.lean:63 — a,b,c on L, a≠b, a≠c, ¬between b a c ⇒ ∠b:a:c = 0.
+    for f1 in s.facts:
+        if f1[0] != "between":
+            continue
+        # order v-x-y on a line: v is not between x and y, so ∠x:v:y = 0
+        v, x, y = f1[1], f1[2], f1[3]
+        for f2 in s.facts:
+            if f2[0] != "on_line":
+                continue
+            L = f2[2]
+            if f2[1] != v:
+                continue
+            if not (s.has(("on_line", x, L)) and s.has(("on_line", y, L))):
+                continue
+            if not (s.has(("neq", v, x)) and s.has(("neq", v, y))):
+                continue
+            marker = ("zero_ang", v, x, y, L)
+            if not s.has(marker):
+                s.la.add({ang_atom(x, v, y): 1}, 0, "=")
+                yield marker, [f1, f2, ("on_line", x, L), ("on_line", y, L),
+                               ("neq", v, x), ("neq", v, y)]
+
+
+def r_angle_ray_eq(s):
+    # [SMT-bridge] between v x y (order v-x-y) ⇒ ∠(z,v,x) = ∠(z,v,y) for
+    # every z: the rays v→x and v→y coincide, so the angles are equal.
+    # LeanEuclid derives this in SMT (the zero angle ∠x:v:y itself is the
+    # axiom degenerated_angle_if, Transfer.lean:63; the ray equality is the
+    # bridge). Marker-guarded.
+    pts = _all_points(s)
+    for fact in s.facts:
+        if fact[0] != "between":
+            continue
+        v, x, y = fact[1], fact[2], fact[3]
+        for z in pts:
+            if z in (v, x, y):
+                continue
+            marker = ("rayang", v, x, y, z)
+            if not s.has(marker):
+                s.la.add({ang_atom(z, v, x): 1, ang_atom(z, v, y): -1},
+                         0, "=")
+                yield marker, [fact]
+
+
+def r_between_order(s):
+    # [SMT-bridge] between a x z ∧ between a y z ∧ |a-x| < |a-y| ⇒
+    # between a x y: interior points of a segment are ordered by distance.
+    # LeanEuclid's SMT proves this from the coordinate model.
+    bt = [f for f in s.facts if f[0] == "between"]
+    for fx in bt:
+        a, x, z = fx[1], fx[2], fx[3]
+        for fy in bt:
+            if fy[1] != a or fy[3] != z:
+                continue
+            y = fy[2]
+            if x == y or s.has(("between", a, x, y)):
+                continue
+            if la_entails_lt(s.la, a, x, a, y):
+                yield (("between", a, x, y), [fx, fy])
+
+
+def r_straight_angle(s):
+    # [SMT-bridge] between u v w ∧ x off the line ⇒ ∠u:v:x + ∠x:v:w = 2∟
+    # (angles on a straight line). Requires the right-angle constant.
+    for fact in s.facts:
+        if fact[0] != "between":
+            continue
+        u, v, w = fact[1], fact[2], fact[3]
+        for f2 in s.facts:
+            if f2[0] != "not_on_line":
+                continue
+            x, L = f2[1], f2[2]
+            if not (s.has(("on_line", u, L)) and s.has(("on_line", v, L))
+                    and s.has(("on_line", w, L))):
+                continue
+            marker = ("strang", u, v, w, x, L)
+            if not s.has(marker):
+                s.la.add({ang_atom(u, v, x): 1, ang_atom(x, v, w): 1,
+                          RT: -2}, 0, "=")
+                yield marker, [fact, f2, ("on_line", u, L),
+                               ("on_line", v, L), ("on_line", w, L)]
+
+
+def r_len_gte_zero(s):
+    # Metric.lean:33 — every segment length is ≥ 0. Applied to every length
+    # atom present in the store, marker-guarded so the fixpoint stays
+    # idempotent (atoms added later pick their row up on the next pass).
+    la = s.la
+    for a in {at for items, _, _ in la.rows for at, _ in items}:
+        if a[0] == "len":
+            marker = ("gte", a[1], a[2])
+            if not s.has(marker):
+                la.add({a: -1}, 0, "<=")
+                yield marker, []
+
+
+def r_peq_subst(s):
+    # [derived from zero_segment_if, Metric.lean:21] point equality x = y
+    # substitutes into every length/angle atom present in the store.
+    la = s.la
+    atoms = {a for items, _, _ in la.rows for a, _ in items}
+    for fact in s.facts:
+        if fact[0] != "peq":
+            continue
+        x, y = fact[1], fact[2]
+        for a in atoms:
+            if a[0] == "len" and x in (a[1], a[2]):
+                other = tuple(y if t == x else t for t in a[1:3])
+                a2 = ("len",) + tuple(sorted(other))
+                marker = ("sublen", a, x, y)
+                if not s.has(marker):
+                    s.la.add({a: 1, a2: -1}, 0, "=")
+                    yield marker, [fact]
+            elif a[0] == "ang" and x in a[1:]:
+                legs, vert = (a[1], a[3]), a[2]
+                sub = tuple(y if t == x else t for t in (legs[0], vert, legs[1]))
+                a2 = ang_atom(*sub)
+                marker = ("subang", a, x, y)
+                if not s.has(marker):
+                    s.la.add({a: 1, a2: -1}, 0, "=")
+                    yield marker, [fact]
+
+
 FORWARD_RULES = [
     ("center_inside_circle [Diagrammatic.lean:28]", r_center_inside),
     ("not_outside [Relations.lean:35]", r_not_outside),
     ("intersection_circle_circle_2 [Diagrammatic.lean:319]", r_icc2),
     ("intersection_symm [Diagrammatic.lean:289]", r_icc_symm),
     ("distinct_points_on_line [Relations.lean:6]", r_dpl),
-    ("neq_positive_length [Metric.lean:21,25,33]", r_neq_pos),
+    ("dpl_parts [Relations.lean:6 defn]", r_dpl_parts),    ("neq_positive_length [Metric.lean:21,25,33]", r_neq_pos),
     ("between_if [Transfer.lean:16]", r_between_if),
     ("point_on_circle_onlyif [Transfer.lean:39]", r_poc_onlyif),
     ("classify_point_vs_circle [Transfer.lean:34,47; Relations.lean:35]", r_classify),
     ("positive_length_neq [Metric.lean:21,25]", r_pos_neq),
+    ("between_symm [Diagrammatic.lean:45]", r_between_symm),
+    ("between_same_line_in [Diagrammatic.lean:61]", r_between_same_line_in),
+    ("between_same_line_out [Diagrammatic.lean:53]", r_between_same_line_out),
+    ("between_trans_in [Diagrammatic.lean:69]", r_between_trans_in),
+    ("same_side_symm [Diagrammatic.lean:112]", r_same_side_symm),
+    ("same_side_trans [Diagrammatic.lean:127]", r_same_side_trans),
+    ("pasch_2 [Diagrammatic.lean:153]", r_pasch_2),
+    ("off_line_neq [logic]", r_off_line_neq),
+    ("two_lines_meet_once [SMT-bridge from Diagrammatic.lean:14]",
+     r_two_lines_meet_once),
+    ("degenerated_angle_if [Transfer.lean:63]", r_degenerated_angle),
+    ("angle_ray_eq [SMT-bridge]", r_angle_ray_eq),
+    ("between_order [SMT-bridge]", r_between_order),
+    ("straight_angle [SMT-bridge]", r_straight_angle),
+    ("segment_gte_zero [Metric.lean:33]", r_len_gte_zero),
+    ("peq_subst [derived, Metric.lean:21]", r_peq_subst),
 ]
 
 
@@ -469,11 +749,23 @@ def _all_points(s):
             pts.update(fact[1:3])
         elif k in ("dpl", "opposing_sides"):
             pts.update(fact[1:3])
-        elif k in ("pos_len", "len_sum", "eq_len"):
+        elif k in ("pos_len", "len_sum", "eq_len", "lt_len"):
             pts.update(fact[1:])
         elif k == "radii":
             pts.update(fact[2:4])
-        # intersects_cc: circle names only
+        elif k in ("not_between",):
+            pts.update(fact[1:4])
+        elif k in ("peq",):
+            pts.update(fact[1:3])
+        elif k == "same_side":
+            pts.update(fact[1:3])
+        elif k in ("eq_ang",):
+            pts.update(fact[1:4]); pts.update(fact[4:7])
+        elif k in ("sum_ang",):
+            pts.update(fact[1:4]); pts.update(fact[4:7])
+        elif k in ("subang",):
+            pts.update(fact[1][1:])
+        # intersects_cc, neq_line: circle/line names only
     return pts
 
 
@@ -574,29 +866,178 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, BC: [
             ("d", [("_eq_len", a, "d", b, c)])],
     },
+    # SystemE/Theory/Inferences/Superposition.lean:7 — exactly the axiom:
+    # formTriangle a b c AB BC AC ∧ dpl d g L ∧ ¬h.onLine L ⇒ ∃ b' c' BC' AC'
+    # with the full equality bundle (three angles, three lengths) plus
+    # b'.onLine L, ¬between b' d g, c'.sameSide h L, dpl b' c' BC',
+    # dpl d c' AC'. formTriangle is destructed into its fact conjuncts.
+    "superposition": {
+        "cite": "Superposition.lean:7",
+        "args": ("a", "b", "c", "d", "g", "h", "AB", "BC", "AC", "L"),
+        "premises": lambda s, a, b, c, d, g, h, AB, BC, AC, L: [
+            ("dpl", a, b, AB), ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("dpl", d, g, L), ("not_on_line", h, L)],
+        "make": lambda s, a, b, c, d, g, h, AB, BC, AC, L: [
+            ("b'", [("on_line", "b'", L), ("not_between", "b'", d, g)]),
+            ("c'", [("same_side", "c'", h, L)]),
+            ("BC'", [("dpl", "b'", "c'", "BC'")]),
+            ("AC'", [("dpl", d, "c'", "AC'")]),
+            (None, [("_eq_ang", b, a, c, "b'", d, "c'"),
+                    ("_eq_ang", a, c, b, d, "c'", "b'"),
+                    ("_eq_ang", c, b, a, "c'", "b'", d),
+                    ("_eq_len", a, b, d, "b'"),
+                    ("_eq_len", b, c, "b'", "c'"),
+                    ("_eq_len", c, a, "c'", d)])],
+    },
+    # [SMT-bridge] Lean's euclid_assert b' = e in Prop04.lean, rendered as a
+    # premise-checked rule: x, y on line L, ¬between x z y, and the
+    # arithmetic entails |z-x| = |z-y| ⇒ x = y (same ray from z, same
+    # distance ⇒ coincident).
+    "assert_point_eq_on_ray": {
+        "cite": "euclid_assert [SMT-bridge]",
+        "args": ("x", "y", "z", "L"),
+        "premises": lambda s, x, y, z, L: [
+            ("on_line", x, L), ("on_line", y, L),
+            ("not_between", x, z, y)],
+        "entail": lambda s, x, y, z, L: [("eq_len", (z, x, z, y))],
+        "make": lambda s, x, y, z, L: [(None, [("peq", x, y)])],
+    },
+    # [SMT-bridge] Lean's euclid_assert c' = f in Prop04.lean: equal angle at
+    # the apex, equal distance from it, same side ⇒ coincident.
+    "assert_point_eq_angle": {
+        "cite": "euclid_assert [SMT-bridge]",
+        "args": ("x", "y", "w", "z", "L"),
+        "premises": lambda s, x, y, w, z, L: [("same_side", x, y, L)],
+        "entail": lambda s, x, y, w, z, L: [
+            ("eq_ang", (w, z, x, w, z, y)),
+            ("eq_len", (z, x, z, y))],
+        "make": lambda s, x, y, w, z, L: [(None, [("peq", x, y)])],
+    },
+    # SystemE/Theory/Constructions/Points.lean:28
+    "point_between_points_shorter_than": {
+        "cite": "Points.lean:28",
+        "args": ("L", "b", "c", "u", "v"),
+        "premises": lambda s, L, b, c, u, v: [("dpl", b, c, L)],
+        "entail": lambda s, L, b, c, u, v: [("pos_len", (u, v))],
+        "make": lambda s, L, b, c, u, v: [
+            ("a", [("on_line", "a", L), ("between", b, "a", c),
+                   ("_lt_len", b, "a", u, v)])],
+    },
+    # Book/Prop03.lean:5 — cut a shorter length off a segment
+    "proposition_3": {
+        "cite": "Book/Prop03.lean:5",
+        "args": ("a", "b", "c0", "c1", "AB", "C"),
+        "premises": lambda s, a, b, c0, c1, AB, C: [
+            ("dpl", a, b, AB), ("dpl", c0, c1, C)],
+        "entail": lambda s, a, b, c0, c1, AB, C: [
+            ("gt_len", (a, b, c0, c1))],
+        "make": lambda s, a, b, c0, c1, AB, C: [
+            ("q", [("between", a, "q", b), ("_eq_len", a, "q", c0, c1)])],
+    },
+    # Book/Prop04.lean:5 — SAS as a forward rule on existing points. The
+    # formTriangle premises are destructed; the three congruence premises are
+    # entailment premises; the conclusions are metric facts (no fresh
+    # objects).
+    "proposition_4": {
+        "cite": "Book/Prop04.lean:5",
+        "args": ("a", "b", "c", "d", "e", "f", "AB", "BC", "AC",
+                 "DE", "EF", "DF"),
+        "premises": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            ("dpl", a, b, AB), ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("dpl", d, e, DE), ("on_line", e, EF), ("on_line", f, EF),
+            ("on_line", f, DF), ("on_line", d, DF)],
+        "entail": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            ("eq_len", (a, b, d, e)), ("eq_len", (a, c, d, f)),
+            ("eq_ang", (b, a, c, e, d, f))],
+        "make": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
+            (None, [("_eq_len", b, c, e, f),
+                    ("_eq_ang", a, b, c, d, e, f),
+                    ("_eq_ang", a, c, b, d, f, e)])],
+    },
+    # SystemE/Theory/Inferences/Transfer.lean:90
+    "sum_angles_onlyif": {
+        "cite": "Transfer.lean:90",
+        "args": ("a", "b", "c", "d", "L", "M"),
+        "premises": lambda s, a, b, c, d, L, M: [
+            ("on_line", a, L), ("on_line", a, M),
+            ("on_line", b, L), ("on_line", c, M),
+            ("neq", a, b), ("neq", a, c),
+            ("not_on_line", d, L), ("not_on_line", d, M),
+            ("neq_line", L, M),
+            ("same_side", b, d, M), ("same_side", c, d, L)],
+        "make": lambda s, a, b, c, d, L, M: [
+            (None, [("_sum_ang", b, a, c, d)])],
+    },
 }
+
+
+def _entail_check(s, i, rule, q):
+    kind, a = q
+    if kind == "eq_len":
+        ok = la_entails_eq(s.la, *a)
+    elif kind == "eq_ang":
+        ok = la_entails_eq_ang(s.la, *a)
+    elif kind == "lt_len":
+        ok = la_entails_lt(s.la, *a)
+    elif kind == "gt_len":
+        ok = la_entails_gt(s.la, *a)
+    elif kind == "pos_len":
+        ok = s.la.entails({len_atom(*a): 1}, 0, ">")
+    else:
+        ok = False
+    if not ok:
+        raise MissingPremise(i, rule, ("entail", kind, a),
+                             "(arithmetic does not entail it)")
+    return ("entail",) + q
 
 
 def apply_step(s, i, rule, args, bindings):
     """Apply one euclid_apply-style step. Returns a report dict.
-    Raises MissingPremise if a premise is not in the closed state."""
+    Raises MissingPremise if a premise is not in the closed state or an
+    entailment premise fails the arithmetic."""
     if rule not in CONSTRUCTIONS:
         raise MissingPremise(i, rule, "(unknown rule)",
                              "(not in the engine's rule table)")
     spec = CONSTRUCTIONS[rule]
     prem_specs = spec["premises"](s, *args)
     prem_facts = [_need(s, i, rule, pf) for pf in prem_specs]
+    for q in spec.get("entail", lambda s, *a: [])(s, *args):
+        prem_facts.append(_entail_check(s, i, rule, q))
     made = spec["make"](s, *args)
     added = []
     for base, facts in made:
-        name = bindings[base] if base in bindings else s.new(base)
+        name = bindings.get(base) if base is not None else None
+        if base is not None and name is None:
+            name = s.new(base)
         for fact in facts:
-            fact = tuple(name if x == base else x for x in fact)
+            fact = tuple((name if x == base else x) if base is not None
+                         else x for x in fact)
             if fact[0] == "_eq_len":
                 eq_len(s.la, *fact[1:])
                 s.add(("eq_len", *fact[1:]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("eq_len", *fact[1:]))
+            elif fact[0] == "_eq_ang":
+                eq_ang(s.la, *fact[1:])
+                s.add(("eq_ang", *fact[1:]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("eq_ang", *fact[1:]))
+            elif fact[0] == "_lt_len":
+                s.la.add({len_atom(fact[1], fact[2]): 1,
+                          len_atom(fact[3], fact[4]): -1}, 0, "<")
+                s.add(("lt_len", *fact[1:]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("lt_len", *fact[1:]))
+            elif fact[0] == "_sum_ang":
+                b, a0, c, d = fact[1:]
+                s.la.add({ang_atom(b, a0, c): 1,
+                          ang_atom(b, a0, d): -1,
+                          ang_atom(d, a0, c): -1}, 0, "=")
+                s.add(("sum_ang", *fact[1:]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("sum_ang", *fact[1:]))
             else:
                 s.add(fact, f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(fact)
@@ -678,6 +1119,75 @@ PROP3_STEPS_DATA = [
      {"e": "e"}),
 ]
 
+# Book I.4 and I.5 as data (hypotheses destructed; SMT-sourced side/off-line
+# facts are stated as explicit inputs — see euclid_engine_test.py docstrings)
+PROP4_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("dpl", "d", "e", "DE"), "h"),
+    (("on_line", "e", "EF"), "h"), (("on_line", "f", "EF"), "h"),
+    (("on_line", "f", "DF"), "h"), (("on_line", "d", "DF"), "h"),
+    (("not_on_line", "f", "DE"), "h"),
+    (("eq_len", "a", "b", "d", "e"), "h"),
+    (("eq_len", "a", "c", "d", "f"), "h"),
+    (("eq_ang", "b", "a", "c", "e", "d", "f"), "h"),
+]
+PROP4_STEPS_DATA = [
+    ("superposition", ("a", "b", "c", "d", "e", "f", "AB", "BC", "AC", "DE"),
+     {"b'": "b'", "c'": "c'", "BC'": "BC'", "AC'": "AC'"}),
+    ("assert_point_eq_on_ray", ("b'", "e", "d", "DE"), {}),
+    ("assert_point_eq_angle", ("c'", "f", "e", "d", "DE"), {}),
+]
+PROP5_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("not_on_line", "c", "AB"), "h"),
+    (("not_on_line", "b", "AC"), "h"),
+    (("not_on_line", "c", "GB"), "h"),
+    (("not_on_line", "b", "FC"), "h"),
+    (("neq_line", "AB", "AC"), "h"), (("neq_line", "AB", "GB"), "h"),
+    (("neq_line", "AC", "FC"), "h"),
+    (("between", "a", "b", "d"), "h"),
+    (("between", "a", "c", "e"), "h"),
+    (("neq", "b", "d"), "h"), (("neq", "c", "e"), "h"),
+    (("eq_len", "a", "b", "a", "c"), "h"),
+]
+PROP5_STEPS_DATA = [
+    ("point_between_points_shorter_than", ("AB", "b", "d", "c", "e"),
+     {"a": "f"}),
+    ("proposition_3", ("a", "e", "f", "a", "AC", "AB"), {"q": "g"}),
+    ("line_from_points", ("c", "f"), {"L": "FC"}),
+    ("line_from_points", ("b", "g"), {"L": "GB"}),
+    ("proposition_4", ("a", "f", "c", "a", "g", "b", "AB", "FC", "AC",
+                       "AC", "GB", "AB"), {}),
+    ("proposition_4", ("f", "b", "c", "g", "c", "b", "AB", "BC", "FC",
+                       "AC", "BC", "GB"), {}),
+    ("sum_angles_onlyif", ("b", "a", "g", "c", "AB", "GB"), {}),
+    ("sum_angles_onlyif", ("c", "a", "f", "b", "AC", "FC"), {}),
+]
+
+
+def _metric_state(hyps):
+    s = State()
+    for f, w in hyps:
+        if f[0] == "eq_len":
+            eq_len(s.la, *f[1:])
+        elif f[0] == "eq_ang":
+            eq_ang(s.la, *f[1:])
+        s.assume(f, w)
+    close(s)
+    return s
+
+
+def _prop4_data_state():
+    return _metric_state(PROP4_HYPS_DATA)
+
+
+def _prop5_data_state():
+    return _metric_state(PROP5_HYPS_DATA)
+
 
 def main():
     import sys
@@ -698,6 +1208,27 @@ def main():
                         "constraints": s.la.size(),
                         "seconds": round(time.time() - t0, 4)})
             assert la_entails_eq(s.la, "a", "l", "b", "c"), "I.2 conclusion"
+        elif p == "4":
+            t0 = time.time()
+            s = _prop4_data_state()
+            for i, (r, a, b) in enumerate(PROP4_STEPS_DATA, 1):
+                apply_step(s, i, r, a, b)
+            assert la_entails_eq(s.la, "b", "c", "e", "f"), "I.4 length"
+            assert la_entails_eq_ang(s.la, "a", "b", "c", "d", "e", "f")
+            assert la_entails_eq_ang(s.la, "a", "c", "b", "d", "f", "e")
+            rep = [{"final": True, "facts": len(s.facts),
+                    "constraints": s.la.size(),
+                    "seconds": round(time.time() - t0, 4)}]
+        elif p == "5":
+            t0 = time.time()
+            s = _prop5_data_state()
+            for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
+                apply_step(s, i, r, a, b)
+            assert la_entails_eq_ang(s.la, "a", "b", "c", "a", "c", "b")
+            assert la_entails_eq_ang(s.la, "c", "b", "d", "b", "c", "e")
+            rep = [{"final": True, "facts": len(s.facts),
+                    "constraints": s.la.size(),
+                    "seconds": round(time.time() - t0, 4)}]
         elif p == "3":
             s = State()
             for f, w in PROP3_HYPS_DATA:

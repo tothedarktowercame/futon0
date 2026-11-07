@@ -258,3 +258,155 @@ def test_prop3_needs_strict_length_hypothesis():
             for i, (r, a, b) in enumerate(eng.PROP3_STEPS_DATA, 1):
                 eng.apply_step(s, i, r, a, b)
         assert "('outside', 'b', 'DEF')" in str(ei.value)
+
+
+# --- I.4 (Book/Prop04.lean:5, SAS via superposition) ------------------------
+
+PROP4_HYPS_DATA = [
+    # formTriangle a b c AB BC AC and d e f DE EF DF, destructed
+    (("dpl", "a", "b", "AB"), "h"),
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("dpl", "d", "e", "DE"), "h"),
+    (("on_line", "e", "EF"), "h"), (("on_line", "f", "EF"), "h"),
+    (("on_line", "f", "DF"), "h"), (("on_line", "d", "DF"), "h"),
+    # SMT-sourced destructed hypothesis (Lean proves f not on DE in SMT)
+    (("not_on_line", "f", "DE"), "h"),
+    (("eq_len", "a", "b", "d", "e"), "h"),
+    (("eq_len", "a", "c", "d", "f"), "h"),
+    (("eq_ang", "b", "a", "c", "e", "d", "f"), "h"),
+]
+
+PROP4_STEPS_DATA = [
+    ("superposition", ("a", "b", "c", "d", "e", "f", "AB", "BC", "AC", "DE"),
+     {"b'": "b'", "c'": "c'", "BC'": "BC'", "AC'": "AC'"}),
+    ("assert_point_eq_on_ray", ("b'", "e", "d", "DE"), {}),
+    ("assert_point_eq_angle", ("c'", "f", "e", "d", "DE"), {}),
+]
+
+
+def _prop4_state(hyps=PROP4_HYPS_DATA):
+    s = eng.State()
+    for f, w in hyps:
+        if f[0] == "eq_len":
+            eng.eq_len(s.la, *f[1:])
+        elif f[0] == "eq_ang":
+            eng.eq_ang(s.la, *f[1:])
+        s.assume(f, w)
+    eng.close(s)
+    return s
+
+
+def test_prop4_replay():
+    import time
+    t0 = time.time()
+    s = _prop4_state()
+    for i, (r, a, b) in enumerate(PROP4_STEPS_DATA, 1):
+        eng.apply_step(s, i, r, a, b)
+    dt = time.time() - t0
+    assert eng.la_entails_eq(s.la, "b", "c", "e", "f"), "I.4 |b-c| = |e-f|"
+    assert eng.la_entails_eq_ang(s.la, "a", "b", "c", "d", "e", "f"), \
+        "I.4 angle at b"
+    assert eng.la_entails_eq_ang(s.la, "a", "c", "b", "d", "f", "e"), \
+        "I.4 angle at c"
+    assert dt < 10
+
+
+def test_control_prop4_ssa_stops():
+    """Negative control (a): drop the included angle (SSA, not SAS). The
+    c' = f assert must stop: its equal-angle entailment premise fails."""
+    hyps = [h for h in PROP4_HYPS_DATA if h[0][0] != "eq_ang"]
+    s = _prop4_state(hyps)
+    with pytest.raises(eng.MissingPremise) as ei:
+        for i, (r, a, b) in enumerate(PROP4_STEPS_DATA, 1):
+            eng.apply_step(s, i, r, a, b)
+    assert "eq_ang" in str(ei.value)
+
+
+# --- I.5 (Book/Prop05.lean:5, isosceles base angles) -------------------------
+
+PROP5_HYPS_DATA = [
+    # formTriangle a b c AB BC AC, destructed
+    (("dpl", "a", "b", "AB"), "h"),
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    # SMT-sourced destructed hypotheses: off-line facts, line distinctness
+    # and the same-side facts Lean's SMT derives from formTriangle and the
+    # extensions (the engine takes them as stated inputs)
+    (("not_on_line", "c", "AB"), "h"),
+    (("not_on_line", "b", "AC"), "h"),
+    (("not_on_line", "c", "GB"), "h"),
+    (("not_on_line", "b", "FC"), "h"),
+    (("neq_line", "AB", "AC"), "h"), (("neq_line", "AB", "GB"), "h"),
+    (("neq_line", "AC", "FC"), "h"),
+    # the Book hypotheses
+    (("between", "a", "b", "d"), "h"),
+    (("between", "a", "c", "e"), "h"),
+    (("neq", "b", "d"), "h"), (("neq", "c", "e"), "h"),
+    (("eq_len", "a", "b", "a", "c"), "h"),
+]
+
+PROP5_STEPS_DATA = [
+    ("point_between_points_shorter_than", ("AB", "b", "d", "c", "e"),
+     {"a": "f"}),
+    ("proposition_3", ("a", "e", "f", "a", "AC", "AB"), {"q": "g"}),
+    ("line_from_points", ("c", "f"), {"L": "FC"}),
+    ("line_from_points", ("b", "g"), {"L": "GB"}),
+    ("proposition_4", ("a", "f", "c", "a", "g", "b", "AB", "FC", "AC",
+                       "AC", "GB", "AB"), {}),
+    ("proposition_4", ("f", "b", "c", "g", "c", "b", "AB", "BC", "FC",
+                       "AC", "BC", "GB"), {}),
+    ("sum_angles_onlyif", ("b", "a", "g", "c", "AB", "GB"), {}),
+    ("sum_angles_onlyif", ("c", "a", "f", "b", "AC", "FC"), {}),
+]
+
+
+def _prop5_state(hyps=PROP5_HYPS_DATA):
+    s = eng.State()
+    for f, w in hyps:
+        if f[0] == "eq_len":
+            eng.eq_len(s.la, *f[1:])
+        s.assume(f, w)
+    eng.close(s)
+    return s
+
+
+def test_prop5_replay():
+    import time
+    t0 = time.time()
+    s = _prop5_state()
+    for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
+        eng.apply_step(s, i, r, a, b)
+    dt = time.time() - t0
+    assert eng.la_entails_eq_ang(s.la, "a", "b", "c", "a", "c", "b"), \
+        "I.5 base angles equal"
+    assert eng.la_entails_eq_ang(s.la, "c", "b", "d", "b", "c", "e"), \
+        "I.5 exterior angles equal"
+    assert dt < 10
+
+
+def test_control_prop5_not_isosceles_stops():
+    """Negative control (b): drop |a-b| = |a-c|. The first proposition_4
+    application must stop: its |a-c| = |a-b| entailment premise fails."""
+    hyps = [h for h in PROP5_HYPS_DATA
+            if h[0] != ("eq_len", "a", "b", "a", "c")]
+    s = _prop5_state(hyps)
+    with pytest.raises(eng.MissingPremise) as ei:
+        for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
+            eng.apply_step(s, i, r, a, b)
+    assert "eq_len" in str(ei.value) or "gt_len" in str(ei.value)
+
+
+def test_control_prop5_angle_sum_needs_side_fact():
+    """Negative control (c), targeting the angle arithmetic: the sum-angles
+    premise c not on GB feeds pasch_2, which derives g~c on AB, without
+    which sum_angles_onlyif (b, a, g, c, AB, GB) cannot fire. Drop it and
+    the angle sum ang:a:b:g = ang:a:b:c + ang:c:b:g must be unreachable —
+    the step stops at that exact premise."""
+    hyps = [h for h in PROP5_HYPS_DATA
+            if h[0] != ("not_on_line", "c", "GB")]
+    s = _prop5_state(hyps)
+    with pytest.raises(eng.MissingPremise) as ei:
+        for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
+            eng.apply_step(s, i, r, a, b)
+    assert ei.value.premise == ("not_on_line", "c", "GB")
