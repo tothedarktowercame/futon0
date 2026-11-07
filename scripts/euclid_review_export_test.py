@@ -7,6 +7,7 @@ Real engine runs, no mocks. Run from scripts/:
 python3 -m pytest euclid_review_export_test.py -q
 """
 
+import functools
 import importlib.util
 import os
 from pathlib import Path
@@ -18,6 +19,7 @@ ex = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(ex)
 
 
+@functools.lru_cache(maxsize=None)
 def _export(name):
     return ex.export_fixture(name), ex.rv.review(
         ex.rv.FIXTURE_PROP[name], ex.rv.FIXTURES[name]())
@@ -78,14 +80,18 @@ def test_badge_classes():
         assert ex.badge_of({"valid": None, "progress": p}) == "unknown"
 
 
-def test_written_file_round_trips(tmp_path):
-    """The JSON on disk carries the same rows as export_fixture."""
+def test_committed_traces_match_a_fresh_export():
+    """Review (claude-9): the viewer serves the committed traces/*.json, and
+    the old round-trip test only read back a file it had just written, so a
+    hand-edited or stale committed file (e.g. an INVALID row flipped to
+    VALID) passed every test. Compare each committed file with a fresh
+    export; regenerate with `python3 euclid_review_export.py`."""
+    import json
     for name in ex.rv.FIXTURES:
-        trace, rep = _export(name)
-        path = tmp_path / ("review-%s.json" % name)
-        import json
-        path.write_text(json.dumps(trace))
-        back = json.loads(path.read_text())
-        for row, orig in zip(back["steps"], rep["steps"]):
-            assert row["valid"] == orig["valid"]
-            assert row["progress"] == orig["progress"]
+        trace, _ = _export(name)
+        path = Path(ex.OUT_DIR) / ("review-%s.json" % name)
+        assert path.exists(), path
+        on_disk = json.loads(path.read_text())
+        fresh = json.loads(json.dumps(trace))
+        assert on_disk == fresh, (
+            "%s is stale or edited; rerun euclid_review_export.py" % path)
