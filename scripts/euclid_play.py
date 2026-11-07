@@ -552,8 +552,8 @@ def _norm(f):
     the vertex in front: (v, side1, side2) with side1 < side2."""
     f = tuple(f)
     k = f[0]
-    if k == "between" and f[3] < f[1]:
-        return ("between", f[3], f[2], f[1])
+    if k in ("between", "not_between") and f[3] < f[1]:
+        return (k, f[3], f[2], f[1])
     if k in ("same_side", "opposing_sides", "not_same_side") \
             and f[2] < f[1]:
         return (k, f[2], f[1], f[3])
@@ -608,6 +608,9 @@ def _holds(s, f):
     f = tuple(f)
     if f[0] == "peq_line":
         return _peq_line_holds(s, f[1], f[2])
+    if f[0] in ("between", "not_between"):
+        return eng._fact_holds(s, f) or \
+            eng._fact_holds(s, (f[0], f[3], f[2], f[1]))
     if f[0] in ("peq", "neq", "neq_line"):
         # symmetric; the engine's raw lookup is order-sensitive (kimi-4,
         # E-kimi-task-421: I.8's conclusion peq d c' vs the member peq c' d)
@@ -618,6 +621,23 @@ def _holds(s, f):
         # opposing); the engine's closure symmetrizes same_side only
         return eng._fact_holds(s, f) or \
             eng._fact_holds(s, (f[0], f[2], f[1], f[3]))
+    if f[0] in ("_zero_ang", "zero_ang") and len(f) >= 4:
+        # ∠x:v:y = 0: the stored fact (either form) or the LA row; the
+        # closure's r_degenerated_angle stores ("zero_ang", v, x, y, L)
+        # with the row (kimi-4, E-kimi-task-422: I.23's inner split)
+        x, v, y = f[1:4]
+        if s.has(("zero_ang", x, v, y)) or s.has(("zero_ang", y, v, x)):
+            return True
+        # x = y: ∠x:v:x = 0 (degenerated_angle_if with c := b, the
+        # engine's angle_self_zero), given v ≠ x (I.23: d = e is a
+        # possibility formRectilinearAngle leaves open)
+        if (_holds(s, ("peq", x, y)) or x == y) and \
+                _holds(s, ("neq", x, v)):
+            return True
+        try:
+            return s.la.entails({eng.ang_atom(x, v, y): 1}, 0, "=")
+        except eng.FMTooLarge:
+            return False
     if f[0] == "lt_len":  # |x-y| < |u-v| as _gt_len u v x y
         return eng._fact_holds(s, ("_gt_len", f[3], f[4], f[1], f[2]))
     return eng._fact_holds(s, (_METRIC_HOLDS.get(f[0], f[0]),) + f[1:])
@@ -717,6 +737,29 @@ def _enrich(s, _depth=0):
         _enrich(s, _depth + 1)
 
 
+def _order_contradiction(t):
+    """System E between_not_trans (Diagrammatic.lean:96): between a b c
+    and between a b d give not between c b d. The engine has no negated
+    between fact, so its contradictory() cannot see this clash; Lean's SMT
+    does (it is why Prop22.lean's trichotomy on g, f, i needs only three
+    cases: the fourth order, between f g i, meets between h g f and
+    between h g i). True when the probe holds all three."""
+    bt = {f[1:4] for f in t.facts if f[0] == "between"}
+    by_mid = {}
+    for a, b, c in bt:
+        by_mid.setdefault((a, b), set()).add(c)
+    for (a, b), ends in by_mid.items():
+        for c in ends:
+            for d in ends:
+                if c != d and ((c, b, d) in bt or (d, b, c) in bt):
+                    return True
+    return False
+
+
+def _plain_contradictory(t):
+    return eng.contradictory(t)[0] or _order_contradiction(t)
+
+
 def _probe(s, facts, enrich=True):
     """A copy of s with `facts` assumed and closed; with enrich, also
     referee-enriched (_enrich). The contradiction probe uses the plain
@@ -750,9 +793,25 @@ def _families(rule, cases, conclusion):
         k = f[0]
         if k == "between":
             p, q, r = sorted(f[1:4])
+            # between_points (Diagrammatic.lean:87) needs the three
+            # points DISTINCT (and on one line, checked in coverage):
+            # a coincidence is a possibility too, covered only when the
+            # state shows the two points differ (the peq probe is then
+            # contradictory) or a case covers it. Review (claude-9,
+            # E-kimi-task-422): without these, I.22's split with its
+            # "i = f" case dropped was accepted.
             add("where %s, %s and %s lie on their line" % (p, q, r),
                 [("between", p, q, r), ("between", q, p, r),
-                 ("between", p, r, q)], ("between", p, q, r))
+                 ("between", p, r, q), ("peq", p, q), ("peq", q, r),
+                 ("peq", p, r)], ("between", p, q, r))
+        if k in ("between", "not_between"):
+            # a fact and its negation (I.24's inner by_contra: between
+            # g' d e or not); between is symmetric in its endpoints
+            x, m, y = f[1:4]
+            x, y = min(x, y), max(x, y)
+            add("whether %s is between %s and %s" % (m, x, y),
+                [("between", x, m, y), ("not_between", x, m, y)],
+                ("bt", x, m, y))
         elif k in ("same_side", "opposing_sides", "not_same_side"):
             p, q, L = f[1], f[2], f[3]
             a, b = min(p, q), max(p, q)
@@ -815,7 +874,7 @@ def coverage(s, rule, cases, conclusion, refuted=()):
         if extra:
             ms = [m] + list(extra)
             tp = _probe(s, ms, enrich=False)
-            if eng.contradictory(tp)[0]:
+            if _plain_contradictory(tp):
                 return True
             tm = _probe(s, ms)
             probes = [tp] + ([] if eng.contradictory(tm)[0] else [tm])
@@ -849,7 +908,7 @@ def coverage(s, rule, cases, conclusion, refuted=()):
             for hyps in cases:
                 if hyps and all(_holds(t, h) for h in hyps):
                     return True
-        if eng.contradictory(_probe(s, [m], enrich=False))[0]:
+        if _plain_contradictory(tp):
             return True
         if refuted:
             t = _probe(s, [m])
@@ -888,13 +947,51 @@ def coverage(s, rule, cases, conclusion, refuted=()):
             fams.append(("the known disjunction: %s or %s"
                          % (" ".join(f[1]), " ".join(f[2])),
                          [tuple(f[1]), tuple(f[2])]))
-    matching = [(name, members) for name, members in fams
-                if any(_norm(m) in norm_pool for m in members)]
+    def lines_of(x):
+        return {f[2] for f in s.facts if f[0] == "on_line" and f[1] == x}
+
+    def collinear_fit(name, members):
+        # A between family (between_points, Diagrammatic.lean:87) is
+        # exhaustive only for points on one line. If the state puts all
+        # three on a line, use it as is. If two are on a line L and the
+        # third x is not known to be, the family becomes conditional:
+        # x off L, or x on L together with each order/coincidence (I.24:
+        # g off DF, or on DF in one of four positions). Otherwise drop it.
+        # Review (claude-9, E-kimi-task-422).
+        bts = [m for m in members if m[0] == "between"]
+        if not bts or any(isinstance(m, list) for m in members):
+            return (name, members)
+        pts = list(bts[0][1:4])
+        common = set.intersection(*(lines_of(x) for x in pts))
+        if common:
+            return (name, members)
+        for x in pts:
+            others = [y for y in pts if y != x]
+            Ls = sorted(lines_of(others[0]) & lines_of(others[1]))
+            if Ls:
+                L = Ls[0]
+                return ("whether %s is on %s, and if so where %s"
+                        % (x, L, name.replace("where ", "", 1)),
+                        [("not_on_line", x, L)]
+                        + [[m, ("on_line", x, L)] for m in members])
+        return None
+
+    matching = []
+    for name, members in fams:
+        if not any(_norm(m) in norm_pool for m in members
+                   if not isinstance(m, list)):
+            continue
+        fit = collinear_fit(name, members)
+        if fit is not None:
+            matching.append(fit)
     if not matching:
         return {"covered": False, "missing": [], "family": None}
     best = None
     for name, members in matching:
-        missing = [list(m) for m in members if not member_covered(m)]
+        missing = [([list(f) for f in m] if isinstance(m, list)
+                    else list(m)) for m in members
+                   if not (member_covered(m[0], m[1:])
+                           if isinstance(m, list) else member_covered(m))]
         if missing and catch_all:
             missing = []  # an "otherwise" case takes everything left
         if not missing:

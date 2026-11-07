@@ -56,7 +56,7 @@ def test_case_props_reach_goal():
     """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (6, 7, 8, 10, 13, 14, 19, 21):
+    for n in (6, 7, 8, 10, 13, 14, 19, 21, 22, 23):
         steps = tr.hyps_and_steps(n)[1]
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
@@ -108,7 +108,13 @@ def test_closed_by_contra_without_contradiction_refused():
                         "moves": []}],
           "conclusion": [["between", "b", "d", "e"]],
           "open": False}
-    res = ep.play(21, [mv])
+    # after the engine's own construction, so b, d, e are on BD (the
+    # between trichotomy needs a common line; at the start it does not
+    # apply — see test_between_split_needs_a_line)
+    steps = [_engine_step_to_move(st) for st in tr.hyps_and_steps(21)[1]]
+    bc = next(m for m in steps if m["rule"] == "by_contra")
+    pre = steps[:steps.index(bc)]
+    res = ep.play(21, pre + [mv])
     ent = res["moves"][-1]
     assert not ent["ok"]
     assert "by_contra branch" in ent["error"]
@@ -161,7 +167,7 @@ def test_catalogue_splits_covered():
     """Every engine case split in the catalogue (I.10, 13, 14, 19, 21,
     nested blocks included) is covered; record the family each matched."""
     table = []
-    for n in (6, 7, 8, 10, 13, 14, 19, 21):
+    for n in (6, 7, 8, 10, 13, 14, 19, 21, 22, 23):
         s = ep._start_state(n)
         found = []
         _walk_case_blocks(n, s, tr.hyps_and_steps(n)[1], (), found)
@@ -653,44 +659,43 @@ def test_palette_23():
     assert "proposition_23'" not in pal
 
 
-def test_play_22_23_splits_await_referee():
-    """E-kimi-task-422: the engine replays of I.22 and I.23 reach the
-    goal (the trace build asserts exactly that), but the play referee
-    refuses the engine's own closed case blocks; coverage code is
-    claude-9's, so these are REPORTED, not routed around:
-
-    - I.22's three-way by_cases (where DE's second meet i falls relative
-      to f) misses family member between f g i of "where f, g and i lie
-      on their line": that order forces i = h (i and h on the same ray
-      from g with |g-i| = |g-h| = |c-c'|, against neq i h), an
-      equidistant-same-ray point identity neither the engine closure
-      nor the referee derives.
-
-    - I.23's inner by_cases (angle d:c:e = 0 vs between d c e, inside
-      the degenerate branch) misses between c d e and between c e d of
-      "where c, d and e lie on their line": both put d, e on the same
-      ray from c, so angle d:c:e = 0 — the closure rule
-      r_degenerated_angle does add the LA row and the zero_ang marker —
-      but _holds/_fact_holds have no _zero_ang query case, so the
-      referee cannot see the zero-angle case cover them.
-
-    When the referee learns these, add 22 and 23 to
-    test_case_props_reach_goal / test_catalogue_splits_covered.
+def test_play_22_23_splits_covered_and_drops_refused():
+    """E-kimi-task-422 found the referee refusing the engine's own I.22
+    and I.23 splits (now in test_case_props_reach_goal). Review fixes
+    (claude-9): between_not_trans (Diagrammatic.lean:96) refutes I.22's
+    fourth order between f g i; ∠x:v:y = 0 is a _holds query, so I.23's
+    zero-angle case covers the same-ray orders and d = e. Bad cases:
+    dropping any case is refused — including I.22's i = f, which the
+    between family did not ask for before (it assumed f, g, i distinct).
     """
     steps22 = [_engine_step_to_move(st) for st in tr.hyps_and_steps(22)[1]]
-    res = ep.play(22, steps22)
-    ent = res["moves"][-1]
-    assert not res["goal_reached"]
-    assert ent["rule"] == "by_cases" and ent["error"] == "missing case"
-    assert ent["missing_case"]["missing"] == [["between", "f", "g", "i"]]
-    assert ent["missing_case"]["family"] == \
-        "where f, g and i lie on their line"
+    k = next(j for j, m in enumerate(steps22) if m["rule"] == "by_cases")
+    expect = [[["between", "g", "f", "i"]], [["between", "f", "i", "g"]],
+              [["peq", "f", "i"]]]
+    for j in range(3):
+        mv = copy.deepcopy(steps22)
+        del mv[k]["branches"][j]
+        res = ep.play(22, mv)
+        ent = res["moves"][-1]
+        assert not res["goal_reached"]
+        assert ent["error"] == "missing case", ent
+        assert ent["missing_case"]["missing"] == expect[j]
     steps23 = [_engine_step_to_move(st) for st in tr.hyps_and_steps(23)[1]]
-    res = ep.play(23, steps23)
-    ent = res["moves"][0]
-    assert not res["goal_reached"]
-    assert ent["rule"] == "by_cases" and ent["error"] == "missing case"
-    assert ent["missing_case"]["missing"] == [["between", "c", "d", "e"],
-                                              ["between", "c", "e", "d"]]
-    assert ent["missing_case"]["family"] == \
-        "where c, d and e lie on their line"
+    for j in range(2):
+        mv = copy.deepcopy(steps23)
+        del mv[0]["branches"][j]
+        ent = ep.play(23, mv)["moves"][0]
+        assert ent["error"] == "missing case", ent
+
+
+def test_between_split_needs_a_line():
+    """between_points needs the three points on one line: at I.21's
+    start nothing puts b, d, e on a common line, so a split on their
+    order is refused, not covered."""
+    mv = {"rule": "by_contra",
+          "branches": [{"hyps": [["between", "b", "e", "d"]], "moves": []},
+                       {"hyps": [["between", "e", "b", "d"]], "moves": []}],
+          "conclusion": [["between", "b", "d", "e"]],
+          "open": False}
+    ent = ep.play(21, [mv])["moves"][-1]
+    assert ent["error"] == "missing case"
