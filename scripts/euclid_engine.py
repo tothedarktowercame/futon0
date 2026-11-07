@@ -2581,8 +2581,19 @@ PROP5_STEPS_DATA = [
 # Book I.6 (Book/Prop06.lean): by_contra on |ab| ≠ |ac|; the by_cases split
 # |ab|>|ac| / |ac|>|ab| is exhaustive by trichotomy of the linear store.
 # Each branch: proposition_3 cuts the shorter length, line_from_points joins,
-# proposition_4 (SAS) congruence; contradiction via side_gt_angle_gt (I.18)
-# against the hypothesis ∠a:b:c = ∠a:c:b.
+# proposition_4 (SAS) congruence. Lean's euclid_finish then closes by pure
+# angle arithmetic: d lies strictly between the endpoints (between b d a,
+# resp. between c d a), so the base angle splits around d —
+# sum_angles_onlyif (SystemE/Theory/Inferences/Transfer.lean:90) gives
+#   branch 1: ∠b:c:a = ∠b:c:d + ∠d:c:a  (same_side b d AC, same_side a d BC
+#             are closure from between b d a via between_symm + Pasch_2;
+#             not_on_line d AC/BC likewise),
+#   branch 2: ∠c:b:a = ∠c:b:d + ∠d:b:a  (mirror),
+# while proposition_4 gives ∠b:c:d = ∠c:b:a (resp. ∠c:b:d = ∠b:c:a) which by
+# the hypothesis ∠a:b:c = ∠a:c:b equals the whole — forcing the part
+# ∠d:c:a (resp. ∠d:b:a) to 0 against angle_pos, store-unsat. This is the
+# I.18-free proof: the closure rule side_gt_angle_gt [SMT-bridge, Euclid
+# I.18] (a later theorem) is excluded from this replay via exclude_rules.
 PROP6_HYPS_DATA = [
     (("dpl", "a", "b", "AB"), "h"),
     (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
@@ -2599,12 +2610,16 @@ PROP6_STEPS_DATA = [
             ("line_from_points", ("d", "c"), {"L": "DC"}),
             ("proposition_4", ("b", "d", "c", "c", "a", "b",
                                "AB", "DC", "BC", "AC", "AB", "BC"), {}),
+            # ∠b:c:a = ∠b:c:d + ∠d:c:a (d strictly inside, Transfer.lean:90)
+            ("sum_angles_onlyif", ("c", "b", "a", "d", "BC", "AC"), {}),
         ]),
         ([("gt_len", "a", "c", "a", "b")], [
             ("proposition_3", ("c", "a", "a", "b", "AC", "AB"), {"q": "d"}),
             ("line_from_points", ("d", "b"), {"L": "DB"}),
             ("proposition_4", ("c", "d", "b", "b", "a", "c",
                                "AC", "DB", "BC", "AB", "AC", "BC"), {}),
+            # ∠c:b:a = ∠c:b:d + ∠d:b:a (d strictly inside, Transfer.lean:90)
+            ("sum_angles_onlyif", ("b", "c", "a", "d", "BC", "AB"), {}),
         ]),
     ], [("eq_len", "a", "b", "a", "c")]),
 ]
@@ -3480,7 +3495,10 @@ def main():
         elif p == "6":
             t0 = time.time()
             s, rep = replay(PROP6_HYPS_DATA, PROP6_STEPS_DATA,
-                            [("_eq_len", "a", "b", "a", "c")])
+                            [("_eq_len", "a", "b", "a", "c")],
+                            # I.6 the Lean way: no later-theorem closure rule
+                            exclude_rules={
+                                "side_gt_angle_gt [SMT-bridge, Euclid I.18]"})
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "7":
             t0 = time.time()
