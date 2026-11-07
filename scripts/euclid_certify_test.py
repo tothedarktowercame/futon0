@@ -59,6 +59,38 @@ def test_emit_unicode_hypothesis_names():
     assert "(proposition_2' a c₀ c₁ C) as d" in src
 
 
+def test_emit_prop5_segment_arg_and_no_witness():
+    # (1) point_between_points_shorter_than ends in a Segment: the engine's
+    # two endpoint args render as (c─e); (2) I.5 has no existential witness,
+    # so emit_proof emits no `use` line.
+    src = cert.emit_proof("I.5", cert.PROP5_BOOK_STEPS, None)
+    assert "  euclid_apply (point_between_points_shorter_than AB b d (c─e)) as f" in src
+    assert "\n  use " not in src
+
+
+def test_emit_prop5_matches_book_proof_lines():
+    # the emitted euclid_apply lines are the Book's own proof
+    # (Book/Prop05.lean lines 13-20) modulo whitespace
+    src = cert.emit_proof("I.5", cert.PROP5_BOOK_STEPS, None)
+    book = (cert.LEAN_EUCLID / "Book" / "Prop05.lean").read_text().splitlines()
+    book_steps = [l.strip() for l in book[12:20] if l.strip().startswith("euclid_apply")]
+    ours = [l.strip() for l in src.splitlines() if l.strip().startswith("euclid_apply")]
+    assert ours == book_steps
+
+
+def test_prop5_steps_pinned_to_engine_data():
+    # PROP5_BOOK_STEPS is a verbatim copy of euclid_engine.PROP5_STEPS_DATA;
+    # keep them in sync (skipped while zai-11 has the engine mid-edit).
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "euclid_engine", Path(__file__).resolve().parents[1] / "scripts" / "euclid_engine.py")
+        eng = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(eng)
+    except SyntaxError:
+        pytest.skip("euclid_engine.py currently unparseable (concurrent edit)")
+    assert cert.PROP5_BOOK_STEPS == eng.PROP5_STEPS_DATA
+
+
 def test_check_lean_rule_catches_sorry_at_rc0(monkeypatch):
     # the exit-0 trap the review flagged: only the sorry check catches it
     def fake_run(*a, **kw):
@@ -76,7 +108,7 @@ def test_check_lean_rule_catches_sorry_at_rc0(monkeypatch):
 # --- Lean checking (integration) ---------------------------------------------
 
 @pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
-@pytest.mark.parametrize("prop", ["I.1", "I.2", "I.3"])
+@pytest.mark.parametrize("prop", ["I.1", "I.2", "I.3", "I.5"])
 def test_book_sequences_certify(prop):
     cfg = cert.PROPS[prop]
     r = cert.check_lean(cert.emit_proof(prop, cfg["book_steps"], cfg["witness"]),
@@ -115,6 +147,16 @@ def test_negative_sorry_only_warning():
     assert r["rc"] == 0
     assert not r["certified"]
     assert "declaration uses 'sorry'" in r["reason"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_prop5_drop_proposition_3():
+    # dropping step 2 (proposition_3) leaves `g` unbound: Lean refuses with
+    # an unknown-identifier error
+    steps = cert.PROP5_BOOK_STEPS[:1] + cert.PROP5_BOOK_STEPS[2:]
+    r = cert.check_lean(cert.emit_proof("I.5", steps, None), "test_neg_prop5")
+    assert not r["certified"]
+    assert "unknown identifier 'g'" in r["reason"]
 
 
 @pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")

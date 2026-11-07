@@ -103,6 +103,34 @@ PROP3_BOOK_STEPS = [
     ("point_on_circle_onlyif", ("a", "d", "e"), {}),
 ]
 
+PROP5_STATEMENT = """\
+theorem proposition_5 : ∀ (a b c d e : Point) (AB BC AC : Line),
+  formTriangle a b c AB BC AC ∧ (|(a─b)| = |(a─c)|) ∧
+  (between a b d) ∧ (between a c e) →
+  (∠ a:b:c = ∠ a:c:b) ∧ (∠ c:b:d = ∠ b:c:e) :="""
+
+# Copied verbatim from euclid_engine.PROP5_STEPS_DATA (zai-11 owns the engine
+# file and may have it mid-edit; the copy is pinned and test-asserted equal to
+# the engine's data whenever the engine file parses). The final rule takes a
+# Segment argument: engine args ("c", "e") render as the Lean segment (c─e).
+PROP5_BOOK_STEPS = [
+    ("point_between_points_shorter_than", ("AB", "b", "d", "c", "e"),
+     {"a": "f"}),
+    ("proposition_3", ("a", "e", "f", "a", "AC", "AB"), {"q": "g"}),
+    ("line_from_points", ("c", "f"), {"L": "FC"}),
+    ("line_from_points", ("b", "g"), {"L": "GB"}),
+    ("proposition_4", ("a", "f", "c", "a", "g", "b", "AB", "FC", "AC",
+                       "AC", "GB", "AB"), {}),
+    ("proposition_4", ("f", "b", "c", "g", "c", "b", "AB", "BC", "FC",
+                       "AC", "BC", "GB"), {}),
+    ("sum_angles_onlyif", ("b", "a", "g", "c", "AB", "GB"), {}),
+    ("sum_angles_onlyif", ("c", "a", "f", "b", "AC", "FC"), {}),
+]
+
+# Rules whose Lean signature ends in a Segment built from the engine's last
+# two (Point) args (SystemE Theory/Constructions/Points.lean:28).
+SEGMENT_TAIL_RULES = {"point_between_points_shorter_than"}
+
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
                 book_steps=PROP1_BOOK_STEPS, witness="c"),
@@ -110,6 +138,11 @@ PROPS = {
                 book_steps=PROP2_BOOK_STEPS, witness="l"),
     "I.3": dict(imports=["SystemE", "Book.Prop02"], statement=PROP3_STATEMENT,
                 book_steps=PROP3_BOOK_STEPS, witness="e"),
+    # I.5 has no existential witness (goal is a conjunction of angle
+    # equalities), so witness=None: emit_proof emits no `use` line.
+    "I.5": dict(imports=["SystemE", "Book.Prop03", "Book.Prop04"],
+                statement=PROP5_STATEMENT, book_steps=PROP5_BOOK_STEPS,
+                witness=None),
 }
 
 
@@ -117,9 +150,22 @@ PROPS = {
 # Proof emission
 # ---------------------------------------------------------------------------
 
+def _render_args(rule, args, term=lean):
+    """Render engine args for one euclid_apply, gluing segment-tail rules.
+
+    point_between_points_shorter_than ends in a Segment (Points.lean:28); the
+    engine carries it as its two endpoint Points, Lean wants (x─y).
+    """
+    if rule in SEGMENT_TAIL_RULES and len(args) >= 2:
+        head = " ".join(term(a) for a in args[:-2])
+        seg = f"({term(args[-2])}─{term(args[-1])})"
+        return " ".join(x for x in (head, seg) if x)
+    return " ".join(term(a) for a in args)
+
+
 def emit_step(rule, args, bindings):
     """One euclid_apply line from an engine step."""
-    terms = " ".join(lean(a) for a in args)
+    terms = _render_args(rule, args)
     names = " ".join(lean(v) for v in bindings.values())
     if names:
         return f"  euclid_apply ({rule} {terms}) as {names}"
@@ -150,13 +196,14 @@ def emit_proof(prop, steps, witness, statement=None, finish="euclid_finish"):
     lines.append("by")
     lines.append("  euclid_intros")
     for rule, args, bindings in steps:
-        terms = " ".join(term(a) for a in args)
+        terms = _render_args(rule, args, term=term)
         names = " ".join(term(v) for v in bindings.values())
         if names:
             lines.append(f"  euclid_apply ({rule} {terms}) as {names}")
         else:
             lines.append(f"  euclid_apply ({rule} {terms})")
-    lines.append(f"  use {term(witness)}")
+    if witness is not None:
+        lines.append(f"  use {term(witness)}")
     lines.append(f"  {finish}")
     lines.append("")
     lines.append("end Elements.Book1")
