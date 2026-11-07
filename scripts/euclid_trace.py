@@ -54,16 +54,20 @@ def _norm_lean(text):
 PROP11_NAME_MAP = {"u": "a", "v": "b", "w": "c", "g": "d"}
 
 
-def lean_lines_for_named(prop, steps, name_map):
+def lean_lines_for_named(prop, steps, name_map, after=None):
     """Signature matching for props whose Lean proof does not name the
     engine's steps one-to-one (I.10's engine proof has bridge and
     by_contra steps Lean does not cite; I.11 renames points). Each step is
     matched to the first unconsumed euclid_apply line whose normalized
     argument list equals the step's (mapped) rule + args. Steps with no
     Lean line get None — the trace says so instead of inventing a line.
-    euclid_assert lines are not used here (I.10/I.11 assert nothing)."""
+    euclid_assert lines are not used here (I.10/I.11 assert nothing).
+    `after`: only match lines past this line number (I.16 replays the
+    SECOND bullet only; line_from_points f c is textually identical in
+    both bullets, so the first bullet's lines must be excluded)."""
     fname = os.path.join(LEAN_DIR, "Book", "Prop%02d.lean" % prop)
-    lines = lean_apply_lines(fname)
+    lines = [ln for ln in lean_apply_lines(fname)
+             if after is None or ln[0] > after]
     texts = [_norm_lean(t) for _, t in lines]
     used = [False] * len(lines)
     rel = os.path.join("Book", "Prop%02d.lean" % prop)
@@ -330,6 +334,17 @@ FREE = {
     # c:e:b = a:e:d, acute) visibly differ.
     15: {"e": (0.0, 0.0), "a": (-1.4, 0.0), "b": (1.1, 0.0),
          "c": (0.75, 1.0), "d": (-0.375, -0.5)},
+    # I.16 (exterior angle, SECOND conjunct — Euclid's own proof): a
+    # scalene triangle a-b-c with d on the extension of b-c beyond c.
+    # e (midpoint of a-c) and f (e the midpoint of b-f) are placed by
+    # the rules (proposition_10 / proposition_3), f' past f by
+    # extend_point_longer. The placement puts f strictly INSIDE the
+    # angle a:c:d with a wide margin (angle a:c:d ~= 135 degrees,
+    # angle a:c:f = angle b:a:c ~= 69.5 degrees), so Euclid's point is
+    # visible: the SAS copies angle b:a:c to angle e:c:f, which is a
+    # proper part of the exterior angle.
+    16: {"b": (0.0, 0.0), "c": (1.6, 0.0), "d": (2.6, 0.0),
+         "a": (0.5, 1.1)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -357,6 +372,9 @@ def hyps_and_steps(prop):
         return list(eng.PROP14_HYPS_DATA), list(eng.PROP14_STEPS_DATA)
     if prop == 15:
         return list(eng.PROP15_HYPS_DATA), list(eng.PROP15_STEPS_DATA)
+    if prop == 16:
+        # the SECOND conjunct (Euclid's own proof, Lean's second bullet)
+        return list(eng.PROP16B_HYPS_DATA), list(eng.PROP16B_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -456,6 +474,15 @@ def objects_from_hyps(prop):
                 {"name": L, "kind": "line", "jsx": {"type": "line",
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("CD", ("c", "d")))]
+    if prop == 16:
+        # the triangle a-b-c and d (between b c d) are hypotheses; the
+        # three named lines are the hypothesis lines AB, BC, AC
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -735,6 +762,24 @@ dragging)" % (a, b)
                 "the perpendicular to %s at %s, on %s's side of %s (the "
                 "rule fixes the side and the right angle, not the "
                 "distance)" % (c, name, AB, c, x, AB))
+    if rule == "extend_point_longer":
+        # (L, p, q, p, q) -> x on L with between p q x and |q-x| > |p-q|
+        # (Points.lean:43; the length bound is passed as its two
+        # endpoints p, q). The rule fixes the line, the side and the
+        # bound; the distance |q-x| is a free parameter of the
+        # existential step (1.5|p-q| chosen, strictly greater than the
+        # bound, as the engine places no coordinate).
+        (L, p, q, u, v), name = args, bindings["x"]
+        assert (u, v) == (p, q), "extend_point_longer: bound is (p-q)"
+        seg = _sub(xy[q], xy[p])
+        xy[name] = _add(xy[q], _mul(_unit(seg), 1.5 * _norm(seg)))
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: |%s-%s| = "
+                "1.5|%s-%s| > |%s-%s| on the ray from %s through %s "
+                "(the rule fixes between %s %s %s and the lower bound, "
+                "not the distance)"
+                % (q, name, p, q, p, q, p, q, p, q, name))
     if rule == "extend_point":
         # (L, p, q) -> x on L with between p q x: the rule fixes the line
         # and the side; the distance |q-x| is a free parameter of the
@@ -751,7 +796,8 @@ dragging)" % (a, b)
                 "between %s %s %s, not the distance)"
                 % (q, name, p, q, p, q, p, q, name))
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
-                "proposition_4", "proposition_13", "sum_angles_onlyif",
+                "proposition_4", "proposition_13", "proposition_15",
+                "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
                 "triple_incidence_2",
@@ -761,6 +807,14 @@ dragging)" % (a, b)
                 "intersection_lines_opposing",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
+        if rule == "sum_angles_onlyif" and prop == 16:
+            return ("engine-only step (sum_angles_onlyif c a d f AC BC, "
+                    "Transfer.lean:90): angle a:c:d = angle a:c:f + "
+                    "angle f:c:d, with angle f:c:d > 0 — so the WHOLE "
+                    "(the exterior angle a:c:d) exceeds the PART "
+                    "(angle a:c:f = angle e:c:f = angle b:a:c by the "
+                    "SAS, proposition_4), hence angle a:c:d > "
+                    "angle b:a:c")
         return ("forward-closure step (no new objects): %s only adds facts "
                 "to the engine state" % rule)
     raise AssertionError("no numeric placement for rule %r" % rule)
@@ -1029,6 +1083,64 @@ def verify15(xy):
     ]
 
 
+def verify16(xy):
+    """I.16 (exterior angle, second conjunct — Euclid's own proof):
+    the drawn facts are the hypotheses (between b c d, the scalene
+    triangle) plus the construction (e the midpoint of a-c; f on the
+    ray b->e with e the midpoint of b-f, i.e. between b e f and
+    |b-e| = |e-f|; f' past f with |e-f'| > |b-e|). The conclusions
+    numerically, with a visible margin: angle b:a:c = angle e:c:f
+    (the SAS, proposition_4), angle e:c:f is a proper PART of angle
+    a:c:d (f strictly inside the exterior angle, and the part-whole
+    split angle a:c:d = angle a:c:f + angle f:c:d), and the goal
+    angle a:c:d > angle b:a:c by a visible margin (the excess
+    angle f:c:d is at least 0.5 rad, not a sliver)."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(p, q, r):
+        """Cross product of (q-p) x (r-p): 0 iff p, q, r collinear."""
+        return ((xy[q][0] - xy[p][0]) * (xy[r][1] - xy[p][1])
+                - (xy[q][1] - xy[p][1]) * (xy[r][0] - xy[p][0]))
+
+    def side(p, l1, l2):
+        return cross(l1, l2, p)
+
+    whole = _ang(xy, "a", "c", "d")
+    part = _ang(xy, "b", "a", "c")
+    copied = _ang(xy, "e", "c", "f")
+    rest = _ang(xy, "f", "c", "d")
+    return [
+        ("I.16: between b c d (d on the extension of b-c beyond c)",
+         abs(dist("b", "c") + dist("c", "d") - dist("b", "d")) < EPS),
+        ("I.16: scalene triangle (all three side lengths distinct)",
+         len({round(dist(p, q), 9)
+              for p, q in (("a", "b"), ("b", "c"), ("a", "c"))}) == 3),
+        ("I.16: a off BC (a genuine triangle)",
+         abs(cross("b", "c", "a")) > EPS * dist("b", "c")
+         * dist("a", "c")),
+        ("I.16: e the midpoint of a-c (between a e c, |a-e| = |e-c|)",
+         abs(dist("a", "e") + dist("e", "c") - dist("a", "c")) < EPS
+         and abs(dist("a", "e") - dist("e", "c")) < EPS),
+        ("I.16: e the midpoint of b-f (between b e f, |b-e| = |e-f|)",
+         abs(dist("b", "e") + dist("e", "f") - dist("b", "f")) < EPS
+         and abs(dist("b", "e") - dist("e", "f")) < EPS),
+        ("I.16: f' past f on the ray (between e f f', |e-f'| > |b-e|)",
+         abs(dist("e", "f") + dist("f", "f'") - dist("e", "f'")) < EPS
+         and dist("e", "f'") > dist("b", "e") + EPS),
+        ("I.16: angle b:a:c = angle e:c:f (the SAS, numerically)",
+         abs(part - copied) < EPS),
+        ("I.16: f strictly inside angle a:c:d (e:c:f a proper part — "
+         "f on d's side of AC and on a's side of BC)",
+         side("f", "c", "a") * side("d", "c", "a") > 0
+         and side("f", "c", "d") * side("a", "c", "d") > 0),
+        ("I.16: part-whole: angle a:c:d = angle a:c:f + angle f:c:d",
+         abs(whole - (_ang(xy, "a", "c", "f") + rest)) < EPS),
+        ("I.16: GOAL angle a:c:d > angle b:a:c, with a visible margin "
+         "(the excess angle f:c:d at least 0.5 rad)",
+         whole > part + 0.5),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1054,6 +1166,8 @@ def verify(prop, xy):
         return verify14(xy)
     if prop == 15:
         return verify15(xy)
+    if prop == 16:
+        return verify16(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1274,21 +1388,23 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12, 15):
+        if prop in (10, 11, 12, 15, 16):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
             # replay proves rt e h c with h on AB, which implies Lean's
             # disjunction (h and e both on AB, e != h, a != b). I.15's are
             # PROP15_GOAL verbatim: both halves of the vertical-angles
-            # conjunction as LA entailment queries.
+            # conjunction as LA entailment queries. I.16's is PROP16B_GOAL
+            # verbatim: the second conjunct angle a:c:d > angle b:a:c.
             queries = {10: [("between", "a", "d", "b"),
                             ("_eq_len", "a", "d", "d", "b")],
                        11: [("not_on_line", "f", "AB"),
                             ("_rt_ang", "u", "w", "f")],
                        12: [("_rt_ang", "e", "h", "c"),
                             ("on_line", "h", "AB")],
-                       15: list(eng.PROP15_GOAL)}[prop]
+                       15: list(eng.PROP15_GOAL),
+                       16: list(eng.PROP16B_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:
@@ -1296,9 +1412,19 @@ def build_trace(prop):
                        for i, (r, a, b) in enumerate(steps, 1)]
 
         name_map = PROP11_NAME_MAP if prop == 11 else {}
-        lean = (lean_lines_for_named(prop, steps, name_map)
-                if prop in (10, 11, 12, 15)
-                else lean_lines_for(prop, [r for r, _, _ in steps]))
+        if prop == 16:
+            # second bullet only: match euclid_apply lines past the first
+            # bullet's euclid_finish (line 25)
+            fname = os.path.join(LEAN_DIR, "Book", "Prop16.lean")
+            with open(fname) as fh:
+                after16 = next(i for i, l in enumerate(fh, 1)
+                               if l.strip().startswith("euclid_finish"))
+            lean = lean_lines_for_named(prop, steps, name_map,
+                                        after=after16)
+        else:
+            lean = (lean_lines_for_named(prop, steps, name_map)
+                    if prop in (10, 11, 12, 15)
+                    else lean_lines_for(prop, [r for r, _, _ in steps]))
         rows = [(r, a, b, rep, loc, None)
                 for (r, a, b), rep, loc in zip(steps, reports, lean)]
 

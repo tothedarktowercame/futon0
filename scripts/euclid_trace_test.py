@@ -765,3 +765,98 @@ def test_bad_case_prop15_perpendicular_crossing_rejected():
     fails = [d for d, ok in tr.verify15(x) if not ok]
     assert [d for d, ok in tr.verify15(x) if ok], fails
     assert len(fails) == 1 and "not right" in fails[0], fails
+
+
+# -- I.16 (kimi-2, packet P-euclid-viewer-I16) -------------------------------
+# I.16 (exterior angle) is FLAT: 14 steps, no case splits, and only the
+# SECOND conjunct (Euclid's own proof — angle a:c:d > angle b:a:c, Lean's
+# second bullet, Book/Prop16.lean lines 26-32). Seven steps are engine-only
+# (three between_symm_parts, two pasch_3_opposing,
+# opposing_opposing_same_side, sum_angles_onlyif: the diagram facts Lean's
+# SMT produces silently); the seven construction/citation steps link to
+# lines 26-32. line_from_points f c is textually identical in both
+# bullets, so matching is restricted to lines past the first bullet's
+# euclid_finish.
+
+TR16 = load(16)
+
+
+def test_prop16_rebuild_matches_disk():
+    rebuilt = tr.build_trace(16)
+    assert rebuilt["placement"] == TR16["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR16["steps"]
+
+
+def test_prop16_lean_lines_cover_the_second_bullet():
+    path = os.path.join(LEAN_DIR, TR16["lean_file"])
+    lines = open(path).read().splitlines()
+    for s in TR16["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            assert "engine-only" in s["lean_note"], s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    # exactly the second bullet's seven euclid_apply lines are linked
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    linked = {s["lean"]["line"] for s in TR16["steps"]
+              if s["lean"]["line"]}
+    assert linked == {26, 27, 28, 29, 30, 31, 32}, linked
+    assert linked <= applies
+    # the engine-only steps are exactly the seven silent diagram facts
+    engine_only = [s["rule"] for s in TR16["steps"]
+                   if s["lean"]["line"] is None]
+    assert engine_only == ["between_symm_parts"] * 3 + [
+        "pasch_3_opposing"] * 2 + ["opposing_opposing_same_side",
+                                   "sum_angles_onlyif"]
+
+
+def test_prop16_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR16["placement"].items() if v}
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR16["steps"], xy)
+           if not ok]
+    assert not bad, bad
+    # the eq_len facts the construction rests on are present and exact
+    eqs = [f for s in TR16["steps"] for f in s["facts_added"]
+           if f[0] == "eq_len"]
+    assert any(f[1:5] == ["a", "e", "e", "c"] for f in eqs), eqs
+    assert any(f[1:5] == ["e", "f", "b", "e"] for f in eqs), eqs
+    assert all(ok for _, ok in tr.verify16(xy))
+    # the last step's info bar states the whole-exceeds-part conclusion
+    last = TR16["steps"][-1]
+    assert last["rule"] == "sum_angles_onlyif"
+    assert "exceeds the PART" in last["placement_decision"]
+
+
+def _xy16():
+    return {k: tuple(v) for k, v in TR16["placement"].items() if v}
+
+
+def test_bad_case_prop16_d_between_b_and_c_fails():
+    x = _xy16()
+    assert all(ok for _, ok in tr.verify16(x))
+    x["d"] = (0.8, 0.0)  # d between b and c: no exterior angle at c
+    fails = [d for d, ok in tr.verify16(x) if not ok]
+    assert any("between b c d" in d for d in fails), fails
+
+
+def test_bad_case_prop16_f_not_on_ray_b_to_e_fails():
+    x = _xy16()
+    # f reflected across e: still |b-e| = |e-f| but not on the ray b->e
+    # (between b e f fails)
+    x["f"] = (2 * x["e"][0] - x["f"][0], 2 * x["e"][1] - x["f"][1])
+    fails = [d for d, ok in tr.verify16(x) if not ok]
+    assert any("midpoint of b-f" in d for d in fails), fails
+
+
+def test_bad_case_prop16_e_not_midpoint_fails():
+    x = _xy16()
+    x["e"] = (x["e"][0] + 0.15, x["e"][1])  # off the midpoint of a-c
+    fails = [d for d, ok in tr.verify16(x) if not ok]
+    assert any("midpoint of a-c" in d for d in fails), fails
+
+
+def test_bad_case_prop16_degenerate_triangle_fails():
+    x = _xy16()
+    x["a"] = (0.5, 0.0)  # a on BC: no triangle, no angles
+    fails = [d for d, ok in tr.verify16(x) if not ok]
+    assert any("a off BC" in d for d in fails), fails

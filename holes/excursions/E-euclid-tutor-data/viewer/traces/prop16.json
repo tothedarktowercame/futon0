@@ -1,0 +1,998 @@
+{
+ "prop": 16,
+ "title": "Elements I.16 (LeanEuclid Book/Prop16.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "BE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "e"
+    ]
+   },
+   "def_step": 4
+  },
+  {
+   "name": "f'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 5
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 6
+  },
+  {
+   "name": "FC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "f",
+     "c"
+    ]
+   },
+   "def_step": 7
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "proposition_10",
+   "args": [
+    "a",
+    "c",
+    "AC"
+   ],
+   "bindings": {
+    "d": "e"
+   },
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "e",
+     "c"
+    ],
+    [
+     "eq_len",
+     "a",
+     "e",
+     "e",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 26
+   },
+   "placement_decision": "midpoint of a-c (the proposition_10 construction fixed exactly)"
+  },
+  {
+   "n": 2,
+   "rule": "between_symm_parts",
+   "args": [
+    "a",
+    "e",
+    "c"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "a",
+     "e"
+    ],
+    [
+     "neq",
+     "a",
+     "c"
+    ],
+    [
+     "not_between",
+     "e",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "a",
+     "e",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 3,
+   "rule": "between_symm_parts",
+   "args": [
+    "c",
+    "e",
+    "a"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "c",
+     "e"
+    ],
+    [
+     "neq",
+     "c",
+     "a"
+    ],
+    [
+     "not_between",
+     "e",
+     "c",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "e",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 4,
+   "rule": "line_from_points",
+   "args": [
+    "b",
+    "e"
+   ],
+   "bindings": {
+    "L": "BE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 27
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 5,
+   "rule": "extend_point_longer",
+   "args": [
+    "BE",
+    "b",
+    "e",
+    "b",
+    "e"
+   ],
+   "bindings": {
+    "x": "f'"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f'",
+     "BE"
+    ],
+    [
+     "between",
+     "b",
+     "e",
+     "f'"
+    ],
+    [
+     "gt_len",
+     "e",
+     "f'",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "e",
+     "BE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 28
+   },
+   "placement_decision": "free parameter of the existential step: |e-f'| = 1.5|b-e| > |b-e| on the ray from b through e (the rule fixes between b e f' and the lower bound, not the distance)"
+  },
+  {
+   "n": 6,
+   "rule": "proposition_3",
+   "args": [
+    "e",
+    "f'",
+    "b",
+    "e",
+    "BE",
+    "BE"
+   ],
+   "bindings": {
+    "q": "f"
+   },
+   "facts_added": [
+    [
+     "between",
+     "e",
+     "f",
+     "f'"
+    ],
+    [
+     "eq_len",
+     "e",
+     "f",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "f'",
+     "BE"
+    ],
+    [
+     "dpl",
+     "b",
+     "e",
+     "BE"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('e', \"f'\", 'b', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 29
+   },
+   "placement_decision": "cut |b-e| off segment e-f' from e; sample direction along the segment"
+  },
+  {
+   "n": 7,
+   "rule": "line_from_points",
+   "args": [
+    "f",
+    "c"
+   ],
+   "bindings": {
+    "L": "FC"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "FC"
+    ],
+    [
+     "on_line",
+     "c",
+     "FC"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "f",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 30
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 8,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "c",
+    "b"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "neq",
+     "d",
+     "b"
+    ],
+    [
+     "not_between",
+     "c",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "c",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 9,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "b",
+    "c",
+    "d",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "b",
+     "d",
+     "AC"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "b",
+     "c",
+     "d"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 10,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "b",
+    "e",
+    "f",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "b",
+     "f",
+     "AC"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "b",
+     "e",
+     "f"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 11,
+   "rule": "opposing_opposing_same_side",
+   "args": [
+    "d",
+    "b",
+    "f",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "d",
+     "f",
+     "AC"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "b",
+     "d",
+     "AC"
+    ],
+    [
+     "opposing_sides",
+     "b",
+     "f",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): opposing_opposing_same_side only adds facts to the engine state",
+   "lean_note": "engine-only step (opposing_opposing_same_side): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 12,
+   "rule": "proposition_15",
+   "args": [
+    "a",
+    "c",
+    "b",
+    "f",
+    "e",
+    "AC",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "e",
+     "b",
+     "f",
+     "e",
+     "c"
+    ],
+    [
+     "eq_ang",
+     "b",
+     "e",
+     "c",
+     "a",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "dpl",
+     "b",
+     "f",
+     "BE"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ],
+    [
+     "neq_line",
+     "BE",
+     "AC"
+    ],
+    [
+     "between",
+     "f",
+     "e",
+     "b"
+    ],
+    [
+     "between",
+     "a",
+     "e",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 31
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_15 only adds facts to the engine state"
+  },
+  {
+   "n": 13,
+   "rule": "proposition_4",
+   "args": [
+    "e",
+    "b",
+    "a",
+    "e",
+    "f",
+    "c",
+    "BE",
+    "AB",
+    "AC",
+    "BE",
+    "FC",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "b",
+     "a",
+     "f",
+     "c"
+    ],
+    [
+     "eq_ang",
+     "e",
+     "b",
+     "a",
+     "e",
+     "f",
+     "c"
+    ],
+    [
+     "eq_ang",
+     "e",
+     "a",
+     "b",
+     "e",
+     "c",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "dpl",
+     "e",
+     "f",
+     "BE"
+    ],
+    [
+     "on_line",
+     "f",
+     "FC"
+    ],
+    [
+     "on_line",
+     "c",
+     "FC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('e', 'b', 'e', 'f')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('e', 'a', 'e', 'c')"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('b', 'e', 'a', 'f', 'e', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": 32
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_4 only adds facts to the engine state"
+  },
+  {
+   "n": 14,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "a",
+    "d",
+    "f",
+    "AC",
+    "BC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "c",
+     "d",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "neq",
+     "c",
+     "a"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "BC"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "BC"
+    ],
+    [
+     "same_side",
+     "a",
+     "f",
+     "BC"
+    ],
+    [
+     "same_side",
+     "d",
+     "f",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop16.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only step (sum_angles_onlyif c a d f AC BC, Transfer.lean:90): angle a:c:d = angle a:c:f + angle f:c:d, with angle f:c:d > 0 \u2014 so the WHOLE (the exterior angle a:c:d) exceeds the PART (angle a:c:f = angle e:c:f = angle b:a:c by the SAS, proposition_4), hence angle a:c:d > angle b:a:c",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  }
+ ],
+ "placement": {
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.6,
+   0.0
+  ],
+  "d": [
+   2.6,
+   0.0
+  ],
+  "a": [
+   0.5,
+   1.1
+  ],
+  "e": [
+   1.05,
+   0.55
+  ],
+  "BE": null,
+  "f'": [
+   2.625,
+   1.375
+  ],
+  "f": [
+   2.1,
+   1.1
+  ],
+  "FC": null
+ },
+ "verification": [
+  {
+   "check": "I.16: between b c d (d on the extension of b-c beyond c)",
+   "ok": true
+  },
+  {
+   "check": "I.16: scalene triangle (all three side lengths distinct)",
+   "ok": true
+  },
+  {
+   "check": "I.16: a off BC (a genuine triangle)",
+   "ok": true
+  },
+  {
+   "check": "I.16: e the midpoint of a-c (between a e c, |a-e| = |e-c|)",
+   "ok": true
+  },
+  {
+   "check": "I.16: e the midpoint of b-f (between b e f, |b-e| = |e-f|)",
+   "ok": true
+  },
+  {
+   "check": "I.16: f' past f on the ray (between e f f', |e-f'| > |b-e|)",
+   "ok": true
+  },
+  {
+   "check": "I.16: angle b:a:c = angle e:c:f (the SAS, numerically)",
+   "ok": true
+  },
+  {
+   "check": "I.16: f strictly inside angle a:c:d (e:c:f a proper part \u2014 f on d's side of AC and on a's side of BC)",
+   "ok": true
+  },
+  {
+   "check": "I.16: part-whole: angle a:c:d = angle a:c:f + angle f:c:d",
+   "ok": true
+  },
+  {
+   "check": "I.16: GOAL angle a:c:d > angle b:a:c, with a visible margin (the excess angle f:c:d at least 0.5 rad)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop16.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop03",
+  "import Book.Prop04",
+  "import Book.Prop10",
+  "import Book.Prop15",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_16 : \u2200 (a b c d : Point) (AB BC AC: Line),",
+  "  formTriangle a b c AB BC AC \u2227 (between b c d) \u2192",
+  "  (\u2220 a:c:d > \u2220 c:b:a) \u2227 (\u2220 a:c:d > \u2220 b:a:c) :=",
+  "by",
+  "  euclid_intros",
+  "  constructor",
+  "  \u00b7 -- Omitted by Euclid.",
+  "    euclid_apply (proposition_10 b c BC) as e",
+  "    euclid_apply (line_from_points a e) as AE",
+  "    euclid_apply (extend_point_longer AE a e (a\u2500e)) as f'",
+  "    euclid_apply (proposition_3 e f' a e AE AE) as f",
+  "    euclid_apply (line_from_points f c) as FC",
+  "    euclid_apply (proposition_15 b c a f e BC AE)",
+  "    euclid_apply (proposition_4 e b a e c f BC AB AE BC FC AE)",
+  "    euclid_apply (extend_point AC a c) as g",
+  "    euclid_apply (proposition_15 a g b d c AC BC)",
+  "    euclid_finish",
+  "  \u00b7 euclid_apply (proposition_10 a c AC) as e",
+  "    euclid_apply (line_from_points b e) as BE",
+  "    euclid_apply (extend_point_longer BE b e (b\u2500e)) as f'",
+  "    euclid_apply (proposition_3 e f' b e BE BE) as f",
+  "    euclid_apply (line_from_points f c) as FC",
+  "    euclid_apply (proposition_15 a c b f e AC BE)",
+  "    euclid_apply (proposition_4 e b a e f c BE AB AC BE FC AC)",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}
