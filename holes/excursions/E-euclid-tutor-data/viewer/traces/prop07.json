@@ -1,0 +1,2106 @@
+{
+ "prop": 7,
+ "title": "Elements I.7 (LeanEuclid Book/Prop07.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "CB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "d"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "CD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "d"
+    ]
+   },
+   "def_step": 1
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "d"
+   ],
+   "bindings": {
+    "L": "CD"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 12
+   },
+   "placement_decision": "the line through c and d \u2014 drawn in the hypothesis configuration; the split below is about which sides of CD and AC the points lie on; line drawn through existing points",
+   "case": "the line through c and d \u2014 drawn in the hypothesis configuration; the split below is about which sides of CD and AC the points lie on"
+  },
+  {
+   "n": 2,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "same_side",
+       "a",
+       "b",
+       "CD"
+      ],
+      [
+       "same_side",
+       "d",
+       "b",
+       "AC"
+      ],
+      [
+       "same_side",
+       "c",
+       "a",
+       "DB"
+      ]
+     ],
+     [
+      [
+       "proposition_5'",
+       [
+        "a",
+        "c",
+        "d",
+        "AC",
+        "CD",
+        "AD"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "d",
+        "c",
+        "b",
+        "a",
+        "CD",
+        "DB"
+       ],
+       {}
+      ],
+      [
+       "proposition_5'",
+       [
+        "b",
+        "c",
+        "d",
+        "CB",
+        "CD",
+        "DB"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "c",
+        "a",
+        "d",
+        "b",
+        "AC",
+        "CD"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "same_side",
+       "a",
+       "b",
+       "CD"
+      ],
+      [
+       "opposing_sides",
+       "d",
+       "b",
+       "AC"
+      ],
+      [
+       "same_side",
+       "c",
+       "a",
+       "DB"
+      ],
+      [
+       "same_side",
+       "d",
+       "a",
+       "CB"
+      ],
+      [
+       "same_side",
+       "c",
+       "b",
+       "AD"
+      ]
+     ],
+     [
+      [
+       "proposition_5'",
+       [
+        "a",
+        "d",
+        "c",
+        "AD",
+        "CD",
+        "AC"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "c",
+        "d",
+        "b",
+        "a",
+        "CD",
+        "CB"
+       ],
+       {}
+      ],
+      [
+       "proposition_5'",
+       [
+        "b",
+        "d",
+        "c",
+        "DB",
+        "CD",
+        "CB"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "d",
+        "a",
+        "c",
+        "b",
+        "AD",
+        "CD"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "opposing_sides",
+       "a",
+       "b",
+       "CD"
+      ],
+      [
+       "same_side",
+       "d",
+       "b",
+       "AC"
+      ],
+      [
+       "same_side",
+       "c",
+       "a",
+       "DB"
+      ],
+      [
+       "same_side",
+       "e",
+       "b",
+       "CD"
+      ],
+      [
+       "same_side",
+       "c",
+       "f",
+       "DB"
+      ],
+      [
+       "same_side",
+       "b",
+       "f",
+       "CD"
+      ]
+     ],
+     [
+      [
+       "extend_point_not_on_line",
+       [
+        "AC",
+        "CD",
+        "a",
+        "c"
+       ],
+       {
+        "x": "e"
+       }
+      ],
+      [
+       "extend_point_not_on_line",
+       [
+        "AD",
+        "CD",
+        "a",
+        "d"
+       ],
+       {
+        "x": "f"
+       }
+      ],
+      [
+       "proposition_5",
+       [
+        "a",
+        "c",
+        "d",
+        "e",
+        "f",
+        "AC",
+        "CD",
+        "AD"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "c",
+        "e",
+        "d",
+        "b",
+        "AC",
+        "CD"
+       ],
+       {}
+      ],
+      [
+       "proposition_5'",
+       [
+        "b",
+        "c",
+        "d",
+        "CB",
+        "CD",
+        "DB"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "d",
+        "c",
+        "b",
+        "f",
+        "CD",
+        "DB"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "opposing_sides",
+       "a",
+       "b",
+       "CD"
+      ],
+      [
+       "opposing_sides",
+       "d",
+       "b",
+       "AC"
+      ],
+      [
+       "same_side",
+       "c",
+       "a",
+       "DB"
+      ],
+      [
+       "same_side",
+       "f",
+       "b",
+       "CD"
+      ],
+      [
+       "same_side",
+       "c",
+       "b",
+       "AD"
+      ],
+      [
+       "same_side",
+       "d",
+       "e",
+       "CB"
+      ],
+      [
+       "same_side",
+       "b",
+       "e",
+       "CD"
+      ]
+     ],
+     [
+      [
+       "extend_point_not_on_line",
+       [
+        "AC",
+        "CD",
+        "a",
+        "c"
+       ],
+       {
+        "x": "e"
+       }
+      ],
+      [
+       "extend_point_not_on_line",
+       [
+        "AD",
+        "CD",
+        "a",
+        "d"
+       ],
+       {
+        "x": "f"
+       }
+      ],
+      [
+       "proposition_5",
+       [
+        "a",
+        "c",
+        "d",
+        "e",
+        "f",
+        "AC",
+        "CD",
+        "AD"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "d",
+        "f",
+        "c",
+        "b",
+        "AD",
+        "CD"
+       ],
+       {}
+      ],
+      [
+       "proposition_5'",
+       [
+        "b",
+        "d",
+        "c",
+        "DB",
+        "CD",
+        "CB"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "c",
+        "d",
+        "b",
+        "e",
+        "CD",
+        "CB"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "false"
+    ]
+   ],
+   "facts_added": [
+    [
+     "false"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 13
+   },
+   "placement_decision": "Lean's `by_cases a.sameSide b CD <;> by_cases d.sameSide b AC` line; the engine renders the 2x2 split as a by_contra concluding False, because every branch is refuted (a by_cases branch must ENTAIL, not contradict). Exhaustiveness: a, b are off CD and d, b off AC (derived in-state), so System E's trichotomy (Relations.lean:13-14) leaves exactly the four branches. The branch assumptions beyond the two case facts are the in-state side derivations, carried explicitly; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; case split: assume [('same_side', 'a', 'b', 'CD'), ('same_side', 'd', 'b', 'AC'), ('same_side', 'c', 'a', 'DB')] \u2014 refuted by [\"proposition_5'\", 'sum_angles_onlyif', \"proposition_5'\", 'sum_angles_onlyif']; case split: assume [('same_side', 'a', 'b', 'CD'), ('opposing_sides', 'd', 'b', 'AC'), ('same_side', 'c', 'a', 'DB'), ('same_side', 'd', 'a', 'CB'), ('same_side', 'c', 'b', 'AD')] \u2014 refuted by [\"proposition_5'\", 'sum_angles_onlyif', \"proposition_5'\", 'sum_angles_onlyif']; case split: assume [('opposing_sides', 'a', 'b', 'CD'), ('same_side', 'd', 'b', 'AC'), ('same_side', 'c', 'a', 'DB'), ('same_side', 'e', 'b', 'CD'), ('same_side', 'c', 'f', 'DB'), ('same_side', 'b', 'f', 'CD')] \u2014 refuted by ['extend_point_not_on_line', 'extend_point_not_on_line', 'proposition_5', 'sum_angles_onlyif', \"proposition_5'\", 'sum_angles_onlyif']; case split: assume [('opposing_sides', 'a', 'b', 'CD'), ('opposing_sides', 'd', 'b', 'AC'), ('same_side', 'c', 'a', 'DB'), ('same_side', 'f', 'b', 'CD'), ('same_side', 'c', 'b', 'AD'), ('same_side', 'd', 'e', 'CB'), ('same_side', 'b', 'e', 'CD')] \u2014 refuted by ['extend_point_not_on_line', 'extend_point_not_on_line', 'proposition_5', 'sum_angles_onlyif', \"proposition_5'\", 'sum_angles_onlyif'] (every branch is refuted \u2014 I.7's conclusion is False; the diagram shows the hypothesis configuration as stated: c, d on the same side of AB with |a-c| = |a-d|. The second equality |c-b| = |d-b| cannot also be drawn \u2014 that impossibility is the theorem)",
+   "case": "Lean's `by_cases a.sameSide b CD <;> by_cases d.sameSide b AC` line; the engine renders the 2x2 split as a by_contra concluding False, because every branch is refuted (a by_cases branch must ENTAIL, not contradict). Exhaustiveness: a, b are off CD and d, b off AC (derived in-state), so System E's trichotomy (Relations.lean:13-14) leaves exactly the four branches. The branch assumptions beyond the two case facts are the in-state side derivations, carried explicitly; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 3,
+   "rule": "proposition_5'",
+   "args": [
+    "a",
+    "c",
+    "d",
+    "AC",
+    "CD",
+    "AD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "d",
+     "a",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "AD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AD"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'a', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 14
+   },
+   "placement_decision": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5' only adds facts to the engine state",
+   "case": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 4,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "d",
+    "c",
+    "b",
+    "a",
+    "CD",
+    "DB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "c",
+     "d",
+     "b",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DB"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "DB"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "neq",
+     "d",
+     "b"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "DB"
+    ],
+    [
+     "neq_line",
+     "CD",
+     "DB"
+    ],
+    [
+     "same_side",
+     "c",
+     "a",
+     "DB"
+    ],
+    [
+     "same_side",
+     "b",
+     "a",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 15
+   },
+   "placement_decision": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 5,
+   "rule": "proposition_5'",
+   "args": [
+    "b",
+    "c",
+    "d",
+    "CB",
+    "CD",
+    "DB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "b",
+     "c",
+     "d",
+     "b",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "c",
+     "CB"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DB"
+    ],
+    [
+     "on_line",
+     "b",
+     "DB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('b', 'c', 'b', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 16
+   },
+   "placement_decision": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5' only adds facts to the engine state",
+   "case": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 6,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "a",
+    "d",
+    "b",
+    "AC",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "c",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "neq",
+     "c",
+     "a"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "CD"
+    ],
+    [
+     "same_side",
+     "a",
+     "b",
+     "CD"
+    ],
+    [
+     "same_side",
+     "d",
+     "b",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 17
+   },
+   "placement_decision": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 1 (a sameSide b across CD, d sameSide b across AC): refuted \u2014 proposition_5' on |a-c| = |a-d| gives angle a:c:d = angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = angle b:d:c, and the angle sums (sum_angles_onlyif) force a part to exceed the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 7,
+   "rule": "proposition_5'",
+   "args": [
+    "a",
+    "d",
+    "c",
+    "AD",
+    "CD",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "d",
+     "c",
+     "a",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "d",
+     "AD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'd', 'a', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 20
+   },
+   "placement_decision": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5' only adds facts to the engine state",
+   "case": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 8,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "d",
+    "b",
+    "a",
+    "CD",
+    "CB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "d",
+     "c",
+     "b",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "CB"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CB"
+    ],
+    [
+     "neq_line",
+     "CD",
+     "CB"
+    ],
+    [
+     "same_side",
+     "d",
+     "a",
+     "CB"
+    ],
+    [
+     "same_side",
+     "b",
+     "a",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 21
+   },
+   "placement_decision": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 9,
+   "rule": "proposition_5'",
+   "args": [
+    "b",
+    "d",
+    "c",
+    "DB",
+    "CD",
+    "CB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "b",
+     "d",
+     "c",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "d",
+     "DB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CB"
+    ],
+    [
+     "on_line",
+     "b",
+     "CB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('b', 'd', 'b', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 22
+   },
+   "placement_decision": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5' only adds facts to the engine state",
+   "case": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 10,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "d",
+    "a",
+    "c",
+    "b",
+    "AD",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "d",
+     "c",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "AD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "neq",
+     "d",
+     "a"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AD"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "neq_line",
+     "AD",
+     "CD"
+    ],
+    [
+     "same_side",
+     "a",
+     "b",
+     "CD"
+    ],
+    [
+     "same_side",
+     "c",
+     "b",
+     "AD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 23
+   },
+   "placement_decision": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 2 (a sameSide b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the mirror of branch 1 with proposition_5' on the crossed configuration; the angle sums again force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 11,
+   "rule": "extend_point_not_on_line",
+   "args": [
+    "AC",
+    "CD",
+    "a",
+    "c"
+   ],
+   "bindings": {
+    "x": "e"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "between",
+     "a",
+     "c",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 26
+   },
+   "placement_decision": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; refuted branch construction \u2014 not drawn: under this branch's refuted case assumptions the extension point would lie past CD; the diagram shows the hypothesis configuration (c, d on the same side of AB, |a-c| = |a-d|)",
+   "case": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it",
+   "lean_note": "Lean's line 26 cites extend_point (extend the line past the endpoint); the engine's extend_point_not_on_line additionally lands the point past CD, so the I.5 under-the-base step can fire \u2014 an equivalent strengthening"
+  },
+  {
+   "n": 12,
+   "rule": "extend_point_not_on_line",
+   "args": [
+    "AD",
+    "CD",
+    "a",
+    "d"
+   ],
+   "bindings": {
+    "x": "f"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "AD"
+    ],
+    [
+     "between",
+     "a",
+     "d",
+     "f"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "CD"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "d",
+     "AD"
+    ],
+    [
+     "neq_line",
+     "AD",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 27
+   },
+   "placement_decision": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; refuted branch construction \u2014 not drawn: under this branch's refuted case assumptions the extension point would lie past CD; the diagram shows the hypothesis configuration (c, d on the same side of AB, |a-c| = |a-d|)",
+   "case": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it",
+   "lean_note": "Lean's line 27 cites extend_point (extend the line past the endpoint); the engine's extend_point_not_on_line additionally lands the point past CD, so the I.5 under-the-base step can fire \u2014 an equivalent strengthening"
+  },
+  {
+   "n": 13,
+   "rule": "proposition_5",
+   "args": [
+    "a",
+    "c",
+    "d",
+    "e",
+    "f",
+    "AC",
+    "CD",
+    "AD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "d",
+     "a",
+     "d",
+     "c"
+    ],
+    [
+     "eq_ang",
+     "d",
+     "c",
+     "e",
+     "c",
+     "d",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "AD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AD"
+    ],
+    [
+     "between",
+     "a",
+     "c",
+     "e"
+    ],
+    [
+     "between",
+     "a",
+     "d",
+     "f"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'a', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 28
+   },
+   "placement_decision": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5 only adds facts to the engine state",
+   "case": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 14,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "e",
+    "d",
+    "b",
+    "AC",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "e",
+     "c",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "neq",
+     "c",
+     "e"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "CD"
+    ],
+    [
+     "same_side",
+     "e",
+     "b",
+     "CD"
+    ],
+    [
+     "same_side",
+     "d",
+     "b",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 29
+   },
+   "placement_decision": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 15,
+   "rule": "proposition_5'",
+   "args": [
+    "b",
+    "c",
+    "d",
+    "CB",
+    "CD",
+    "DB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "b",
+     "c",
+     "d",
+     "b",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "c",
+     "CB"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DB"
+    ],
+    [
+     "on_line",
+     "b",
+     "DB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('b', 'c', 'b', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 30
+   },
+   "placement_decision": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5' only adds facts to the engine state",
+   "case": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 16,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "d",
+    "c",
+    "b",
+    "f",
+    "CD",
+    "DB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "c",
+     "d",
+     "b",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DB"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "DB"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "neq",
+     "d",
+     "b"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "DB"
+    ],
+    [
+     "neq_line",
+     "CD",
+     "DB"
+    ],
+    [
+     "same_side",
+     "c",
+     "f",
+     "DB"
+    ],
+    [
+     "same_side",
+     "b",
+     "f",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 31
+   },
+   "placement_decision": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 3 (a opposingSides b across CD, d sameSide b across AC \u2014 Euclid omits it): refuted \u2014 AC and AD are extended past c, d to e, f beyond CD and proposition_5 (the full isosceles theorem, under-the-base angles) gives angle e:c:d = angle f:d:c while proposition_5' gives angle b:c:d = angle b:d:c; the angle sums force a part past the whole; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 17,
+   "rule": "extend_point_not_on_line",
+   "args": [
+    "AC",
+    "CD",
+    "a",
+    "c"
+   ],
+   "bindings": {
+    "x": "e"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "between",
+     "a",
+     "c",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 34
+   },
+   "placement_decision": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; refuted branch construction \u2014 not drawn: under this branch's refuted case assumptions the extension point would lie past CD; the diagram shows the hypothesis configuration (c, d on the same side of AB, |a-c| = |a-d|)",
+   "case": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it",
+   "lean_note": "Lean's line 34 cites extend_point (extend the line past the endpoint); the engine's extend_point_not_on_line additionally lands the point past CD, so the I.5 under-the-base step can fire \u2014 an equivalent strengthening"
+  },
+  {
+   "n": 18,
+   "rule": "extend_point_not_on_line",
+   "args": [
+    "AD",
+    "CD",
+    "a",
+    "d"
+   ],
+   "bindings": {
+    "x": "f"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "AD"
+    ],
+    [
+     "between",
+     "a",
+     "d",
+     "f"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "CD"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "d",
+     "AD"
+    ],
+    [
+     "neq_line",
+     "AD",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 35
+   },
+   "placement_decision": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; refuted branch construction \u2014 not drawn: under this branch's refuted case assumptions the extension point would lie past CD; the diagram shows the hypothesis configuration (c, d on the same side of AB, |a-c| = |a-d|)",
+   "case": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it",
+   "lean_note": "Lean's line 35 cites extend_point (extend the line past the endpoint); the engine's extend_point_not_on_line additionally lands the point past CD, so the I.5 under-the-base step can fire \u2014 an equivalent strengthening"
+  },
+  {
+   "n": 19,
+   "rule": "proposition_5",
+   "args": [
+    "a",
+    "c",
+    "d",
+    "e",
+    "f",
+    "AC",
+    "CD",
+    "AD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "d",
+     "a",
+     "d",
+     "c"
+    ],
+    [
+     "eq_ang",
+     "d",
+     "c",
+     "e",
+     "c",
+     "d",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "AD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AD"
+    ],
+    [
+     "between",
+     "a",
+     "c",
+     "e"
+    ],
+    [
+     "between",
+     "a",
+     "d",
+     "f"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'a', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 36
+   },
+   "placement_decision": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5 only adds facts to the engine state",
+   "case": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 20,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "d",
+    "f",
+    "c",
+    "b",
+    "AD",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "f",
+     "d",
+     "c",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "AD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "f",
+     "AD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "neq",
+     "d",
+     "f"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AD"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "neq_line",
+     "AD",
+     "CD"
+    ],
+    [
+     "same_side",
+     "f",
+     "b",
+     "CD"
+    ],
+    [
+     "same_side",
+     "c",
+     "b",
+     "AD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 37
+   },
+   "placement_decision": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 21,
+   "rule": "proposition_5'",
+   "args": [
+    "b",
+    "d",
+    "c",
+    "DB",
+    "CD",
+    "CB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "b",
+     "d",
+     "c",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "d",
+     "DB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CB"
+    ],
+    [
+     "on_line",
+     "b",
+     "CB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('b', 'd', 'b', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 38
+   },
+   "placement_decision": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): proposition_5' only adds facts to the engine state",
+   "case": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  },
+  {
+   "n": 22,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "d",
+    "b",
+    "e",
+    "CD",
+    "CB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "d",
+     "c",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "CB"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CB"
+    ],
+    [
+     "neq_line",
+     "CD",
+     "CB"
+    ],
+    [
+     "same_side",
+     "d",
+     "e",
+     "CB"
+    ],
+    [
+     "same_side",
+     "b",
+     "e",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop07.lean",
+    "line": 39
+   },
+   "placement_decision": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "branch 4 (a opposingSides b across CD, d opposingSides b across AC \u2014 Euclid omits it): refuted \u2014 the extension argument of branch 3 on the crossed configuration; this case assumption is refuted; the diagram shows the hypothesis configuration as far as one can be drawn \u2014 c, d on the same side of AB with |a-c| = |a-d|; the second equality |c-b| = |d-b| cannot hold too (that impossibility is the theorem), so the drawn d visibly fails it"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.6,
+   0.0
+  ],
+  "c": [
+   0.5,
+   1.2
+  ],
+  "d": [
+   1.2802500789158704,
+   0.22574263096700944
+  ],
+  "CD": null
+ },
+ "verification": [
+  {
+   "check": "I.7: c and d on the SAME side of AB (hypothesis same_side c d AB)",
+   "ok": true
+  },
+  {
+   "check": "I.7: c != d, visibly (at least 0.2 apart)",
+   "ok": true
+  },
+  {
+   "check": "I.7: hypothesis |a-c| = |a-d| (to 1e-9 \u2014 d on the circle centre a through c)",
+   "ok": true
+  },
+  {
+   "check": "I.7: the un-drawable hypothesis |c-b| = |d-b| visibly fails (|c-b| > |d-b| by at least 0.2) \u2014 the two equalities plus same-side are the contradiction the proof derives",
+   "ok": true
+  },
+  {
+   "check": "I.7: d strictly inside triangle a-c-b (Euclid's figure)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop07.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop05",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_7 : \u2200 (a b c d : Point) (AB AC CB AD DB : Line),",
+  "  distinctPointsOnLine a b AB \u2227 distinctPointsOnLine a c AC \u2227 distinctPointsOnLine c b CB \u2227",
+  "  distinctPointsOnLine a d AD \u2227 distinctPointsOnLine d b DB \u2227 (c.sameSide d AB) \u2227 c \u2260 d \u2227",
+  "  (|(a\u2500c)| = |(a\u2500d)|) \u2227 (|(c\u2500b)| = |(d\u2500b)|) \u2192 False :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (line_from_points c d) as CD",
+  "  by_cases a.sameSide b CD <;> by_cases d.sameSide b AC",
+  "  \u00b7 euclid_apply (proposition_5' a c d AC CD AD)",
+  "    euclid_apply (sum_angles_onlyif d c b a CD DB)",
+  "    euclid_apply (proposition_5' b c d CB CD DB)",
+  "    euclid_apply (sum_angles_onlyif c a d b AC CD)",
+  "    euclid_finish",
+  "  \u00b7 -- Omitted by Euclid.",
+  "    euclid_apply (proposition_5' a d c AD CD AC)",
+  "    euclid_apply (sum_angles_onlyif c d b a CD CB)",
+  "    euclid_apply (proposition_5' b d c DB CD CB)",
+  "    euclid_apply (sum_angles_onlyif d a c b AD CD)",
+  "    euclid_finish",
+  "  \u00b7 -- Omitted by Euclid.",
+  "    euclid_apply (extend_point AC a c) as e",
+  "    euclid_apply (extend_point AD a d) as f",
+  "    euclid_apply (proposition_5 a c d e f AC CD AD)",
+  "    euclid_apply (sum_angles_onlyif c e d b AC CD)",
+  "    euclid_apply (proposition_5' b c d CB CD DB)",
+  "    euclid_apply (sum_angles_onlyif d c b f CD DB)",
+  "    euclid_finish",
+  "  \u00b7 -- Omitted by Euclid.",
+  "    euclid_apply (extend_point AC a c) as e",
+  "    euclid_apply (extend_point AD a d) as f",
+  "    euclid_apply (proposition_5 a c d e f AC CD AD)",
+  "    euclid_apply (sum_angles_onlyif d f c b AD CD)",
+  "    euclid_apply (proposition_5' b d c DB CD CB)",
+  "    euclid_apply (sum_angles_onlyif c d b e CD CB)",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

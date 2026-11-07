@@ -298,6 +298,31 @@ FREE = {
     # past b) separates from both b and d on the fitted board (review,
     # claude-9: f sat almost on b and d was at the board edge).
     5: {"a": (0.0, 1.2), "b": (-0.7, 0.0), "c": (0.7, 0.0)},
+    # I.6 (equal base angles make equal sides — the converse of I.5, a
+    # by_contra drawn in the TRUE configuration): the TRUE configuration
+    # is forced to be isosceles (|a-b| = |a-c| is the goal), so a sits
+    # exactly on the perpendicular bisector of b-c — a.x = 0.75 = 1.5/2
+    # makes both the hypothesis (angle a:b:c = angle a:c:b) and the goal
+    # exact in float. Base angles ~= 53.1 degrees (the 3-4-5 angle, over
+    # 0.1 rad from each of 45/60/90), and |b-c| = 1.5 differs visibly
+    # from |a-b| = |a-c| = 1.25, so the triangle does not look
+    # equilateral.
+    6: {"b": (0.0, 0.0), "c": (1.5, 0.0), "a": (0.75, 1.0)},
+    # I.7 (no two distinct points on the same side of AB at the same
+    # distances from a and b — conclusion False): the hypotheses are
+    # JOINTLY IMPOSSIBLE — that is the theorem (|a-c| = |a-d| and
+    # |c-b| = |d-b| together force d to be c's mirror across AB, the
+    # OPPOSITE side). So no placement can satisfy them all. The drawing
+    # keeps every drawable hypothesis exact — c and d on the same side
+    # of AB, c != d, and |a-c| = |a-d| (d on the circle centre a through
+    # c, |a-c| = 1.3 exactly, at a visibly different angle: 10 vs ~67.4
+    # degrees — on that side of c the arc runs INSIDE triangle a-c-b, as
+    # in Euclid's own figure) — and the un-drawable hypothesis visibly
+    # fails: |c-b| ~= 1.628 vs |d-b| ~= 0.391, the margin the proof
+    # refutes.
+    7: {"a": (0.0, 0.0), "b": (1.6, 0.0), "c": (0.5, 1.2),
+        "d": (1.3 * math.cos(math.radians(10.0)),
+              1.3 * math.sin(math.radians(10.0)))},
     # I.10: symmetric base so the bisector/CD is the y-axis and d lands
     # exactly on the midpoint of a-b (verify10 checks |a-d| = |d-b| and
     # between a d b).
@@ -401,6 +426,10 @@ def hyps_and_steps(prop):
         return list(eng.PROP4_HYPS_DATA), list(eng.PROP4_STEPS_DATA)
     if prop == 5:
         return list(eng.PROP5_HYPS_DATA), list(eng.PROP5_STEPS_DATA)
+    if prop == 6:
+        return list(eng.PROP6_HYPS_DATA), list(eng.PROP6_STEPS_DATA)
+    if prop == 7:
+        return list(eng.PROP7_HYPS_DATA), list(eng.PROP7_STEPS_DATA)
     if prop == 10:
         return list(eng.PROP10_HYPS_DATA), list(eng.PROP10_STEPS_DATA)
     if prop == 11:
@@ -478,6 +507,28 @@ def objects_from_hyps(prop):
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
                               ("AC", ("a", "c")))]
+    if prop == 6:
+        # the triangle a-b-c and the three hypothesis lines (dpl a b AB;
+        # b, c on BC; c, a on AC); I.6 constructs only inside the
+        # by_contra's refuted branches, which are not drawn
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
+    if prop == 7:
+        # the four hypothesis points and the FIVE hypothesis lines
+        # (dpl a b AB, dpl a c AC, dpl c b CB, dpl a d AD, dpl d b DB);
+        # CD is drawn by step 1 (line_from_points), and the branches'
+        # e, f live only under refuted case assumptions (not drawn)
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("AC", ("a", "c")),
+                              ("CB", ("c", "b")), ("AD", ("a", "d")),
+                              ("DB", ("d", "b")))]
     if prop == 10:
         # c (the equilateral apex) is CONSTRUCTED by step 1, not a
         # hypothesis; the SMT-sourced non-collinearity is an assumption
@@ -594,6 +645,26 @@ def objects_from_hyps(prop):
 def place_step(prop, rule, args, bindings, added, xy, objects):
     """Numeric placement for one step: extends xy (name -> (x,y)) and
     appends introduced objects. Returns the decision note."""
+    if prop == 6 and rule in ("proposition_3", "line_from_points"):
+        # I.6's only constructions live inside the by_contra's refuted
+        # branches (a cut point d and the line through it): under the
+        # branch's refuted length assumption d would sit strictly inside
+        # the segment; in the TRUE configuration (|a-b| = |a-c|) d would
+        # coincide with an endpoint. Nothing is placed; the note says so.
+        return ("refuted branch construction — not drawn: under this "
+                "branch's refuted assumption the new point would be a "
+                "strict interior cut, which the TRUE configuration "
+                "(angle a:b:c = angle a:c:b, hence |a-b| = |a-c|) "
+                "collapses onto an endpoint")
+    if prop == 7 and rule == "extend_point_not_on_line":
+        # I.7's e/f live only inside the refuted same/opposing-side
+        # branches (past CD on the extensions of AC/AD). The branches
+        # are refuted, so the points are not placed; the note says so.
+        return ("refuted branch construction — not drawn: under this "
+                "branch's refuted case assumptions the extension point "
+                "would lie past CD; the diagram shows the hypothesis "
+                "configuration (c, d on the same side of AB, "
+                "|a-c| = |a-d|)")
     if rule == "line_from_points":
         (p, q), L = args, bindings["L"]
         xy[L] = None  # lines have no coordinates; drawn from points
@@ -838,6 +909,18 @@ dragging)" % (a, b)
                     "not drawable; the diagram shows the TRUE "
                     "configuration — angle a:b:c > angle b:c:a, hence "
                     "|a-c| > |a-b|)")
+        if prop == 6:
+            return ("; ".join(parts) + " (the refuted assumptions are "
+                    "not drawable; the diagram shows the TRUE "
+                    "configuration — angle a:b:c = angle a:c:b, hence "
+                    "|a-b| = |a-c|)")
+        if prop == 7:
+            return ("; ".join(parts) + " (every branch is refuted — "
+                    "I.7's conclusion is False; the diagram shows the "
+                    "hypothesis configuration as stated: c, d on the "
+                    "same side of AB with |a-c| = |a-d|. The second "
+                    "equality |c-b| = |d-b| cannot also be drawn — that "
+                    "impossibility is the theorem)")
         if prop == 21:
             return ("engine-only step fixing the order of b, d, e on BD "
                     "(trichotomy, Diagrammatic.lean:87): the two other "
@@ -912,8 +995,8 @@ dragging)" % (a, b)
                 "between %s %s %s, not the distance)"
                 % (q, name, p, q, p, q, p, q, name))
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
-                "proposition_4", "proposition_5'", "proposition_13",
-                "proposition_15",
+                "proposition_4", "proposition_5", "proposition_5'",
+                "proposition_13", "proposition_15",
                 "proposition_16", "proposition_18", "proposition_19",
                 "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
@@ -1559,6 +1642,72 @@ def verify21(xy):
     ]
 
 
+def verify6(xy):
+    """I.6 (equal base angles make equal sides — the converse of I.5, a
+    by_contra drawn in the TRUE configuration): the drawn facts are the
+    hypothesis — a genuine triangle a-b-c with angle a:b:c = angle a:c:b
+    — plus the conclusion numerically: |a-b| = |a-c|. The TRUE
+    configuration is forced to be isosceles, so the placement puts a
+    exactly on the perpendicular bisector of b-c. Both refuted branch
+    assumptions (|a-b| > |a-c| and |a-c| > |a-b|) fail these checks, as
+    they must."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(p, q, r):
+        return ((xy[q][0] - xy[p][0]) * (xy[r][1] - xy[p][1])
+                - (xy[q][1] - xy[p][1]) * (xy[r][0] - xy[p][0]))
+
+    abc = _ang(xy, "a", "b", "c")
+    acb = _ang(xy, "a", "c", "b")
+    return [
+        ("I.6: a off BC (a genuine triangle)",
+         abs(cross("b", "c", "a")) > EPS * dist("b", "c")
+         * dist("a", "c")),
+        ("I.6: base angles visibly off the special angles (0.1 rad "
+         "from each of 45/60/90 degrees)",
+         all(abs(abc - math.radians(x)) > 0.1 for x in (45, 60, 90))),
+        ("I.6: hypothesis angle a:b:c = angle a:c:b (to 1e-9)",
+         abs(abc - acb) < EPS),
+        ("I.6: GOAL |a-b| = |a-c| (to 1e-9)",
+         abs(dist("a", "b") - dist("a", "c")) < EPS),
+        ("I.6: not equilateral (|b-c| visibly different from |a-b|, at "
+         "least 0.1)", abs(dist("b", "c") - dist("a", "b")) > 0.1),
+    ]
+
+
+def verify7(xy):
+    """I.7 (no two distinct points on the same side of AB at the same
+    distances from a and b — conclusion False): the hypotheses are
+    jointly impossible (that IS the theorem), so no placement satisfies
+    them all. The drawn placement keeps every drawable hypothesis exact
+    — c and d on the same side of AB, c != d, and |a-c| = |a-d| — and
+    the un-drawable one visibly fails: |c-b| > |d-b| (had both
+    equalities held, d would be c's mirror across AB, on the OPPOSITE
+    side)."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def side(p, l1, l2):
+        return ((xy[p][0] - xy[l1][0]) * (xy[l2][1] - xy[l1][1])
+                - (xy[p][1] - xy[l1][1]) * (xy[l2][0] - xy[l1][0]))
+
+    return [
+        ("I.7: c and d on the SAME side of AB (hypothesis same_side "
+         "c d AB)", side("c", "a", "b") * side("d", "a", "b") > 0),
+        ("I.7: c != d, visibly (at least 0.2 apart)",
+         dist("c", "d") > 0.2),
+        ("I.7: hypothesis |a-c| = |a-d| (to 1e-9 — d on the circle "
+         "centre a through c)",
+         abs(dist("a", "c") - dist("a", "d")) < EPS),
+        ("I.7: the un-drawable hypothesis |c-b| = |d-b| visibly fails "
+         "(|c-b| > |d-b| by at least 0.2) — the two equalities plus "
+         "same-side are the contradiction the proof derives",
+         dist("c", "b") > dist("d", "b") + 0.2),
+        ("I.7: d strictly inside triangle a-c-b (Euclid's figure)",
+         side("d", "a", "c") * side("b", "a", "c") > 0
+         and side("d", "c", "b") * side("a", "c", "b") > 0),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1572,6 +1721,10 @@ def verify(prop, xy):
         return verify4(xy)
     if prop == 5:
         return verify5(xy)
+    if prop == 6:
+        return verify6(xy)
+    if prop == 7:
+        return verify7(xy)
     if prop == 10:
         return verify10(xy)
     if prop == 11:
@@ -1859,9 +2012,207 @@ def build_trace19_rows(hyps, steps):
     return rows, s
 
 
+# I.6 display decision (packet P-euclid-play-config-I6-I7): like I.19, the
+# proof is a by_contra whose two branches (Lean's by_cases |(a─b)| >
+# |(a─c)| split) run under refuted assumptions, so the trace draws the
+# TRUE configuration — the isosceles triangle with angle a:b:c =
+# angle a:c:b, hence |a-b| = |a-c| — and every step says in the info bar
+# which refuted assumption it runs under. Unlike I.19 the branches
+# CONSTRUCT (a cut point d and a line through it): those constructions
+# are not drawn — in the true configuration the cut would coincide with
+# an endpoint (|a-b| = |a-c|), so there is nothing honest to draw.
+DRAWN6 = ("under an assumption the proof refutes; not drawn as such — "
+          "the diagram shows the TRUE configuration (angle a:b:c = "
+          "angle a:c:b, hence |a-b| = |a-c|)")
+BR6_1 = ("branch 1 (|a-b| > |a-c|): refuted — proposition_3 cuts d off "
+         "segment b-a with |b-d| = |a-c|, then proposition_4 (SAS on "
+         "triangles d-b-c, a-c-b, using the hypothesis angle d:b:c = "
+         "angle a:c:b) gives angle d:c:b = angle a:b:c = angle a:c:b; "
+         "but d is strictly inside segment b-a, so angle d:c:b is a "
+         "proper PART of angle a:c:b (sum_angles_onlyif) — the part "
+         "equals the whole, impossible; " + DRAWN6)
+BR6_2 = ("branch 2 (|a-c| > |a-b|): refuted — the mirror argument on "
+         "the other side: proposition_3 cuts d off segment c-a with "
+         "|c-d| = |a-b|, proposition_4 gives angle d:b:c = angle a:c:b "
+         "= angle a:b:c, and d strictly inside segment c-a makes "
+         "angle d:b:c a proper PART of angle a:b:c (sum_angles_onlyif) "
+         "— the part equals the whole, impossible; " + DRAWN6)
+
+
+def build_trace6_rows(hyps, steps):
+    """I.6 is a single by_contra whose two branches (Lean's by_cases
+    |(a-b)| > |(a-c)| split) each cut a point and cite proposition_4
+    (see PROP6_STEPS_DATA). The trace flattens it: the by_contra
+    (Lean's by_contra line), the split (Lean's by_cases line), then
+    both branches' steps, each replayed on a state copy and exhibited
+    contradictory. Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop06.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop06.lean"
+    ln_by_contra = next(i + 1 for i, l in enumerate(lean_lines)
+                        if l.strip().startswith("by_contra"))
+    ln_by_cases = next(i + 1 for i, l in enumerate(lean_lines)
+                       if l.strip().startswith("by_cases"))
+    p3 = [i + 1 for i, l in enumerate(lean_lines) if "proposition_3" in l]
+    lfp = [i + 1 for i, l in enumerate(lean_lines)
+           if "line_from_points" in l]
+    p4 = [i + 1 for i, l in enumerate(lean_lines) if "proposition_4" in l]
+    assert len(p3) == len(lfp) == len(p4) == 2, (p3, lfp, p4)
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+    top = eng.run_steps(s, steps)[0]  # the single outer by_contra report
+
+    _tag, branches, conclusions = steps[0]
+    rows = [("by_contra", branches, conclusions,
+             dict(top, added=[tuple(c) for c in conclusions]),
+             (rel, ln_by_contra),
+             DRAWN6 + "; the conclusion (|a-b| = |a-c|) is what the "
+             "diagram draws")]
+    rows.append(("by_cases", [list(f) for a, _ in branches for f in a],
+                 [list(f) for a, _ in branches for f in a], {},
+                 (rel, ln_by_cases),
+                 "Lean's `by_cases |(a-b)| > |(a-c)|` line; under the "
+                 "by_contra's assumption not |a-b| = |a-c|, trichotomy "
+                 "on the two lengths leaves exactly these two branches; "
+                 + DRAWN6))
+    for (assume, bsteps), note, locs in zip(
+            branches, (BR6_1, BR6_2),
+            [[(rel, p3[0]), (rel, lfp[0]), (rel, p4[0]), None],
+             [(rel, p3[1]), (rel, lfp[1]), (rel, p4[1]), None]]):
+        reps, bstate = _run_branch14(s0, assume, bsteps)
+        ok, _w = eng.contradictory(bstate)
+        assert ok, "I.6 branch must end contradictory"
+        for (r, a, b), rep, loc in zip(bsteps, reps, locs):
+            rows.append((r, a, b, rep, loc, note))
+    return rows, s
+
+
+# I.7 display decision (packet P-euclid-play-config-I6-I7): I.7 concludes
+# False — the hypotheses are jointly impossible, so no placement can
+# satisfy them all (the two length equalities force d to be c's mirror
+# across AB, the OPPOSITE side). The trace draws the hypotheses as Lean
+# states them as far as a diagram can: c, d on the same side of AB with
+# |a-c| = |a-d| exact, the second equality visibly failing. Every
+# branch of the 2x2 side split (Lean's `by_cases a.sameSide b CD <;>
+# by_cases d.sameSide b AC`, rendered by the engine as a by_contra
+# concluding False) says in the info bar that its case assumption is
+# refuted.
+DRAWN7 = ("this case assumption is refuted; the diagram shows the "
+          "hypothesis configuration as far as one can be drawn — c, d "
+          "on the same side of AB with |a-c| = |a-d|; the second "
+          "equality |c-b| = |d-b| cannot hold too (that impossibility "
+          "is the theorem), so the drawn d visibly fails it")
+BR7_1 = ("branch 1 (a sameSide b across CD, d sameSide b across AC): "
+         "refuted — proposition_5' on |a-c| = |a-d| gives angle a:c:d = "
+         "angle a:d:c and on |c-b| = |d-b| gives angle b:c:d = "
+         "angle b:d:c, and the angle sums (sum_angles_onlyif) force a "
+         "part to exceed the whole; " + DRAWN7)
+BR7_2 = ("branch 2 (a sameSide b across CD, d opposingSides b across "
+         "AC — Euclid omits it): refuted — the mirror of branch 1 with "
+         "proposition_5' on the crossed configuration; the angle sums "
+         "again force a part past the whole; " + DRAWN7)
+BR7_3 = ("branch 3 (a opposingSides b across CD, d sameSide b across "
+         "AC — Euclid omits it): refuted — AC and AD are extended past "
+         "c, d to e, f beyond CD and proposition_5 (the full isosceles "
+         "theorem, under-the-base angles) gives angle e:c:d = "
+         "angle f:d:c while proposition_5' gives angle b:c:d = "
+         "angle b:d:c; the angle sums force a part past the whole; "
+         + DRAWN7)
+BR7_4 = ("branch 4 (a opposingSides b across CD, d opposingSides b "
+         "across AC — Euclid omits it): refuted — the extension "
+         "argument of branch 3 on the crossed configuration; "
+         + DRAWN7)
+
+
+def build_trace7_rows(hyps, steps):
+    """I.7's engine proof is line_from_points (CD) then a by_contra
+    whose four branches are Lean's 2x2 side split (see PROP7_STEPS_DATA;
+    Lean's goal IS False, so the by_contra is the engine's rendering of
+    the two nested by_cases — both case facts and the side facts the
+    branches need are carried as explicit branch assumptions). The trace
+    flattens it: the CD step (Lean's line_from_points line), the split
+    (Lean's by_cases line), then all four branches' steps, each replayed
+    on a state copy and exhibited contradictory. Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop07.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop07.lean"
+    ln_lfp = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "line_from_points" in l)
+    ln_by_cases = next(i + 1 for i, l in enumerate(lean_lines)
+                       if l.strip().startswith("by_cases"))
+    applies = [i + 1 for i, l in enumerate(lean_lines)
+               if "euclid_apply" in l and i + 1 > ln_by_cases]
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    rep0 = eng.run_steps(s, steps[:1])[0]  # line_from_points c d -> CD
+    s0 = s.copy()
+    top = eng.run_steps(s, steps[1:])[0]  # the by_contra report
+
+    _tag, branches, conclusions = steps[1]
+    rows = [("line_from_points", steps[0][1], steps[0][2], rep0,
+             (rel, ln_lfp),
+             "the line through c and d — drawn in the hypothesis "
+             "configuration; the split below is about which sides of "
+             "CD and AC the points lie on"),
+            ("by_contra", branches, conclusions,
+             dict(top, added=[tuple(c) for c in conclusions]),
+             (rel, ln_by_cases),
+             "Lean's `by_cases a.sameSide b CD <;> by_cases "
+             "d.sameSide b AC` line; the engine renders the 2x2 split "
+             "as a by_contra concluding False, because every branch is "
+             "refuted (a by_cases branch must ENTAIL, not contradict). "
+             "Exhaustiveness: a, b are off CD and d, b off AC (derived "
+             "in-state), so System E's trichotomy (Relations.lean:13-14) "
+             "leaves exactly the four branches. The branch assumptions "
+             "beyond the two case facts are the in-state side "
+             "derivations, carried explicitly; " + DRAWN7)]
+    flat = [(r, a, b) for _assume, bsteps in branches for r, a, b in
+            bsteps]
+    assert len(applies) == len(flat), (len(applies), len(flat))
+    EXT_NOTE = ("note: Lean's line %d cites extend_point (extend the "
+                "line past the endpoint); the engine's "
+                "extend_point_not_on_line additionally lands the point "
+                "past CD, so the I.5 under-the-base step can fire — an "
+                "equivalent strengthening")
+    for (assume, bsteps), note in zip(branches,
+                                      (BR7_1, BR7_2, BR7_3, BR7_4)):
+        reps, bstate = _run_branch14(s0, assume, bsteps)
+        ok, _w = eng.contradictory(bstate)
+        assert ok, "I.7 branch must end contradictory"
+        for (r, a, b), rep in zip(bsteps, reps):
+            ln = applies.pop(0)
+            loc = ((rel, ln, EXT_NOTE % ln)
+                   if r == "extend_point_not_on_line" else (rel, ln))
+            rows.append((r, a, b, rep, loc, note))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
-    if prop == 13:
+    if prop == 6:
+        # by_contra with two constructing branches (see
+        # build_trace6_rows); each branch is replayed on a state copy
+        # and exhibited contradictory
+        rows, _s = build_trace6_rows(hyps, steps)
+        name_map = {}
+    elif prop == 7:
+        # by_contra rendering Lean's 2x2 side split (see
+        # build_trace7_rows); each branch is replayed on a state copy
+        # and exhibited contradictory
+        rows, _s = build_trace7_rows(hyps, steps)
+        name_map = {}
+    elif prop == 13:
         # nested by_cases: rows built by replaying each branch on a state
         # copy (see build_trace13_rows); the replay itself is the check
         rows, _s = build_trace13_rows(hyps, steps)
@@ -1991,6 +2342,10 @@ def build_trace(prop):
                              "sum_angles_onlyif on the same arguments to "
                              "derive the angle-sum row Lean's SMT "
                              "discharges silently" % loc[1])
+            elif len(loc) > 2 and loc[2].startswith("note: "):
+                # a row builder's own Lean-link note (I.7's
+                # extend_point_not_on_line vs Lean's extend_point)
+                lean_note = loc[2][len("note: "):]
             else:
                 lean_note = (("Lean cites %s with different arguments; the "
                               "engine's citation is an equivalent variant"

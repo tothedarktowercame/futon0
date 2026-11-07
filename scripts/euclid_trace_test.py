@@ -1266,3 +1266,184 @@ def test_bad_case_prop21_d_on_ac_fails():
     x["d"] = ((ax + cx) / 2, (ay + cy) / 2)
     fails = [d for d, ok in tr.verify21(x) if not ok]
     assert any("side of AC" in d for d in fails), fails
+
+
+# -- I.6 / I.7 (E-kimi-task-418, P-euclid-play-config-I6-I7) ------------------
+# Both are proofs by contradiction drawn in the hypothesis/TRUE
+# configuration (like I.14/I.19): every by_contra branch step says in
+# its case note which refuted assumption it runs under. I.6's branches
+# CONSTRUCT (a cut point d and a line through it) — not drawn, since in
+# the true configuration (|a-b| = |a-c|) the cut coincides with an
+# endpoint. I.7's hypotheses are jointly impossible (that is the
+# theorem), so the placement keeps every drawable hypothesis exact
+# (same side, c != d, |a-c| = |a-d|) and lets the un-drawable second
+# equality visibly fail.
+
+TR6, TR7 = load(6), load(7)
+
+
+def test_prop6_rebuild_matches_disk():
+    rebuilt = tr.build_trace(6)
+    assert rebuilt["placement"] == TR6["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR6["steps"]
+
+
+def test_prop7_rebuild_matches_disk():
+    rebuilt = tr.build_trace(7)
+    assert rebuilt["placement"] == TR7["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR7["steps"]
+
+
+def test_prop6_lean_lines_cover_the_split_and_apply_lines():
+    path = os.path.join(LEAN_DIR, TR6["lean_file"])
+    lines = open(path).read().splitlines()
+    for s in TR6["steps"]:
+        ln = s["lean"]["line"]
+        if s["rule"] == "sum_angles_onlyif":
+            # engine-only: Lean's euclid_finish discharges it by SMT
+            assert ln is None and "engine-only" in s["lean_note"], s
+            continue
+        assert ln is not None, s
+        line = lines[ln - 1]
+        if s["rule"] in ("by_contra", "by_cases"):
+            assert line.strip().startswith(s["rule"]), s
+        else:
+            assert "euclid_apply" in line and s["rule"] in line, s
+    linked = [s["lean"]["line"] for s in TR6["steps"]
+              if s["lean"]["line"] is not None]
+    assert linked == sorted(linked), linked
+    # all six euclid_apply lines plus the by_contra and by_cases lines
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies <= set(linked) and len(linked) == len(applies) + 2
+
+
+def test_prop7_lean_lines_cover_the_split_and_apply_lines():
+    path = os.path.join(LEAN_DIR, TR7["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = []
+    for s in TR7["steps"]:
+        ln = s["lean"]["line"]
+        assert ln is not None, s  # every step linked (split included)
+        line = lines[ln - 1]
+        if s["rule"] == "by_contra":
+            # the engine's by_contra renders Lean's 2x2 by_cases line
+            assert line.strip().startswith("by_cases"), s
+        elif s["rule"] == "extend_point_not_on_line":
+            # Lean cites extend_point; the engine's variant additionally
+            # lands the point past CD — the link note says so
+            assert "extend_point" in line and "extend_point_not_on_line" \
+                not in line, s
+            assert "extend_point" in s["lean_note"], s
+        else:
+            assert "euclid_apply" in line and s["rule"] in line, s
+        linked.append(ln)
+    assert linked == sorted(linked), linked
+    # every euclid_apply line in Prop07.lean is linked, plus the by_cases
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies <= set(linked) and len(linked) == len(applies) + 1
+
+
+def test_prop6_cases_recorded():
+    """Every step says which refuted assumption it runs under and that
+    the diagram draws the true configuration."""
+    for s in TR6["steps"]:
+        assert s.get("case"), s
+        assert s["case"] in s["placement_decision"], s
+        assert "TRUE configuration" in s["case"], s
+    cases = [s["case"] for s in TR6["steps"]]
+    assert any("branch 1 (|a-b| > |a-c|)" in c and "refuted" in c
+               and "proposition_4" in c for c in cases)
+    assert any("branch 2 (|a-c| > |a-b|)" in c and "refuted" in c
+               and "proposition_4" in c for c in cases)
+    # the outer by_contra's conclusion is the goal
+    outer = TR6["steps"][0]
+    assert outer["rule"] == "by_contra"
+    assert outer["facts_added"] == [["eq_len", "a", "b", "a", "c"]]
+    # the split shows exactly the two refuted assumptions
+    split = TR6["steps"][1]
+    assert split["rule"] == "by_cases"
+    assert split["facts_added"] == [["gt_len", "a", "b", "a", "c"],
+                                    ["gt_len", "a", "c", "a", "b"]]
+    # the refuted branch constructions place nothing: only the
+    # hypothesis objects exist
+    assert {o["name"] for o in TR6["objects"]} == \
+        {"a", "b", "c", "AB", "BC", "AC"}
+
+
+def test_prop7_cases_recorded():
+    """Every branch step says which refuted case assumption it runs
+    under; the split row carries the exhaustiveness note."""
+    branch = [s for s in TR7["steps"][2:]]
+    assert len(branch) == 20
+    for s in branch:
+        assert s.get("case"), s
+        assert s["case"] in s["placement_decision"], s
+        assert "refuted" in s["case"], s
+    cases = [s["case"] for s in branch]
+    assert any("branch 1" in c and "sameSide b across CD" in c
+               for c in cases)
+    assert any("branch 4" in c and "opposingSides b across AC" in c
+               for c in cases)
+    split = TR7["steps"][1]
+    assert split["rule"] == "by_contra"
+    assert split["facts_added"] == [["false"]]
+    assert "Exhaustiveness" in split["case"]
+    # the refuted branch extensions place nothing: e and f never appear
+    assert {o["name"] for o in TR7["objects"]} == \
+        {"a", "b", "c", "d", "AB", "AC", "CB", "AD", "DB", "CD"}
+
+
+def test_prop6_step_facts_hold():
+    xy = _xy(TR6)
+    assert all(ok for _, ok in tr.verify6(xy))
+    # the hypothesis (equal base angles) and the goal hold numerically
+    assert abs(tr._ang(xy, "a", "b", "c")
+               - tr._ang(xy, "a", "c", "b")) < tr.EPS
+    assert abs(dist(TR6, "a", "b") - dist(TR6, "a", "c")) < tr.EPS
+    # the REFUTED branch assumptions (gt_len, unchecked by
+    # metric_facts_hold) must NOT hold in the true placement
+    assert not (dist(TR6, "a", "b") > dist(TR6, "a", "c") + tr.EPS)
+    assert not (dist(TR6, "a", "c") > dist(TR6, "a", "b") + tr.EPS)
+
+
+def test_prop7_step_facts_hold():
+    xy = _xy(TR7)
+    assert all(ok for _, ok in tr.verify7(xy))
+    # the drawable hypotheses hold numerically
+    assert abs(dist(TR7, "a", "c") - dist(TR7, "a", "d")) < tr.EPS
+    # the by_contra's branches derive equalities the placement must
+    # refute: the I.5' step on |c-b| = |d-b| (angle b:c:d = angle
+    # b:d:c) fails numerically, with the angle at d the greater
+    # (|d-b| < |c-b|)
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR7["steps"], xy)
+           if not ok]
+    assert bad, "expected the refuted I.5' equalities to fail"
+    assert any(f[0] == "eq_ang" and tuple(f[1:]) in
+               (("b", "c", "d", "b", "d", "c"),
+                ("b", "d", "c", "b", "c", "d")) for f, _ in bad), bad
+    assert tr._ang(xy, "b", "d", "c") > tr._ang(xy, "b", "c", "d") + 0.15
+
+
+def test_bad_case_prop6_angles_unequal_fails():
+    x = _xy(TR6)
+    assert all(ok for _, ok in tr.verify6(x))
+    x["a"] = (0.6, 1.0)  # off the perpendicular bisector of b-c
+    fails = [d for d, ok in tr.verify6(x) if not ok]
+    assert any("angle a:b:c = angle a:c:b" in d for d in fails), fails
+    assert any("GOAL |a-b| = |a-c|" in d for d in fails), fails
+
+
+def test_bad_case_prop7_d_mirrored_across_ab_fails():
+    x = _xy(TR7)
+    assert all(ok for _, ok in tr.verify7(x))
+    # d replaced by c's mirror across AB: BOTH length equalities now
+    # hold exactly — but the same-side hypothesis fails (that mirror IS
+    # the theorem's excluded configuration)
+    x["d"] = (x["c"][0], -x["c"][1])
+    fails = [d for d, ok in tr.verify7(x) if not ok]
+    assert any("SAME side of AB" in d for d in fails), fails
+    # sanity: with d mirrored, |c-b| = |d-b| holds — the check that the
+    # equality visibly fails in the drawn placement now flips
+    assert abs(math.hypot(x["c"][0] - x["b"][0], x["c"][1] - x["b"][1])
+               - math.hypot(x["d"][0] - x["b"][0],
+                            x["d"][1] - x["b"][1])) < tr.EPS
