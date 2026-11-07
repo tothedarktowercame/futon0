@@ -899,8 +899,8 @@ def test_negative_engine_i17_dropped_proposition_13():
 def test_emit_engine_i18_emission_pinned():
     # Flat proof: proposition_3 as d, line_from_points as BD,
     # proposition_16 and proposition_5' in exactly Lean's argument orders
-    # (Book/Prop18.lean:12-15), then sum_angles_onlyif (NOT the sum_angles_if
-    # that Book/Prop18.lean:16 cites — the engine must DERIVE the angle-sum
+    # (Book/Prop18.lean:13-16), then sum_angles_onlyif (NOT the sum_angles_if
+    # that Book/Prop18.lean:17 cites — the engine must DERIVE the angle-sum
     # row that sum_angles_if takes as a premise; see PROP18_ENGINE_CITABLE);
     # euclid_finish's LA closes ∠a:b:c > ∠b:c:a.
     steps = cert.engine_steps("I.18")
