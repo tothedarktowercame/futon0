@@ -1206,3 +1206,22 @@ def test_between_symm_parts_premises_exact():
     eng.close(s2)
     with pytest.raises(eng.MissingPremise):
         eng.apply_step(s2, 1, "between_symm_parts", ("a", "b", "c"), {})
+
+
+def test_base_name_capture_does_not_rename_student_points():
+    """Review (claude-9): proposition_1's fresh point has base name "d".
+    Book I.11 cites proposition_1 d e AB as f; substituting the base also
+    renamed the argument d, giving |ff| = |fe| instead of |df| = |de|."""
+    s = eng.State()
+    s.assume(("dpl", "d", "e", "AB"))
+    eng.close(s)
+    rep = eng.apply_step(s, 1, "proposition_1", ("d", "e", "AB"), {"d": "f"})
+    assert rep["added"] == [("eq_len", "d", "f", "d", "e"),
+                            ("eq_len", "f", "e", "d", "e")]
+    # and with an unbound fresh point the argument d still survives
+    s2 = eng.State()
+    s2.assume(("dpl", "d", "e", "AB"))
+    eng.close(s2)
+    added = eng.apply_step(s2, 1, "proposition_1", ("d", "e", "AB"), {})["added"]
+    assert all(f[1] == "d" or f[3] == "d" for f in added), added
+    assert eng._fm_sat(s.la.rows) and eng._fm_sat(s2.la.rows)

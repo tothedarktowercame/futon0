@@ -1709,6 +1709,23 @@ def apply_step(s, i, rule, args, bindings):
     for q in spec.get("entail", lambda s, *a: [])(s, *args):
         prem_facts.append(_entail_check(s, i, rule, q))
     made = spec["make"](s, *args)
+    # Review (claude-9): a made fact names its fresh object by the rule's
+    # base name ("d" in proposition_1). If an ARGUMENT has that same name
+    # (Book I.11: proposition_1 d e AB as f), substituting the base would
+    # also rename the student's own point: |df| = |de| became |ff| = |fe|.
+    # Re-make with collision-free placeholders, substitute, then restore.
+    bases = {b for b, _ in made if b is not None}
+    restore = {}
+    if bases & {a for a in args if isinstance(a, str)}:
+        ph = []
+        for k, a in enumerate(args):
+            if isinstance(a, str) and a in bases:
+                tok = f"\x00arg{k}"
+                restore[tok] = a
+                ph.append(tok)
+            else:
+                ph.append(a)
+        made = spec["make"](s, *ph)
     added = []
     for base, facts in made:
         name = bindings.get(base) if base is not None else None
@@ -1717,6 +1734,8 @@ def apply_step(s, i, rule, args, bindings):
         for fact in facts:
             fact = tuple((name if x == base else x) if base is not None
                          else x for x in fact)
+            fact = tuple(restore.get(x, x) if isinstance(x, str) else x
+                         for x in fact)
             if fact[0] == "_eq_len":
                 eq_len(s.la, *fact[1:])
                 s.add(("eq_len", *fact[1:]),
