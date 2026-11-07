@@ -607,3 +607,22 @@ def test_plain_empty_case_block():
     t = res["moves"][0]["error_plain"]
     _assert_student_text(t)
     assert "at least one case" in t
+
+
+def test_metric_and_either_refusals_in_plain_words():
+    """claude-9 review of 17adff0: a metric MissingPremise arrives as
+    ("entail", kind, (args)), and either-facts nest; both came out as
+    Python reprs."""
+    cases = [
+        (("entail", "gt_sum_len", ("a", "b", "b", "c", "a", "c")),
+         "|ab| + |bc| > |ac|"),
+        (("entail", "eq_len", ("a", "b", "c", "d")), "|ab| = |cd|"),
+        (["either", [["on_line", "f", "AB"]],
+          [["same_side", "f", "x", "AB"]]],
+         "either f is on line AB, or f and x are on the same side of AB"),
+    ]
+    for err, words in cases:
+        text = ep.student_error(err)
+        assert words in text, text
+        for bad in ("('", "[(", "[[", "None", "entail"):
+            assert bad not in text, text

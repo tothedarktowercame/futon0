@@ -308,7 +308,31 @@ _FACT_WORDS = {
     "_eq_ang": "∠{1}{2}{3} = ∠{4}{5}{6}",
     "gt_ang": "∠{1}{2}{3} > ∠{4}{5}{6}",
     "_rt_ang": "∠{1}{2}{3} is right",
+    "rt_ang": "∠{1}{2}{3} is right",
+    "right_ang": "∠{1}{2}{3} is right",
+    "flat_ang": "∠{1}{2}{3} is a straight angle",
+    "zero_ang": "∠{1}{2}{3} is zero",
+    "pos_len": "|{1}{2}| > 0",
+    "_lt_len": "|{1}{2}| < |{3}{4}|",
+    "_gt_len": "|{1}{2}| > |{3}{4}|",
+    "_gt_ang": "∠{1}{2}{3} > ∠{4}{5}{6}",
+    "gt_sum_len": "|{1}{2}| + |{3}{4}| > |{5}{6}|",
+    "lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
+    "sum_rt_ang": "∠{1}{2}{3} and ∠{4}{5}{6} together make two right angles",
+    "lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
 }
+
+
+def _flat_args(xs):
+    """Fact arguments with nested tuples/lists spread out (the engine's
+    entail premises carry their arguments as one tuple)."""
+    out = []
+    for x in xs:
+        if isinstance(x, (list, tuple)):
+            out.extend(_flat_args(x))
+        else:
+            out.append(x)
+    return out
 
 
 def fact_words(f):
@@ -319,10 +343,24 @@ def fact_words(f):
     if kind == "fresh":
         return ("%s already exists; choose a new name, or show that the "
                 "new point is %s" % (f[1], f[1]))
+    if kind == "entail" and len(f) >= 2:
+        # MissingPremise for a metric fact: ("entail", kind, (args...)).
+        return fact_words([f[1]] + _flat_args(f[2:]))
+    if kind == "either" and len(f) == 3:
+        def side(d):
+            if d and isinstance(d[0], (list, tuple)):
+                return " and ".join(fact_words(x) for x in d)
+            return fact_words(d)
+        return "either %s, or %s" % (side(f[1]), side(f[2]))
     tmpl = _FACT_WORDS.get(kind)
-    if tmpl is None:
-        return " ".join(str(x) for x in f)
-    return tmpl.format(*([""] + [str(x) for x in f[1:]]))
+    args = [str(x) for x in _flat_args(f[1:])]
+    if tmpl is not None:
+        try:
+            return tmpl.format(*([""] + args))
+        except IndexError:
+            pass
+    # Unknown kind or shape: plain words, never a Python repr.
+    return " ".join([str(kind).strip("_").replace("_", " ")] + args)
 
 
 def student_error(err, rule=None):
