@@ -1941,6 +1941,8 @@ def _entail_check(s, i, rule, q):
         ok = la_entails_lt(s.la, *a)
     elif kind == "gt_len":
         ok = la_entails_gt(s.la, *a)
+    elif kind == "gt_ang":
+        ok = la_entails_gt_ang(s.la, *a)
     elif kind == "pos_len":
         ok = s.la.entails({len_atom(*a): 1}, 0, ">")
     elif kind == "rt_ang":
@@ -2250,6 +2252,9 @@ def _assume_metric_or_fact(s, fact, why):
                      (len_atom(fact[3], fact[4]), -1)), 0, ">")
     elif fact[0] == "eq_ang":
         eq_ang(s.la, *fact[1:])
+    elif fact[0] == "gt_ang":
+        s.la.add(lin((ang_atom(fact[1], fact[2], fact[3]), 1),
+                     (ang_atom(fact[4], fact[5], fact[6]), -1)), 0, ">")
     elif fact[0] == "_sum_rt_ang":
         # ∠(u:v:x) + ∠(x:v:w) = 2∟ as a hypothesis/assumption (Book I.14
         # states its angle-sum hypothesis in this shape).
@@ -2424,6 +2429,8 @@ def replay(hyps, steps, verify, exclude_rules=None):
             assert la_entails_eq(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_eq_ang":
             assert la_entails_eq_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
+        elif q[0] == "_gt_len":
+            assert la_entails_gt(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_gt_ang":
             assert la_entails_gt_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_lt_sum_rt_ang":
@@ -3450,6 +3457,58 @@ PROP18_STEPS_DATA = [
 PROP18_GOAL = [("_gt_ang", "a", "b", "c", "b", "c", "a")]
 
 
+# ---------------------------------------------------------------------------
+# I.19 (the greater angle is subtended by the greater side) — the converse
+# of I.18, proved by contradiction FROM the cited proposition_18 lemma
+# ---------------------------------------------------------------------------
+# proposition_19 : formTriangle a b c AB BC AC ∧ (∠a:b:c > ∠b:c:a) →
+# |a─c| > |a─b|. formTriangle destructured exactly as PROP18_HYPS_DATA;
+# the angle comparison is a gt_ang metric hypothesis (the same plain
+# tuple form as PROP18's gt_len hypothesis; _assume_metric_or_fact adds
+# the strict angle row).
+PROP19_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),     # distinctPointsOnLine a b AB
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"),   # formTriangle non-degeneracy
+    (("neq", "a", "c"), "h"),   # formTriangle non-degeneracy
+    (("not_on_line", "c", "AB"), "h"),  # formTriangle: c not on AB
+    (("gt_ang", "a", "b", "c", "b", "c", "a"), "h"),  # ∠a:b:c > ∠b:c:a
+]
+# Lean's shape (Book/Prop19.lean:10-15): by_contra on the goal, then
+# by_cases on |a─c| = |a─b|. Branch 1's assumption is the equality;
+# branch 2's is Lean's other case (¬(>) ∧ ¬(=)) rendered as
+# |a─b| > |a─c|. The two branches split ¬(|a─c| > |a─b|) exactly, and
+# their exhaustiveness is trichotomy on the two lengths — the caller's
+# responsibility, documented here as at every by_contra use site.
+# Branch 1 (|a─c| = |a─b|): proposition_5' a b c AB BC AC gives
+#   ∠a:b:c = ∠a:c:b = ∠b:c:a (canonical atom) against the hypothesis —
+#   store unsat.
+# Branch 2 (|a─b| > |a─c|): proposition_18 a c b AC BC AB (Lean's
+#   argument order) — formTriangle a c b AC BC AB closes from the
+#   hypotheses (dpl a c AC by r_dpl; b off AC by r_two_lines_meet_once
+#   on the neq_line AC AB that the c-on-AC/c-off-AB pair derives; the
+#   on_lines and neqs by closure) and the branch assumption is exactly
+#   its length premise — gives ∠a:c:b > ∠c:b:a, i.e. ∠b:c:a > ∠a:b:c,
+#   against the hypothesis — store unsat. Both contradictions are
+#   arithmetic (euclid_finish's SMT in Lean), so no further steps are
+#   named. The by_contra conclusion is the goal itself.
+PROP19_STEPS_DATA = [
+    ("by_contra", [
+        # branch 1: |(a─c)| = |(a─b)|
+        ([("eq_len", "a", "c", "a", "b")], [
+            ("proposition_5'", ("a", "b", "c", "AB", "BC", "AC"), {}),
+        ]),
+        # branch 2: |(a─b)| > |(a─c)|
+        ([("gt_len", "a", "b", "a", "c")], [
+            ("proposition_18", ("a", "c", "b", "AC", "BC", "AB"), {}),
+        ]),
+    ], [("gt_len", "a", "c", "a", "b")]),
+]
+# The goal as an LA entailment query: |a─c| > |a─b|.
+PROP19_GOAL = [("_gt_len", "a", "c", "a", "b")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3583,6 +3642,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP18_HYPS_DATA, PROP18_STEPS_DATA,
                             PROP18_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "19":
+            t0 = time.time()
+            s, rep = replay(PROP19_HYPS_DATA, PROP19_STEPS_DATA,
+                            PROP19_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

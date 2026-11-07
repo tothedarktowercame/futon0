@@ -640,6 +640,67 @@ def test_proposition_18_citation_fires():
     assert eng.la_entails_gt_ang(s.la, "a", "b", "c", "b", "c", "a")
 
 
+# --- I.19 (Book/Prop19.lean) -----------------------------------------------
+
+
+def test_prop19_replay():
+    """I.19 replays the Lean way: by_contra on the goal, splitting
+    ¬(|a-c| > |a-b|) into |a-c| = |a-b| (proposition_5' gives
+    ∠a:b:c = ∠b:c:a against the hypothesis) and |a-b| > |a-c|
+    (proposition_18 a c b AC BC AB — the cited I.18 lemma — gives
+    ∠b:c:a > ∠a:b:c against the hypothesis). Both branches end
+    arithmetically contradictory; exhaustiveness is trichotomy, the
+    caller's responsibility as documented at PROP19_STEPS_DATA."""
+    s, rep = eng.replay(eng.PROP19_HYPS_DATA, eng.PROP19_STEPS_DATA,
+                        eng.PROP19_GOAL)
+    assert eng.la_entails_gt(s.la, "a", "c", "a", "b")
+    assert rep[-1]["final"]
+    assert rep[0]["rule"] == "by_contra" and rep[0]["branches"] == 2
+
+
+def test_prop19_hyps_alone_do_not_entail_goal():
+    """The I.19 hypotheses alone do NOT entail |a-c| > |a-b| — the
+    by_contra carries the proof (the replay is not vacuous)."""
+    s = eng.State()
+    for f, w in eng.PROP19_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_gt(s.la, "a", "c", "a", "b")
+
+
+def test_prop19_control_dropped_proposition_18():
+    """Drop branch 2's proposition_18 citation: with |a-b| > |a-c|
+    assumed and no way to turn it into the angle inequality that
+    contradicts the hypothesis, the branch cannot reach a contradiction
+    -> by_contra refused (ByContraFailure)."""
+    steps = [("by_contra", [
+        (assumps, [st for st in br_steps
+                   if st[0] != "proposition_18"])
+        for assumps, br_steps in eng.PROP19_STEPS_DATA[0][1]],
+        eng.PROP19_STEPS_DATA[0][2])]
+    with pytest.raises(eng.ByContraFailure):
+        eng.replay(eng.PROP19_HYPS_DATA, steps, eng.PROP19_GOAL)
+
+
+def test_prop19_control_dropped_angle_hypothesis():
+    """Drop the angle hypothesis ∠a:b:c > ∠b:c:a: neither branch
+    contradicts (branch 1's isosceles equality and branch 2's I.18
+    inequality are exactly consistent with each other) -> by_contra
+    refused. The replay is not vacuous in its hypothesis."""
+    hyps = [(f, w) for f, w in eng.PROP19_HYPS_DATA if f[0] != "gt_ang"]
+    with pytest.raises(eng.ByContraFailure):
+        eng.replay(hyps, eng.PROP19_STEPS_DATA, eng.PROP19_GOAL)
+
+
+def test_prop19_reverse_not_entailed():
+    """After the full I.19 replay the REVERSE |a-b| > |a-c| is not
+    entailed (the goal direction is the theorem's, not an artifact of an
+    unsat store)."""
+    s, rep = eng.replay(eng.PROP19_HYPS_DATA, eng.PROP19_STEPS_DATA,
+                        eng.PROP19_GOAL)
+    assert not eng.la_entails_gt(s.la, "a", "b", "a", "c")
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))
