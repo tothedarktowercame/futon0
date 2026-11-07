@@ -322,6 +322,14 @@ FREE = {
     # b and d and distinct from both.
     14: {"a": (0.6, 0.8), "b": (0.0, 0.0), "c": (1.5, 0.0),
          "d": (-1.8, 0.0)},
+    # I.15 (vertical angles): e is a HYPOTHESIS point here (the crossing
+    # of the two lines), placed at the origin. AB horizontal with between
+    # a e b; CD on the exact 3-4-5 direction (53.13 degrees, a non-right
+    # crossing; the coordinates are exact binary fractions) with between
+    # d e c — so the two vertical pairs (a:e:c = d:e:b, obtuse, and
+    # c:e:b = a:e:d, acute) visibly differ.
+    15: {"e": (0.0, 0.0), "a": (-1.4, 0.0), "b": (1.1, 0.0),
+         "c": (0.75, 1.0), "d": (-0.375, -0.5)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -347,6 +355,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP13_HYPS_DATA), list(eng.PROP13_STEPS_DATA)
     if prop == 14:
         return list(eng.PROP14_HYPS_DATA), list(eng.PROP14_STEPS_DATA)
+    if prop == 15:
+        return list(eng.PROP15_HYPS_DATA), list(eng.PROP15_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -437,6 +447,15 @@ def objects_from_hyps(prop):
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
                               ("BD", ("b", "d")))]
+    if prop == 15:
+        # five hypothesis points (e included: it is the given crossing of
+        # the two lines, between a and b and between d and c) and the two
+        # hypothesis lines they determine
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d", "e")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("CD", ("c", "d")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -971,6 +990,45 @@ def verify14(xy):
     ]
 
 
+def verify15(xy):
+    """I.15 (vertical angles): the drawn facts are the hypotheses — both
+    betweens (a e b on AB, d e c on CD), e on both lines, the lines
+    distinct (CD != AB, i.e. not parallel) — plus the two conclusion
+    equalities numerically (angle a:e:c = angle d:e:b and angle c:e:b =
+    angle a:e:d), and general position: the crossing is NOT right, so the
+    two vertical pairs visibly differ. A perpendicular crossing satisfies
+    the theorem geometrically but this check rejects it (both pairs would
+    be pairs of right angles and the conclusion would be invisible in the
+    diagram)."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(p, q, r):
+        """Cross product of (q-p) x (r-p): 0 iff p, q, r collinear."""
+        return ((xy[q][0] - xy[p][0]) * (xy[r][1] - xy[p][1])
+                - (xy[q][1] - xy[p][1]) * (xy[r][0] - xy[p][0]))
+
+    return [
+        ("I.15: between a e b",
+         abs(dist("a", "e") + dist("e", "b") - dist("a", "b")) < EPS),
+        ("I.15: between d e c",
+         abs(dist("d", "e") + dist("e", "c") - dist("d", "c")) < EPS),
+        ("I.15: e on line AB",
+         abs(cross("a", "b", "e")) < EPS * dist("a", "b")),
+        ("I.15: e on line CD",
+         abs(cross("c", "d", "e")) < EPS * dist("c", "d")),
+        ("I.15: CD != AB (the lines cross, not parallel)",
+         abs(cross("a", "b", "c")) > EPS * dist("a", "b")
+         * dist("b", "c")),
+        ("I.15: angle a:e:c = angle d:e:b (the conclusion, numerically)",
+         abs(_ang(xy, "a", "e", "c") - _ang(xy, "d", "e", "b")) < EPS),
+        ("I.15: angle c:e:b = angle a:e:d (the conclusion, numerically)",
+         abs(_ang(xy, "c", "e", "b") - _ang(xy, "a", "e", "d")) < EPS),
+        ("I.15: general position (crossing not right, so the two "
+         "vertical pairs visibly differ)",
+         abs(_ang(xy, "a", "e", "c") - math.pi / 2) > EPS),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -994,6 +1052,8 @@ def verify(prop, xy):
         return verify13(xy)
     if prop == 14:
         return verify14(xy)
+    if prop == 15:
+        return verify15(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1214,18 +1274,21 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12):
+        if prop in (10, 11, 12, 15):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
             # replay proves rt e h c with h on AB, which implies Lean's
-            # disjunction (h and e both on AB, e != h, a != b).
+            # disjunction (h and e both on AB, e != h, a != b). I.15's are
+            # PROP15_GOAL verbatim: both halves of the vertical-angles
+            # conjunction as LA entailment queries.
             queries = {10: [("between", "a", "d", "b"),
                             ("_eq_len", "a", "d", "d", "b")],
                        11: [("not_on_line", "f", "AB"),
                             ("_rt_ang", "u", "w", "f")],
                        12: [("_rt_ang", "e", "h", "c"),
-                            ("on_line", "h", "AB")]}[prop]
+                            ("on_line", "h", "AB")],
+                       15: list(eng.PROP15_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:
@@ -1234,7 +1297,7 @@ def build_trace(prop):
 
         name_map = PROP11_NAME_MAP if prop == 11 else {}
         lean = (lean_lines_for_named(prop, steps, name_map)
-                if prop in (10, 11, 12)
+                if prop in (10, 11, 12, 15)
                 else lean_lines_for(prop, [r for r, _, _ in steps]))
         rows = [(r, a, b, rep, loc, None)
                 for (r, a, b), rep, loc in zip(steps, reports, lean)]

@@ -669,3 +669,99 @@ def test_bad_case_prop14_a_on_the_line_fails():
     x["a"] = (0.6, 0.0)  # a on the line c-d: no triangle, no angles
     fails = [d for d, ok in tr.verify14(x) if not ok]
     assert any("a off the line c-d" in d for d in fails), fails
+
+
+# -- I.15 (kimi-2, packet P-euclid-viewer-I15) --------------------------------
+# I.15 (vertical angles) is FLAT: six steps, no case splits. Steps 1-3
+# (between_symm_parts) are engine-only (they rebuild the dpl premises that
+# proposition_13 matches on; Lean's SMT produces the neqs silently); steps
+# 4-6 are Lean's three euclid_apply proposition_13 lines, in order. The
+# crossing is drawn at a non-right angle so the two vertical pairs
+# visibly differ.
+
+TR15 = load(15)
+
+
+def test_prop15_rebuild_matches_disk():
+    rebuilt = tr.build_trace(15)
+    assert rebuilt["placement"] == TR15["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR15["steps"]
+
+
+def test_prop15_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR15["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = {s["lean"]["line"] for s in TR15["steps"]
+              if s["lean"]["line"]}
+    for s in TR15["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            assert "engine-only" in s["lean_note"], s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    # every euclid_apply line of Prop15.lean is linked, and nothing else
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies == linked, (applies, linked)
+    # the engine-only steps are exactly the three between_symm_parts
+    engine_only = [s["rule"] for s in TR15["steps"]
+                   if s["lean"]["line"] is None]
+    assert engine_only == ["between_symm_parts"] * 3
+
+
+def test_prop15_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR15["placement"].items() if v}
+    # the steps add neq / not_between / sum_rt_ang facts (none of the
+    # kinds metric_facts_hold covers); check the sum_rt_ang facts
+    # numerically: sum_rt_ang p e q r is angle p:e:q + angle q:e:r = pi
+    sums = [f for s in TR15["steps"] for f in s["facts_added"]
+            if f[0] == "sum_rt_ang"]
+    assert len(sums) == 3  # the three proposition_13 citations
+    for f in sums:
+        _, p, e, q, r = f
+        total = tr._ang(xy, p, e, q) + tr._ang(xy, q, e, r)
+        assert abs(total - math.pi) < 1e-9, (f, total)
+    # and the neq / not_between facts hold of the placement
+    for s in TR15["steps"]:
+        for f in s["facts_added"]:
+            if f[0] == "neq":
+                assert tr._norm(tr._sub(xy[f[1]], xy[f[2]])) > 1e-9, f
+    assert all(ok for _, ok in tr.verify15(xy))
+
+
+def _xy15():
+    return {k: tuple(v) for k, v in TR15["placement"].items() if v}
+
+
+def test_bad_case_prop15_e_not_between_a_b_fails():
+    x = _xy15()
+    assert all(ok for _, ok in tr.verify15(x))
+    x["e"] = (2.0, 0.0)  # e on AB but past b: no longer between a and b
+    fails = [d for d, ok in tr.verify15(x) if not ok]
+    assert any("between a e b" in d for d in fails), fails
+
+
+def test_bad_case_prop15_e_not_between_d_c_fails():
+    x = _xy15()
+    x["d"] = (0.375, 0.5)  # d on c's side of e: e not between d and c
+    fails = [d for d, ok in tr.verify15(x) if not ok]
+    assert any("between d e c" in d for d in fails), fails
+
+
+def test_bad_case_prop15_lines_parallel_fails():
+    x = _xy15()
+    # CD through e and "parallel" to AB means coincident with AB
+    x["c"], x["d"] = (0.75, 0.0), (-0.375, 0.0)
+    fails = [d for d, ok in tr.verify15(x) if not ok]
+    assert any("CD != AB" in d for d in fails), fails
+
+
+def test_bad_case_prop15_perpendicular_crossing_rejected():
+    # perpendicular crossing is geometrically FINE for the theorem (both
+    # vertical pairs are pairs of right angles, hence equal); verify15
+    # rejects it anyway, deliberately: the check pins the drawn general
+    # case, where the two pairs visibly differ
+    x = _xy15()
+    x["c"], x["d"] = (0.0, 1.0), (0.0, -0.5)
+    fails = [d for d, ok in tr.verify15(x) if not ok]
+    assert [d for d, ok in tr.verify15(x) if ok], fails
+    assert len(fails) == 1 and "not right" in fails[0], fails

@@ -1,0 +1,432 @@
+{
+ "prop": 15,
+ "title": "Elements I.15 (LeanEuclid Book/Prop15.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "CD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "d"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "between_symm_parts",
+   "args": [
+    "a",
+    "e",
+    "b"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "a",
+     "e"
+    ],
+    [
+     "neq",
+     "a",
+     "b"
+    ],
+    [
+     "not_between",
+     "e",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "a",
+     "e",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop15.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 2,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "e",
+    "c"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "e"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "not_between",
+     "e",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "e",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop15.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 3,
+   "rule": "between_symm_parts",
+   "args": [
+    "c",
+    "e",
+    "d"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "c",
+     "e"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_between",
+     "e",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "e",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop15.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_13",
+   "args": [
+    "a",
+    "e",
+    "c",
+    "d",
+    "AB",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "c",
+     "e",
+     "a",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "AB",
+     "CD"
+    ],
+    [
+     "dpl",
+     "a",
+     "e",
+     "AB"
+    ],
+    [
+     "dpl",
+     "c",
+     "d",
+     "CD"
+    ],
+    [
+     "between",
+     "d",
+     "e",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop15.lean",
+    "line": 12
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_13 only adds facts to the engine state"
+  },
+  {
+   "n": 5,
+   "rule": "proposition_13",
+   "args": [
+    "d",
+    "e",
+    "a",
+    "b",
+    "CD",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "a",
+     "e",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "CD",
+     "AB"
+    ],
+    [
+     "dpl",
+     "d",
+     "e",
+     "CD"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "between",
+     "b",
+     "e",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop15.lean",
+    "line": 13
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_13 only adds facts to the engine state"
+  },
+  {
+   "n": 6,
+   "rule": "proposition_13",
+   "args": [
+    "c",
+    "e",
+    "a",
+    "b",
+    "CD",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "a",
+     "e",
+     "c",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "CD",
+     "AB"
+    ],
+    [
+     "dpl",
+     "c",
+     "e",
+     "CD"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "between",
+     "b",
+     "e",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop15.lean",
+    "line": 14
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_13 only adds facts to the engine state"
+  }
+ ],
+ "placement": {
+  "e": [
+   0.0,
+   0.0
+  ],
+  "a": [
+   -1.4,
+   0.0
+  ],
+  "b": [
+   1.1,
+   0.0
+  ],
+  "c": [
+   0.75,
+   1.0
+  ],
+  "d": [
+   -0.375,
+   -0.5
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.15: between a e b",
+   "ok": true
+  },
+  {
+   "check": "I.15: between d e c",
+   "ok": true
+  },
+  {
+   "check": "I.15: e on line AB",
+   "ok": true
+  },
+  {
+   "check": "I.15: e on line CD",
+   "ok": true
+  },
+  {
+   "check": "I.15: CD != AB (the lines cross, not parallel)",
+   "ok": true
+  },
+  {
+   "check": "I.15: angle a:e:c = angle d:e:b (the conclusion, numerically)",
+   "ok": true
+  },
+  {
+   "check": "I.15: angle c:e:b = angle a:e:d (the conclusion, numerically)",
+   "ok": true
+  },
+  {
+   "check": "I.15: general position (crossing not right, so the two vertical pairs visibly differ)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop15.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop13",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_15 : \u2200 (a b c d e : Point) (AB CD : Line),",
+  "  distinctPointsOnLine a b AB \u2227 distinctPointsOnLine c d CD \u2227 e.onLine AB \u2227 e.onLine CD \u2227",
+  "  CD \u2260 AB \u2227 (between d e c) \u2227 (between a e b) \u2192",
+  "  (\u2220 a:e:c = \u2220 d:e:b) \u2227 (\u2220 c:e:b = \u2220 a:e:d) :=",
+  "by",
+  "   euclid_intros",
+  "   euclid_apply (proposition_13 a e c d AB CD)",
+  "   euclid_apply (proposition_13 d e a b CD AB)",
+  "   euclid_apply (proposition_13 c e a b CD AB)",
+  "   euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}
