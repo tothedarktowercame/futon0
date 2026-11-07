@@ -2778,6 +2778,12 @@ def _conclude(s, c, why, witnesses):
     if c[0] == "_eq_len":
         eq_len(s.la, *c[1:])
         s.add(("eq_len", *c[1:]), why, witnesses)
+    elif c[0] == "_gt_len":
+        # |x─y| > |u─v| carried out of a by_cases (Book I.24a's one-branch
+        # split on d.sameSide g EF): the strict LA row plus the fact form.
+        x, y, u, v = c[1:5]
+        s.la.add(lin((len_atom(x, y), 1), (len_atom(u, v), -1)), 0, ">")
+        s.add(("gt_len", *c[1:5]), why, witnesses)
     elif c[0] == "_eq_ang":
         eq_ang(s.la, *c[1:])
         s.add(("eq_ang", *c[1:]), why, witnesses)
@@ -4586,6 +4592,227 @@ PROP23P_STEPS_DATA = [
 PROP23P_GOAL = PROP23P_CONCL_DATA
 
 
+# ---------------------------------------------------------------------------
+# Book I.24a (Prop24.lean:12-39) — the hinge theorem, FIRST HALF ONLY:
+# the common construction (lines 18-34) and the one case Euclid treats
+# (the d.sameSide g EF branch of line 35's by_cases, lines 36-39). The
+# second bullet (lines 40-59, "Omitted by Euclid") is the NEXT packet:
+# this replay's closing by_cases has ONE branch, so as a proof of I.24 it
+# is INCOMPLETE — it establishes the goal only under the branch
+# hypothesis d.sameSide g EF. The name PROP24A (and the test names) say
+# so; do not read it as the whole proof.
+#
+# proposition_24 : formTriangle a b c AB BC AC ∧ formTriangle d e f DE EF
+# DF ∧ |a─b| = |d─e| ∧ |a─c| = |d─f| ∧ (∠b:a:c > ∠e:d:f) → |b─c| > |e─f|.
+# The two formTriangles destructure exactly as at PROP18/PROP19 (dpl +
+# the four on_lines + the two non-degeneracy neqs + the off-line fact),
+# once per triangle; the two length equalities and the angle comparison
+# are metric hypotheses (the plain tuple forms _assume_metric_or_fact
+# installs rows for).
+PROP24A_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),     # formTriangle a b c AB BC AC
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"), (("neq", "a", "c"), "h"),
+    (("not_on_line", "c", "AB"), "h"),
+    (("dpl", "d", "e", "DE"), "h"),     # formTriangle d e f DE EF DF
+    (("on_line", "e", "EF"), "h"), (("on_line", "f", "EF"), "h"),
+    (("on_line", "f", "DF"), "h"), (("on_line", "d", "DF"), "h"),
+    (("neq", "e", "f"), "h"), (("neq", "d", "f"), "h"),
+    (("not_on_line", "f", "DE"), "h"),
+    (("eq_len", "a", "b", "d", "e"), "h"),   # |a─b| = |d─e|
+    (("eq_len", "a", "c", "d", "f"), "h"),   # |a─c| = |d─f|
+    (("gt_ang", "b", "a", "c", "e", "d", "f"), "h"),  # ∠b:a:c > ∠e:d:f
+]
+# Lean's shape (Prop24.lean:18-39), step by step:
+#   18. proposition_23' d e a b c f DE AB AC as g'  (Book/Prop23.lean:35,
+#       cited): g' ≠ d, ∠g':d:e = ∠b:a:c, and the DISJUNCTION
+#       g'.onLine DE ∨ g'.sameSide f DE (the "either" fact kind).
+#   -- The disjunction is RESOLVED BY ELIMINATING ITS LEFT HALF: g' on DE
+#      would put the ray d→g' along DE, so ∠g':d:e ∈ {0, 2∟}; but
+#      ∠g':d:e = ∠b:a:c is a proper triangle angle, 0 < ∠b:a:c < 2∟.
+#      Rendered as a by_contra whose single branch assumes on_line g' DE
+#      and whose inner by_contra splits on between g' d e (classical
+#      P ∨ ¬P): flat_angle_onlyif (Transfer.lean:124) gives
+#      ∠g':d:e = 2∟ against proposition_17 c a b AC AB BC
+#      (∠c:a:b + ∠a:b:c < 2∟, with angle_pos on ∠a:b:c);
+#      degenerated_angle_if (Transfer.lean:63) gives ∠g':d:e = 0 against
+#      angle_pos on ∠b:a:c. The conclusion same_side g' f DE is the
+#      disjunction's surviving right half (exhaustiveness: the stored
+#      "either" plus the eliminated left — the caller's classical
+#      responsibility, as at every by_contra use site).
+#   19. line_from_points d g' as DG.
+#   20. extend_point_longer DG d g' (a─c) as g''  (Points.lean:43):
+#       between d g' g'', |g'─g''| > |a─c|.
+#   21. proposition_3 d g'' a c DG AC as g  (Book/Prop03.lean:5, cited):
+#       between d g g'', |d─g| = |a─c|; its gt_len premise |d─g''| > |a─c|
+#       is |d─g'| + |g'─g''| > |g'─g''| > |a─c| (between_if + the
+#       extension, closure).
+#   22-23. line_from_points e g as EG, f g as FG. The neq premises are
+#       SMT in Lean: e ≠ g closes from e off DG (two_lines_meet_once at d
+#       over DG ≠ DE, g' off DE from step 18's resolution); f ≠ g is the
+#       by_contra below — peq f g would identify ∠e:d:f with ∠e:d:g
+#       (peq_subst), against ∠e:d:g = ∠b:a:c > ∠e:d:f (angle_ray_eq on
+#       between d g g'' / d g' g'' plus step 18's equality, all closure).
+#   24. proposition_4 a b c d e g AB BC AC DE EG DG  (cited): the SAS
+#       angle premise ∠b:a:c = ∠e:d:g is exactly the ray-equality chain
+#       above; makes |b─c| = |e─g| (the goal's hinge) and the two angle
+#       equalities.
+#   25. proposition_5' d g f DG FG DF  (cited): |d─g| = |a─c| = |d─f|,
+#       so the base angles agree: ∠d:g:f = ∠d:f:g.
+#   28. euclid_assert ∠e:d:g > ∠e:d:f — rendered as a by_contra (angle
+#       trichotomy on the two angles, caller-documented): it needs only
+#       the angle hypothesis and the ray-equality chain ∠e:d:g =
+#       ∠e:d:g' = ∠b:a:c (BEFORE proposition_4's conclusion; Lean's SMT
+#       and the engine's LA see the same rows).
+#   29. euclid_assert g.sameSide f DE — diagrammatic, CLOSURE ONLY (no
+#       cited step): pasch_2 (Diagrammatic.lean:153) on between d g g''
+#       and between d g' g'' (d on DE; g, g' off DE — g' from step 18's
+#       same_side, g from two_lines_meet_once over DG ≠ DE) puts g and
+#       g' on g''s side of DE, and same_side_trans/symm
+#       (Diagrammatic.lean:112,127) chain g ~ g'' ~ g' ~ f. The by_contra
+#       below only exposes the already-closed fact (its branch assumes
+#       opposing_sides g f DE, contradicting the closure-derived
+#       same_side; exhaustiveness: g, f both off DE).
+#   -- g off DF (needed by hgf's sum_angles_onlyif premise and by the
+#      opposing_sides rendering of hgf's conclusion): by_contra on
+#      on_line g DF, splitting g's position on DF relative to d and f
+#      (g ≠ d since |d─g| = |a─c| > 0; trichotomy plus peq g f,
+#      caller-documented): between g d f gives opposing_sides g f DE
+#      (pasch_3_opposing) against step 29; between d g f / between d f g
+#      identify the rays d→g and d→f (angle_ray_eq), peq g f identifies
+#      the points (peq_subst) — each forces ∠e:d:g = ∠e:d:f against
+#      step 28.
+#   30-33. have hgf : ¬(g.sameSide e DF) — by_contra citing
+#       sum_angles_onlyif d e f g DE DF (Transfer.lean:90): the branch
+#       assumption (symmetrized) and step 29 (symmetrized) are its side
+#       premises, so ∠e:d:f = ∠e:d:g + ∠g:d:f; with ∠e:d:g = ∠b:a:c >
+#       ∠e:d:f the arithmetic forces ∠g:d:f < 0, against angle_pos
+#       (g off DF — the step above). The conclusion is rendered as the
+#       POSITIVE fact opposing_sides e g DF (Relations.lean:13-14: the
+#       off-line parts hold — e off DF from the second triangle, g off DF
+#       from the step above — and the branch eliminates the sameSide),
+#       the same rendering pasch_4 and triple_incidence_2 use, since the
+#       engine has no negated sameSide fact kind.
+#   34. euclid_assert f.sameSide e DG — diagrammatic: triple_incidence_2
+#       (Diagrammatic.lean:201) over (DE, DF, DG) meeting at d with
+#       b := e, c := f, d := g: f sameSide g DE (step 29) and
+#       opposing_sides e g DF (hgf) give e sameSide f DG; symm is
+#       closure.
+#   35-39. by_cases (d.sameSide g EF) — FIRST BRANCH ONLY (see the header):
+#       36-37. the two angle asserts: triple_incidence_2 over (EF, DF, FG)
+#              meeting at f with b := e, c := d, d := g turns the branch
+#              hypothesis (d sameSide g EF) and hgf (opposing_sides e g
+#              DF) into e sameSide d FG; then sum_angles_onlyif f e g d
+#              EF FG gives ∠e:f:g = ∠e:f:d + ∠d:f:g and
+#              sum_angles_onlyif g d f e DG FG gives
+#              ∠d:g:f = ∠d:g:e + ∠e:g:f. With angle_pos on the two
+#              split-off parts and step 25's ∠d:g:f = ∠d:f:g, the
+#              arithmetic entails both asserts (∠d:f:g > ∠e:g:f and
+#              ∠e:f:g > ∠e:g:f) — each rendered as a by_contra on the
+#              angle trichotomy, as at step 28.
+#       38. proposition_19 e f g EF FG EG (cited): ∠e:f:g > ∠e:g:f is
+#           step 37's row; makes |e─g| > |e─f|.
+#       39. euclid_finish: |b─c| = |e─g| (step 24) > |e─f| — the goal,
+#           carried out of the branch as a _gt_len conclusion (_conclude
+#           gained that case for this replay).
+PROP24A_STEPS_DATA = [
+    # Prop24.lean:18
+    ("proposition_23'", ("d", "e", "a", "b", "c", "f", "DE", "AB", "AC"),
+     {"f": "g'"}),
+    # resolve the disjunction: eliminate on_line g' DE (see the header)
+    ("by_contra", [
+        ([("on_line", "g'", "DE")], [
+            ("by_contra", [
+                ([("between", "g'", "d", "e")], [
+                    ("flat_angle_onlyif", ("g'", "d", "e"), {}),
+                    ("proposition_17", ("c", "a", "b", "AC", "AB", "BC"),
+                     {}),
+                ]),
+                ([("not_between", "g'", "d", "e")], [
+                    ("degenerated_angle_if", ("d", "g'", "e", "DE"), {}),
+                ]),
+            ], [("false",)]),
+        ]),
+    ], [("same_side", "g'", "f", "DE")]),
+    # Prop24.lean:19-20
+    ("line_from_points", ("d", "g'"), {"L": "DG"}),
+    ("extend_point_longer", ("DG", "d", "g'", "a", "c"), {"x": "g''"}),
+    # neq d g'' (dpl d g'' DG for the cut; closure does not derive neqs
+    # from between — the I.13/14 pattern)
+    ("between_symm_parts", ("d", "g'", "g''"), {}),
+    # Prop24.lean:21-22
+    ("proposition_3", ("d", "g''", "a", "c", "DG", "AC"), {"q": "g"}),
+    ("between_symm_parts", ("d", "g", "g''"), {}),   # neq d g (dpl d g DG)
+    ("line_from_points", ("e", "g"), {"L": "EG"}),
+    # f ≠ g (line_from_points f g's premise): peq f g identifies
+    # ∠e:d:f with ∠e:d:g (peq_subst closure) against the angle hypothesis
+    ("by_contra", [
+        ([("peq", "f", "g")], []),
+    ], [("neq", "f", "g")]),
+    ("line_from_points", ("f", "g"), {"L": "FG"}),
+    # Prop24.lean:24-25
+    ("proposition_4", ("a", "b", "c", "d", "e", "g",
+                       "AB", "BC", "AC", "DE", "EG", "DG"), {}),
+    ("proposition_5'", ("d", "g", "f", "DG", "FG", "DF"), {}),
+    # Prop24.lean:28 — euclid_assert ∠e:d:g > ∠e:d:f (angle trichotomy)
+    ("by_contra", [
+        ([("eq_ang", "e", "d", "g", "e", "d", "f")], []),
+        ([("gt_ang", "e", "d", "f", "e", "d", "g")], []),
+    ], [("gt_ang", "e", "d", "g", "e", "d", "f")]),
+    # Prop24.lean:29 — euclid_assert g.sameSide f DE (closure-derived;
+    # exposed by contradicting its opposing_sides rendering)
+    ("by_contra", [
+        ([("opposing_sides", "g", "f", "DE")], []),
+    ], [("same_side", "g", "f", "DE")]),
+    # g off DF (hgf's premise support; trichotomy on DF — see the header)
+    ("by_contra", [
+        ([("on_line", "g", "DF"), ("between", "g", "d", "f")], [
+            ("pasch_3_opposing", ("g", "d", "f", "DE"), {}),
+        ]),
+        ([("on_line", "g", "DF"), ("between", "d", "g", "f")], []),
+        ([("on_line", "g", "DF"), ("between", "d", "f", "g")], []),
+        ([("on_line", "g", "DF"), ("peq", "g", "f")], []),
+    ], [("not_on_line", "g", "DF")]),
+    # Prop24.lean:30-33 — hgf: ¬(g.sameSide e DF), rendered opposing_sides
+    ("by_contra", [
+        ([("same_side", "g", "e", "DF")], [
+            ("sum_angles_onlyif", ("d", "e", "f", "g", "DE", "DF"), {}),
+        ]),
+    ], [("opposing_sides", "e", "g", "DF")]),
+    # Prop24.lean:34 — euclid_assert f.sameSide e DG
+    ("triple_incidence_2", ("DE", "DF", "DG", "d", "e", "f", "g"), {}),
+    # Prop24.lean:35-39 — the d.sameSide g EF branch ONLY (the second
+    # bullet, lines 40-59, is the next packet; this by_cases is
+    # deliberately one-branched and proves I.24 only in Euclid's case)
+    ("by_cases", [
+        ([("same_side", "d", "g", "EF")], [
+            # e sameSide d FG (for the vertex-g angle split)
+            ("triple_incidence_2", ("EF", "DF", "FG", "f", "e", "d", "g"),
+             {}),
+            # ∠e:f:g = ∠e:f:d + ∠d:f:g and ∠d:g:f = ∠d:g:e + ∠e:g:f
+            ("sum_angles_onlyif", ("f", "e", "g", "d", "EF", "FG"), {}),
+            ("sum_angles_onlyif", ("g", "d", "f", "e", "DG", "FG"), {}),
+            # Prop24.lean:36 — euclid_assert ∠d:f:g > ∠e:g:f
+            ("by_contra", [
+                ([("eq_ang", "d", "f", "g", "e", "g", "f")], []),
+                ([("gt_ang", "e", "g", "f", "d", "f", "g")], []),
+            ], [("gt_ang", "d", "f", "g", "e", "g", "f")]),
+            # Prop24.lean:37 — euclid_assert ∠e:f:g > ∠e:g:f
+            ("by_contra", [
+                ([("eq_ang", "e", "f", "g", "e", "g", "f")], []),
+                ([("gt_ang", "e", "g", "f", "e", "f", "g")], []),
+            ], [("gt_ang", "e", "f", "g", "e", "g", "f")]),
+            # Prop24.lean:38
+            ("proposition_19", ("e", "f", "g", "EF", "FG", "EG"), {}),
+        ]),
+    ], [("_gt_len", "b", "c", "e", "f")]),
+]
+# The goal: |b─c| > |e─f| — under the branch hypothesis only (see the
+# header); as an LA entailment query, as at I.18/I.19.
+PROP24A_GOAL = [("_gt_len", "b", "c", "e", "f")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -4759,6 +4986,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP23P_HYPS_DATA, PROP23P_STEPS_DATA,
                             PROP23P_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "24a":
+            t0 = time.time()
+            s, rep = replay(PROP24A_HYPS_DATA, PROP24A_STEPS_DATA,
+                            PROP24A_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
