@@ -3432,6 +3432,56 @@ PROP17_STEPS_DATA = [
 PROP17_GOAL = [("_lt_sum_rt_ang", "a", "b", "c", "b", "c", "a")]
 
 
+# ---------------------------------------------------------------------------
+# I.18 (the greater side subtends the greater angle) — the theorem that the
+# side_gt_angle_gt closure rule short-circuits
+# ---------------------------------------------------------------------------
+# proposition_18 : formTriangle a b c AB BC AC ∧ (|a─c| > |a─b|) →
+# ∠a:b:c > ∠b:c:a. formTriangle destructured exactly as at PROP16/17
+# (dpl a b AB + the four on_lines + the two non-degeneracy neqs + c off
+# AB); the length comparison is a gt_len metric hypothesis.
+PROP18_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),      # distinctPointsOnLine a b AB
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"),   # formTriangle non-degeneracy
+    (("neq", "a", "c"), "h"),   # formTriangle non-degeneracy
+    (("not_on_line", "c", "AB"), "h"),   # formTriangle: c not on AB
+    (("gt_len", "a", "c", "a", "b"), "h"),   # |a─c| > |a─b|
+]
+# Lean's shape (Book/Prop18.lean:10-16):
+#   proposition_3 a c a b AC AB as d  : d on AC, between a d c, |a-d|=|a-b|
+#   line_from_points b d as BD
+#   proposition_16 b c d a BC AC BD   : triangle b c d with between c d a;
+#       exterior angle ∠b:d:a > ∠d:c:b and ∠b:d:a > ∠c:b:d
+#   proposition_5' a b d AB BD AC     : ∠a:b:d = ∠a:d:b (|a-b| = |a-d|)
+#   euclid_finish: ∠a:b:c = ∠a:b:d + ∠d:b:c > ∠a:b:d (angle_pos on
+#       ∠d:b:c) = ∠a:d:b = ∠b:d:a (canonical atom) > ∠d:c:b = ∠a:c:b
+#       (angle_ray_eq, d between a and c) = ∠b:c:a canonically.
+# Engine-only step: sum_angles_onlyif b a c d AB BC — NOT Lean's cited
+# sum_angles_if b a c d AB BC (Transfer.lean:83). sum_angles_if converts
+# a KNOWN angle-sum equality into same-side facts; here both halves of
+# its conclusion (same_side a d BC, same_side c d AB) already follow by
+# closure from between a d c via Pasch_2, and it makes no metric row, so
+# it cannot feed euclid_finish's arithmetic. In Lean, euclid_apply
+# discharges sum_angles_if's metric premise (∠b:a:c = ∠b:a:d + ∠d:a:c,
+# i.e. ∠a:b:c = ∠a:b:d + ∠d:b:c) by its SMT angle normalization; the
+# engine must instead DERIVE that row, which is exactly sum_angles_onlyif
+# (Transfer.lean:90) run on the same arguments: same-side premises -> the
+# sum row. Its side premises (same_side a d BC, same_side c d AB,
+# not_on_line d AB/BC, neq_line AB BC) all close from between a d c, as
+# at PROP6's by_contra branch steps (E-kimi-task-388).
+PROP18_STEPS_DATA = [
+    ("proposition_3", ("a", "c", "a", "b", "AC", "AB"), {"q": "d"}),
+    ("line_from_points", ("b", "d"), {"L": "BD"}),
+    ("proposition_16", ("b", "c", "d", "a", "BC", "AC", "BD"), {}),
+    ("proposition_5'", ("a", "b", "d", "AB", "BD", "AC"), {}),
+    ("sum_angles_onlyif", ("b", "a", "c", "d", "AB", "BC"), {}),
+]
+# The goal as an LA entailment query: ∠a:b:c > ∠b:c:a.
+PROP18_GOAL = [("_gt_ang", "a", "b", "c", "b", "c", "a")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3563,6 +3613,14 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP17_HYPS_DATA, PROP17_STEPS_DATA,
                             PROP17_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "18":
+            t0 = time.time()
+            s, rep = replay(PROP18_HYPS_DATA, PROP18_STEPS_DATA,
+                            PROP18_GOAL,
+                            # I.18 the Lean way: its own closure rule off
+                            exclude_rules={
+                                "side_gt_angle_gt [SMT-bridge, Euclid I.18]"})
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
