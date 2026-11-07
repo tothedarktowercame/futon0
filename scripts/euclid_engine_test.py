@@ -3652,3 +3652,34 @@ def test_prop25_final_state_not_contradictory():
                       eng.PROP25_GOAL)
     contra, witness = eng.contradictory(s)
     assert not contra, witness
+
+
+def test_proposition_25_citation_fires():
+    """The cited lemma (Prop25.lean:7-11) applies on the I.25 hypotheses
+    and makes exactly the _gt_ang conclusion PROP25_STEPS_DATA proves."""
+    s = eng.State()
+    for f, w in eng.PROP25_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_25",
+                   ("a", "b", "c", "d", "e", "f",
+                    "AB", "BC", "AC", "DE", "EF", "DF"), {})
+    assert eng.la_entails_gt_ang(s.la, "b", "a", "c", "e", "d", "f")
+
+
+def test_proposition_25_citation_refused_wrong_way():
+    """Cited with the length hypothesis REVERSED (|e-f| > |b-c| instead
+    of |b-c| > |e-f|) proposition_25 is refused: the gt_len entailment
+    premise fails (and the conclusion would be false — the hinge opens
+    the other way, that is I.24's configuration)."""
+    s = eng.State()
+    for f, w in eng.PROP25_HYPS_DATA:
+        if f[0] == "gt_len":
+            f = ("gt_len", "e", "f", "b", "c")  # reversed
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_25",
+                       ("a", "b", "c", "d", "e", "f",
+                        "AB", "BC", "AC", "DE", "EF", "DF"), {})
+    assert "gt_len" in str(ei.value.premise)
