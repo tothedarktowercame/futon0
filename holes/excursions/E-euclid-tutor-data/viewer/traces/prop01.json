@@ -1,0 +1,235 @@
+{
+ "prop": 1,
+ "title": "Elements I.1 (LeanEuclid Book/Prop01.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BCD",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "a",
+    "through": "b"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "ACE",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "b",
+    "through": "a"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "BCD",
+     "ACE"
+    ],
+    "idx": 0
+   },
+   "def_step": 3
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "circle_from_points",
+   "args": [
+    "a",
+    "b"
+   ],
+   "bindings": {
+    "C": "BCD"
+   },
+   "facts_added": [
+    [
+     "centre",
+     "a",
+     "BCD"
+    ],
+    [
+     "on_circle",
+     "b",
+     "BCD"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "a",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop01.lean",
+    "line": 10
+   },
+   "placement_decision": "circle with centre a through b (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 2,
+   "rule": "circle_from_points",
+   "args": [
+    "b",
+    "a"
+   ],
+   "bindings": {
+    "C": "ACE"
+   },
+   "facts_added": [
+    [
+     "centre",
+     "b",
+     "ACE"
+    ],
+    [
+     "on_circle",
+     "a",
+     "ACE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop01.lean",
+    "line": 11
+   },
+   "placement_decision": "circle with centre b through a (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 3,
+   "rule": "intersection_circles",
+   "args": [
+    "BCD",
+    "ACE"
+   ],
+   "bindings": {
+    "c": "c"
+   },
+   "facts_added": [
+    [
+     "on_circle",
+     "c",
+     "BCD"
+    ],
+    [
+     "on_circle",
+     "c",
+     "ACE"
+    ]
+   ],
+   "premises": [
+    [
+     "intersects_cc",
+     "BCD",
+     "ACE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop01.lean",
+    "line": 12
+   },
+   "placement_decision": "no distinguishing fact recorded (arbitrary pick; both candidates satisfy every fact of the step)"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.0,
+   0.0
+  ],
+  "BCD": null,
+  "ACE": null,
+  "c": [
+   0.5,
+   0.8660254037844386
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.1: |c-a| = |a-b|",
+   "ok": true
+  },
+  {
+   "check": "I.1: |c-b| = |a-b|",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop01.lean",
+ "lean_text": [
+  "import SystemE",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_1 : \u2200 (a b : Point) (AB : Line),",
+  "  distinctPointsOnLine a b AB \u2192",
+  "  \u2203 c : Point, |(c\u2500a)| = |(a\u2500b)| \u2227 |(c\u2500b)| = |(a\u2500b)| :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply circle_from_points a b as BCD",
+  "  euclid_apply circle_from_points b a as ACE",
+  "  euclid_apply intersection_circles BCD ACE as c",
+  "  euclid_apply point_on_circle_onlyif a b c BCD",
+  "  euclid_apply point_on_circle_onlyif b a c ACE",
+  "  use c",
+  "  euclid_finish",
+  "",
+  "theorem proposition_1' : \u2200 (a b x : Point) (AB : Line),",
+  "  distinctPointsOnLine a b AB \u2227 \u00ac(x.onLine AB) \u2192",
+  "  \u2203 c : Point, |(c\u2500a)| = |(a\u2500b)| \u2227 |(c\u2500b)| = |(a\u2500b)| \u2227 (c.opposingSides x AB) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply circle_from_points a b as BCD",
+  "  euclid_apply circle_from_points b a as ACE",
+  "  euclid_apply intersection_opposite_side BCD ACE x a b AB as c",
+  "  euclid_apply point_on_circle_onlyif a b c BCD",
+  "  euclid_apply point_on_circle_onlyif b a c ACE",
+  "  use c",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

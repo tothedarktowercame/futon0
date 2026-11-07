@@ -1,0 +1,298 @@
+{
+ "prop": 3,
+ "title": "Elements I.3 (LeanEuclid Book/Prop03.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c0",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c1",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "C",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c0",
+     "c1"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "compass_d",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "a",
+    "radius_from": [
+     "c0",
+     "c1"
+    ]
+   },
+   "def_step": 1,
+   "aux": true
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "glider",
+    "on": "compass_d"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "DEF",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "a",
+    "through": "d"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "DEF",
+     "AB"
+    ],
+    "idx": 0
+   },
+   "def_step": 3
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "proposition_2'",
+   "args": [
+    "a",
+    "c0",
+    "c1",
+    "C"
+   ],
+   "bindings": {
+    "d": "d"
+   },
+   "facts_added": [
+    [
+     "eq_len",
+     "a",
+     "d",
+     "c0",
+     "c1"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c0",
+     "c1",
+     "C"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop03.lean",
+    "line": 11
+   },
+   "placement_decision": "free parameter of the existential step: sample direction chosen (no fact decides it); glider on a circle of dynamic radius |b-c| preserves |a-d| = |b-c| under dragging"
+  },
+  {
+   "n": 2,
+   "rule": "circle_from_points",
+   "args": [
+    "a",
+    "d"
+   ],
+   "bindings": {
+    "C": "DEF"
+   },
+   "facts_added": [
+    [
+     "centre",
+     "a",
+     "DEF"
+    ],
+    [
+     "on_circle",
+     "d",
+     "DEF"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "a",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop03.lean",
+    "line": 12
+   },
+   "placement_decision": "circle with centre a through d (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 3,
+   "rule": "intersection_circle_line_between_points",
+   "args": [
+    "DEF",
+    "AB",
+    "a",
+    "b"
+   ],
+   "bindings": {
+    "e": "e"
+   },
+   "facts_added": [
+    [
+     "on_circle",
+     "e",
+     "DEF"
+    ],
+    [
+     "on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "between",
+     "a",
+     "e",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "inside",
+     "a",
+     "DEF"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "outside",
+     "b",
+     "DEF"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop03.lean",
+    "line": 13
+   },
+   "placement_decision": "fact ('between', 'a', 'e', 'b') decided"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   5.0,
+   0.0
+  ],
+  "c0": [
+   0.0,
+   1.0
+  ],
+  "c1": [
+   2.0,
+   1.0
+  ],
+  "d": [
+   1.2246467991473532e-16,
+   2.0
+  ],
+  "DEF": null,
+  "e": [
+   2.0,
+   0.0
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.3: |a-e| = |c0-c1|",
+   "ok": true
+  },
+  {
+   "check": "I.3: between a e b",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop03.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop02",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_3 : \u2200 (a b c\u2080 c\u2081 : Point) (AB C : Line),",
+  "  distinctPointsOnLine a b AB \u2227 distinctPointsOnLine c\u2080 c\u2081 C \u2227 |(a\u2500b)| > |(c\u2080\u2500c\u2081)| \u2192",
+  "  \u2203 e : Point, between a e b \u2227 |(a\u2500e)| = |(c\u2080\u2500c\u2081)| :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (proposition_2' a c\u2080 c\u2081 C) as d",
+  "  euclid_apply (circle_from_points a d) as DEF",
+  "  euclid_apply (intersection_circle_line_between_points DEF AB a b) as e",
+  "  euclid_apply (point_on_circle_onlyif a d e)",
+  "  use e",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

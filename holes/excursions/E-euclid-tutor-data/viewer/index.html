@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>E-euclid-tutor — engine replay viewer</title>
+<!-- JSXGraph pinned to 1.11.1 (jsdelivr). No build step. -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraph.css">
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraphcore.js"></script>
+<style>
+  body { font-family: sans-serif; margin: 0; display: flex; flex-direction:
+         column; height: 100vh; }
+  header { padding: 6px 12px; border-bottom: 1px solid #ccc; display: flex;
+           gap: 10px; align-items: center; }
+  header button, header select { font-size: 14px; }
+  #main { display: flex; flex: 1; min-height: 0; }
+  #board-wrap { flex: 1; position: relative; }
+  #jxgbox { position: absolute; inset: 6px; border: 1px solid #999;
+            border-radius: 4px; }
+  #lean-wrap { width: 46%; overflow: auto; border-left: 1px solid #ccc;
+               font-size: 13px; }
+  table.lean { border-collapse: collapse; width: 100%; }
+  table.lean td { padding: 0 6px; vertical-align: top; white-space: pre;
+                  font-family: monospace; }
+  td.ln { text-align: right; color: #888; user-select: none; width: 2.5em; }
+  tr.step-line td.code { cursor: pointer; }
+  tr.step-line.done td.code { background: #eef6ee; }
+  tr.step-line.future td.code { color: #bbb; background: #fafafa; }
+  tr.step-line.hover td.code { background: #ffe9b8; }
+  #step-info { padding: 6px 12px; border-top: 1px solid #ccc;
+               font-size: 13px; min-height: 3em; }
+  .fact { font-family: monospace; background: #f2f2f2; padding: 0 4px;
+          border-radius: 3px; margin-right: 6px; }
+  #toggle-aux { font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <b>E-euclid-tutor</b>
+  <select id="prop-select">
+    <option value="1">I.1 equilateral</option>
+    <option value="2">I.2 transfer length</option>
+    <option value="3">I.3 cut off shorter</option>
+  </select>
+  <button id="btn-reset">⏮ reset</button>
+  <button id="btn-back">◀ back</button>
+  <button id="btn-fwd">step ▶</button>
+  <span id="step-count"></span>
+  <label><input type="checkbox" id="toggle-aux"> show auxiliary</label>
+</header>
+<div id="main">
+  <div id="board-wrap"><div id="jxgbox"></div></div>
+  <div id="lean-wrap"></div>
+</div>
+<div id="step-info">loading…</div>
+<script src="viewer.js"></script>
+</body>
+</html>
