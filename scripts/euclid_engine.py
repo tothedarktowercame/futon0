@@ -1252,6 +1252,15 @@ FORWARD_RULES.insert(0, ("neq_symm [logic]", r_neq_symm))
 # ---------------------------------------------------------------------------
 
 
+def _dpl_either(s, p, q, L):
+    # distinctPointsOnLine (Relations.lean:6) is symmetric in its points;
+    # premise tuples name a direction, so accept whichever the state holds.
+    f = ("dpl", p, q, L)
+    if s.has(f):
+        return f
+    return ("dpl", q, p, L)
+
+
 def _need(s, i, rule, fact):
     if not s.has(fact):
         raise MissingPremise(i, rule, fact, "(no forward rule derives it)")
@@ -1522,6 +1531,89 @@ CONSTRUCTIONS = {
             ("eq_len", (b, c, e, f))],
         "make": lambda s, a, b, c, d, e, f, AB, BC, AC, DE, EF, DF: [
             (None, [("_eq_ang", b, a, c, e, d, f)])],
+    },
+    # Book/Prop09.lean (proposition_9') — angle bisection point with its
+    # side conclusions, as a construction when cited. Statement verbatim:
+    #   ∀ (a b c : Point) (AB AC : Line),
+    #     formRectilinearAngle b a c AB AC ∧ AB ≠ AC →
+    #     ∃ f : Point, (f.sameSide c AB) ∧ (f.sameSide b AC) ∧
+    #                  (∠ b:a:f = ∠ c:a:f)
+    # formRectilinearAngle b a c AB AC destructures (Relations.lean:64) to
+    # dpl b a AB ∧ dpl a c AC. The engine's own I.9 replay (b6407e7) stands
+    # behind the citation of the construction; this prime form adds the two
+    # sameSide conclusions (Lean's proof: proposition_8 on the SSS pair plus
+    # intersection_lines AF DE, finished by SMT).
+    "proposition_9'": {
+        "cite": "Book/Prop09.lean (proposition_9')",
+        "args": ("a", "b", "c", "AB", "AC"),
+        "premises": lambda s, a, b, c, AB, AC: [
+            _dpl_either(s, b, a, AB), _dpl_either(s, a, c, AC),
+            ("neq_line", AB, AC)],
+        "make": lambda s, a, b, c, AB, AC: [
+            ("f", [("same_side", "f", c, AB), ("same_side", "f", b, AC),
+                   ("_eq_ang", b, a, "f", c, a, "f")])],
+    },
+    # SystemE/Theory/Constructions/Intersections.lean:3 — exactly the axiom:
+    # L.intersectsLine M ⇒ ∃ a, a.onLine L ∧ a.onLine M. The premise fact
+    # ("intersects_ll", L, M) is produced by the cited rule
+    # intersection_lines_opposing (Diagrammatic.lean:267) below.
+    "intersection_lines": {
+        "cite": "Intersections.lean:3",
+        "args": ("L", "M"),
+        "premises": lambda s, L, M: [("intersects_ll", L, M)],
+        "make": lambda s, L, M: [
+            ("a", [("on_line", "a", L), ("on_line", "a", M)])],
+    },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:267 —
+    # intersection_lines_opposing verbatim:
+    #   (a.opposingSides b L) ∧ (a.onLine M) ∧ (b.onLine M) →
+    #   L.intersectsLine M
+    # Cited before intersection_lines (I.10).
+    "intersection_lines_opposing": {
+        "cite": "Diagrammatic.lean:267",
+        "args": ("a", "b", "L", "M"),
+        "premises": lambda s, a, b, L, M: [
+            ("opposing_sides", a, b, L),
+            ("on_line", a, M), ("on_line", b, M)],
+        "make": lambda s, a, b, L, M: [
+            (None, [("intersects_ll", L, M)])],
+    },
+    # [SMT-bridge] Lean's euclid_assert-style ray-side fact (Prop10.lean):
+    # v, x, u on L (v ≠ x, v ≠ u) and ∠(z,v,x) = ∠(w,v,x) ⇒
+    # ∠(z,v,u) = ∠(w,v,u). u on line(v,x) distinct from v lies on the ray
+    # v→x or on its opposite; the reflection through v maps an angle θ to
+    # 2∟−θ, so the equality is preserved on both rays. Lean's SMT uses this
+    # when it feeds proposition_9's angle about d' to proposition_4 about
+    # the intersection point d of line(c,d') with the base.
+    # neq v x is required: with x = v both premise angles are 0 for every
+    # z, w and the rule would force unrelated angles equal.
+    "angle_pair_on_line": {
+        "cite": "euclid_assert [SMT-bridge]",
+        "args": ("z", "w", "v", "x", "u", "L"),
+        "premises": lambda s, z, w, v, x, u, L: [
+            ("on_line", v, L), ("on_line", x, L), ("on_line", u, L),
+            ("neq", v, x), ("neq", v, u)],
+        "entail": lambda s, z, w, v, x, u, L: [
+            ("eq_ang", (z, v, x, w, v, x))],
+        "make": lambda s, z, w, v, x, u, L: [
+            (None, [("_eq_ang", z, v, u, w, v, u)])],
+    },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:173 — pasch_4 verbatim:
+    #   (L ≠ M) ∧ b.onLine L ∧ b.onLine M ∧ distinctPointsOnLine a c M ∧
+    #   (a ≠ b) ∧ (c ≠ b) ∧ ¬(a.sameSide c L) → between a b c
+    # ¬(a.sameSide c L) is rendered as the positive fact opposing_sides a c L
+    # (stronger: it also carries a, c off L — Relations.lean:13-14), because
+    # the engine has no negated sameSide fact kind.
+    "pasch_4": {
+        "cite": "Diagrammatic.lean:173",
+        "args": ("a", "b", "c", "L", "M"),
+        "premises": lambda s, a, b, c, L, M: [
+            ("neq_line", L, M),
+            ("on_line", b, L), ("on_line", b, M),
+            ("dpl", a, c, M), ("neq", a, b), ("neq", c, b),
+            ("opposing_sides", a, c, L)],
+        "make": lambda s, a, b, c, L, M: [
+            (None, [("between", a, b, c)])],
     },
     # SystemE/Theory/Inferences/Transfer.lean:90
     "sum_angles_onlyif": {
@@ -2064,6 +2156,74 @@ PROP9_STEPS_DATA = [
 ]
 
 
+# Book I.10 (Book/Prop10.lean): bisect a segment. c is the equilateral apex
+# on AB (proposition_1); d' bisects the angle at c with its side conclusions
+# (proposition_9'); the same_side branch for (a,b,CD) dies on proposition_7
+# after proposition_4 (SAS on c-a-d' / c-b-d') yields |a-d'| = |b-d'|, so a
+# and b oppose across CD; intersection_lines (via intersection_lines_opposing)
+# lands d on CD and AB; pasch_4 gives between a d b; angle_pair_on_line moves
+# the bisector angle from d' to d, and proposition_4 (SAS) closes |a-d|=|b-d|.
+# SMT-sourced input Lean derives (flagged in the bell-back): c off AB — the
+# equilateral apex is off its base (Lean's proposition_1 concludes only the
+# two lengths; the non-collinearity is SMT). Everything else is derived:
+# a off BC and b off AC follow from c off AB (two_lines_meet_once at b, the
+# sole common point of AB and BC), so AC ≠ BC (line_neq); and once d' is
+# constructed, d' off AC/BC (same_side parts) give CD ≠ AC/BC, whence
+# a and b off CD (two_lines_meet_once at c). With a, b off CD the
+# sameSide/opposingSides split of the by_contra below is exhaustive
+# (Relations.lean:13-14, as in the I.7 replay).
+PROP10_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),  # distinctPointsOnLine a b AB
+    (("not_on_line", "c", "AB"), "h-sm"),  # equilateral apex off the base
+]
+PROP10_STEPS_DATA = [
+    ("proposition_1", ("a", "b", "AB"), {"d": "c"}),
+    ("line_from_points", ("c", "a"), {"L": "AC"}),
+    ("line_from_points", ("c", "b"), {"L": "BC"}),
+    ("proposition_9'", ("c", "a", "b", "AC", "BC"), {"f": "d'"}),
+    # c ≠ d': else d' = c lies on AC, but same_side d' b AC puts d' off AC.
+    ("by_contra", [
+        ([("peq", "c", "d'")], []),
+    ], [("neq", "c", "d'")]),
+    ("line_from_points", ("c", "d'"), {"L": "CD"}),
+    # a ≠ d' and b ≠ d' for the line constructions below: peq a d' would put
+    # a on CD against not_on_line a CD (derived: CD ≠ AC at c, a on AC).
+    # Same for b.
+    ("by_contra", [
+        ([("peq", "a", "d'")], []),
+    ], [("neq", "a", "d'")]),
+    ("by_contra", [
+        ([("peq", "b", "d'")], []),
+    ], [("neq", "b", "d'")]),
+    ("line_from_points", ("a", "d'"), {"L": "AD'"}),
+    ("line_from_points", ("b", "d'"), {"L": "BD'"}),
+    # SAS on (c,a,d') vs (c,b,d'): |c-a| = |c-b| (equilateral), |c-d'|
+    # common, ∠a:c:d' = ∠b:c:d' (proposition_9') ⇒ |a-d'| = |b-d'|.
+    ("proposition_4", ("c", "a", "d'", "c", "b", "d'",
+                       "AC", "AD'", "CD", "BC", "BD'", "CD"), {}),
+    # a, b off CD (derived: d' off AC/BC give CD ≠ AC/BC, then
+    # two_lines_meet_once at c), so same_side a b CD is exhaustive against
+    # opposing_sides; in the same_side branch proposition_7 fires on the
+    # SSS pair (a, b) over base (c, d'): |c-a| = |c-b|, |a-d'| = |b-d'|.
+    ("by_contra", [
+        ([("same_side", "a", "b", "CD")], [
+            ("proposition_7", ("c", "d'", "a", "b", "CD", "AC", "AD'",
+                               "BC", "BD'"), {}),
+        ]),
+    ], [("opposing_sides", "a", "b", "CD")]),
+    # closure now yields neq_line CD AB (line_neq: c on CD, c off AB).
+    ("intersection_lines_opposing", ("a", "b", "CD", "AB"), {}),
+    ("intersection_lines", ("CD", "AB"), {"a": "d"}),
+    # neq a d, neq b d come from off_line_neq (a, b off CD; d on CD).
+    ("pasch_4", ("a", "d", "b", "CD", "AB"), {}),
+    # carry ∠a:c:d' = ∠b:c:d' onto d (d, d', c on CD; needs neq c d,
+    # which off_line_neq gives: c off AB, d on AB).
+    ("angle_pair_on_line", ("a", "b", "c", "d'", "d", "CD"), {}),
+    ("proposition_4", ("c", "a", "d", "c", "b", "d",
+                       "AC", "AB", "CD", "BC", "AB", "CD"), {}),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -2144,6 +2304,12 @@ def main():
             s, rep = replay(PROP9_HYPS_DATA, PROP9_STEPS_DATA,
                             [("_eq_ang", "b", "v", "f", "c", "v", "f"),
                              ("neq", "v", "f")])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "10":
+            t0 = time.time()
+            s, rep = replay(PROP10_HYPS_DATA, PROP10_STEPS_DATA,
+                            [("between", "a", "d", "b"),
+                             ("_eq_len", "a", "d", "d", "b")])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

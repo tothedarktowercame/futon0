@@ -703,7 +703,7 @@ def test_replay_fact_set_footprints():
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (442, 227), "6": (41, 11), "7": (113, 26),
-                "8": (210, 82), "9": (236, 93)}
+                "8": (210, 82), "9": (236, 93), "10": (163, 51)}
     got = {}
     old_argv = sys.argv
     try:
@@ -853,3 +853,191 @@ def test_entails_memo_not_stale_after_rows_replaced():
     assert l3.entails({X: 1}, 2, "<=")
     l3.rows = list(l2.rows)
     assert not l3.entails({X: 1}, 2, "<=")
+
+
+# --- I.10: proposition_9' rule, intersection/pasch/angle bridges ------------
+
+
+def test_prop10_replay():
+    """Bisect a segment: ∃ d, between a d b ∧ |a-d| = |d-b|."""
+    s, rep = eng.replay(eng.PROP10_HYPS_DATA, eng.PROP10_STEPS_DATA,
+                        [("between", "a", "d", "b"),
+                         ("_eq_len", "a", "d", "d", "b")])
+    assert s.has(("between", "a", "d", "b"))
+    assert eng.la_entails_eq(s.la, "a", "d", "d", "b")
+    assert rep[-1]["final"]
+
+
+def test_prop10_control_dropped_apex_off_base():
+    """Without ¬(c.onLine AB) — the replay's only SMT-sourced input — the
+    arms AC and BC are never known distinct, so proposition_9's AB ≠ AC
+    premise stops the replay."""
+    hyps = [h for h in eng.PROP10_HYPS_DATA
+            if h[0] != ("not_on_line", "c", "AB")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP10_STEPS_DATA, [("between", "a", "d", "b")])
+    assert ei.value.rule == "proposition_9'"
+    assert ei.value.premise == ("neq_line", "AC", "BC")
+
+
+def test_prop10_inputs_reduce_to_apex_off_base():
+    """a off CD and AC ≠ BC are DERIVED, not stated: c off AB puts a off BC
+    (two distinct lines AB, BC meet only at b), whence AC ≠ BC; and once d'
+    exists, d' off AC/BC give CD ≠ AC/BC, whence a off CD. The replay's
+    only SMT-sourced input is ¬(c.onLine AB)."""
+    s, rep = eng.replay(eng.PROP10_HYPS_DATA, eng.PROP10_STEPS_DATA,
+                        [("between", "a", "d", "b")])
+    assert s.has(("neq_line", "AC", "BC"))
+    assert s.has(("not_on_line", "a", "CD"))
+    assert s.has(("not_on_line", "b", "CD"))
+
+
+def test_proposition_9_prime_premises_exact():
+    """proposition_9' premises are exactly the Lean statement's destructed
+    hypotheses: formRectilinearAngle b a c AB AC (Relations.lean:64 =
+    dpl b a AB ∧ dpl a c AC) ∧ AB ≠ AC. Dropping any one stops the rule."""
+    spec = eng.CONSTRUCTIONS["proposition_9'"]
+    probe = eng.State()
+    probe.assume(("dpl", "b", "a", "AB"))
+    probe.assume(("dpl", "a", "c", "AC"))
+    prem = spec["premises"](probe, "a", "b", "c", "AB", "AC")
+    assert set(prem) == {("dpl", "b", "a", "AB"), ("dpl", "a", "c", "AC"),
+                         ("neq_line", "AB", "AC")}
+    # either dpl direction is accepted (distinctPointsOnLine is symmetric)
+    s = eng.State()
+    for f in [("on_line", "b", "AB"), ("on_line", "a", "AB"),
+              ("neq", "b", "a"), ("neq", "a", "b"),
+              ("dpl", "a", "c", "AC"), ("dpl", "c", "b", "BC"),
+              ("neq_line", "AC", "BC")]:
+        s.assume(f)
+    eng.close(s)
+    rep = eng.apply_step(s, 1, "proposition_9'",
+                         ("c", "a", "b", "AC", "BC"), {"f": "d'"})
+    assert ("same_side", "d'", "b", "AC") in rep["added"]
+    assert ("eq_ang", "a", "c", "d'", "b", "c", "d'") in rep["added"]
+
+
+def test_bridge_pasch_4_counterexamples():
+    """pasch_4 (Diagrammatic.lean:173). Realisability: all premises on,
+    conclusion absent, state consistent; fires when cited. Premise-dropped
+    variants: same_side instead of opposing_sides (a, b on the same side of
+    CD — d then need not lie between them), and the neq_line variant."""
+    base = [("neq_line", "L", "M"), ("on_line", "d", "L"),
+            ("on_line", "d", "M"), ("on_line", "a", "M"),
+            ("on_line", "b", "M"), ("neq", "a", "b"), ("neq", "a", "d"),
+            ("neq", "b", "d")]
+    s = eng.State()
+    for f in base + [("opposing_sides", "a", "b", "L")]:
+        s.assume(f)
+    eng.close(s)
+    ok, w = eng.contradictory(s)
+    assert not ok  # consistent, and the between fact is not there
+    assert not s.has(("between", "a", "d", "b"))
+    rep = eng.apply_step(s, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
+    assert rep["added"] == [("between", "a", "d", "b")]
+    # same side: must refuse (d can lie outside the segment)
+    s_same = eng.State()
+    for f in base + [("same_side", "a", "b", "L")]:
+        s_same.assume(f)
+    eng.close(s_same)
+    assert eng.contradictory(s_same)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_same, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
+    assert ei.value.premise == ("opposing_sides", "a", "b", "L")
+    # no neq_line: must refuse
+    s_nl = eng.State()
+    for f in base + [("opposing_sides", "a", "b", "L")]:
+        if f != ("neq_line", "L", "M"):
+            s_nl.assume(f)
+    eng.close(s_nl)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_nl, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
+    assert ei.value.premise == ("neq_line", "L", "M")
+
+
+def test_bridge_intersection_lines_opposing_counterexamples():
+    """intersection_lines_opposing (Diagrammatic.lean:267). Opposing sides
+    of L with both points on M: L meets M. same_side instead: refuses (two
+    points on the same side do not force a crossing)."""
+    base = [("on_line", "a", "M"), ("on_line", "b", "M")]
+    s = eng.State()
+    for f in base + [("opposing_sides", "a", "b", "L")]:
+        s.assume(f)
+    eng.close(s)
+    assert eng.contradictory(s)[0] is False
+    rep = eng.apply_step(s, 1, "intersection_lines_opposing",
+                         ("a", "b", "L", "M"), {})
+    assert rep["added"] == [("intersects_ll", "L", "M")]
+    s_same = eng.State()
+    for f in base + [("same_side", "a", "b", "L")]:
+        s_same.assume(f)
+    eng.close(s_same)
+    assert eng.contradictory(s_same)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_same, 1, "intersection_lines_opposing",
+                       ("a", "b", "L", "M"), {})
+    assert ei.value.premise == ("opposing_sides", "a", "b", "L")
+    # and intersection_lines consumes the fact
+    s.assume(("intersects_ll", "L", "M"))
+    rep = eng.apply_step(s, 2, "intersection_lines", ("L", "M"), {"a": "p"})
+    assert ("on_line", "p", "L") in rep["added"]
+    assert ("on_line", "p", "M") in rep["added"]
+
+
+def test_bridge_angle_pair_on_line_counterexamples():
+    """angle_pair_on_line: v,x,u on L (neqs) ∧ ∠(z,v,x) = ∠(w,v,x) entailed
+    ⇒ ∠(z,v,u) = ∠(w,v,u). Counterexamples per premise:
+    - u off L: u anywhere off the bisector line, angles to u differ.
+    - no equal-angle row: z, w arbitrary, nothing ties the angles.
+    - x = v (drop neq v x): the premise angles are both degenerate; without
+      the neq the rule would force unrelated angles equal, so it must
+      refuse."""
+    base = [("on_line", "v", "L"), ("on_line", "x", "L"),
+            ("on_line", "u", "L"), ("neq", "v", "x"), ("neq", "v", "u")]
+    eqrow = [({eng.ang_atom("z", "v", "x"): 1,
+               eng.ang_atom("w", "v", "x"): -1}, 0, "=")]
+    s = eng.State()
+    for f in base:
+        s.assume(f)
+    for co, c, op in eqrow:
+        s.la.add(co, c, op)
+    eng.close(s)
+    assert eng.contradictory(s)[0] is False  # realisable, conclusion absent
+    rep = eng.apply_step(s, 1, "angle_pair_on_line",
+                         ("z", "w", "v", "x", "u", "L"), {})
+    assert ("eq_ang", "z", "v", "u", "w", "v", "u") in rep["added"]
+    # u off L: refuses
+    s_u = eng.State()
+    for f in base:
+        if f != ("on_line", "u", "L"):
+            s_u.assume(f)
+    for co, c, op in eqrow:
+        s_u.la.add(co, c, op)
+    eng.close(s_u)
+    assert eng.contradictory(s_u)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_u, 1, "angle_pair_on_line",
+                       ("z", "w", "v", "x", "u", "L"), {})
+    assert ei.value.premise == ("on_line", "u", "L")
+    # x = v (no neq v x): refuses; x stays on L (an on_line fact about the
+    # same point is harmless) so the neq premise is what stops the rule
+    s_x = eng.State()
+    for f in base:
+        if f != ("neq", "v", "x"):
+            s_x.assume(f)
+    for co, c, op in eqrow:
+        s_x.la.add(co, c, op)
+    eng.close(s_x)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_x, 1, "angle_pair_on_line",
+                       ("z", "w", "v", "x", "u", "L"), {})
+    assert ei.value.premise == ("neq", "v", "x")
+    # no equal-angle row: the entailment premise refuses
+    s_e = eng.State()
+    for f in base:
+        s_e.assume(f)
+    eng.close(s_e)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_e, 1, "angle_pair_on_line",
+                       ("z", "w", "v", "x", "u", "L"), {})
+    assert "arithmetic" in str(ei.value)
