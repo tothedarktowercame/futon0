@@ -1177,6 +1177,47 @@ def test_prop22p_final_state_not_contradictory():
     assert not contra, witness
 
 
+def test_proposition_22p_citation_fires():
+    """The cited lemma makes exactly the I.22' conclusions over fresh
+    witnesses k and g (the theorem PROP22P_STEPS_DATA replays): on_line
+    g FE, not_between g f e, and the three length equalities."""
+    s = eng.State()
+    for f, w in eng.PROP22P_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    rep = eng.apply_step(
+        s, 1, "proposition_22'",
+        ("a", "a'", "b", "b'", "c", "c'", "f", "e", "A", "B", "C", "FE"),
+        {"k": "k", "g": "g"})
+    assert rep["rule"].startswith("proposition_22'")
+    assert s.has(("on_line", "g", "FE"))
+    assert s.has(("not_between", "g", "f", "e"))
+    assert eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+
+
+def test_proposition_22p_citation_refused_without_inequality():
+    """Each triangle inequality is an entailment premise: with
+    |b-b'| + |c-c'| > |a-a'| missing, the citation is refused at that
+    entailment (the construction it stands for cuts |f-d| = |a-a'| off a
+    segment only known to exceed |b-b'| + |c-c'|)."""
+    hyps = [h for h in eng.PROP22P_HYPS_DATA
+            if h[0] != ("gt_sum_len", "b", "b'", "c", "c'", "a", "a'")]
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(
+            s, 1, "proposition_22'",
+            ("a", "a'", "b", "b'", "c", "c'", "f", "e",
+             "A", "B", "C", "FE"),
+            {"k": "k", "g": "g"})
+    assert ei.value.premise == (
+        "entail", "gt_sum_len", ("b", "b'", "c", "c'", "a", "a'"))
+
+
 def test_proposition_21_citation_fires():
     """The cited lemma makes exactly the two I.21 conclusions (the
     theorem PROP21_STEPS_DATA proves): the strict rows plus the

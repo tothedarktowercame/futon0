@@ -2051,6 +2051,31 @@ CONSTRUCTIONS = {
             (None, [("_lt_sum_sum_len", b, d, d, c, b, a, a, c),
                     ("_gt_ang", b, d, c, b, a, c)])],
     },
+    # Book/Prop22.lean:34 — proposition_22' verbatim (the variant I.23
+    # cites): four distinctPointsOnLine and the three triangle
+    # inequalities ⇒ ∃ k g, g.onLine FE ∧ ¬between g f e ∧
+    # |f─k| = |a─a'| ∧ |f─g| = |b─b'| ∧ |k─g| = |c─c'|. An existential
+    # construction (like proposition_3): it makes the two witness points.
+    # The theorem PROP22P_STEPS_DATA replays. The triangle inequalities
+    # are entailment premises (the arithmetic must know them); the first
+    # use fires them from gt_sum_len hypothesis rows.
+    "proposition_22'": {
+        "cite": "Book/Prop22.lean:34 (proposition_22')",
+        "args": ("a", "a'", "b", "b'", "c", "c'", "f", "e",
+                 "A", "B", "C", "FE"),
+        "premises": lambda s, a, a2, b, b2, c, c2, f, e, A, B, C, FE: [
+            _dpl_either(s, a, a2, A), _dpl_either(s, b, b2, B),
+            _dpl_either(s, c, c2, C), _dpl_either(s, f, e, FE)],
+        "entail": lambda s, a, a2, b, b2, c, c2, f, e, A, B, C, FE: [
+            ("gt_sum_len", (a, a2, b, b2, c, c2)),
+            ("gt_sum_len", (a, a2, c, c2, b, b2)),
+            ("gt_sum_len", (b, b2, c, c2, a, a2))],
+        "make": lambda s, a, a2, b, b2, c, c2, f, e, A, B, C, FE: [
+            ("k", [("_eq_len", f, "k", a, a2),
+                   ("_eq_len", "k", "g", c, c2)]),
+            ("g", [("on_line", "g", FE), ("not_between", "g", f, e),
+                   ("_eq_len", f, "g", b, b2)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:187 — triple_incidence_1
     # verbatim:
     #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧
@@ -2117,6 +2142,8 @@ def _entail_check(s, i, rule, q):
         ok = la_entails_lt(s.la, *a)
     elif kind == "gt_len":
         ok = la_entails_gt(s.la, *a)
+    elif kind == "gt_sum_len":
+        ok = la_entails_gt_sum_len(s.la, *a)
     elif kind == "gt_ang":
         ok = la_entails_gt_ang(s.la, *a)
     elif kind == "pos_len":
