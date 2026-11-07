@@ -1009,74 +1009,6 @@ def _snapshot(la):
     return l2
 
 
-def r_side_gt_angle_gt(s):
-    # [SMT-bridge, Euclid I.18] p,q,r pairwise distinct and |p-r| > |p-q|
-    # ⇒ ∠(p,q,r) > ∠(q,r,p): the greater side subtends the greater angle.
-    # Only for a genuine triangle: r off a line through p and q. It FAILS for
-    # collinear q-p-r (both angles 0). Note: this is a LATER proposition used
-    # as a rule, so a replay of I.6 that uses it does not mirror Lean's
-    # argument (Lean's I.6 closes by the area/part-whole reasoning in SMT).
-    pts = _all_points(s)
-    snap = _snapshot(s.la)
-    on = {}
-    for f in s.facts:
-        if f[0] == "on_line":
-            on.setdefault(f[2], set()).add(f[1])
-    lines_pq = {}
-    for M, ps in on.items():
-        for x in ps:
-            for y in ps:
-                if x != y:
-                    lines_pq.setdefault((x, y), []).append(M)
-    live_atoms = {at for items, _, _ in s.la.rows for at, _ in items}
-    # rows that directly relate two length atoms: only these can entail a
-    # comparison (each FM check is a full Fourier-Motzkin run)
-    direct = [set(at for at, _ in items) for items, _, _ in s.la.rows
-              if sum(1 for at, _ in items if at[0] == "len") >= 2]
-    for p in pts:
-        for q in pts:
-            for r in pts:
-                if len({p, q, r}) < 3:
-                    continue
-                a1, a2 = ang_atom(p, q, r), ang_atom(q, r, p)
-                # only compare angles already under discussion: without
-                # this the rule fires for every ordered triple with any
-                # entailed length comparison and buries the store in rows
-                if a1 not in live_atoms or a2 not in live_atoms:
-                    continue
-                # cheap filter: some row must relate the two lengths
-                if not any(({len_atom(p, r), len_atom(p, q)} <= ats
-                            for ats in direct)):
-                    continue
-                marker = ("angord", p, q, r)
-                if s.has(marker):
-                    continue
-                if not (s.has(("neq", p, q)) and s.has(("neq", q, r))
-                        and s.has(("neq", p, r))):
-                    continue
-                # review fix (claude-9): require a genuine triangle. The
-                # collinear claim above is false when p lies between q and r
-                # (q-p-r, |pr| > |pq|): both angles are 0 and the rule
-                # produced a false contradiction on a realisable state.
-                tri = next((M for M in lines_pq.get((p, q), ())
-                            if s.has(("not_on_line", r, M))), None)
-                if tri is None:
-                    continue
-                key = ("angord", len(snap.rows), p, q, r)
-                if key in s.rule_cache:
-                    if not s.rule_cache[key]:
-                        continue
-                elif not la_entails_gt(snap, p, r, p, q):
-                    s.rule_cache[key] = False
-                    continue
-                s.rule_cache[key] = True
-                s.la.add(lin((ang_atom(p, q, r), 1), (ang_atom(q, r, p), -1)),
-                         0, "<")
-                yield marker, [("neq", p, q), ("neq", q, r), ("neq", p, r),
-                               ("on_line", p, tri), ("on_line", q, tri),
-                               ("not_on_line", r, tri)]
-
-
 def r_off_line_pair_same_side(s):
     # [SMT-bridge] same_side c d L ∧ p on L ∧ c ≠ d ∧ c,d on M ∧ |p-c| = |p-d|
     # (entailed) ⇒ p not on M.
@@ -1191,7 +1123,16 @@ FORWARD_RULES = [
     ("opposing_parts [Relations.lean:13-14]", r_opposing_parts),
     ("line_neq [logic]", r_line_neq),
     ("angle_pos [SMT-bridge]", r_angle_pos),
-    ("side_gt_angle_gt [SMT-bridge, Euclid I.18]", r_side_gt_angle_gt),
+    # NOTE: "side_gt_angle_gt" (|p-r| > |p-q| ⇒ ∠p:q:r > ∠q:r:p) was
+    # REMOVED from the default closure (E-kimi-task-389): it IS Book
+    # I.18, so closing I.1-I.17 with it used a later theorem. I.18 is now
+    # proved from I.3/I.16/I.5' (PROP18_STEPS_DATA) and the theorem is
+    # available to later propositions only as the cited lemma
+    # CONSTRUCTIONS["proposition_18"]. Post-removal reading: the rule's
+    # row was also sign-INVERTED (it added ∠p:q:r < ∠q:r:p); every
+    # historical use paired it with an angle equality, where either
+    # strict direction reaches the same unsat, so the inversion was
+    # invisible until the I.18 replay (see test_prop18_hyps_alone...).
     ("off_line_pair_same_side [SMT-bridge]", r_off_line_pair_same_side),
     ("peq_subst_diagram [logic]", r_peq_subst_diagram),
 ]
@@ -1202,7 +1143,7 @@ def close(s):
 
     Stops early when the linear store is UNSAT: past that point every
     entailment query answers vacuously, and rules gated on entailment
-    (side_gt_angle_gt, off_line_pair_same_side) would derive garbage from a
+    (off_line_pair_same_side) would derive garbage from a
     broken state. FMTooLarge is not an unsat answer, so closure continues."""
     it = 0
     while True:
@@ -1885,6 +1826,31 @@ CONSTRUCTIONS = {
             ("not_on_line", c, AB)],
         "make": lambda s, a, b, c, AB, BC, AC: [
             (None, [("_lt_sum_rt_ang", a, b, c, b, c, a)])],
+    },
+    # Book/Prop18.lean:6 — proposition_18 verbatim:
+    #   ∀ (a b c : Point) (AB BC AC : Line),
+    #   formTriangle a b c AB BC AC ∧ (|(a─c)| > |(a─b)|) →
+    #   (∠ a:b:c > ∠ b:c:a)
+    # Cited as a lemma (the engine's own I.18 replay, PROP18_STEPS_DATA,
+    # is the proof); it replaces the "side_gt_angle_gt [SMT-bridge]"
+    # closure rule, which proved exactly this and so let I.1-I.17 use a
+    # later theorem (E-kimi-task-389, the c237244 straight_angle/I.13
+    # pattern). formTriangle destructured as at proposition_17; the
+    # length comparison is an entailment premise. The conclusion is the
+    # metric tuple _gt_ang. No fresh objects, forward-style citation.
+    "proposition_18": {
+        "cite": "Book/Prop18.lean:6",
+        "args": ("a", "b", "c", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, AB, BC, AC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB)],
+        "entail": lambda s, a, b, c, AB, BC, AC: [
+            ("gt_len", (a, c, a, b))],
+        "make": lambda s, a, b, c, AB, BC, AC: [
+            (None, [("_gt_ang", a, b, c, b, c, a)])],
     },
     # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
     #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
@@ -2593,7 +2559,9 @@ PROP5_STEPS_DATA = [
 # the hypothesis ∠a:b:c = ∠a:c:b equals the whole — forcing the part
 # ∠d:c:a (resp. ∠d:b:a) to 0 against angle_pos, store-unsat. This is the
 # I.18-free proof: the closure rule side_gt_angle_gt [SMT-bridge, Euclid
-# I.18] (a later theorem) is excluded from this replay via exclude_rules.
+# I.18] (a later theorem) was first excluded from this replay via
+# exclude_rules (E-kimi-task-388), then removed from default closure
+# entirely (E-kimi-task-389) once I.18 itself replayed the Lean way.
 PROP6_HYPS_DATA = [
     (("dpl", "a", "b", "AB"), "h"),
     (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
@@ -3545,10 +3513,7 @@ def main():
         elif p == "6":
             t0 = time.time()
             s, rep = replay(PROP6_HYPS_DATA, PROP6_STEPS_DATA,
-                            [("_eq_len", "a", "b", "a", "c")],
-                            # I.6 the Lean way: no later-theorem closure rule
-                            exclude_rules={
-                                "side_gt_angle_gt [SMT-bridge, Euclid I.18]"})
+                            [("_eq_len", "a", "b", "a", "c")])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "7":
             t0 = time.time()
@@ -3617,10 +3582,7 @@ def main():
         elif p == "18":
             t0 = time.time()
             s, rep = replay(PROP18_HYPS_DATA, PROP18_STEPS_DATA,
-                            PROP18_GOAL,
-                            # I.18 the Lean way: its own closure rule off
-                            exclude_rules={
-                                "side_gt_angle_gt [SMT-bridge, Euclid I.18]"})
+                            PROP18_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
