@@ -443,8 +443,8 @@ class State:
         # assumptions declare, and derived facts never do.
         self.declared = set()  # names of objects that exist
         self.reserved = set()  # names awaiting their one later binding
-        # Forward-rule exclusion set (rule NAMES, e.g.
-        # "straight_angle [SMT-bridge]"): close() skips these. Empty by
+        # Forward-rule exclusion set (rule NAMES as in FORWARD_RULES):
+        # close() skips these. Empty by
         # default; replay(..., exclude_rules=...) sets it, and copies made
         # by by_contra/by_cases inherit it.
         self.exclude_rules = frozenset()
@@ -880,28 +880,6 @@ def r_between_order(s):
                 yield (("between", a, x, y), [fx, fy])
 
 
-def r_straight_angle(s):
-    # [SMT-bridge] between u v w ∧ x off the line ⇒ ∠u:v:x + ∠x:v:w = 2∟
-    # (angles on a straight line). Requires the right-angle constant.
-    for fact in s.facts:
-        if fact[0] != "between":
-            continue
-        u, v, w = fact[1], fact[2], fact[3]
-        for f2 in s.facts:
-            if f2[0] != "not_on_line":
-                continue
-            x, L = f2[1], f2[2]
-            if not (s.has(("on_line", u, L)) and s.has(("on_line", v, L))
-                    and s.has(("on_line", w, L))):
-                continue
-            marker = ("strang", u, v, w, x, L)
-            if not s.has(marker):
-                s.la.add(lin((ang_atom(u, v, x), 1), (ang_atom(x, v, w), 1),
-                             (RT, -2)), 0, "=")
-                yield marker, [fact, f2, ("on_line", u, L),
-                               ("on_line", v, L), ("on_line", w, L)]
-
-
 def r_len_gte_zero(s):
     # Metric.lean:33 — every segment length is ≥ 0. Applied to every length
     # atom present in the store, marker-guarded so the fixpoint stays
@@ -1188,7 +1166,12 @@ FORWARD_RULES = [
     ("degenerated_angle_if [Transfer.lean:63]", r_degenerated_angle),
     ("angle_ray_eq [SMT-bridge]", r_angle_ray_eq),
     ("between_order [SMT-bridge]", r_between_order),
-    ("straight_angle [SMT-bridge]", r_straight_angle),
+    # NOTE: "straight_angle" (between u v w, x off the line ⇒
+    # ∠u:v:x + ∠x:v:w = 2∟) was REMOVED from the default closure
+    # (P-euclid-straight-angle-out): it IS Book I.13, so closing I.1-I.12
+    # with it used a later theorem. I.13 is now proved from I.11'
+    # (PROP13_STEPS_DATA) and the rule is available to later propositions
+    # only as the cited lemma CONSTRUCTIONS["proposition_13"].
     ("segment_gte_zero [Metric.lean:33]", r_len_gte_zero),
     ("peq_subst [derived, Metric.lean:21]", r_peq_subst),
     ("same_side_not_on_line [Diagrammatic.lean:120]", r_same_side_not_on_line),
@@ -1215,8 +1198,7 @@ def close(s):
         excluded = getattr(s, "exclude_rules", frozenset())
         for name, fn in FORWARD_RULES:
             if name in excluded:
-                continue  # excluded for this replay (e.g. I.13 must not use
-                # straight_angle, which IS I.13 as a closure rule)
+                continue  # excluded for this replay (replay's exclude_rules)
             for newfact, prem in list(fn(s)):
                 if newfact not in s.facts:
                     s.add(newfact, name, prem)
@@ -1782,6 +1764,27 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, x, AB: [
             ("f", [("same_side", "f", x, AB), ("_rt_ang", a, c, "f")])],
     },
+    # Book/Prop13.lean:6 — proposition_13 verbatim:
+    #   ∀ (a b c d : Point) (AB CD : Line), AB ≠ CD ∧
+    #   (distinctPointsOnLine a b AB) ∧ (distinctPointsOnLine c d CD) ∧
+    #   (between d b c) → ∠ c:b:a + ∠ a:b:d = ∟ + ∟
+    # The engine's own I.13 replay (PROP13_STEPS_DATA) is the proof; this
+    # entry is the theorem cited as a lemma by later propositions — it
+    # replaces the old "straight_angle [SMT-bridge]" closure rule, which
+    # proved exactly this and so let I.1-I.12 use a later theorem
+    # (P-euclid-straight-angle-out). The conclusion is the metric tuple
+    # _sum_rt_ang (same fact form as the by_cases conclusions and the
+    # PROP13_GOAL query): ∠c:b:a + ∠a:b:d = 2∟.
+    "proposition_13": {
+        "cite": "Book/Prop13.lean:6",
+        "args": ("a", "b", "c", "d", "AB", "CD"),
+        "premises": lambda s, a, b, c, d, AB, CD: [
+            ("neq_line", AB, CD),
+            _dpl_either(s, a, b, AB), _dpl_either(s, c, d, CD),
+            ("between", d, b, c)],
+        "make": lambda s, a, b, c, d, AB, CD: [
+            (None, [("_sum_rt_ang", c, b, a, d)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
     #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
     # Rendered as the POSITIVE fact opposing_sides a c L (same rendering as
@@ -2047,6 +2050,13 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("right_ang", *fact[1:4]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("right_ang", *fact[1:4]))
+            elif fact[0] == "_sum_rt_ang":
+                u, v, x, w = fact[1:5]
+                s.la.add(lin((ang_atom(u, v, x), 1), (ang_atom(x, v, w), 1),
+                             (RT, -2)), 0, "=")
+                s.add(("sum_rt_ang", *fact[1:5]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("sum_rt_ang", *fact[1:5]))
             else:
                 s.add(fact, f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(fact)
@@ -2756,10 +2766,12 @@ PROP12_STEPS_DATA = [
 # theorem proposition_13 : AB ≠ CD ∧ distinctPointsOnLine a b AB ∧
 #   distinctPointsOnLine c d CD ∧ between d b c → ∠ c:b:a + ∠ a:b:d = ∟ + ∟
 #
-# This replay is run with the closure rule "straight_angle [SMT-bridge]"
-# EXCLUDED (replay's exclude_rules): that rule is I.13 itself (between u v w,
-# x off the line ⇒ ∠u:v:x + ∠x:v:w = 2∟), so closing with it would prove the
-# goal with no steps. The proof here follows Lean's shape (by_cases on
+# The old closure rule "straight_angle [SMT-bridge]" was I.13 itself
+# (between u v w, x off the line ⇒ ∠u:v:x + ∠x:v:w = 2∟); it is REMOVED
+# from the default closure (P-euclid-straight-angle-out) and the theorem
+# is available to later propositions only as the cited lemma
+# CONSTRUCTIONS["proposition_13"]. The proof here follows Lean's shape
+# (by_cases on
 # ∠c:b:a = ∠a:b:d; in the ≠ case erect the perpendicular be by I.11' and let
 # the angle arithmetic close the goal) rather than taking the equality as an
 # SMT fact.
@@ -2950,8 +2962,7 @@ def main():
         elif p == "13":
             t0 = time.time()
             s, rep = replay(PROP13_HYPS_DATA, PROP13_STEPS_DATA,
-                            [PROP13_GOAL],
-                            exclude_rules={"straight_angle [SMT-bridge]"})
+                            [PROP13_GOAL])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

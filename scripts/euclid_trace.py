@@ -955,9 +955,8 @@ def build_trace13_rows(hyps, steps):
                   if "line_from_points" in l)
 
     s = eng.State()
-    # the engine's own I.13 replay excludes straight_angle (that closure
-    # rule IS I.13); the trace replays under the same exclusion
-    s.exclude_rules = frozenset({"straight_angle [SMT-bridge]"})
+    # straight_angle (a closure rule that WAS I.13) has left default
+    # closure, so no exclusion is needed here
     for f, w in hyps:
         eng._assume_metric_or_fact(s, f, w)
     eng.close(s)

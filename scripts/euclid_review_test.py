@@ -434,16 +434,13 @@ def test_i12_lean_cited_steps_goal_via_smt_repair():
     every step valid. Step 3 (intersections_circle_line) is
     valid-needs-smt: Lean's SMT supplies intersects_lc EFG AB, repaired by
     the engine-only intersection_circle_line_1.
-    GOAL NOTE (found while implementing the packet, which expected
-    goal_held False + a goal repair naming perpendicular_if): the goal
-    ALREADY holds after proposition_8. The engine's closure adds, for
-    between e h g, the supplementary row ang c:h:e + ang c:h:g = 2RT; with
-    proposition_8's eq_ang the store entails ang e:h:c = RT on its own
-    (verified: consistent store, no right_ang/sum_ang facts needed).
-    perpendicular_if -- what Lean's euclid_finish does -- is metrically
-    redundant in the engine; it only adds the right_ang FACT. So
-    goal_held is True with goal_via_smt None: the goal repair runs only
-    when the goal genuinely fails, and here it never fires."""
+    GOAL: the steps end at proposition_8; the goal (∠e:h:c = ∟) is reached
+    by the goal repair, which names perpendicular_if e g h c AB -- what
+    Lean's euclid_finish supplies. History: before the closure rule
+    straight_angle (= Book I.13) left default closure
+    (P-euclid-straight-angle-out), that rule's supplementary row
+    ∠c:h:e + ∠c:h:g = 2∟ made the goal hold with no repair, i.e. the
+    review used I.13 to prove I.12. Now it does not."""
     t0 = time.perf_counter()
     rep = rv.review("I.12", I12_LEAN_STEPS, **I10_I11_BUDGET)
     wall = time.perf_counter() - t0
@@ -457,7 +454,7 @@ def test_i12_lean_cited_steps_goal_via_smt_repair():
     assert "intersection_circle_line_1" in third["why"], third["why"]
     assert rep["smt_repairs"] == 1
     assert rep["goal_held"] is True
-    assert rep["goal_via_smt"] is None
+    assert rep["goal_via_smt"] == ["perpendicular_if e g h c AB"]
     assert rep["remaining_distance"] == 0
 
 

@@ -702,12 +702,17 @@ def test_replay_fact_set_footprints():
     I.5 changed from (1432, 640) to (442, 227) with the lin() fix
     (claude-9): the old store was unsat from step 6 (|bc| = 0) and the
     closure kept deriving from it. eng.main() now asserts every replay's
-    final store is satisfiable (except I.7)."""
+    final store is satisfiable (except I.7).
+    I.5, I.9-I.12 shrank when the closure rule straight_angle (= Book I.13)
+    left default closure (P-euclid-straight-angle-out, claude-9 finishing
+    kimi-4's edit): I.5 (442, 227) -> (394, 203), I.9 (236, 93) -> (224, 87),
+    I.10 (163, 51) -> (161, 50), I.11 (318, 158) -> (298, 148),
+    I.12 (178, 68) -> (174, 66). Every main() goal still holds."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
-                "5": (442, 227), "6": (41, 11), "7": (113, 26),
-                "8": (210, 82), "9": (236, 93), "10": (163, 51),
-                "11": (318, 158), "12": (178, 68)}
+                "5": (394, 203), "6": (41, 11), "7": (113, 26),
+                "8": (210, 82), "9": (224, 87), "10": (161, 50),
+                "11": (298, 148), "12": (174, 66), "13": (43, 16)}
     got = {}
     old_argv = sys.argv
     try:
@@ -1552,18 +1557,15 @@ def test_two_fresh_objects_identified_with_one_point_refused():
 
 
 # --- I.13 (Book/Prop13.lean): angles on a straight line --------------------
-# Replayed with the closure rule "straight_angle [SMT-bridge]" EXCLUDED —
-# that rule is I.13 itself, so closing with it would prove the goal with no
-# steps. The replay follows Lean: by_cases ∠c:b:a = ∠a:b:d; in the ≠ case
+# The old closure rule "straight_angle [SMT-bridge]" was I.13 itself (it
+# proved the goal from the hypotheses with no steps); it has left default
+# closure and I.13 is citable only as CONSTRUCTIONS["proposition_13"].
+# The replay follows Lean: by_cases ∠c:b:a = ∠a:b:d; in the ≠ case
 # erect the perpendicular be by proposition_11' and split on where a lies
 # relative to BE (exhaustiveness documented at PROP13_STEPS_DATA).
 
-EXCLUDE_STRAIGHT = {"straight_angle [SMT-bridge]"}
-
-
 def _prop13(steps=eng.PROP13_STEPS_DATA, hyps=eng.PROP13_HYPS_DATA):
-    return eng.replay(hyps, steps, [eng.PROP13_GOAL],
-                      exclude_rules=EXCLUDE_STRAIGHT)
+    return eng.replay(hyps, steps, [eng.PROP13_GOAL])
 
 
 def test_prop13_replay():
@@ -1575,12 +1577,10 @@ def test_prop13_replay():
     assert s.has(("sum_rt_ang", u, v, x, w))
     assert eng._fm_sat(s.la.rows)
     assert rep[-1]["final"]
-    # the excluded rule never fired: its markers and rows are absent
-    assert not any(f[0] == "strang" for f in s.facts)
-    # sanity: with the rule allowed, the hypotheses ALONE (no steps) entail
-    # the goal — that is why the exclusion is needed for an honest replay.
-    s2, _ = eng.replay(eng.PROP13_HYPS_DATA, [], [eng.PROP13_GOAL])
-    assert any(f[0] == "strang" for f in s2.facts)
+    # the hypotheses ALONE (no steps) do not entail the goal: closure no
+    # longer contains I.13
+    s2, _ = eng.replay(eng.PROP13_HYPS_DATA, [], [])
+    assert not eng._fact_holds(s2, eng.PROP13_GOAL)
 
 
 def test_prop13_control_dropped_proposition_11():
@@ -1793,23 +1793,43 @@ def test_triple_incidence_2_needs_the_opposing_sides():
     assert s.has(("same_side", "p", "q", "N"))
 
 
-def test_prop13_exclusion_really_removes_straight_angle():
-    """Review (claude-9): with the exclusion the hypotheses alone do NOT
-    entail the goal, and the excluded rule's function is never called."""
-    X = {"straight_angle [SMT-bridge]"}
-    s, _ = eng.replay(eng.PROP13_HYPS_DATA, [], [], exclude_rules=X)
+def test_no_straight_angle_in_default_closure():
+    """Review (claude-9): I.13 is not a closure rule. No FORWARD_RULES name
+    mentions straight_angle, and the hypotheses alone do not entail the
+    goal (before the change they did, with no steps)."""
+    assert not any("straight" in n for n, _ in eng.FORWARD_RULES)
+    s, _ = eng.replay(eng.PROP13_HYPS_DATA, [], [])
     assert not eng._fact_holds(s, eng.PROP13_GOAL)
-    orig = eng.r_straight_angle
-    saved = list(eng.FORWARD_RULES)
 
-    def boom(_s):
-        raise AssertionError("straight_angle called despite exclusion")
-    eng.FORWARD_RULES[:] = [(n, boom if f is orig else f) for n, f in saved]
-    try:
-        eng.replay(eng.PROP13_HYPS_DATA, eng.PROP13_STEPS_DATA,
-                   [eng.PROP13_GOAL], exclude_rules=X)
-    finally:
-        eng.FORWARD_RULES[:] = saved
+
+def _p13_cite_state(between):
+    s = eng.State()
+    for f in [("neq_line", "AB", "CD"), ("dpl", "a", "b", "AB"),
+              ("dpl", "c", "d", "CD"), between]:
+        s.assume(f, "hypothesis")
+    eng.close(s)
+    return s
+
+
+def test_proposition_13_citation():
+    """Review (claude-9): citing proposition_13 (Book/Prop13.lean:6) with
+    its hypotheses adds ∠c:b:a + ∠a:b:d = 2∟; the store stays sat."""
+    s = _p13_cite_state(("between", "d", "b", "c"))
+    assert not eng._fact_holds(s, eng.PROP13_GOAL)
+    eng.apply_step(s, 1, "proposition_13", ("a", "b", "c", "d", "AB", "CD"),
+                   {})
+    assert eng._fact_holds(s, eng.PROP13_GOAL)
+    assert eng._fm_sat(s.la.rows)
+
+
+def test_proposition_13_citation_refused_when_b_not_between():
+    """Bad case (claude-9): b is not between d and c (d is between b and c
+    instead): the citation is refused and the angle sum is not added."""
+    s = _p13_cite_state(("between", "b", "d", "c"))
+    with pytest.raises(eng.MissingPremise):
+        eng.apply_step(s, 1, "proposition_13",
+                       ("a", "b", "c", "d", "AB", "CD"), {})
+    assert not eng._fact_holds(s, eng.PROP13_GOAL)
 
 
 def test_prop13_branch1_without_perpendicular_if_refused():
@@ -1820,5 +1840,4 @@ def test_prop13_branch1_without_perpendicular_if_refused():
     st = copy.deepcopy(eng.PROP13_STEPS_DATA)
     st[0][1][0] = (st[0][1][0][0], [])
     with pytest.raises(eng.ByCasesFailure):
-        eng.replay(eng.PROP13_HYPS_DATA, st, [eng.PROP13_GOAL],
-                   exclude_rules={"straight_angle [SMT-bridge]"})
+        eng.replay(eng.PROP13_HYPS_DATA, st, [eng.PROP13_GOAL])
