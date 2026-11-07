@@ -1655,7 +1655,7 @@ def test_prop23_use_witness_bad_case():
     eng.close(s)
     with pytest.raises(eng.MissingPremise) as ei:
         eng.apply_step(s, 99, "use_witness",
-                       ("f", "b", "a", "d", "c", "e"), {"f": "f"})
+                       ("f", "b", "a", "d", "c", "e", "AB"), {"f": "f"})
     assert ei.value.premise == ("entail", "eq_ang",
                                 ("b", "a", "b", "d", "c", "e"))
 
@@ -1665,6 +1665,91 @@ def test_prop23_final_state_not_contradictory():
     (main() asserts store satisfiability; make the fact side explicit)."""
     s, _ = eng.replay(eng.PROP23_HYPS_DATA, eng.PROP23_STEPS_DATA,
                       eng.PROP23_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness
+
+
+def test_prop23p_replay():
+    """I.23' (Prop23.lean:35-59): I.23's construction verbatim, plus the
+    hypothesis ¬(x.onLine AB) and the main branch citing the same-side
+    variant proposition_22'' (line 54) in place of 22'. The goal is
+    I.23's two conjuncts plus the disjunction f.onLine AB ∨
+    f.sameSide x AB — the fact kind "either", carried out of the
+    by_cases as the join of the branch facts (left half in the
+    degenerate branches, right half in the main branch)."""
+    s, rep = eng.replay(eng.PROP23P_HYPS_DATA, eng.PROP23P_STEPS_DATA,
+                        eng.PROP23P_GOAL)
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == ["by_cases"]
+    assert rep[0]["branches"] == 2
+    assert s.has(("neq", "f", "a"))
+    assert s.has(("either", ("on_line", "f", "AB"),
+                 ("same_side", "f", "x", "AB")))
+    assert eng.la_entails_eq_ang(s.la, "f", "a", "b", "d", "c", "e")
+    assert rep[-1]["final"]
+
+
+def test_prop23p_hyps_alone_do_not_entail_goal():
+    """The I.23' hypotheses alone entail no goal conjunct — f does not
+    exist before the construction, and the disjunction is not stored."""
+    s = eng.State()
+    for f, w in eng.PROP23P_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not s.has(("neq", "f", "a"))
+    assert not s.has(("either", ("on_line", "f", "AB"),
+                     ("same_side", "f", "x", "AB")))
+    assert not eng.la_entails_eq_ang(s.la, "f", "a", "b", "d", "c", "e")
+
+
+def test_prop23p_control_dropped_x_off_line():
+    """Drop ¬(x.onLine AB): the main branch's proposition_22'' citation
+    has no side to pick — refused at its not_on_line premise (the inner
+    by_cases branch reports the stuck step)."""
+    hyps = [h for h in eng.PROP23P_HYPS_DATA
+            if h[0] != ("not_on_line", "x", "AB")]
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.replay(hyps, eng.PROP23P_STEPS_DATA, eng.PROP23P_GOAL)
+    assert ei.value.branch == [("not_on_line", "d", "CE")]
+    assert ei.value.witness == ("stuck", ("not_on_line", "x", "AB"))
+
+
+def test_prop23p_degenerate_branches_unchanged():
+    """The degenerate branch (d on CE) is I.23's: same branch
+    assumptions, same step rules in the same order — the only change is
+    use_witness's extra line argument carrying the witness's on-line
+    fact, which I.23's replay shares."""
+    def degenerate(steps):
+        return steps[0][1][0]   # (assumptions, steps) of the d-on-CE branch
+    a23, s23 = degenerate(eng.PROP23_STEPS_DATA)
+    a23p, s23p = degenerate(eng.PROP23P_STEPS_DATA)
+    assert a23 == a23p == [("on_line", "d", "CE")]
+    (k1, br1, _), (k2, br2, _) = s23[0], s23p[0]
+    assert k1 == k2 == "by_cases"
+    assert [b[0] for b in br1] == [b[0] for b in br2]
+    assert [[st[0] for st in b[1]] for b in br1] == \
+           [[st[0] for st in b[1]] for b in br2]
+
+
+def test_prop23p_either_conclusion_checked_per_branch():
+    """The bad case the "either" check is named for: a by_cases whose
+    branches establish NEITHER disjunct must not carry the disjunction
+    out — refused as not-entailed, not stored."""
+    hyps = [(("dpl", "a", "b", "AB"), "h")]
+    disj = ("either", ("on_line", "f", "AB"), ("same_side", "f", "x", "AB"))
+    steps = [("by_cases", [
+        ([("on_line", "d", "CE")], []),
+        ([("not_on_line", "d", "CE")], []),
+    ], [disj])]
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.replay(hyps, steps, [])
+    assert ei.value.witness == ("not-entailed", disj)
+
+
+def test_prop23p_final_state_not_contradictory():
+    """The by_cases (with the disjunctive conclusion) concludes on the
+    OUTER state; it stays consistent."""
+    s, _ = eng.replay(eng.PROP23P_HYPS_DATA, eng.PROP23P_STEPS_DATA,
+                      eng.PROP23P_GOAL)
     contra, witness = eng.contradictory(s)
     assert not contra, witness
 

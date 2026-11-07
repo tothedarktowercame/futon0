@@ -2211,16 +2211,23 @@ CONSTRUCTIONS = {
     # about b (so the step asserts nothing the store does not already
     # hold); the make restates them under the witness name f, which the
     # by_cases conclusion then carries to the outer state as the
-    # eigenvariable of the case split. First use: Book I.23's
-    # degenerate zero branch (`use b`, Prop23.lean:15).
+    # eigenvariable of the case split. The line argument L carries the
+    # witness's on-line fact (on_line b L → on_line f L): Book I.23's
+    # goal has no such conjunct, but I.23''s does (f.onLine AB ∨
+    # f.sameSide x AB, Prop23.lean:37), and Lean's euclid_finish closes
+    # that disjunction's left half in the degenerate branches from
+    # b.onLine AB — so it is part of what `use` discharges there.
+    # First use: Book I.23's degenerate zero branch (`use b`,
+    # Prop23.lean:15).
     "use_witness": {
         "cite": "logic: Lean `use` (the witness renamed)",
-        "args": ("f", "b", "a", "d", "c", "e"),
-        "premises": lambda s, f, b, a, d, c, e: [("neq", b, a)],
-        "entail": lambda s, f, b, a, d, c, e: [
+        "args": ("f", "b", "a", "d", "c", "e", "L"),
+        "premises": lambda s, f, b, a, d, c, e, L: [
+            ("neq", b, a), ("on_line", b, L)],
+        "entail": lambda s, f, b, a, d, c, e, L: [
             ("eq_ang", (b, a, b, d, c, e))],
-        "make": lambda s, f, b, a, d, c, e: [
-            ("f", [("neq", "f", a),
+        "make": lambda s, f, b, a, d, c, e, L: [
+            ("f", [("neq", "f", a), ("on_line", "f", L),
                    ("_eq_ang", "f", a, b, d, c, e)])],
     },
     # SystemE/Theory/Inferences/Diagrammatic.lean:187 — triple_incidence_1
@@ -2332,6 +2339,12 @@ def _fact_holds(s, fact):
             return la_entails_lt_sum_rt_ang(s.la, *fact[1:])
     except FMTooLarge:
         return False  # undecided is not entailed
+    if k == "either":
+        # A disjunctive fact (Book I.23': f.onLine AB ∨ f.sameSide x AB,
+        # Prop23.lean:37): holds if the disjunction itself is in the
+        # store (carried out of a by_cases or made by the cited
+        # proposition_23') or if either disjunct holds in this state.
+        return fact in s.facts or any(_fact_holds(s, d) for d in fact[1:])
     if k == "_sum_ang":
         return ("sum_ang",) + tuple(fact[1:]) in s.facts
     if k == "_rt_ang":
@@ -2419,9 +2432,16 @@ def apply_step(s, i, rule, args, bindings):
                if base is not None}
 
     def _concrete(f):
-        f = tuple(namemap.get(x, x) if isinstance(x, str) else x for x in f)
-        return tuple(restore.get(x, x) if isinstance(x, str) else x
-                     for x in f)
+        # Recurse: a made fact may nest tuples (the "either" disjuncts of
+        # proposition_23'), and the fresh base name occurs inside them.
+        def _m(x):
+            if isinstance(x, tuple):
+                return tuple(_m(y) for y in x)
+            if isinstance(x, str):
+                y = namemap.get(x, x)   # fresh base -> its bound name
+                return restore.get(y, y)  # collision placeholder -> arg
+            return x
+        return tuple(_m(y) for y in f)
 
     # Pass 2: a binding to a DECLARED name is an identification claim
     # (P-euclid-binding-clash-2). Accepted iff every fact the step states
@@ -4365,7 +4385,7 @@ PROP23_STEPS_DATA = [
                 # ∠d:c:e = 0: the witness is b
                 ([("_zero_ang", "d", "c", "e")], [
                     ("angle_self_zero", ("b", "a"), {}),
-                    ("use_witness", ("f", "b", "a", "d", "c", "e"),
+                    ("use_witness", ("f", "b", "a", "d", "c", "e", "AB"),
                      {"f": "f"}),
                 ]),
                 # ∠d:c:e ≠ 0, i.e. between d c e: the witness is the
@@ -4465,6 +4485,81 @@ PROP22PP_STEPS_DATA = [
 ]
 # The goals: I.22''s five conjuncts plus same_side k x FE.
 PROP22PP_GOAL = PROP22P_GOAL + [("same_side", "k", "x", "FE")]
+
+
+# ---------------------------------------------------------------------------
+# Book I.23' (Prop23.lean:35, theorem proposition_23'): copy an angle onto
+# a given line at a given point, on EITHER side —
+#   distinctPointsOnLine a b AB ∧ formRectilinearAngle d c e CD CE ∧
+#   ¬(x.onLine AB) →
+#     ∃ f, f ≠ a ∧ (f.onLine AB ∨ f.sameSide x AB) ∧ ∠f:a:b = ∠d:c:e
+# The construction is proposition_23's verbatim (Prop23.lean:39-59) with
+# two changes: the extra hypothesis ¬(x.onLine AB), and the main branch
+# citing proposition_22'' c d c e e d a b x CD CE DE AB (line 54; the
+# same-side variant) in place of proposition_22', so f lands on x's side
+# of AB. The degenerate branches are unchanged from I.23: there the
+# witness (b, or the extension of AB past a) is ON AB — the disjunction's
+# left half (use_witness now carries the witness's on-line fact; in the
+# between branch on_line f AB closes from between b a f).
+#
+# The disjunctive conclusion is a new goal/fact KIND, "either": one
+# tuple ("either", d1, d2). A by_cases branch entails it when EITHER
+# disjunct holds in the branch state (_fact_holds); the by_cases carries
+# the disjunction itself out to the outer state (_conclude's plain-fact
+# path), where neither disjunct needs to hold individually — exactly the
+# join of the branch facts. This is the engine's first disjunctive
+# conclusion; no earlier replay needed one.
+PROP23P_HYPS_DATA = PROP23_HYPS_DATA + [
+    ((("not_on_line", "x", "AB"), "h")),   # ¬(x.onLine AB)
+]
+# The existential's body over the eigenvariable f: the I.23 conjuncts
+# plus the disjunction (shared by the outer by_cases, the nested
+# by_cases, and the replay's goal).
+PROP23P_CONCL_DATA = [
+    ("neq", "f", "a"),
+    ("either", ("on_line", "f", "AB"), ("same_side", "f", "x", "AB")),
+    ("_eq_ang", "f", "a", "b", "d", "c", "e"),
+]
+PROP23P_STEPS_DATA = [
+    ("by_cases", [
+        # -- degenerate branch: d on CE, unchanged from I.23
+        ([("on_line", "d", "CE")], [
+            ("by_cases", [
+                ([("_zero_ang", "d", "c", "e")], [
+                    ("angle_self_zero", ("b", "a"), {}),
+                    ("use_witness", ("f", "b", "a", "d", "c", "e", "AB"),
+                     {"f": "f"}),
+                ]),
+                ([("between", "d", "c", "e")], [
+                    ("flat_angle_onlyif", ("d", "c", "e"), {}),
+                    ("extend_point", ("AB", "b", "a"), {"x": "f"}),
+                    ("flat_angle_onlyif", ("b", "a", "f"), {}),
+                    ("between_symm_parts", ("f", "a", "b"), {}),
+                ]),
+            ], PROP23P_CONCL_DATA),
+        ]),
+        # -- main branch: d off CE, proposition_22'' in place of 22'
+        ([("not_on_line", "d", "CE")], [
+            ("line_from_points", ("d", "e"), {"L": "DE"}),
+            ("proposition_20", ("c", "d", "e", "CD", "DE", "CE"), {}),
+            ("proposition_20", ("d", "e", "c", "DE", "CE", "CD"), {}),
+            ("proposition_20", ("e", "c", "d", "CE", "CD", "DE"), {}),
+            # Prop23.lean:54 — as (f, g), with f same_side x AB
+            ("proposition_22''",
+             ("c", "d", "c", "e", "e", "d", "a", "b", "x",
+              "CD", "CE", "DE", "AB"), {"k": "f", "g": "g"}),
+            ("line_from_points", ("a", "f"), {"L": "AF"}),
+            ("line_from_points", ("f", "g"), {"L": "FG"}),
+            ("off_line_strict_triangle", ("f", "a", "g", "AB"), {}),
+            ("degenerated_angle_if", ("a", "g", "b", "AB"), {}),
+            ("angle_ray_eq_zero", ("g", "a", "b", "f"), {}),
+            ("proposition_8",
+             ("c", "d", "e", "a", "f", "g",
+              "CD", "DE", "CE", "AF", "FG", "AB"), {}),
+        ]),
+    ], PROP23P_CONCL_DATA),
+]
+PROP23P_GOAL = PROP23P_CONCL_DATA
 
 
 def _metric_state(hyps):
@@ -4635,6 +4730,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP23_HYPS_DATA, PROP23_STEPS_DATA,
                             PROP23_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "23'":
+            t0 = time.time()
+            s, rep = replay(PROP23P_HYPS_DATA, PROP23P_STEPS_DATA,
+                            PROP23P_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
