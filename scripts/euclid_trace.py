@@ -858,11 +858,11 @@ dragging)" % (a, b)
         if rule == "sum_angles_onlyif" and prop == 18:
             return ("engine-only step in this direction "
                     "(sum_angles_onlyif b a c d AB BC, Transfer.lean:90): "
-                    "the OTHER direction of the axiom Lean cites at "
-                    "Prop18.lean:17 (sum_angles_if) — the engine DERIVES "
+                    "the OTHER direction: the converse of the axiom Lean "
+                    "cites at Prop18.lean:17 (sum_angles_if, Transfer.lean:83) — the engine DERIVES "
                     "the angle-sum row angle a:b:c = angle a:b:d + "
                     "angle d:b:c that Lean's SMT discharges silently; "
-                    "same axiom, opposite direction. The conclusion's "
+                    "two converse axioms. The conclusion's "
                     "why: angle a:b:c > angle a:b:d (the part, angle "
                     "d:b:c > 0) = angle a:d:b (I.5') > angle d:c:b "
                     "(I.16) = angle b:c:a (d between a and c) — the goal")
@@ -1624,8 +1624,9 @@ def build_trace(prop):
             lean_entry = {"file": loc[0], "line": loc[1]}
             if len(loc) > 2 and loc[2] == "other-direction":
                 lean_note = ("Lean's line %d cites sum_angles_if — the "
-                             "OTHER direction of the same axiom "
-                             "(Transfer.lean); the engine uses "
+                             "OTHER direction: sum_angles_if (Transfer.lean:83) "
+                             "and sum_angles_onlyif (:90) are converse "
+                             "axioms; the engine uses "
                              "sum_angles_onlyif on the same arguments to "
                              "derive the angle-sum row Lean's SMT "
                              "discharges silently" % loc[1])

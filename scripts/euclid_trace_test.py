@@ -946,7 +946,7 @@ def test_bad_case_prop17_goal_margin_fails():
 # on segment a-c with |a-d| = |a-b|), not a hypothesis. Steps 1-4 are
 # Prop18.lean's euclid_apply lines 13-16; the engine's last step is
 # sum_angles_onlyif where Lean cites sum_angles_if (line 17) — the other
-# direction of the same Transfer.lean axiom — linked to line 17 with an
+# direction (its converse axiom, Transfer.lean:83/:90) — linked to line 17 with an
 # "other-direction" lean_note so the reader is not misled.
 
 TR18 = load(18)
