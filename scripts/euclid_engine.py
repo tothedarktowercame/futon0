@@ -1843,40 +1843,26 @@ def apply_step(s, i, rule, args, bindings):
     # the store goes unsat, after which everything is entailed. A name
     # only RESERVED (h-sm input about a not-yet-built object) may take
     # its one binding here.
+    # Pass 1: a name for every fresh object (binding, or auto-minted).
     fresh_names = []
-    identified = []  # per made-object: name it is identified with, else None
     for base, facts in made:
         if base is None:
             fresh_names.append(None)
-            identified.append(None)
             continue
         name = bindings.get(base)
         if name is None:
             name = s.new(base)
-        if name in s.declared:
-            concrete = [tuple((name if x == base else x) for x in f)
-                        for f in facts]
-            concrete = [tuple(restore.get(x, x) if isinstance(x, str) else x
-                              for x in f) for f in concrete]
-            if all(_fact_holds(s, f) for f in concrete):
-                fresh_names.append(name)
-                identified.append(name)
-                continue
-            raise MissingPremise(
-                i, rule, ("fresh", name),
-                f"(the step would identify its fresh object {base!r} with "
-                f"the existing {name!r}, but not every fact it states "
-                f"about {base!r} already holds of {name!r}; give the new "
-                f"object a new name)")
         fresh_names.append(name)
-        identified.append(None)
-    # all names validated: declare the genuinely new ones and consume
-    # their reservations
-    for name, ident in zip(fresh_names, identified):
-        if name is not None and ident is None:
-            s.reserved.discard(name)  # h-sm reservation consumed, once
-            s.declared.add(name)
-    added = []
+    # Review (claude-9, after 5dd4348): two fresh objects bound to ONE name
+    # (intersections_circle_line as (e, e)) identified them with each other
+    # and added neq e e: unsat store, everything entailed. Refused.
+    named = [n for n in fresh_names if n is not None]
+    for n in named:
+        if named.count(n) > 1:
+            raise MissingPremise(
+                i, rule, ("fresh", n),
+                f"(the step makes {named.count(n)} new objects and names "
+                f"them all {n!r}; each new object needs its own name)")
     # Substitute EVERY fresh base in every made fact: a rule with two fresh
     # objects (intersections_circle_line: e, g and their a ≠ b) names the
     # other fresh object in a None-base fact, and the own-base-only
@@ -1884,14 +1870,54 @@ def apply_step(s, i, rule, args, bindings):
     # escaped this only because its replays bind b'/c' identically).
     namemap = {base: name for (base, _), name in zip(made, fresh_names)
                if base is not None}
+
+    def _concrete(f):
+        f = tuple(namemap.get(x, x) if isinstance(x, str) else x for x in f)
+        return tuple(restore.get(x, x) if isinstance(x, str) else x
+                     for x in f)
+
+    # Pass 2: a binding to a DECLARED name is an identification claim
+    # (P-euclid-binding-clash-2). Accepted iff every fact the step states
+    # about that object holds already: its own facts AND (review, claude-9)
+    # every base-less fact naming it, e.g. a ≠ b when a is reused. All
+    # names are concretised with the full namemap, not only the own base.
+    identified = [n if n is not None and n in s.declared else None
+                  for n in fresh_names]
+    ident_set = {n for n in identified if n is not None}
+    for (base, facts), name, ident in zip(made, fresh_names, identified):
+        if base is None:
+            checks = [_concrete(f) for f in facts
+                      if ident_set & {namemap.get(x) for x in f
+                                      if isinstance(x, str)}]
+            who = next((namemap.get(x) for f in facts for x in f
+                        if isinstance(x, str) and namemap.get(x) in ident_set),
+                       None)
+        elif ident is not None:
+            checks = [_concrete(f) for f in facts]
+            who = name
+        else:
+            continue
+        if not all(_fact_holds(s, f) for f in checks):
+            raise MissingPremise(
+                i, rule, ("fresh", who),
+                f"(the step would identify a fresh object with the "
+                f"existing {who!r}, but not every fact it states about "
+                f"{who!r} already holds; give the new object a new name)")
+    # all names validated: declare the genuinely new ones and consume
+    # their reservations
+    for name, ident in zip(fresh_names, identified):
+        if name is not None and ident is None:
+            s.reserved.discard(name)  # h-sm reservation consumed, once
+            s.declared.add(name)
+    added = []
     for (base, facts), name, ident in zip(made, fresh_names, identified):
         if ident is not None:
             continue  # identification accepted: the step adds nothing
         for fact in facts:
-            fact = tuple(namemap.get(x, x) if isinstance(x, str) else x
-                         for x in fact)
-            fact = tuple(restore.get(x, x) if isinstance(x, str) else x
-                         for x in fact)
+            if base is None and ident_set & {namemap.get(x) for x in fact
+                                             if isinstance(x, str)}:
+                continue  # checked above: already holds, adds nothing
+            fact = _concrete(fact)
             if fact[0] == "_eq_len":
                 eq_len(s.la, *fact[1:])
                 s.add(("eq_len", *fact[1:]),

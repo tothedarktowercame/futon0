@@ -1509,3 +1509,43 @@ def test_identification_proposition_1_with_existing_witness_accepted():
     rep = eng.apply_step(s, 2, "proposition_1", ("a", "b", "AB"), {"d": "c"})
     assert rep["added"] == []
     assert len(s.facts) == nfacts and len(s.la.rows) == nrows
+
+
+# -- review (claude-9, after 5dd4348): identification with two fresh objects --
+
+def _i12_state_to_circle():
+    s = eng.State()
+    s.assume(("dpl", "p", "q", "L"))
+    s.assume(("not_on_line", "c", "L"))
+    eng.close(s)
+    eng.apply_step(s, 1, "exists_point_opposite", ("L", "c"), {"a": "d"})
+    eng.apply_step(s, 2, "circle_from_points", ("c", "d"), {"C": "EFG"})
+    eng.apply_step(s, 3, "intersection_circle_line_1",
+                   ("d", "c", "EFG", "L"), {})
+    return s
+
+
+def test_two_fresh_objects_one_new_name_refused():
+    """intersections_circle_line bound (x, x) added neq x x: unsat store."""
+    s = _i12_state_to_circle()
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 4, "intersections_circle_line", ("EFG", "L"),
+                       {"a": "x", "b": "x"})
+    assert ei.value.premise == ("fresh", "x")
+    assert ("neq", "x", "x") not in s.facts
+
+
+def test_two_fresh_objects_identified_with_one_point_refused():
+    """After (e, g) exist, binding (e, e) was ACCEPTED and added neq e e:
+    each own-base check passed, the base-less a ≠ b was added unchecked."""
+    s = _i12_state_to_circle()
+    eng.apply_step(s, 4, "intersections_circle_line", ("EFG", "L"),
+                   {"a": "e", "b": "g"})
+    with pytest.raises(eng.MissingPremise):
+        eng.apply_step(s, 5, "intersections_circle_line", ("EFG", "L"),
+                       {"a": "e", "b": "e"})
+    assert ("neq", "e", "e") not in s.facts
+    # the swapped pair is a sound no-op (g ≠ e already holds)
+    r = eng.apply_step(s, 6, "intersections_circle_line", ("EFG", "L"),
+                       {"a": "g", "b": "e"})
+    assert r["added"] == []
