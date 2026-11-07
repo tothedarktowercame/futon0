@@ -1013,3 +1013,102 @@ def test_bad_case_prop18_shorter_side_fails():
     x["a"] = (1.1, 0.5)  # |a-b| = ~1.21 > |a-c| = ~0.71
     fails = [d for d, ok in tr.verify18(x) if not ok]
     assert any("hypothesis |a-c| > |a-b|" in d for d in fails), fails
+
+
+# -- I.19 (kimi-2, packet P-euclid-viewer-I19) -------------------------------
+# I.19 (the greater angle is subtended by the greater side) is a by_contra
+# with two cited-lemma branches (Lean's by_cases |(a-c)| = |(a-b)| split):
+# branch 1 proposition_5' (equal sides give equal angles, against the
+# hypothesis), branch 2 proposition_18 (I.18 in triangle a-c-b). Like
+# I.14 the trace draws the TRUE configuration (angle a:b:c > angle b:c:a,
+# hence |a-c| > |a-b|); both branch assumptions are refuted, so the
+# branch facts must NOT hold in the placement. Steps link to
+# Prop19.lean:12 (by_contra), :13 (by_cases), :14 (proposition_5'),
+# :16 (proposition_18).
+
+TR19 = load(19)
+
+
+def test_prop19_rebuild_matches_disk():
+    rebuilt = tr.build_trace(19)
+    assert rebuilt["placement"] == TR19["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR19["steps"]
+
+
+def test_prop19_lean_lines_cover_the_split_and_apply_lines():
+    path = os.path.join(LEAN_DIR, TR19["lean_file"])
+    lines = open(path).read().splitlines()
+    for s in TR19["steps"]:
+        ln = s["lean"]["line"]
+        assert ln is not None, s  # all four steps linked
+        if s["rule"] == "by_contra":
+            assert lines[ln - 1].strip().startswith("by_contra"), s
+        elif s["rule"] == "by_cases":
+            assert lines[ln - 1].strip().startswith("by_cases"), s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    linked = [s["lean"]["line"] for s in TR19["steps"]]
+    assert linked == sorted(linked), linked
+    # both euclid_apply lines plus the by_contra and by_cases lines
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies <= set(linked) and len(linked) == len(applies) + 2
+
+
+def test_prop19_cases_recorded():
+    """Every step says which refuted assumption it runs under and that
+    the diagram draws the true configuration."""
+    for s in TR19["steps"]:
+        assert s.get("case"), s
+        assert s["case"] in s["placement_decision"], s
+        assert "TRUE configuration" in s["case"], s
+    cases = [s["case"] for s in TR19["steps"]]
+    assert any("|a-c| = |a-b|" in c and "proposition_5'" in c
+               and "contradicting the hypothesis" in c for c in cases)
+    assert any("|a-b| > |a-c|" in c and "proposition_18" in c
+               and "contradicting the hypothesis" in c for c in cases)
+    # the outer by_contra's conclusion is the goal
+    outer = TR19["steps"][0]
+    assert outer["rule"] == "by_contra"
+    assert outer["facts_added"] == [["gt_len", "a", "c", "a", "b"]]
+    # the split shows exactly the two refuted assumptions
+    split = TR19["steps"][1]
+    assert split["rule"] == "by_cases"
+    assert split["facts_added"] == [["eq_len", "a", "c", "a", "b"],
+                                    ["gt_len", "a", "b", "a", "c"]]
+
+
+def test_prop19_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR19["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify19(xy))
+    # the by_contra's conclusion (the goal) holds in the true placement
+    assert tr.metric_facts_hold([TR19["steps"][0]], xy) == []  # gt_len
+    # unchecked kind; checked directly:
+    assert dist(TR19, "a", "c") > dist(TR19, "a", "b") + 0.2
+    # the REFUTED branch facts (the split's assumptions and branch 1's
+    # equal-angles conclusion) must NOT hold in the true placement
+    refuted = tr.metric_facts_hold(TR19["steps"][1:], xy)
+    assert refuted and not any(ok for _, ok in refuted), refuted
+
+
+def _xy19():
+    return {k: tuple(v) for k, v in TR19["placement"].items() if v}
+
+
+def test_bad_case_prop19_angle_order_flipped_fails():
+    x = _xy19()
+    assert all(ok for _, ok in tr.verify19(x))
+    x["a"] = (1.1, 0.5)  # nearer c: angle a:b:c < angle b:c:a
+    fails = [d for d, ok in tr.verify19(x) if not ok]
+    assert any("hypothesis angle a:b:c > angle b:c:a" in d
+               for d in fails), fails
+
+
+def test_bad_case_prop19_isosceles_fails():
+    x = _xy19()
+    # |a-c| = |a-b| (branch 1's refuted assumption): a directly above
+    # the midpoint of b-c at the height that keeps |a-b| unchanged;
+    # both the hypothesis margin and the goal fail
+    h = math.sqrt(dist(TR19, "a", "b") ** 2 - 0.8 ** 2)
+    x["a"] = (0.8, h)
+    fails = [d for d, ok in tr.verify19(x) if not ok]
+    assert any("GOAL |a-c| > |a-b|" in d for d in fails), fails

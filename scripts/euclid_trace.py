@@ -358,6 +358,14 @@ FREE = {
     # angle a:b:c ~= 65.6 deg vs angle b:c:a = 45.0 deg — a ~0.36 rad
     # visible margin.
     18: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
+    # I.19 (the greater angle is subtended by the greater side): the same
+    # scalene triangle as I.16-I.18; here the hypothesis is the ANGLE
+    # comparison angle a:b:c ~= 65.6 deg > angle b:c:a = 45.0 deg and the
+    # goal is the length comparison |a-c| = ~1.556 > |a-b| = ~1.208.
+    # A by_contra (like I.14): the TRUE configuration is drawn; both
+    # branches' assumptions (|a-c| = |a-b|, |a-b| > |a-c|) are refuted
+    # and not drawn as such.
+    19: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -392,6 +400,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP17_HYPS_DATA), list(eng.PROP17_STEPS_DATA)
     if prop == 18:
         return list(eng.PROP18_HYPS_DATA), list(eng.PROP18_STEPS_DATA)
+    if prop == 19:
+        return list(eng.PROP19_HYPS_DATA), list(eng.PROP19_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -513,6 +523,15 @@ def objects_from_hyps(prop):
         # the triangle a-b-c and the three hypothesis lines; d is
         # CONSTRUCTED by step 1 (proposition_3 a c a b AC AB), not a
         # hypothesis
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
+    if prop == 19:
+        # the triangle a-b-c and the three hypothesis lines; I.19
+        # constructs nothing (a by_contra with two cited-lemma branches)
         return [{"name": n, "kind": "point", "jsx": {"type": "point"},
                  "def_step": 0} for n in ("a", "b", "c")] + [
                 {"name": L, "kind": "line", "jsx": {"type": "line",
@@ -769,6 +788,11 @@ dragging)" % (a, b)
             return ("; ".join(parts) + " (the assumption is not drawable; "
                     "the branch's construction steps are drawn in the "
                     "true configuration)")
+        if prop == 19:
+            return ("; ".join(parts) + " (the refuted assumptions are "
+                    "not drawable; the diagram shows the TRUE "
+                    "configuration — angle a:b:c > angle b:c:a, hence "
+                    "|a-c| > |a-b|)")
         return "; ".join(parts) + " (refuted branches are not drawn)"
     if rule == "by_cases":
         # no drawing for the split itself: the DRAWN case is branch 2 in
@@ -834,7 +858,7 @@ dragging)" % (a, b)
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
                 "proposition_4", "proposition_5'", "proposition_13",
                 "proposition_15",
-                "proposition_16", "sum_angles_onlyif",
+                "proposition_16", "proposition_18", "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
                 "triple_incidence_2",
@@ -871,6 +895,20 @@ dragging)" % (a, b)
                     "exterior-angle theorem): the exterior angle a:c:d "
                     "exceeds the interior angle a:b:c (= c:b:a as "
                     "canonical atoms) — angle a:c:d > angle a:b:c")
+        if rule == "proposition_5'" and prop == 19:
+            return ("cited step (proposition_5' a b c AB BC AC, the "
+                    "isosceles theorem): under the branch assumption "
+                    "|a-c| = |a-b| the base angles are equal — angle "
+                    "a:b:c = angle a:c:b = angle b:c:a — contradicting "
+                    "the hypothesis angle a:b:c > angle b:c:a")
+        if rule == "proposition_18" and prop == 19:
+            return ("cited step (proposition_18 a c b AC BC AB — I.18, "
+                    "the greater side subtends the greater angle, in "
+                    "triangle a-c-b): under the branch assumption "
+                    "|a-b| > |a-c| the angle opposite a-b exceeds the "
+                    "angle opposite a-c — angle b:c:a > angle a:b:c — "
+                    "contradicting the hypothesis angle a:b:c > "
+                    "angle b:c:a")
         if rule == "proposition_13" and prop == 17:
             return ("cited step (proposition_13 a c b d AC BC, the "
                     "linear pair): angle b:c:a + angle a:c:d = two right "
@@ -1283,6 +1321,36 @@ def verify18(xy):
     ]
 
 
+def verify19(xy):
+    """I.19 (the greater angle is subtended by the greater side — the
+    converse of I.18, a by_contra drawn in the TRUE configuration):
+    the drawn facts are the hypotheses — the scalene triangle a-b-c
+    with a off BC and angle a:b:c > angle b:c:a by a visible margin —
+    plus the conclusion numerically: |a-c| > |a-b| by a visible
+    margin. Both refuted branch assumptions (|a-c| = |a-b| and
+    |a-b| > |a-c|) fail these checks, as they must."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(p, q, r):
+        return ((xy[q][0] - xy[p][0]) * (xy[r][1] - xy[p][1])
+                - (xy[q][1] - xy[p][1]) * (xy[r][0] - xy[p][0]))
+
+    abc = _ang(xy, "a", "b", "c")
+    bca = _ang(xy, "b", "c", "a")
+    return [
+        ("I.19: scalene triangle (all three side lengths distinct)",
+         len({round(dist(p, q), 9)
+              for p, q in (("a", "b"), ("b", "c"), ("a", "c"))}) == 3),
+        ("I.19: a off BC (a genuine triangle)",
+         abs(cross("b", "c", "a")) > EPS * dist("b", "c")
+         * dist("a", "c")),
+        ("I.19: hypothesis angle a:b:c > angle b:c:a, with a visible "
+         "margin (at least 0.15 rad)", abc > bca + 0.15),
+        ("I.19: GOAL |a-c| > |a-b|, with a visible margin (at least "
+         "0.2)", dist("a", "c") > dist("a", "b") + 0.2),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1314,6 +1382,8 @@ def verify(prop, xy):
         return verify17(xy)
     if prop == 18:
         return verify18(xy)
+    if prop == 19:
+        return verify19(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1507,6 +1577,76 @@ def build_trace14_rows(hyps, steps):
     return rows, s
 
 
+# I.19 display decision (packet P-euclid-viewer-I19): like I.14, the
+# proof is a by_contra, so the trace draws the TRUE configuration (the
+# scalene triangle with angle a:b:c > angle b:c:a, hence |a-c| > |a-b|)
+# and every branch step says in the info bar which refuted assumption it
+# runs under (branch 1: |a-c| = |a-b|; branch 2: |a-b| > |a-c|) and which
+# hypothesis it contradicts. I.19 constructs nothing: each branch is a
+# single cited lemma (proposition_5' / proposition_18) and the
+# contradictions are arithmetic (Lean's euclid_finish / SMT).
+DRAWN19 = ("under an assumption the proof refutes; not drawn as such — "
+           "the diagram shows the TRUE configuration (angle a:b:c > "
+           "angle b:c:a, hence |a-c| > |a-b|)")
+BR19_1 = ("branch 1 (|a-c| = |a-b|): refuted — proposition_5' gives "
+          "angle a:b:c = angle b:c:a, contradicting the hypothesis "
+          "angle a:b:c > angle b:c:a; " + DRAWN19)
+BR19_2 = ("branch 2 (|a-b| > |a-c|): refuted — proposition_18 (I.18 in "
+          "triangle a-c-b) gives angle b:c:a > angle a:b:c, "
+          "contradicting the hypothesis; " + DRAWN19)
+
+
+def build_trace19_rows(hyps, steps):
+    """I.19 is a by_contra whose two branches (Lean's by_cases
+    |(a─c)| = |(a─b)| split) each hold a single cited lemma (see
+    PROP19_STEPS_DATA). The trace flattens it: the by_contra (Lean's
+    by_contra line), the split (Lean's by_cases line), then both
+    branches' steps, each replayed on a state copy and exhibited
+    contradictory. Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop19.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop19.lean"
+    ln_by_contra = next(i + 1 for i, l in enumerate(lean_lines)
+                        if l.strip().startswith("by_contra"))
+    ln_by_cases = next(i + 1 for i, l in enumerate(lean_lines)
+                       if l.strip().startswith("by_cases"))
+    ln_p5 = next(i + 1 for i, l in enumerate(lean_lines)
+                 if "proposition_5'" in l)
+    ln_p18 = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "proposition_18" in l)
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+    top = eng.run_steps(s, steps)[0]  # the single outer by_contra report
+
+    _tag, branches, conclusions = steps[0]
+    rows = [("by_contra", branches, conclusions,
+             dict(top, added=[tuple(c) for c in conclusions]),
+             (rel, ln_by_contra),
+             DRAWN19 + "; the conclusion (|a-c| > |a-b|) is what the "
+             "diagram draws")]
+    rows.append(("by_cases", [list(f) for a, _ in branches for f in a],
+                 [list(f) for a, _ in branches for f in a], {},
+                 (rel, ln_by_cases),
+                 "Lean's `by_cases |(a-c)| = |(a-b)|` line; under the "
+                 "by_contra's assumption not |a-c| > |a-b|, trichotomy "
+                 "on the two lengths leaves exactly these two branches; "
+                 + DRAWN19))
+    for (assume, bsteps), note, ln in zip(branches, (BR19_1, BR19_2),
+                                          (ln_p5, ln_p18)):
+        reps, bstate = _run_branch14(s0, assume, bsteps)
+        ok, _w = eng.contradictory(bstate)
+        assert ok, "I.19 branch must end contradictory"
+        for (r, a, b), rep in zip(bsteps, reps):
+            rows.append((r, a, b, rep, (rel, ln), note))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
     if prop == 13:
@@ -1519,6 +1659,12 @@ def build_trace(prop):
         # state copy (see build_trace14_rows); the replay itself is the
         # check (each inner branch is exhibited contradictory)
         rows, _s = build_trace14_rows(hyps, steps)
+        name_map = {}
+    elif prop == 19:
+        # by_contra with two cited-lemma branches (see
+        # build_trace19_rows); each branch is replayed on a state copy
+        # and exhibited contradictory
+        rows, _s = build_trace19_rows(hyps, steps)
         name_map = {}
     else:
         # engine replay (premises checked, facts collected); props 4-5

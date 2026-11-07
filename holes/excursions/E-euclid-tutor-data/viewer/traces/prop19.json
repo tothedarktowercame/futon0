@@ -1,0 +1,406 @@
+{
+ "prop": 19,
+ "title": "Elements I.19 (LeanEuclid Book/Prop19.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "eq_len",
+       "a",
+       "c",
+       "a",
+       "b"
+      ]
+     ],
+     [
+      [
+       "proposition_5'",
+       [
+        "a",
+        "b",
+        "c",
+        "AB",
+        "BC",
+        "AC"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "gt_len",
+       "a",
+       "b",
+       "a",
+       "c"
+      ]
+     ],
+     [
+      [
+       "proposition_18",
+       [
+        "a",
+        "c",
+        "b",
+        "AC",
+        "BC",
+        "AB"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "gt_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ]
+   ],
+   "facts_added": [
+    [
+     "gt_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop19.lean",
+    "line": 12
+   },
+   "placement_decision": "under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|); the conclusion (|a-c| > |a-b|) is what the diagram draws; case split: assume [('eq_len', 'a', 'c', 'a', 'b')] \u2014 refuted by [\"proposition_5'\"]; case split: assume [('gt_len', 'a', 'b', 'a', 'c')] \u2014 refuted by ['proposition_18'] (the refuted assumptions are not drawable; the diagram shows the TRUE configuration \u2014 angle a:b:c > angle b:c:a, hence |a-c| > |a-b|)",
+   "case": "under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|); the conclusion (|a-c| > |a-b|) is what the diagram draws"
+  },
+  {
+   "n": 2,
+   "rule": "by_cases",
+   "args": [
+    [
+     "eq_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ],
+    [
+     "gt_len",
+     "a",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "bindings": [
+    [
+     "eq_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ],
+    [
+     "gt_len",
+     "a",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "facts_added": [
+    [
+     "eq_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ],
+    [
+     "gt_len",
+     "a",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop19.lean",
+    "line": 13
+   },
+   "placement_decision": "Lean's `by_cases |(a-c)| = |(a-b)|` line; under the by_contra's assumption not |a-c| > |a-b|, trichotomy on the two lengths leaves exactly these two branches; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|); case split \u2014 the drawn diagram shows the general case; the other cases are checked by the engine (see the case note on each step), not drawn",
+   "case": "Lean's `by_cases |(a-c)| = |(a-b)|` line; under the by_contra's assumption not |a-c| > |a-b|, trichotomy on the two lengths leaves exactly these two branches; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|)"
+  },
+  {
+   "n": 3,
+   "rule": "proposition_5'",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "AB",
+    "BC",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "b",
+     "c",
+     "a",
+     "c",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'b', 'a', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop19.lean",
+    "line": 14
+   },
+   "placement_decision": "branch 1 (|a-c| = |a-b|): refuted \u2014 proposition_5' gives angle a:b:c = angle b:c:a, contradicting the hypothesis angle a:b:c > angle b:c:a; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|); cited step (proposition_5' a b c AB BC AC, the isosceles theorem): under the branch assumption |a-c| = |a-b| the base angles are equal \u2014 angle a:b:c = angle a:c:b = angle b:c:a \u2014 contradicting the hypothesis angle a:b:c > angle b:c:a",
+   "case": "branch 1 (|a-c| = |a-b|): refuted \u2014 proposition_5' gives angle a:b:c = angle b:c:a, contradicting the hypothesis angle a:b:c > angle b:c:a; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|)"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_18",
+   "args": [
+    "a",
+    "c",
+    "b",
+    "AC",
+    "BC",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_ang",
+     "a",
+     "c",
+     "b",
+     "c",
+     "b",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "neq",
+     "a",
+     "b"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "AC"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('a', 'b', 'a', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop19.lean",
+    "line": 16
+   },
+   "placement_decision": "branch 2 (|a-b| > |a-c|): refuted \u2014 proposition_18 (I.18 in triangle a-c-b) gives angle b:c:a > angle a:b:c, contradicting the hypothesis; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|); cited step (proposition_18 a c b AC BC AB \u2014 I.18, the greater side subtends the greater angle, in triangle a-c-b): under the branch assumption |a-b| > |a-c| the angle opposite a-b exceeds the angle opposite a-c \u2014 angle b:c:a > angle a:b:c \u2014 contradicting the hypothesis angle a:b:c > angle b:c:a",
+   "case": "branch 2 (|a-b| > |a-c|): refuted \u2014 proposition_18 (I.18 in triangle a-c-b) gives angle b:c:a > angle a:b:c, contradicting the hypothesis; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (angle a:b:c > angle b:c:a, hence |a-c| > |a-b|)"
+  }
+ ],
+ "placement": {
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.6,
+   0.0
+  ],
+  "a": [
+   0.5,
+   1.1
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.19: scalene triangle (all three side lengths distinct)",
+   "ok": true
+  },
+  {
+   "check": "I.19: a off BC (a genuine triangle)",
+   "ok": true
+  },
+  {
+   "check": "I.19: hypothesis angle a:b:c > angle b:c:a, with a visible margin (at least 0.15 rad)",
+   "ok": true
+  },
+  {
+   "check": "I.19: GOAL |a-c| > |a-b|, with a visible margin (at least 0.2)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop19.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop05",
+  "import Book.Prop18",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_19 : \u2200 (a b c : Point) (AB BC AC : Line),",
+  "  formTriangle a b c AB BC AC \u2227 (\u2220 a:b:c > \u2220 b:c:a) \u2192",
+  "  (|(a\u2500c)| > |(a\u2500b)|) :=",
+  "by",
+  "  euclid_intros",
+  "  by_contra",
+  "  by_cases |(a\u2500c)| = |(a\u2500b)|",
+  "  . euclid_apply (proposition_5' a b c AB BC AC)",
+  "    euclid_finish",
+  "  . euclid_apply (proposition_18 a c b AC BC AB)",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}
