@@ -1,0 +1,122 @@
+{
+ "review": true,
+ "prop": "I.3",
+ "title": "review: i3-prop2-omitted \u2014 student attempt on I.3",
+ "name": "i3-prop2-omitted",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c0",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c1",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "C",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c0",
+     "c1"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "circle_from_points ('a', 'd')",
+   "valid": false,
+   "progress": "invalid",
+   "why": "uses d before it exists",
+   "d_before": null,
+   "d_after": null,
+   "state_note": "step not applied; later steps are reviewed against the state without it",
+   "badge": "invalid",
+   "drawn": false,
+   "placement_decision": "step not applied \u2014 nothing drawn for it"
+  },
+  {
+   "n": 2,
+   "rule": "intersection_circle_line_between_points ('DEF', 'AB', 'a', 'b')",
+   "valid": false,
+   "progress": "invalid",
+   "why": "uses DEF before it exists",
+   "d_before": null,
+   "d_after": null,
+   "state_note": "step not applied; later steps are reviewed against the state without it",
+   "badge": "invalid",
+   "drawn": false,
+   "placement_decision": "step not applied \u2014 nothing drawn for it"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   5.0,
+   0.0
+  ],
+  "c0": [
+   0.0,
+   1.0
+  ],
+  "c1": [
+   2.0,
+   1.0
+  ]
+ },
+ "summary": {
+  "invalid_steps": 2,
+  "undecided_steps": 0,
+  "engine_errors": 0,
+  "blocked_steps": 0,
+  "incomplete": false,
+  "goal_held": false,
+  "remaining_distance": 3,
+  "steps_drawn": 0
+ }
+}

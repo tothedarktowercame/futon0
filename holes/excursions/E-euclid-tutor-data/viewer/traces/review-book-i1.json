@@ -1,0 +1,137 @@
+{
+ "review": true,
+ "prop": "I.1",
+ "title": "review: book-i1 \u2014 student attempt on I.1",
+ "name": "book-i1",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BCD",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "a",
+    "through": "b"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "ACE",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "b",
+    "through": "a"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "BCD",
+     "ACE"
+    ],
+    "idx": 0
+   },
+   "def_step": 3
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "circle_from_points ('a', 'b')",
+   "valid": true,
+   "progress": "progress",
+   "why": "apply_step succeeded",
+   "d_before": 3,
+   "d_after": 2,
+   "state_note": null,
+   "badge": "valid-progress",
+   "drawn": true,
+   "placement_decision": "circle with centre a through b (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 2,
+   "rule": "circle_from_points ('b', 'a')",
+   "valid": true,
+   "progress": "progress",
+   "why": "apply_step succeeded",
+   "d_before": 2,
+   "d_after": 1,
+   "state_note": null,
+   "badge": "valid-progress",
+   "drawn": true,
+   "placement_decision": "circle with centre b through a (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 3,
+   "rule": "intersection_circles ('BCD', 'ACE')",
+   "valid": true,
+   "progress": "progress",
+   "why": "apply_step succeeded",
+   "d_before": 1,
+   "d_after": 0,
+   "state_note": null,
+   "badge": "valid-progress",
+   "drawn": true,
+   "placement_decision": "no distinguishing fact recorded (arbitrary pick; both candidates satisfy every fact of the step)"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.0,
+   0.0
+  ],
+  "BCD": null,
+  "ACE": null,
+  "c": [
+   0.5,
+   0.8660254037844386
+  ]
+ },
+ "summary": {
+  "invalid_steps": 0,
+  "undecided_steps": 0,
+  "engine_errors": 0,
+  "blocked_steps": 0,
+  "incomplete": false,
+  "goal_held": true,
+  "remaining_distance": 0,
+  "steps_drawn": 3
+ }
+}

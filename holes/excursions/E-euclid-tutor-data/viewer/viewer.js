@@ -8,8 +8,12 @@
 
 const params = new URLSearchParams(location.search);
 const prop = params.get("prop") || "1";
-const traceUrl = "traces/prop0" + prop + ".json";
-document.getElementById("prop-select").value = prop;
+const review = params.get("review");
+const traceUrl = review
+  ? "traces/review-" + review + ".json"
+  : "traces/prop0" + prop + ".json";
+document.getElementById("prop-select").value =
+  review ? "review-" + review : prop;
 
 let trace = null;
 let cur = 0;              // current step (0 = hypotheses only)
@@ -58,7 +62,10 @@ function fitBBox() {
 }
 
 document.getElementById("prop-select").onchange = () => {
-  location.search = "?prop=" + document.getElementById("prop-select").value;
+  const v = document.getElementById("prop-select").value;
+  location.search = v.startsWith("review-")
+    ? "?review=" + v.slice("review-".length)
+    : "?prop=" + v;
 };
 document.getElementById("btn-fwd").onclick = () => setStep(Math.min(cur + 1, trace.steps.length));
 document.getElementById("btn-back").onclick = () => setStep(Math.max(cur - 1, 0));
@@ -68,7 +75,7 @@ document.getElementById("toggle-aux").onchange = () => draw();
 fetch(traceUrl).then(r => r.json()).then(t => {
   trace = t;
   window.__TRACE = t;  // exposed for the headless self-check only
-  renderLean();
+  if (t.review) renderReview(); else renderLean();
   setStep(0);
 }).catch(function (e) {
   document.getElementById("step-info").textContent =
@@ -105,6 +112,50 @@ function renderLean() {
     tr.appendChild(td1); tr.appendChild(td2);
     tbl.appendChild(tr);
     els[ln] = tr;
+  });
+  wrap.innerHTML = "";
+  wrap.appendChild(tbl);
+}
+
+// ------------------------------------------------------------- review pane
+// A reviewed student attempt (traces/review-*.json): the right panel is the
+// student's step list, one badge per review row, the "why" in the step-info
+// bar. Steps that were applied also draw; the rest draw nothing (their rows
+// are never hover-drawn: no objects carry their step number).
+
+const BADGE_LABEL = {
+  "valid-progress": "VALID · progress",
+  "valid-no-progress": "VALID · no progress",
+  "invalid": "INVALID",
+  "unknown": "NOT DECIDED",
+};
+
+function renderReview() {
+  const wrap = document.getElementById("lean-wrap");
+  const tbl = document.createElement("table");
+  tbl.className = "lean review";
+  trace.steps.forEach(s => {
+    const tr = document.createElement("tr");
+    tr.className = "step-line future";
+    tr.dataset.step = s.n;
+    tr.onmouseenter = () => hoverStep(s.n, true);
+    tr.onmouseleave = () => hoverStep(s.n, false);
+    tr.onclick = () => setStep(s.n);
+    const td1 = document.createElement("td");
+    td1.className = "ln";
+    td1.textContent = s.n;
+    const td2 = document.createElement("td");
+    td2.className = "code";
+    td2.textContent = s.rule + (s.drawn ? "" : "  (not drawn)");
+    const td3 = document.createElement("td");
+    td3.className = "badge-cell";
+    const b = document.createElement("span");
+    b.className = "badge " + s.badge;
+    b.textContent = BADGE_LABEL[s.badge] || s.badge;
+    td3.appendChild(b);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+    tbl.appendChild(tr);
+    els[s.n] = tr;   // keyed by step number in review mode
   });
   wrap.innerHTML = "";
   wrap.appendChild(tbl);
@@ -282,8 +333,9 @@ function stepObjects(n) {
 
 function hoverStep(n, on) {
   const step = trace.steps.find(s => s.n === n);
-  if (step && els[step.lean.line])
-    els[step.lean.line].classList.toggle("hover", on);
+  const key = trace.review ? n : (step && step.lean ? step.lean.line : null);
+  if (step && key !== null && els[key])
+    els[key].classList.toggle("hover", on);
   clearExtras();
   if (on && step) {
     if (step.superposition) drawSuperposition(step.superposition);
@@ -311,9 +363,37 @@ function currentStep() { return trace.steps.find(s => s.n === cur) || null; }
 function showInfo(step) {
   const info = document.getElementById("step-info");
   if (!step) {
+    if (trace.review) {
+      const s = trace.summary;
+      const v = (trace.verification || [])
+        .map(c => c.check + (c.ok ? " ✓" : " ✗"));
+      info.innerHTML = "<b>" + trace.title + "</b> — step ▶ to walk the " +
+        "student's steps. Review: goal " +
+        (s.goal_held ? "reached" : "NOT reached") +
+        ", remaining distance " + s.remaining_distance +
+        ", invalid " + s.invalid_steps + ", undecided " + s.undecided_steps +
+        ", engine errors " + s.engine_errors + ", blocked " + s.blocked_steps +
+        (s.incomplete ? " — REVIEW INCOMPLETE" : "") +
+        (v.length ? ". " + v.join("; ") : "");
+      return;
+    }
     const v = trace.verification.map(c => c.check + (c.ok ? " ✓" : " ✗"));
     info.innerHTML = "<b>hypotheses</b> — step ▶ to begin. "
       + "Verification of the final placement: " + v.join("; ");
+    return;
+  }
+  if (trace.review) {
+    const d = (step.d_before === null || step.d_before === undefined)
+      ? "?" : step.d_before;
+    const d2 = (step.d_after === null || step.d_after === undefined)
+      ? "?" : step.d_after;
+    info.innerHTML =
+      "<b>step " + step.n + "</b> <code>" + step.rule + "</code> — " +
+      "<span class='badge " + step.badge + "'>" +
+      (BADGE_LABEL[step.badge] || step.badge) + "</span>" +
+      " — distance " + d + " → " + d2 + "<br>" + step.why +
+      "<br>placement: " + step.placement_decision +
+      (step.state_note ? "<br>" + step.state_note : "");
     return;
   }
   const facts = step.facts_added.map(f =>
@@ -338,6 +418,13 @@ function setStep(n) {
   document.getElementById("step-count").textContent =
     "step " + n + " / " + trace.steps.length;
   for (const s of trace.steps) {
+    if (trace.review) {
+      if (els[s.n]) {
+        els[s.n].classList.toggle("done", s.n <= cur);
+        els[s.n].classList.toggle("future", s.n > cur);
+      }
+      continue;
+    }
     const tr = els[s.lean.line];
     if (!tr) continue;
     tr.classList.toggle("done", s.n <= cur);

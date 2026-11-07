@@ -32,17 +32,37 @@
   .fact { font-family: monospace; background: #f2f2f2; padding: 0 4px;
           border-radius: 3px; margin-right: 6px; }
   #toggle-aux { font-size: 12px; }
+  td.badge-cell { white-space: normal; padding-left: 8px; }
+  span.badge { font-size: 11px; padding: 1px 6px; border-radius: 8px;
+               white-space: nowrap; }
+  span.badge.valid-progress { background: #d4f0c8; color: #1c5e0f;
+                              border: 1px solid #4e9b37; }
+  span.badge.valid-no-progress { background: #e6e6e6; color: #555;
+                                 border: 1px solid #999; }
+  span.badge.invalid { background: #f6d2d0; color: #8f130c;
+                       border: 1px solid #b6402f; }
+  span.badge.unknown { background: #f7e6c6; color: #7a5300;
+                       border: 1px solid #c99a2e; }
+  tr.step-line.done td.code.badged-invalid { background: #fbeae9; }
 </style>
 </head>
 <body>
 <header>
   <b>E-euclid-tutor</b>
   <select id="prop-select">
+  <optgroup label="Book propositions">
     <option value="1">I.1 equilateral</option>
     <option value="2">I.2 transfer length</option>
     <option value="3">I.3 cut off shorter</option>
     <option value="4">I.4 SAS superposition</option>
     <option value="5">I.5 isosceles angles</option>
+  </optgroup>
+  <optgroup label="Reviewed student attempts">
+    <option value="review-book-i1">review: Book I.1</option>
+    <option value="review-i1-useless-step">review: I.1 useless step</option>
+    <option value="review-i1-diagram-trusting">review: I.1 diagram-trusting</option>
+    <option value="review-i3-prop2-omitted">review: I.3 prop 2 omitted</option>
+  </optgroup>
   </select>
   <button id="btn-reset">⏮ reset</button>
   <button id="btn-back">◀ back</button>
