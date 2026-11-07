@@ -29,7 +29,7 @@ set -uo pipefail
 
 STORE="${FUTON1B_STORE_DIR:-$HOME/code/futon1b/migration-store-21}"
 export RESTIC_PASSWORD_FILE="${RESTIC_PASSWORD_FILE:-$HOME/.config/evidence-backup/restic-password}"
-HUBS=(${EVIDENCE_BACKUP_HUBS:-metameso lucy-joe})   # ~/.ssh/config aliases
+HUBS=(${EVIDENCE_BACKUP_HUBS:-metameso lucy})   # ~/.ssh/config aliases
 REMOTE_DIR=/home/joe/backups/evidence
 DRY=""; [ "${1:-}" = "--dry-run" ] && DRY="--dry-run"
 
