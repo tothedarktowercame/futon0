@@ -414,6 +414,27 @@ PROP18_ENGINE_CITABLE = [
     "sum_angles_onlyif",
 ]
 
+# Book/Prop19.lean:7-9 verbatim: the greater angle is subtended by the
+# greater side.
+PROP19_STATEMENT = """\
+theorem proposition_19 : ∀ (a b c : Point) (AB BC AC : Line),
+  formTriangle a b c AB BC AC ∧ (∠ a:b:c > ∠ b:c:a) →
+  (|(a─c)| > |(a─b)|) :="""
+
+# The engine's own I.19 steps (euclid_engine.PROP19_STEPS_DATA, read
+# live): a by_contra whose branch list IS the split — branch 1 assumes
+# |(a─c)| = |(a─b)| and cites proposition_5' a b c AB BC AC; branch 2
+# assumes |(a─b)| > |(a─c)| and cites proposition_18 a c b AC BC AB —
+# exactly Book/Prop19.lean:12-16's shape (by_contra; by_cases
+# |(a─c)| = |(a─b)|; two bullets of euclid_apply + euclid_finish).
+# Lean's negative by_cases branch supplies only ¬(|(a─c)| = |(a─b)|),
+# so the engine's branch-2 gt_len form IS needed as an assert and is
+# emitted as a CHECKED euclid_assert (trichotomy from ¬> and ¬=);
+# euclid_finish does not close branch 2 without it. No witness.
+PROP19_ENGINE_CITABLE = [
+    "proposition_5'", "proposition_18",
+]
+
 
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
@@ -522,6 +543,17 @@ PROPS = {
                         statement=PROP18_STATEMENT, book_steps=None,
                         witness=None, engine="I.18",
                         engine_citable=PROP18_ENGINE_CITABLE),
+    # The ENGINE's own I.19 steps (euclid_engine.PROP19_STEPS_DATA, read
+    # live): a by_contra whose two branches ARE the case split, emitted
+    # by emit_proof19 (emitter="by_contra", split directly in the
+    # by_contra's branch list — unlike I.14's nested-by_contra shape).
+    # No existential witness, statement/imports as Book/Prop19.lean.
+    # See the comment above PROP19_ENGINE_CITABLE.
+    "I.19-engine": dict(imports=["SystemE", "Book.Prop05", "Book.Prop18"],
+                        statement=PROP19_STATEMENT, book_steps=None,
+                        witness=None, engine="I.19",
+                        engine_citable=PROP19_ENGINE_CITABLE,
+                        emitter="by_contra"),
 }
 
 
@@ -707,6 +739,9 @@ def engine_steps(prop):
 CASE_FACT_LEAN = {
     "eq_ang": lambda a: f"∠ {a[0]}:{a[1]}:{a[2]} = ∠ {a[3]}:{a[4]}:{a[5]}",
     "same_side": lambda a: f"{a[0]}.sameSide {a[1]} {a[2]}",
+    # I.19: the by_cases split is on a LENGTH equality.
+    "eq_len": lambda a: f"|({a[0]}─{a[1]})| = |({a[2]}─{a[3]})|",
+    "gt_len": lambda a: f"|({a[0]}─{a[1]})| > |({a[2]}─{a[3]})|",
 }
 
 
@@ -851,6 +886,63 @@ def emit_proof14():
     return "\n".join(lines) + "\n"
 
 
+# ---------------------------------------------------------------------------
+# I.19-engine: by_contra whose branch list IS the split (E-kimi-task-406)
+# ---------------------------------------------------------------------------
+
+
+def engine_steps19():
+    """The engine's PROP19_STEPS_DATA as translated steps for emit_proof19.
+
+    Unlike I.14 (outer by_contra wrapping flat steps ending in a NESTED
+    by_contra), I.19's by_contra carries the two case branches directly:
+    branch 1 ([eq_len a c a b], proposition_5'), branch 2
+    ([gt_len a b a c], proposition_18). They become the ("by_cases", ...)
+    node's branches verbatim — branch 1's eq_len is the split proposition
+    (Book/Prop19.lean:13's `by_cases |(a─c)| = |(a─b)|`), and branch 2's
+    gt_len is KEPT (unlike I.14's dropped opposing_sides): Lean's
+    negative branch supplies only ¬(|(a─c)| = |(a─b)|, so _emit_block
+    emits it as a CHECKED euclid_assert (trichotomy with the by_contra
+    hypothesis ¬(|(a─c)| > |(a─b)|)); euclid_finish cannot close branch 2
+    from the bare negations' proposition_18 premise without it.
+    """
+    eng = _engine()
+    data = eng.PROP19_STEPS_DATA
+    if len(data) != 1 or data[0][0] != "by_contra":
+        raise ValueError("PROP19_STEPS_DATA must be a single by_contra "
+                         "whose branch list is the case split")
+    _, branches, conclusions = data[0]
+    if len(branches) != 2:
+        raise ValueError("PROP19_STEPS_DATA by_contra must have exactly "
+                         "two branches (the length trichotomy split)")
+    conv = []
+    for facts, bsteps in branches:
+        tb = []
+        for bs in bsteps:
+            tb.extend(translate_engine_steps([bs]))
+        conv.append((list(facts), tb))
+    return [("by_cases", conv, conclusions)]
+
+
+def emit_proof19():
+    """The full Lean source for I.19-engine (by_contra emitter)."""
+    cfg = PROPS["I.19-engine"]
+    lines = [f"import {imp}" for imp in cfg["imports"]]
+    lines.append("")
+    lines.append("namespace Elements.Book1")
+    lines.append("")
+    lines.append(cfg["statement"])
+    lines.append("by")
+    lines.append("  euclid_intros")
+    # Lean's by_contra supplies ¬(|(a─c)| > |(a─b)|); the by_cases branches
+    # close the False goal, so no trailing euclid_finish (as at I.14).
+    lines.append("  by_contra")
+    lines.extend(_emit_block(engine_steps19(), 1))
+    lines.append("")
+    lines.append("end Elements.Book1")
+    return "\n".join(lines) + "\n"
+
+
 def emit_step(rule, args, bindings):
     """One euclid_apply line from an engine step."""
     return "\n".join(_step_lines(rule, args, bindings, lean))
@@ -954,7 +1046,7 @@ def certify_book():
         if cfg.get("emitter") == "by_cases":
             src = emit_proof13()
         elif cfg.get("emitter") == "by_contra":
-            src = emit_proof14()
+            src = emit_proof14() if prop == "I.14-engine" else emit_proof19()
         elif cfg.get("engine"):
             src = emit_proof(prop, engine_steps(cfg["engine"]), cfg["witness"],
                              finish=cfg.get("finish", "euclid_finish"))

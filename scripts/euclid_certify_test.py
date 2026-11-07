@@ -991,3 +991,105 @@ def test_negative_engine_i18_dropped_proposition_16():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.19-engine (E-kimi-task-406) ------------------------------------------
+
+def test_emit_engine_i19_emission_pinned():
+    # by_contra; by_cases |(a─c)| = |(a─b)| — the engine's by_contra branch
+    # list IS the split (unlike I.14's nested by_contra). Branch 1 cites
+    # proposition_5' (Book/Prop19.lean:14); branch 2's engine gt_len
+    # assumption is KEPT as a CHECKED euclid_assert (Lean's negative
+    # by_cases branch supplies only ¬(|(a─c)| = |(a─b)|); trichotomy with
+    # the by_contra hypothesis gives |(a─b)| > |(a─c)|), then cites
+    # proposition_18 a c b AC BC AB (Book/Prop19.lean:16). One
+    # euclid_finish per branch; no trailing finish.
+    src = cert.emit_proof19()
+    assert "theorem proposition_19 :" in src
+    assert "formTriangle a b c AB BC AC ∧ (∠ a:b:c > ∠ b:c:a) →\n" in src
+    assert "(|(a─c)| > |(a─b)|) :=\n" in src
+    assert "import Book.Prop05\n" in src
+    assert "import Book.Prop18\n" in src
+    assert "  by_contra\n" in src
+    assert "  by_cases |(a─c)| = |(a─b)|\n" in src
+    assert "  . euclid_apply (proposition_5' a b c AB BC AC)\n" in src
+    assert "  . euclid_assert |(a─b)| > |(a─c)|\n" in src
+    assert "    euclid_apply (proposition_18 a c b AC BC AB)\n" in src
+    assert src.count("euclid_finish") == 2  # one per by_cases branch
+    assert not src.rstrip().endswith("euclid_finish")
+    # sha of the emitted source == sha of the file actually written
+    # (/home/joe/code/LeanEuclid/tmp-certify/test_engine_I19.lean).
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "16ac3b4bdb39518a"
+
+
+def test_engine_i19_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP19_STEPS_DATA and show emission follows
+    eng = cert._engine()
+    (kind, branches, conclusions), = eng.PROP19_STEPS_DATA
+    mutated = [(facts, [(r, tuple("AB" if a == "AC" else a for a in args), b)
+                        if r == "proposition_18" else (r, args, b)
+                        for (r, args, b) in bsteps])
+               for facts, bsteps in branches]
+    monkeypatch.setattr(eng, "PROP19_STEPS_DATA",
+                        [(kind, mutated, conclusions)])
+    src = cert.emit_proof19()
+    assert "(proposition_18 a c b AB BC AB)" in src
+    assert "(proposition_18 a c b AC BC AB)" not in src
+    # untouched branch unchanged
+    assert "(proposition_5' a b c AB BC AC)" in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i19_certifies():
+    # the ENGINE's own PROP19_STEPS_DATA (by_contra + case split) certified
+    # against LeanEuclid
+    r = cert.check_lean(cert.emit_proof19(), "test_engine_I19")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i19_dropped_proposition_18():
+    # Drop the proposition_18 citation from branch 2: without
+    # ∠b:c:a > ∠a:b:c, euclid_finish cannot close the False goal from the
+    # hypothesis ∠a:b:c > ∠b:c:a. Must NOT certify, and no lean process
+    # may survive.
+    src = cert.emit_proof19()
+    bad = src.replace(
+        "    euclid_apply (proposition_18 a c b AC BC AB)\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I19_drop18", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I19_drop18.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i19_false_assert_branch1():
+    # A false euclid_assert in branch 1, BEFORE the proposition_5' apply
+    # (after it the branch-1 context is already inconsistent — isosceles
+    # angles against the > hypothesis — and ex falso any assert checks):
+    # ∠ a:b:c < ∠ b:c:a contradicts the metric hypothesis
+    # ∠a:b:c > ∠b:c:a. Must NOT certify, and no lean process may survive.
+    src = cert.emit_proof19()
+    bad = src.replace(
+        "  . euclid_apply (proposition_5' a b c AB BC AC)\n",
+        "  . euclid_assert ∠ a:b:c < ∠ b:c:a\n"
+        "    euclid_apply (proposition_5' a b c AB BC AC)\n")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I19_assert", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I19_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
