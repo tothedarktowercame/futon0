@@ -1333,6 +1333,24 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b: [
             ("c", [("on_circle", "c", a), ("on_circle", "c", b)])],
     },
+    # Constructions/Intersections.lean:20 — intersection_same_side
+    # verbatim:
+    #   ∀ (α β : Circle) (b c d : Point) (L : Line),
+    #     (α.intersectsCircle β) ∧ (c.isCentre α) ∧ (d.isCentre β) ∧
+    #     (c.onLine L) ∧ (d.onLine L) ∧ ¬(b.onLine L) →
+    #       ∃ a : Point, (a.onCircle α) ∧ (a.onCircle β) ∧
+    #         (a.sameSide b L)
+    "intersection_same_side": {
+        "cite": "Intersections.lean:20",
+        "args": ("alpha", "beta", "b", "c", "d", "L"),
+        "premises": lambda s, a, b, bp, c, d, L: [
+            ("intersects_cc", a, b), ("centre", c, a),
+            ("centre", d, b), ("on_line", c, L), ("on_line", d, L),
+            ("not_on_line", bp, L)],
+        "make": lambda s, a, b, bp, c, d, L: [
+            ("a", [("on_circle", "a", a), ("on_circle", "a", b),
+                   ("same_side", "a", bp, L)])],
+    },
     # SystemE/Theory/Constructions/Points.lean:60 — exists_point_opposite
     # verbatim: ¬(b.onLine L) → ∃ a : Point, a.opposingSides b L
     "exists_point_opposite": {
@@ -2093,6 +2111,34 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, d, e, AB, CD, CE: [
             ("f", [("neq", "f", a),
                    ("_eq_ang", "f", a, b, d, c, e)])],
+    },
+    # Book/Prop22.lean:58 — proposition_22'' verbatim (the same-side
+    # variant I.23' cites): proposition_22' plus a point x off FE and the
+    # extra conclusion k.sameSide x FE —
+    #   ∀ (a a' b b' c c' f e x : Point) (A B C FE : Line),
+    #     distinctPointsOnLine a a' A ∧ ... ∧ distinctPointsOnLine f e FE ∧
+    #     ¬(x.onLine FE) ∧ (|aa'| + |bb'| > |cc'|) ∧ ... →
+    #       ∃ k g, g.onLine FE ∧ ¬(between g f e) ∧ (k.sameSide x FE) ∧
+    #       |f─k| = |a─a'| ∧ |f─g| = |b─b'| ∧ |k─g| = |c─c'|
+    # The theorem PROP22PP_STEPS_DATA replays.
+    "proposition_22''": {
+        "cite": "Book/Prop22.lean:58 (proposition_22'')",
+        "args": ("a", "a'", "b", "b'", "c", "c'", "f", "e", "x",
+                 "A", "B", "C", "FE"),
+        "premises": lambda s, a, a2, b, b2, c, c2, f, e, x, A, B, C, FE: [
+            _dpl_either(s, a, a2, A), _dpl_either(s, b, b2, B),
+            _dpl_either(s, c, c2, C), _dpl_either(s, f, e, FE),
+            ("not_on_line", x, FE)],
+        "entail": lambda s, a, a2, b, b2, c, c2, f, e, x, A, B, C, FE: [
+            ("gt_sum_len", (a, a2, b, b2, c, c2)),
+            ("gt_sum_len", (a, a2, c, c2, b, b2)),
+            ("gt_sum_len", (b, b2, c, c2, a, a2))],
+        "make": lambda s, a, a2, b, b2, c, c2, f, e, x, A, B, C, FE: [
+            ("k", [("_eq_len", f, "k", a, a2),
+                   ("_eq_len", "k", "g", c, c2),
+                   ("same_side", "k", x, FE)]),
+            ("g", [("on_line", "g", FE), ("not_between", "g", f, e),
+                   ("_eq_len", f, "g", b, b2)])],
     },
     # SystemE/Theory/Inferences/Transfer.lean:124 — flat_angle_onlyif
     # verbatim: between a b c → ∠a:b:c = ∟ + ∟ (the straight angle).
@@ -4358,6 +4404,69 @@ PROP23_STEPS_DATA = [
 PROP23_GOAL = [("neq", "f", "a"), ("_eq_ang", "f", "a", "b", "d", "c", "e")]
 
 
+# ---------------------------------------------------------------------------
+# proposition_22'' (Prop22.lean:58, the same-side variant I.23' cites):
+#   distinctPointsOnLine a a' A ∧ ... ∧ distinctPointsOnLine f e FE ∧
+#   ¬(x.onLine FE) ∧ (|aa'| + |bb'| > |cc'|) ∧ (|aa'| + |cc'| > |bb'|) ∧
+#   (|bb'| + |cc'| > |aa'|) →
+#     ∃ k g, g.onLine FE ∧ ¬(between g f e) ∧ (k.sameSide x FE) ∧
+#     |f─k| = |a─a'| ∧ |f─g| = |b─b'| ∧ |k─g| = |c─c'|
+# The construction is proposition_22''s verbatim (Prop22.lean:67-80),
+# IDENTICAL to I.22' except the circles' meet: line 76 applies
+# intersection_same_side KLH DKL x g f FE as k (in place of
+# intersection_circles KLH DKL as k), picking the meet on x's side of
+# FE. See the I.22' header above for the SMT-rendered premises the two
+# proofs share (between_symm_parts neqs, the three-case inside-i-DKL
+# by_cases, icc1's intersects_cc, the by_contra for ¬between g f e).
+# intersection_same_side (Intersections.lean:20, cited per use) asks,
+# beyond intersects_cc: g.isCentre KLH and f.isCentre DKL (the
+# circle_from_points makes), g and f on FE (g from its proposition_3
+# cut's between f g e'' with f, e'' on FE; f from dpl f e FE), and
+# ¬(x.onLine FE) — the hypothesis this variant adds. Its conclusion
+# a.sameSide b L is the goal's extra conjunct, same_side k x FE.
+PROP22PP_HYPS_DATA = PROP22P_HYPS_DATA + [
+    ((("not_on_line", "x", "FE"), "h")),   # ¬(x.onLine FE)
+]
+PROP22PP_STEPS_DATA = [
+    ("extend_point_longer", ("FE", "f", "e", "b", "b'"), {"x": "e'"}),
+    ("between_symm_parts", ("f", "e", "e'"), {}),   # neq f e' (dpl f e' FE)
+    ("extend_point_longer", ("FE", "f", "e'", "c", "c'"), {"x": "e''"}),
+    # neq f e'' (dpl f e'' FE for the first two proposition_3 cuts)
+    ("between_symm_parts", ("f", "e'", "e''"), {}),
+    ("proposition_3", ("f", "e''", "a", "a'", "FE", "A"), {"q": "d"}),
+    ("proposition_3", ("f", "e''", "b", "b'", "FE", "B"), {"q": "g"}),
+    # neq g e'' off the REVERSAL of between f g e'' (closure
+    # r_between_symm + neq_symm), for the third cut's dpl g e'' FE
+    ("between_symm_parts", ("e''", "g", "f"), {}),
+    ("proposition_3", ("g", "e''", "c", "c'", "FE", "C"), {"q": "h"}),
+    ("between_symm_parts", ("g", "h", "e''"), {}),  # neq g h (dpl g h FE)
+    ("circle_from_points", ("f", "d"), {"C": "DKL"}),
+    ("circle_from_points", ("g", "h"), {"C": "KLH"}),
+    ("intersection_circle_line_extending_points", ("KLH", "FE", "g", "h"),
+     {"g": "i"}),
+    # inside i DKL by the three-case trichotomy documented under I.22'
+    ("by_cases", [
+        ([("between", "g", "f", "i")], []),
+        ([("between", "g", "i", "f")], []),
+        ([("peq", "f", "i")], []),
+    ], [("inside", "i", "DKL")]),
+    ("intersection_circle_circle_1", ("i", "h", "KLH", "DKL"), {}),
+    # Prop22.lean:76 — the meet on x's side of FE (in place of
+    # intersection_circles; Intersections.lean:20)
+    ("intersection_same_side", ("KLH", "DKL", "x", "g", "f", "FE"),
+     {"a": "k"}),
+    # euclid_finish's ¬between g f e, rendered as a by_contra (as in I.22')
+    ("by_contra", [
+        ([("between", "g", "f", "e")], [
+            ("between_trans_out", ("g", "f", "e", "e''"), {}),
+            ("between_symm_parts", ("f", "g", "e''"), {}),
+        ]),
+    ], [("not_between", "g", "f", "e")]),
+]
+# The goals: I.22''s five conjuncts plus same_side k x FE.
+PROP22PP_GOAL = PROP22P_GOAL + [("same_side", "k", "x", "FE")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -4516,6 +4625,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP22P_HYPS_DATA, PROP22P_STEPS_DATA,
                             PROP22P_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "22''":
+            t0 = time.time()
+            s, rep = replay(PROP22PP_HYPS_DATA, PROP22PP_STEPS_DATA,
+                            PROP22PP_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "23":
             t0 = time.time()

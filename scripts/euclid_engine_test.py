@@ -1177,6 +1177,112 @@ def test_prop22p_final_state_not_contradictory():
     assert not contra, witness
 
 
+def test_prop22pp_replay_passes():
+    """I.22'' (Prop22.lean:58-80): proposition_22''s construction with the
+    circles' meet taken by the cited intersection_same_side
+    (Intersections.lean:20) on x's side of FE. The goals are I.22''s six
+    conjuncts over the named k, g: on_line g FE, not_between g f e,
+    same_side k x FE, and the three witness equalities."""
+    s, rep = eng.replay(eng.PROP22PP_HYPS_DATA, eng.PROP22PP_STEPS_DATA,
+                        eng.PROP22PP_GOAL)
+    assert s.has(("on_line", "g", "FE"))
+    assert s.has(("not_between", "g", "f", "e"))
+    assert s.has(("same_side", "k", "x", "FE"))
+    assert eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+    assert rep[-1]["final"]
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == [
+        "extend_point_longer", "between_symm_parts",
+        "extend_point_longer", "between_symm_parts",
+        "proposition_3", "proposition_3", "between_symm_parts",
+        "proposition_3", "between_symm_parts",
+        "circle_from_points", "circle_from_points",
+        "intersection_circle_line_extending_points", "by_cases",
+        "intersection_circle_circle_1", "intersection_same_side",
+        "by_contra"]
+
+
+def test_prop22pp_control_dropped_x_off_line():
+    """Drop ¬(x.onLine FE): the replay is refused at
+    intersection_same_side's not_on_line premise — the same-side meet has
+    no side to pick without a point off FE."""
+    hyps = [h for h in eng.PROP22PP_HYPS_DATA
+            if h[0] != ("not_on_line", "x", "FE")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP22PP_STEPS_DATA, eng.PROP22PP_GOAL)
+    assert ei.value.rule == "intersection_same_side"
+    assert ei.value.premise == ("not_on_line", "x", "FE")
+
+
+def test_prop22pp_control_dropped_inequality_1_or_2():
+    """The by_cases branch control, exactly as in I.22': dropping
+    inequality 1 kills the between g f i branch; dropping inequality 2
+    kills the between g i f branch."""
+    for dropped, branch in (
+            (("gt_sum_len", "a", "a'", "b", "b'", "c", "c'"),
+             [("between", "g", "f", "i")]),
+            (("gt_sum_len", "a", "a'", "c", "c'", "b", "b'"),
+             [("between", "g", "i", "f")])):
+        hyps = [h for h in eng.PROP22PP_HYPS_DATA if h[0] != dropped]
+        with pytest.raises(eng.ByCasesFailure) as ei:
+            eng.replay(hyps, eng.PROP22PP_STEPS_DATA, eng.PROP22PP_GOAL)
+        assert ei.value.branch == branch
+        assert ei.value.witness[0] == "not-entailed"
+
+
+def test_prop22pp_final_state_not_contradictory():
+    """The by_contra concludes not_between on the OUTER state, which
+    stays consistent (as in I.22')."""
+    s, _ = eng.replay(eng.PROP22PP_HYPS_DATA, eng.PROP22PP_STEPS_DATA,
+                      eng.PROP22PP_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness
+
+
+def test_proposition_22pp_citation_fires():
+    """The cited lemma makes exactly the I.22'' conclusions over fresh
+    witnesses k and g (the theorem PROP22PP_STEPS_DATA replays): on_line
+    g FE, not_between g f e, same_side k x FE, and the three length
+    equalities."""
+    s = eng.State()
+    for f, w in eng.PROP22PP_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    rep = eng.apply_step(
+        s, 1, "proposition_22''",
+        ("a", "a'", "b", "b'", "c", "c'", "f", "e", "x",
+         "A", "B", "C", "FE"),
+        {"k": "k", "g": "g"})
+    assert rep["rule"].startswith("proposition_22''")
+    assert s.has(("on_line", "g", "FE"))
+    assert s.has(("not_between", "g", "f", "e"))
+    assert s.has(("same_side", "k", "x", "FE"))
+    assert eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+
+
+def test_proposition_22pp_citation_refused_without_inequality():
+    """Each triangle inequality is an entailment premise: with
+    |b-b'| + |c-c'| > |a-a'| missing, the citation is refused at that
+    entailment (as for proposition_22')."""
+    hyps = [h for h in eng.PROP22PP_HYPS_DATA
+            if h[0] != ("gt_sum_len", "b", "b'", "c", "c'", "a", "a'")]
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(
+            s, 1, "proposition_22''",
+            ("a", "a'", "b", "b'", "c", "c'", "f", "e", "x",
+             "A", "B", "C", "FE"),
+            {"k": "k", "g": "g"})
+    assert ei.value.premise == (
+        "entail", "gt_sum_len", ("b", "b'", "c", "c'", "a", "a'"))
+
+
 def test_proposition_22p_citation_fires():
     """The cited lemma makes exactly the I.22' conclusions over fresh
     witnesses k and g (the theorem PROP22P_STEPS_DATA replays): on_line
