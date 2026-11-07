@@ -53,6 +53,8 @@ GOALS = {
         ("_eq_ang", "a", "c", "b", "d", "f", "e")],
     5: [("_eq_ang", "a", "b", "c", "a", "c", "b"),  # eng.main() p=="5"
         ("_eq_ang", "c", "b", "d", "b", "c", "e")],
+    6: [("_eq_len", "a", "b", "a", "c")],   # eng.main() p=="6" query
+    7: [("false",)],                        # eng.main() p=="7" query
     10: [("between", "a", "d", "b"),        # tr.build_trace queries dict
          ("_eq_len", "a", "d", "d", "b")],
     11: [("not_on_line", "f", "AB"),        # tr.build_trace queries dict

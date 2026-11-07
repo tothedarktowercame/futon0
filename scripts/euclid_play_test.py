@@ -52,10 +52,10 @@ def _engine_step_to_move(st):
 
 
 def test_case_props_reach_goal():
-    """I.10, 13, 14, 19, 21 played with the engine's own steps (case
+    """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (10, 13, 14, 19, 21):
+    for n in (6, 7, 10, 13, 14, 19, 21):
         steps = tr.hyps_and_steps(n)[1]
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
@@ -96,10 +96,14 @@ def test_open_block_reports_branch():
 
 
 def test_closed_by_contra_without_contradiction_refused():
-    """A closed by_contra whose branch does not contradict is refused
-    with the engine's own wording."""
+    """A closed by_contra whose split IS exhaustive but whose branch does
+    not contradict is refused with the engine's own wording. (A split
+    with a case dropped is now refused earlier, as "missing case" — see
+    test_missing_case_refusals.)"""
     mv = {"rule": "by_contra",
           "branches": [{"hyps": [["between", "b", "e", "d"]],
+                        "moves": []},  # covered, but does not contradict
+                       {"hyps": [["between", "e", "b", "d"]],
                         "moves": []}],
           "conclusion": [["between", "b", "d", "e"]],
           "open": False}
@@ -162,6 +166,15 @@ def test_palette_5():
     assert "proposition_6" not in pal
     assert "proposition_10" not in pal
     assert "line_from_points" in pal  # a construction, always available
+
+
+def test_catalogue_lists_6_and_7():
+    """I.6 and I.7 join the catalogue between 5 and 10 (packet
+    P-euclid-play-config-I6-I7)."""
+    ns = [e["n"] for e in ep.catalogue()]
+    assert ns.index(5) < ns.index(6) < ns.index(7) < ns.index(10)
+    assert ep.GOALS[6] == [("_eq_len", "a", "b", "a", "c")]
+    assert ep.GOALS[7] == [("false",)]
 
 
 def test_future_proposition_refused():
