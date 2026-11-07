@@ -435,6 +435,27 @@ PROP19_ENGINE_CITABLE = [
     "proposition_5'", "proposition_18",
 ]
 
+# Book/Prop20.lean:8-9 verbatim: any two sides of a triangle are together
+# greater than the remaining side.
+PROP20_STATEMENT = """\
+theorem proposition_20 : ∀ (a b c : Point) (AB BC AC : Line),
+  formTriangle a b c AB BC AC → |(b─a)| + |(a─c)| > |(b─c)| :="""
+
+# The engine's own I.20 steps (euclid_engine.PROP20_STEPS_DATA, read
+# live): flat — extend_point_longer AB b a (c─a) as d' (SEGMENT_TAIL;
+# the engine carries the (c─a) segment as its two endpoints, in exactly
+# Lean's argument order, Book/Prop20.lean:12), proposition_3 a d' a c
+# AB AC as d, line_from_points d c as DC, proposition_5' a c d AC DC AB,
+# sum_angles_onlyif c b d a BC DC, proposition_19 b c d BC DC AB —
+# exactly Book/Prop20.lean:13-17's lines. euclid_finish's LA closes
+# |b─a| + |a─c| > |b─c| from the sum_angles_onlyif row, proposition_5''s
+# angle equality and proposition_19's length inequality. No witness, no
+# bridges, no euclid_assert.
+PROP20_ENGINE_CITABLE = [
+    "extend_point_longer", "proposition_3", "line_from_points",
+    "proposition_5'", "sum_angles_onlyif", "proposition_19",
+]
+
 
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
@@ -554,6 +575,18 @@ PROPS = {
                         witness=None, engine="I.19",
                         engine_citable=PROP19_ENGINE_CITABLE,
                         emitter="by_contra"),
+    # The ENGINE's own I.20 steps (euclid_engine.PROP20_STEPS_DATA, read
+    # live): flat — extend_point_longer as d', proposition_3 as d,
+    # line_from_points as DC, proposition_5', sum_angles_onlyif,
+    # proposition_19, in exactly Book/Prop20.lean:12-17's argument
+    # orders; euclid_finish's LA closes |(b─a)| + |(a─c)| > |(b─c)|.
+    # Statement and imports verbatim from Book/Prop20.lean:1-9. No
+    # witness, no bridges. See the comment above PROP20_ENGINE_CITABLE.
+    "I.20-engine": dict(imports=["SystemE", "Book.Prop03", "Book.Prop05",
+                                 "Book.Prop19"],
+                        statement=PROP20_STATEMENT, book_steps=None,
+                        witness=None, engine="I.20",
+                        engine_citable=PROP20_ENGINE_CITABLE),
 }
 
 
@@ -726,6 +759,8 @@ def engine_steps(prop):
         return translate_engine_steps(eng.PROP17_STEPS_DATA)
     if prop == "I.18" and hasattr(eng, "PROP18_STEPS_DATA"):
         return translate_engine_steps(eng.PROP18_STEPS_DATA)
+    if prop == "I.20" and hasattr(eng, "PROP20_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP20_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
 
 

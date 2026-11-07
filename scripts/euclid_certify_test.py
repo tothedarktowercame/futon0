@@ -1035,6 +1035,110 @@ def test_negative_engine_i18_dropped_proposition_16():
     assert left == "", (left, r["reason"])
 
 
+# --- I.20-engine (E-kimi-task-412) ------------------------------------------
+
+def test_emit_engine_i20_emission_pinned():
+    # Flat proof: extend_point_longer as d' (SEGMENT_TAIL: the engine's
+    # ("AB","b","a","c","a") renders as (extend_point_longer AB b a (c─a)),
+    # exactly Book/Prop20.lean:12), proposition_3 as d, line_from_points
+    # as DC, proposition_5', sum_angles_onlyif, proposition_19 — exactly
+    # Book/Prop20.lean:13-17; euclid_finish's LA closes
+    # |(b─a)| + |(a─c)| > |(b─c)|.
+    steps = cert.engine_steps("I.20")
+    src = cert.emit_proof("I.20-engine", steps, None)
+    assert "theorem proposition_20 :" in src
+    assert "formTriangle a b c AB BC AC → |(b─a)| + |(a─c)| > |(b─c)| :=\n" in src
+    assert "  euclid_apply (extend_point_longer AB b a (c─a)) as d'\n" in src
+    assert "  euclid_apply (proposition_3 a d' a c AB AC) as d\n" in src
+    assert "  euclid_apply (line_from_points d c) as DC\n" in src
+    assert "  euclid_apply (proposition_5' a c d AC DC AB)\n" in src
+    assert "  euclid_apply (sum_angles_onlyif c b d a BC DC)\n" in src
+    assert "  euclid_apply (proposition_19 b c d BC DC AB)\n" in src
+    assert "import Book.Prop03\n" in src
+    assert "import Book.Prop05\n" in src
+    assert "import Book.Prop19\n" in src
+    assert "euclid_assert" not in src  # no derived facts needed asserting
+    assert src.count("euclid_finish") == 1
+    # sha of the emitted source == sha of the file actually written
+    # (/home/joe/code/LeanEuclid/tmp-certify/test_engine_I20.lean).
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "dd512124ac1c25e0"
+
+
+def test_engine_i20_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP20_STEPS_DATA and show emission follows
+    eng = cert._engine()
+    data = [("proposition_5'", tuple("AB" if a == "DC" else a for a in args),
+             b) if r == "proposition_5'" else (r, args, b)
+            for (r, args, b) in eng.PROP20_STEPS_DATA]
+    monkeypatch.setattr(eng, "PROP20_STEPS_DATA", data)
+    src = cert.emit_proof("I.20-engine", cert.engine_steps("I.20"), None)
+    assert "(proposition_5' a c d AC AB AB)" in src
+    assert "(proposition_5' a c d AC DC AB)" not in src
+    # untouched steps unchanged
+    assert "(proposition_19 b c d BC DC AB)" in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i20_certifies():
+    # the ENGINE's own PROP20_STEPS_DATA certified against LeanEuclid
+    r = cert.check_lean(
+        cert.emit_proof("I.20-engine", cert.engine_steps("I.20"), None),
+        "test_engine_I20")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i20_false_len_assert():
+    # A false euclid_assert right after the proposition_19 step:
+    # |(b─a)| + |(a─c)| < |(b─c)| contradicts the goal itself. Must NOT
+    # certify, and no lean process may survive.
+    src = cert.emit_proof("I.20-engine", cert.engine_steps("I.20"), None)
+    bad = src.replace(
+        "  euclid_finish\n",
+        "  euclid_assert |(b─a)| + |(a─c)| < |(b─c)|\n"
+        "  euclid_finish\n")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I20_assert", timeout=600)
+    assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f",
+                               "test_neg_I20_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i20_dropped_proposition_19():
+    # Drop the proposition_19 citation: without the greater-angle side row
+    # (|(b─d)| > |(b─c)|) euclid_finish's LA cannot turn the angle facts
+    # into |(b─a)| + |(a─c)| > |(b─c)|. Must NOT certify, and no lean
+    # process may survive.
+    src = cert.emit_proof("I.20-engine", cert.engine_steps("I.20"), None)
+    bad = src.replace("  euclid_apply (proposition_19 b c d BC DC AB)\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I20_drop19", timeout=600)
+    assert not r["certified"], r
+    # refused by Lean, not by the clock: a timeout would also "refuse" a
+    # correct proof (review, claude-9: refusals take 180-360 s here)
+    assert not r["reason"].startswith("timeout"), r["reason"]
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I20_drop19.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
 # --- I.19-engine (E-kimi-task-406) ------------------------------------------
 
 def test_emit_engine_i19_emission_pinned():
