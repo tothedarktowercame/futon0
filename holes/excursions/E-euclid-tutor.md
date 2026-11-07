@@ -1,6 +1,6 @@
 # Excursion: E-euclid-tutor
 
-**Status:** OPEN — proof-game prototype built overnight 2026-11-07 (see Checkpoint 1).
+**Status:** OPEN — proof-game prototype and first student-model pieces built overnight 2026-11-07 (Checkpoints 1–2).
 **Date:** 2026-11-07
 **Owner:** claude-9 with Joe
 **Relates to:** `holes/missions/M-futonzero-prelim-practice.md` (the prelim tutor; its lessons live in
@@ -167,3 +167,31 @@ this design does not require.
 **In flight:** contradiction detection plus I.6/I.7 (zai-11); prior-guided search on I.2 (zai-9);
 engine review of student attempts (zai-2).
 **Next:** I.8–I.10; clones as weakened engines; held-out prior test once more propositions replay.
+
+### Checkpoint 2 — 2026-11-07 (overnight, continued; claude-9 reviewing, zai-2/zai-9/zai-11 writing)
+**What was done:**
+- Engine: contradiction detection and `by_contra`; replays of I.6–I.9 (3106383, b879b83, b6407e7). I.6 uses an I.18
+  bridge rule, so it does not mirror Lean's argument; I.9 states four inputs Lean derives; I.10 is blocked on
+  `proposition_9'`. Speed work (e8d5f9a): I.1–I.9 replays 6.2 s → 0.7 s, search about 1.7× more nodes per second.
+- **Soundness bug, found late (ceea2b1):** rows written as dict literals `{X: 1, Y: -1}` collapse when X and Y are the
+  same canonical atom. Book I.5 step 6 (`proposition_4 f b c g c b`) asserted |bc| = |cb| and the store received
+  |bc| = 0, so the I.5 replay proved its goal on an unsatisfiable store. zai-2 found the unsat store while adding I.5 to
+  search; the cause was traced in review. Fixed with an accumulating `lin()`; every replay now asserts a satisfiable final
+  store (I.7 excepted: its hypotheses are contradictory by design). Lesson: an entailment test must also check the store
+  is consistent; I.5 had passed review twice without that check.
+- Search: I.4/I.5 entries (1b32dd6); uninformed search is hopeless on I.5 (17 nodes in 120 s; proposition_4 candidates
+  explode). Priors (ea6927c, 27872f9): the motif prior makes I.3 worse; motif + "cite the most recent proposition" finds
+  I.3 at 35× the uninformed cost; nothing finds I.2. So far no prior beats breadth-first search on Book I.
+- Lean certification of I.1–I.3 (c13b7c9) and I.5 (44b9096, review pending).
+- Student model: engine review of an attempt, each step valid/invalid and progress/no progress by BFS distance
+  (abeb26c; engine failures are never shown as an invalid step: 7674773, 9ca1c0e, 385c867). Clones as weakened engines and
+  an envelope with likelihood scoring and a posterior (3be9fd8, 5b72952, a2d5275); a clone that trusts the diagram
+  (9bcba36, 6b73ad3, 2833202). On the Book I.1 the full engine gets posterior 0.82, depth-1 0.15, trusting 0.023.
+- Viewer (JSXGraph): I.1–I.5 with angle sectors and the I.4 superposition, board fitted to the figure; each step's facts
+  are checked against the drawn placement (94fe35f, 4209a90, 7dea3a5, 7dedfc4). It opens inside the :8099 code-server via
+  Joyride (`~/notes/euclid-cs/open-viewer.cljs`); a public route is Joe's call.
+**Test state:** at ceea2b1: engine, search, review, clones, diagram clone and trace tests 90 passed; prior search 13 passed;
+step motifs 6 passed; 0 failures. Certify tests need Lean and were run by zai-2 (not rerun here).
+**Open:** I.10 (`proposition_9'`); I.6 by Lean's area argument rather than I.18; I.9's four stated inputs; clones fitted to
+real student steps (none collected yet); a prior that beats breadth-first search.
+**Next:** review mode in the viewer (in flight, zai-9); I.10 replay; first real-student trial of the envelope.
