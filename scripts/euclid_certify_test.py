@@ -79,6 +79,30 @@ def test_emit_prop5_matches_book_proof_lines():
     assert ours == book_steps
 
 
+def test_emit_prop4_asserts_and_grouped_bindings():
+    # I.4: euclid_assert steps emitted verbatim; superposition's four names
+    # in the Book's grouped form `as (b', c', BC', DC')`; no witness.
+    src = cert.emit_proof("I.4", cert.PROP4_BOOK_STEPS, None)
+    assert "  euclid_apply (superposition a b c d e f AB BC AC DE) as (b', c', BC', DC')" in src
+    assert "  euclid_assert b' = e" in src
+    assert "  euclid_assert ∠ e:d:c' = ∠ e:d:f" in src
+    assert "  euclid_assert DC' = DF" in src
+    assert "  euclid_assert c' = f" in src
+    assert "\n  use " not in src
+
+
+def test_emit_prop4_matches_book_proof_block():
+    # the emitted statement and proof block are the Book's own, byte-identical
+    book = (cert.LEAN_EUCLID / "Book" / "Prop04.lean").read_text().splitlines()
+
+    def block(lines):
+        return lines[lines.index("by"):lines.index("end Elements.Book1")]
+
+    src = cert.emit_proof("I.4", cert.PROP4_BOOK_STEPS, None).splitlines()
+    assert cert.PROP4_STATEMENT == "\n".join(book[4:8])
+    assert block(src) == block(book)
+
+
 def test_prop5_steps_pinned_to_engine_data():
     # PROP5_BOOK_STEPS is a verbatim copy of euclid_engine.PROP5_STEPS_DATA;
     # keep them in sync (skipped while zai-11 has the engine mid-edit).
@@ -118,7 +142,7 @@ def test_check_lean_rule_catches_sorry_at_rc0(monkeypatch):
 # --- Lean checking (integration) ---------------------------------------------
 
 @pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
-@pytest.mark.parametrize("prop", ["I.1", "I.2", "I.3", "I.5"])
+@pytest.mark.parametrize("prop", ["I.1", "I.2", "I.3", "I.4", "I.5"])
 def test_book_sequences_certify(prop):
     cfg = cert.PROPS[prop]
     r = cert.check_lean(cert.emit_proof(prop, cfg["book_steps"], cfg["witness"]),
@@ -157,6 +181,21 @@ def test_negative_sorry_only_warning():
     assert r["rc"] == 0
     assert not r["certified"]
     assert "declaration uses 'sorry'" in r["reason"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_prop4_false_assert():
+    # asserting b' = d (not true of the superposed triangle) is refused.
+    # Measured: the SMT solver hangs on the false assert, so this comes back
+    # as a timeout refusal, not an error line — both are accepted, and the
+    # reason records which happened.
+    steps = [("euclid_assert", ("b' = d",), {}) if i == 1 else s
+             for i, s in enumerate(cert.PROP4_BOOK_STEPS)]
+    r = cert.check_lean(cert.emit_proof("I.4", steps, None), "test_neg_prop4",
+                        timeout=180)
+    assert not r["certified"]
+    assert ("timeout after 180 s" in r["reason"]
+            or "error" in r["reason"].lower())
 
 
 @pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")

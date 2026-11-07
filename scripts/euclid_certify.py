@@ -4,7 +4,8 @@
 Given a found step sequence in the engine's (rule, args, bindings) format,
 emit a LeanEuclid proof (theorem statement copied verbatim from
 ~/code/LeanEuclid/Book/PropNN.lean, `euclid_intros`, one `euclid_apply ...`
-per step, `use <witness>`, `euclid_finish`), check it with
+per step, `euclid_assert <prop>` steps for SMT-justified facts (I.4),
+`use <witness>`, `euclid_finish`), check it with
 `lake env lean` from ~/code/LeanEuclid, and report certified / not certified
 with the reason and wall time.
 
@@ -104,6 +105,37 @@ PROP3_BOOK_STEPS = [
     ("point_on_circle_onlyif", ("a", "d", "e"), {}),
 ]
 
+# Assert steps: ("euclid_assert", ("<proposition text>",), {}) — a single
+# string emitted verbatim after `euclid_assert ` (the Lean tactic that
+# delegates a step's justification to SMT). Not an engine rule; used for the
+# Book I.4 proof, whose justifications the engine holds as [SMT-bridge]
+# stand-ins (packet P-euclid-certify-I4-asserts).
+#
+# Superposition's Book proof names its four fresh objects in one grouped
+# binding `as (b', c', BC', DC')`; the emitter emits grouped bindings
+# (parenthesised, comma-separated) for rules in GROUPED_BINDINGS_RULES.
+GROUPED_BINDINGS_RULES = {"superposition"}
+
+PROP4_STATEMENT = """\
+theorem proposition_4 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
+  formTriangle a b c AB BC AC ∧ formTriangle d e f DE EF DF ∧
+  |(a─b)| = |(d─e)| ∧ |(a─c)| = |(d─f)| ∧ (∠ b:a:c = ∠ e:d:f) →
+  |(b─c)| = |(e─f)| ∧ (∠ a:b:c = ∠ d:e:f) ∧ (∠ a:c:b = ∠ d:f:e) :="""
+
+# The Book's own I.4 proof (Book/Prop04.lean): superposition names its fourth
+# object DC' (the engine's PROP4_STEPS_DATA names it AC'); the four asserts
+# are the SMT justifications the Book itself makes. Not an engine replay —
+# reconciling the engine's two assert_* bridge steps with these four is a
+# later packet.
+PROP4_BOOK_STEPS = [
+    ("superposition", ("a", "b", "c", "d", "e", "f", "AB", "BC", "AC", "DE"),
+     {"b'": "b'", "c'": "c'", "BC'": "BC'", "DC'": "DC'"}),
+    ("euclid_assert", ("b' = e",), {}),
+    ("euclid_assert", ("∠ e:d:c' = ∠ e:d:f",), {}),
+    ("euclid_assert", ("DC' = DF",), {}),
+    ("euclid_assert", ("c' = f",), {}),
+]
+
 PROP5_STATEMENT = """\
 theorem proposition_5 : ∀ (a b c d e : Point) (AB BC AC : Line),
   formTriangle a b c AB BC AC ∧ (|(a─b)| = |(a─c)|) ∧
@@ -139,6 +171,10 @@ PROPS = {
                 book_steps=PROP2_BOOK_STEPS, witness="l"),
     "I.3": dict(imports=["SystemE", "Book.Prop02"], statement=PROP3_STATEMENT,
                 book_steps=PROP3_BOOK_STEPS, witness="e"),
+    # I.4 has no existential witness (goal is a conjunction), and its proof
+    # uses euclid_assert steps; the goal is closed by euclid_finish's SMT.
+    "I.4": dict(imports=["SystemE"], statement=PROP4_STATEMENT,
+                book_steps=PROP4_BOOK_STEPS, witness=None),
     # I.5 has no existential witness (goal is a conjunction of angle
     # equalities), so witness=None: emit_proof emits no `use` line.
     "I.5": dict(imports=["SystemE", "Book.Prop03", "Book.Prop04"],
@@ -164,13 +200,23 @@ def _render_args(rule, args, term=lean):
     return " ".join(term(a) for a in args)
 
 
+def _step_lines(rule, args, bindings, term):
+    """The proof line(s) for one step (shared by emit_step and emit_proof)."""
+    if rule == "euclid_assert":
+        return [f"  euclid_assert {term(args[0])}"]
+    terms = _render_args(rule, args, term=term)
+    names = " ".join(term(v) for v in bindings.values())
+    if rule in GROUPED_BINDINGS_RULES and names:
+        grouped = ", ".join(term(v) for v in bindings.values())
+        return [f"  euclid_apply ({rule} {terms}) as ({grouped})"]
+    if names:
+        return [f"  euclid_apply ({rule} {terms}) as {names}"]
+    return [f"  euclid_apply ({rule} {terms})"]
+
+
 def emit_step(rule, args, bindings):
     """One euclid_apply line from an engine step."""
-    terms = _render_args(rule, args)
-    names = " ".join(lean(v) for v in bindings.values())
-    if names:
-        return f"  euclid_apply ({rule} {terms}) as {names}"
-    return f"  euclid_apply ({rule} {terms})"
+    return "\n".join(_step_lines(rule, args, bindings, lean))
 
 
 def emit_proof(prop, steps, witness, statement=None, finish="euclid_finish"):
@@ -197,12 +243,7 @@ def emit_proof(prop, steps, witness, statement=None, finish="euclid_finish"):
     lines.append("by")
     lines.append("  euclid_intros")
     for rule, args, bindings in steps:
-        terms = _render_args(rule, args, term=term)
-        names = " ".join(term(v) for v in bindings.values())
-        if names:
-            lines.append(f"  euclid_apply ({rule} {terms}) as {names}")
-        else:
-            lines.append(f"  euclid_apply ({rule} {terms})")
+        lines.extend(_step_lines(rule, args, bindings, term))
     if witness is not None:
         lines.append(f"  use {term(witness)}")
     lines.append(f"  {finish}")
