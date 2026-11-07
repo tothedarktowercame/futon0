@@ -2076,6 +2076,89 @@ CONSTRUCTIONS = {
             ("g", [("on_line", "g", FE), ("not_between", "g", f, e),
                    ("_eq_len", f, "g", b, b2)])],
     },
+    # SystemE/Theory/Inferences/Transfer.lean:124 — flat_angle_onlyif
+    # verbatim: between a b c → ∠a:b:c = ∟ + ∟ (the straight angle).
+    # Cited per use. First use: Book I.23's degenerate branch, where the
+    # angle to copy is straight.
+    "flat_angle_onlyif": {
+        "cite": "Transfer.lean:124",
+        "args": ("a", "b", "c"),
+        "premises": lambda s, a, b, c: [("between", a, b, c)],
+        "make": lambda s, a, b, c: [(None, [("_flat_ang", a, b, c)])],
+    },
+    # SystemE/Theory/Inferences/Transfer.lean:63 — degenerated_angle_if
+    # verbatim: a≠b ∧ a≠c ∧ a,b,c on L ∧ ¬between b a c → ∠b:a:c = 0
+    # (the rays a→b and a→c coincide). Cited per use (the closure rule
+    # r_degenerated_angle covers only the between-fed shape; footprints
+    # are pinned). First use: Book I.23, ∠g:a:b = 0 from the I.22'
+    # conclusion ¬between g a b.
+    "degenerated_angle_if": {
+        "cite": "Transfer.lean:63",
+        "args": ("a", "b", "c", "L"),
+        "premises": lambda s, a, b, c, L: [
+            ("neq", a, b), ("neq", a, c), ("on_line", a, L),
+            ("on_line", b, L), ("on_line", c, L),
+            ("not_between", b, a, c)],
+        "make": lambda s, a, b, c, L: [(None, [("_zero_ang", b, a, c)])],
+    },
+    # [SMT-bridge: coordinate model] ∠x:v:x = 0 — the ray v→x against
+    # itself. Lean's euclid_finish closes this in SMT; it is
+    # degenerated_angle_if (Transfer.lean:63) with c := b, whose
+    # ¬between b a b premise is between's irreflexivity (no fact form).
+    # First use: Book I.23's degenerate zero branch, ∠b:a:b = 0.
+    "angle_self_zero": {
+        "cite": "SMT-bridge (degenerated_angle_if Transfer.lean:63, c := b)",
+        "args": ("x", "v"),
+        "premises": lambda s, x, v: [("neq", x, v)],
+        "make": lambda s, x, v: [(None, [("_zero_ang", x, v, x)])],
+    },
+    # [SMT-bridge: coordinate model] ∠x:v:y = 0 ⇒ ∠z:v:x = ∠z:v:y for
+    # every z: the rays v→x and v→y coincide (the same ray-equality
+    # bridge as the closure rule r_angle_ray_eq, but fed by a zero-angle
+    # fact instead of a between fact). First use: Book I.23,
+    # ∠f:a:g = ∠f:a:b from ∠g:a:b = 0.
+    "angle_ray_eq_zero": {
+        "cite": "SMT-bridge (ray coincidence from a zero angle)",
+        "args": ("x", "v", "y", "z"),
+        "premises": lambda s, x, v, y, z: [("zero_ang", x, v, y)],
+        "make": lambda s, x, v, y, z: [
+            (None, [("_eq_ang", z, v, x, z, v, y)])],
+    },
+    # [SMT-bridge: coordinate model] u, v distinct on L and the three
+    # STRICT triangle inequalities among |u─x|, |u─v|, |x─v| ⇒ x off L:
+    # for collinear x one of the three is an equality (which one depends
+    # on x's position on the line). Lean's SMT closes such cases (e.g.
+    # f off AB in Prop23.lean's main branch, where the three
+    # inequalities are the proposition_20 rows through the I.22' length
+    # equalities). First use: Book I.23.
+    "off_line_strict_triangle": {
+        "cite": "SMT-bridge (three strict triangle inequalities)",
+        "args": ("x", "u", "v", "L"),
+        "premises": lambda s, x, u, v, L: [
+            ("on_line", u, L), ("on_line", v, L), ("neq", u, v)],
+        "entail": lambda s, x, u, v, L: [
+            ("gt_sum_len", (u, x, x, v, u, v)),
+            ("gt_sum_len", (u, x, u, v, x, v)),
+            ("gt_sum_len", (x, v, u, v, u, x))],
+        "make": lambda s, x, u, v, L: [(None, [("not_on_line", x, L)])],
+    },
+    # [logic: Lean's `use`] The existential witness f IS the existing
+    # point b — a rename. The premises are exactly the goal's conjuncts
+    # about b (so the step asserts nothing the store does not already
+    # hold); the make restates them under the witness name f, which the
+    # by_cases conclusion then carries to the outer state as the
+    # eigenvariable of the case split. First use: Book I.23's
+    # degenerate zero branch (`use b`, Prop23.lean:15).
+    "use_witness": {
+        "cite": "logic: Lean `use` (the witness renamed)",
+        "args": ("f", "b", "a", "d", "c", "e"),
+        "premises": lambda s, f, b, a, d, c, e: [("neq", b, a)],
+        "entail": lambda s, f, b, a, d, c, e: [
+            ("eq_ang", (b, a, b, d, c, e))],
+        "make": lambda s, f, b, a, d, c, e: [
+            ("f", [("neq", "f", a),
+                   ("_eq_ang", "f", a, b, d, c, e)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:187 — triple_incidence_1
     # verbatim:
     #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧
@@ -2395,6 +2478,22 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("lt_sum_rt_ang", *fact[1:7]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("lt_sum_rt_ang", *fact[1:7]))
+            elif fact[0] == "_zero_ang":
+                # ∠x:v:y = 0 (degenerated angle): the LA row plus the
+                # fact form.
+                x, v, y = fact[1:4]
+                s.la.add({ang_atom(x, v, y): 1}, 0, "=")
+                s.add(("zero_ang", x, v, y),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("zero_ang", x, v, y))
+            elif fact[0] == "_flat_ang":
+                # ∠x:v:y = ∟ + ∟ (the straight angle, flat_angle_onlyif
+                # Transfer.lean:124): the LA row plus the fact form.
+                x, v, y = fact[1:4]
+                s.la.add(lin((ang_atom(x, v, y), 1), (RT, -2)), 0, "=")
+                s.add(("flat_ang", x, v, y),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("flat_ang", x, v, y))
             else:
                 s.add(fact, f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(fact)
@@ -2499,6 +2598,11 @@ def _assume_metric_or_fact(s, fact, why):
         u, v, x, w = fact[1:5]
         s.la.add(lin((ang_atom(u, v, x), 1), (ang_atom(x, v, w), 1),
                      (RT, -2)), 0, "=")
+    elif fact[0] == "_zero_ang":
+        # ∠x:v:y = 0 as an assumption (Book I.23's inner by_cases on
+        # ∠d:c:e = 0, Prop23.lean:14).
+        x, v, y = fact[1:4]
+        s.la.add({ang_atom(x, v, y): 1}, 0, "=")
     s.assume(fact, why)
 
 
@@ -4122,6 +4226,120 @@ PROP22P_GOAL = [("on_line", "g", "FE"), ("not_between", "g", "f", "e"),
                 ("_eq_len", "k", "g", "c", "c'")]
 
 
+# ---------------------------------------------------------------------------
+# Book I.23 (Prop23.lean:8, theorem proposition_23): copy an angle onto a
+# given line at a given point —
+#   distinctPointsOnLine a b AB ∧ formRectilinearAngle d c e CD CE →
+#     ∃ f, f ≠ a ∧ ∠f:a:b = ∠d:c:e
+# formRectilinearAngle d c e CD CE destructures (Relations.lean:64) to
+# dpl d c CD ∧ dpl c e CE. Lean's proof is a by_cases on d.onLine CE
+# (Prop23.lean:12); the degenerate branch ("Omitted by Euclid",
+# lines 13-21) is a nested by_cases on ∠d:c:e = 0.
+PROP23_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),   # distinctPointsOnLine a b AB
+    (("dpl", "d", "c", "CD"), "h"),   # formRectilinearAngle d c e CD CE
+    (("dpl", "c", "e", "CE"), "h"),   #  (Relations.lean:64)
+]
+# The outer by_cases (Prop23.lean:12) splits on on_line d CE /
+# not_on_line d CE — a classical negation, exhaustive by logic. Its
+# conclusions are the existential's body over the eigenvariable f: each
+# branch supplies its own witness (the constructed f in the main branch;
+# b via `use` and b' via extend_point in the two degenerate branches)
+# and the by_cases carries the renamed conclusions out.
+#
+# DEGENERATE BRANCH (d on CE, lines 13-21): the nested by_cases on
+# ∠d:c:e = 0. c, d, e are collinear with c ≠ d, c ≠ e, so
+# ¬between d c e ⇔ ∠d:c:e = 0 (degenerated_angle_if/_onlyif,
+# Transfer.lean:63/67) and the split ∠d:c:e = 0 / between d c e is
+# exactly Lean's split, the ¬(∠ = 0) branch rendered positively by the
+# contrapositive of degenerated_angle_if.
+#   * branch ∠d:c:e = 0 (assumed as the metric tuple _zero_ang): the
+#     witness is b (`use b`, line 15). ∠b:a:b = 0 is the SMT-bridge
+#     angle_self_zero (degenerated_angle_if with c := b); use_witness
+#     (logic: `use`) restates the goal's conjuncts about b under the
+#     witness name f. euclid_finish closes f ≠ a from dpl a b AB and
+#     ∠b:a:b = ∠d:c:e from the two zero rows.
+#   * branch between d c e: Lean's `euclid_assert ∠d:c:e = ∟+∟` (line
+#     18) is SMT from the coordinate model; the System E citation is
+#     flat_angle_onlyif (Transfer.lean:124): between d c e →
+#     ∠d:c:e = ∟+∟. (proposition_13 is NOT needed — nothing here goes
+#     through a sum of adjacent angles.) extend_point AB b a as f gives
+#     between b a f, so ∠f:a:b = ∠b:a:f = ∟+∟ by flat_angle_onlyif
+#     again (the legs of ∠f:a:b sort by angle_symm, Metric.lean:46);
+#     f ≠ a is between_symm_parts on the closure reversal between f a b.
+# MAIN BRANCH (d off CE, lines 22-32), Lean's arg orders:
+#   line_from_points d e as DE (d ≠ e: d off CE, e on CE,
+#   r_off_line_neq); the three proposition_20 citations give exactly the
+#   three gt_sum_len rows |c─d|+|c─e|>|e─d|, |e─d|+|d─c|>|e─c|,
+#   |c─e|+|e─d|>|c─d| that proposition_22's entail premises ask for
+#   (proposition_22' c d c e e d a b: a,a' = c,d; b,b' = c,e;
+#   c,c' = e,d) — no other source; proposition_22' makes f (= Lean's f,
+#   the circles' meet k) and g with |a─f| = |c─d|, |f─g| = |e─d|,
+#   |a─g| = |c─e|, g on AB, ¬between g a b; line_from_points a f as FA
+#   (a ≠ f: |a─f| = |c─d| > 0) and f g as FG (|f─g| = |e─d| > 0);
+#   proposition_8 c d e a f g CD DE CE FA FG AB (SSS) gives
+#   ∠d:c:e = ∠f:a:g. What Lean's SMT closes silently inside those
+#   euclid_apply's, the engine renders explicitly:
+#     * e off CD and c off DE (proposition_20's not_on_line premises):
+#       r_line_neq from d on CD/DE off CE, then the closure
+#       r_two_lines_meet_once through c and e respectively;
+#     * g off FA (proposition_8's second not_on_line premise): f is off
+#       AB by the cited off_line_strict_triangle (the three strict
+#       inequalities among |a─f|, |a─g|, |f─g| come from the
+#       proposition_20 rows through the I.22' equalities), then
+#       r_line_neq (f on FA, off AB) and r_two_lines_meet_once through a
+#       (g ≠ a: |a─g| = |c─e| > 0);
+#     * ∠f:a:g = ∠f:a:b (euclid_finish): the cited degenerated_angle_if
+#       (Transfer.lean:63) turns ¬between g a b (I.22's conclusion) into
+#       ∠g:a:b = 0 — the rays a→g and a→b coincide — and the cited
+#       angle_ray_eq_zero bridge rewrites the proposition_8 angle.
+PROP23_STEPS_DATA = [
+    ("by_cases", [
+        # -- degenerate branch: d on CE ("Omitted by Euclid")
+        ([("on_line", "d", "CE")], [
+            ("by_cases", [
+                # ∠d:c:e = 0: the witness is b
+                ([("_zero_ang", "d", "c", "e")], [
+                    ("angle_self_zero", ("b", "a"), {}),
+                    ("use_witness", ("f", "b", "a", "d", "c", "e"),
+                     {"f": "f"}),
+                ]),
+                # ∠d:c:e ≠ 0, i.e. between d c e: the witness is the
+                # extension of AB past a
+                ([("between", "d", "c", "e")], [
+                    ("flat_angle_onlyif", ("d", "c", "e"), {}),
+                    ("extend_point", ("AB", "b", "a"), {"x": "f"}),
+                    ("flat_angle_onlyif", ("b", "a", "f"), {}),
+                    ("between_symm_parts", ("f", "a", "b"), {}),
+                ]),
+            ], [("neq", "f", "a"), ("_eq_ang", "f", "a", "b", "d", "c", "e")]),
+        ]),
+        # -- main branch: d off CE (Euclid's construction)
+        ([("not_on_line", "d", "CE")], [
+            ("line_from_points", ("d", "e"), {"L": "DE"}),
+            ("proposition_20", ("c", "d", "e", "CD", "DE", "CE"), {}),
+            ("proposition_20", ("d", "e", "c", "DE", "CE", "CD"), {}),
+            ("proposition_20", ("e", "c", "d", "CE", "CD", "DE"), {}),
+            ("proposition_22'",
+             ("c", "d", "c", "e", "e", "d", "a", "b",
+              "CD", "CE", "DE", "AB"), {"k": "f", "g": "g"}),
+            ("line_from_points", ("a", "f"), {"L": "FA"}),
+            ("line_from_points", ("f", "g"), {"L": "FG"}),
+            ("off_line_strict_triangle", ("f", "a", "g", "AB"), {}),
+            ("degenerated_angle_if", ("a", "g", "b", "AB"), {}),
+            ("angle_ray_eq_zero", ("g", "a", "b", "f"), {}),
+            ("proposition_8",
+             ("c", "d", "e", "a", "f", "g",
+              "CD", "DE", "CE", "FA", "FG", "AB"), {}),
+        ]),
+    ], [("neq", "f", "a"), ("_eq_ang", "f", "a", "b", "d", "c", "e")]),
+]
+# The goal: the existential's body over the witness name the by_cases
+# carries out — f ≠ a (a plain fact) and ∠f:a:b = ∠d:c:e (an _eq_ang LA
+# entailment query; the kind already exists in replay's verify loop).
+PROP23_GOAL = [("neq", "f", "a"), ("_eq_ang", "f", "a", "b", "d", "c", "e")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -4280,6 +4498,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP22P_HYPS_DATA, PROP22P_STEPS_DATA,
                             PROP22P_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "23":
+            t0 = time.time()
+            s, rep = replay(PROP23_HYPS_DATA, PROP23_STEPS_DATA,
+                            PROP23_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
