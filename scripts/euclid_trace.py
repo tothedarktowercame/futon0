@@ -345,6 +345,12 @@ FREE = {
     # proper part of the exterior angle.
     16: {"b": (0.0, 0.0), "c": (1.6, 0.0), "d": (2.6, 0.0),
          "a": (0.5, 1.1)},
+    # I.17 (any two angles of a triangle < two right): the same scalene
+    # triangle as I.16; d is CONSTRUCTED by step 1 (extend_point BC b c),
+    # which places it at c + 0.6*(c-b) = (2.56, 0) — on the extension of
+    # b-c beyond c. Interior angles ~65.6 deg at b and ~45.0 deg at c
+    # sum to ~110.6 deg, under 180 by a wide visible margin.
+    17: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -375,6 +381,8 @@ def hyps_and_steps(prop):
     if prop == 16:
         # the SECOND conjunct (Euclid's own proof, Lean's second bullet)
         return list(eng.PROP16B_HYPS_DATA), list(eng.PROP16B_STEPS_DATA)
+    if prop == 17:
+        return list(eng.PROP17_HYPS_DATA), list(eng.PROP17_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -479,6 +487,15 @@ def objects_from_hyps(prop):
         # three named lines are the hypothesis lines AB, BC, AC
         return [{"name": n, "kind": "point", "jsx": {"type": "point"},
                  "def_step": 0} for n in ("a", "b", "c", "d")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
+    if prop == 17:
+        # the triangle a-b-c and the three hypothesis lines; d is
+        # CONSTRUCTED by step 1 (extend_point BC b c), not a hypothesis
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c")] + [
                 {"name": L, "kind": "line", "jsx": {"type": "line",
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
@@ -797,7 +814,7 @@ dragging)" % (a, b)
                 % (q, name, p, q, p, q, p, q, name))
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
                 "proposition_4", "proposition_13", "proposition_15",
-                "sum_angles_onlyif",
+                "proposition_16", "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
                 "triple_incidence_2",
@@ -807,6 +824,17 @@ dragging)" % (a, b)
                 "intersection_lines_opposing",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
+        if rule == "proposition_16" and prop == 17:
+            return ("cited step (proposition_16 a b c d AB BC AC, the "
+                    "exterior-angle theorem): the exterior angle a:c:d "
+                    "exceeds the interior angle a:b:c (= c:b:a as "
+                    "canonical atoms) — angle a:c:d > angle a:b:c")
+        if rule == "proposition_13" and prop == 17:
+            return ("cited step (proposition_13 a c b d AC BC, the "
+                    "linear pair): angle b:c:a + angle a:c:d = two right "
+                    "angles. With angle a:c:d > angle a:b:c (the I.16 "
+                    "step), angle a:b:c + angle b:c:a < angle a:c:d + "
+                    "angle b:c:a = two right angles — the goal")
         if rule == "sum_angles_onlyif" and prop == 16:
             return ("engine-only step (sum_angles_onlyif c a d f AC BC, "
                     "Transfer.lean:90): angle a:c:d = angle a:c:f + "
@@ -1141,6 +1169,44 @@ def verify16(xy):
     ]
 
 
+def verify17(xy):
+    """I.17 (any two angles of a triangle sum to less than two right):
+    the drawn facts are the hypotheses (the scalene triangle a-b-c) plus
+    the construction (d on the extension of b-c beyond c, between b c d).
+    The conclusions numerically: the linear pair angle a:c:b + angle
+    a:c:d = 180 deg exactly (proposition_13); the I.16 step angle a:c:d
+    > angle a:b:c; and the goal angle a:b:c + angle b:c:a < 180 deg with
+    a visible margin (at least 0.5 rad short, not a sliver)."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(p, q, r):
+        """Cross product of (q-p) x (r-p): 0 iff p, q, r collinear."""
+        return ((xy[q][0] - xy[p][0]) * (xy[r][1] - xy[p][1])
+                - (xy[q][1] - xy[p][1]) * (xy[r][0] - xy[p][0]))
+
+    at_b = _ang(xy, "a", "b", "c")
+    at_c = _ang(xy, "b", "c", "a")
+    ext = _ang(xy, "a", "c", "d")
+    return [
+        ("I.17: between b c d (d on the extension of b-c beyond c)",
+         abs(dist("b", "c") + dist("c", "d") - dist("b", "d")) < EPS),
+        ("I.17: scalene triangle (all three side lengths distinct)",
+         len({round(dist(p, q), 9)
+              for p, q in (("a", "b"), ("b", "c"), ("a", "c"))}) == 3),
+        ("I.17: a off BC (a genuine triangle)",
+         abs(cross("b", "c", "a")) > EPS * dist("b", "c")
+         * dist("a", "c")),
+        ("I.17: linear pair angle a:c:b + angle a:c:d = 180 deg "
+         "(proposition_13, numerically)",
+         abs(at_c + ext - math.pi) < EPS),
+        ("I.17: I.16 step angle a:c:d > angle a:b:c",
+         ext > at_b + EPS),
+        ("I.17: GOAL angle a:b:c + angle b:c:a < 180 deg, with a visible "
+         "margin (at least 0.5 rad short)",
+         at_b + at_c < math.pi - 0.5),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1168,6 +1234,8 @@ def verify(prop, xy):
         return verify15(xy)
     if prop == 16:
         return verify16(xy)
+    if prop == 17:
+        return verify17(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1388,7 +1456,7 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12, 15, 16):
+        if prop in (10, 11, 12, 15, 16, 17):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
@@ -1397,6 +1465,8 @@ def build_trace(prop):
             # PROP15_GOAL verbatim: both halves of the vertical-angles
             # conjunction as LA entailment queries. I.16's is PROP16B_GOAL
             # verbatim: the second conjunct angle a:c:d > angle b:a:c.
+            # I.17's is PROP17_GOAL verbatim: angle a:b:c + angle b:c:a
+            # < two right angles.
             queries = {10: [("between", "a", "d", "b"),
                             ("_eq_len", "a", "d", "d", "b")],
                        11: [("not_on_line", "f", "AB"),
@@ -1404,7 +1474,8 @@ def build_trace(prop):
                        12: [("_rt_ang", "e", "h", "c"),
                             ("on_line", "h", "AB")],
                        15: list(eng.PROP15_GOAL),
-                       16: list(eng.PROP16B_GOAL)}[prop]
+                       16: list(eng.PROP16B_GOAL),
+                       17: list(eng.PROP17_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:
@@ -1423,7 +1494,7 @@ def build_trace(prop):
                                         after=after16)
         else:
             lean = (lean_lines_for_named(prop, steps, name_map)
-                    if prop in (10, 11, 12, 15)
+                    if prop in (10, 11, 12, 15, 17)
                     else lean_lines_for(prop, [r for r, _, _ in steps]))
         rows = [(r, a, b, rep, loc, None)
                 for (r, a, b), rep, loc in zip(steps, reports, lean)]

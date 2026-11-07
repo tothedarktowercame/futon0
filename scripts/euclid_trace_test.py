@@ -860,3 +860,81 @@ def test_bad_case_prop16_degenerate_triangle_fails():
     x["a"] = (0.5, 0.0)  # a on BC: no triangle, no angles
     fails = [d for d, ok in tr.verify16(x) if not ok]
     assert any("a off BC" in d for d in fails), fails
+
+
+# -- I.17 (kimi-2, packet P-euclid-viewer-I17) -------------------------------
+# I.17 (any two angles of a triangle < two right) is FLAT: 4 steps, no
+# case splits. d is CONSTRUCTED by step 1 (extend_point BC b c), not a
+# hypothesis. between_symm_parts b c d is engine-only (it rebuilds the
+# dpl b d BC premise proposition_13 needs; Lean's SMT produces the neq
+# silently); the three remaining steps are Lean's three euclid_apply
+# lines (Prop17.lean:12-14), in order.
+
+TR17 = load(17)
+
+
+def test_prop17_rebuild_matches_disk():
+    rebuilt = tr.build_trace(17)
+    assert rebuilt["placement"] == TR17["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR17["steps"]
+
+
+def test_prop17_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR17["lean_file"])
+    lines = open(path).read().splitlines()
+    for s in TR17["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            assert "engine-only" in s["lean_note"], s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    # exactly the three euclid_apply lines are linked, in order
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    linked = [s["lean"]["line"] for s in TR17["steps"]
+              if s["lean"]["line"]]
+    assert linked == sorted(linked) and set(linked) == applies, linked
+    # the only engine-only step is between_symm_parts
+    engine_only = [s["rule"] for s in TR17["steps"]
+                   if s["lean"]["line"] is None]
+    assert engine_only == ["between_symm_parts"], engine_only
+
+
+def test_prop17_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR17["placement"].items() if v}
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR17["steps"], xy)
+           if not ok]
+    assert not bad, bad
+    assert all(ok for _, ok in tr.verify17(xy))
+    # the last step's info bar states the conclusion's why
+    last = TR17["steps"][-1]
+    assert last["rule"] == "proposition_13"
+    assert "two right angles" in last["placement_decision"]
+    assert "a:c:d > angle a:b:c" in last["placement_decision"]
+
+
+def _xy17():
+    return {k: tuple(v) for k, v in TR17["placement"].items() if v}
+
+
+def test_bad_case_prop17_d_between_b_and_c_fails():
+    x = _xy17()
+    assert all(ok for _, ok in tr.verify17(x))
+    x["d"] = (0.8, 0.0)  # d between b and c: no exterior angle at c
+    fails = [d for d, ok in tr.verify17(x) if not ok]
+    assert any("between b c d" in d for d in fails), fails
+
+
+def test_bad_case_prop17_degenerate_triangle_fails():
+    x = _xy17()
+    x["a"] = (0.5, 0.0)  # a on BC: no triangle, no angles
+    fails = [d for d, ok in tr.verify17(x) if not ok]
+    assert any("a off BC" in d for d in fails), fails
+
+
+def test_bad_case_prop17_goal_margin_fails():
+    x = _xy17()
+    # a far away: the angle at a approaches 0, so the two angles at b
+    # and c sum to nearly 180 and the goal margin (0.5 rad short) fails
+    x["a"] = (0.8, 10.0)
+    fails = [d for d, ok in tr.verify17(x) if not ok]
+    assert any("GOAL" in d for d in fails), fails

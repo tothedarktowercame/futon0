@@ -1,0 +1,363 @@
+{
+ "prop": 17,
+ "title": "Elements I.17 (LeanEuclid Book/Prop17.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "extend_point",
+   "args": [
+    "BC",
+    "b",
+    "c"
+   ],
+   "bindings": {
+    "x": "d"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "between",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "c",
+     "BC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop17.lean",
+    "line": 12
+   },
+   "placement_decision": "free parameter of the existential step: |c-d| = 0.6|b-c| on the ray from b through c (the rule fixes between b c d, not the distance)"
+  },
+  {
+   "n": 2,
+   "rule": "between_symm_parts",
+   "args": [
+    "b",
+    "c",
+    "d"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "b",
+     "c"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "not_between",
+     "c",
+     "b",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop17.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 3,
+   "rule": "proposition_16",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "AB",
+    "BC",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_ang",
+     "a",
+     "c",
+     "d",
+     "c",
+     "b",
+     "a"
+    ],
+    [
+     "gt_ang",
+     "a",
+     "c",
+     "d",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "neq",
+     "b",
+     "c"
+    ],
+    [
+     "neq",
+     "a",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "AB"
+    ],
+    [
+     "between",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop17.lean",
+    "line": 13
+   },
+   "placement_decision": "cited step (proposition_16 a b c d AB BC AC, the exterior-angle theorem): the exterior angle a:c:d exceeds the interior angle a:b:c (= c:b:a as canonical atoms) \u2014 angle a:c:d > angle a:b:c"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_13",
+   "args": [
+    "a",
+    "c",
+    "b",
+    "d",
+    "AC",
+    "BC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "b",
+     "c",
+     "a",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "AC",
+     "BC"
+    ],
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "dpl",
+     "b",
+     "d",
+     "BC"
+    ],
+    [
+     "between",
+     "d",
+     "c",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop17.lean",
+    "line": 14
+   },
+   "placement_decision": "cited step (proposition_13 a c b d AC BC, the linear pair): angle b:c:a + angle a:c:d = two right angles. With angle a:c:d > angle a:b:c (the I.16 step), angle a:b:c + angle b:c:a < angle a:c:d + angle b:c:a = two right angles \u2014 the goal"
+  }
+ ],
+ "placement": {
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.6,
+   0.0
+  ],
+  "a": [
+   0.5,
+   1.1
+  ],
+  "d": [
+   2.56,
+   0.0
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.17: between b c d (d on the extension of b-c beyond c)",
+   "ok": true
+  },
+  {
+   "check": "I.17: scalene triangle (all three side lengths distinct)",
+   "ok": true
+  },
+  {
+   "check": "I.17: a off BC (a genuine triangle)",
+   "ok": true
+  },
+  {
+   "check": "I.17: linear pair angle a:c:b + angle a:c:d = 180 deg (proposition_13, numerically)",
+   "ok": true
+  },
+  {
+   "check": "I.17: I.16 step angle a:c:d > angle a:b:c",
+   "ok": true
+  },
+  {
+   "check": "I.17: GOAL angle a:b:c + angle b:c:a < 180 deg, with a visible margin (at least 0.5 rad short)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop17.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop13",
+  "import Book.Prop16",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_17 : \u2200 (a b c : Point) (AB BC AC : Line),",
+  "  formTriangle a b c AB BC AC \u2192",
+  "  \u2220 a:b:c + \u2220 b:c:a < \u221f + \u221f :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (extend_point BC b c) as d",
+  "  euclid_apply (proposition_16 a b c d AB BC AC)",
+  "  euclid_apply (proposition_13 a c b d AC BC)",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}
