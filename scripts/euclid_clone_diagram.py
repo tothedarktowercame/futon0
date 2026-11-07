@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+"""Diagram-trusting clone for E-euclid-tutor (student model slice 2).
+
+A TrustingClone is a Clone that believes extra things: a student who reads
+facts off the picture. apply_step works like the engine's, but on a
+MissingPremise whose premise kind is trusted (default: intersects_cc,
+between, same_side, inside) AND which holds in the picture, it assumes the
+premise and retries, recording "trusted from the picture: <fact>". A
+premise false in the picture is still refused (the student believes the
+picture, not anything at all), and untrusted premise kinds are refused.
+
+The picture is numeric placement from euclid_trace (objects_from_hyps,
+place_step) — no new geometry: between/opposing_sides are decided by
+trace.fact_holds, circle-circle meeting by trace.circle_circle, and
+same_side/inside by trace's own vector helpers on the same coordinates.
+
+predict is deliberately simple (per the slice spec): it returns the set of
+moves LEGAL for this clone — engine-legal moves plus candidate moves whose
+only obstacle is a trusted, picture-true premise — with args canonicalized
+by euclid_clones.canon_step. Unlike Clone.predict it is not filtered to
+shortest-path first moves. TrustingClone is an ordinary member of
+euclid_clones.Envelope; its picture is advanced with note_step after each
+observed step (the envelope itself does not track placements).
+
+euclid_engine / euclid_search / euclid_review / euclid_clones /
+euclid_trace are imported read-only by path; none are edited here.
+"""
+
+import importlib.util
+from pathlib import Path
+
+_SCRIPTS = Path(__file__).resolve().parent
+
+
+def _load(name, filename):
+    spec = importlib.util.spec_from_file_location(name, _SCRIPTS / filename)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+ec = _load("euclid_clones_trust", "euclid_clones.py")
+tr = _load("euclid_trace_trust", "euclid_trace.py")
+rv, srch, eng = ec.rv, ec.srch, ec.eng
+
+DEFAULT_TRUSTED = frozenset({"intersects_cc", "between", "same_side",
+                             "inside"})
+
+
+class TrustingClone(ec.Clone):
+    """A Clone that also believes trusted facts read off the picture."""
+
+    def __init__(self, name, prop, xy=None, objects=None,
+                 trusted_kinds=DEFAULT_TRUSTED, removed_rules=frozenset(),
+                 max_depth=3, node_budget=3000):
+        super().__init__(name, removed_rules=removed_rules,
+                         max_depth=max_depth, node_budget=node_budget)
+        self.prop = prop
+        self.trusted_kinds = frozenset(trusted_kinds)
+        # picture: euclid_trace placement, defaulting to the traditional
+        # diagram for the proposition (FREE points + hypothesis objects)
+        self.xy = dict(xy) if xy is not None else dict(tr.FREE[
+            {"I.1": 1, "I.2": 2, "I.3": 3}[prop]])
+        self.objects = list(objects) if objects is not None \
+            else tr.objects_from_hyps({"I.1": 1, "I.2": 2, "I.3": 3}[prop])
+        self.trust_log = []  # "trusted from the picture: <fact>" records
+
+    # --- picture checks (trace primitives, no new geometry) ---------------
+
+    def _circle_geo(self, C):
+        o = next(o for o in self.objects
+                 if o["name"] == C and o["kind"] == "circle")
+        centre = o["jsx"]["center"]
+        through = o["jsx"]["through"]
+        r = tr._norm(tr._sub(self.xy[through], self.xy[centre]))
+        return self.xy[centre], r
+
+    def _line_geo(self, L):
+        o = next(o for o in self.objects
+                 if o["name"] == L and o["kind"] == "line"
+                 and o.get("jsx", {}).get("p"))
+        p1, p2 = o["jsx"]["p"]
+        return self.xy[p1], self.xy[p2]
+
+    def holds_in_picture(self, fact):
+        """True / False for the trusted diagram kinds, using euclid_trace's
+        placement and geometry; None when the fact is not a picture fact."""
+        kind = fact[0]
+        if kind in ("between", "opposing_sides"):
+            return tr.fact_holds(fact, self.xy) is True
+        if kind == "intersects_cc":
+            try:
+                (c1, r1), (c2, r2) = (self._circle_geo(fact[1]),
+                                      self._circle_geo(fact[2]))
+                tr.circle_circle(c1, r1, c2, r2)
+                return True
+            except (AssertionError, StopIteration, KeyError):
+                return False
+        if kind == "same_side":
+            p, q, L = fact[1], fact[2], fact[3]
+            (x1, y1), (x2, y2) = self._line_geo(L)
+
+            def side(pt):
+                return ((pt[0] - x1) * (y2 - y1) - (pt[1] - y1) * (x2 - x1))
+            try:
+                return side(self.xy[p]) * side(self.xy[q]) > 0
+            except (StopIteration, KeyError):
+                return False
+        if kind == "inside":
+            (c, r) = self._circle_geo(fact[2])
+            try:
+                return tr._norm(tr._sub(self.xy[fact[1]], c)) < r
+            except (StopIteration, KeyError):
+                return False
+        return None
+
+    # --- trusting application ---------------------------------------------
+
+    def apply_step(self, state, i, rule, args, bindings,
+                   advance_picture=True):
+        """eng.apply_step, but a MissingPremise of a trusted kind that
+        holds in the picture is assumed (and recorded) and the step
+        retried. Anything else still raises."""
+        while True:
+            try:
+                rep = eng.apply_step(state, i, rule, args, bindings)
+                break
+            except eng.MissingPremise as e:
+                p = e.premise
+                if (isinstance(p, tuple) and p and isinstance(p[0], str)
+                        and p[0] in self.trusted_kinds
+                        and self.holds_in_picture(p) is True):
+                    state.assume(p, "student diagram trust")
+                    self.trust_log.append(f"trusted from the picture: {p}")
+                else:
+                    raise
+        if advance_picture:
+            try:
+                tr.place_step({"I.1": 1, "I.2": 2, "I.3": 3}[self.prop],
+                              rule, args, bindings, rep["added"],
+                              self.xy, self.objects)
+            except Exception:
+                pass  # placement is advisory; refusals above never get here
+        return rep
+
+    def note_step(self, prop, state, step):
+        """Advance the clone's picture past an observed `step` (the engine
+        side is applied to a scratch copy of `state`)."""
+        assert prop == self.prop
+        trial = srch.clone_state(state)
+        return self.apply_step(trial, 1, step[0], step[1], step[2],
+                               advance_picture=True)
+
+    # --- prediction ---------------------------------------------------------
+
+    def predict(self, prop, state):
+        """Legal moves FOR THIS CLONE: every candidate move of its rules
+        whose application succeeds outright or after trusting a
+        picture-true premise of a trusted kind. Not shortest-path
+        filtered (slice spec: keep it simple)."""
+        assert prop == self.prop
+        moves = set()
+        for rname in self.rules(prop):
+            for args in srch.CANDIDATES[rname](state):
+                trial = srch.clone_state(state)
+                try:
+                    self.apply_step(trial, 1, rname, args, {},
+                                    advance_picture=False)
+                except eng.MissingPremise:
+                    continue
+                moves.add(ec.canon_step(rname, args))
+        return moves
+
+
+def main():
+    # demo: the I.2 fixture — full engine refuses, trusting clone accepts
+    steps = [("circle_from_points", ("b", "c"), {"C": "CGH"}),
+             ("circle_from_points", ("a", "b"), {"C": "ABX"}),
+             ("intersection_circles", ("CGH", "ABX"), {"c": "p"})]
+    tc = TrustingClone("trusting", "I.2")
+    state = rv.initial_state("I.2")
+    for i, step in enumerate(steps, start=1):
+        try:
+            eng.apply_step(srch.clone_state(state), i, *step[:2],
+                           step[2])
+            print(f"  {i}. {step[0]} {step[1]}: engine OK")
+        except eng.MissingPremise as e:
+            print(f"  {i}. {step[0]} {step[1]}: engine refuses ({e})")
+        rep = tc.apply_step(state, i, step[0], step[1], step[2])
+        print(f"     trusting: applied, added {len(rep['added'])} facts")
+    print("trust log:", tc.trust_log)
+
+
+if __name__ == "__main__":
+    main()
