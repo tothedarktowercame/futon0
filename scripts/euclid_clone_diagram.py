@@ -56,14 +56,51 @@ class TrustingClone(ec.Clone):
         super().__init__(name, removed_rules=removed_rules,
                          max_depth=max_depth, node_budget=node_budget)
         self.prop = prop
+        self.prop_n = self._prop_number(prop)
         self.trusted_kinds = frozenset(trusted_kinds)
         # picture: euclid_trace placement, defaulting to the traditional
-        # diagram for the proposition (FREE points + hypothesis objects)
-        self.xy = dict(xy) if xy is not None else dict(tr.FREE[
-            {"I.1": 1, "I.2": 2, "I.3": 3}[prop]])
-        self.objects = list(objects) if objects is not None \
-            else tr.objects_from_hyps({"I.1": 1, "I.2": 2, "I.3": 3}[prop])
+        # diagram for the proposition (FREE points + hypothesis objects).
+        # Fail LOUDLY here if euclid_trace has no placement support for the
+        # proposition (review, claude-9: a silent fallback meant the picture
+        # never advanced for I.4 onward).
+        if xy is not None:
+            self.xy = dict(xy)
+        else:
+            if self.prop_n not in tr.FREE:
+                raise ValueError(
+                    "euclid_trace has no placement (FREE) for %s" % prop)
+            self.xy = dict(tr.FREE[self.prop_n])
+        if objects is not None:
+            self.objects = list(objects)
+        else:
+            try:
+                self.objects = tr.objects_from_hyps(self.prop_n)
+            except Exception as exc:
+                raise ValueError(
+                    "euclid_trace has no hypothesis objects for %s: %r"
+                    % (prop, exc))
+        # derived hypothesis points (I.4's e/f, I.5's d/e): placed by
+        # euclid_trace at build_trace time; the default picture must match
+        # or place_step would KeyError on them (seen as a picture error)
+        if xy is None and objects is None:
+            try:
+                tr.derived_free_points(self.prop_n, self.xy)
+            except KeyError as exc:
+                raise ValueError(
+                    "euclid_trace cannot place the hypothesis points "
+                    "for %s: %r" % (prop, exc))
         self.trust_log = []  # "trusted from the picture: <fact>" records
+        self.picture_errors = []  # (rule, args, repr(exc)) from place_step
+        self.picture_stale = False
+
+    @staticmethod
+    def _prop_number(prop):
+        if not (isinstance(prop, str) and prop.startswith("I.")):
+            raise ValueError("prop must be 'I.n', got %r" % (prop,))
+        try:
+            return int(prop[2:])
+        except ValueError:
+            raise ValueError("prop must be 'I.n', got %r" % (prop,))
 
     # --- picture checks (trace primitives, no new geometry) ---------------
 
@@ -84,34 +121,51 @@ class TrustingClone(ec.Clone):
 
     def holds_in_picture(self, fact):
         """True / False for the trusted diagram kinds, using euclid_trace's
-        placement and geometry; None when the fact is not a picture fact."""
+        placement and geometry; None when the fact is not a picture fact.
+        Review fixes (claude-9):
+          * while the picture is STALE (a place_step failure was recorded),
+            no picture fact is trusted: None (no trust), never False/True
+            asserted from a lagging picture;
+          * a missing point/object is None ("not in the picture"), not
+            False ("false in the picture")."""
+        if self.picture_stale:
+            return None
         kind = fact[0]
         if kind in ("between", "opposing_sides"):
-            return tr.fact_holds(fact, self.xy) is True
+            try:
+                return tr.fact_holds(fact, self.xy) is True
+            except KeyError:
+                return None
         if kind == "intersects_cc":
             try:
                 (c1, r1), (c2, r2) = (self._circle_geo(fact[1]),
                                       self._circle_geo(fact[2]))
+            except (StopIteration, KeyError):
+                return None  # not in the picture
+            try:
                 tr.circle_circle(c1, r1, c2, r2)
                 return True
-            except (AssertionError, StopIteration, KeyError):
-                return False
+            except AssertionError:
+                return False  # genuinely non-meeting circles
         if kind == "same_side":
             p, q, L = fact[1], fact[2], fact[3]
-            (x1, y1), (x2, y2) = self._line_geo(L)
+            try:
+                (x1, y1), (x2, y2) = self._line_geo(L)
 
-            def side(pt):
-                return ((pt[0] - x1) * (y2 - y1) - (pt[1] - y1) * (x2 - x1))
-            try:
-                return side(self.xy[p]) * side(self.xy[q]) > 0
+                def side(pt):
+                    return ((pt[0] - x1) * (y2 - y1)
+                            - (pt[1] - y1) * (x2 - x1))
+                sp, sq = side(self.xy[p]), side(self.xy[q])
             except (StopIteration, KeyError):
-                return False
+                return None  # not in the picture
+            return sp * sq > 0
         if kind == "inside":
-            (c, r) = self._circle_geo(fact[2])
             try:
-                return tr._norm(tr._sub(self.xy[fact[1]], c)) < r
+                (c, r) = self._circle_geo(fact[2])
+                d = tr._norm(tr._sub(self.xy[fact[1]], c))
             except (StopIteration, KeyError):
-                return False
+                return None  # not in the picture
+            return d < r
         return None
 
     # --- trusting application ---------------------------------------------
@@ -143,11 +197,16 @@ class TrustingClone(ec.Clone):
         self.trust_log.extend(pending)
         if advance_picture:
             try:
-                tr.place_step({"I.1": 1, "I.2": 2, "I.3": 3}[self.prop],
-                              rule, args, bindings, rep["added"],
-                              self.xy, self.objects)
-            except Exception:
-                pass  # placement is advisory; refusals above never get here
+                tr.place_step(self.prop_n, rule, args, bindings,
+                              rep["added"], self.xy, self.objects)
+            except Exception as exc:
+                # Review fix (claude-9): never hide a picture failure. The
+                # engine step already succeeded and is valid — record the
+                # placement failure and mark the picture stale; while stale,
+                # holds_in_picture answers None (no trust) so the clone
+                # refuses trusted premises for a reason anyone can see.
+                self.picture_errors.append((rule, args, repr(exc)))
+                self.picture_stale = True
         return rep
 
     def note_step(self, prop, state, step):
