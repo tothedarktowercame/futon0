@@ -1958,6 +1958,35 @@ CONSTRUCTIONS = {
         "make": lambda s, x, y, z, L: [
             (None, [("same_side", x, z, L)])],
     },
+    # Book/Prop21.lean:6 — proposition_21 verbatim:
+    #   ∀ (a b c d : Point) (AB BC AC BD DC : Line),
+    #   formTriangle a b c AB BC AC ∧ (a.sameSide d BC) ∧
+    #   (c.sameSide d AB) ∧ (b.sameSide d AC) ∧
+    #   distinctPointsOnLine b d BD ∧ distinctPointsOnLine d c DC →
+    #   (|(b─d)| + |(d─c)| < |(b─a)| + |(a─c)|) ∧ (∠ b:d:c > ∠ b:a:c)
+    # Cited as a lemma (the engine's own I.21 replay, PROP21_STEPS_DATA,
+    # is the proof — intersection at e, then proposition_20 twice and
+    # proposition_16 twice). formTriangle destructured as at
+    # proposition_20. The conclusions are the metric tuples
+    # _lt_sum_sum_len and _gt_ang: the strict LA rows plus the fact forms
+    # (apply_step's make loop handles both). No fresh objects,
+    # forward-style citation.
+    "proposition_21": {
+        "cite": "Book/Prop21.lean:6",
+        "args": ("a", "b", "c", "d", "AB", "BC", "AC", "BD", "DC"),
+        "premises": lambda s, a, b, c, d, AB, BC, AC, BD, DC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB),
+            ("same_side", a, d, BC), ("same_side", c, d, AB),
+            ("same_side", b, d, AC),
+            ("dpl", b, d, BD), ("dpl", d, c, DC)],
+        "make": lambda s, a, b, c, d, AB, BC, AC, BD, DC: [
+            (None, [("_lt_sum_sum_len", b, d, d, c, b, a, a, c),
+                    ("_gt_ang", b, d, c, b, a, c)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:187 — triple_incidence_1
     # verbatim:
     #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧

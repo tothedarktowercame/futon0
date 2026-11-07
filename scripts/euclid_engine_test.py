@@ -960,6 +960,41 @@ def test_la_entails_lt_sum_sum_len_bad_case():
                                              "b", "a", "a", "c")
 
 
+def test_proposition_21_citation_fires():
+    """The cited lemma makes exactly the two I.21 conclusions (the
+    theorem PROP21_STEPS_DATA proves): the strict rows plus the
+    lt_sum_sum_len / gt_ang fact forms."""
+    s = eng.State()
+    for f, w in eng.PROP21_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_21",
+                   ("a", "b", "c", "d", "AB", "BC", "AC", "BD", "DC"), {})
+    assert eng.la_entails_lt_sum_sum_len(s.la, "b", "d", "d", "c",
+                                         "b", "a", "a", "c")
+    assert eng.la_entails_gt_ang(s.la, "b", "d", "c", "b", "a", "c")
+    assert s.has(("lt_sum_sum_len", "b", "d", "d", "c", "b", "a", "a", "c"))
+    assert s.has(("gt_ang", "b", "d", "c", "b", "a", "c"))
+
+
+def test_proposition_21_citation_refused_other_side():
+    """Cited with d on the OTHER side of BC from a (opposing_sides
+    a d BC in place of same_side a d BC — d outside the triangle, where
+    |b-d| + |d-c| < |b-a| + |a-c| can fail) the lemma is refused: the
+    premise same_side a d BC is missing."""
+    s = eng.State()
+    for f, w in eng.PROP21_HYPS_DATA:
+        if f == ("same_side", "a", "d", "BC"):
+            f = ("opposing_sides", "a", "d", "BC")
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_21",
+                       ("a", "b", "c", "d", "AB", "BC", "AC", "BD", "DC"),
+                       {})
+    assert ei.value.premise == ("same_side", "a", "d", "BC")
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))
