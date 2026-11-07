@@ -1754,6 +1754,41 @@ def test_prop23p_final_state_not_contradictory():
     assert not contra, witness
 
 
+def test_proposition_23p_citation_fires():
+    """The cited lemma makes exactly the I.23' conclusions over the
+    fresh witness f (the theorem PROP23P_STEPS_DATA replays): f ≠ a, the
+    disjunction f.onLine AB ∨ f.sameSide x AB as one "either" fact, and
+    ∠f:a:b = ∠d:c:e."""
+    s = eng.State()
+    for f, w in eng.PROP23P_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    rep = eng.apply_step(
+        s, 1, "proposition_23'",
+        ("a", "b", "c", "d", "e", "x", "AB", "CD", "CE"), {"f": "f"})
+    assert rep["rule"].startswith("proposition_23'")
+    assert s.has(("neq", "f", "a"))
+    assert s.has(("either", ("on_line", "f", "AB"),
+                 ("same_side", "f", "x", "AB")))
+    assert eng.la_entails_eq_ang(s.la, "f", "a", "b", "d", "c", "e")
+
+
+def test_proposition_23p_citation_refused_without_x_off_line():
+    """¬(x.onLine AB) is a premise (the construction must know which
+    side of AB is x's): without it the citation is refused."""
+    hyps = [h for h in eng.PROP23P_HYPS_DATA
+            if h[0] != ("not_on_line", "x", "AB")]
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(
+            s, 1, "proposition_23'",
+            ("a", "b", "c", "d", "e", "x", "AB", "CD", "CE"), {"f": "f"})
+    assert ei.value.premise == ("not_on_line", "x", "AB")
+
+
 def test_replay_fact_set_footprints():
     """Speed work on the closure/FM internals must not change what a replay
     derives: (fact count, constraint count) per proposition, verified

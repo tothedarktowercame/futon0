@@ -2112,6 +2112,30 @@ CONSTRUCTIONS = {
             ("f", [("neq", "f", a),
                    ("_eq_ang", "f", a, b, d, c, e)])],
     },
+    # Book/Prop23.lean:35 — proposition_23' verbatim: copy an angle onto
+    # a given line at a given point, on either side —
+    #   ∀ (a b c d e x : Point) (AB CD CE : Line),
+    #     distinctPointsOnLine a b AB ∧ formRectilinearAngle d c e CD CE ∧
+    #     ¬(x.onLine AB) →
+    #       ∃ f : Point, f ≠ a ∧ (f.onLine AB ∨ f.sameSide x AB) ∧
+    #         (∠ f:a:b = ∠ d:c:e)
+    # formRectilinearAngle destructures (Relations.lean:64) to dpl d c CD
+    # ∧ dpl c e CE. The disjunction is the fact kind "either" (see the
+    # PROP23P section): the lemma makes the disjunction itself. First
+    # cited by Book I.24 (Prop24.lean:18). The theorem
+    # PROP23P_STEPS_DATA replays.
+    "proposition_23'": {
+        "cite": "Book/Prop23.lean:35 (proposition_23')",
+        "args": ("a", "b", "c", "d", "e", "x", "AB", "CD", "CE"),
+        "premises": lambda s, a, b, c, d, e, x, AB, CD, CE: [
+            _dpl_either(s, a, b, AB), _dpl_either(s, d, c, CD),
+            _dpl_either(s, c, e, CE), ("not_on_line", x, AB)],
+        "make": lambda s, a, b, c, d, e, x, AB, CD, CE: [
+            ("f", [("neq", "f", a),
+                   ("either", ("on_line", "f", AB),
+                    ("same_side", "f", x, AB)),
+                   ("_eq_ang", "f", a, b, d, c, e)])],
+    },
     # Book/Prop22.lean:58 — proposition_22'' verbatim (the same-side
     # variant I.23' cites): proposition_22' plus a point x off FE and the
     # extra conclusion k.sameSide x FE —
