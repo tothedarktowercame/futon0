@@ -1,0 +1,689 @@
+{
+ "prop": 9,
+ "title": "Elements I.9 (LeanEuclid Book/Prop09.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e"
+    ]
+   },
+   "def_step": 3
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 4
+  },
+  {
+   "name": "FE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "f",
+     "e"
+    ]
+   },
+   "def_step": 5
+  },
+  {
+   "name": "FD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "f",
+     "d"
+    ]
+   },
+   "def_step": 6
+  },
+  {
+   "name": "AF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "f"
+    ]
+   },
+   "def_step": 7
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "point_between_points_shorter_than",
+   "args": [
+    "AB",
+    "a",
+    "b",
+    "a",
+    "c"
+   ],
+   "bindings": {
+    "a": "d"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "between",
+     "a",
+     "d",
+     "b"
+    ],
+    [
+     "lt_len",
+     "a",
+     "d",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "entail",
+     "pos_len",
+     "('v', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 15
+   },
+   "placement_decision": "sample: |b-d| = |v-c|/2 (any length shorter than the bound satisfies the step; the engine places no coordinate)"
+  },
+  {
+   "n": 2,
+   "rule": "proposition_3",
+   "args": [
+    "a",
+    "c",
+    "a",
+    "d",
+    "AC",
+    "AB"
+   ],
+   "bindings": {
+    "q": "e"
+   },
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "e",
+     "c"
+    ],
+    [
+     "eq_len",
+     "a",
+     "e",
+     "a",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "dpl",
+     "a",
+     "d",
+     "AB"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('v', 'c', 'v', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 16
+   },
+   "placement_decision": "cut |v-d| off segment v-c from v; sample direction along the segment"
+  },
+  {
+   "n": 3,
+   "rule": "line_from_points",
+   "args": [
+    "d",
+    "e"
+   ],
+   "bindings": {
+    "L": "DE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "d",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 17
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_1'",
+   "args": [
+    "d",
+    "e",
+    "a",
+    "DE"
+   ],
+   "bindings": {
+    "c": "f"
+   },
+   "facts_added": [
+    [
+     "eq_len",
+     "f",
+     "d",
+     "d",
+     "e"
+    ],
+    [
+     "eq_len",
+     "f",
+     "e",
+     "d",
+     "e"
+    ],
+    [
+     "opposing_sides",
+     "f",
+     "a",
+     "DE"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 18
+   },
+   "placement_decision": "equilateral apex on d-e, on the side of DE opposite v (proposition_1' fixes the point exactly: both lengths equal |d-e|; no free parameter)"
+  },
+  {
+   "n": 5,
+   "rule": "line_from_points",
+   "args": [
+    "f",
+    "e"
+   ],
+   "bindings": {
+    "L": "FE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "FE"
+    ],
+    [
+     "on_line",
+     "e",
+     "FE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "f",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 19
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 6,
+   "rule": "line_from_points",
+   "args": [
+    "f",
+    "d"
+   ],
+   "bindings": {
+    "L": "FD"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "FD"
+    ],
+    [
+     "on_line",
+     "d",
+     "FD"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "f",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 20
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 7,
+   "rule": "line_from_points",
+   "args": [
+    "a",
+    "f"
+   ],
+   "bindings": {
+    "L": "AF"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "a",
+     "AF"
+    ],
+    [
+     "on_line",
+     "f",
+     "AF"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "a",
+     "f"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 21
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 8,
+   "rule": "proposition_8",
+   "args": [
+    "a",
+    "d",
+    "f",
+    "a",
+    "e",
+    "f",
+    "AB",
+    "FD",
+    "AF",
+    "AC",
+    "FE",
+    "AF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "d",
+     "a",
+     "f",
+     "e",
+     "a",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "d",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "FD"
+    ],
+    [
+     "on_line",
+     "f",
+     "FD"
+    ],
+    [
+     "on_line",
+     "f",
+     "AF"
+    ],
+    [
+     "on_line",
+     "a",
+     "AF"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "AB"
+    ],
+    [
+     "dpl",
+     "a",
+     "e",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "FE"
+    ],
+    [
+     "on_line",
+     "f",
+     "FE"
+    ],
+    [
+     "on_line",
+     "f",
+     "AF"
+    ],
+    [
+     "on_line",
+     "a",
+     "AF"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "AC"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('v', 'd', 'v', 'e')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('v', 'f', 'v', 'f')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', 'f', 'e', 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop09.lean",
+    "line": 33
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_8 only adds facts to the engine state"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.6,
+   0.0
+  ],
+  "c": [
+   0.5,
+   1.2
+  ],
+  "d": [
+   0.65,
+   0.0
+  ],
+  "e": [
+   0.25,
+   0.6
+  ],
+  "DE": null,
+  "f": [
+   0.9696152422706632,
+   0.6464101615137754
+  ],
+  "FE": null,
+  "FD": null,
+  "AF": null
+ },
+ "verification": [
+  {
+   "check": "I.9: a genuine angle b:v:c (AB != AC)",
+   "ok": true
+  },
+  {
+   "check": "I.9: angle b:v:c visibly off the special angles (0.1 rad from each of 45/60/90 degrees)",
+   "ok": true
+  },
+  {
+   "check": "I.9: d on segment v-b (the step-1 sample)",
+   "ok": true
+  },
+  {
+   "check": "I.9: |v-d| = |v-c|/2 (the step-1 sample distance)",
+   "ok": true
+  },
+  {
+   "check": "I.9: |v-e| = |v-d| (the proposition_3 cut, to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.9: e on segment v-c",
+   "ok": true
+  },
+  {
+   "check": "I.9: f the equilateral apex on DE (|f-d| = |f-e| = |d-e|, to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.9: f on the side of DE opposite v",
+   "ok": true
+  },
+  {
+   "check": "I.9: f off AB and f off AC (the h-sm hypotheses behind the SSS step)",
+   "ok": true
+  },
+  {
+   "check": "I.9: GOAL angle b:v:f = angle c:v:f (to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.9: GOAL v != f, visibly (at least 0.1 apart)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop09.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop01",
+  "import Book.Prop03",
+  "import Book.Prop05",
+  "import Book.Prop07",
+  "import Book.Prop08",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_9 : \u2200 (a b c : Point) (AB AC : Line),",
+  "  formRectilinearAngle b a c AB AC \u2227 AB \u2260 AC \u2192",
+  "  \u2203 f : Point, f \u2260 a \u2227 (\u2220 b:a:f = \u2220 c:a:f) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply point_between_points_shorter_than AB a b (a\u2500c) as d",
+  "  euclid_apply (proposition_3 a c a d AC AB) as e",
+  "  euclid_apply (line_from_points d e) as DE",
+  "  euclid_apply (proposition_1' d e a DE) as f",
+  "  euclid_apply (line_from_points f e) as FE",
+  "  euclid_apply (line_from_points f d) as FD",
+  "  euclid_apply (line_from_points a f) as AF",
+  "  use f",
+  "  have : \u00ac(f.onLine AB) := by  -- Omitted by Euclid.",
+  "    euclid_intros",
+  "    euclid_apply (proposition_5' f d e AB DE FE)",
+  "    euclid_apply (proposition_5 a d e b c AB DE AC)",
+  "    euclid_finish",
+  "  have : \u00ac(f.onLine AC) := by  -- Omitted by Euclid.",
+  "    euclid_intros",
+  "    euclid_apply (proposition_5' f e d AC DE FD)",
+  "    euclid_apply (proposition_5 a d e b c AB DE AC)",
+  "    euclid_finish",
+  "  euclid_apply (proposition_8 a d f a e f AB FD AF AC FE AF)",
+  "  euclid_finish",
+  "",
+  "theorem proposition_9' : \u2200 (a b c : Point) (AB AC : Line),",
+  "  formRectilinearAngle b a c AB AC \u2227 AB \u2260 AC \u2192",
+  "  \u2203 f : Point, (f.sameSide c AB) \u2227 (f.sameSide b AC) \u2227 (\u2220 b:a:f = \u2220 c:a:f) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (point_between_points_shorter_than AB a b (a\u2500c)) as d",
+  "  euclid_apply (proposition_3 a c a d AC AB) as e",
+  "  euclid_apply (line_from_points d e) as DE",
+  "  euclid_apply (proposition_1' d e a DE) as f",
+  "  euclid_apply (line_from_points f e) as FE",
+  "  euclid_apply (line_from_points f d) as FD",
+  "  euclid_apply (line_from_points a f) as AF",
+  "  use f",
+  "  have : \u00ac(f.onLine AB) := by  -- Omitted by Euclid.",
+  "    euclid_intros",
+  "    euclid_apply (proposition_5' f d e AB DE FE)",
+  "    euclid_apply (proposition_5 a d e b c AB DE AC)",
+  "    euclid_finish",
+  "  have : \u00ac(f.onLine AC) := by  -- Omitted by Euclid.",
+  "    euclid_intros",
+  "    euclid_apply (proposition_5' f e d AC DE FD)",
+  "    euclid_apply (proposition_5 a d e b c AB DE AC)",
+  "    euclid_finish",
+  "  euclid_apply (proposition_8 a d f a e f AB FD AF AC FE AF)",
+  "  euclid_apply (intersection_lines AF DE) as g",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ],
+ "name_map": {
+  "v": "a"
+ },
+ "name_map_note": "engine points renamed for Lean display: engine v = Lean a"
+}

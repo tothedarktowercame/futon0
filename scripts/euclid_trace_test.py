@@ -1462,3 +1462,135 @@ def test_bad_case_prop7_d_mirrored_across_ab_fails():
     assert abs(math.hypot(x["c"][0] - x["b"][0], x["c"][1] - x["b"][1])
                - math.hypot(x["d"][0] - x["b"][0],
                             x["d"][1] - x["b"][1])) < tr.EPS
+
+
+# -- I.8 / I.9 (E-kimi-task-421, P-euclid-play-config-I8-I9) -----------------
+
+TR8, TR9 = load(8), load(9)
+INV9 = {v: k for k, v in TR9["name_map"].items()}
+
+
+def test_prop8_rebuild_matches_disk():
+    rebuilt = tr.build_trace(8)
+    assert rebuilt["placement"] == TR8["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR8["steps"]
+
+
+def test_prop9_rebuild_matches_disk():
+    rebuilt = tr.build_trace(9)
+    assert rebuilt["placement"] == TR9["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR9["steps"]
+
+
+def test_prop8_lean_lines_cover_the_split_assert_and_apply_lines():
+    path = os.path.join(LEAN_DIR, TR8["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = []
+    for s in TR8["steps"]:
+        ln = s["lean"]["line"]
+        assert ln is not None, s
+        line = lines[ln - 1]
+        if s["rule"] == "by_contra":
+            # the engine's by_contra renders Lean's by_cases d = g line
+            assert line.strip().startswith("by_cases"), s
+        elif s["rule"] == "assert_point_eq_on_ray":
+            # Lean's euclid_assert c' = f (no euclid_apply)
+            assert "euclid_assert" in line, s
+        else:
+            assert "euclid_apply" in line and s["rule"] in line, s
+        linked.append(ln)
+    assert linked == sorted(linked) and len(set(linked)) == len(linked)
+    # every euclid_apply line in Prop08.lean is linked (superposition,
+    # proposition_7), plus the euclid_assert and the by_cases line
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies <= set(linked) and len(linked) == len(applies) + 2
+
+
+def test_prop9_lean_lines_cover_the_apply_lines():
+    # Prop09.lean holds TWO theorems; the engine's replay is
+    # proposition_9 (apply lines 15-21 and 33). The apply lines inside
+    # the two inline have-blocks (25, 26, 30, 31) and the whole
+    # proposition_9' proof (41+) are not part of the replay and stay
+    # unlinked.
+    path = os.path.join(LEAN_DIR, TR9["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = [s["lean"]["line"] for s in TR9["steps"]]
+    assert all(ln is not None for ln in linked)
+    assert linked == sorted(linked) and len(set(linked)) == len(linked)
+    for s in TR9["steps"]:
+        line = lines[s["lean"]["line"] - 1]
+        assert "euclid_apply" in line and s["rule"] in line, s
+    assert linked == [15, 16, 17, 18, 19, 20, 21, 33], linked
+
+
+def test_prop9_shows_lean_names_only():
+    assert TR9["name_map"] == {"v": "a"}
+    names = {o["name"] for o in TR9["objects"]}
+    assert "v" not in names
+    assert {"a", "b", "c", "d", "e", "f", "AB", "AC", "DE"} <= names
+    for s in TR9["steps"]:
+        assert "v" not in map(str, s["args"]), s
+        assert "v" not in map(str, s["bindings"].values()), s
+
+
+def test_prop8_cases_recorded():
+    """The by_contra renders Lean's by_cases d = g with the
+    exhaustiveness note; the branch step says which refuted assumption
+    it runs under and that the TRUE configuration is drawn."""
+    steps = TR8["steps"]
+    assert [s["rule"] for s in steps] == [
+        "superposition", "assert_point_eq_on_ray", "by_contra",
+        "proposition_7"]
+    split = steps[2]
+    assert split["facts_added"] == [["peq", "d", "c'"]]
+    assert "by_cases d = g" in split["case"], split["case"]
+    assert "Exhaustiveness" in split["case"]
+    br = steps[3]
+    assert br.get("case") and "refuted" in br["case"]
+    assert br["case"] in br["placement_decision"]
+    assert "TRUE configuration" in br["case"]
+    # the superposition draws the primed points/lines at step 1; no
+    # later step places anything (the refuted branch constructs nothing)
+    assert {o["name"] for o in TR8["objects"]} == {
+        "a", "b", "c", "d", "e", "f", "AB", "BC", "AC", "DE", "EF",
+        "DF", "b'", "c'", "CG", "EG"}
+    assert all(o["def_step"] <= 1 for o in TR8["objects"])
+
+
+def test_prop8_step_facts_hold():
+    xy = _xy(TR8)
+    assert all(ok for _, ok in tr.verify8(xy))
+    # every fact the steps add holds numerically in the TRUE placement
+    res = tr.metric_facts_hold(TR8["steps"], xy)
+    assert res and all(ok for _, ok in res), \
+        [f for f, ok in res if not ok]
+
+
+def test_prop9_step_facts_hold():
+    xy = _xy(TR9, INV9)
+    assert all(ok for _, ok in tr.verify9(xy))
+    res = tr.metric_facts_hold(
+        tr._remap_names(TR9["steps"], INV9), xy)
+    assert res and all(ok for _, ok in res), \
+        [f for f, ok in res if not ok]
+
+
+def test_bad_case_prop8_moved_f_breaks_sss():
+    xy = _xy(TR8)
+    assert all(ok for _, ok in tr.verify8(xy))
+    x = dict(xy)
+    x["f"] = (xy["f"][0] + 0.1, xy["f"][1])
+    fails = [d for d, ok in tr.verify8(x) if not ok]
+    assert any("|a-c| = |d-f|" in d for d in fails), fails
+    assert any("b' on f" in d for d in fails), fails
+
+
+def test_bad_case_prop9_moved_c_breaks_bisection():
+    xy = _xy(TR9, INV9)
+    assert all(ok for _, ok in tr.verify9(xy))
+    x = dict(xy)
+    x["c"] = (xy["c"][0], xy["c"][1] + 0.3)  # tilts AC off the bisector
+    fails = [d for d, ok in tr.verify9(x) if not ok]
+    assert any("GOAL angle b:v:f = angle c:v:f" in d for d in fails), \
+        fails
+    assert any("e on segment v-c" in d for d in fails), fails

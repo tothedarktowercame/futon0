@@ -468,3 +468,39 @@ def test_engine_i24_i25_splits_covered():
                            for b in mv["branches"]],
                 [tuple(c) for c in mv["conclusion"]], refuted)
             assert cov["covered"], (n, rule, mv["branches"], cov)
+
+
+def test_catalogue_lists_8_and_9():
+    ns = [e["n"] for e in ep.catalogue()]
+    assert ns.index(7) < ns.index(8) < ns.index(9) < ns.index(10)
+    assert ep.GOALS[8] == [("_eq_ang", "b", "a", "c", "e", "d", "f")]
+    assert ep.GOALS[9] == [("_eq_ang", "b", "v", "f", "c", "v", "f"),
+                           ("neq", "v", "f")]
+
+
+def test_palette_9():
+    """palette(9) contains proposition_8 (CONSTRUCTIONS lemma,
+    Book/Prop08.lean:5, cited) and proposition_6; proposition_9 itself
+    and later propositions stay out."""
+    pal = ep.palette(9)
+    assert "proposition_8" in pal
+    assert "proposition_6" in pal
+    assert "proposition_9" not in pal
+    assert "proposition_9'" not in pal
+    assert "proposition_10" not in pal
+
+
+def test_play_9_reaches_goal():
+    """E-kimi-task-421: play(9) with the engine's own steps reaches the
+    goal (also covered by test_engine_steps_reach_goal, I.9 being
+    straight-line). play(8) awaits a referee fix — see the
+    E-kimi-task-421 bell: the play referee's _holds does not
+    symmetrize peq, so I.8's by_contra conclusion peq d c' (Lean's
+    `by_cases d = g` order) is not matched to the normalized family
+    member peq c' d."""
+    steps = tr.hyps_and_steps(9)[1]
+    res = ep.play(9, [_engine_step_to_move(st) for st in steps])
+    assert res["goal_reached"], \
+        "I.9: engine replay did not reach the goal: %s" % res
+    assert all(m["ok"] for m in res["moves"]), \
+        "I.9: a move failed: %s" % res["moves"]

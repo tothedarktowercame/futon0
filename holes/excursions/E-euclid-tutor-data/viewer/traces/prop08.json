@@ -1,0 +1,625 @@
+{
+ "prop": 8,
+ "title": "Elements I.8 (LeanEuclid Book/Prop08.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "EF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "e",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "b'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "c'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "CG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b'",
+     "c'"
+    ]
+   },
+   "def_step": 1
+  },
+  {
+   "name": "EG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "e",
+     "c'"
+    ]
+   },
+   "def_step": 1
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "superposition",
+   "args": [
+    "b",
+    "c",
+    "a",
+    "e",
+    "f",
+    "d",
+    "BC",
+    "AC",
+    "AB",
+    "EF"
+   ],
+   "bindings": {
+    "b'": "b'",
+    "c'": "c'",
+    "BC'": "CG",
+    "AC'": "EG"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b'",
+     "EF"
+    ],
+    [
+     "not_between",
+     "b'",
+     "e",
+     "f"
+    ],
+    [
+     "same_side",
+     "c'",
+     "d",
+     "EF"
+    ],
+    [
+     "dpl",
+     "b'",
+     "c'",
+     "CG"
+    ],
+    [
+     "dpl",
+     "e",
+     "c'",
+     "EG"
+    ],
+    [
+     "eq_ang",
+     "c",
+     "b",
+     "a",
+     "b'",
+     "e",
+     "c'"
+    ],
+    [
+     "eq_ang",
+     "b",
+     "a",
+     "c",
+     "e",
+     "c'",
+     "b'"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "b",
+     "c'",
+     "b'",
+     "e"
+    ],
+    [
+     "eq_len",
+     "b",
+     "c",
+     "e",
+     "b'"
+    ],
+    [
+     "eq_len",
+     "c",
+     "a",
+     "b'",
+     "c'"
+    ],
+    [
+     "eq_len",
+     "a",
+     "b",
+     "c'",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "dpl",
+     "e",
+     "f",
+     "EF"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "EF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop08.lean",
+    "line": 12
+   },
+   "placement_decision": "rigid motion mapping b->e, c->f, a->d: b' (the image of c) lands exactly on f (asserted in step 2) and c' (the image of a) lands exactly on d (the by_contra's conclusion, exact in this TRUE configuration); the primed triangle is triangle b-c-a carried onto e-f-d. Lean names the images (c', g) and the carried lines (CG', EG)",
+   "superposition": {
+    "triangles": [
+     [
+      "a",
+      "b",
+      "c"
+     ],
+     [
+      "d",
+      "e",
+      "f"
+     ]
+    ],
+    "correspondence": [
+     [
+      "a",
+      "d"
+     ],
+     [
+      "b",
+      "e"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "n": 2,
+   "rule": "assert_point_eq_on_ray",
+   "args": [
+    "b'",
+    "f",
+    "e",
+    "EF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "peq",
+     "b'",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b'",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "not_between",
+     "b'",
+     "e",
+     "f"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('e', \"b'\", 'e', 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop08.lean",
+    "line": 13
+   },
+   "placement_decision": "cited assertion (Lean's euclid_assert c' = f): b' and f both lie on EF on the same ray from e with |e-b'| = |b-c| (the superposition bundle) = |e-f| (hypothesis), so b' = f \u2014 exact in the drawing"
+  },
+  {
+   "n": 3,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "neq",
+       "d",
+       "c'"
+      ]
+     ],
+     [
+      [
+       "proposition_7",
+       [
+        "e",
+        "f",
+        "d",
+        "c'",
+        "EF",
+        "DE",
+        "DF",
+        "EG",
+        "CG"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "peq",
+     "d",
+     "c'"
+    ]
+   ],
+   "facts_added": [
+    [
+     "peq",
+     "d",
+     "c'"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop08.lean",
+    "line": 14
+   },
+   "placement_decision": "Lean's `by_cases d = g` line; the engine renders it as a by_contra concluding peq d c' (engine c' = Lean's g), because the d != c' branch is refuted (a by_cases branch must ENTAIL, not contradict); the d = c' branch is Lean's euclid_finish. Exhaustiveness is trichotomy on point equality; the diagram shows the TRUE configuration \u2014 the superposition lands b' exactly on f and c' exactly on d, hence angle b:a:c = angle e:d:f; case split: assume [('neq', 'd', \"c'\")] \u2014 refuted by ['proposition_7'] (the refuted assumption d != c' is not drawable; the diagram shows the TRUE configuration \u2014 the superposition lands c' exactly on d, hence angle b:a:c = angle e:d:f)",
+   "case": "Lean's `by_cases d = g` line; the engine renders it as a by_contra concluding peq d c' (engine c' = Lean's g), because the d != c' branch is refuted (a by_cases branch must ENTAIL, not contradict); the d = c' branch is Lean's euclid_finish. Exhaustiveness is trichotomy on point equality; the diagram shows the TRUE configuration \u2014 the superposition lands b' exactly on f and c' exactly on d, hence angle b:a:c = angle e:d:f"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_7",
+   "args": [
+    "e",
+    "f",
+    "d",
+    "c'",
+    "EF",
+    "DE",
+    "DF",
+    "EG",
+    "CG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "false"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "f",
+     "EF"
+    ],
+    [
+     "dpl",
+     "e",
+     "d",
+     "DE"
+    ],
+    [
+     "dpl",
+     "d",
+     "f",
+     "DF"
+    ],
+    [
+     "dpl",
+     "e",
+     "c'",
+     "EG"
+    ],
+    [
+     "dpl",
+     "c'",
+     "f",
+     "CG"
+    ],
+    [
+     "same_side",
+     "d",
+     "c'",
+     "EF"
+    ],
+    [
+     "neq",
+     "d",
+     "c'"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('e', 'd', 'e', \"c'\")"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', 'f', \"c'\", 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop08.lean",
+    "line": 16
+   },
+   "placement_decision": "branch (d != c'): refuted \u2014 proposition_7 (I.7, two distances fix the point) on the SSS pair (e, f | d, c') with c'.sameSide d EF from the superposition bundle forces d = c', contradicting the assumption; the case assumption is refuted \u2014 the diagram shows the TRUE configuration \u2014 the superposition lands b' exactly on f and c' exactly on d, hence angle b:a:c = angle e:d:f; cited step (proposition_7 e f d c' EF DE DF EG CG \u2014 I.7, two distances fix the point): d and c' lie on the same side of EF (the superposition bundle) with |e-d| = |a-b| = |e-c'| and |f-d| = |a-c| = |b'-c'| = |f-c'|, so d = c' \u2014 contradicting the branch assumption d != c'",
+   "case": "branch (d != c'): refuted \u2014 proposition_7 (I.7, two distances fix the point) on the SSS pair (e, f | d, c') with c'.sameSide d EF from the superposition bundle forces d = c', contradicting the assumption; the case assumption is refuted \u2014 the diagram shows the TRUE configuration \u2014 the superposition lands b' exactly on f and c' exactly on d, hence angle b:a:c = angle e:d:f"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   2.0,
+   0.0
+  ],
+  "c": [
+   0.6,
+   1.2
+  ],
+  "d": [
+   3.4,
+   0.2
+  ],
+  "e": [
+   5.331851652578137,
+   -0.31763809020504147
+  ],
+  "f": [
+   4.290138349896466,
+   1.2038195644853695
+  ],
+  "b'": [
+   4.290138349896466,
+   1.203819564485369
+  ],
+  "c'": [
+   3.4000000000000004,
+   0.19999999999999946
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.8: c off AB (a genuine triangle)",
+   "ok": true
+  },
+  {
+   "check": "I.8: f off DE (a genuine triangle)",
+   "ok": true
+  },
+  {
+   "check": "I.8: hypothesis |a-b| = |d-e| (to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.8: hypothesis |a-c| = |d-f| (to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.8: hypothesis |b-c| = |e-f| (to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.8: the superposition lands b' on f (to 1e-9) \u2014 step 2's assert",
+   "ok": true
+  },
+  {
+   "check": "I.8: the superposition lands c' on d (to 1e-9) \u2014 the by_contra's conclusion, exact in the TRUE configuration",
+   "ok": true
+  },
+  {
+   "check": "I.8: GOAL angle b:a:c = angle e:d:f (to 1e-9)",
+   "ok": true
+  },
+  {
+   "check": "I.8: triangles scalene (side lengths pairwise at least 0.1 apart)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop08.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop07",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_8 : \u2200 (a b c d e f : Point) (AB BC AC DE EF DF : Line),",
+  "  formTriangle a b c AB BC AC \u2227 formTriangle d e f DE EF DF \u2227",
+  "  |(a\u2500b)| = |(d\u2500e)| \u2227 |(a\u2500c)| = |(d\u2500f)| \u2227 |(b\u2500c)| = |(e\u2500f)| \u2192",
+  "  \u2220 b:a:c = \u2220 e:d:f :=",
+  "by",
+  "    euclid_intros",
+  "    euclid_apply (superposition b c a e f d BC AC AB EF) as (c', g, CG', EG)",
+  "    euclid_assert c' = f",
+  "    by_cases d = g",
+  "    \u00b7 euclid_finish",
+  "    \u00b7 euclid_apply (proposition_7 e f d g EF DE DF EG CG')",
+  "      euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

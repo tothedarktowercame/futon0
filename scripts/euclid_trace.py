@@ -53,6 +53,13 @@ def _norm_lean(text):
 # remapped at the end; the map is stated in the JSON.
 PROP11_NAME_MAP = {"u": "a", "v": "b", "w": "c", "g": "d"}
 
+# Book I.9: the engine renames Lean's vertex a to v (Lean's
+# point_between_points_shorter_than introduces a base name "a" that
+# would collide; see PROP9_HYPS_DATA's comment). The viewer shows
+# Lean's names, so the trace is built in engine names and remapped at
+# the end, as for I.11; the map is stated in the JSON.
+PROP9_NAME_MAP = {"v": "a"}
+
 
 def lean_lines_for_named(prop, steps, name_map, after=None):
     """Signature matching for props whose Lean proof does not name the
@@ -323,6 +330,24 @@ FREE = {
     7: {"a": (0.0, 0.0), "b": (1.6, 0.0), "c": (0.5, 1.2),
         "d": (1.3 * math.cos(math.radians(10.0)),
               1.3 * math.sin(math.radians(10.0)))},
+    # I.8 (SSS congruence): two scalene triangles a-b-c and d-e-f with
+    # the three hypothesis side equalities. e, f are a rigid copy of
+    # b, c under the rotation+translation taking a to d
+    # (derived_free_points, PROP8_ROT), so the equalities hold to float
+    # precision and the proof's superposition lands EXACTLY: b' = f
+    # (step 2's assert) and c' = d (the by_contra's conclusion, exact
+    # in the drawn TRUE configuration — verify8 checks both
+    # coincidences).
+    8: {"a": (0.0, 0.0), "b": (2.0, 0.0), "c": (0.6, 1.2),
+        "d": (3.4, 0.2)},
+    # I.9 (bisect an angle; the engine renames Lean's vertex a to v —
+    # see PROP9_HYPS_DATA): |v-c| = 1.3 < 2|v-b| = 3.2, so the step-1
+    # sample (d at |v-c|/2 along v->b) satisfies the
+    # point_between_points_shorter_than placement assert. Angle
+    # b:v:c ~= 67.4 degrees (the 3-4-5 angle), visibly off the special
+    # angles. d, e, f are CONSTRUCTED by steps 1, 2, 4; verify9 checks
+    # |v-e| = |v-d|, the equilateral apex, and the bisection to 1e-9.
+    9: {"v": (0.0, 0.0), "b": (1.6, 0.0), "c": (0.5, 1.2)},
     # I.10: symmetric base so the bisector/CD is the y-axis and d lands
     # exactly on the midpoint of a-b (verify10 checks |a-d| = |d-b| and
     # between a d b).
@@ -414,6 +439,7 @@ FREE = {
 }
 
 PROP4_ROT = math.radians(25.0)
+PROP8_ROT = math.radians(-15.0)
 PROP5_EXTEND = 2.0
 
 
@@ -430,6 +456,10 @@ def hyps_and_steps(prop):
         return list(eng.PROP6_HYPS_DATA), list(eng.PROP6_STEPS_DATA)
     if prop == 7:
         return list(eng.PROP7_HYPS_DATA), list(eng.PROP7_STEPS_DATA)
+    if prop == 8:
+        return list(eng.PROP8_HYPS_DATA), list(eng.PROP8_STEPS_DATA)
+    if prop == 9:
+        return list(eng.PROP9_HYPS_DATA), list(eng.PROP9_STEPS_DATA)
     if prop == 10:
         return list(eng.PROP10_HYPS_DATA), list(eng.PROP10_STEPS_DATA)
     if prop == 11:
@@ -474,6 +504,14 @@ def derived_free_points(prop, xy):
         for src, name in (("b", "d"), ("c", "e")):
             v = _sub(xy[src], xy["a"])
             xy[name] = _add(xy["a"], _mul(v, PROP5_EXTEND))
+    if prop == 8:
+        # e, f: rigid copy of b, c under the rotation+translation taking
+        # a to d (as I.4), so the three hypothesis side equalities hold
+        # exactly and the superposition lands b' on f and c' on d
+        cs, sn = math.cos(PROP8_ROT), math.sin(PROP8_ROT)
+        rot = lambda p: (cs * p[0] - sn * p[1], sn * p[0] + cs * p[1])
+        for src, name in (("b", "e"), ("c", "f")):
+            xy[name] = _add(xy["d"], rot(_sub(xy[src], xy["a"])))
 
 
 
@@ -529,6 +567,27 @@ def objects_from_hyps(prop):
                 for L, pq in (("AB", ("a", "b")), ("AC", ("a", "c")),
                               ("CB", ("c", "b")), ("AD", ("a", "d")),
                               ("DB", ("d", "b")))]
+    if prop == 8:
+        # the two hypothesis triangles and their six hypothesis lines
+        # (two formTriangles destructed); the superposition's primed
+        # points b', c' and lines CG, EG are drawn by step 1
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d", "e", "f")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")), ("DE", ("d", "e")),
+                              ("EF", ("e", "f")), ("DF", ("d", "f")))]
+    if prop == 9:
+        # the angle's vertex v (Lean's a) with b, c and the two
+        # hypothesis lines (formRectilinearAngle destructured: dpl v b
+        # AB, dpl v c AC); d, e, f are CONSTRUCTED (steps 1, 2, 4); the
+        # h-sm facts about f stand behind the SSS step
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("v", "b", "c")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("v", "b")), ("AC", ("v", "c")))]
     if prop == 10:
         # c (the equilateral apex) is CONSTRUCTED by step 1, not a
         # hypothesis; the SMT-sourced non-collinearity is an assumption
@@ -762,6 +821,41 @@ dragging)" % (a, b)
         return ("free parameter of the existential step: sample direction "
                 "chosen (no fact decides it); glider on a circle of dynamic "
                 "radius |b-c| preserves |a-d| = |b-c| under dragging")
+    if prop == 8 and rule == "superposition":
+        # I.8's argument order is (b c a e f d): the rigid motion maps
+        # b->e, so b' is the image of C (|e-b'| = |b-c| = |e-f| then
+        # forces b' = f — step 2's assert) and c' is the image of A
+        # (the by_contra proves c' = d; in the drawn TRUE configuration
+        # the coincidence is exact — verify8 checks it). Lean names the
+        # images (c', g) and the carried lines (CG', EG). Placement
+        # math as the generic superposition handler below.
+        (a, b, c, d, e, f, AB, BC, AC, DE), B = args, bindings
+        bp, cp = B["b'"], B["c'"]
+        ab = _sub(xy[b], xy[a])
+        de = _sub(xy[e], xy[d])
+        ang = math.atan2(de[1], de[0]) - math.atan2(ab[1], ab[0])
+        cs, sn = math.cos(ang), math.sin(ang)
+        rot = lambda p: (cs * p[0] - sn * p[1], sn * p[0] + cs * p[1])
+        xy[bp] = _add(xy[d], rot(ab))
+        xy[cp] = _add(xy[d], rot(_sub(xy[c], xy[a])))
+        assert _norm(_sub(xy[bp], xy[e])) < EPS, "superposition: b' must be f"
+        objects.append({"name": bp, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        objects.append({"name": cp, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        objects.append({"name": bindings["BC'"], "kind": "line",
+                        "jsx": {"type": "line", "p": [bp, cp]},
+                        "def_step": None})
+        objects.append({"name": bindings["AC'"], "kind": "line",
+                        "jsx": {"type": "line", "p": [d, cp]},
+                        "def_step": None})
+        return ("rigid motion mapping b->e, c->f, a->d: b' (the image "
+                "of c) lands exactly on f (asserted in step 2) and c' "
+                "(the image of a) lands exactly on d (the by_contra's "
+                "conclusion, exact in this TRUE configuration); the "
+                "primed triangle is triangle b-c-a carried onto e-f-d. "
+                "Lean names the images (c', g) and the carried lines "
+                "(CG', EG)")
     if rule == "superposition":
         # rigid motion taking a->d and b->e (|ab| = |de| by hypothesis):
         # b' = T(b) = e exactly, c' = T(c). Drawn at the sample placement;
@@ -831,6 +925,29 @@ dragging)" % (a, b)
         return ("free parameter of the existential step: sample distance " 
                 "0.6 |c-mid(ab)| along the bisector ray (no fact decides "
                 "the distance)")
+    if rule == "proposition_1'":
+        # (a, b, x, AB) -> the equilateral apex on segment a-b, on the
+        # side of AB opposite x (I.9's f on DE opposite v). The rule
+        # fixes the point exactly (both lengths equal |a-b|); no free
+        # parameter.
+        (a, b, x, AB), name = args, bindings["c"]
+        p1, p2 = xy[a], xy[b]
+        seg = _sub(p2, p1)
+        mid = _mul(_add(p1, p2), 0.5)
+        h = math.sqrt(3.0) / 2.0 * _norm(seg)
+        perp = _unit((-seg[1], seg[0]))
+        side = lambda p: ((p[0] - p1[0]) * seg[1]
+                          - (p[1] - p1[1]) * seg[0])
+        cand = _add(mid, _mul(perp, h))
+        if side(cand) * side(xy[x]) > 0:
+            cand = _sub(mid, _mul(perp, h))
+        xy[name] = cand
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("equilateral apex on %s-%s, on the side of %s opposite "
+                "%s (proposition_1' fixes the point exactly: both "
+                "lengths equal |%s-%s|; no free parameter)"
+                % (a, b, AB, x, a, b))
     if rule == "intersection_lines":
         # (L1, L2) -> point on both: numeric line-line intersection of the
         # two drawn lines (the engine asserts they meet; step 13 of I.10
@@ -900,6 +1017,11 @@ dragging)" % (a, b)
             parts.append("case split: assume %s — refuted by %s"
                          % (list(facts), rules or
                             ["contradiction in the store"]))
+        if prop == 8:
+            return ("; ".join(parts) + " (the refuted assumption "
+                    "d != c' is not drawable; the diagram shows the "
+                    "TRUE configuration — the superposition lands c' "
+                    "exactly on d, hence angle b:a:c = angle e:d:f)")
         if prop == 14:
             return ("; ".join(parts) + " (the assumption is not drawable; "
                     "the branch's construction steps are drawn in the "
@@ -1008,6 +1130,18 @@ dragging)" % (a, b)
                 "intersection_lines_opposing",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
+        if rule == "assert_point_eq_on_ray" and prop == 8:
+            return ("cited assertion (Lean's euclid_assert c' = f): b' "
+                    "and f both lie on EF on the same ray from e with "
+                    "|e-b'| = |b-c| (the superposition bundle) = |e-f| "
+                    "(hypothesis), so b' = f — exact in the drawing")
+        if rule == "proposition_7" and prop == 8:
+            return ("cited step (proposition_7 e f d c' EF DE DF EG CG "
+                    "— I.7, two distances fix the point): d and c' lie "
+                    "on the same side of EF (the superposition bundle) "
+                    "with |e-d| = |a-b| = |e-c'| and |f-d| = |a-c| = "
+                    "|b'-c'| = |f-c'|, so d = c' — contradicting the "
+                    "branch assumption d != c'")
         if rule == "triple_incidence_1" and prop == 21:
             return ("engine-only step (triple_incidence_1 AB BD BC b a d "
                     "c, Diagrammatic.lean:187): AB, BD, BC all meet at b; "
@@ -1708,6 +1842,92 @@ def verify7(xy):
     ]
 
 
+def verify8(xy):
+    """I.8 (SSS congruence): two genuine scalene triangles with the
+    three hypothesis side equalities to 1e-9; the superposition of
+    step 1 lands EXACTLY — b' = f (step 2's assert) and c' = d (the
+    by_contra's conclusion) — which is the drawn truth; the goal angle
+    equality then holds to 1e-9."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(p, q, r):
+        return ((xy[q][0] - xy[p][0]) * (xy[r][1] - xy[p][1])
+                - (xy[q][1] - xy[p][1]) * (xy[r][0] - xy[p][0]))
+
+    sides1 = [dist("a", "b"), dist("b", "c"), dist("a", "c")]
+    return [
+        ("I.8: c off AB (a genuine triangle)",
+         abs(cross("a", "b", "c")) > EPS * dist("a", "b")
+         * dist("b", "c")),
+        ("I.8: f off DE (a genuine triangle)",
+         abs(cross("d", "e", "f")) > EPS * dist("d", "e")
+         * dist("e", "f")),
+        ("I.8: hypothesis |a-b| = |d-e| (to 1e-9)",
+         abs(dist("a", "b") - dist("d", "e")) < EPS),
+        ("I.8: hypothesis |a-c| = |d-f| (to 1e-9)",
+         abs(dist("a", "c") - dist("d", "f")) < EPS),
+        ("I.8: hypothesis |b-c| = |e-f| (to 1e-9)",
+         abs(dist("b", "c") - dist("e", "f")) < EPS),
+        ("I.8: the superposition lands b' on f (to 1e-9) — step 2's "
+         "assert", dist("b'", "f") < EPS),
+        ("I.8: the superposition lands c' on d (to 1e-9) — the "
+         "by_contra's conclusion, exact in the TRUE configuration",
+         dist("c'", "d") < EPS),
+        ("I.8: GOAL angle b:a:c = angle e:d:f (to 1e-9)",
+         abs(_ang(xy, "b", "a", "c") - _ang(xy, "e", "d", "f")) < EPS),
+        ("I.8: triangles scalene (side lengths pairwise at least 0.1 "
+         "apart)", all(abs(x - y) > 0.1 for i, x in enumerate(sides1)
+                       for y in sides1[i + 1:])),
+    ]
+
+
+def verify9(xy):
+    """I.9 (bisect an angle): a genuine angle b:v:c; the constructions
+    land where the rules put them (d on segment v-b at the step-1
+    sample distance |v-c|/2, |v-e| = |v-d| by the proposition_3 cut,
+    f the equilateral apex on DE opposite v); and the GOAL holds to
+    1e-9: angle b:v:f = angle c:v:f with v != f."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def side(p, l1, l2):
+        return ((xy[p][0] - xy[l1][0]) * (xy[l2][1] - xy[l1][1])
+                - (xy[p][1] - xy[l1][1]) * (xy[l2][0] - xy[l1][0]))
+
+    bvc = _ang(xy, "b", "v", "c")
+    return [
+        ("I.9: a genuine angle b:v:c (AB != AC)",
+         abs(side("c", "v", "b")) > EPS * dist("v", "b")
+         * dist("v", "c")),
+        ("I.9: angle b:v:c visibly off the special angles (0.1 rad "
+         "from each of 45/60/90 degrees)",
+         all(abs(bvc - math.radians(x)) > 0.1 for x in (45, 60, 90))),
+        ("I.9: d on segment v-b (the step-1 sample)",
+         abs(dist("v", "d") + dist("d", "b") - dist("v", "b")) < EPS),
+        ("I.9: |v-d| = |v-c|/2 (the step-1 sample distance)",
+         abs(dist("v", "d") - dist("v", "c") / 2.0) < EPS),
+        ("I.9: |v-e| = |v-d| (the proposition_3 cut, to 1e-9)",
+         abs(dist("v", "e") - dist("v", "d")) < EPS),
+        ("I.9: e on segment v-c",
+         abs(dist("v", "e") + dist("e", "c") - dist("v", "c")) < EPS),
+        ("I.9: f the equilateral apex on DE (|f-d| = |f-e| = |d-e|, "
+         "to 1e-9)",
+         abs(dist("f", "d") - dist("d", "e")) < EPS
+         and abs(dist("f", "e") - dist("d", "e")) < EPS),
+        ("I.9: f on the side of DE opposite v",
+         side("f", "d", "e") * side("v", "d", "e") < 0),
+        ("I.9: f off AB and f off AC (the h-sm hypotheses behind the "
+         "SSS step)",
+         abs(side("f", "v", "b")) > EPS * dist("v", "b")
+         * dist("v", "f")
+         and abs(side("f", "v", "c")) > EPS * dist("v", "c")
+         * dist("v", "f")),
+        ("I.9: GOAL angle b:v:f = angle c:v:f (to 1e-9)",
+         abs(_ang(xy, "b", "v", "f") - _ang(xy, "c", "v", "f")) < EPS),
+        ("I.9: GOAL v != f, visibly (at least 0.1 apart)",
+         dist("v", "f") > 0.1),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1725,6 +1945,10 @@ def verify(prop, xy):
         return verify6(xy)
     if prop == 7:
         return verify7(xy)
+    if prop == 8:
+        return verify8(xy)
+    if prop == 9:
+        return verify9(xy)
     if prop == 10:
         return verify10(xy)
     if prop == 11:
@@ -2211,6 +2435,79 @@ def build_trace7_rows(hyps, steps):
     return rows, s
 
 
+# I.8 display decision (packet P-euclid-play-config-I8-I9): the TRUE
+# configuration is drawn — two triangles with the three side equalities,
+# under which the superposition lands EXACTLY (b' = f, c' = d). The
+# by_contra refutes d != c' (Lean's by_cases d = g, where the d = g
+# branch is euclid_finish); the refuted branch is not drawn as such.
+DRAWN8 = ("the diagram shows the TRUE configuration — the "
+          "superposition lands b' exactly on f and c' exactly on d, "
+          "hence angle b:a:c = angle e:d:f")
+BR8_1 = ("branch (d != c'): refuted — proposition_7 (I.7, two "
+         "distances fix the point) on the SSS pair (e, f | d, c') with "
+         "c'.sameSide d EF from the superposition bundle forces d = "
+         "c', contradicting the assumption; the case assumption is "
+         "refuted — " + DRAWN8)
+
+
+def build_trace8_rows(hyps, steps):
+    """I.8's engine proof is superposition, assert_point_eq_on_ray
+    (Lean's euclid_assert c' = f), then a one-branch by_contra
+    rendering Lean's `by_cases d = g` (the d = g branch is
+    euclid_finish; the other cites proposition_7 — see
+    PROP8_STEPS_DATA). The trace flattens it: the two top-level steps,
+    the by_contra row (Lean's by_cases line), then the branch's
+    proposition_7 step replayed on a state copy and exhibited
+    contradictory. Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop08.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop08.lean"
+    ln_super = next(i + 1 for i, l in enumerate(lean_lines)
+                    if "superposition" in l)
+    ln_assert = next(i + 1 for i, l in enumerate(lean_lines)
+                     if "euclid_assert" in l)
+    ln_by_cases = next(i + 1 for i, l in enumerate(lean_lines)
+                       if l.strip().startswith("by_cases"))
+    ln_prop7 = next(i + 1 for i, l in enumerate(lean_lines)
+                    if "euclid_apply" in l and "proposition_7" in l)
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    rep0 = eng.run_steps(s, steps[:1])[0]   # superposition
+    rep1 = eng.run_steps(s, steps[1:2])[0]  # assert_point_eq_on_ray
+    s0 = s.copy()
+    top = eng.run_steps(s, steps[2:])[0]    # the by_contra report
+    # the goal angle equality is then entailed (engine main()'s p=="8"
+    # query: the superposition bundle's angle at c' with c' = d)
+    assert eng.la_entails_eq_ang(s.la, "b", "a", "c", "e", "d", "f")
+
+    _tag, branches, conclusions = steps[2]
+    rows = [("superposition", steps[0][1], steps[0][2], rep0,
+             (rel, ln_super), None),
+            ("assert_point_eq_on_ray", steps[1][1], steps[1][2], rep1,
+             (rel, ln_assert), None),
+            ("by_contra", branches, conclusions,
+             dict(top, added=[tuple(c) for c in conclusions]),
+             (rel, ln_by_cases),
+             "Lean's `by_cases d = g` line; the engine renders it as a "
+             "by_contra concluding peq d c' (engine c' = Lean's g), "
+             "because the d != c' branch is refuted (a by_cases branch "
+             "must ENTAIL, not contradict); the d = c' branch is "
+             "Lean's euclid_finish. Exhaustiveness is trichotomy on "
+             "point equality; " + DRAWN8)]
+    for assume, bsteps in branches:
+        reps, bstate = _run_branch14(s0, assume, bsteps)
+        ok, _w = eng.contradictory(bstate)
+        assert ok, "I.8 branch must end contradictory"
+        for (r, a, b), rep in zip(bsteps, reps):
+            rows.append((r, a, b, rep, (rel, ln_prop7), BR8_1))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
     if prop == 6:
@@ -2224,6 +2521,12 @@ def build_trace(prop):
         # build_trace7_rows); each branch is replayed on a state copy
         # and exhibited contradictory
         rows, _s = build_trace7_rows(hyps, steps)
+        name_map = {}
+    elif prop == 8:
+        # superposition + assert + one-branch by_contra rendering
+        # Lean's by_cases d = g (see build_trace8_rows); the branch is
+        # replayed on a state copy and exhibited contradictory
+        rows, _s = build_trace8_rows(hyps, steps)
         name_map = {}
     elif prop == 13:
         # nested by_cases: rows built by replaying each branch on a state
@@ -2256,7 +2559,7 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12, 15, 16, 17, 18, 20, 21):
+        if prop in (9, 10, 11, 12, 15, 16, 17, 18, 20, 21):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
@@ -2269,7 +2572,12 @@ def build_trace(prop):
             # < two right angles. I.18's is PROP18_GOAL verbatim:
             # angle a:b:c > angle b:c:a. I.21's is PROP21_GOAL verbatim:
             # |b-d| + |d-c| < |b-a| + |a-c| and angle b:d:c > angle b:a:c.
-            queries = {10: [("between", "a", "d", "b"),
+            # I.9's are eng.main()'s p=="9" queries verbatim: the
+            # bisection angle b:v:f = angle c:v:f and v != f (engine
+            # v = Lean's a).
+            queries = {9: [("_eq_ang", "b", "v", "f", "c", "v", "f"),
+                           ("neq", "v", "f")],
+                       10: [("between", "a", "d", "b"),
                             ("_eq_len", "a", "d", "d", "b")],
                        11: [("not_on_line", "f", "AB"),
                             ("_rt_ang", "u", "w", "f")],
@@ -2287,7 +2595,8 @@ def build_trace(prop):
             reports = [eng.apply_step(s, i, r, a, b)
                        for i, (r, a, b) in enumerate(steps, 1)]
 
-        name_map = PROP11_NAME_MAP if prop == 11 else {}
+        name_map = (PROP11_NAME_MAP if prop == 11
+                    else PROP9_NAME_MAP if prop == 9 else {})
         if prop == 16:
             # second bullet only: match euclid_apply lines past the first
             # bullet's euclid_finish (line 25)
@@ -2299,7 +2608,7 @@ def build_trace(prop):
                                         after=after16)
         else:
             lean = (lean_lines_for_named(prop, steps, name_map)
-                    if prop in (10, 11, 12, 15, 17, 18, 21)
+                    if prop in (9, 10, 11, 12, 15, 17, 18, 21)
                     else lean_lines_for(prop, [r for r, _, _ in steps]))
         if prop == 18:
             # the engine's last step is sum_angles_onlyif where Lean
@@ -2389,12 +2698,13 @@ def build_trace(prop):
                  for k, v in xy.items()}
     checks = verify(prop, xy)
     assert all(ok for _, ok in checks), checks
-    if prop == 11:
+    if prop in (9, 11):
         # the viewer shows Lean's names; the whole trace is remapped and
         # the engine->Lean map is stated in the JSON
-        objects = _remap_names(objects, PROP11_NAME_MAP)
-        trace_steps = _remap_names(trace_steps, PROP11_NAME_MAP)
-        placement = _remap_names(placement, PROP11_NAME_MAP)
+        nm = PROP11_NAME_MAP if prop == 11 else PROP9_NAME_MAP
+        objects = _remap_names(objects, nm)
+        trace_steps = _remap_names(trace_steps, nm)
+        placement = _remap_names(placement, nm)
 
     lean_file = os.path.join(LEAN_DIR, "Book", "Prop%02d.lean" % prop)
     with open(lean_file) as fh:
@@ -2411,6 +2721,10 @@ def build_trace(prop):
         "lean_file": "Book/Prop%02d.lean" % prop,
         "lean_text": lean_text,
     }
+    if prop == 9:
+        out["name_map"] = dict(PROP9_NAME_MAP)
+        out["name_map_note"] = ("engine points renamed for Lean display: "
+                                "engine v = Lean a")
     if prop == 11:
         out["name_map"] = dict(PROP11_NAME_MAP)
         out["name_map_note"] = ("engine points renamed for Lean display: "
