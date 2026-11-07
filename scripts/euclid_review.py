@@ -48,7 +48,7 @@ def initial_state(prop):
     kw = srch.prop_searches()[prop]
     s = eng.State()
     for fact, why in kw["hyps"]:
-        s.assume(fact, why)
+        eng._assume_metric_or_fact(s, fact, why)  # metric hyps add their row
     for coeffs, const, op in (kw.get("extra_la") or []):
         s.la.add(coeffs, const, op)
     eng.close(s)

@@ -3,6 +3,7 @@ Run from ~/code/futon0: python3 -m pytest scripts/euclid_search_test.py -q
 """
 
 import importlib.util
+import pytest
 from pathlib import Path
 
 _spec = importlib.util.spec_from_file_location(
@@ -94,3 +95,45 @@ def test_engine_regression_no_line_names_as_points():
         "|b-c| = 0 entailed: line names leaked into metric atoms"
     # the bogus goal |a-p| = |b-c| for arbitrary p must now fail
     assert not srch.goal_prop2(s)
+
+
+# --- I.4 / I.5 (Book/Prop04-05.lean) ----------------------------------------
+
+def test_I4_book_path_verifies():
+    """The Book's I.4 steps (superposition + the two [SMT-bridge] asserts)
+    pass verify_path for the new prop_searches entry."""
+    kw = srch.prop_searches()["I.4"]
+    s, n = srch.verify_path(kw["hyps"], eng.PROP4_STEPS_DATA, kw["goal"])
+    assert n == 3
+    assert kw["goal"](s)
+
+
+def test_I5_book_path_replays_goal_holds_store_refused():
+    """The Book's I.5 steps replay without a missing premise and the goal
+    holds on the final state, BUT the store becomes UNSAT in the forward
+    closure at the second proposition_4 (side_gt_angle_gt, the I.18
+    [SMT-bridge], adds ang a:c:e > ang c:a:e and its reverse), so
+    verify_path — correctly — refuses to certify: entailments on an unsat
+    store are vacuous. Reported to claude-9; the engine is zai-11's."""
+    kw = srch.prop_searches()["I.5"]
+    s = eng.State()
+    for f, w in kw["hyps"]:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    for i, (r, a, b) in enumerate(eng.PROP5_STEPS_DATA, 1):
+        eng.apply_step(s, i, r, a, b)  # no MissingPremise anywhere
+    assert kw["goal"](s)
+    assert srch.store_consistent(s.la) is False  # certification refused
+    with pytest.raises(AssertionError, match="unsatisfiable"):
+        srch.verify_path(kw["hyps"], eng.PROP5_STEPS_DATA, kw["goal"])
+
+
+def test_uninformed_search_I5_within_budget():
+    """Uninformed search is NOT required to find I.5. It must simply run
+    honestly under a budget and report its node count (short budget here;
+    the 120 s measurement is reported in the requisition answer)."""
+    kw = dict(srch.prop_searches()["I.5"])
+    kw.update(node_budget=100000, time_budget=20.0)
+    found, path, st = srch.search(**kw)
+    assert st["nodes"] > 0
+    assert found in (True, False)  # whichever; never an error

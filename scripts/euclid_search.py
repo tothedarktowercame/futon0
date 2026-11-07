@@ -198,6 +198,108 @@ def _c_prop2(s):
             yield (a, b, c, BC)
 
 
+def _dpls(s):
+    return [(f[1], f[2], f[3]) for f in s.facts if f[0] == "dpl"]
+
+
+def _triangles(s):
+    """formTriangle-shaped (a, b, c, AB, BC, AC) present in the state:
+    dpl a b AB, b and c on BC, a and c on AC."""
+    for a, b, AB in _dpls(s):
+        for BC in sorted({f[2] for f in s.facts
+                          if f[0] == "on_line" and f[1] == b}):
+            for c in sorted({f[1] for f in s.facts
+                             if f[0] == "on_line" and f[2] == BC
+                             and f[1] not in (a, b)}):
+                for AC in sorted({f[2] for f in s.facts
+                                  if f[0] == "on_line" and f[1] == a}):
+                    if s.has(("on_line", c, AC)):
+                        yield (a, b, c, AB, BC, AC)
+
+
+def _c_prop3(s):
+    # (a, b, c0, c1, AB, C): cut |c0-c1| (shorter) off segment a-b
+    for a, b, AB in _dpls(s):
+        for c0, c1, C in _dpls(s):
+            if (a, b) != (c0, c1):
+                yield (a, b, c0, c1, AB, C)
+
+
+def _c_extend_pt(s):
+    # extend the segment b-c on its own line: (L, b, c)
+    for b, c, L in _dpls(s):
+        yield (L, b, c)
+
+
+def _c_pbps(s):
+    # point_between_points_shorter_than: (L, b, c, u, v) — a point between
+    # b and c at distance < |u-v| from b (entailment premise)
+    pts, _, _ = object_kinds(s)
+    for b, c, L in _dpls(s):
+        for u in sorted(pts):
+            for v in sorted(pts):
+                if u != v:
+                    yield (L, b, c, u, v)
+
+
+def _c_prop4(s):
+    # SAS citation between two in-state triangles (12 args); entailment
+    # premises (the equal sides/angle) are checked by apply_step
+    for (a, b, c, AB, BC, AC), (d, e, f, DE, EF, DF) in \
+            itertools.permutations(sorted(set(_triangles(s))), 2):
+        yield (a, b, c, d, e, f, AB, BC, AC, DE, EF, DF)
+
+
+def _c_super(s):
+    # superposition: triangle (a,b,c) onto ray d-g of line L, off-line h
+    for a, b, c, AB, BC, AC in _triangles(s):
+        for d, g, L in _dpls(s):
+            for nl in s.facts:
+                if nl[0] == "not_on_line" and nl[2] == L:
+                    yield (a, b, c, d, g, nl[1], AB, BC, AC, L)
+
+
+def _c_assert_ray(s):
+    # assert_point_eq_on_ray: x, y, z all on L, x != y not between z
+    for L in sorted({f[2] for f in s.facts if f[0] == "on_line"}):
+        onL = sorted({f[1] for f in s.facts
+                      if f[0] == "on_line" and f[2] == L})
+        for x, y, z in itertools.permutations(onL, 3):
+            yield (x, y, z, L)
+
+
+def _c_assert_ang(s):
+    # assert_point_eq_angle: x, y same side of L; arm w-z on L, z != w,x,y
+    for f in s.facts:
+        if f[0] != "same_side":
+            continue
+        x, y, L = f[1], f[2], f[3]
+        onL = sorted({g[1] for g in s.facts
+                      if g[0] == "on_line" and g[2] == L})
+        for z, w in itertools.permutations(onL, 2):
+            yield (x, y, w, z, L)
+
+
+def _c_sum_ang(s):
+    # sum_angles_onlyif: (a, b, c, d, L, M)
+    for a, L in sorted({(f[1], f[2]) for f in s.facts
+                        if f[0] == "on_line"}):
+        for M in sorted({f[2] for f in s.facts
+                         if f[0] == "on_line" and f[1] == a}):
+            if L == M:
+                continue
+            for b in sorted({f[1] for f in s.facts
+                             if f[0] == "on_line" and f[2] == L
+                             and f[1] != a}):
+                for c in sorted({f[1] for f in s.facts
+                                 if f[0] == "on_line" and f[2] == M
+                                 and f[1] != a}):
+                    for d in sorted({f[1] for f in s.facts
+                                     if f[0] == "not_on_line" and f[1] != a
+                                     and f[2] in (L, M)}):
+                        yield (a, b, c, d, L, M)
+
+
 CANDIDATES = {
     "line_from_points": _c_line,
     "circle_from_points": _c_circle,
@@ -207,6 +309,14 @@ CANDIDATES = {
     "intersection_opposite_side": _c_opp,
     "proposition_1": _c_prop1,
     "proposition_2'": _c_prop2,
+    "proposition_3": _c_prop3,
+    "extend_point": _c_extend_pt,
+    "point_between_points_shorter_than": _c_pbps,
+    "proposition_4": _c_prop4,
+    "superposition": _c_super,
+    "assert_point_eq_on_ray": _c_assert_ray,
+    "assert_point_eq_angle": _c_assert_ang,
+    "sum_angles_onlyif": _c_sum_ang,
 }
 
 AXIOM_MOVES = ["line_from_points", "circle_from_points",
@@ -271,6 +381,21 @@ def goal_prop3(s, a="a", b="b", c0="c0", c1="c1"):
     return False
 
 
+def goal_prop4(s, a="a", b="b", c="c", d="d", e="e", f="f"):
+    """I.4 (Book/Prop04.lean): SAS — |b-c| = |e-f| entailed, plus the two
+    base angles equal: ang a:b:c = ang d:e:f and ang a:c:b = ang d:f:e."""
+    return (eng.la_entails_eq(s.la, b, c, e, f)
+            and eng.la_entails_eq_ang(s.la, a, b, c, d, e, f)
+            and eng.la_entails_eq_ang(s.la, a, c, b, d, f, e))
+
+
+def goal_prop5(s, a="a", b="b", c="c", d="d", e="e"):
+    """I.5 (Book/Prop05.lean): isosceles base angles equal and the
+    exterior-angle equality: ang a:b:c = ang a:c:b, ang c:b:d = ang b:c:e."""
+    return (eng.la_entails_eq_ang(s.la, a, b, c, a, c, b)
+            and eng.la_entails_eq_ang(s.la, c, b, d, b, c, e))
+
+
 # --- the search ----------------------------------------------------------------
 
 def search(hyps, rules, goal, max_depth, node_budget,
@@ -280,7 +405,7 @@ def search(hyps, rules, goal, max_depth, node_budget,
     t0 = time.perf_counter()
     root = eng.State()
     for f, w in hyps:
-        root.assume(f, w)
+        eng._assume_metric_or_fact(root, f, w)  # metric hyps add their row
     for coeffs, const, op in (extra_la or []):
         root.la.add(coeffs, const, op)
     eng.close(root)
@@ -360,7 +485,7 @@ def verify_path(hyps, path, goal, extra_la=None):
     this mirrors it: assume, close, apply_step per step, assert.)"""
     s = eng.State()
     for f, w in hyps:
-        s.assume(f, w)
+        eng._assume_metric_or_fact(s, f, w)  # metric hyps add their row
     for coeffs, const, op in (extra_la or []):
         s.la.add(coeffs, const, op)
     eng.close(s)
@@ -398,6 +523,26 @@ def prop_searches():
                     rules=AXIOM_MOVES + ["proposition_1", "proposition_2'"],
                     goal=goal_prop3, max_depth=4, node_budget=20000,
                     extra_la=prop3_extra),
+        # I.4: rules may cite only propositions < 4 (proposition_1-3) plus
+        # the superposition inference and its [SMT-bridge] assert rules,
+        # which is what the Book's proof uses.
+        "I.4": dict(hyps=list(eng.PROP4_HYPS_DATA),
+                    rules=AXIOM_MOVES + ["proposition_1", "proposition_2'",
+                                         "proposition_3", "superposition",
+                                         "assert_point_eq_on_ray",
+                                         "assert_point_eq_angle"],
+                    goal=goal_prop4,
+                    max_depth=4, node_budget=5000, time_budget=60.0),
+        # I.5: rules may cite proposition_4 (< 5) and the point/proposition_3
+        # constructions the Book's proof uses.
+        "I.5": dict(hyps=list(eng.PROP5_HYPS_DATA),
+                    rules=AXIOM_MOVES + ["proposition_1", "proposition_2'",
+                                         "proposition_3", "extend_point",
+                                         "point_between_points_shorter_than",
+                                         "proposition_4",
+                                         "sum_angles_onlyif"],
+                    goal=goal_prop5,
+                    max_depth=8, node_budget=100000, time_budget=120.0),
     }
 
 
