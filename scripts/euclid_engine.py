@@ -1955,6 +1955,8 @@ def _fact_holds(s, fact):
             return la_entails_lt(s.la, *fact[1:])
         if k == "_gt_len":
             return la_entails_gt(s.la, *fact[1:])
+        if k == "_gt_ang":
+            return la_entails_gt_ang(s.la, *fact[1:])
     except FMTooLarge:
         return False  # undecided is not entailed
     if k == "_sum_ang":

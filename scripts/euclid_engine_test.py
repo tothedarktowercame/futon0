@@ -2044,3 +2044,16 @@ def test_proposition_15_control_between_reversed():
                            ("a", "b", "c", "d", "e", "AB", "CD"), {})],
                    eng.PROP15_GOAL[:1])
 
+
+
+def test_fact_holds_gt_ang_prop16b():
+    """Review (claude-9): _fact_holds answers the strict angle goal (used by
+    review/apply_step), not only replay's own goal branch; and dropping
+    sum_angles_onlyif (the step putting f inside angle a:c:d) loses it."""
+    s, _ = eng.replay(eng.PROP16B_HYPS_DATA, eng.PROP16B_STEPS_DATA, [])
+    assert eng._fact_holds(s, eng.PROP16B_GOAL[0])
+    steps = [st for st in eng.PROP16B_STEPS_DATA
+             if st[0] != "sum_angles_onlyif"]
+    s2, _ = eng.replay(eng.PROP16B_HYPS_DATA, steps, [])
+    assert not eng._fact_holds(s2, eng.PROP16B_GOAL[0])
+    assert eng._fm_sat(s2.la.rows)
