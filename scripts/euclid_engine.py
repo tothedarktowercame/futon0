@@ -60,6 +60,12 @@ def la_entails_gt_ang(la, a, b, c, d, e, f):
     return la.entails(lin((ang_atom(a, b, c), 1), (ang_atom(d, e, f), -1)), 0, ">")
 
 
+def la_entails_lt_sum_rt_ang(la, u, v, w, x, y, z):
+    """∠u:v:w + ∠x:y:z < 2∟ (Book I.17's goal shape) as an LA query."""
+    return la.entails(lin((ang_atom(u, v, w), 1), (ang_atom(x, y, z), 1),
+                          (RT, -2)), 0, "<")
+
+
 def len_atom(a, b):
     """Canonical atom for |(a-b)|. Sorting the pair applies segment_symmetric
     (SystemE/Theory/Inferences/Metric.lean:41, |a-b| = |b-a|) as a rewrite."""
@@ -1860,6 +1866,26 @@ CONSTRUCTIONS = {
             (None, [("_gt_ang", a, c, d, c, b, a),
                     ("_gt_ang", a, c, d, b, a, c)])],
     },
+    # Book/Prop17.lean:6 — proposition_17 verbatim:
+    #   ∀ (a b c : Point) (AB BC AC : Line),
+    #   formTriangle a b c AB BC AC → ∠ a:b:c + ∠ b:c:a < ∟ + ∟
+    # Cited as a lemma (the engine's own I.17 replay, PROP17_STEPS_DATA,
+    # is the proof); formTriangle destructured exactly as at
+    # PROP6/PROP16B. The conclusion is the metric tuple _lt_sum_rt_ang
+    # (LA row ∠a:b:c + ∠b:c:a − 2∟ < 0 plus the lt_sum_rt_ang fact form).
+    # No fresh objects, so a forward-style citation like proposition_16.
+    "proposition_17": {
+        "cite": "Book/Prop17.lean:6",
+        "args": ("a", "b", "c", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, AB, BC, AC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB)],
+        "make": lambda s, a, b, c, AB, BC, AC: [
+            (None, [("_lt_sum_rt_ang", a, b, c, b, c, a)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
     #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
     # Rendered as the POSITIVE fact opposing_sides a c L (same rendering as
@@ -1980,6 +2006,8 @@ def _fact_holds(s, fact):
             return la_entails_gt(s.la, *fact[1:])
         if k == "_gt_ang":
             return la_entails_gt_ang(s.la, *fact[1:])
+        if k == "_lt_sum_rt_ang":
+            return la_entails_lt_sum_rt_ang(s.la, *fact[1:])
     except FMTooLarge:
         return False  # undecided is not entailed
     if k == "_sum_ang":
@@ -2164,6 +2192,15 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("sum_rt_ang", *fact[1:5]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("sum_rt_ang", *fact[1:5]))
+            elif fact[0] == "_lt_sum_rt_ang":
+                # ∠u:v:w + ∠x:y:z < 2∟ (Book I.17's conclusion shape):
+                # the strict LA row plus the fact form.
+                u, v, w, x, y, z = fact[1:7]
+                s.la.add(lin((ang_atom(u, v, w), 1), (ang_atom(x, y, z), 1),
+                             (RT, -2)), 0, "<")
+                s.add(("lt_sum_rt_ang", *fact[1:7]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("lt_sum_rt_ang", *fact[1:7]))
             else:
                 s.add(fact, f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(fact)
@@ -2423,6 +2460,9 @@ def replay(hyps, steps, verify, exclude_rules=None):
             assert la_entails_eq_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_gt_ang":
             assert la_entails_gt_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
+        elif q[0] == "_lt_sum_rt_ang":
+            assert la_entails_lt_sum_rt_ang(s.la, *q[1:]), \
+                f"conclusion not entailed: {q}"
         elif q[0] == "_rt_ang":
             assert s.la.entails(lin((ang_atom(*q[1:4]), 1), (RT, -1)),
                                 0, "="), f"conclusion not entailed: {q}"
@@ -3335,6 +3375,48 @@ PROP16A_STEPS_DATA = [
 PROP16A_GOAL = [("_gt_ang", "a", "c", "d", "c", "b", "a")]
 
 
+# ---------------------------------------------------------------------------
+# Book I.17, as data (Book/Prop17.lean:6-13 — any two angles of a triangle
+# sum to less than two right angles)
+# ---------------------------------------------------------------------------
+# proposition_17 : formTriangle a b c AB BC AC → ∠a:b:c + ∠b:c:a < ∟+∟.
+# formTriangle destructed exactly as at PROP16 (dpl a b AB + the four
+# on_lines + the two non-degeneracy neqs + c off AB); no extension
+# hypothesis — the replay builds d itself.
+PROP17_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),      # distinctPointsOnLine a b AB
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"),   # formTriangle non-degeneracy
+    (("neq", "a", "c"), "h"),   # formTriangle non-degeneracy
+    (("not_on_line", "c", "AB"), "h"),   # formTriangle: c not on AB
+]
+# Lean's shape (Book/Prop17.lean:10-13):
+#   extend_point BC b c as d          : d on BC, between b c d
+#   proposition_16 a b c d AB BC AC   : ∠a:c:d > ∠c:b:a (the conjunct
+#       used here) and ∠a:c:d > ∠b:a:c
+#   proposition_13 a c b d AC BC      : ∠b:c:a + ∠a:c:d = ∟+∟ (linear
+#       pair; engine proposition_13 (a,b,c,d,AB,CD) with (a,b,c,d,AB,CD)
+#       := (a,c,b,d,AC,BC) concludes _sum_rt_ang b c a d)
+#   euclid_finish: ∠a:b:c + ∠b:c:a < ∠a:c:d + ∠b:c:a = 2∟, since
+#       ∠c:b:a = ∠a:b:c as canonical atoms (angle_symm, Metric.lean:46).
+# Engine-only step: between_symm_parts (b, c, d) cites b ≠ d — the
+# closure does not derive neqs from between (as at PROP13/14/15/16), and
+# proposition_13's dpl b d BC premise needs it (between d c b, its other
+# between premise, is the closure reversal of extend_point's fact).
+# proposition_16's premises are the formTriangle hypotheses plus between
+# b c d; proposition_13's neq_line AC BC premise is closure (c off AB
+# seed → two_lines_meet_once/line_neq chain, as at PROP15/16).
+PROP17_STEPS_DATA = [
+    ("extend_point", ("BC", "b", "c"), {"x": "d"}),
+    ("between_symm_parts", ("b", "c", "d"), {}),
+    ("proposition_16", ("a", "b", "c", "d", "AB", "BC", "AC"), {}),
+    ("proposition_13", ("a", "c", "b", "d", "AC", "BC"), {}),
+]
+# The goal as an LA entailment query: ∠a:b:c + ∠b:c:a < 2∟.
+PROP17_GOAL = [("_lt_sum_rt_ang", "a", "b", "c", "b", "c", "a")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3458,6 +3540,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP16A_HYPS_DATA, PROP16A_STEPS_DATA,
                             PROP16A_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "17":
+            t0 = time.time()
+            s, rep = replay(PROP17_HYPS_DATA, PROP17_STEPS_DATA,
+                            PROP17_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
