@@ -270,12 +270,22 @@ def _fm_sat(rows):
     rows = _elim_equalities(rows)
     if rows is None:
         return False
-    # inequalities: eliminate variables one at a time
+    # inequalities: eliminate variables one at a time. The pivot is the
+    # variable with the SMALLEST pos*neg product (fewest new rows), not
+    # the sorted-first: FM's result is order-independent, but the row
+    # count is not — on I.22's chain store the sorted order eliminated
+    # ('len','e'','e''') with 22 pos x 41 neg rows (then 572 x 145) and
+    # blew past the guard on a query whose store is 31 rows x 7 atoms
+    # after equality substitution (E-kimi-task-395).
     while True:
-        vars_ = sorted({a for items, _, _ in rows for a, _ in items})
-        if not vars_:
+        counts = {}
+        for items, _, _ in rows:
+            for a, co in items:
+                p, n = counts.get(a, (0, 0))
+                counts[a] = (p + (co > 0), n + (co < 0))
+        if not counts:
             return all(_check_const(c, op) for _, c, op in rows)
-        x = vars_[0]
+        x = min(counts, key=lambda a: (counts[a][0] * counts[a][1], a))
         pos, neg, keep = [], [], []
         for items, c, op in rows:
             co = dict(items)
@@ -1082,7 +1092,10 @@ def r_peq_subst_diagram(s):
         return
     for f in s.facts:
         k = f[0]
-        if k in ("on_line", "not_on_line"):
+        # "inside" joins for I.22: the by_cases equality branch identifies
+        # i with f (the centre of DKL), so inside f DKL (r_center_inside)
+        # must rewrite to inside i DKL for the branch conclusion.
+        if k in ("on_line", "not_on_line", "inside"):
             x, L = f[1], f[2]
             for pf in peqs:
                 if pf[1] == x and not s.has((k, pf[2], L)):
@@ -1267,6 +1280,22 @@ def _need(s, i, rule, fact):
 
 
 CONSTRUCTIONS = {
+    # SystemE/Theory/Constructions/Points.lean:5 — arbitrary_point
+    # verbatim: ∃ _ : Point, true. A fresh point with no facts.
+    "arbitrary_point": {
+        "cite": "Points.lean:5",
+        "args": (),
+        "premises": lambda s: [],
+        "make": lambda s: [("p", [])],
+    },
+    # Points.lean:8 — distinct_points verbatim:
+    #   ∀ p₁ : Point, ∃ p₂ : Point, p₁ ≠ p₂
+    "distinct_points": {
+        "cite": "Points.lean:8",
+        "args": ("p",),
+        "premises": lambda s, p: [],
+        "make": lambda s, p: [("q", [("neq", p, "q")])],
+    },
     # SystemE/Theory/Constructions/LinesAndCircles.lean:3
     "line_from_points": {
         "cite": "LinesAndCircles.lean:3",
@@ -1322,6 +1351,27 @@ CONSTRUCTIONS = {
         "make": lambda s, a, L, b, c: [
             ("g", [("on_circle", "g", a), ("on_line", "g", L),
                    ("between", "g", b, c)])],
+    },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:312 —
+    # intersection_circle_circle_1 verbatim:
+    #   (a.onCircle α) ∧ ¬(b.outsideCircle α) ∧ (a.insideCircle β) ∧
+    #   (b.outsideCircle β) → α.intersectsCircle β
+    # ¬(b.outsideCircle α) is rendered as the POSITIVE fact not_outside
+    # b α (the same rendering intersection_circle_line_1 uses: on or
+    # inside, Relations.lean:35). Cited per use, not a closure rule (a
+    # closure rule would add intersects_cc to earlier replays whose
+    # footprints are pinned). First use: Book I.22, where Lean's SMT
+    # closes the intersects_cc premise of intersection_circles silently
+    # (Prop22.lean:28); a = i (on KLH, inside DKL), b = h (on KLH —
+    # hence not outside it — and outside DKL).
+    "intersection_circle_circle_1": {
+        "cite": "Diagrammatic.lean:312 + Relations.lean:35",
+        "args": ("a", "b", "alpha", "beta"),
+        "premises": lambda s, a, b, alpha, beta: [
+            ("on_circle", a, alpha), ("not_outside", b, alpha),
+            ("inside", a, beta), ("outside", b, beta)],
+        "make": lambda s, a, b, alpha, beta: [
+            (None, [("intersects_cc", alpha, beta)])],
     },
     # Intersections.lean:9 — between an inside b and outside c, both on L
     "intersection_circle_line_between_points": {
@@ -3815,6 +3865,118 @@ PROP21_GOAL = [("_lt_sum_sum_len", "b", "d", "d", "c", "b", "a", "a", "c"),
                ("_gt_ang", "b", "d", "c", "b", "a", "c")]
 
 
+# ---------------------------------------------------------------------------
+# I.22 (Book/Prop22.lean) — the triangle from three lengths
+# ---------------------------------------------------------------------------
+# proposition_22 : distinctPointsOnLine a a' A ∧ distinctPointsOnLine b b' B
+#   ∧ distinctPointsOnLine c c' C ∧ (|aa'| + |bb'| > |cc'|) ∧
+#   (|aa'| + |cc'| > |bb'|) ∧ (|bb'| + |cc'| > |aa'|) →
+#   ∃ k f g, |f─k| = |a─a'| ∧ |f─g| = |b─b'| ∧ |k─g| = |c─c'|
+# The three dpls ship destructured; the three triangle inequalities ship
+# as plain gt_sum_len metric hypotheses (|x─y| + |u─v| > |p─q| rows).
+PROP22_HYPS_DATA = [
+    (("dpl", "a", "a'", "A"), "h"),   # distinctPointsOnLine a a' A
+    (("dpl", "b", "b'", "B"), "h"),   # distinctPointsOnLine b b' B
+    (("dpl", "c", "c'", "C"), "h"),   # distinctPointsOnLine c c' C
+    # |a─a'| + |b─b'| > |c─c'|  (inequality 1)
+    (("gt_sum_len", "a", "a'", "b", "b'", "c", "c'"), "h"),
+    # |a─a'| + |c─c'| > |b─b'|  (inequality 2)
+    (("gt_sum_len", "a", "a'", "c", "c'", "b", "b'"), "h"),
+    # |b─b'| + |c─c'| > |a─a'|  (inequality 3)
+    (("gt_sum_len", "b", "b'", "c", "c'", "a", "a'"), "h"),
+]
+# Lean's shape (Prop22.lean:14-32), argument orders exactly as Lean's.
+# d arbitrary; e' distinct from it; DE the line; e'', e''', e extend DE
+# past d by more than |aa'|, |bb'|, |cc'| (so |d─e| exceeds each length
+# and the three proposition_3 cuts succeed); f, g, h cut |d─f| = |aa'|,
+# |f─g| = |bb'|, |g─h| = |cc'| along DE; DKL = circle centre f through d
+# (radius |aa'|), KLH = circle centre g through h (radius |cc'|); i is
+# the second meet of DE with KLH (between i g h — the far side of g
+# from h, toward d); k = the two circles' meet. The ∃ is witnessed by
+# the named k, f, g; the goal is the three length equalities.
+# The only premise Lean's SMT closes silently (Prop22.lean:28) is
+# intersects_cc KLH DKL for intersection_circles. The engine renders it
+# explicitly as intersection_circle_circle_1 (Diagrammatic.lean:312)
+# with witnesses a = i, b = h:
+#   * i on KLH (its construction), h on KLH (circle_from_points), so
+#     not_outside h KLH (r_not_outside, Relations.lean:35);
+#   * outside h DKL: between f g h (closure: between_order on
+#     between f g e, between f h e with |f─g| < |f─h|; the comparison
+#     comes from the three betweenness sums and |g─h| = |cc'| > 0) gives
+#     |f─h| = |f─g| + |g─h| = |bb'| + |cc'| > |aa'| = |f─d| (r_between_if
+#     Transfer.lean:16 + INEQUALITY 3), so r_classify (Transfer.lean:47 /
+#     Relations.lean:35) puts h outside DKL;
+#   * inside i DKL: |g─i| = |g─h| = |cc'| (radii, poc_onlyif
+#     Transfer.lean:39) and |g─f| = |bb'|; i and f both lie on DE on the
+#     side of g opposite h (between i g h from i's construction; between
+#     f g h closure as above), so between_points trichotomy
+#     (Diagrammatic.lean:87) on the collinear g, f, i leaves three
+#     cases — the by_cases below. between f g i (g between f and i) is
+#     dead: it puts i on h's side of g at distance |cc'| = |g─h|, i.e.
+#     i = h, against i ≠ h (between i g h). In each live case
+#     r_classify puts i inside DKL:
+#       - between g f i: |f─i| = |cc'| − |bb'| < |aa'| (INEQUALITY 1);
+#       - between g i f: |f─i| = |bb'| − |cc'| < |aa'| (INEQUALITY 2);
+#       - peq f i: i IS the centre of DKL, inside it
+#         (r_center_inside Diagrammatic.lean:28 on inside f DKL, then
+#         peq_subst_diagram).
+#     (icc2, Diagrammatic.lean:319, cannot serve: d is outside KLH —
+#     |g─d| = |aa'| + |bb'| > |cc'| — and h outside DKL, so no pair of
+#     constructed points fills its a/b slots.)
+# The final two point_on_circle_onlyif euclid_apply's (Prop22.lean:30-31)
+# are the engine's closure rule r_poc_onlyif (Transfer.lean:39), which
+# gives |f─k| = |f─d| and |g─k| = |g─h| once k is on both circles — no
+# explicit steps. euclid_finish: |f─k| = |f─d| = |a─a'| (step 7),
+# |f─g| = |b─b'| (step 8), |k─g| = |g─k| = |g─h| = |c─c'| (step 9).
+# Engine-only steps: NONE beyond Lean's — the by_cases and the icc1
+# citation are the explicit rendering of premises Lean's SMT closes
+# inside euclid_apply / euclid_finish; every rule cited is System E.
+PROP22_STEPS_DATA = [
+    ("arbitrary_point", (), {"p": "d"}),
+    ("distinct_points", ("d",), {"q": "e'"}),
+    ("line_from_points", ("d", "e'"), {"L": "DE"}),
+    ("extend_point_longer", ("DE", "d", "e'", "a", "a'"), {"x": "e''"}),
+    ("extend_point_longer", ("DE", "d", "e''", "b", "b'"), {"x": "e'''"}),
+    ("extend_point_longer", ("DE", "d", "e'''", "c", "c'"), {"x": "e"}),
+    # The dpl premises of the proposition_3 cuts and of
+    # intersection_circle_line_extending_points need the neqs d ≠ e,
+    # f ≠ e, g ≠ e, g ≠ h. The closure's metric route (r_pos_neq,
+    # Metric.lean:21,25) asks the linear store |x─y| > 0; on this
+    # replay's five-point chain store Fourier-Motzkin blows past its row
+    # guard (the between-sum rows make a dense elimination graph), so the
+    # neqs are cited diagrammatically instead: between_symm_parts
+    # (Diagrammatic.lean:45-46), the same per-use pattern that keeps
+    # between_symm's ¬between part out of default closure.
+    ("between_symm_parts", ("d", "e'''", "e"), {}),   # neq d e (and d e''')
+    ("proposition_3", ("d", "e", "a", "a'", "DE", "A"), {"q": "f"}),
+    # between_symm_parts states a ≠ b and a ≠ c of between a b c, so the
+    # f/g neqs come off the REVERSALS (closure between_symm) of the makes
+    # (neq_symm, logic, flips them for the dpl rule).
+    ("between_symm_parts", ("e", "f", "d"), {}),      # neq e f -> f e
+    ("proposition_3", ("f", "e", "b", "b'", "DE", "B"), {"q": "g"}),
+    ("between_symm_parts", ("e", "g", "f"), {}),      # neq e g -> g e
+    ("proposition_3", ("g", "e", "c", "c'", "DE", "C"), {"q": "h"}),
+    ("between_symm_parts", ("g", "h", "e"), {}),      # neq g h
+    ("circle_from_points", ("f", "d"), {"C": "DKL"}),
+    ("circle_from_points", ("g", "h"), {"C": "KLH"}),
+    ("intersection_circle_line_extending_points", ("KLH", "DE", "g", "h"),
+     {"g": "i"}),
+    # inside i DKL by the three-case trichotomy documented above
+    ("by_cases", [
+        ([("between", "g", "f", "i")], []),
+        ([("between", "g", "i", "f")], []),
+        ([("peq", "f", "i")], []),
+    ], [("inside", "i", "DKL")]),
+    ("intersection_circle_circle_1", ("i", "h", "KLH", "DKL"), {}),
+    ("intersection_circles", ("KLH", "DKL"), {"c": "k"}),
+]
+# The goals as LA entailment queries: |f─k| = |a─a'|, |f─g| = |b─b'|,
+# |k─g| = |c─c'| over the named witnesses k, f, g.
+PROP22_GOAL = [("_eq_len", "f", "k", "a", "a'"),
+               ("_eq_len", "f", "g", "b", "b'"),
+               ("_eq_len", "k", "g", "c", "c'")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3963,6 +4125,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP21_HYPS_DATA, PROP21_STEPS_DATA,
                             PROP21_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "22":
+            t0 = time.time()
+            s, rep = replay(PROP22_HYPS_DATA, PROP22_STEPS_DATA,
+                            PROP22_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

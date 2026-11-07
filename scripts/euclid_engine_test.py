@@ -960,6 +960,106 @@ def test_la_entails_lt_sum_sum_len_bad_case():
                                              "b", "a", "a", "c")
 
 
+# --- I.22 (Book/Prop22.lean) -----------------------------------------------
+
+
+def test_prop22_replay():
+    """I.22 replays the Lean way: arbitrary d, the three extend_point_longer
+    and three proposition_3 cuts along DE, the two circles, i = the far
+    meet of DE with KLH, a three-case by_cases (between_points trichotomy
+    on the collinear g, f, i) for inside i DKL, then the cited
+    intersection_circle_circle_1 (what Lean's SMT closes silently at
+    Prop22.lean:28) and intersection_circles as k. The goals are the
+    three witness equalities over the named k, f, g."""
+    s, rep = eng.replay(eng.PROP22_HYPS_DATA, eng.PROP22_STEPS_DATA,
+                        eng.PROP22_GOAL)
+    assert eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+    assert rep[-1]["final"]
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == [
+        "arbitrary_point", "distinct_points", "line_from_points",
+        "extend_point_longer", "extend_point_longer", "extend_point_longer",
+        "between_symm_parts", "proposition_3", "between_symm_parts",
+        "proposition_3", "between_symm_parts", "proposition_3",
+        "between_symm_parts", "circle_from_points", "circle_from_points",
+        "intersection_circle_line_extending_points", "by_cases",
+        "intersection_circle_circle_1", "intersection_circles"]
+
+
+def test_prop22_hyps_alone_do_not_entail_goal():
+    """The I.22 hypotheses alone entail NONE of the three witness
+    equalities — the construction carries the proof (and k, f, g do not
+    even exist before it)."""
+    s = eng.State()
+    for f, w in eng.PROP22_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert not eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert not eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+
+
+def test_prop22_control_dropped_inequality_3():
+    """Drop |b-b'| + |c-c'| > |a-a'| (inequality 3): it is consumed at
+    outside h DKL — |f-h| = |f-g| + |g-h| = |b-b'| + |c-c'| must exceed
+    the radius |f-d| = |a-a'| — so the cited intersection_circle_circle_1
+    is refused at its outside premise and intersection_circles is never
+    reached."""
+    hyps = [h for h in eng.PROP22_HYPS_DATA
+            if h[0] != ("gt_sum_len", "b", "b'", "c", "c'", "a", "a'")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP22_STEPS_DATA, eng.PROP22_GOAL)
+    assert ei.value.rule == "intersection_circle_circle_1"
+    assert ei.value.premise == ("outside", "h", "DKL")
+
+
+def test_prop22_control_dropped_inequality_1_or_2():
+    """Inequalities 1 and 2 are consumed in the by_cases: dropping
+    |a-a'| + |b-b'| > |c-c'| kills the between g f i branch
+    (|f-i| = |c-c'| - |b-b'| < |a-a'| no longer follows); dropping
+    |a-a'| + |c-c'| > |b-b'| kills the between g i f branch. Either way
+    the case split fails, inside i DKL is never concluded, and the
+    circle-circle intersection is refused."""
+    for dropped, branch in (
+            (("gt_sum_len", "a", "a'", "b", "b'", "c", "c'"),
+             [("between", "g", "f", "i")]),
+            (("gt_sum_len", "a", "a'", "c", "c'", "b", "b'"),
+             [("between", "g", "i", "f")])):
+        hyps = [h for h in eng.PROP22_HYPS_DATA if h[0] != dropped]
+        with pytest.raises(eng.ByCasesFailure) as ei:
+            eng.replay(hyps, eng.PROP22_STEPS_DATA, eng.PROP22_GOAL)
+        assert ei.value.branch == branch
+        assert ei.value.witness[0] == "not-entailed"
+
+
+def test_prop22_control_without_point_on_circle_onlyif():
+    """Lean's two closing point_on_circle_onlyif steps (Prop22.lean:30-31)
+    are the engine's closure rule r_poc_onlyif (Transfer.lean:39), which
+    also supplies the radii row |g-i| = |g-h| the by_cases branches
+    consume. Excluding it, no branch can show |f-i| < |f-d|, so the
+    replay fails at the case split — the rule is load-bearing twice."""
+    with pytest.raises(eng.ByCasesFailure):
+        eng.replay(eng.PROP22_HYPS_DATA, eng.PROP22_STEPS_DATA, [],
+                   exclude_rules={"point_on_circle_onlyif [Transfer.lean:39]"})
+
+
+def test_prop22_icc1_bad_case():
+    """intersection_circle_circle_1's own bad case: with a and b swapped
+    (i inside/not-outside, h on/outside the wrong circles — h is NOT
+    inside DKL and i IS inside DKL), the citation is refused at the
+    inside premise against the real replay state."""
+    s = eng.State()
+    for f, w in eng.PROP22_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.run_steps(s, eng.PROP22_STEPS_DATA[:-2])  # through the by_cases
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 99, "intersection_circle_circle_1",
+                       ("h", "i", "KLH", "DKL"), {})
+    assert ei.value.premise == ("inside", "h", "DKL")
+
+
 def test_proposition_21_citation_fires():
     """The cited lemma makes exactly the two I.21 conclusions (the
     theorem PROP21_STEPS_DATA proves): the strict rows plus the
@@ -1182,7 +1282,17 @@ def test_replay_fact_set_footprints():
     I.20 joins the pin at (173, 71).
     E-kimi-task-394 added the I.21 replay (triple_incidence_1 +
     intersection_lines + pasch_4 + the cited proposition_20/proposition_16
-    lemmas). No replay changed; I.21 joins the pin at (181, 64)."""
+    lemmas). No replay changed; I.21 joins the pin at (181, 64).
+    E-kimi-task-395 added the I.22 replay (the extend/proposition_3 chain,
+    a three-case by_cases for inside i DKL, and the cited
+    intersection_circle_circle_1). Two engine changes that could have
+    moved earlier replays did NOT: _fm_sat picks its elimination pivot by
+    smallest pos*neg product instead of sorted-first (same decisions —
+    FM is order-independent — but the chain store no longer blows past
+    the row guard), and r_peq_subst_diagram also substitutes peq into
+    inside facts (fires only where a peq stands; no pinned replay
+    derives a new fact). No replay changed; I.22 joins the pin at
+    (1172, 906)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
@@ -1190,7 +1300,8 @@ def test_replay_fact_set_footprints():
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
                 "16a": (546, 281), "17": (70, 24), "18": (97, 32),
-                "19": (41, 11), "20": (173, 71), "21": (181, 64)}
+                "19": (41, 11), "20": (173, 71), "21": (181, 64),
+                "22": (1172, 906)}
     got = {}
     old_argv = sys.argv
     try:
