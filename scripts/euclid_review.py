@@ -156,11 +156,29 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     n_invalid = 0
     n_undecided = 0
     n_engine_errors = 0
+    n_blocked = 0
+    unapplied = []  # steps the ENGINE could not apply (error/undecided)
+
+    def blocked_row(i, rule, args, reason):
+        # review fix (claude-9): once the engine failed to apply an earlier
+        # step, the state is not the student's; a later "missing" object or
+        # premise may be one that step would have supplied. Not a verdict.
+        return {"step": i, "rule": _fmt_step(rule, args), "valid": None,
+                "why": (f"{reason}; may depend on step(s) {unapplied}, "
+                        "which the engine could not apply"),
+                "progress": "blocked", "d_before": None, "d_after": None,
+                "state_note": "step not applied"}
+
     for i, step in enumerate(steps, start=1):
         rule, args = step[0], step[1]
         bindings = step[2] if len(step) > 2 else {}
         pts, lns, crs = srch.object_kinds(state)
         unknown = [x for x in args if x not in pts | lns | crs]
+        if unknown and unapplied:
+            n_blocked += 1
+            rows.append(blocked_row(i, rule, args,
+                                    f"uses {', '.join(unknown)}"))
+            continue
         if unknown:  # review fix (claude-9): say the object does not exist,
             # rather than reporting a missing premise that mentions it
             n_invalid += 1
@@ -178,6 +196,11 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         try:
             eng.apply_step(trial, i, rule, args, bindings)
         except eng.MissingPremise as e:
+            if unapplied:
+                n_blocked += 1
+                rows.append(blocked_row(i, rule, args,
+                                        f"missing premise: {e.premise}"))
+                continue
             n_invalid += 1
             rows.append({
                 "step": i, "rule": _fmt_step(rule, args),
@@ -190,6 +213,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
             continue  # state unchanged
         except eng.FMTooLarge as e:
             n_undecided += 1
+            unapplied.append(i)
             rows.append({
                 "step": i, "rule": _fmt_step(rule, args),
                 "valid": None,
@@ -203,6 +227,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         except Exception as e:  # engine bug: NOT a verdict on the step
             import traceback
             n_engine_errors += 1
+            unapplied.append(i)
             rows.append({
                 "step": i, "rule": _fmt_step(rule, args),
                 "valid": None,
@@ -240,7 +265,9 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         "invalid_steps": n_invalid,
         "undecided_steps": n_undecided,
         "engine_errors": n_engine_errors,
-        "incomplete": bool(n_undecided or n_engine_errors or dist.errors),
+        "blocked_steps": n_blocked,
+        "incomplete": bool(n_undecided or n_engine_errors or n_blocked
+                           or dist.errors),
         "distance_move_errors": len(dist.errors),
         "goal_held": bool(goal_held),
         "remaining_distance": d_before,
@@ -255,7 +282,8 @@ def format_report(rep):
     for r in rep["steps"]:
         verdict = {True: "VALID", False: "INVALID", None: None}
         label = verdict[r["valid"]] or (
-            "UNDECIDED" if r["progress"] == "undecided" else "ENGINE ERROR")
+            {"undecided": "UNDECIDED", "blocked": "NOT REVIEWED"}.get(
+                r["progress"], "ENGINE ERROR"))
         lines.append(
             f"  {r['step']}. {r['rule']}: "
             f"{label} "
@@ -276,6 +304,8 @@ def format_report(rep):
                 if rep.get("undecided_steps") else None,
                 f"{rep['engine_errors']} engine error(s)"
                 if rep.get("engine_errors") else None,
+                f"{rep['blocked_steps']} later step(s) not reviewed"
+                if rep.get("blocked_steps") else None,
                 f"{rep.get('distance_move_errors', 0)} distance move(s) "
                 f"skipped after engine errors"
                 if rep.get("distance_move_errors") else None,

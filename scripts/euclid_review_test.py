@@ -210,3 +210,20 @@ def test_tainted_distance_never_labels_no_progress(monkeypatch):
     labels = [r["progress"] for r in rep["steps"]]
     assert labels == ["unknown"] * 3, labels
     assert rep["incomplete"] is True
+
+
+def test_step_after_engine_error_is_not_blamed(monkeypatch):
+    """Review (claude-9): the engine crashes on Book I.1 step 2 (circle
+    b a, which creates ACE). Step 3 uses ACE; before the fix it read
+    INVALID "uses ACE before it exists", blaming the student for the
+    engine's failure. It must be blocked (not reviewed), not invalid."""
+    _patched_engine(monkeypatch, RuntimeError("planted"),
+                    when=lambda rule, args: rule == "circle_from_points"
+                    and args == ("b", "a"))
+    rep = rv.review("I.1", rv.fixture_book_i1())
+    rows = rep["steps"]
+    assert rows[1]["progress"] == "engine-error"
+    assert rows[2]["valid"] is None and rows[2]["progress"] == "blocked"
+    assert rep["invalid_steps"] == 0 and rep["blocked_steps"] == 1
+    text = rv.format_report(rep)
+    assert "INVALID" not in text and "not reviewed" in text
