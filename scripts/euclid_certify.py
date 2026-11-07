@@ -142,6 +142,35 @@ theorem proposition_5 : ∀ (a b c d e : Point) (AB BC AC : Line),
   (between a b d) ∧ (between a c e) →
   (∠ a:b:c = ∠ a:c:b) ∧ (∠ c:b:d = ∠ b:c:e) :="""
 
+# Book/Prop11.lean verbatim (proposition_11, not 11'/11''): erect a
+# perpendicular to AB at the interior point c.
+PROP11_STATEMENT = """\
+theorem proposition_11 : ∀ (a b c : Point) (AB : Line),
+  distinctPointsOnLine a b AB ∧ between a c b →
+  exists f : Point, ¬(f.onLine AB) ∧ (∠ a:c:f = ∟) :="""
+
+# The engine's own I.11 steps (euclid_engine.PROP11_STEPS_DATA, read live).
+# between_symm_parts is the engine's citation of the NON-REVERSAL parts of
+# between_symm (Diagrammatic.lean:45-46: between a b c -> between c b a ∧
+# a ≠ b ∧ a ≠ c ∧ ¬(between b a c)). It is NOT a SystemE name, so it emits
+# as `euclid_apply (between_symm <args>)` — the whole axiom, reversal
+# conclusion included (harmless extra facts in context), via
+# ENGINE_RULE_TO_LEAN. Chosen over euclid_assert of just the neq parts for
+# the same reason as I.12's axiom steps: assert would delegate the fact to
+# SMT without recording which axiom justified it (E-kimi-task-376 decision).
+# The engine renames Lean's a b c d to u v w g (substitution collisions,
+# see the comment above PROP11_STEPS_DATA); PROP11_ENGINE_RENAMES maps them
+# back at emit time, after translation.
+PROP11_ENGINE_CITABLE = [
+    "between_symm", "point_between_points_shorter_than", "proposition_3",
+    "proposition_1", "line_from_points", "proposition_8",
+    "perpendicular_if",
+]
+PROP11_ENGINE_RENAMES = {"u": "a", "v": "b", "w": "c", "g": "d"}
+# Names bound by the I.11 statement (not created by any step): h-sm facts
+# that name only these are assertable from the start.
+PROP11_GIVEN = {"a", "b", "c", "AB"}
+
 # Book/Prop12.lean verbatim (disjunctive goal: one of the two angles at the
 # foot h is right).
 PROP12_STATEMENT = """\
@@ -215,6 +244,21 @@ PROPS = {
     "I.5": dict(imports=["SystemE", "Book.Prop03", "Book.Prop04"],
                 statement=PROP5_STATEMENT, book_steps=PROP5_BOOK_STEPS,
                 witness=None),
+    # The ENGINE's own I.11 steps (euclid_engine.PROP11_STEPS_DATA, read
+    # live, engine names renamed back to Lean's); statement/imports as
+    # Book/Prop11.lean, witness f. The engine's SMT-sourced input
+    # ("h-sm": not_on_line f AB) is emitted as a CHECKED euclid_assert
+    # right after the step that constructs f.
+    "I.11-engine": dict(imports=["SystemE", "Book.Prop01", "Book.Prop03",
+                                 "Book.Prop08"],
+                        statement=PROP11_STATEMENT, book_steps=None,
+                        witness="f", engine="I.11",
+                        engine_citable=PROP11_ENGINE_CITABLE,
+                        # Lean's `use f` closes the goal itself (the h-sm
+                        # assert and perpendicular_if conclusion are in
+                        # context as hypotheses); a trailing euclid_finish
+                        # would error "no goals to be solved".
+                        finish=None),
     # The ENGINE's own I.12 steps (euclid_engine.PROP12_STEPS_DATA, read
     # live); statement/imports as Book/Prop12.lean, witness h.
     "I.12-engine": dict(imports=["SystemE", "Book.Prop08", "Book.Prop10"],
@@ -272,6 +316,38 @@ BRIDGE_ASSERTS = {
 # names it DC'. The engine file is zai-11's, so the reconciliation lives here.)
 BINDING_RENAMES = {"AC'": "DC'"}
 
+# Engine rule names that are not SystemE names but cite part of one axiom:
+# emitted as an euclid_apply of that axiom (the extra conclusions land in
+# context harmlessly). See the I.11 comment block above PROP11_ENGINE_CITABLE.
+ENGINE_RULE_TO_LEAN = {"between_symm_parts": "between_symm"}
+
+# h-sm (SMT-sourced) engine input facts, rendered as a CHECKED euclid_assert
+# proposition text. Generalised only as far as I.11 needs (one fact shape).
+HSM_FACT_ASSERTS = {
+    "not_on_line": lambda a: f"¬({a[0]}.onLine {a[1]})",
+}
+
+
+def _insert_hsm_asserts(steps, hsm_facts, given):
+    """Emit each SMT-sourced ('h-sm') input as an euclid_assert right after
+    the step that creates the last object it names (a name in `given` —
+    bound by the statement — is available from the start). Lean must prove
+    the assert: the input the engine took on trust is CHECKED here.
+    """
+    steps = list(steps)
+    for fact in hsm_facts:
+        kind, args = fact[0], fact[1:]
+        text = HSM_FACT_ASSERTS[kind](args)
+        pos = 0
+        for name in args:
+            if name in given:
+                continue
+            for i, (_r, _a, b) in enumerate(steps):
+                if name in b.values():
+                    pos = max(pos, i + 1)
+        steps.insert(pos, ("euclid_assert", (text,), {}))
+    return steps
+
 
 def citable_apply_rules():
     """Engine rules known to be Lean-citable (euclid_apply-able): every rule
@@ -293,6 +369,7 @@ def translate_engine_steps(steps):
     citable = citable_apply_rules()
     out = []
     for rule, args, bindings in steps:
+        rule = ENGINE_RULE_TO_LEAN.get(rule, rule)
         if rule in BRIDGE_ASSERTS:
             out.append(("euclid_assert", (BRIDGE_ASSERTS[rule](args),), {}))
         elif rule == "euclid_assert" or rule in citable:
@@ -325,6 +402,15 @@ def engine_steps(prop):
     eng = _engine()
     if prop == "I.4" and hasattr(eng, "PROP4_STEPS_DATA"):
         return translate_engine_steps(eng.PROP4_STEPS_DATA)
+    if prop == "I.11" and hasattr(eng, "PROP11_STEPS_DATA"):
+        steps = translate_engine_steps(eng.PROP11_STEPS_DATA)
+        rn = PROP11_ENGINE_RENAMES
+        steps = [(r, tuple(rn.get(a, a) for a in args),
+                  {k: rn.get(v, v) for k, v in b.items()})
+                 for (r, args, b) in steps]
+        hsm = [tuple(rn.get(x, x) for x in fact)
+               for (fact, prov) in eng.PROP11_HYPS_DATA if prov == "h-sm"]
+        return _insert_hsm_asserts(steps, hsm, PROP11_GIVEN)
     if prop == "I.12" and hasattr(eng, "PROP12_STEPS_DATA"):
         return translate_engine_steps(eng.PROP12_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
@@ -362,7 +448,8 @@ def emit_proof(prop, steps, witness, statement=None, finish="euclid_finish"):
         lines.extend(_step_lines(rule, args, bindings, term))
     if witness is not None:
         lines.append(f"  use {term(witness)}")
-    lines.append(f"  {finish}")
+    if finish is not None:
+        lines.append(f"  {finish}")
     lines.append("")
     lines.append("end Elements.Book1")
     return "\n".join(lines) + "\n"
@@ -433,7 +520,8 @@ def certify_book():
             steps = engine_steps(cfg["engine"])
         else:
             steps = cfg["book_steps"]
-        r = check_lean(emit_proof(prop, steps, cfg["witness"]),
+        r = check_lean(emit_proof(prop, steps, cfg["witness"],
+                                  finish=cfg.get("finish", "euclid_finish")),
                        f"book_{prop.replace('.', '').replace('-', '_')}")
         results[prop] = r
         _report(f"book {prop}", r)

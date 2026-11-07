@@ -212,6 +212,74 @@ def test_unknown_bridge_rule_raises():
         cert.translate_engine_steps(steps)
 
 
+# --- I.11-engine (E-kimi-task-377) ------------------------------------------
+
+def _i11_src(steps=None):
+    if steps is None:
+        steps = cert.engine_steps("I.11")
+    cfg = cert.PROPS["I.11-engine"]
+    return cert.emit_proof("I.11-engine", steps, "f",
+                           finish=cfg.get("finish", "euclid_finish"))
+
+
+def test_emit_engine_i11_emission_pinned():
+    # Engine names renamed back to Lean's (u v w g -> a b c d); the h-sm
+    # input is a CHECKED euclid_assert right after proposition_1 creates f;
+    # between_symm_parts emits as euclid_apply of between_symm (axiom cite,
+    # not assert); no trailing euclid_finish (use f closes the goal).
+    src = _i11_src()
+    assert "  euclid_apply (between_symm a c b)\n" in src
+    assert "  euclid_apply (point_between_points_shorter_than AB c a (c─b)) as d\n" in src
+    assert ("  euclid_apply (proposition_1 d e AB) as f\n"
+            "  euclid_assert ¬(f.onLine AB)\n") in src
+    assert "  euclid_apply (perpendicular_if a b c f AB)\n  use f\n" in src
+    assert "euclid_finish" not in src
+    assert " u " not in src and " v " not in src and " w " not in src
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "bcb60be9b3dcdff4"
+
+
+def test_engine_i11_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP11_STEPS_DATA and show the emission follows
+    eng = cert._engine()
+    swapped = [list(s) for s in eng.PROP11_STEPS_DATA]
+    swapped[9] = ("proposition_8", ("w", "e", "f", "w", "g", "f",
+                                    "AB", "DF", "FC", "AB", "FE", "FC"), {})
+    monkeypatch.setattr(eng, "PROP11_STEPS_DATA", swapped)
+    src = _i11_src()
+    assert "(proposition_8 c e f c d f AB DF FC AB FE FC)" in src
+    assert "(proposition_8 c d f c e f AB DF FC AB FE FC)" not in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i11_certifies():
+    # the ENGINE's own PROP11_STEPS_DATA incl. its SMT-sourced h-sm input,
+    # certified against LeanEuclid
+    r = cert.check_lean(_i11_src(), "test_engine_I11")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i11_false_hsm_assert():
+    # Replace the h-sm assert ¬(f.onLine AB) with its negation (asserting the
+    # equilateral apex ON its base — false). The assert must be CHECKED, so
+    # this must NOT certify, and no lean process may survive the refusal.
+    steps = [("euclid_assert", ("f.onLine AB",), {})
+             if r_ == "euclid_assert" else (r_, a, b)
+             for (r_, a, b) in cert.engine_steps("I.11")]
+    assert any(r_ == "euclid_assert" for (r_, _a, _b) in steps)
+    r = cert.check_lean(_i11_src(steps), "test_neg_I11_hsm", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I11_hsm.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
 # --- I.12-engine (E-kimi-task-376) ------------------------------------------
 
 def test_emit_engine_i12_emission_pinned():
