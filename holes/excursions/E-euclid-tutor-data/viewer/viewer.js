@@ -452,9 +452,10 @@ function showInfo(step) {
   }
   info.innerHTML =
     "<b>step " + step.n + "</b> <code>"
-    + (step.rule === "by_contra"
-       // args are nested case branches; show the conclusion instead
-       ? "by_contra ⊢ " + (step.bindings || []).map(f => f.join(" ")).join(", ")
+    + (step.rule === "by_contra" || step.rule === "by_cases"
+       // args are nested case branches; show the conclusion instead. For
+       // by_cases the case note says which branch the diagram draws.
+       ? step.rule + " ⊢ " + (step.bindings || []).map(f => f.join(" ")).join(", ")
        : step.rule + "(" + step.args.join(", ") + ")")
     + "</code> → "
     + (step.lean.line

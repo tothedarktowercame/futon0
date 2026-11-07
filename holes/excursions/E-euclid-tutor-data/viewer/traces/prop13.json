@@ -1,0 +1,1378 @@
+{
+ "prop": 13,
+ "title": "Elements I.13 (LeanEuclid Book/Prop13.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "CD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "d"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 3
+  },
+  {
+   "name": "BE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "e"
+    ]
+   },
+   "def_step": 4
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      "eq_ang",
+      "c",
+      "b",
+      "a",
+      "a",
+      "b",
+      "d"
+     ]
+    ],
+    []
+   ],
+   "bindings": [
+    [
+     "sum_rt_ang",
+     "c",
+     "b",
+     "a",
+     "d"
+    ]
+   ],
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "c",
+     "b",
+     "a",
+     "d"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": 11
+   },
+   "placement_decision": "drawn case (branch 2: angle c:b:a != angle a:b:d) \u2014 the general case; the other cases are checked by the engine and only noted; case split \u2014 the drawn diagram shows the general case; the other cases are checked by the engine (see the case note on each step), not drawn",
+   "case": "drawn case (branch 2: angle c:b:a != angle a:b:d) \u2014 the general case; the other cases are checked by the engine and only noted"
+  },
+  {
+   "n": 2,
+   "rule": "perpendicular_if",
+   "args": [
+    "c",
+    "d",
+    "b",
+    "a",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "right_ang",
+     "c",
+     "b",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "between",
+     "c",
+     "b",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('c', 'b', 'a', 'a', 'b', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "branch 1 (angle c:b:a = angle a:b:d): checked by the engine, not drawn \u2014 Lean closes it with euclid_finish alone; forward-closure step (no new objects): perpendicular_if only adds facts to the engine state",
+   "case": "branch 1 (angle c:b:a = angle a:b:d): checked by the engine, not drawn \u2014 Lean closes it with euclid_finish alone",
+   "lean_note": "engine-only step (perpendicular_if): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 3,
+   "rule": "proposition_11'",
+   "args": [
+    "d",
+    "c",
+    "b",
+    "a",
+    "CD"
+   ],
+   "bindings": {
+    "f": "e"
+   },
+   "facts_added": [
+    [
+     "same_side",
+     "e",
+     "a",
+     "CD"
+    ],
+    [
+     "right_ang",
+     "d",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "c",
+     "CD"
+    ],
+    [
+     "between",
+     "d",
+     "b",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": 13
+   },
+   "placement_decision": "drawn case (branch 2: angle c:b:a != angle a:b:d) \u2014 the general case; the other cases are checked by the engine and only noted; free parameter of the existential step: |b-e| = 1 on the perpendicular to CD at b, on a's side of CD (the rule fixes the side and the right angle, not the distance)",
+   "case": "drawn case (branch 2: angle c:b:a != angle a:b:d) \u2014 the general case; the other cases are checked by the engine and only noted"
+  },
+  {
+   "n": 4,
+   "rule": "line_from_points",
+   "args": [
+    "b",
+    "e"
+   ],
+   "bindings": {
+    "L": "BE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": 14
+   },
+   "placement_decision": "drawn case (branch 2: angle c:b:a != angle a:b:d) \u2014 the general case; the other cases are checked by the engine and only noted; line drawn through existing points",
+   "case": "drawn case (branch 2: angle c:b:a != angle a:b:d) \u2014 the general case; the other cases are checked by the engine and only noted"
+  },
+  {
+   "n": 5,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      "same_side",
+      "a",
+      "c",
+      "BE"
+     ]
+    ],
+    [
+     [
+      "same_side",
+      "a",
+      "d",
+      "BE"
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "sum_rt_ang",
+     "c",
+     "b",
+     "a",
+     "d"
+    ]
+   ],
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "c",
+     "b",
+     "a",
+     "d"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; case split \u2014 the drawn diagram shows the general case; the other cases are checked by the engine (see the case note on each step), not drawn",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 6,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "b",
+    "c"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "b"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "not_between",
+     "b",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "b",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 7,
+   "rule": "between_symm_parts",
+   "args": [
+    "c",
+    "b",
+    "d"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_between",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "b",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 8,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "d",
+    "b",
+    "c",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "d",
+     "c",
+     "BE"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "b",
+     "c"
+    ],
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "BE"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "BE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 9,
+   "rule": "opposing_same_side_trans",
+   "args": [
+    "d",
+    "c",
+    "a",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "d",
+     "a",
+     "BE"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "d",
+     "c",
+     "BE"
+    ],
+    [
+     "same_side",
+     "a",
+     "c",
+     "BE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): opposing_same_side_trans only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (opposing_same_side_trans): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 10,
+   "rule": "triple_incidence_2",
+   "args": [
+    "CD",
+    "BE",
+    "AB",
+    "b",
+    "d",
+    "e",
+    "a"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "d",
+     "e",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "same_side",
+     "e",
+     "a",
+     "CD"
+    ],
+    [
+     "opposing_sides",
+     "d",
+     "a",
+     "BE"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "BE"
+    ],
+    [
+     "neq",
+     "d",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): triple_incidence_2 only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (triple_incidence_2): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 11,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "c",
+    "e",
+    "a",
+    "CD",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "c",
+     "b",
+     "e",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ],
+    [
+     "neq",
+     "b",
+     "c"
+    ],
+    [
+     "neq",
+     "b",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "BE"
+    ],
+    [
+     "neq_line",
+     "CD",
+     "BE"
+    ],
+    [
+     "same_side",
+     "c",
+     "a",
+     "BE"
+    ],
+    [
+     "same_side",
+     "e",
+     "a",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 12,
+   "rule": "perpendicular_onlyif",
+   "args": [
+    "d",
+    "c",
+    "b",
+    "e",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "d",
+     "b",
+     "e",
+     "e",
+     "b",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "between",
+     "d",
+     "b",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ],
+    [
+     "entail",
+     "rt_ang",
+     "('d', 'b', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): perpendicular_onlyif only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (perpendicular_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 13,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "a",
+    "d",
+    "e",
+    "AB",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "b",
+     "d",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ],
+    [
+     "neq_line",
+     "AB",
+     "CD"
+    ],
+    [
+     "same_side",
+     "a",
+     "e",
+     "CD"
+    ],
+    [
+     "same_side",
+     "d",
+     "e",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner case drawn: a on c's side of BE; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "inner case drawn: a on c's side of BE",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 14,
+   "rule": "between_symm_parts",
+   "args": [
+    "c",
+    "b",
+    "d"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_between",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "b",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 15,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "b",
+    "c"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "b"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "not_between",
+     "b",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "b",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 16,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "c",
+    "b",
+    "d",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "c",
+     "d",
+     "BE"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "b",
+     "d"
+    ],
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "BE"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "BE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 17,
+   "rule": "opposing_same_side_trans",
+   "args": [
+    "c",
+    "d",
+    "a",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "c",
+     "a",
+     "BE"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "c",
+     "d",
+     "BE"
+    ],
+    [
+     "same_side",
+     "a",
+     "d",
+     "BE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): opposing_same_side_trans only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (opposing_same_side_trans): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 18,
+   "rule": "triple_incidence_2",
+   "args": [
+    "CD",
+    "BE",
+    "AB",
+    "b",
+    "c",
+    "e",
+    "a"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "c",
+     "e",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "same_side",
+     "e",
+     "a",
+     "CD"
+    ],
+    [
+     "opposing_sides",
+     "c",
+     "a",
+     "BE"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "BE"
+    ],
+    [
+     "neq",
+     "c",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): triple_incidence_2 only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (triple_incidence_2): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 19,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "d",
+    "e",
+    "a",
+    "CD",
+    "BE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "d",
+     "b",
+     "e",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BE"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "e",
+     "BE"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "neq",
+     "b",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "BE"
+    ],
+    [
+     "neq_line",
+     "CD",
+     "BE"
+    ],
+    [
+     "same_side",
+     "d",
+     "a",
+     "BE"
+    ],
+    [
+     "same_side",
+     "e",
+     "a",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 20,
+   "rule": "perpendicular_onlyif",
+   "args": [
+    "d",
+    "c",
+    "b",
+    "e",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "d",
+     "b",
+     "e",
+     "e",
+     "b",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "between",
+     "d",
+     "b",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ],
+    [
+     "entail",
+     "rt_ang",
+     "('d', 'b', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): perpendicular_onlyif only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (perpendicular_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 21,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "a",
+    "c",
+    "e",
+    "AB",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "b",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "neq",
+     "b",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ],
+    [
+     "neq_line",
+     "AB",
+     "CD"
+    ],
+    [
+     "same_side",
+     "a",
+     "e",
+     "CD"
+    ],
+    [
+     "same_side",
+     "c",
+     "e",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop13.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn; forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "inner branch (a on d's side of BE): the mirror image, checked by the engine, not drawn",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  }
+ ],
+ "placement": {
+  "a": [
+   1.2,
+   0.9
+  ],
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   2.0,
+   0.0
+  ],
+  "d": [
+   -1.5,
+   0.0
+  ],
+  "e": [
+   0.0,
+   1.0
+  ],
+  "BE": null
+ },
+ "verification": [
+  {
+   "check": "I.13: between d b c",
+   "ok": true
+  },
+  {
+   "check": "I.13: a off CD (distance to line c-d > 0)",
+   "ok": true
+  },
+  {
+   "check": "I.13: angle d-b-e is right (e perpendicular to CD at b)",
+   "ok": true
+  },
+  {
+   "check": "I.13: e and a on the same side of CD",
+   "ok": true
+  },
+  {
+   "check": "I.13: angle c-b-a + angle a-b-d = 180 degrees",
+   "ok": true
+  },
+  {
+   "check": "I.13: general case drawn (angle c-b-a != angle a-b-d)",
+   "ok": true
+  },
+  {
+   "check": "I.13: drawn case: a on c's side of BE",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop13.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop11",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_13 : \u2200 (a b c d : Point) (AB CD : Line),",
+  "  AB \u2260 CD \u2227 distinctPointsOnLine a b AB \u2227 distinctPointsOnLine c d CD \u2227 between d b c \u2192",
+  "  \u2220 c:b:a + \u2220 a:b:d = \u221f + \u221f :=",
+  "by",
+  "  euclid_intros",
+  "  by_cases \u2220 c:b:a = \u2220 a:b:d",
+  "  . euclid_finish",
+  "  . euclid_apply (proposition_11' d c b a CD) as e",
+  "    euclid_apply (line_from_points b e) as BE",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

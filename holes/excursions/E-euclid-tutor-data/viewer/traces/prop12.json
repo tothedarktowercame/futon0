@@ -650,6 +650,18 @@
    "ok": true
   },
   {
+   "check": "I.12: e on circle EFG (|c-e| = |c-d|)",
+   "ok": true
+  },
+  {
+   "check": "I.12: e, g on AB",
+   "ok": true
+  },
+  {
+   "check": "I.12: e != g",
+   "ok": true
+  },
+  {
    "check": "I.12: angle e-h-c is right",
    "ok": true
   },

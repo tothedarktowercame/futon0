@@ -307,6 +307,12 @@ FREE = {
     # place_step), so the circle centre c through d meets AB at e, g with
     # midpoint h the foot of c on AB: angle e-h-c is exactly right.
     12: {"a": (-2.2, 0.0), "b": (2.2, 0.0), "c": (0.4, 0.9)},
+    # I.13: b at the origin, CD horizontal with between d b c, a off CD in
+    # the GENERAL position (angle c:b:a not right, so branch 2 of Lean's
+    # by_cases is the drawn case) and on c's side of BE (the inner branch
+    # that is drawn); e is placed straight up over b by proposition_11'.
+    13: {"a": (1.2, 0.9), "b": (0.0, 0.0), "c": (2.0, 0.0),
+         "d": (-1.5, 0.0)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -328,6 +334,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP11_HYPS_DATA), list(eng.PROP11_STEPS_DATA)
     if prop == 12:
         return list(eng.PROP12_HYPS_DATA), list(eng.PROP12_STEPS_DATA)
+    if prop == 13:
+        return list(eng.PROP13_HYPS_DATA), list(eng.PROP13_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -400,6 +408,14 @@ def objects_from_hyps(prop):
                  "def_step": 0} for n in ("a", "b", "c")] + [
                 {"name": "AB", "kind": "line", "jsx": {"type": "line",
                   "p": ["a", "b"]}, "def_step": 0, "hyp": True}]
+    if prop == 13:
+        # both lines are hypotheses (dpl facts); between d b c puts b on
+        # CD, and a is on AB and off CD
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("CD", ("c", "d")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -645,10 +661,41 @@ dragging)" % (a, b)
                          % (list(facts), rules or
                             ["contradiction in the store"]))
         return "; ".join(parts) + " (refuted branches are not drawn)"
+    if rule == "by_cases":
+        # no drawing for the split itself: the DRAWN case is branch 2 in
+        # general position (see the entry's case note); the other branches
+        # are checked by the engine on state copies and only noted
+        return ("case split — the drawn diagram shows the general case; "
+                "the other cases are checked by the engine (see the case "
+                "note on each step), not drawn")
+    if rule == "proposition_11'":
+        # (a, b, c, x, AB) -> f same side of AB as x with angle a:c:f
+        # right. The rule fixes the side and the right angle; the distance
+        # |c-f| is a free parameter of the existential step (unit length
+        # chosen, as the engine places no coordinate).
+        (a, b, c, x, AB), name = args, bindings["f"]
+        l1, l2 = _line_objects(objects, AB)
+        dvec = _unit(_sub(xy[a], xy[c]))
+        perp = (-dvec[1], dvec[0])
+        side = lambda p: (_sub(p, xy[c])[0] * (xy[l2][1] - xy[l1][1])
+                          - _sub(p, xy[c])[1] * (xy[l2][0] - xy[l1][0]))
+        cand = _add(xy[c], perp)
+        if side(cand) * side(xy[x]) < 0:
+            cand = _sub(xy[c], perp)
+        xy[name] = cand
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: |%s-%s| = 1 on "
+                "the perpendicular to %s at %s, on %s's side of %s (the "
+                "rule fixes the side and the right angle, not the "
+                "distance)" % (c, name, AB, c, x, AB))
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
                 "proposition_4", "sum_angles_onlyif",
-                "between_symm_parts", "pasch_4", "angle_pair_on_line",
+                "between_symm_parts", "pasch_3_opposing", "pasch_4",
+                "opposing_same_side_trans", "triple_incidence_2",
+                "angle_pair_on_line",
                 "proposition_8", "proposition_7", "perpendicular_if",
+                "perpendicular_onlyif",
                 "intersection_lines_opposing",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
@@ -813,6 +860,39 @@ def verify12(xy):
     ]
 
 
+def verify13(xy):
+    """I.13 (drawn case: branch 2, a on c's side of BE): between d b c, a
+    off CD, e perpendicular to CD at b, e and a on the same side of CD
+    (proposition_11' produces exactly this), the angle sum
+    angle c:b:a + angle a:b:d = 180 degrees numerically, the drawn case
+    really is general (the two angles unequal), and a is on c's side of
+    BE (the inner branch that is drawn)."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def side(p, l1, l2):
+        dvec = _sub(xy[l2], xy[l1])
+        return (dvec[0] * (xy[p][1] - xy[l1][1])
+                - dvec[1] * (xy[p][0] - xy[l1][0]))
+
+    ang_sum = _ang(xy, "c", "b", "a") + _ang(xy, "a", "b", "d")
+    return [
+        ("I.13: between d b c",
+         abs(dist("d", "b") + dist("b", "c") - dist("d", "c")) < EPS),
+        ("I.13: a off CD (distance to line c-d > 0)",
+         abs(side("a", "c", "d")) / dist("c", "d") > EPS),
+        ("I.13: angle d-b-e is right (e perpendicular to CD at b)",
+         abs(_ang(xy, "d", "b", "e") - math.pi / 2) < EPS),
+        ("I.13: e and a on the same side of CD",
+         side("e", "c", "d") * side("a", "c", "d") > 0),
+        ("I.13: angle c-b-a + angle a-b-d = 180 degrees",
+         abs(ang_sum - math.pi) < EPS),
+        ("I.13: general case drawn (angle c-b-a != angle a-b-d)",
+         abs(_ang(xy, "c", "b", "a") - _ang(xy, "a", "b", "d")) > EPS),
+        ("I.13: drawn case: a on c's side of BE",
+         side("a", "b", "e") * side("c", "b", "e") > 0),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -832,6 +912,8 @@ def verify(prop, xy):
         return verify11(xy)
     if prop == 12:
         return verify12(xy)
+    if prop == 13:
+        return verify13(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -842,54 +924,151 @@ def verify(prop, xy):
     return checks
 
 
+def _run_branch13(s, facts, steps):
+    """Re-run one by_cases branch on a copy of the pre-split state to get
+    per-step reports for the trace (the real by_cases runs branches on
+    private copies and reports only witnesses)."""
+    sub = s.copy()
+    for f in facts:
+        eng._assume_metric_or_fact(sub, f, "by_cases assumption")
+    eng.close(sub)
+    return eng.run_steps(sub, steps)
+
+
+def build_trace13_rows(hyps, steps):
+    """I.13 is a nested by_cases (see PROP13_STEPS_DATA). The trace flattens
+    it: the outer split (Lean's by_cases line), branch 1's step (not drawn),
+    branch 2's two construction steps (drawn — they ARE Lean's), the inner
+    split (no Lean line: euclid_finish does it by SMT), then both inner
+    branches' steps (drawn case: a on c's side of BE; the mirror case is
+    checked by the engine, not drawn). Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop13.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop13.lean"
+    ln_by_cases = next(i + 1 for i, l in enumerate(lean_lines)
+                       if l.strip().startswith("by_cases"))
+    ln_p11 = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "proposition_11'" in l)
+    ln_lfp = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "line_from_points" in l)
+
+    s = eng.State()
+    # the engine's own I.13 replay excludes straight_angle (that closure
+    # rule IS I.13); the trace replays under the same exclusion
+    s.exclude_rules = frozenset({"straight_angle [SMT-bridge]"})
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+    top = eng.run_steps(s, steps)[0]  # the single outer by_cases report
+
+    _tag, branches, conclusions = steps[0]
+    b1_assume, b1_steps = branches[0]
+    b2_assume, b2_steps = branches[1]
+    inner = b2_steps[2]  # ("by_cases", inner_branches, [PROP13_GOAL])
+
+    def disp(cs):
+        """Conclusions for display: the engine's _sum_rt_ang row is added
+        to the state as the fact sum_rt_ang."""
+        return [["sum_rt_ang" if c[0] == "_sum_rt_ang" else c[0],
+                 *c[1:]] for c in cs]
+
+    DRAWN2 = ("drawn case (branch 2: angle c:b:a != angle a:b:d) — the "
+              "general case; the other cases are checked by the engine "
+              "and only noted")
+    NOT1 = ("branch 1 (angle c:b:a = angle a:b:d): checked by the engine, "
+            "not drawn — Lean closes it with euclid_finish alone")
+    DRAWNC = ("inner case drawn: a on c's side of BE")
+    NOTD = ("inner branch (a on d's side of BE): the mirror image, checked "
+            "by the engine, not drawn")
+
+    rows = [("by_cases", [b[0] for b in branches],
+             disp(conclusions), top, (rel, ln_by_cases),
+             DRAWN2)]
+    for (r, a, b), rep in zip(b1_steps, _run_branch13(s0, b1_assume,
+                                                      b1_steps)):
+        rows.append((r, a, b, rep, None, NOT1))
+    sub2 = s0.copy()
+    eng.close(sub2)
+    reps2 = eng.run_steps(sub2, b2_steps[:2])
+    rows.append(("proposition_11'", b2_steps[0][1], b2_steps[0][2],
+                 reps2[0], (rel, ln_p11), DRAWN2))
+    rows.append(("line_from_points", b2_steps[1][1], b2_steps[1][2],
+                 reps2[1], (rel, ln_lfp), DRAWN2))
+    rep_inner = eng._by_cases(sub2.copy(), 4, inner)
+    rows.append(("by_cases", [b[0] for b in inner[1]],
+                 disp(inner[2]), rep_inner, None, DRAWNC))
+    for (assume, bsteps), note in zip(inner[1], (DRAWNC, NOTD)):
+        for (r, a, b), rep in zip(bsteps, _run_branch13(sub2, assume,
+                                                        bsteps)):
+            rows.append((r, a, b, rep, None, note))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
-    # engine replay (premises checked, facts collected); props 4-5 have
-    # metric hypotheses (eq_len / eq_ang) that must enter the linear store
-    if prop in (4, 5):
-        s = eng._metric_state(hyps)
+    if prop == 13:
+        # nested by_cases: rows built by replaying each branch on a state
+        # copy (see build_trace13_rows); the replay itself is the check
+        rows, _s = build_trace13_rows(hyps, steps)
+        name_map = {}
     else:
-        s = eng.State()
-        for f, w in hyps:
-            s.assume(f, w)
-    if prop == 3:
-        s.la.add({eng.len_atom("a", "b"): 1,
-                  eng.len_atom("c0", "c1"): -1}, 0, ">")
-    eng.close(s)
-    if prop in (10, 11, 12):
-        # replay() also drives the by_contra steps and asserts the Book
-        # conclusion (same queries the engine's own main() uses). I.12's
-        # goal substitute is stated in PROP12_STEPS_DATA's comment: the
-        # replay proves rt e h c with h on AB, which implies Lean's
-        # disjunction (h and e both on AB, e != h, a != b).
-        queries = {10: [("between", "a", "d", "b"),
-                        ("_eq_len", "a", "d", "d", "b")],
-                   11: [("not_on_line", "f", "AB"),
-                        ("_rt_ang", "u", "w", "f")],
-                   12: [("_rt_ang", "e", "h", "c"),
-                        ("on_line", "h", "AB")]}[prop]
-        _s, reports_all = eng.replay(hyps, steps, queries)
-        reports = reports_all[:-1]  # drop the {"final": ...} entry
-    else:
-        reports = [eng.apply_step(s, i, r, a, b)
-                   for i, (r, a, b) in enumerate(steps, 1)]
+        # engine replay (premises checked, facts collected); props 4-5
+        # have metric hypotheses (eq_len / eq_ang) that must enter the
+        # linear store
+        if prop in (4, 5):
+            s = eng._metric_state(hyps)
+        else:
+            s = eng.State()
+            for f, w in hyps:
+                s.assume(f, w)
+        if prop == 3:
+            s.la.add({eng.len_atom("a", "b"): 1,
+                      eng.len_atom("c0", "c1"): -1}, 0, ">")
+        eng.close(s)
+        if prop in (10, 11, 12):
+            # replay() also drives the by_contra steps and asserts the Book
+            # conclusion (same queries the engine's own main() uses). I.12's
+            # goal substitute is stated in PROP12_STEPS_DATA's comment: the
+            # replay proves rt e h c with h on AB, which implies Lean's
+            # disjunction (h and e both on AB, e != h, a != b).
+            queries = {10: [("between", "a", "d", "b"),
+                            ("_eq_len", "a", "d", "d", "b")],
+                       11: [("not_on_line", "f", "AB"),
+                            ("_rt_ang", "u", "w", "f")],
+                       12: [("_rt_ang", "e", "h", "c"),
+                            ("on_line", "h", "AB")]}[prop]
+            _s, reports_all = eng.replay(hyps, steps, queries)
+            reports = reports_all[:-1]  # drop the {"final": ...} entry
+        else:
+            reports = [eng.apply_step(s, i, r, a, b)
+                       for i, (r, a, b) in enumerate(steps, 1)]
 
-    name_map = PROP11_NAME_MAP if prop == 11 else {}
-    lean = (lean_lines_for_named(prop, steps, name_map)
-            if prop in (10, 11, 12)
-            else lean_lines_for(prop, [r for r, _, _ in steps]))
+        name_map = PROP11_NAME_MAP if prop == 11 else {}
+        lean = (lean_lines_for_named(prop, steps, name_map)
+                if prop in (10, 11, 12)
+                else lean_lines_for(prop, [r for r, _, _ in steps]))
+        rows = [(r, a, b, rep, loc, None)
+                for (r, a, b), rep, loc in zip(steps, reports, lean)]
 
     objects = objects_from_hyps(prop)
     xy = {k: v for k, v in FREE[prop].items()}
     derived_free_points(prop, xy)
     trace_steps = []
-    for i, ((rule, args, bindings), rep, loc) in enumerate(
-            zip(steps, reports, lean), 1):
-        # by_contra reports have no added/premises keys (branches ran on
-        # scratch states); nothing was added to the outer state's facts
+    for i, (rule, args, bindings, rep, loc, case_note) in enumerate(
+            rows, 1):
+        # by_contra/by_cases reports have no added/premises keys (branches
+        # ran on scratch states); a by_cases step's contribution to the
+        # outer state is its conclusions, shown as the facts it adds
         added = rep.get("added", [])
+        if rule == "by_cases":
+            added = [tuple(c) for c in bindings]
         premises = rep.get("premises", [])
         why = place_step(prop, rule, args, bindings, added, xy, objects)
+        if case_note:
+            why = case_note + "; " + why
         for o in objects:
             if o["def_step"] is None:
                 o["def_step"] = i
@@ -898,7 +1077,8 @@ def build_trace(prop):
             lean_note = ("engine-only step (%s): no euclid_apply line in "
                          "the Lean proof cites it; Lean leaves this to "
                          "euclid_finish / SMT"
-                         % ("case split" if rule == "by_contra" else rule))
+                         % ("case split" if rule in ("by_contra", "by_cases")
+                            else rule))
         else:
             lean_entry = {"file": loc[0], "line": loc[1]}
             lean_note = (("Lean cites %s with different arguments; the "
@@ -912,6 +1092,8 @@ def build_trace(prop):
             "lean": lean_entry,
             "placement_decision": why,
         }
+        if case_note:
+            entry["case"] = case_note
         if lean_note:
             entry["lean_note"] = lean_note
         if rule == "superposition":

@@ -457,3 +457,107 @@ def test_bad_case_prop12_e_g_off_the_circle_fails():
         bad[k] = [h[0] + 1.5 * (bad[k][0] - h[0]), h[1] + 1.5 * (bad[k][1] - h[1])]
     fails = [d for d, ok in tr.verify12(bad) if not ok]
     assert fails == ["I.12: e on circle EFG (|c-e| = |c-d|)"], fails
+
+
+# -- I.13 (kimi-2, packet P-euclid-viewer-I13) --------------------------------
+# I.13's trace is a FLATTENED nested by_cases: the outer split (Lean's
+# by_cases line), branch 1 (not drawn), branch 2's two construction steps
+# (Lean's proposition_11' / line_from_points lines), the inner split (no
+# Lean line), then both inner branches (drawn case: a on c's side of BE).
+
+TR13 = load(13)
+
+
+def test_prop13_rebuild_matches_disk():
+    rebuilt = tr.build_trace(13)
+    assert rebuilt["placement"] == TR13["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR13["steps"]
+
+
+def test_prop13_lean_lines_cover_the_apply_lines_and_the_by_cases():
+    path = os.path.join(LEAN_DIR, TR13["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = {s["lean"]["line"] for s in TR13["steps"]
+              if s["lean"]["line"]}
+    # every linked line names the step's rule (or is the by_cases line)
+    for s in TR13["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            assert "engine-only" in s["lean_note"], s
+        elif s["rule"] == "by_cases":
+            assert lines[ln - 1].strip().startswith("by_cases"), s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    # every euclid_apply line of Prop13.lean is linked, and the by_cases
+    # line is linked by the outer split
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies <= linked, (applies, linked)
+    assert len(linked) == len(applies) + 1
+    # the drawn construction steps are exactly proposition_11' and
+    # line_from_points; the inner by_cases has no Lean line
+    drawn = {s["rule"] for s in TR13["steps"]
+             if s["lean"]["line"] in applies}
+    assert drawn == {"proposition_11'", "line_from_points"}
+    inner = [s for s in TR13["steps"]
+             if s["rule"] == "by_cases" and s["lean"]["line"] is None]
+    assert len(inner) == 1
+
+
+def test_prop13_cases_recorded():
+    """Every step says which case it belongs to; the drawn case is branch
+    2 with a on c's side of BE; the others say they are not drawn."""
+    for s in TR13["steps"]:
+        assert s.get("case"), s
+        assert s["case"] in s["placement_decision"]
+    assert any(s["case"].endswith("not drawn") for s in TR13["steps"])
+    drawn = [s for s in TR13["steps"]
+             if not s["case"].endswith("not drawn")]
+    assert {s["rule"] for s in drawn} >= {
+        "by_cases", "proposition_11'", "line_from_points"}
+    # the conclusions of both by_cases levels are the I.13 goal, shown as
+    # the facts the split adds
+    for s in TR13["steps"]:
+        if s["rule"] == "by_cases":
+            assert s["facts_added"] == [["sum_rt_ang", "c", "b", "a", "d"]]
+
+
+def test_prop13_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR13["placement"].items() if v}
+    res = tr.metric_facts_hold(TR13["steps"], xy)
+    assert res and all(ok for _, ok in res), \
+        [f for f, ok in res if not ok]
+    assert all(ok for _, ok in tr.verify13(xy))
+
+
+def _xy13():
+    return {k: tuple(v) for k, v in TR13["placement"].items() if v}
+
+
+def test_bad_case_prop13_a_on_cd_fails():
+    xy = _xy13()
+    assert all(ok for _, ok in tr.verify13(xy))
+    x = dict(xy)
+    x["a"] = (1.2, 0.0)  # a on CD
+    fails = [d for d, ok in tr.verify13(x) if not ok]
+    assert any("a off CD" in d for d in fails), fails
+
+
+def test_bad_case_prop13_e_not_perpendicular_fails():
+    x = _xy13()
+    x["e"] = (0.3, 1.0)  # tilted off the perpendicular
+    fails = [d for d, ok in tr.verify13(x) if not ok]
+    assert any("right" in d for d in fails), fails
+
+
+def test_bad_case_prop13_e_opposite_side_from_a_fails():
+    x = _xy13()
+    x["e"] = (0.0, -1.0)  # still perpendicular, but across CD from a
+    fails = [d for d, ok in tr.verify13(x) if not ok]
+    assert fails == ["I.13: e and a on the same side of CD"], fails
+
+
+def test_bad_case_prop13_a_on_ds_side_of_be_fails():
+    x = _xy13()
+    x["a"] = (-0.8, 0.9)  # the mirror case: a on d's side of BE
+    fails = [d for d, ok in tr.verify13(x) if not ok]
+    assert fails == ["I.13: drawn case: a on c's side of BE"], fails
