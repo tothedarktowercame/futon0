@@ -366,6 +366,15 @@ FREE = {
     # branches' assumptions (|a-c| = |a-b|, |a-b| > |a-c|) are refuted
     # and not drawn as such.
     19: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
+    # I.20 (two sides of a triangle together exceed the third,
+    # |b-a| + |a-c| > |b-c|): the same scalene triangle as I.16-I.19.
+    # d' and d are CONSTRUCTED (steps 1-2): d' on the ray b->a beyond a
+    # with |a-d'| = 1.5|c-a| (the free parameter of extend_point_longer,
+    # strictly greater than the bound); d on segment a-d' with
+    # |a-d| = |a-c| (the proposition_3 cut), so between b a d and
+    # |b-d| = |b-a| + |a-c| = ~2.763 > |b-c| = 1.6 — a ~1.16 visible
+    # margin on the goal.
+    20: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -402,6 +411,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP18_HYPS_DATA), list(eng.PROP18_STEPS_DATA)
     if prop == 19:
         return list(eng.PROP19_HYPS_DATA), list(eng.PROP19_STEPS_DATA)
+    if prop == 20:
+        return list(eng.PROP20_HYPS_DATA), list(eng.PROP20_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -532,6 +543,16 @@ def objects_from_hyps(prop):
     if prop == 19:
         # the triangle a-b-c and the three hypothesis lines; I.19
         # constructs nothing (a by_contra with two cited-lemma branches)
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
+    if prop == 20:
+        # the triangle a-b-c and the three hypothesis lines; d' and d
+        # are CONSTRUCTED by steps 1-2 (extend_point_longer AB b a (c-a);
+        # proposition_3 a d' a c AB AC), not hypotheses
         return [{"name": n, "kind": "point", "jsx": {"type": "point"},
                  "def_step": 0} for n in ("a", "b", "c")] + [
                 {"name": L, "kind": "line", "jsx": {"type": "line",
@@ -823,23 +844,23 @@ dragging)" % (a, b)
                 "rule fixes the side and the right angle, not the "
                 "distance)" % (c, name, AB, c, x, AB))
     if rule == "extend_point_longer":
-        # (L, p, q, p, q) -> x on L with between p q x and |q-x| > |p-q|
+        # (L, p, q, u, v) -> x on L with between p q x and |q-x| > |u-v|
         # (Points.lean:43; the length bound is passed as its two
-        # endpoints p, q). The rule fixes the line, the side and the
-        # bound; the distance |q-x| is a free parameter of the
-        # existential step (1.5|p-q| chosen, strictly greater than the
-        # bound, as the engine places no coordinate).
+        # endpoints u, v — (b-e) at I.16, (c-a) at I.20). The rule fixes
+        # the line, the side and the bound; the distance |q-x| is a free
+        # parameter of the existential step (1.5|u-v| chosen, strictly
+        # greater than the bound, as the engine places no coordinate).
         (L, p, q, u, v), name = args, bindings["x"]
-        assert (u, v) == (p, q), "extend_point_longer: bound is (p-q)"
+        bound = _norm(_sub(xy[v], xy[u]))
         seg = _sub(xy[q], xy[p])
-        xy[name] = _add(xy[q], _mul(_unit(seg), 1.5 * _norm(seg)))
+        xy[name] = _add(xy[q], _mul(_unit(seg), 1.5 * bound))
         objects.append({"name": name, "kind": "point",
                         "jsx": {"type": "point"}, "def_step": None})
         return ("free parameter of the existential step: |%s-%s| = "
                 "1.5|%s-%s| > |%s-%s| on the ray from %s through %s "
                 "(the rule fixes between %s %s %s and the lower bound, "
                 "not the distance)"
-                % (q, name, p, q, p, q, p, q, p, q, name))
+                % (q, name, u, v, u, v, p, q, p, q, name))
     if rule == "extend_point":
         # (L, p, q) -> x on L with between p q x: the rule fixes the line
         # and the side; the distance |q-x| is a free parameter of the
@@ -858,7 +879,8 @@ dragging)" % (a, b)
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
                 "proposition_4", "proposition_5'", "proposition_13",
                 "proposition_15",
-                "proposition_16", "proposition_18", "sum_angles_onlyif",
+                "proposition_16", "proposition_18", "proposition_19",
+                "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
                 "triple_incidence_2",
@@ -909,6 +931,27 @@ dragging)" % (a, b)
                     "angle opposite a-c — angle b:c:a > angle a:b:c — "
                     "contradicting the hypothesis angle a:b:c > "
                     "angle b:c:a")
+        if rule == "proposition_5'" and prop == 20:
+            return ("cited step (proposition_5' a c d AC DC AB, the "
+                    "isosceles theorem): |a-c| = |a-d| (the step-2 cut), "
+                    "so the base angles of triangle a-c-d are equal — "
+                    "angle a:c:d = angle a:d:c")
+        if rule == "sum_angles_onlyif" and prop == 20:
+            return ("cited step (sum_angles_onlyif c b d a BC DC, "
+                    "Transfer.lean:90): a lies inside angle b:c:d "
+                    "(between b a d), so angle b:c:d = angle b:c:a + "
+                    "angle a:c:d")
+        if rule == "proposition_19" and prop == 20:
+            return ("cited step (proposition_19 b c d BC DC AB — I.19, "
+                    "the greater angle is subtended by the greater "
+                    "side, in triangle b-c-d): angle b:c:d = "
+                    "angle b:c:a + angle a:c:d (step 5) > angle a:c:d "
+                    "(angle b:c:a > 0) = angle a:d:c (step 4, I.5') = "
+                    "angle b:d:c (a on the ray d->b), so |b-d| > |b-c|. "
+                    "The conclusion's why: |b-a| + |a-c| = |b-a| + "
+                    "|a-d| (step 2) = |b-d| (between b a d) > |b-c| — "
+                    "because in triangle b-c-d the angle at c exceeds "
+                    "the angle at d")
         if rule == "proposition_13" and prop == 17:
             return ("cited step (proposition_13 a c b d AC BC, the "
                     "linear pair): angle b:c:a + angle a:c:d = two right "
@@ -1351,6 +1394,41 @@ def verify19(xy):
     ]
 
 
+def verify20(xy):
+    """I.20 (two sides of a triangle together exceed the third,
+    |b-a| + |a-c| > |b-c|): the drawn facts are the hypothesis triangle
+    a-b-c plus the construction — d' on the ray b->a beyond a
+    (extend_point_longer) and d on segment a-d' with |a-d| = |a-c|
+    (proposition_3), so between b a d. The conclusions numerically: the
+    I.5' step angle a:c:d = angle a:d:c; the angle-split
+    angle b:c:d = angle b:c:a + angle a:c:d (a inside the angle at c);
+    the I.19 step angle b:c:d > angle b:d:c; the length sum
+    |b-d| = |b-a| + |a-c|; and the goal with a visible margin."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+    acd = _ang(xy, "a", "c", "d")
+    adc = _ang(xy, "a", "d", "c")
+    bcd = _ang(xy, "b", "c", "d")
+    bca = _ang(xy, "b", "c", "a")
+    bdc = _ang(xy, "b", "d", "c")
+    return [
+        ("I.20: between b a d (d on the ray b->a beyond a)",
+         abs(dist("b", "a") + dist("a", "d") - dist("b", "d")) < EPS),
+        ("I.20: |a-d| = |a-c| (proposition_3 cut)",
+         abs(dist("a", "d") - dist("a", "c")) < EPS),
+        ("I.20: I.5' step angle a:c:d = angle a:d:c",
+         abs(acd - adc) < EPS),
+        ("I.20: angle b:c:d = angle b:c:a + angle a:c:d (a inside the "
+         "angle at c)", abs(bcd - (bca + acd)) < EPS),
+        ("I.20: I.19 step angle b:c:d > angle b:d:c",
+         bcd > bdc + EPS),
+        ("I.20: |b-d| = |b-a| + |a-c| (the two sides laid end to end)",
+         abs(dist("b", "d") - (dist("b", "a") + dist("a", "c"))) < EPS),
+        ("I.20: GOAL |b-a| + |a-c| > |b-c|, with a visible margin (at "
+         "least 0.2)",
+         dist("b", "a") + dist("a", "c") > dist("b", "c") + 0.2),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1384,6 +1462,8 @@ def verify(prop, xy):
         return verify18(xy)
     if prop == 19:
         return verify19(xy)
+    if prop == 20:
+        return verify20(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1680,7 +1760,7 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12, 15, 16, 17, 18):
+        if prop in (10, 11, 12, 15, 16, 17, 18, 20):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
@@ -1701,7 +1781,8 @@ def build_trace(prop):
                        15: list(eng.PROP15_GOAL),
                        16: list(eng.PROP16B_GOAL),
                        17: list(eng.PROP17_GOAL),
-                       18: list(eng.PROP18_GOAL)}[prop]
+                       18: list(eng.PROP18_GOAL),
+                       20: list(eng.PROP20_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:

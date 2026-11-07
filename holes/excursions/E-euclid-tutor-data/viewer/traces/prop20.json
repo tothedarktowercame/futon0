@@ -1,0 +1,534 @@
+{
+ "prop": 20,
+ "title": "Elements I.20 (LeanEuclid Book/Prop20.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "d'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "DC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "c"
+    ]
+   },
+   "def_step": 3
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "extend_point_longer",
+   "args": [
+    "AB",
+    "b",
+    "a",
+    "c",
+    "a"
+   ],
+   "bindings": {
+    "x": "d'"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d'",
+     "AB"
+    ],
+    [
+     "between",
+     "b",
+     "a",
+     "d'"
+    ],
+    [
+     "gt_len",
+     "a",
+     "d'",
+     "c",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "a",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop20.lean",
+    "line": 12
+   },
+   "placement_decision": "free parameter of the existential step: |a-d'| = 1.5|c-a| > |c-a| on the ray from b through a (the rule fixes between b a d' and the lower bound, not the distance)"
+  },
+  {
+   "n": 2,
+   "rule": "proposition_3",
+   "args": [
+    "a",
+    "d'",
+    "a",
+    "c",
+    "AB",
+    "AC"
+   ],
+   "bindings": {
+    "q": "d"
+   },
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "d",
+     "d'"
+    ],
+    [
+     "eq_len",
+     "a",
+     "d",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "d'",
+     "AB"
+    ],
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('a', \"d'\", 'a', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop20.lean",
+    "line": 13
+   },
+   "placement_decision": "cut |a-c| off segment a-d' from a; sample direction along the segment"
+  },
+  {
+   "n": 3,
+   "rule": "line_from_points",
+   "args": [
+    "d",
+    "c"
+   ],
+   "bindings": {
+    "L": "DC"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "DC"
+    ],
+    [
+     "on_line",
+     "c",
+     "DC"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "d",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop20.lean",
+    "line": 14
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_5'",
+   "args": [
+    "a",
+    "c",
+    "d",
+    "AC",
+    "DC",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "d",
+     "a",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "DC"
+    ],
+    [
+     "on_line",
+     "d",
+     "DC"
+    ],
+    [
+     "on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'a', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop20.lean",
+    "line": 15
+   },
+   "placement_decision": "cited step (proposition_5' a c d AC DC AB, the isosceles theorem): |a-c| = |a-d| (the step-2 cut), so the base angles of triangle a-c-d are equal \u2014 angle a:c:d = angle a:d:c"
+  },
+  {
+   "n": 5,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "c",
+    "b",
+    "d",
+    "a",
+    "BC",
+    "DC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "b",
+     "c",
+     "d",
+     "a"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "DC"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "d",
+     "DC"
+    ],
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "BC"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "DC"
+    ],
+    [
+     "neq_line",
+     "BC",
+     "DC"
+    ],
+    [
+     "same_side",
+     "b",
+     "a",
+     "DC"
+    ],
+    [
+     "same_side",
+     "d",
+     "a",
+     "BC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop20.lean",
+    "line": 16
+   },
+   "placement_decision": "cited step (sum_angles_onlyif c b d a BC DC, Transfer.lean:90): a lies inside angle b:c:d (between b a d), so angle b:c:d = angle b:c:a + angle a:c:d"
+  },
+  {
+   "n": 6,
+   "rule": "proposition_19",
+   "args": [
+    "b",
+    "c",
+    "d",
+    "BC",
+    "DC",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_len",
+     "b",
+     "d",
+     "b",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "DC"
+    ],
+    [
+     "on_line",
+     "d",
+     "DC"
+    ],
+    [
+     "on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "entail",
+     "gt_ang",
+     "('b', 'c', 'd', 'c', 'd', 'b')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop20.lean",
+    "line": 17
+   },
+   "placement_decision": "cited step (proposition_19 b c d BC DC AB \u2014 I.19, the greater angle is subtended by the greater side, in triangle b-c-d): angle b:c:d = angle b:c:a + angle a:c:d (step 5) > angle a:c:d (angle b:c:a > 0) = angle a:d:c (step 4, I.5') = angle b:d:c (a on the ray d->b), so |b-d| > |b-c|. The conclusion's why: |b-a| + |a-c| = |b-a| + |a-d| (step 2) = |b-d| (between b a d) > |b-c| \u2014 because in triangle b-c-d the angle at c exceeds the angle at d"
+  }
+ ],
+ "placement": {
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.6,
+   0.0
+  ],
+  "a": [
+   0.5,
+   1.1
+  ],
+  "d'": [
+   1.4655894643680771,
+   3.22429682160977
+  ],
+  "d": [
+   1.1437263095787182,
+   2.5161978810731798
+  ],
+  "DC": null
+ },
+ "verification": [
+  {
+   "check": "I.20: between b a d (d on the ray b->a beyond a)",
+   "ok": true
+  },
+  {
+   "check": "I.20: |a-d| = |a-c| (proposition_3 cut)",
+   "ok": true
+  },
+  {
+   "check": "I.20: I.5' step angle a:c:d = angle a:d:c",
+   "ok": true
+  },
+  {
+   "check": "I.20: angle b:c:d = angle b:c:a + angle a:c:d (a inside the angle at c)",
+   "ok": true
+  },
+  {
+   "check": "I.20: I.19 step angle b:c:d > angle b:d:c",
+   "ok": true
+  },
+  {
+   "check": "I.20: |b-d| = |b-a| + |a-c| (the two sides laid end to end)",
+   "ok": true
+  },
+  {
+   "check": "I.20: GOAL |b-a| + |a-c| > |b-c|, with a visible margin (at least 0.2)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop20.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop03",
+  "import Book.Prop05",
+  "import Book.Prop19",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_20 : \u2200 (a b c : Point) (AB BC AC : Line),",
+  "  formTriangle a b c AB BC AC \u2192 |(b\u2500a)| + |(a\u2500c)| > |(b\u2500c)| :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (extend_point_longer AB b a (c\u2500a)) as d'",
+  "  euclid_apply (proposition_3 a d' a c AB AC) as d",
+  "  euclid_apply (line_from_points d c) as DC",
+  "  euclid_apply (proposition_5' a c d AC DC AB)",
+  "  euclid_apply (sum_angles_onlyif c b d a BC DC)",
+  "  euclid_apply (proposition_19 b c d BC DC AB)",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

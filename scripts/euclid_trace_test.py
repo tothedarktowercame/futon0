@@ -1112,3 +1112,75 @@ def test_bad_case_prop19_isosceles_fails():
     x["a"] = (0.8, h)
     fails = [d for d, ok in tr.verify19(x) if not ok]
     assert any("GOAL |a-c| > |a-b|" in d for d in fails), fails
+
+
+# -- I.20 (kimi-2, packet P-euclid-viewer-I20) -------------------------------
+# I.20 (two sides of a triangle together exceed the third,
+# |b-a| + |a-c| > |b-c|) is FLAT: 6 steps, no case splits. d' and d are
+# CONSTRUCTED (step 1 extend_point_longer AB b a (c-a): d' on the ray
+# b->a beyond a; step 2 proposition_3 a d' a c AB AC: d on segment a-d'
+# with |a-d| = |a-c|), not hypotheses. Steps 1-6 are Prop20.lean's
+# euclid_apply lines 12-17, in order. The last step's bar carries the
+# conclusion's why: |b-a| + |a-c| = |b-d| > |b-c|.
+
+TR20 = load(20)
+
+
+def test_prop20_rebuild_matches_disk():
+    rebuilt = tr.build_trace(20)
+    assert rebuilt["placement"] == TR20["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR20["steps"]
+
+
+def test_prop20_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR20["lean_file"])
+    lines = open(path).read().splitlines()
+    for s in TR20["steps"]:
+        ln = s["lean"]["line"]
+        assert ln is not None, s  # all six steps linked
+        assert s["rule"] in lines[ln - 1], s
+    # exactly the six euclid_apply lines are linked, in order
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    linked = [s["lean"]["line"] for s in TR20["steps"]]
+    assert linked == sorted(linked) and set(linked) == applies, linked
+
+
+def test_prop20_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR20["placement"].items() if v}
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR20["steps"], xy)
+           if not ok]
+    assert not bad, bad
+    assert all(ok for _, ok in tr.verify20(xy))
+    # the last step's info bar states the conclusion's why
+    last = TR20["steps"][-1]
+    assert last["rule"] == "proposition_19"
+    assert "|b-a| + |a-c| = |b-a| + |a-d|" in last["placement_decision"]
+    assert "> |b-c|" in last["placement_decision"]
+    assert "angle at c exceeds" in last["placement_decision"]
+
+
+def _xy20():
+    return {k: tuple(v) for k, v in TR20["placement"].items() if v}
+
+
+def test_bad_case_prop20_d_between_b_and_a_fails():
+    x = _xy20()
+    assert all(ok for _, ok in tr.verify20(x))
+    # d between b and a instead of beyond a: the betweenness and the
+    # length-sum checks fail
+    bx, by = x["b"]
+    ax, ay = x["a"]
+    x["d"] = (bx + 0.5 * (ax - bx), by + 0.5 * (ay - by))
+    fails = [d for d, ok in tr.verify20(x) if not ok]
+    assert any("between b a d" in d for d in fails), fails
+
+
+def test_bad_case_prop20_ad_neq_ac_fails():
+    x = _xy20()
+    # d still on the ray b->a beyond a but |a-d| = 0.7|a-c|: the
+    # proposition_3 cut is violated and the I.5' equal-angles step fails
+    ax, ay = x["a"]
+    dx, dy = x["d"]
+    x["d"] = (ax + 0.7 * (dx - ax), ay + 0.7 * (dy - ay))
+    fails = [d for d, ok in tr.verify20(x) if not ok]
+    assert any("|a-d| = |a-c|" in d for d in fails), fails
