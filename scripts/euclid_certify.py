@@ -32,6 +32,7 @@ Usage (from ~/code/futon0):
 
 import importlib.util
 import os
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -233,22 +234,24 @@ def check_lean(source, name, timeout=600):
     path = SCRATCH / f"{name}.lean"
     path.write_text(source)
     t0 = time.perf_counter()
+    # own session, so a timeout kills lean too, not only lake (review,
+    # claude-9: lean outlived subprocess.run's timeout as an orphan)
+    proc = subprocess.Popen(
+        ["lake", "env", "lean", str(path)],
+        cwd=str(LEAN_EUCLID), env=env(), stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, text=True, start_new_session=True)
     try:
-        proc = subprocess.run(
-            ["lake", "env", "lean", str(path)],
-            cwd=str(LEAN_EUCLID), env=env(), capture_output=True, text=True,
-            timeout=timeout)
-    except subprocess.TimeoutExpired as e:
-        # review (claude-9): a solver that never answers is a refusal to
-        # certify, not a crash of the certifier
-        out = ((e.stdout or b"").decode(errors="replace")
-               if isinstance(e.stdout, bytes) else (e.stdout or ""))
+        stdout, stderr = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        # a solver that never answers is a refusal, not a certifier crash
+        os.killpg(proc.pid, signal.SIGKILL)
+        stdout, stderr = proc.communicate()
         return {"certified": False, "rc": None,
                 "wall_s": round(time.perf_counter() - t0, 2),
-                "reason": f"timeout after {timeout} s", "output": out,
-                "path": str(path)}
+                "reason": f"timeout after {timeout} s",
+                "output": (stdout + stderr).strip(), "path": str(path)}
     wall = time.perf_counter() - t0
-    out = (proc.stdout + proc.stderr).strip()
+    out = (stdout + stderr).strip()
     reasons = []
     if "declaration uses 'sorry'" in out:
         reasons.append("declaration uses 'sorry'")

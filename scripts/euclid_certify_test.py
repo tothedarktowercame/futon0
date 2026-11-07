@@ -92,15 +92,24 @@ def test_prop5_steps_pinned_to_engine_data():
     assert cert.PROP5_BOOK_STEPS == eng.PROP5_STEPS_DATA
 
 
+class _FakePopen:
+    """Stands in for subprocess.Popen in check_lean unit tests."""
+    def __init__(self, out="", rc=0, hang=False):
+        self.out, self.returncode, self.hang, self.pid = out, rc, hang, -1
+
+    def __call__(self, *a, **kw):
+        return self
+
+    def communicate(self, timeout=None):
+        if self.hang and timeout is not None:
+            raise subprocess.TimeoutExpired(cmd="lean", timeout=timeout)
+        return self.out, ""
+
+
 def test_check_lean_rule_catches_sorry_at_rc0(monkeypatch):
     # the exit-0 trap the review flagged: only the sorry check catches it
-    def fake_run(*a, **kw):
-        class P:
-            returncode = 0
-            stdout = "warning: declaration uses 'sorry'\n"
-            stderr = ""
-        return P()
-    monkeypatch.setattr(cert.subprocess, "run", fake_run)
+    monkeypatch.setattr(cert.subprocess, "Popen",
+                        _FakePopen("warning: declaration uses 'sorry'\n"))
     r = cert.check_lean("x", "t")
     assert not r["certified"]
     assert "declaration uses 'sorry'" in r["reason"]
@@ -179,12 +188,39 @@ def test_found_sequence_i1_certifies():
     assert r["certified"], r["output"]
 
 
+
 def test_check_lean_timeout_is_not_certified(monkeypatch):
     # review (claude-9): a false step can leave the SMT search running past
     # the timeout; that must come back as a refusal, not an exception
-    def fake_run(*a, **kw):
-        raise subprocess.TimeoutExpired(cmd="lean", timeout=kw.get("timeout"))
-    monkeypatch.setattr(cert.subprocess, "run", fake_run)
+    killed = []
+    monkeypatch.setattr(cert.subprocess, "Popen", _FakePopen(hang=True))
+    monkeypatch.setattr(cert.os, "killpg", lambda pid, sig: killed.append(pid))
     r = cert.check_lean("-- anything", "test_timeout", timeout=7)
     assert r["certified"] is False
     assert r["reason"] == "timeout after 7 s"
+    assert killed == [-1]          # the whole process group was killed
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_prop5_swapped_sas_times_out_and_leaves_no_lean():
+    # review (claude-9): proposition_4 a c f a g b (f and c swapped) claims
+    # triangle acf ~ agb, which needs |ac| = |ag|: false. Lean's SMT search
+    # does not refute it within 10 min; it must not certify, and no lean
+    # process may survive the timeout (before the fix one did).
+    steps = list(cert.PROP5_BOOK_STEPS)
+    rule, args, b = steps[4]
+    args = list(args); args[1], args[2] = args[2], args[1]
+    steps[4] = (rule, tuple(args), b)
+    r = cert.check_lean(cert.emit_proof("I.5", steps, None),
+                        "test_neg_prop5_swap", timeout=30)
+    assert not r["certified"], r
+    # SIGKILL delivery is asynchronous: allow a few seconds for the group to
+    # go (one suite run saw a failure here that did not reproduce in 3 reruns)
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_prop5_swap.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
