@@ -1549,3 +1549,245 @@ def test_two_fresh_objects_identified_with_one_point_refused():
     r = eng.apply_step(s, 6, "intersections_circle_line", ("EFG", "L"),
                        {"a": "g", "b": "e"})
     assert r["added"] == []
+
+
+# --- I.13 (Book/Prop13.lean): angles on a straight line --------------------
+# Replayed with the closure rule "straight_angle [SMT-bridge]" EXCLUDED —
+# that rule is I.13 itself, so closing with it would prove the goal with no
+# steps. The replay follows Lean: by_cases ∠c:b:a = ∠a:b:d; in the ≠ case
+# erect the perpendicular be by proposition_11' and split on where a lies
+# relative to BE (exhaustiveness documented at PROP13_STEPS_DATA).
+
+EXCLUDE_STRAIGHT = {"straight_angle [SMT-bridge]"}
+
+
+def _prop13(steps=eng.PROP13_STEPS_DATA, hyps=eng.PROP13_HYPS_DATA):
+    return eng.replay(hyps, steps, [eng.PROP13_GOAL],
+                      exclude_rules=EXCLUDE_STRAIGHT)
+
+
+def test_prop13_replay():
+    s, rep = _prop13()
+    u, v, x, w = "c", "b", "a", "d"
+    assert s.la.entails(eng.lin((eng.ang_atom(u, v, x), 1),
+                                (eng.ang_atom(x, v, w), 1), (eng.RT, -2)),
+                        0, "=")
+    assert s.has(("sum_rt_ang", u, v, x, w))
+    assert eng._fm_sat(s.la.rows)
+    assert rep[-1]["final"]
+    # the excluded rule never fired: its markers and rows are absent
+    assert not any(f[0] == "strang" for f in s.facts)
+    # sanity: with the rule allowed, the hypotheses ALONE (no steps) entail
+    # the goal — that is why the exclusion is needed for an honest replay.
+    s2, _ = eng.replay(eng.PROP13_HYPS_DATA, [], [eng.PROP13_GOAL])
+    assert any(f[0] == "strang" for f in s2.facts)
+
+
+def test_prop13_control_dropped_proposition_11():
+    """Bad case (a): drop proposition_11' (e never exists). line_from_points
+    then has no b ≠ e and the by_cases branch fails, naming the branch."""
+    outer = eng.PROP13_STEPS_DATA[0]
+    br2 = ([], [st for st in outer[1][1][1]
+                if not (st[0] == "proposition_11'")])
+    steps = [("by_cases", [outer[1][0], br2], outer[2])]
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        _prop13(steps=steps)
+    assert ei.value.branch == []
+    assert ei.value.witness[0] == "stuck"
+    assert ei.value.witness[1] == ("neq", "b", "e")
+
+
+def test_prop13_wrong_sum_not_entailed():
+    """Bad case (b): the replay proves ∠c:b:a + ∠a:b:d = 2∟; the wrong sum
+    (= ∟) is NOT entailed by the final store."""
+    s, _ = _prop13()
+    row = eng.lin((eng.ang_atom("c", "b", "a"), 1),
+                  (eng.ang_atom("a", "b", "d"), 1), (eng.RT, -1))
+    assert not s.la.entails(row, 0, "=")
+    # and the store stays satisfiable with the wrong sum's negation... i.e.
+    # adding ∠cba + ∠abd < 2∟ must be inconsistent (the sum is pinned):
+    s.la.add(eng.lin((eng.ang_atom("c", "b", "a"), 1),
+                     (eng.ang_atom("a", "b", "d"), 1), (eng.RT, -2)), 0, "<")
+    assert not eng._fm_sat(s.la.rows)
+
+
+def test_prop13_control_dropped_between():
+    """Bad case (c): without between d b c the perpendicular construction
+    has no foot (proposition_11' premise) and branch 1 has no between
+    c b d for perpendicular_if — the replay fails."""
+    hyps = [h for h in eng.PROP13_HYPS_DATA
+            if h[0] != ("between", "d", "b", "c")]
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        _prop13(hyps=hyps)
+    assert ei.value.witness[0] == "stuck"
+
+
+def test_prop13_inner_branch_removed_is_not_refused():
+    """Bad case (d): remove one branch of the inner by_cases. The engine
+    does NOT refuse: like by_contra, exhaustiveness of the branch
+    assumptions is the caller's documented responsibility (each remaining
+    branch still entails the conclusion, and that is all the construct
+    checks). The test pins that the engine-level check is per-branch
+    entailment only — the removed branch leaves a HOLE IN THE PROOF, not
+    an engine error."""
+    outer = eng.PROP13_STEPS_DATA[0]
+    inner = outer[1][1][1][2]  # the inner by_cases step
+    one_branch = ("by_cases", [inner[1][0]], inner[2])
+    br2 = ([], outer[1][1][1][:2] + [one_branch])
+    steps = [("by_cases", [outer[1][0], br2], outer[2])]
+    s, rep = _prop13(steps=steps)  # accepted: exhaustiveness is on the caller
+    assert s.has(("sum_rt_ang", "c", "b", "a", "d"))
+    assert rep[-1]["final"]
+
+
+def test_prop13_proposition_11_prime_refuses_x_on_the_line():
+    """Bad case (e): proposition_11' with x ON AB is refused at its own
+    premise (¬(x.onLine AB) — Prop11.lean:24)."""
+    s = eng.State()
+    for f, w in eng.PROP13_HYPS_DATA:
+        s.assume(f, w)
+    s.assume(("on_line", "q", "CD"))  # q on the line
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_11'", ("d", "c", "b", "q", "CD"),
+                       {"f": "e"})
+    assert ei.value.premise == ("not_on_line", "q", "CD")
+    # positive control: x off the line is accepted
+    s2 = eng.State()
+    for f, w in eng.PROP13_HYPS_DATA:
+        s2.assume(f, w)
+    eng.close(s2)
+    r = eng.apply_step(s2, 1, "proposition_11'", ("d", "c", "b", "a", "CD"),
+                       {"f": "e"})
+    assert ("same_side", "e", "a", "CD") in [f for f in r["added"]]
+    assert s2.has(("right_ang", "d", "b", "e"))
+
+
+# --- by_cases: the construct's own contract ---------------------------------
+
+
+def test_by_cases_branch_not_entailing_is_refused():
+    """A by_cases whose one branch does not reach the conclusion is refused
+    (ByCasesFailure naming the branch), and the OUTER state is unchanged."""
+    s = eng.State()
+    s.assume(("on_line", "a", "L"), "hypothesis")
+    s.assume(("on_line", "b", "L"), "hypothesis")
+    s.assume(("neq", "a", "b"), "hypothesis")
+    eng.close(s)
+    goal = ("on_line", "z", "L")  # entailed by no branch
+    before = dict(s.facts)
+    entry = ("by_cases", [
+        ([("same_side", "x", "y", "M")], []),   # assumes, derives nothing
+        ([], []),                                # nothing at all
+    ], [goal])
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.run_steps(s, [entry])
+    assert ei.value.branch == [("same_side", "x", "y", "M")]
+    assert ei.value.witness == ("not-entailed", goal)
+    assert dict(s.facts) == before  # outer state unchanged
+
+
+def test_by_cases_contradictory_branch_is_refused():
+    """A branch that reaches a CONTRADICTION would entail every conclusion
+    vacuously; by_cases (unlike by_contra) refuses it."""
+    s = eng.State()
+    s.assume(("on_line", "a", "L"), "hypothesis")
+    eng.close(s)
+    entry = ("by_cases", [
+        ([("not_on_line", "a", "L")], []),  # contradicts the hypothesis
+    ], [("on_line", "b", "L")])
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.run_steps(s, [entry])
+    assert ei.value.witness[0] == "contradictory"
+
+
+def test_by_cases_entailing_branches_add_conclusions():
+    """Both branches entail the conclusion (a metric one): the conclusion
+    and its row reach the outer state, and closure runs after."""
+    s = eng.State()
+    for f in [("on_line", "a", "L"), ("on_line", "b", "L"),
+              ("neq", "a", "b")]:
+        s.assume(f, "hypothesis")
+    eng.close(s)
+    eq = ("eq_ang", "a", "b", "x", "a", "b", "y")
+    entry = ("by_cases", [
+        ([eq], []),
+        ([eq], []),
+    ], [("_eq_ang", "a", "b", "x", "a", "b", "y")])
+    eng.run_steps(s, [entry])
+    assert s.has(eq)
+    assert eng.la_entails_eq_ang(s.la, "a", "b", "x", "a", "b", "y")
+
+
+# --- perpendicular_onlyif / the side-rule citations: premise checks ---------
+
+
+def test_perpendicular_onlyif_premises_exact():
+    """perpendicular_onlyif (Transfer.lean:107): premises are the axiom's
+    destructed hypotheses; the ∟ premise is an entailment."""
+    spec = eng.CONSTRUCTIONS["perpendicular_onlyif"]
+    probe = eng.State()
+    prem = spec["premises"](probe, "a", "b", "c", "d", "L")
+    assert set(prem) == {("on_line", "a", "L"), ("on_line", "b", "L"),
+                         ("between", "a", "c", "b"),
+                         ("not_on_line", "d", "L")}
+    assert spec["entail"](probe, "a", "b", "c", "d", "L") == \
+        [("rt_ang", ("a", "c", "d"))]
+
+
+def test_perpendicular_onlyif_needs_right_angle():
+    """The exact bad case the entailment premise is named for: without
+    ∠a:c:d = ∟ in the arithmetic the rule refuses."""
+    s = eng.State()
+    for f in [("on_line", "u", "AB"), ("on_line", "v", "AB"),
+              ("between", "u", "w", "v"), ("not_on_line", "f", "AB")]:
+        s.assume(f)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "perpendicular_onlyif", ("u", "v", "w", "f", "AB"),
+                       {})
+    assert ei.value.premise == ("entail", "rt_ang", ("u", "w", "f"))
+    # with the right angle the rule fires and the equality is entailed
+    s.la.add(eng.lin((eng.ang_atom("u", "w", "f"), 1), (eng.RT, -1)), 0, "=")
+    eng.apply_step(s, 1, "perpendicular_onlyif", ("u", "v", "w", "f", "AB"), {})
+    assert eng.la_entails_eq_ang(s.la, "u", "w", "f", "f", "w", "v")
+
+
+def test_pasch_3_opposing_needs_points_off_the_line():
+    """pasch_3_opposing renders ¬(a.sameSide c L) as opposing_sides, which
+    also carries a, c OFF L (Relations.lean:13-14): with a on L the rule
+    must refuse (between u w v alone does not place w off L)."""
+    s = eng.State()
+    for f in [("on_line", "u", "L"), ("on_line", "v", "L"),
+              ("on_line", "w", "L"), ("between", "u", "w", "v")]:
+        s.assume(f)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "pasch_3_opposing", ("u", "w", "v", "L"), {})
+    assert ei.value.premise == ("not_on_line", "u", "L")
+
+
+def test_triple_incidence_2_needs_the_opposing_sides():
+    """triple_incidence_2 (Diagrammatic.lean:201): the ¬(b.sameSide d M)
+    premise (rendered opposing_sides b d M) is required — drop it and the
+    rule refuses (c sameSide d L alone does not move b to c's side of N)."""
+    def mk(with_opposing):
+        s = eng.State()
+        for f in [("on_line", "o", "L"), ("on_line", "o", "M"),
+                  ("on_line", "o", "N"), ("on_line", "p", "L"),
+                  ("on_line", "q", "M"), ("on_line", "r", "N"),
+                  ("same_side", "q", "r", "L"),
+                  ("not_on_line", "r", "M"), ("neq", "p", "o")]:
+            s.assume(f)
+        if with_opposing:
+            s.assume(("opposing_sides", "p", "r", "M"))
+        eng.close(s)
+        return s
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(mk(False), 1, "triple_incidence_2",
+                       ("L", "M", "N", "o", "p", "q", "r"), {})
+    assert ei.value.premise == ("opposing_sides", "p", "r", "M")
+    s = mk(True)
+    eng.apply_step(s, 1, "triple_incidence_2",
+                   ("L", "M", "N", "o", "p", "q", "r"), {})
+    assert s.has(("same_side", "p", "q", "N"))

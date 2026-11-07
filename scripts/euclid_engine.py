@@ -443,6 +443,11 @@ class State:
         # assumptions declare, and derived facts never do.
         self.declared = set()  # names of objects that exist
         self.reserved = set()  # names awaiting their one later binding
+        # Forward-rule exclusion set (rule NAMES, e.g.
+        # "straight_angle [SMT-bridge]"): close() skips these. Empty by
+        # default; replay(..., exclude_rules=...) sets it, and copies made
+        # by by_contra/by_cases inherit it.
+        self.exclude_rules = frozenset()
 
     def assume(self, fact, why="hypothesis"):
         names = {x for x in fact[1:] if isinstance(x, str)}
@@ -476,6 +481,7 @@ class State:
         s2.reserved = set(self.reserved)
         s2.la.rows = list(self.la.rows)
         s2.rule_cache = dict(getattr(self, "rule_cache", {}))
+        s2.exclude_rules = self.exclude_rules
         return s2
 
     def new(self, base):
@@ -1206,7 +1212,11 @@ def close(s):
     while True:
         it += 1
         changed = False
+        excluded = getattr(s, "exclude_rules", frozenset())
         for name, fn in FORWARD_RULES:
+            if name in excluded:
+                continue  # excluded for this replay (e.g. I.13 must not use
+                # straight_angle, which IS I.13 as a closure rule)
             for newfact, prem in list(fn(s)):
                 if newfact not in s.facts:
                     s.add(newfact, name, prem)
@@ -1742,6 +1752,86 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, d, L, M: [
             (None, [("_sum_ang", b, a, c, d)])],
     },
+    # SystemE/Theory/Inferences/Transfer.lean:107 — perpendicular_onlyif
+    # verbatim: (a.onLine L) ∧ (b.onLine L) ∧ (between a c b) ∧
+    # ¬(d.onLine L) ∧ (∠ a:c:d = ∟) → ∠ a:c:d = ∠ d:c:b
+    # The right-angle premise is an entailment premise (a "rt_ang" query).
+    "perpendicular_onlyif": {
+        "cite": "Transfer.lean:107",
+        "args": ("a", "b", "c", "d", "L"),
+        "premises": lambda s, a, b, c, d, L: [
+            ("on_line", a, L), ("on_line", b, L), ("between", a, c, b),
+            ("not_on_line", d, L)],
+        "entail": lambda s, a, b, c, d, L: [("rt_ang", (a, c, d))],
+        "make": lambda s, a, b, c, d, L: [
+            (None, [("_eq_ang", a, c, d, d, c, b)])],
+    },
+    # Book/Prop11.lean:24 — proposition_11' verbatim:
+    #   ∀ (a b c x : Point) (AB : Line), (distinctPointsOnLine a b AB) ∧
+    #   (between a c b) ∧ ¬(x.onLine AB) →
+    #   exists f : Point, (f.sameSide x AB) ∧ (∠ a:c:f = ∟)
+    # Cited as a lemma (the engine's own I.11 replay is the proof of the
+    # constructible version; Prop11.lean:24 is exactly this existential).
+    # Existential conclusion, so a construction when cited.
+    "proposition_11'": {
+        "cite": "Book/Prop11.lean:24",
+        "args": ("a", "b", "c", "x", "AB"),
+        "premises": lambda s, a, b, c, x, AB: [
+            _dpl_either(s, a, b, AB), ("between", a, c, b),
+            ("not_on_line", x, AB)],
+        "make": lambda s, a, b, c, x, AB: [
+            ("f", [("same_side", "f", x, AB), ("_rt_ang", a, c, "f")])],
+    },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
+    #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
+    # Rendered as the POSITIVE fact opposing_sides a c L (same rendering as
+    # pasch_4): opposingSides a c L := ¬a.onLine L ∧ ¬c.onLine L ∧
+    # ¬a.sameSide c L (Relations.lean:13-14), so the two off-line parts are
+    # added as premises and the conclusion carries exactly pasch_3's
+    # content plus them.
+    "pasch_3_opposing": {
+        "cite": "Diagrammatic.lean:161 + Relations.lean:13-14",
+        "args": ("a", "b", "c", "L"),
+        "premises": lambda s, a, b, c, L: [
+            ("between", a, b, c), ("on_line", b, L),
+            ("not_on_line", a, L), ("not_on_line", c, L)],
+        "make": lambda s, a, b, c, L: [
+            (None, [("opposing_sides", a, c, L)])],
+    },
+    # [derived: Diagrammatic.lean:127 (sameSide transitivity) read as its
+    # contrapositive + Relations.lean:13-14] x opposing y across L and
+    # z on y's side of L put x opposing z across L:
+    #   opposingSides x y L ∧ sameSide z y L → opposingSides x z L
+    # (¬(x~y) ∧ (z~y) ⇒ ¬(x~z), since x~z ∧ z~y would give x~y; the
+    # off-line parts ship with the premises).
+    "opposing_same_side_trans": {
+        "cite": "derived, Diagrammatic.lean:127 contrapositive",
+        "args": ("x", "y", "z", "L"),
+        "premises": lambda s, x, y, z, L: [
+            ("opposing_sides", x, y, L), ("same_side", z, y, L)],
+        "make": lambda s, x, y, z, L: [
+            (None, [("opposing_sides", x, z, L)])],
+    },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:201 — triple_incidence_2
+    # verbatim:
+    #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧
+    #   (c.onLine M) ∧ (d.onLine N) ∧ (c.sameSide d L) ∧
+    #   ¬(b.sameSide d M) ∧ ¬(d.onLine M) ∧ (b ≠ a) → b.sameSide c N
+    # ¬(b.sameSide d M) is rendered as the positive fact opposing_sides
+    # b d M (stronger: it also carries b, d off M — Relations.lean:13-14),
+    # the same rendering pasch_4 uses, because the engine has no negated
+    # sameSide fact kind.
+    "triple_incidence_2": {
+        "cite": "Diagrammatic.lean:201",
+        "args": ("L", "M", "N", "a", "b", "c", "d"),
+        "premises": lambda s, L, M, N, a, b, c, d: [
+            ("on_line", a, L), ("on_line", a, M), ("on_line", a, N),
+            ("on_line", b, L), ("on_line", c, M), ("on_line", d, N),
+            ("same_side", c, d, L), ("opposing_sides", b, d, M),
+            ("not_on_line", d, M), ("neq", b, a)],
+        "make": lambda s, L, M, N, a, b, c, d: [
+            (None, [("same_side", b, c, N)])],
+    },
 }
 
 
@@ -1766,6 +1856,8 @@ def _entail_check(s, i, rule, q):
         ok = la_entails_gt(s.la, *a)
     elif kind == "pos_len":
         ok = s.la.entails({len_atom(*a): 1}, 0, ">")
+    elif kind == "rt_ang":
+        ok = s.la.entails(lin((ang_atom(*a), 1), (RT, -1)), 0, "=")
     else:
         ok = False
     if not ok:
@@ -1797,6 +1889,14 @@ def _fact_holds(s, fact):
         return ("sum_ang",) + tuple(fact[1:]) in s.facts
     if k == "_rt_ang":
         return ("right_ang",) + tuple(fact[1:]) in s.facts
+    if k == "_sum_rt_ang":
+        # ∠(u:v:x) + ∠(x:v:w) = 2∟ — an LA query, not a stored fact
+        u, v, x, w = fact[1:5]
+        try:
+            return s.la.entails(lin((ang_atom(u, v, x), 1),
+                                    (ang_atom(x, v, w), 1), (RT, -2)), 0, "=")
+        except FMTooLarge:
+            return False  # undecided is not entailed
     return fact in s.facts
 
 
@@ -2078,26 +2178,112 @@ def _by_contra(s, i, entry):
             "conclusions": conclusions}
 
 
+# ---------------------------------------------------------------------------
+# by_cases: case split; every branch must ENTAIL each conclusion
+# ---------------------------------------------------------------------------
+
+
+class ByCasesFailure(Exception):
+    def __init__(self, entry, branch, witness):
+        super().__init__(
+            f"by_cases branch {branch} failed: {witness}")
+        self.entry, self.branch, self.witness = entry, branch, witness
+
+
+def _conclude(s, c, why, witnesses):
+    """Add a by_cases conclusion to the state. Metric tuples ("_eq_len",
+    "_eq_ang", "_rt_ang", "_sum_rt_ang") add their row plus the fact form;
+    anything else is a plain diagram fact."""
+    if c[0] == "_eq_len":
+        eq_len(s.la, *c[1:])
+        s.add(("eq_len", *c[1:]), why, witnesses)
+    elif c[0] == "_eq_ang":
+        eq_ang(s.la, *c[1:])
+        s.add(("eq_ang", *c[1:]), why, witnesses)
+    elif c[0] == "_rt_ang":
+        s.la.add(lin((ang_atom(*c[1:4]), 1), (RT, -1)), 0, "=")
+        s.add(("right_ang", *c[1:4]), why, witnesses)
+    elif c[0] == "_sum_rt_ang":
+        u, v, x, w = c[1:5]
+        s.la.add(lin((ang_atom(u, v, x), 1), (ang_atom(x, v, w), 1),
+                     (RT, -2)), 0, "=")
+        s.add(("sum_rt_ang", *c[1:5]), why, witnesses)
+    else:
+        s.add(c, why, witnesses)
+
+
+def _by_cases(s, i, entry):
+    """entry = ("by_cases", branches, conclusions).
+    branches: list of (assumption-facts, steps). Each branch runs on a copy
+    of the current state plus its assumptions and must ENTAIL every
+    conclusion (checked with _fact_holds: relational facts present in the
+    closed branch state, metric facts entailed by its arithmetic). Unlike
+    by_contra a branch does NOT prove anything by reaching a contradiction:
+    a contradictory branch would entail everything vacuously, so it is
+    reported as a failure. Classical exhaustiveness of the branch
+    assumptions is the caller's responsibility (documented at each use
+    site, as for by_contra). The outer state is unchanged unless every
+    branch entails every conclusion; then the conclusions are added to the
+    OUTER state (metric fact tuples add their row too)."""
+    _, branches, conclusions = entry
+    witnesses = []
+    for facts, steps in branches:
+        sub = s.copy()
+        for f in facts:
+            _assume_metric_or_fact(sub, f, "by_cases assumption")
+        close(sub)  # assumptions must be closed before the steps run
+        try:
+            run_steps(sub, steps, i + 1)
+        except MissingPremise as mp:
+            # A stuck branch cannot claim the conclusions: report it as a
+            # failed by_cases, naming the missing premise.
+            raise ByCasesFailure(entry, facts, ("stuck", mp.premise)) from mp
+        contra, w = contradictory(sub)
+        if contra:
+            raise ByCasesFailure(
+                entry, facts,
+                ("contradictory", w,
+                 "a contradictory branch would entail everything vacuously"))
+        for c in conclusions:
+            if not _fact_holds(sub, c):
+                raise ByCasesFailure(entry, facts, ("not-entailed", c))
+        witnesses.append((facts, ["entailed: " + repr(c) for c in conclusions]))
+    for c in conclusions:
+        _conclude(s, c, "by_cases", witnesses)
+    close(s)  # conclusions (e.g. metric rows) must reach the closure rules
+    return {"step": i, "rule": "by_cases",
+            "branches": len(branches), "witnesses": witnesses,
+            "conclusions": conclusions}
+
+
 def run_steps(s, steps, i0=1):
-    """Driver loop shared by replay() and by_contra branches. Steps are
-    (rule, args, bindings) or ("by_contra", branches, conclusions)."""
+    """Driver loop shared by replay(), by_contra and by_cases branches.
+    Steps are (rule, args, bindings), ("by_contra", branches, conclusions),
+    or ("by_cases", branches, conclusions)."""
     rep = []
     for i, st in enumerate(steps, i0):
         if st[0] == "by_contra":
             rep.append(_by_contra(s, i, st))
+        elif st[0] == "by_cases":
+            rep.append(_by_cases(s, i, st))
         else:
             rep.append(apply_step(s, i, st[0], st[1], st[2]))
     return rep
 
 
-def replay(hyps, steps, verify):
+def replay(hyps, steps, verify, exclude_rules=None):
     """Driver. hyps: list of (fact, why) hypotheses (already destructed, as
     euclid_intros would leave them); steps: list of (rule, args, bindings);
     verify: list of facts/queries the conclusion must satisfy (each is either a
-    diagram fact tuple or ("_eq_len", x, y, u, v) metric query).
+    diagram fact tuple or a metric query such as ("_eq_len", x, y, u, v)).
+    exclude_rules: optional set of FORWARD_RULES names to disable for this
+    replay (threaded through close() on this state and every by_contra /
+    by_cases copy of it); default None keeps the full rule set.
     Returns (state, report). Raises MissingPremise on the first stuck step,
     AssertionError if a final query fails."""
     s = State()
+    if exclude_rules:
+        s.exclude_rules = frozenset(exclude_rules)
     for fact, why in hyps:
         _assume_metric_or_fact(s, fact, why)  # metric hyps also add their row
     close(s)
@@ -2114,6 +2300,11 @@ def replay(hyps, steps, verify):
             assert la_entails_eq_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_rt_ang":
             assert s.la.entails(lin((ang_atom(*q[1:4]), 1), (RT, -1)),
+                                0, "="), f"conclusion not entailed: {q}"
+        elif q[0] == "_sum_rt_ang":
+            u, v, x, w = q[1:5]
+            assert s.la.entails(lin((ang_atom(u, v, x), 1),
+                                    (ang_atom(x, v, w), 1), (RT, -2)),
                                 0, "="), f"conclusion not entailed: {q}"
         else:
             assert s.has(q), f"conclusion fact missing: {q}"
@@ -2561,6 +2752,102 @@ PROP12_STEPS_DATA = [
 ]
 
 
+# Book I.13 (Book/Prop13.lean:6): angles on a straight line.
+# theorem proposition_13 : AB ≠ CD ∧ distinctPointsOnLine a b AB ∧
+#   distinctPointsOnLine c d CD ∧ between d b c → ∠ c:b:a + ∠ a:b:d = ∟ + ∟
+#
+# This replay is run with the closure rule "straight_angle [SMT-bridge]"
+# EXCLUDED (replay's exclude_rules): that rule is I.13 itself (between u v w,
+# x off the line ⇒ ∠u:v:x + ∠x:v:w = 2∟), so closing with it would prove the
+# goal with no steps. The proof here follows Lean's shape (by_cases on
+# ∠c:b:a = ∠a:b:d; in the ≠ case erect the perpendicular be by I.11' and let
+# the angle arithmetic close the goal) rather than taking the equality as an
+# SMT fact.
+PROP13_HYPS_DATA = [
+    # AB ≠ CD in BOTH directions: the engine's neq_line is directed (rules
+    # match the stated order; two_lines_meet_once reads CD ≠ AB below).
+    (("neq_line", "AB", "CD"), "h"),
+    (("neq_line", "CD", "AB"), "h"),
+    (("dpl", "a", "b", "AB"), "h"),   # distinctPointsOnLine a b AB
+    (("dpl", "c", "d", "CD"), "h"),   # distinctPointsOnLine c d CD
+    (("between", "d", "b", "c"), "h"),
+]
+# The goal row, shared as the conclusions of both by_cases levels:
+# ∠c:b:a + ∠a:b:d = 2∟ (checked per branch by LA entailment, then added).
+PROP13_GOAL = ("_sum_rt_ang", "c", "b", "a", "d")
+
+# Branch 2 of Lean's split (∠c:b:a ≠ ∠a:b:d): erect the perpendicular.
+# proposition_11' d c b a CD as e: same_side e a CD ∧ ∠d:b:e = ∟
+# (Prop11.lean:24 with (a,b,c,x,AB) := (d,c,b,a,CD)); line_from_points b e
+# as BE. Then a second by_cases on where a lies relative to BE.
+# EXHAUSTIVENESS of that inner split (caller's responsibility, as for
+# by_contra): the outer branch's hypothesis is ∠c:b:a ≠ ∠a:b:d. If a were
+# ON BE, then AB = BE (two lines through a ≠ b), and BE ⊥ CD at b makes
+# both angles right — contradicting the hypothesis. So a is off BE, and
+# then a is on c's side or on d's side of BE (System E trichotomy; c and d
+# are on opposite sides of BE since between d b c with b on BE, pasch_3).
+# The engine has no angle-DISEQUALITY fact, so the outer branch-2
+# assumption list is empty and the hypothesis is carried by this comment.
+def _prop13_branch(side, other):
+    # side: the point whose side of BE a is on ("c" or "d"); other: the
+    # opposite endpoint of CD. Geometry (drawn for side="c"): e same side of
+    # CD as a with ∠d:b:e = ∟; ray ba inside ∠c:b:e, and ray be inside
+    # ∠a:b:d. Steps:
+    #   1. pasch_3_opposing: between d b c, b on BE, c, d off BE (derived:
+    #      two_lines_meet_once at b from BE ≠ CD) ⇒ opposing_sides d c BE.
+    #   2. opposing_same_side_trans with same_side a c BE (branch
+    #      assumption) ⇒ opposing_sides d a BE.
+    #   3. triple_incidence_2 at b over (CD, BE, AB) ⇒ same_side d e AB.
+    #      This is the fact Lean's SMT produces silently; System E reaches
+    #      it only through the two negation-mediated steps above.
+    #   4. sum_angles_onlyif: ∠c:b:e = ∠c:b:a + ∠a:b:e (splitter a).
+    #   5. perpendicular_onlyif on between d b c: ∠d:b:e = ∟ ⇒ ∠e:b:c = ∟.
+    #   6. sum_angles_onlyif: ∠a:b:d = ∠a:b:e + ∠e:b:d (splitter e; its
+    #      side premises are same_side a e CD (I.11') and same_side d e AB
+    #      (step 3)).
+    # LA closes ∠c:b:a + ∠a:b:d = 2∟ from those rows and ∠d:b:e = ∟.
+    # (side="d" is the mirror image: roles of c and d swapped, using
+    # between c b d from between_symm closure.)
+    return ([("same_side", "a", side, "BE")], [
+        # neq b c / neq b d / neq c d are cited from the between (its parts,
+        # Diagrammatic.lean:45-46); the engine's closure does not derive
+        # neqs from between, and two_lines_meet_once needs them to put c, d
+        # off BE.
+        ("between_symm_parts", (other, "b", side), {}),
+        ("between_symm_parts", (side, "b", other), {}),
+        ("pasch_3_opposing", (other, "b", side, "BE"), {}),
+        ("opposing_same_side_trans", (other, side, "a", "BE"), {}),
+        ("triple_incidence_2", ("CD", "BE", "AB", "b", other, "e", "a"), {}),
+        ("sum_angles_onlyif", ("b", side, "e", "a", "CD", "BE"), {}),
+        # ∠d:b:e = ∟ is the right angle I.11' constructs (in BOTH branches);
+        # perpendicular_onlyif moves it across b: ∠e:b:c = ∟.
+        ("perpendicular_onlyif", ("d", "c", "b", "e", "CD"), {}),
+        ("sum_angles_onlyif", ("b", "a", other, "e", "AB", "CD"), {}),
+    ])
+
+
+PROP13_STEPS_DATA = [
+    ("by_cases", [
+        # branch 1: ∠c:b:a = ∠a:b:d (Lean's first by_cases branch:
+        # euclid_finish). perpendicular_if (Transfer.lean:102) with
+        # between c b d (between_symm of the hypothesis) makes each angle
+        # right; LA adds them to 2∟.
+        ([("eq_ang", "c", "b", "a", "a", "b", "d")], [
+            ("perpendicular_if", ("c", "d", "b", "a", "CD"), {}),
+        ]),
+        # branch 2: ∠c:b:a ≠ ∠a:b:d — see the exhaustiveness comment above.
+        ([], [
+            ("proposition_11'", ("d", "c", "b", "a", "CD"), {"f": "e"}),
+            ("line_from_points", ("b", "e"), {"L": "BE"}),
+            ("by_cases", [
+                _prop13_branch("c", "d"),
+                _prop13_branch("d", "c"),
+            ], [PROP13_GOAL]),
+        ]),
+    ], [PROP13_GOAL]),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -2659,6 +2946,12 @@ def main():
             s, rep = replay(PROP12_HYPS_DATA, PROP12_STEPS_DATA,
                             [("_rt_ang", "e", "h", "c"),
                              ("on_line", "h", "AB")])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "13":
+            t0 = time.time()
+            s, rep = replay(PROP13_HYPS_DATA, PROP13_STEPS_DATA,
+                            [PROP13_GOAL],
+                            exclude_rules={"straight_angle [SMT-bridge]"})
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
