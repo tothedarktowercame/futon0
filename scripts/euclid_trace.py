@@ -35,6 +35,85 @@ TRACES_DIR = os.path.join(ROOT, "holes", "excursions", "E-euclid-tutor-data",
 EPS = 1e-9
 
 
+def _norm_lean(text):
+    """Inside of an euclid_apply parenthetical, whitespace-collapsed and
+    with the (c─b) length decoration reduced to its point names, so
+    'point_between_points_shorter_than AB c a (c─b)' compares equal to
+    the engine args (AB, c, a, c, b)."""
+    inner = text.split("euclid_apply", 1)[1]
+    inner = inner.split(")", 1)[0].lstrip("(")
+    for ch in ("(", ")", "─"):
+        inner = inner.replace(ch, " ")
+    return " ".join(inner.split())
+
+
+# Book I.11: the engine renames Lean's points (a b c d e f -> u v w g e f)
+# to dodge base-name captures in apply_step (see PROP11_STEPS_DATA). The
+# viewer shows Lean's names, so the trace is built in engine names and
+# remapped at the end; the map is stated in the JSON.
+PROP11_NAME_MAP = {"u": "a", "v": "b", "w": "c", "g": "d"}
+
+
+def lean_lines_for_named(prop, steps, name_map):
+    """Signature matching for props whose Lean proof does not name the
+    engine's steps one-to-one (I.10's engine proof has bridge and
+    by_contra steps Lean does not cite; I.11 renames points). Each step is
+    matched to the first unconsumed euclid_apply line whose normalized
+    argument list equals the step's (mapped) rule + args. Steps with no
+    Lean line get None — the trace says so instead of inventing a line.
+    euclid_assert lines are not used here (I.10/I.11 assert nothing)."""
+    fname = os.path.join(LEAN_DIR, "Book", "Prop%02d.lean" % prop)
+    lines = lean_apply_lines(fname)
+    texts = [_norm_lean(t) for _, t in lines]
+    used = [False] * len(lines)
+    rel = os.path.join("Book", "Prop%02d.lean" % prop)
+    res = []
+    for st in steps:
+        if st[0] == "by_contra":
+            res.append(None)
+            continue
+        args = [name_map.get(str(x), str(x)) for x in st[1]]
+        sig = " ".join([st[0]] + args)
+        hit = next((k for k, t in enumerate(texts)
+                    if not used[k] and (t == sig or t.startswith(sig + " "))),
+                   None)
+        if hit is None:
+            res.append(None)
+        else:
+            used[hit] = True
+            res.append((rel, lines[hit][0]))
+    # second pass (review, claude-9): a step whose rule Lean cites with
+    # different arguments (I.11's perpendicular_if: engine a b c f, Lean
+    # d e c f) takes the unused Lean line of the same rule, if it lies
+    # between its neighbours' lines; marked as a variant citation
+    for i, st in enumerate(steps):
+        if res[i] is not None or st[0] == "by_contra":
+            continue
+        lo = max([r[1] for r in res[:i] if r and r[1]] or [0])
+        hi = min([r[1] for r in res[i + 1:] if r and r[1]] or [10 ** 9])
+        hit = next((k for k, t in enumerate(texts)
+                    if not used[k] and t.split(" ", 1)[0] == st[0]
+                    and lo < lines[k][0] < hi), None)
+        if hit is not None:
+            used[hit] = True
+            res[i] = (rel, lines[hit][0], "variant")
+    return res
+
+
+def _remap_names(obj, name_map):
+    """Deep-rename exact tokens under a name map (dicts' keys and values,
+    lists' items). Rule names and jsx recipes never collide with the
+    single-letter point names being mapped."""
+    if isinstance(obj, dict):
+        return {name_map.get(k, k): _remap_names(v, name_map)
+                for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_remap_names(x, name_map) for x in obj]
+    if isinstance(obj, str):
+        return name_map.get(obj, obj)
+    return obj
+
+
 # ---------------------------------------------------------------------------
 # engine step -> euclid_apply line in Book/PropNN.lean
 # ---------------------------------------------------------------------------
@@ -215,6 +294,14 @@ FREE = {
     # past b) separates from both b and d on the fitted board (review,
     # claude-9: f sat almost on b and d was at the board edge).
     5: {"a": (0.0, 1.2), "b": (-0.7, 0.0), "c": (0.7, 0.0)},
+    # I.10: symmetric base so the bisector/CD is the y-axis and d lands
+    # exactly on the midpoint of a-b (verify10 checks |a-d| = |d-b| and
+    # between a d b).
+    10: {"a": (-1.0, 0.0), "b": (1.0, 0.0)},
+    # I.11: u-v with w strictly between; g/e are placed by the rules at
+    # |w-g| = |w-e| = |w-v|/2, f is the equilateral apex on g-e (verify11
+    # checks angle u-w-f is a right angle).
+    11: {"u": (-1.0, 0.0), "v": (1.0, 0.0), "w": (0.0, 0.0)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -230,6 +317,10 @@ def hyps_and_steps(prop):
         return list(eng.PROP4_HYPS_DATA), list(eng.PROP4_STEPS_DATA)
     if prop == 5:
         return list(eng.PROP5_HYPS_DATA), list(eng.PROP5_STEPS_DATA)
+    if prop == 10:
+        return list(eng.PROP10_HYPS_DATA), list(eng.PROP10_STEPS_DATA)
+    if prop == 11:
+        return list(eng.PROP11_HYPS_DATA), list(eng.PROP11_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -282,6 +373,19 @@ def objects_from_hyps(prop):
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
                               ("AC", ("a", "c")))]
+    if prop == 10:
+        # c (the equilateral apex) is CONSTRUCTED by step 1, not a
+        # hypothesis; the SMT-sourced non-collinearity is an assumption
+        # about that later point, so the initial picture is just a-b-AB
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b")] + [
+                {"name": "AB", "kind": "line", "jsx": {"type": "line",
+                  "p": ["a", "b"]}, "def_step": 0, "hyp": True}]
+    if prop == 11:
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("u", "v", "w")] + [
+                {"name": "AB", "kind": "line", "jsx": {"type": "line",
+                  "p": ["u", "v"]}, "def_step": 0, "hyp": True}]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -348,12 +452,13 @@ dragging)" % (a, b)
                         "def_step": None})
         return why
     if rule == "proposition_1":
-        # equilateral: d is the intersection of circle(a,b) and circle(b,a);
-        # both candidates satisfy the step's metric facts, so the pick is
-        # arbitrary and recorded as such. Drawn with JSXGraph intersections
-        # of two auxiliary circles, so dragging a/b keeps |ad|=|ab|=|bd|.
+        # equilateral: the new point is the intersection of circle(a,b) and
+        # circle(b,a); both candidates satisfy the step's metric facts, so
+        # the pick is arbitrary and recorded as such. Drawn with JSXGraph
+        # intersections of two auxiliary circles, so dragging the base
+        # points keeps the triangle equilateral.
         (a, b, AB), d = args, bindings["d"]
-        aux1, aux2 = CIRC_AUX[d]
+        aux1, aux2 = CIRC_AUX.get(d) or ("aux_%s_a" % d, "aux_%s_b" % d)
         cands = circle_circle(xy[a], _norm(_sub(xy[b], xy[a])),
                               xy[b], _norm(_sub(xy[a], xy[b])))
         pick, why = choose(cands, added, d, dict(xy))
@@ -442,8 +547,48 @@ dragging)" % (a, b)
                         "jsx": {"type": "point"}, "def_step": None})
         return ("cut |%s-%s| off segment %s-%s from %s; sample direction "
                 "along the segment" % (c0, c1, a, b, a))
+    if rule == "proposition_9'":
+        # angle bisector at c of the triangle a-b: the new point sits on
+        # the bisector ray. Between the vertex and the far side at 0.6 of
+        # the distance to the base midpoint (any interior point of the ray
+        # satisfies the step's same_side / eq_ang facts; no fact fixes the
+        # distance — it is a free parameter of the existential step).
+        (c, a, b, AC, BC), f = args, bindings["f"]
+        mid = _mul(_add(xy[a], xy[b]), 0.5)
+        vec = _sub(mid, xy[c])
+        pick = _add(xy[c], _mul(_unit(vec), 0.6 * _norm(vec)))
+        xy[f] = pick
+        objects.append({"name": f, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: sample distance " 
+                "0.6 |c-mid(ab)| along the bisector ray (no fact decides "
+                "the distance)")
+    if rule == "intersection_lines":
+        # (L1, L2) -> point on both: numeric line-line intersection of the
+        # two drawn lines (the engine asserts they meet; step 13 of I.10
+        # derives intersects_ll first)
+        (L1, L2), name = args, bindings["a"]
+        p1, p2 = _line_objects(objects, L1)
+        q1, q2 = _line_objects(objects, L2)
+        xy[name] = _line_line(xy[p1], xy[p2], xy[q1], xy[q2])
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return "intersection of the drawn lines %s and %s" % (L1, L2)
+    if rule == "by_contra":
+        # no drawing: refuted branches are not drawn, only noted
+        branches, _concl = args, bindings
+        parts = []
+        for facts, bsteps in branches:
+            rules = [s[0] for s in bsteps]
+            parts.append("case split: assume %s — refuted by %s"
+                         % (list(facts), rules or
+                            ["contradiction in the store"]))
+        return "; ".join(parts) + " (refuted branches are not drawn)"
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
-                "proposition_4", "sum_angles_onlyif"):
+                "proposition_4", "sum_angles_onlyif",
+                "between_symm_parts", "pasch_4", "angle_pair_on_line",
+                "proposition_8", "proposition_7", "perpendicular_if",
+                "intersection_lines_opposing"):
         # forward-closure / cited steps: no new objects, no coordinates
         return ("forward-closure step (no new objects): %s only adds facts "
                 "to the engine state" % rule)
@@ -452,6 +597,23 @@ dragging)" % (a, b)
 
 # auxiliary circle names for the proposition_1 sub-construction inside I.2
 CIRC_AUX = {"d": ("aux_da", "aux_db")}
+
+
+def _line_line(p1, p2, q1, q2):
+    """Intersection of line p1-p2 with line q1-q2 (numeric)."""
+    d1, d2 = _sub(p2, p1), _sub(q2, q1)
+    det = d1[0] * d2[1] - d1[1] * d2[0]
+    if abs(det) < EPS:
+        raise AssertionError("parallel lines")
+    t = ((q1[0] - p1[0]) * d2[1] - (q1[1] - p1[1]) * d2[0]) / det
+    return _add(p1, _mul(d1, t))
+
+
+def _line_objects(objects, L):
+    o = next(o for o in objects
+             if o["name"] == L and o["kind"] == "line"
+             and o.get("jsx", {}).get("p"))
+    return o["jsx"]["p"]
 
 
 def _ang(xy, p, q, r):
@@ -521,6 +683,38 @@ def metric_facts_hold(trace_steps, xy):
     return out
 
 
+def verify10(xy):
+    """I.10: d is the midpoint of a-b — between a d b and |a-d| = |d-b|."""
+    return [
+        ("I.10: between a d b",
+         abs(_norm(_sub(xy["d"], xy["a"])) + _norm(_sub(xy["b"], xy["d"]))
+             - _norm(_sub(xy["b"], xy["a"]))) < EPS),
+        ("I.10: |a-d| = |d-b|",
+         abs(_norm(_sub(xy["d"], xy["a"]))
+             - _norm(_sub(xy["b"], xy["d"]))) < EPS),
+        ("I.10: equilateral apex |a-c| = |a-b|",
+         abs(_norm(_sub(xy["c"], xy["a"]))
+             - _norm(_sub(xy["b"], xy["a"]))) < EPS),
+    ]
+
+
+def verify11(xy):
+    """I.11 (labels in Lean's names; engine u v w g = Lean a b c d): the
+    angle a-c-f is right, |c-d| = |c-e|, and f is off AB (its distance to
+    the line a-b, not merely to c: review, claude-9)."""
+    u, v, f = xy["u"], xy["v"], xy["f"]
+    dvec = _sub(v, u)
+    off = abs(dvec[0] * (f[1] - u[1]) - dvec[1] * (f[0] - u[0])) / _norm(dvec)
+    return [
+        ("I.11: |c-d| = |c-e|",
+         abs(_norm(_sub(xy["g"], xy["w"]))
+             - _norm(_sub(xy["e"], xy["w"]))) < EPS),
+        ("I.11: angle a-c-f is right",
+         abs(_ang(xy, "u", "w", "f") - math.pi / 2) < EPS),
+        ("I.11: f off AB (distance to line a-b > 0)", off > EPS),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -534,6 +728,10 @@ def verify(prop, xy):
         return verify4(xy)
     if prop == 5:
         return verify5(xy)
+    if prop == 10:
+        return verify10(xy)
+    if prop == 11:
+        return verify11(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -558,30 +756,59 @@ def build_trace(prop):
         s.la.add({eng.len_atom("a", "b"): 1,
                   eng.len_atom("c0", "c1"): -1}, 0, ">")
     eng.close(s)
-    reports = [eng.apply_step(s, i, r, a, b)
-               for i, (r, a, b) in enumerate(steps, 1)]
+    if prop in (10, 11):
+        # replay() also drives the by_contra steps and asserts the Book
+        # conclusion (same queries the engine's own main() uses)
+        queries = {10: [("between", "a", "d", "b"),
+                        ("_eq_len", "a", "d", "d", "b")],
+                   11: [("not_on_line", "f", "AB"),
+                        ("_rt_ang", "u", "w", "f")]}[prop]
+        _s, reports_all = eng.replay(hyps, steps, queries)
+        reports = reports_all[:-1]  # drop the {"final": ...} entry
+    else:
+        reports = [eng.apply_step(s, i, r, a, b)
+                   for i, (r, a, b) in enumerate(steps, 1)]
 
-    lean = lean_lines_for(prop, [r for r, _, _ in steps])
+    name_map = PROP11_NAME_MAP if prop == 11 else {}
+    lean = (lean_lines_for_named(prop, steps, name_map)
+            if prop in (10, 11)
+            else lean_lines_for(prop, [r for r, _, _ in steps]))
 
     objects = objects_from_hyps(prop)
     xy = {k: v for k, v in FREE[prop].items()}
     derived_free_points(prop, xy)
     trace_steps = []
-    for i, ((rule, args, bindings), rep, (lf, ll)) in enumerate(
+    for i, ((rule, args, bindings), rep, loc) in enumerate(
             zip(steps, reports, lean), 1):
-        why = place_step(prop, rule, args, bindings, rep["added"], xy,
-                         objects)
+        # by_contra reports have no added/premises keys (branches ran on
+        # scratch states); nothing was added to the outer state's facts
+        added = rep.get("added", [])
+        premises = rep.get("premises", [])
+        why = place_step(prop, rule, args, bindings, added, xy, objects)
         for o in objects:
             if o["def_step"] is None:
                 o["def_step"] = i
+        if loc is None:
+            lean_entry = {"file": "Book/Prop%02d.lean" % prop, "line": None}
+            lean_note = ("engine-only step (%s): no euclid_apply line in "
+                         "the Lean proof cites it; Lean leaves this to "
+                         "euclid_finish / SMT"
+                         % ("case split" if rule == "by_contra" else rule))
+        else:
+            lean_entry = {"file": loc[0], "line": loc[1]}
+            lean_note = (("Lean cites %s with different arguments; the "
+                          "engine's citation is an equivalent variant" % rule)
+                         if len(loc) > 2 else None)
         entry = {
             "n": i, "rule": rule, "args": list(args),
             "bindings": bindings,
-            "facts_added": [list(map(str, f)) for f in rep["added"]],
-            "premises": [list(map(str, f)) for f in rep["premises"]],
-            "lean": {"file": lf, "line": ll},
+            "facts_added": [list(map(str, f)) for f in added],
+            "premises": [list(map(str, f)) for f in premises],
+            "lean": lean_entry,
             "placement_decision": why,
         }
+        if lean_note:
+            entry["lean_note"] = lean_note
         if rule == "superposition":
             # viewer hint: both triangles highlighted as a colour pair and
             # the correspondence shown in the fact panel
@@ -595,12 +822,18 @@ def build_trace(prop):
                  for k, v in xy.items()}
     checks = verify(prop, xy)
     assert all(ok for _, ok in checks), checks
+    if prop == 11:
+        # the viewer shows Lean's names; the whole trace is remapped and
+        # the engine->Lean map is stated in the JSON
+        objects = _remap_names(objects, PROP11_NAME_MAP)
+        trace_steps = _remap_names(trace_steps, PROP11_NAME_MAP)
+        placement = _remap_names(placement, PROP11_NAME_MAP)
 
     lean_file = os.path.join(LEAN_DIR, "Book", "Prop%02d.lean" % prop)
     with open(lean_file) as fh:
         lean_text = fh.read().splitlines()
 
-    return {
+    out = {
         "prop": prop,
         "title": "Elements I.%d (LeanEuclid Book/Prop%02d.lean)" % (prop,
                                                                     prop),
@@ -611,6 +844,11 @@ def build_trace(prop):
         "lean_file": "Book/Prop%02d.lean" % prop,
         "lean_text": lean_text,
     }
+    if prop == 11:
+        out["name_map"] = dict(PROP11_NAME_MAP)
+        out["name_map_note"] = ("engine points renamed for Lean display: "
+                                "engine u v w g = Lean a b c d")
+    return out
 
 
 def main():

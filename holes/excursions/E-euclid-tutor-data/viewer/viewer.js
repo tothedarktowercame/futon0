@@ -11,7 +11,7 @@ const prop = params.get("prop") || "1";
 const review = params.get("review");
 const traceUrl = review
   ? "traces/review-" + review + ".json"
-  : "traces/prop0" + prop + ".json";
+  : "traces/prop" + String(prop).padStart(2, "0") + ".json";
 document.getElementById("prop-select").value =
   review ? "review-" + review : prop;
 

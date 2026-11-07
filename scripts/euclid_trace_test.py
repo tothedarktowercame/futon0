@@ -283,3 +283,91 @@ def test_step_facts_hold_in_every_trace_and_swaps_are_caught():
         x = dict(xy)
         x[a], x[b] = x[b], x[a]
         assert not all(ok for _, ok in tr.metric_facts_hold(t5["steps"], x)), (a, b)
+
+
+# -- I.10 / I.11 (zai-9 traces; review additions, claude-9) -------------------
+
+TR10, TR11 = load(10), load(11)
+INV11 = {v: k for k, v in TR11["name_map"].items()}
+
+
+def _xy(t, inv=None):
+    inv = inv or {}
+    return {inv.get(k, k): tuple(v) for k, v in t["placement"].items() if v}
+
+
+def test_prop10_11_rebuild_matches_disk():
+    for prop, t in ((10, TR10), (11, TR11)):
+        rebuilt = tr.build_trace(prop)
+        assert rebuilt["placement"] == t["placement"]
+        assert json.loads(json.dumps(rebuilt["steps"])) == t["steps"]
+
+
+def test_prop10_11_lean_lines_name_the_rule_and_cover_the_proof():
+    """Every linked line names the step's rule, links are distinct and in
+    order, and every euclid_apply line of the Lean proof is linked by some
+    step (Lean's proof is a subsequence of the engine's)."""
+    for t in (TR10, TR11):
+        path = os.path.join(LEAN_DIR, t["lean_file"])
+        lines = open(path).read().splitlines()
+        linked = [s["lean"]["line"] for s in t["steps"] if s["lean"]["line"]]
+        assert linked == sorted(linked) and len(set(linked)) == len(linked)
+        for s in t["steps"]:
+            if s["lean"]["line"]:
+                assert s["rule"] in lines[s["lean"]["line"] - 1], s
+            else:
+                assert "engine-only" in s["lean_note"], s
+        applies = [i + 1 for i, l in enumerate(lines)
+                   if "euclid_apply" in l and i + 1 < len(lines)
+                   and i + 1 <= next(j for j, x in enumerate(lines)
+                                     if "use " in x) + 1]
+        assert set(applies) == set(linked), (t["prop"], applies, linked)
+
+
+def test_prop11_shows_lean_names_only():
+    names = {o["name"] for o in TR11["objects"]}
+    assert not names & {"u", "v", "w", "g"}, names
+    assert {"a", "b", "c", "d", "e", "f"} <= names
+    for s in TR11["steps"]:
+        assert not set(map(str, s["args"])) & {"u", "v", "w", "g"}, s
+    p = next(s for s in TR11["steps"] if s["rule"] == "proposition_1")
+    assert p["args"][:2] == ["d", "e"] and p["bindings"] == {"d": "f"}
+
+
+def test_by_contra_steps_draw_nothing():
+    n = [s["n"] for s in TR10["steps"] if s["rule"] == "by_contra"]
+    assert n, "I.10 has case-split steps"
+    assert not [o for o in TR10["objects"] if o["def_step"] in n]
+    for s in TR10["steps"]:
+        if s["rule"] == "by_contra":
+            assert s["facts_added"] == [] and s["lean"]["line"] is None
+
+
+def test_prop10_11_step_facts_hold():
+    for t, inv in ((TR10, None), (TR11, INV11)):
+        res = tr.metric_facts_hold(tr._remap_names(t["steps"], inv or {}),
+                                   _xy(t, inv))
+        assert res and all(ok for _, ok in res), \
+            (t["prop"], [f for f, ok in res if not ok])
+
+
+def test_bad_case_prop10_d_off_the_midpoint_fails():
+    xy = _xy(TR10)
+    assert all(ok for _, ok in tr.verify10(xy))
+    for moved in ((0.1, 0.0), (0.0, 0.1)):  # along AB; off AB
+        x = dict(xy)
+        x["d"] = (xy["d"][0] + moved[0], xy["d"][1] + moved[1])
+        assert not all(ok for _, ok in tr.verify10(x)), moved
+
+
+def test_bad_case_prop11_f_tilted_or_on_ab_fails():
+    xy = _xy(TR11, INV11)
+    assert all(ok for _, ok in tr.verify11(xy))
+    x = dict(xy)
+    x["f"] = (xy["f"][0] + 0.2, xy["f"][1])
+    assert not all(ok for _, ok in tr.verify11(x))
+    # f on AB but away from c: the old check (|f-c| > 0) passed this
+    x = dict(xy)
+    x["f"] = (0.7, 0.0)
+    off = [ok for d, ok in tr.verify11(x) if "off AB" in d]
+    assert off == [False]

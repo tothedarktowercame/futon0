@@ -1,0 +1,1090 @@
+{
+ "prop": 10,
+ "title": "Elements I.10 (LeanEuclid Book/Prop10.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "aux_c_a",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "a",
+    "through": "b"
+   },
+   "def_step": 1,
+   "aux": true
+  },
+  {
+   "name": "aux_c_b",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "b",
+    "through": "a"
+   },
+   "def_step": 1,
+   "aux": true
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "aux_c_a",
+     "aux_c_b"
+    ],
+    "idx": 0
+   },
+   "def_step": 1
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "a"
+    ]
+   },
+   "def_step": 2
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "b"
+    ]
+   },
+   "def_step": 3
+  },
+  {
+   "name": "d'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 4
+  },
+  {
+   "name": "CD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "d'"
+    ]
+   },
+   "def_step": 6
+  },
+  {
+   "name": "AD'",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "d'"
+    ]
+   },
+   "def_step": 9
+  },
+  {
+   "name": "BD'",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "d'"
+    ]
+   },
+   "def_step": 10
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 14
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "proposition_1",
+   "args": [
+    "a",
+    "b",
+    "AB"
+   ],
+   "bindings": {
+    "d": "c"
+   },
+   "facts_added": [
+    [
+     "eq_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ],
+    [
+     "eq_len",
+     "c",
+     "b",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 12
+   },
+   "placement_decision": "no distinguishing fact recorded (arbitrary pick; both candidates satisfy every fact of the step)"
+  },
+  {
+   "n": 2,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "a"
+   ],
+   "bindings": {
+    "L": "AC"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 13
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 3,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "b"
+   ],
+   "bindings": {
+    "L": "BC"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 14
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_9'",
+   "args": [
+    "c",
+    "a",
+    "b",
+    "AC",
+    "BC"
+   ],
+   "bindings": {
+    "f": "d'"
+   },
+   "facts_added": [
+    [
+     "same_side",
+     "d'",
+     "b",
+     "AC"
+    ],
+    [
+     "same_side",
+     "d'",
+     "a",
+     "BC"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "d'",
+     "b",
+     "c",
+     "d'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "dpl",
+     "c",
+     "b",
+     "BC"
+    ],
+    [
+     "neq_line",
+     "AC",
+     "BC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 15
+   },
+   "placement_decision": "free parameter of the existential step: sample distance 0.6 |c-mid(ab)| along the bisector ray (no fact decides the distance)"
+  },
+  {
+   "n": 5,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "peq",
+       "c",
+       "d'"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "neq",
+     "c",
+     "d'"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('peq', 'c', \"d'\")] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 6,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "d'"
+   ],
+   "bindings": {
+    "L": "CD"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d'",
+     "CD"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "d'"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 16
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 7,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "peq",
+       "a",
+       "d'"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "neq",
+     "a",
+     "d'"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('peq', 'a', \"d'\")] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 8,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "peq",
+       "b",
+       "d'"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "neq",
+     "b",
+     "d'"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('peq', 'b', \"d'\")] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 9,
+   "rule": "line_from_points",
+   "args": [
+    "a",
+    "d'"
+   ],
+   "bindings": {
+    "L": "AD'"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "a",
+     "AD'"
+    ],
+    [
+     "on_line",
+     "d'",
+     "AD'"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "a",
+     "d'"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "line drawn through existing points",
+   "lean_note": "engine-only step (line_from_points): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 10,
+   "rule": "line_from_points",
+   "args": [
+    "b",
+    "d'"
+   ],
+   "bindings": {
+    "L": "BD'"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b",
+     "BD'"
+    ],
+    [
+     "on_line",
+     "d'",
+     "BD'"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "d'"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "line drawn through existing points",
+   "lean_note": "engine-only step (line_from_points): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 11,
+   "rule": "proposition_4",
+   "args": [
+    "c",
+    "a",
+    "d'",
+    "c",
+    "b",
+    "d'",
+    "AC",
+    "AD'",
+    "CD",
+    "BC",
+    "BD'",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "a",
+     "d'",
+     "b",
+     "d'"
+    ],
+    [
+     "eq_ang",
+     "c",
+     "a",
+     "d'",
+     "c",
+     "b",
+     "d'"
+    ],
+    [
+     "eq_ang",
+     "c",
+     "d'",
+     "a",
+     "c",
+     "d'",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AD'"
+    ],
+    [
+     "on_line",
+     "d'",
+     "AD'"
+    ],
+    [
+     "on_line",
+     "d'",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "dpl",
+     "c",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD'"
+    ],
+    [
+     "on_line",
+     "d'",
+     "BD'"
+    ],
+    [
+     "on_line",
+     "d'",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', 'a', 'c', 'b')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', \"d'\", 'c', \"d'\")"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('a', 'c', \"d'\", 'b', 'c', \"d'\")"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_4 only adds facts to the engine state",
+   "lean_note": "engine-only step (proposition_4): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 12,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "same_side",
+       "a",
+       "b",
+       "CD"
+      ]
+     ],
+     [
+      [
+       "proposition_7",
+       [
+        "c",
+        "d'",
+        "a",
+        "b",
+        "CD",
+        "AC",
+        "AD'",
+        "BC",
+        "BD'"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "opposing_sides",
+     "a",
+     "b",
+     "CD"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('same_side', 'a', 'b', 'CD')] \u2014 refuted by ['proposition_7'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 13,
+   "rule": "intersection_lines_opposing",
+   "args": [
+    "a",
+    "b",
+    "CD",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "intersects_ll",
+     "CD",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "a",
+     "b",
+     "CD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): intersection_lines_opposing only adds facts to the engine state",
+   "lean_note": "engine-only step (intersection_lines_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 14,
+   "rule": "intersection_lines",
+   "args": [
+    "CD",
+    "AB"
+   ],
+   "bindings": {
+    "a": "d"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "intersects_ll",
+     "CD",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 17
+   },
+   "placement_decision": "intersection of the drawn lines CD and AB"
+  },
+  {
+   "n": 15,
+   "rule": "pasch_4",
+   "args": [
+    "a",
+    "d",
+    "b",
+    "CD",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "CD",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "neq",
+     "a",
+     "d"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "opposing_sides",
+     "a",
+     "b",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): pasch_4 only adds facts to the engine state",
+   "lean_note": "engine-only step (pasch_4): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 16,
+   "rule": "angle_pair_on_line",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "d'",
+    "d",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "d",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d'",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "neq",
+     "c",
+     "d'"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "CD"
+    ],
+    [
+     "not_on_line",
+     "b",
+     "CD"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('a', 'c', \"d'\", 'b', 'c', \"d'\")"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): angle_pair_on_line only adds facts to the engine state",
+   "lean_note": "engine-only step (angle_pair_on_line): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 17,
+   "rule": "proposition_4",
+   "args": [
+    "c",
+    "a",
+    "d",
+    "c",
+    "b",
+    "d",
+    "AC",
+    "AB",
+    "CD",
+    "BC",
+    "AB",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "a",
+     "d",
+     "b",
+     "d"
+    ],
+    [
+     "eq_ang",
+     "c",
+     "a",
+     "d",
+     "c",
+     "b",
+     "d"
+    ],
+    [
+     "eq_ang",
+     "c",
+     "d",
+     "a",
+     "c",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "dpl",
+     "c",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', 'a', 'c', 'b')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', 'd', 'c', 'd')"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('a', 'c', 'd', 'b', 'c', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop10.lean",
+    "line": 18
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_4 only adds facts to the engine state"
+  }
+ ],
+ "placement": {
+  "a": [
+   -1.0,
+   0.0
+  ],
+  "b": [
+   1.0,
+   0.0
+  ],
+  "c": [
+   0.0,
+   1.7320508075688772
+  ],
+  "AC": null,
+  "BC": null,
+  "d'": [
+   0.0,
+   0.6928203230275509
+  ],
+  "CD": null,
+  "AD'": null,
+  "BD'": null,
+  "d": [
+   0.0,
+   0.0
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.10: between a d b",
+   "ok": true
+  },
+  {
+   "check": "I.10: |a-d| = |d-b|",
+   "ok": true
+  },
+  {
+   "check": "I.10: equilateral apex |a-c| = |a-b|",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop10.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop01",
+  "import Book.Prop04",
+  "import Book.Prop09",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_10 : \u2200 (a b : Point) (AB : Line), distinctPointsOnLine a b AB \u2192",
+  "  \u2203 d : Point, (between a d b) \u2227 (|(a\u2500d)| = |(d\u2500b)|) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (proposition_1 a b AB) as c",
+  "  euclid_apply (line_from_points c a) as AC",
+  "  euclid_apply (line_from_points c b ) as BC",
+  "  euclid_apply (proposition_9' c a b AC BC) as d'",
+  "  euclid_apply (line_from_points c d') as CD",
+  "  euclid_apply (intersection_lines CD AB) as d",
+  "  euclid_apply (proposition_4 c a d c b d AC AB CD BC AB CD)",
+  "  use d",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}
