@@ -27,6 +27,18 @@ function fitBBox() {
   const pts = Object.values(trace ? trace.placement : {})
     .filter(p => Array.isArray(p));
   if (!pts.length) return [-2.5, 3.5, 7, -3];
+  // circles: include the full circle (centre +/- radius) so arcs are not
+  // clipped (I.1's circles ran off the board once it fitted the points)
+  const P = trace.placement;
+  for (const o of trace.objects) {
+    const j = o.jsx;
+    if (j.type !== "circle") continue;
+    const ends = j.radius_from || [j.center, j.through];
+    const c = P[j.center], p1 = P[ends[0]], p2 = P[ends[1]];
+    if (!Array.isArray(c) || !Array.isArray(p1) || !Array.isArray(p2)) continue;
+    const r = Math.hypot(p1[0] - p2[0], p1[1] - p2[1]);
+    pts.push([c[0] - r, c[1] - r], [c[0] + r, c[1] + r]);
+  }
   let xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
   let x0 = Math.min(...xs), x1 = Math.max(...xs);
   let y0 = Math.min(...ys), y1 = Math.max(...ys);
@@ -186,7 +198,22 @@ function mk(o, aux) {
     }
     case "intersection": {
       const parents = j.parents.map(p => built[p]);
-      const el = board.create("intersection", parents.concat([j.idx]),
+      // JSXGraph's index order is not the trace's: in I.1 idx 0 is the
+      // lower intersection while the trace places c above AB. When the
+      // trace records a placement, take whichever index lies nearer it.
+      const P = trace.placement[o.name];
+      let idx = j.idx;
+      if (Array.isArray(P)) {
+        const d = k => {
+          const t = board.create("intersection", parents.concat([k]),
+                                 {visible: false, withLabel: false});
+          const r = Math.hypot(t.X() - P[0], t.Y() - P[1]);
+          board.removeObject(t);
+          return isNaN(r) ? Infinity : r;
+        };
+        idx = d(0) <= d(1) ? 0 : 1;
+      }
+      const el = board.create("intersection", parents.concat([idx]),
                               Object.assign(base, {fillColor: "#3366aa"}));
       return el;
     }
