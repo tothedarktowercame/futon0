@@ -165,7 +165,14 @@ function renderReview() {
 
 function draw() {
   if (board) JXG.JSXGraph.freeBoard(board);
-  document.getElementById("jxgbox").innerHTML = "";
+  const jx = document.getElementById("jxgbox");
+  jx.innerHTML = "";
+  // review (claude-9): resizeContainer leaves an inline width/height on the
+  // box, so a later draw re-read the OLD size after the info bar grew; size
+  // it from the wrapper (inset 6px each side) every time
+  const wrapEl = document.getElementById("board-wrap");
+  jx.style.width = (wrapEl.clientWidth - 12) + "px";
+  jx.style.height = (wrapEl.clientHeight - 12) + "px";
   board = JXG.JSXGraph.initBoard("jxgbox", {
     boundingbox: [-2.5, 3.5, 7, -3], axis: false,
     showCopyright: false, showNavigation: true,
@@ -469,6 +476,8 @@ function setStep(n) {
     tr.classList.toggle("done", s.n <= cur);
     tr.classList.toggle("future", s.n > cur);
   }
-  draw();
+  // review (claude-9): fill the info bar and envelope BEFORE drawing, so
+  // the board measures the space left after they have grown
   showInfo(currentStep());
+  draw();
 }

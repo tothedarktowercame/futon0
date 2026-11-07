@@ -48,12 +48,12 @@
               max-height: 150px; overflow: auto; }
   .env-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
   .env-name { width: 170px; font-family: monospace; white-space: nowrap; }
-  .env-bar-track { flex: 1; background: #f0f0f0; height: 12px;
+  .env-bar-track { flex: 1; min-width: 0; background: #f0f0f0; height: 12px;
                    border-radius: 6px; position: relative; }
-  .env-bar { height: 12px; border-radius: 6px; background: #3366aa; }
+  .env-bar { display: block; height: 12px; border-radius: 6px; background: #3366aa; }
   .env-row.below .env-bar { background: #bbb; }
   .env-row.below .env-name { color: #999; text-decoration: line-through; }
-  .env-val { width: 190px; text-align: right; font-family: monospace;
+  .env-val { flex: none; width: 250px; text-align: right; font-family: monospace;
              white-space: nowrap; color: #444; }
 </style>
 </head>
