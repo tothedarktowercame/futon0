@@ -351,6 +351,13 @@ FREE = {
     # b-c beyond c. Interior angles ~65.6 deg at b and ~45.0 deg at c
     # sum to ~110.6 deg, under 180 by a wide visible margin.
     17: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
+    # I.18 (the greater side subtends the greater angle): the same
+    # scalene triangle as I.16/I.17; here |a-c| = ~1.556 > |a-b| =
+    # ~1.208 is the hypothesis. d is CONSTRUCTED by step 1
+    # (proposition_3 a c a b AC AB): on segment a-c with |a-d| = |a-b|.
+    # angle a:b:c ~= 65.6 deg vs angle b:c:a = 45.0 deg — a ~0.36 rad
+    # visible margin.
+    18: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -383,6 +390,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP16B_HYPS_DATA), list(eng.PROP16B_STEPS_DATA)
     if prop == 17:
         return list(eng.PROP17_HYPS_DATA), list(eng.PROP17_STEPS_DATA)
+    if prop == 18:
+        return list(eng.PROP18_HYPS_DATA), list(eng.PROP18_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -494,6 +503,16 @@ def objects_from_hyps(prop):
     if prop == 17:
         # the triangle a-b-c and the three hypothesis lines; d is
         # CONSTRUCTED by step 1 (extend_point BC b c), not a hypothesis
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")))]
+    if prop == 18:
+        # the triangle a-b-c and the three hypothesis lines; d is
+        # CONSTRUCTED by step 1 (proposition_3 a c a b AC AB), not a
+        # hypothesis
         return [{"name": n, "kind": "point", "jsx": {"type": "point"},
                  "def_step": 0} for n in ("a", "b", "c")] + [
                 {"name": L, "kind": "line", "jsx": {"type": "line",
@@ -813,7 +832,8 @@ dragging)" % (a, b)
                 "between %s %s %s, not the distance)"
                 % (q, name, p, q, p, q, p, q, name))
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
-                "proposition_4", "proposition_13", "proposition_15",
+                "proposition_4", "proposition_5'", "proposition_13",
+                "proposition_15",
                 "proposition_16", "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
@@ -824,6 +844,28 @@ dragging)" % (a, b)
                 "intersection_lines_opposing",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
+        if rule == "proposition_16" and prop == 18:
+            return ("cited step (proposition_16 b c d a BC AC BD, the "
+                    "exterior-angle theorem in triangle b-c-d): the "
+                    "exterior angle a:d:b (= b:d:a as canonical atoms, a "
+                    "on the extension of c-d past d) exceeds the interior "
+                    "angle d:c:b — angle a:d:b > angle d:c:b")
+        if rule == "proposition_5'" and prop == 18:
+            return ("cited step (proposition_5' a b d AB BD AC, the "
+                    "isosceles theorem): |a-b| = |a-d| (step 1 cut "
+                    "|a-d| = |a-b| off a-c), so angle a:b:d = "
+                    "angle a:d:b")
+        if rule == "sum_angles_onlyif" and prop == 18:
+            return ("engine-only step in this direction "
+                    "(sum_angles_onlyif b a c d AB BC, Transfer.lean:90): "
+                    "the OTHER direction of the axiom Lean cites at "
+                    "Prop18.lean:17 (sum_angles_if) — the engine DERIVES "
+                    "the angle-sum row angle a:b:c = angle a:b:d + "
+                    "angle d:b:c that Lean's SMT discharges silently; "
+                    "same axiom, opposite direction. The conclusion's "
+                    "why: angle a:b:c > angle a:b:d (the part, angle "
+                    "d:b:c > 0) = angle a:d:b (I.5') > angle d:c:b "
+                    "(I.16) = angle b:c:a (d between a and c) — the goal")
         if rule == "proposition_16" and prop == 17:
             return ("cited step (proposition_16 a b c d AB BC AC, the "
                     "exterior-angle theorem): the exterior angle a:c:d "
@@ -1207,6 +1249,40 @@ def verify17(xy):
     ]
 
 
+def verify18(xy):
+    """I.18 (in a triangle, the greater side subtends the greater angle):
+    the drawn facts are the hypotheses (the scalene triangle a-b-c with
+    |a-c| > |a-b|) plus the construction (d on segment a-c with
+    |a-d| = |a-b|, between a d c). The conclusions numerically: the I.5'
+    step angle a:b:d = angle a:d:b; the I.16 step angle a:d:b >
+    angle d:c:b (exterior angle of triangle b-c-d); the angle-split
+    angle a:b:c = angle a:b:d + angle d:b:c (d inside the angle at b);
+    and the goal angle a:b:c > angle b:c:a with a visible margin."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+    abc = _ang(xy, "a", "b", "c")
+    abd = _ang(xy, "a", "b", "d")
+    dbc = _ang(xy, "d", "b", "c")
+    adb = _ang(xy, "a", "d", "b")
+    dcb = _ang(xy, "d", "c", "b")
+    bca = _ang(xy, "b", "c", "a")
+    return [
+        ("I.18: between a d c (d on segment a-c)",
+         abs(dist("a", "d") + dist("d", "c") - dist("a", "c")) < EPS),
+        ("I.18: |a-d| = |a-b| (proposition_3 cut)",
+         abs(dist("a", "d") - dist("a", "b")) < EPS),
+        ("I.18: hypothesis |a-c| > |a-b| with a visible margin",
+         dist("a", "c") > dist("a", "b") + 0.2),
+        ("I.18: I.5' step angle a:b:d = angle a:d:b",
+         abs(abd - adb) < EPS),
+        ("I.18: I.16 step angle a:d:b > angle d:c:b (exterior angle of "
+         "triangle b-c-d)", adb > dcb + EPS),
+        ("I.18: angle a:b:c = angle a:b:d + angle d:b:c (d inside the "
+         "angle at b)", abs(abc - (abd + dbc)) < EPS),
+        ("I.18: GOAL angle a:b:c > angle b:c:a, with a visible margin "
+         "(at least 0.15 rad)", abc > bca + 0.15),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1236,6 +1312,8 @@ def verify(prop, xy):
         return verify16(xy)
     if prop == 17:
         return verify17(xy)
+    if prop == 18:
+        return verify18(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1456,7 +1534,7 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12, 15, 16, 17):
+        if prop in (10, 11, 12, 15, 16, 17, 18):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
@@ -1466,7 +1544,8 @@ def build_trace(prop):
             # conjunction as LA entailment queries. I.16's is PROP16B_GOAL
             # verbatim: the second conjunct angle a:c:d > angle b:a:c.
             # I.17's is PROP17_GOAL verbatim: angle a:b:c + angle b:c:a
-            # < two right angles.
+            # < two right angles. I.18's is PROP18_GOAL verbatim:
+            # angle a:b:c > angle b:c:a.
             queries = {10: [("between", "a", "d", "b"),
                             ("_eq_len", "a", "d", "d", "b")],
                        11: [("not_on_line", "f", "AB"),
@@ -1475,7 +1554,8 @@ def build_trace(prop):
                             ("on_line", "h", "AB")],
                        15: list(eng.PROP15_GOAL),
                        16: list(eng.PROP16B_GOAL),
-                       17: list(eng.PROP17_GOAL)}[prop]
+                       17: list(eng.PROP17_GOAL),
+                       18: list(eng.PROP18_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:
@@ -1494,8 +1574,23 @@ def build_trace(prop):
                                         after=after16)
         else:
             lean = (lean_lines_for_named(prop, steps, name_map)
-                    if prop in (10, 11, 12, 15, 17)
+                    if prop in (10, 11, 12, 15, 17, 18)
                     else lean_lines_for(prop, [r for r, _, _ in steps]))
+        if prop == 18:
+            # the engine's last step is sum_angles_onlyif where Lean
+            # cites sum_angles_if (Prop18.lean:17) — the OTHER direction
+            # of the same Transfer.lean axiom. Link the step to that
+            # line, marked so the note says why and the reader is not
+            # misled.
+            fname = os.path.join(LEAN_DIR, "Book", "Prop18.lean")
+            with open(fname) as fh:
+                ln18 = next(i for i, l in enumerate(fh, 1)
+                            if "sum_angles_if" in l)
+            lean = [((os.path.join("Book", "Prop18.lean"), ln18,
+                      "other-direction")
+                     if st[0] == "sum_angles_onlyif" and loc is None
+                     else loc)
+                    for st, loc in zip(steps, lean)]
         rows = [(r, a, b, rep, loc, None)
                 for (r, a, b), rep, loc in zip(steps, reports, lean)]
 
@@ -1527,9 +1622,18 @@ def build_trace(prop):
                             else rule))
         else:
             lean_entry = {"file": loc[0], "line": loc[1]}
-            lean_note = (("Lean cites %s with different arguments; the "
-                          "engine's citation is an equivalent variant" % rule)
-                         if len(loc) > 2 else None)
+            if len(loc) > 2 and loc[2] == "other-direction":
+                lean_note = ("Lean's line %d cites sum_angles_if — the "
+                             "OTHER direction of the same axiom "
+                             "(Transfer.lean); the engine uses "
+                             "sum_angles_onlyif on the same arguments to "
+                             "derive the angle-sum row Lean's SMT "
+                             "discharges silently" % loc[1])
+            else:
+                lean_note = (("Lean cites %s with different arguments; the "
+                              "engine's citation is an equivalent variant"
+                              % rule)
+                             if len(loc) > 2 else None)
         entry = {
             "n": i, "rule": rule, "args": list(args),
             "bindings": bindings,

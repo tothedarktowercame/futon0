@@ -1,0 +1,489 @@
+{
+ "prop": 18,
+ "title": "Elements I.18 (LeanEuclid Book/Prop18.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "BD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "d"
+    ]
+   },
+   "def_step": 2
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "proposition_3",
+   "args": [
+    "a",
+    "c",
+    "a",
+    "b",
+    "AC",
+    "AB"
+   ],
+   "bindings": {
+    "q": "d"
+   },
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "d",
+     "c"
+    ],
+    [
+     "eq_len",
+     "a",
+     "d",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('a', 'c', 'a', 'b')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop18.lean",
+    "line": 13
+   },
+   "placement_decision": "cut |a-b| off segment a-c from a; sample direction along the segment"
+  },
+  {
+   "n": 2,
+   "rule": "line_from_points",
+   "args": [
+    "b",
+    "d"
+   ],
+   "bindings": {
+    "L": "BD"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop18.lean",
+    "line": 14
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 3,
+   "rule": "proposition_16",
+   "args": [
+    "b",
+    "c",
+    "d",
+    "a",
+    "BC",
+    "AC",
+    "BD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_ang",
+     "b",
+     "d",
+     "a",
+     "d",
+     "c",
+     "b"
+    ],
+    [
+     "gt_ang",
+     "b",
+     "d",
+     "a",
+     "c",
+     "b",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "d",
+     "AC"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "between",
+     "c",
+     "d",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop18.lean",
+    "line": 15
+   },
+   "placement_decision": "cited step (proposition_16 b c d a BC AC BD, the exterior-angle theorem in triangle b-c-d): the exterior angle a:d:b (= b:d:a as canonical atoms, a on the extension of c-d past d) exceeds the interior angle d:c:b \u2014 angle a:d:b > angle d:c:b"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_5'",
+   "args": [
+    "a",
+    "b",
+    "d",
+    "AB",
+    "BD",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "a",
+     "b",
+     "d",
+     "a",
+     "d",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ],
+    [
+     "on_line",
+     "d",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'b', 'a', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop18.lean",
+    "line": 16
+   },
+   "placement_decision": "cited step (proposition_5' a b d AB BD AC, the isosceles theorem): |a-b| = |a-d| (step 1 cut |a-d| = |a-b| off a-c), so angle a:b:d = angle a:d:b"
+  },
+  {
+   "n": 5,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "a",
+    "c",
+    "d",
+    "AB",
+    "BC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "neq",
+     "b",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "neq_line",
+     "AB",
+     "BC"
+    ],
+    [
+     "same_side",
+     "a",
+     "d",
+     "BC"
+    ],
+    [
+     "same_side",
+     "c",
+     "d",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop18.lean",
+    "line": 17
+   },
+   "placement_decision": "engine-only step in this direction (sum_angles_onlyif b a c d AB BC, Transfer.lean:90): the OTHER direction of the axiom Lean cites at Prop18.lean:17 (sum_angles_if) \u2014 the engine DERIVES the angle-sum row angle a:b:c = angle a:b:d + angle d:b:c that Lean's SMT discharges silently; same axiom, opposite direction. The conclusion's why: angle a:b:c > angle a:b:d (the part, angle d:b:c > 0) = angle a:d:b (I.5') > angle d:c:b (I.16) = angle b:c:a (d between a and c) \u2014 the goal",
+   "lean_note": "Lean's line 17 cites sum_angles_if \u2014 the OTHER direction of the same axiom (Transfer.lean); the engine uses sum_angles_onlyif on the same arguments to derive the angle-sum row Lean's SMT discharges silently"
+  }
+ ],
+ "placement": {
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.6,
+   0.0
+  ],
+  "a": [
+   0.5,
+   1.1
+  ],
+  "d": [
+   1.3544003745317532,
+   0.24559962546824687
+  ],
+  "BD": null
+ },
+ "verification": [
+  {
+   "check": "I.18: between a d c (d on segment a-c)",
+   "ok": true
+  },
+  {
+   "check": "I.18: |a-d| = |a-b| (proposition_3 cut)",
+   "ok": true
+  },
+  {
+   "check": "I.18: hypothesis |a-c| > |a-b| with a visible margin",
+   "ok": true
+  },
+  {
+   "check": "I.18: I.5' step angle a:b:d = angle a:d:b",
+   "ok": true
+  },
+  {
+   "check": "I.18: I.16 step angle a:d:b > angle d:c:b (exterior angle of triangle b-c-d)",
+   "ok": true
+  },
+  {
+   "check": "I.18: angle a:b:c = angle a:b:d + angle d:b:c (d inside the angle at b)",
+   "ok": true
+  },
+  {
+   "check": "I.18: GOAL angle a:b:c > angle b:c:a, with a visible margin (at least 0.15 rad)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop18.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop03",
+  "import Book.Prop05",
+  "import Book.Prop16",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_18 : \u2200 (a b c : Point) (AB BC AC : Line),",
+  "  formTriangle a b c AB BC AC \u2227 (|(a\u2500c)| > |(a\u2500b)|) \u2192",
+  "  (\u2220 a:b:c > \u2220 b:c:a) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (proposition_3 a c a b AC AB) as d",
+  "  euclid_apply (line_from_points b d) as BD",
+  "  euclid_apply (proposition_16 b c d a BC AC BD)",
+  "  euclid_apply (proposition_5' a b d AB BD AC)",
+  "  euclid_apply (sum_angles_if b a c d AB BC)",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

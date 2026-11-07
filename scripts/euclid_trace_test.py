@@ -938,3 +938,78 @@ def test_bad_case_prop17_goal_margin_fails():
     x["a"] = (0.8, 10.0)
     fails = [d for d, ok in tr.verify17(x) if not ok]
     assert any("GOAL" in d for d in fails), fails
+
+
+# -- I.18 (kimi-2, packet P-euclid-viewer-I18) -------------------------------
+# I.18 (the greater side subtends the greater angle) is FLAT: 5 steps, no
+# case splits. d is CONSTRUCTED by step 1 (proposition_3 a c a b AC AB:
+# on segment a-c with |a-d| = |a-b|), not a hypothesis. Steps 1-4 are
+# Prop18.lean's euclid_apply lines 13-16; the engine's last step is
+# sum_angles_onlyif where Lean cites sum_angles_if (line 17) — the other
+# direction of the same Transfer.lean axiom — linked to line 17 with an
+# "other-direction" lean_note so the reader is not misled.
+
+TR18 = load(18)
+
+
+def test_prop18_rebuild_matches_disk():
+    rebuilt = tr.build_trace(18)
+    assert rebuilt["placement"] == TR18["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR18["steps"]
+
+
+def test_prop18_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR18["lean_file"])
+    lines = open(path).read().splitlines()
+    for s in TR18["steps"]:
+        ln = s["lean"]["line"]
+        assert ln is not None, s  # all five steps linked
+        if s["rule"] == "sum_angles_onlyif":
+            # the other direction of the axiom Lean cites here
+            assert "sum_angles_if" in lines[ln - 1], s
+            assert "OTHER direction" in s["lean_note"], s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    # exactly the five euclid_apply lines are linked, in order
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    linked = [s["lean"]["line"] for s in TR18["steps"]]
+    assert linked == sorted(linked) and set(linked) == applies, linked
+
+
+def test_prop18_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR18["placement"].items() if v}
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR18["steps"], xy)
+           if not ok]
+    assert not bad, bad
+    assert all(ok for _, ok in tr.verify18(xy))
+    # the last step's info bar states the conclusion's why
+    last = TR18["steps"][-1]
+    assert last["rule"] == "sum_angles_onlyif"
+    assert "angle a:b:c > angle a:b:d" in last["placement_decision"]
+    assert "= angle b:c:a" in last["placement_decision"]
+
+
+def _xy18():
+    return {k: tuple(v) for k, v in TR18["placement"].items() if v}
+
+
+def test_bad_case_prop18_d_beyond_c_fails():
+    x = _xy18()
+    assert all(ok for _, ok in tr.verify18(x))
+    # d beyond c on the ray a->c with |a-d| = |a-b|... but |a-b| < |a-c|
+    # here, so place d past c instead: not between a and c
+    ax, ay = x["a"]
+    cx, cy = x["c"]
+    ux, uy = (cx - ax), (cy - ay)
+    n = math.hypot(ux, uy)
+    x["d"] = (ax + 1.3 * ux, ay + 1.3 * uy)  # d beyond c
+    fails = [d for d, ok in tr.verify18(x) if not ok]
+    assert any("between a d c" in d for d in fails), fails
+
+
+def test_bad_case_prop18_shorter_side_fails():
+    x = _xy18()
+    # |a-c| < |a-b|: the hypothesis is violated and the goal flips
+    x["a"] = (1.1, 0.5)  # |a-b| = ~1.21 > |a-c| = ~0.71
+    fails = [d for d, ok in tr.verify18(x) if not ok]
+    assert any("hypothesis |a-c| > |a-b|" in d for d in fails), fails
