@@ -76,7 +76,7 @@ def test_b_picture_false_premise_still_refused():
     assert tc.trust_log == []
 
 
-def test_c_envelope_leaves_only_the_trusting_clone():
+def test_c_envelope_posterior_favours_the_trusting_clone():
     env = ec.standard_envelope()
     tc = cd.TrustingClone("trusting", "I.2")
     env.clones.append(tc)
@@ -87,9 +87,12 @@ def test_c_envelope_leaves_only_the_trusting_clone():
         tc.note_step("I.2", state, step)  # advance the clone's picture
         if i < 3:
             eng.apply_step(state, i, step[0], step[1], step[2])
+    post = ev["posterior"]
+    # only the trusting clone predicted the diagram-trusting step ...
     assert ev["predicted_by"] == ["trusting"], ev
-    assert "full-engine" in ev["ruled_out"], ev
-    assert [c.name for c in env.active] == ["trusting"]
+    # ... and it ends with the highest posterior
+    assert post["trusting"] == max(post.values()), post
+    assert post["trusting"] > post["full-engine"], post
 
 
 def test_d_trusting_predicts_at_least_the_full_engine_on_book_i1():

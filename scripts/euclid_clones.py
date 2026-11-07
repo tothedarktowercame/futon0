@@ -22,6 +22,7 @@ here reads the Book step data — prediction is search-only (tested).
 """
 
 import importlib.util
+import math
 from pathlib import Path
 
 _SCRIPTS = Path(__file__).resolve().parent
@@ -61,17 +62,53 @@ class Clone:
     """The engine minus `removed_rules`, searching to `max_depth`."""
 
     def __init__(self, name, removed_rules=frozenset(), max_depth=3,
-                 node_budget=3000):
+                 node_budget=3000, eps=0.05):
         self.name = name
         self.removed_rules = frozenset(removed_rules)
         self.max_depth = max_depth
         self.node_budget = node_budget
+        self.eps = eps  # slice-3 field: mass a wrong move gets (not a literal)
         self.hits = 0
         self.observations = 0
+        self.loglik = 0.0  # cumulative log-likelihood of the observed steps
 
     def rules(self, prop):
         return [r for r in srch.prop_searches()[prop]["rules"]
                 if r not in self.removed_rules]
+
+    def legal_set(self, prop, state):
+        """Canonical set of moves legal for this clone at `state` (base:
+        euclid_search.legal_moves under the clone's rules)."""
+        return {canon_step(r, a)
+                for r, a in srch.legal_moves(state, self.rules(prop))}
+
+    def legal_count(self, prop, state):
+        """Number of moves legal for this clone at `state`."""
+        return len(self.legal_set(prop, state))
+
+    def probability(self, prop, state, canonical):
+        """Probability this clone assigns to the observed (canonical) step.
+        In its non-empty predicted set P: (1-eps)/|P|. Otherwise
+        eps/(|legal|-|P|) — the clone thought something else was right.
+        Empty P: 1/|legal| if the step is one of the clone's legal moves
+        (it cannot see any path and is guessing uniformly over the moves it
+        could make); if the step is not even in its action space the clone
+        cannot produce it at all and gets eps/|legal| — the same
+        smoothing a miss gets. (Literal 1/|legal| for every step, legal or
+        not, would let a technique-less clone outrank an informed hit —
+        measured on the I.2 fixture, where no-circle_from_points would
+        win with posterior 0.71 while the trusting clone scored 0.06.)"""
+        P = self.predict(prop, state)
+        L = self.legal_count(prop, state)
+        if not P:
+            if not L:
+                return 0.0
+            if canonical in self.legal_set(prop, state):
+                return 1.0 / L
+            return self.eps / L
+        if canonical in P:
+            return (1 - self.eps) / len(P)
+        return self.eps / max(L - len(P), 1)
 
     def _goal(self, prop):
         return srch.prop_searches()[prop]["goal"]
@@ -135,41 +172,74 @@ class Clone:
 
 
 class Envelope:
-    """The set of clones still consistent with the student's play."""
+    """The set of clones still consistent with the student's play.
 
-    def __init__(self, clones):
+    Scoring (slice 3): each clone gives the observed step a probability
+    (see Clone.probability); the envelope keeps a cumulative log-likelihood
+    per clone and a normalised posterior under a uniform prior. A clone is
+    RULED OUT when its posterior falls below `threshold` (recorded, never
+    deleted); if every clone falls below, all are kept and the event says
+    so — silent emptying is not allowed. hits/observations stay as a
+    reported statistic next to the posterior."""
+
+    def __init__(self, clones, threshold=0.01):
         self.clones = list(clones)
         self.active = list(self.clones)
+        self.threshold = threshold
         self.events = []  # one record per observation, never pruned
+
+    def _posterior(self):
+        """Uniform prior over clones, likelihood = exp(cumulative loglik).
+        All-zero likelihood (e.g. eps=0 misses) yields all-zero posteriors;
+        the caller keeps every clone in that case."""
+        ws = [math.exp(c.loglik) if c.loglik != float("-inf") else 0.0
+              for c in self.clones]
+        total = sum(ws)
+        if total <= 0.0:
+            return {c.name: 0.0 for c in self.clones}
+        return {c.name: w / total for c, w in zip(self.clones, ws)}
 
     def observe(self, prop, state, step):
         """Observe the student's `step` = (rule, args[, bindings]) at
-        `state`. Scores every clone, prunes the active set to the clones
-        that predicted it, records the ruled-out ones. If every clone is
-        ruled out, ALL clones stay active and the event says so."""
+        `state`. Scores every clone, updates posteriors, records clones
+        below threshold. If every clone is below threshold (or every
+        likelihood is zero), ALL clones stay active and the event says so."""
         rule, args = step[0], step[1]
         canonical = canon_step(rule, args)
-        predicted, missed = {}, {}
+        probabilities = {}
+        predicted_by, missed_prediction = [], []
         for c in self.clones:
             pred = c.predict(prop, state)
             c.observations += 1
+            p = c.probability(prop, state, canonical)
+            probabilities[c.name] = p
+            c.loglik += math.log(p) if p > 0 else float("-inf")
             if canonical in pred:
                 c.hits += 1
-                predicted[c.name] = sorted(map(str, pred))
+                predicted_by.append(c.name)
             else:
-                missed[c.name] = sorted(map(str, pred))
-        keep = [c for c in self.active if c.name in predicted]
-        no_clone = bool(self.active) and not keep
-        if no_clone:
+                missed_prediction.append(c.name)
+        posterior = self._posterior()
+        below = [c.name for c in self.clones
+                 if posterior[c.name] < self.threshold]
+        keep = [c for c in self.active if c.name not in below]
+        all_below = bool(self.active) and not keep
+        if all_below:
             keep = list(self.active)  # silent emptying is not allowed
         self.active = keep
         self.events.append({
             "prop": prop,
             "step": f"{rule} {tuple(args)}",
-            "predicted_by": sorted(predicted),
-            "ruled_out": sorted(missed),
-            "no_clone_predicted_this_step": no_clone,
+            "probabilities": probabilities,
+            "posterior": posterior,
+            "predicted_by": sorted(predicted_by),
+            "missed_prediction": sorted(missed_prediction),
+            "below_threshold": sorted(below),
+            "no_clone_predicted_this_step": not predicted_by,
+            "all_below_threshold": all_below,
         })
+        # 'ruled_out' kept as an alias for the below-threshold record
+        self.events[-1]["ruled_out"] = sorted(below)
         return self.events[-1]
 
     def accuracy(self):
@@ -178,16 +248,17 @@ class Envelope:
                 for c in self.clones}
 
 
-def standard_envelope():
+def standard_envelope(eps=0.05):
     """The starting envelope for I.1-I.3: the full engine; a student who
     has not got circles; one without intersection_circles; and a student
     who looks only one move ahead."""
     return Envelope([
-        Clone("full-engine"),
-        Clone("no-circle_from_points", removed_rules={"circle_from_points"}),
+        Clone("full-engine", eps=eps),
+        Clone("no-circle_from_points", removed_rules={"circle_from_points"},
+              eps=eps),
         Clone("no-intersection_circles",
-              removed_rules={"intersection_circles"}),
-        Clone("depth-1", max_depth=1),
+              removed_rules={"intersection_circles"}, eps=eps),
+        Clone("depth-1", max_depth=1, eps=eps),
     ])
 
 
@@ -201,7 +272,8 @@ def main():
     for step in rv.fixture_book_i1():
         ev = env.observe("I.1", state, step)
         print(f"  {ev['step']}: predicted_by={ev['predicted_by']} "
-              f"ruled_out={ev['ruled_out']}")
+              f"below_threshold={ev['below_threshold']}")
+        print(f"    posterior={ev['posterior']}")
         trial = srch.clone_state(state)
         eng.apply_step(trial, 1, step[0], step[1], step[2])
         state = trial

@@ -180,6 +180,14 @@ class TrustingClone(ec.Clone):
         self.trust_log = saved_log
         return moves
 
+    def legal_set(self, prop, state):
+        """The trusting clone's legal set IS its predicted set (moves that
+        apply outright or after trusting a picture-true premise)."""
+        return self.predict(prop, state)
+
+    def legal_count(self, prop, state):
+        return len(self.legal_set(prop, state))
+
 
 def main():
     # demo: the I.2 fixture — full engine refuses, trusting clone accepts
