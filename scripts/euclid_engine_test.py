@@ -1409,6 +1409,128 @@ def test_by_contra_conclusion_reaches_closure():
     assert eng.la_entails_eq_ang(s.la, "e", "c'", "b'", "e", "d", "b'")
 
 
+def test_prop23_replay():
+    """I.23 (Prop23.lean:8-32) replays the Lean way: a by_cases on
+    d.onLine CE; the degenerate branch is a nested by_cases on
+    ∠d:c:e = 0 (`use b` via use_witness after angle_self_zero; the ≠0
+    half rendered positively as between d c e, flat_angle_onlyif
+    (Transfer.lean:124) giving ∠d:c:e = ∟+∟ and the witness from
+    extend_point AB b a); the main branch is line_from_points, the three
+    proposition_20 rows, proposition_22', proposition_8, with the
+    SMT-closed premises rendered as the cited off_line_strict_triangle,
+    degenerated_angle_if and angle_ray_eq_zero. The goal is neq f a and
+    the existing _eq_ang query ∠f:a:b = ∠d:c:e, carried out of the
+    by_cases over the eigenvariable f."""
+    s, rep = eng.replay(eng.PROP23_HYPS_DATA, eng.PROP23_STEPS_DATA,
+                        eng.PROP23_GOAL)
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == ["by_cases"]
+    assert rep[0]["branches"] == 2
+    assert s.has(("neq", "f", "a"))
+    assert eng.la_entails_eq_ang(s.la, "f", "a", "b", "d", "c", "e")
+    assert rep[-1]["final"]
+
+
+def test_prop23_hyps_alone_do_not_entail_goal():
+    """The I.23 hypotheses alone entail neither goal conjunct — the
+    construction carries the proof (f does not even exist before it)."""
+    s = eng.State()
+    for f, w in eng.PROP23_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not s.has(("neq", "f", "a"))
+    assert not eng.la_entails_eq_ang(s.la, "f", "a", "b", "d", "c", "e")
+
+
+def _prop23_without_main_step(index):
+    """PROP23_STEPS_DATA with the main branch's step `index` removed."""
+    (kind, branches, concl) = eng.PROP23_STEPS_DATA[0]
+    deg, main = branches
+    main_assume, main_steps = main
+    main2 = (main_assume, [st for i, st in enumerate(main_steps)
+                           if i != index])
+    return [("by_cases", [deg, main2], concl)]
+
+
+def test_prop23_control_dropped_proposition_20():
+    """Each of the three proposition_20 citations feeds exactly one of
+    proposition_22''s gt_sum_len entail premises (arg orders as Lean's):
+    dropping it refuses the replay there — the inner by_cases branch
+    reports the stuck step."""
+    drops = {1: ("c", "d", "c", "e", "e", "d"),   # |cd|+|ce|>|ed|
+             2: ("c", "d", "e", "d", "c", "e"),   # |cd|+|ed|>|ce|
+             3: ("c", "e", "e", "d", "c", "d")}   # |ce|+|ed|>|cd|
+    for index, expected in drops.items():
+        steps = _prop23_without_main_step(index)
+        with pytest.raises(eng.ByCasesFailure) as ei:
+            eng.replay(eng.PROP23_HYPS_DATA, steps, eng.PROP23_GOAL)
+        assert ei.value.branch == [("not_on_line", "d", "CE")]
+        assert ei.value.witness == ("stuck",
+                                    ("entail", "gt_sum_len", expected))
+
+
+def test_prop23_control_degenerate_zero_branch_needs_zero_angle():
+    """Degenerate branch, ∠d:c:e = 0 half: drop angle_self_zero and
+    use_witness's eq_ang entail premise (∠b:a:b = ∠d:c:e) no longer
+    holds — refused there."""
+    (kind, branches, concl) = eng.PROP23_STEPS_DATA[0]
+    (deg_assume, deg_steps), main = branches
+    (ikind, ibranches, iconcl) = deg_steps[0]
+    (zero_assume, zero_steps), flat = ibranches
+    zero2 = (zero_assume, [st for st in zero_steps
+                           if st[0] != "angle_self_zero"])
+    deg2 = (deg_assume, [(ikind, [zero2, flat], iconcl)])
+    steps = [("by_cases", [deg2, main], concl)]
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.replay(eng.PROP23_HYPS_DATA, steps, eng.PROP23_GOAL)
+    assert ei.value.branch == [("_zero_ang", "d", "c", "e")]
+    assert ei.value.witness == (
+        "stuck", ("entail", "eq_ang", ("b", "a", "b", "d", "c", "e")))
+
+
+def test_prop23_control_degenerate_flat_branch_needs_flat_angle():
+    """Degenerate branch, between d c e half: drop flat_angle_onlyif and
+    ∠d:c:e = ∟+∟ is never derived, so the branch cannot entail the
+    _eq_ang conclusion (the extended side still gets ∠b:a:f = ∟+∟)."""
+    (kind, branches, concl) = eng.PROP23_STEPS_DATA[0]
+    (deg_assume, deg_steps), main = branches
+    (ikind, ibranches, iconcl) = deg_steps[0]
+    zero, (flat_assume, flat_steps) = ibranches
+    flat2 = (flat_assume, [st for st in flat_steps
+                           if not (st[0] == "flat_angle_onlyif" and
+                                   st[1] == ("d", "c", "e"))])
+    deg2 = (deg_assume, [(ikind, [zero, flat2], iconcl)])
+    steps = [("by_cases", [deg2, main], concl)]
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.replay(eng.PROP23_HYPS_DATA, steps, eng.PROP23_GOAL)
+    assert ei.value.branch == [("between", "d", "c", "e")]
+    assert ei.value.witness == (
+        "not-entailed", ("_eq_ang", "f", "a", "b", "d", "c", "e"))
+
+
+def test_prop23_use_witness_bad_case():
+    """use_witness's own bad case: the witness rename is refused when the
+    store does NOT already hold the renamed goal — here against the bare
+    hypotheses, where ∠b:a:b = ∠d:c:e is not entailed."""
+    s = eng.State()
+    for f, w in eng.PROP23_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 99, "use_witness",
+                       ("f", "b", "a", "d", "c", "e"), {"f": "f"})
+    assert ei.value.premise == ("entail", "eq_ang",
+                                ("b", "a", "b", "d", "c", "e"))
+
+
+def test_prop23_final_state_not_contradictory():
+    """The by_cases concludes on the OUTER state; it stays consistent
+    (main() asserts store satisfiability; make the fact side explicit)."""
+    s, _ = eng.replay(eng.PROP23_HYPS_DATA, eng.PROP23_STEPS_DATA,
+                      eng.PROP23_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness
+
+
 def test_replay_fact_set_footprints():
     """Speed work on the closure/FM internals must not change what a replay
     derives: (fact count, constraint count) per proposition, verified
@@ -1456,7 +1578,14 @@ def test_replay_fact_set_footprints():
     by_contra citing the new per-use between_trans_out rule,
     Diagrammatic.lean:78 — cited, not closure, so no pinned replay
     derives a new fact). No replay changed; I.22' joins the pin at
-    (624, 434)."""
+    (624, 434).
+    E-kimi-task-402 added the I.23 replay (the by_cases on d.onLine CE
+    with the nested degenerate split, citing the new per-use rules
+    flat_angle_onlyif, degenerated_angle_if, angle_self_zero,
+    angle_ray_eq_zero, off_line_strict_triangle and use_witness — all
+    cited, none in closure). No replay changed; I.23 joins the pin at
+    (33, 9) — all branch work happens on by_cases copies, so the outer
+    state carries only the two conclusions."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
@@ -1465,7 +1594,7 @@ def test_replay_fact_set_footprints():
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
                 "16a": (546, 281), "17": (70, 24), "18": (97, 32),
                 "19": (41, 11), "20": (173, 71), "21": (181, 64),
-                "22": (1172, 906), "22'": (624, 434)}
+                "22": (1172, 906), "22'": (624, 434), "23": (33, 9)}
     got = {}
     old_argv = sys.argv
     try:
