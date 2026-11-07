@@ -349,6 +349,26 @@ def _enrich(s, _depth=0):
                     add.append(("opposing_sides", g[1], p, L))
                 if g[1] == q and not s.has(("opposing_sides", g[2], p, L)):
                     add.append(("opposing_sides", g[2], p, L))
+    # opposing_opposing_same_side (the engine's cited rule of that name):
+    # p opposite q and q opposite r across L => p, r on the same side
+    opp = [f for f in facts if f[0] == "opposing_sides"]
+    for f in opp:
+        for g in opp:
+            if f[3] != g[3]:
+                continue
+            ends = None
+            if f[2] == g[1]:
+                ends = (f[1], g[2])
+            elif f[2] == g[2]:
+                ends = (f[1], g[1])
+            elif f[1] == g[1]:
+                ends = (f[2], g[2])
+            elif f[1] == g[2]:
+                ends = (f[2], g[1])
+            if ends and ends[0] != ends[1]:
+                cand = ("same_side", ends[0], ends[1], f[3])
+                if not s.has(cand) and cand not in add:
+                    add.append(cand)
     for f in add:
         s.add(f, "coverage referee", [])
     rts = [f for f in facts if f[0] == "right_ang"]
@@ -465,9 +485,24 @@ def coverage(s, rule, cases, conclusion, refuted=()):
         and any(c for c in cases)
 
     def member_covered(m):
-        for hyps in cases:
-            if hyps and _holds(_probe(s, hyps), m):
-                return True
+        # A case covers member m when m (with the state) entails EVERY
+        # hypothesis of the case, i.e. the case is no stronger than m.
+        # Review (claude-9): the converse test (case entails m) let a case
+        # carry extra, unentailed assumptions: {between b e d, X} counted
+        # as covering between b e d while refuting only the part where X
+        # holds -- the same diagram trust found in the engine's I.7.
+        # First on a plain-closed probe; then on the referee-enriched one,
+        # unless that is already contradictory (it would entail every
+        # hypothesis vacuously; impossibility is left to the plain-close
+        # probe below, so a refutable-but-unrefuted case still shows as
+        # missing).
+        tp = _probe(s, [m], enrich=False)
+        tm = _probe(s, [m])
+        probes = [tp] + ([] if eng.contradictory(tm)[0] else [tm])
+        for t in probes:
+            for hyps in cases:
+                if hyps and all(_holds(t, h) for h in hyps):
+                    return True
         if eng.contradictory(_probe(s, [m], enrich=False))[0]:
             return True
         if refuted:
@@ -475,8 +510,28 @@ def coverage(s, rule, cases, conclusion, refuted=()):
             for r in refuted:
                 if r and all(_holds(t, f) for f in r):
                     return True
-        if rule == "by_contra" and concl and _holds(_probe(s, concl), m):
-            return True
+        # by_contra: the conclusion side covers m when m entails the
+        # conclusion (same direction as the cases above; review,
+        # claude-9: "conclusion entails m" let a family the state alone
+        # decides -- a on AB -- count as covered)
+        if rule == "by_contra" and concl:
+            for t in probes:
+                if all(_holds(t, c) for c in concl):
+                    return True
+            # the virtual peq_line L M: the engine cannot assume line
+            # equality, so substitute: each conclusion fact on_line x L
+            # (or x M) must follow from x lying on the other line
+            if m[0] == "peq_line":
+                L, M = m[1], m[2]
+
+                def by_subst(c):
+                    if c[0] != "on_line":
+                        return False
+                    other = {L: M, M: L}.get(c[2])
+                    return other is not None and \
+                        s.has(("on_line", c[1], other))
+                if all(by_subst(c) for c in concl):
+                    return True
         return False
 
     matching = [(name, members) for name, members in

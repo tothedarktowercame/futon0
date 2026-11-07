@@ -4,6 +4,7 @@ Run from scripts/: ~/code/futon6/.venv/bin/python -m pytest -q euclid_play_test.
 """
 
 import copy
+import pytest
 import json
 import os
 import signal
@@ -55,7 +56,7 @@ def test_case_props_reach_goal():
     """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (6, 7, 10, 13, 14, 19, 21):
+    for n in (6, 10, 13, 14, 19, 21):
         steps = tr.hyps_and_steps(n)[1]
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
@@ -395,4 +396,32 @@ def test_case_block_with_no_cases_is_refused():
          "open": False})
     r = ep.play(21, nested)
     assert r["moves"][i]["ok"] is False
+    assert r["goal_reached"] is False
+
+
+def test_engine_i7_split_not_covered_until_its_side_facts_are_derived():
+    # Review (claude-9): the engine's I.7 cases assume side facts beyond
+    # the two split facts, and none is entailed (E-kimi-task-420 derives
+    # them). The referee must refuse that split: a case covers a
+    # possibility only if the possibility entails every case hypothesis.
+    # When 420 lands, I.7 goes back into test_case_props_reach_goal and
+    # this test is deleted.
+    steps = tr.hyps_and_steps(7)[1]
+    res = ep.play(7, [_engine_step_to_move(st) for st in steps])
+    if res["goal_reached"]:
+        pytest.skip("I.7's cases no longer carry unentailed assumptions")
+    bad = [m for m in res["moves"] if not m["ok"]]
+    assert bad and bad[0]["error"] == "missing case", bad
+
+
+def test_case_with_extra_assumption_does_not_cover():
+    # Review (claude-9): {between b e d, X} must not count as covering
+    # "between b e d" -- it refutes only the part where X also holds.
+    moves = [_engine_step_to_move(st) for st in tr.hyps_and_steps(21)[1]]
+    i = next(k for k, m in enumerate(moves) if m["rule"] == "by_contra")
+    x = copy.deepcopy(moves)
+    x[i]["branches"][0]["hyps"].append(["opposing_sides", "a", "c", "AB"])
+    r = ep.play(21, x)
+    assert r["moves"][i]["ok"] is False
+    assert r["moves"][i]["error"] == "missing case"
     assert r["goal_reached"] is False
