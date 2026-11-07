@@ -1,0 +1,636 @@
+{
+ "prop": 25,
+ "title": "Elements I.25 (LeanEuclid Book/Prop25.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "EF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "e",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "eq_ang",
+       "b",
+       "a",
+       "c",
+       "e",
+       "d",
+       "f"
+      ]
+     ],
+     [
+      [
+       "proposition_4",
+       [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "AB",
+        "BC",
+        "AC",
+        "DE",
+        "EF",
+        "DF"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "gt_ang",
+       "e",
+       "d",
+       "f",
+       "b",
+       "a",
+       "c"
+      ]
+     ],
+     [
+      [
+       "proposition_24",
+       [
+        "d",
+        "e",
+        "f",
+        "a",
+        "b",
+        "c",
+        "DE",
+        "EF",
+        "DF",
+        "AB",
+        "BC",
+        "AC"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "gt_ang",
+     "b",
+     "a",
+     "c",
+     "e",
+     "d",
+     "f"
+    ]
+   ],
+   "facts_added": [
+    [
+     "gt_ang",
+     "b",
+     "a",
+     "c",
+     "e",
+     "d",
+     "f"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop25.lean",
+    "line": 13
+   },
+   "placement_decision": "under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f); the conclusion (angle b:a:c > angle e:d:f) is what the diagram draws; case split: assume [('eq_ang', 'b', 'a', 'c', 'e', 'd', 'f')] \u2014 refuted by ['proposition_4']; case split: assume [('gt_ang', 'e', 'd', 'f', 'b', 'a', 'c')] \u2014 refuted by ['proposition_24'] (the refuted assumptions are not drawable; the diagram shows the TRUE configuration \u2014 |b-c| > |e-f|, hence angle b:a:c > angle e:d:f)",
+   "case": "under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f); the conclusion (angle b:a:c > angle e:d:f) is what the diagram draws"
+  },
+  {
+   "n": 2,
+   "rule": "by_cases",
+   "args": [
+    [
+     "eq_ang",
+     "b",
+     "a",
+     "c",
+     "e",
+     "d",
+     "f"
+    ],
+    [
+     "gt_ang",
+     "e",
+     "d",
+     "f",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "bindings": [
+    [
+     "eq_ang",
+     "b",
+     "a",
+     "c",
+     "e",
+     "d",
+     "f"
+    ],
+    [
+     "gt_ang",
+     "e",
+     "d",
+     "f",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "facts_added": [
+    [
+     "eq_ang",
+     "b",
+     "a",
+     "c",
+     "e",
+     "d",
+     "f"
+    ],
+    [
+     "gt_ang",
+     "e",
+     "d",
+     "f",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop25.lean",
+    "line": 14
+   },
+   "placement_decision": "Lean's `by_cases \u2220 b:a:c = \u2220 e:d:f` line; under the by_contra's assumption not angle b:a:c > angle e:d:f, trichotomy on the two angles leaves exactly these two branches; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f); case split \u2014 the drawn diagram shows the general case; the other cases are checked by the engine (see the case note on each step), not drawn",
+   "case": "Lean's `by_cases \u2220 b:a:c = \u2220 e:d:f` line; under the by_contra's assumption not angle b:a:c > angle e:d:f, trichotomy on the two angles leaves exactly these two branches; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f)"
+  },
+  {
+   "n": 3,
+   "rule": "proposition_4",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "AB",
+    "BC",
+    "AC",
+    "DE",
+    "EF",
+    "DF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "b",
+     "c",
+     "e",
+     "f"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "b",
+     "c",
+     "d",
+     "e",
+     "f"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "b",
+     "d",
+     "f",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "d",
+     "DF"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'b', 'd', 'e')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'd', 'f')"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('b', 'a', 'c', 'e', 'd', 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop25.lean",
+    "line": 15
+   },
+   "placement_decision": "branch 1 (angle b:a:c = angle e:d:f): refuted \u2014 proposition_4 (SAS) gives |b-c| = |e-f|, contradicting the hypothesis |b-c| > |e-f|; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f); cited step (proposition_4 a b c d e f AB BC AC DE EF DF \u2014 SAS): under the branch assumption angle b:a:c = angle e:d:f, with |a-b| = |d-e| and |a-c| = |d-f| (hypotheses), the triangles congrue \u2014 so |b-c| = |e-f|, contradicting the hypothesis |b-c| > |e-f|",
+   "case": "branch 1 (angle b:a:c = angle e:d:f): refuted \u2014 proposition_4 (SAS) gives |b-c| = |e-f|, contradicting the hypothesis |b-c| > |e-f|; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f)"
+  },
+  {
+   "n": 4,
+   "rule": "proposition_24",
+   "args": [
+    "d",
+    "e",
+    "f",
+    "a",
+    "b",
+    "c",
+    "DE",
+    "EF",
+    "DF",
+    "AB",
+    "BC",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_len",
+     "e",
+     "f",
+     "b",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "d",
+     "DF"
+    ],
+    [
+     "neq",
+     "e",
+     "f"
+    ],
+    [
+     "neq",
+     "d",
+     "f"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "DE"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "neq",
+     "b",
+     "c"
+    ],
+    [
+     "neq",
+     "a",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "AB"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', 'e', 'a', 'b')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', 'f', 'a', 'c')"
+    ],
+    [
+     "entail",
+     "gt_ang",
+     "('e', 'd', 'f', 'b', 'a', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop25.lean",
+    "line": 18
+   },
+   "placement_decision": "branch 2 (angle e:d:f > angle b:a:c): refuted \u2014 proposition_24 (the hinge theorem, I.24, with the triangles swapped) gives |e-f| > |b-c|, contradicting the hypothesis |b-c| > |e-f|; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f); cited step (proposition_24 d e f a b c DE EF DF AB BC AC \u2014 the hinge theorem, I.24, with the two triangles swapped): under the branch assumption angle e:d:f > angle b:a:c, with |d-e| = |a-b| and |d-f| = |a-c|, I.24 gives |e-f| > |b-c|, contradicting the hypothesis |b-c| > |e-f|",
+   "case": "branch 2 (angle e:d:f > angle b:a:c): refuted \u2014 proposition_24 (the hinge theorem, I.24, with the triangles swapped) gives |e-f| > |b-c|, contradicting the hypothesis |b-c| > |e-f|; under an assumption the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (|b-c| > |e-f|, hence angle b:a:c > angle e:d:f)"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.6,
+   0.0
+  ],
+  "c": [
+   0.3105828541230249,
+   1.159110991546882
+  ],
+  "d": [
+   3.0,
+   0.0
+  ],
+  "e": [
+   4.6,
+   0.0
+  ],
+  "f": [
+   3.6882917236212553,
+   0.9829824531467901
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.25: |a-b| = |d-e| (hypothesis, exact)",
+   "ok": true
+  },
+  {
+   "check": "I.25: |a-c| = |d-f| (hypothesis, exact)",
+   "ok": true
+  },
+  {
+   "check": "I.25: |b-c| > |e-f| (hypothesis) with a visible margin (>= 0.15)",
+   "ok": true
+  },
+  {
+   "check": "I.25: genuine triangles (c off AB, f off DE)",
+   "ok": true
+  },
+  {
+   "check": "I.25: the two triangles stand apart (every cross-pair of vertices at least 0.5 apart)",
+   "ok": true
+  },
+  {
+   "check": "I.25: GOAL angle b:a:c > angle e:d:f with a visible margin (>= 5 degrees)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop25.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop04",
+  "import Book.Prop24",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_25 : \u2200 (a b c d e f : Point) (AB BC AC DE EF DF : Line),",
+  "  formTriangle a b c AB BC AC \u2227 formTriangle d e f DE EF DF \u2227",
+  "  (|(a\u2500b)| = |(d\u2500e)|) \u2227 (|(a\u2500c)| = |(d\u2500f)|) \u2227 (|(b\u2500c)| > |(e\u2500f)|) \u2192",
+  "  (\u2220 b:a:c > \u2220 e:d:f) :=",
+  "by",
+  "  euclid_intros",
+  "  by_contra",
+  "  by_cases (\u2220 b:a:c = \u2220 e:d:f)",
+  "  \u00b7 euclid_apply (proposition_4 a b c d e f AB BC AC DE EF DF)",
+  "    euclid_finish",
+  "  \u00b7 euclid_assert (\u2220 b:a:c < \u2220 e:d:f)",
+  "    euclid_apply (proposition_24 d e f a b c DE EF DF AB BC AC)",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

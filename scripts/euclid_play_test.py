@@ -699,3 +699,57 @@ def test_between_split_needs_a_line():
           "open": False}
     ent = ep.play(21, [mv])["moves"][-1]
     assert ent["error"] == "missing case"
+
+
+def test_catalogue_lists_24_and_25():
+    """I.24 and I.25 join the catalogue after 23 (E-kimi-task-424)."""
+    ns = [e["n"] for e in ep.catalogue()]
+    assert ns.index(23) < ns.index(24) < ns.index(25)
+    assert ep.GOALS[24] == list(eng.PROP24_GOAL)
+    assert ep.GOALS[25] == list(eng.PROP25_GOAL)
+
+
+def test_palette_25():
+    """palette(25) contains proposition_24 (citable: I.25's branch 2
+    cites it) and proposition_23'; proposition_25 itself stays out."""
+    pal = ep.palette(25)
+    assert "proposition_24" in pal
+    assert "proposition_23'" in pal
+    assert "proposition_25" not in pal
+
+
+def test_play_24_25_splits_covered_and_drops_refused():
+    """E-kimi-task-424: I.24's closing by_cases (same_side d g EF or
+    not — the P-or-not-P family) and I.25's by_contra (the angle
+    trichotomy family) are covered by the referee; dropping a branch
+    names the missing member."""
+    steps24 = [_engine_step_to_move(st) for st in tr.hyps_and_steps(24)[1]]
+    k = next(j for j, m in enumerate(steps24) if m["rule"] == "by_cases")
+    expect = [[["same_side", "d", "g", "EF"]],
+              [["not_same_side", "d", "g", "EF"]]]
+    for j in range(2):
+        mv = copy.deepcopy(steps24)
+        del mv[k]["branches"][j]
+        res = ep.play(24, mv)
+        ent = res["moves"][k]
+        assert not res["goal_reached"]
+        assert ent["error"] == "missing case", ent
+        assert ent["missing_case"]["missing"] == expect[j], ent
+    # I.24's nested split (g on EF or not) inside branch 2
+    mv = copy.deepcopy(steps24)
+    del mv[k]["branches"][1]["moves"][0]["branches"][1]
+    ent = ep.play(24, mv)["moves"][k]
+    assert ent["error"] == "missing case", ent
+    assert ent["missing_case"]["missing"] == [["not_on_line", "g", "EF"]]
+    # I.25: drop either branch of the by_contra
+    steps25 = [_engine_step_to_move(st) for st in tr.hyps_and_steps(25)[1]]
+    expect25 = [[["eq_ang", "e", "d", "f", "b", "a", "c"]],
+                [["gt_ang", "e", "d", "f", "b", "a", "c"]]]
+    for j in range(2):
+        mv = copy.deepcopy(steps25)
+        del mv[0]["branches"][j]
+        res = ep.play(25, mv)
+        ent = res["moves"][0]
+        assert not res["goal_reached"]
+        assert ent["error"] == "missing case", ent
+        assert ent["missing_case"]["missing"] == expect25[j], ent

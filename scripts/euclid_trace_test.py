@@ -1773,3 +1773,202 @@ def test_bad_case_prop23_wrong_copy_fails():
     xy["f"] = (0.5, 0.3)
     fails = [d for d, ok in tr.verify23(xy) if not ok]
     assert any("GOAL" in d for d in fails), fails
+
+
+# -- I.24/I.25 (kimi-4, packet P-euclid-play-config-I24-I25) -----------------
+# I.24 (the hinge theorem): the two triangles stand apart, |a-b| = |d-e|
+# and |a-c| = |d-f| exact, angle at a = 72 degrees visibly greater than
+# at d = 48 degrees. The drawn case of the closing by_cases is branch 1
+# (d sameSide g EF — Euclid's own); the second case ("Omitted by
+# Euclid", Prop24.lean:40-59) is handled by the engine on state copies,
+# not drawn. I.25 (the converse) is a by_contra with two cited-lemma
+# branches, drawn in the TRUE configuration, as I.19.
+
+TR24, TR25 = load(24), load(25)
+
+
+def test_prop24_rebuild_matches_disk():
+    rebuilt = tr.build_trace(24)
+    assert rebuilt["placement"] == TR24["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR24["steps"]
+
+
+def test_prop25_rebuild_matches_disk():
+    rebuilt = tr.build_trace(25)
+    assert rebuilt["placement"] == TR25["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR25["steps"]
+
+
+def test_prop24_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR24["lean_file"])
+    with open(path) as fh:
+        lines = fh.read().splitlines()
+    linked = []
+    for s in TR24["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            # engine-only: the disjunction resolution and the neq /
+            # off-line supports (by_contra), the between_symm_parts dpl
+            # premises, and the closure steps Lean's SMT discharges
+            assert s["rule"] in ("by_contra", "between_symm_parts",
+                                 "pasch_3_opposing", "opposing_sides_if",
+                                 "opposing_opposing_same_side",
+                                 "triple_incidence_2",
+                                 "sum_angles_onlyif"), s
+            continue
+        line = lines[ln - 1]
+        if s["rule"] == "by_cases":
+            assert line.strip().startswith("by_cases"), s
+        elif s["rule"] == "by_contra":
+            # the by_contra-rendered euclid_asserts, the hgf have, and
+            # the euclid_finish of the g-on-EF sub-case
+            assert ("euclid_assert" in line or "have hgf" in line
+                    or "euclid_finish" in line), (s, line)
+        elif s["rule"] in ("triple_incidence_2",
+                           "opposing_opposing_same_side"):
+            # the diagrammatic rules behind Lean's euclid_assert lines
+            assert "euclid_assert" in line, (s, line)
+        else:
+            assert s["rule"] in line, (s, line)
+        linked.append(ln)
+    # every euclid_apply line of Prop24.lean is linked, in order, except
+    # the sum_angles_onlyif inside the hgf have (Prop24.lean:32), which
+    # stays inside the engine's hgf by_contra
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    sao = {i + 1 for i, l in enumerate(lines) if "sum_angles_onlyif" in l}
+    assert applies - set(linked) == sao, (applies - set(linked), sao)
+    # distinct; in order except that the engine exposes the three "Not
+    # clear why these are needed" asserts (Prop24.lean:45-47) BEFORE
+    # placing h (extend_point, line 43), so line 43 follows 45-47
+    assert len(set(linked)) == len(linked)
+    reordered = sorted(linked[:18]) + sorted(linked[18:])
+    assert reordered == sorted(linked), linked
+
+
+def test_prop25_lean_lines_cover_the_split_and_apply_lines():
+    path = os.path.join(LEAN_DIR, TR25["lean_file"])
+    with open(path) as fh:
+        lines = fh.read().splitlines()
+    steps = TR25["steps"]
+    assert [s["rule"] for s in steps] == ["by_contra", "by_cases",
+                                          "proposition_4",
+                                          "proposition_24"]
+    lns = [s["lean"]["line"] for s in steps]
+    assert "by_contra" in lines[lns[0] - 1]
+    assert "by_cases" in lines[lns[1] - 1]
+    assert "proposition_4" in lines[lns[2] - 1]
+    assert "proposition_24" in lines[lns[3] - 1]
+    # the euclid_apply lines of Prop25.lean are exactly the two cited
+    # lemmas, and both are linked
+    applies = [i + 1 for i, l in enumerate(lines) if "euclid_apply" in l]
+    assert sorted(applies) == sorted(lns[2:])
+
+
+def test_prop24_cases_recorded():
+    """Every second-case step says it is handled by the engine, not
+    drawn; the drawn branch-1 steps and the common construction say the
+    drawn case is Euclid's."""
+    br2 = [s for s in TR24["steps"]
+           if "Omitted by Euclid" in (s.get("case") or "")]
+    assert br2, "the second case must be recorded"
+    for s in br2:
+        assert "handled by the engine, not drawn" in s["case"], s
+        assert s["case"] in s["placement_decision"], s
+    drawn = [s for s in TR24["steps"]
+             if (s.get("case") or "").startswith("drawn case")]
+    assert len(drawn) == 6, drawn  # branch 1's six steps
+    # the outer split names both cases and the drawn one
+    outer = next(s for s in TR24["steps"] if s["rule"] == "by_cases"
+                 and s["lean"]["line"] is not None
+                 and "d.sameSide g EF" in s["placement_decision"])
+    assert "EUCLID'S case" in outer["placement_decision"]
+    # and the second case's bars name its configuration
+    assert any("g on EF" in s["case"] for s in br2)
+    assert any("g off EF" in s["case"] for s in br2)
+
+
+def test_prop25_cases_recorded():
+    """Each refuted branch's bar says what it contradicts (the I.19
+    pattern)."""
+    cases = [s.get("case") or "" for s in TR25["steps"]]
+    assert any("angle b:a:c = angle e:d:f" in c and "proposition_4" in c
+               and "contradicting the hypothesis" in c for c in cases)
+    assert any("angle e:d:f > angle b:a:c" in c and "proposition_24" in c
+               and "contradicting the hypothesis" in c for c in cases)
+    outer = TR25["steps"][0]
+    assert outer["rule"] == "by_contra"
+    assert outer["facts_added"] == [["gt_ang", "b", "a", "c",
+                                     "e", "d", "f"]]
+
+
+def test_prop24_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR24["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify24(xy))
+    # the DRAWN steps' metric facts hold (the second case's facts live
+    # on state copies and are not drawn — the I.23 pattern)
+    drawn = [s for s in TR24["steps"]
+             if "Omitted by Euclid" not in (s.get("case") or "")]
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(drawn, xy) if not ok]
+    assert not bad, bad
+    # the copied angle equals the given angle, numerically
+    assert abs(tr._ang(xy, "g'", "d", "e")
+               - tr._ang(xy, "b", "a", "c")) < tr.EPS
+    # the goal numerically: |b-c| = |e-g| > |e-f|
+    assert abs(dist(TR24, "b", "c") - dist(TR24, "e", "g")) < tr.EPS
+    assert dist(TR24, "b", "c") > dist(TR24, "e", "f") + 0.15
+
+
+def test_prop25_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR25["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify25(xy))
+    # the by_contra's conclusion (the goal) holds in the true placement
+    assert tr.metric_facts_hold([TR25["steps"][0]], xy) == []  # gt_ang
+    # unchecked kind; checked directly:
+    assert (tr._ang(xy, "b", "a", "c")
+            > tr._ang(xy, "e", "d", "f") + math.radians(5.0))
+    # the REFUTED branch facts (branch 1's SAS conclusion |b-c| = |e-f|
+    # and the by_cases split's angle assumptions) must NOT hold in the
+    # true placement
+    refuted = tr.metric_facts_hold(TR25["steps"][1:], xy)
+    assert refuted and not any(ok for _, ok in refuted), refuted
+
+
+def _xy24():
+    return {k: tuple(v) for k, v in TR24["placement"].items() if v}
+
+
+def test_bad_case_prop24_angle_not_greater_fails():
+    xy = _xy24()
+    assert all(ok for _, ok in tr.verify24(xy))
+    # the angle at a narrowed to 40 degrees (< 48 at d): the hypothesis
+    # margin fails (packet's required bad placement)
+    xy["c"] = (1.2 * math.cos(math.radians(40.0)),
+               1.2 * math.sin(math.radians(40.0)))
+    fails = [d for d, ok in tr.verify24(xy) if not ok]
+    assert any("angle b:a:c > angle e:d:f" in d for d in fails), fails
+
+
+def test_bad_case_prop24_g_same_side_fails():
+    xy = _xy24()
+    # g mirrored across EF: the drawn case (d sameSide g EF) fails
+    e, f = xy["e"], xy["f"]
+    v = (f[0] - e[0], f[1] - e[1])
+    n = (-v[1], v[0])
+    g = xy["g"]
+    t = ((g[0] - e[0]) * n[0] + (g[1] - e[1]) * n[1]) / (n[0] ** 2
+                                                         + n[1] ** 2)
+    xy["g"] = (g[0] - 2 * t * n[0], g[1] - 2 * t * n[1])
+    fails = [d for d, ok in tr.verify24(xy) if not ok]
+    assert any("same side of EF" in d for d in fails), fails
+
+
+def test_bad_case_prop25_base_not_longer_fails():
+    xy = {k: tuple(v) for k, v in TR25["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify25(xy))
+    # widen the angle at d to 80 degrees, |d-f| unchanged: now
+    # |e-f| > |b-c| (branch 2's refuted assumption drawn) and the goal
+    # margin fails
+    xy["f"] = (3.0 + 1.2 * math.cos(math.radians(80.0)),
+               1.2 * math.sin(math.radians(80.0)))
+    fails = [d for d, ok in tr.verify25(xy) if not ok]
+    assert any("|b-c| > |e-f|" in d for d in fails), fails

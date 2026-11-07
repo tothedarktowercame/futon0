@@ -75,6 +75,8 @@ GOALS = {
     21: eng.PROP21_GOAL,
     22: eng.PROP22_GOAL,
     23: eng.PROP23_GOAL,
+    24: eng.PROP24_GOAL,
+    25: eng.PROP25_GOAL,
 }
 
 _PROP_RE = re.compile(r"^proposition_(\d+)'*$")

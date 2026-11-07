@@ -1,0 +1,3013 @@
+{
+ "prop": 24,
+ "title": "Elements I.24 (LeanEuclid Book/Prop24.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "EF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "e",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DF",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "f"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "g'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "DG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "g'"
+    ]
+   },
+   "def_step": 3
+  },
+  {
+   "name": "g''",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 4
+  },
+  {
+   "name": "g",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 6
+  },
+  {
+   "name": "EG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "e",
+     "g"
+    ]
+   },
+   "def_step": 8
+  },
+  {
+   "name": "FG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "f",
+     "g"
+    ]
+   },
+   "def_step": 10
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "proposition_23'",
+   "args": [
+    "d",
+    "e",
+    "a",
+    "b",
+    "c",
+    "f",
+    "DE",
+    "AB",
+    "AC"
+   ],
+   "bindings": {
+    "f": "g'"
+   },
+   "facts_added": [
+    [
+     "neq",
+     "g'",
+     "d"
+    ],
+    [
+     "either",
+     "('on_line', \"g'\", 'DE')",
+     "('same_side', \"g'\", 'f', 'DE')"
+    ],
+    [
+     "eq_ang",
+     "g'",
+     "d",
+     "e",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "dpl",
+     "b",
+     "a",
+     "AB"
+    ],
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 18
+   },
+   "placement_decision": "free parameter of the existential step: |d-g'| = 1 on the ray from d making angle g':d:e = angle b:a:c with d-e, on f's side of DE (the rule fixes the angle and the side \u2014 the on-line disjunct is eliminated by the next step \u2014 not the distance)"
+  },
+  {
+   "n": 2,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "on_line",
+       "g'",
+       "DE"
+      ]
+     ],
+     [
+      [
+       "by_contra",
+       [
+        [
+         [
+          [
+           "between",
+           "g'",
+           "d",
+           "e"
+          ]
+         ],
+         [
+          [
+           "flat_angle_onlyif",
+           [
+            "g'",
+            "d",
+            "e"
+           ],
+           {}
+          ],
+          [
+           "proposition_17",
+           [
+            "c",
+            "a",
+            "b",
+            "AC",
+            "AB",
+            "BC"
+           ],
+           {}
+          ]
+         ]
+        ],
+        [
+         [
+          [
+           "not_between",
+           "g'",
+           "d",
+           "e"
+          ]
+         ],
+         [
+          [
+           "degenerated_angle_if",
+           [
+            "d",
+            "g'",
+            "e",
+            "DE"
+           ],
+           {}
+          ]
+         ]
+        ]
+       ],
+       [
+        [
+         "false"
+        ]
+       ]
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "same_side",
+     "g'",
+     "f",
+     "DE"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('on_line', \"g'\", 'DE')] \u2014 refuted by ['by_contra'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 3,
+   "rule": "line_from_points",
+   "args": [
+    "d",
+    "g'"
+   ],
+   "bindings": {
+    "L": "DG"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "DG"
+    ],
+    [
+     "on_line",
+     "g'",
+     "DG"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "d",
+     "g'"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 19
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 4,
+   "rule": "extend_point_longer",
+   "args": [
+    "DG",
+    "d",
+    "g'",
+    "a",
+    "c"
+   ],
+   "bindings": {
+    "x": "g''"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "g''",
+     "DG"
+    ],
+    [
+     "between",
+     "d",
+     "g'",
+     "g''"
+    ],
+    [
+     "gt_len",
+     "g'",
+     "g''",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "g'",
+     "DG"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 20
+   },
+   "placement_decision": "free parameter of the existential step: |g'-g''| = 1.5|a-c| > |a-c| on the ray from d through g' (the rule fixes between d g' g'' and the lower bound, not the distance)"
+  },
+  {
+   "n": 5,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "g'",
+    "g''"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "g'"
+    ],
+    [
+     "neq",
+     "d",
+     "g''"
+    ],
+    [
+     "not_between",
+     "g'",
+     "d",
+     "g''"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "g'",
+     "g''"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 6,
+   "rule": "proposition_3",
+   "args": [
+    "d",
+    "g''",
+    "a",
+    "c",
+    "DG",
+    "AC"
+   ],
+   "bindings": {
+    "q": "g"
+   },
+   "facts_added": [
+    [
+     "between",
+     "d",
+     "g",
+     "g''"
+    ],
+    [
+     "eq_len",
+     "d",
+     "g",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "g''",
+     "DG"
+    ],
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('d', \"g''\", 'a', 'c')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 21
+   },
+   "placement_decision": "cut |a-c| off segment d-g'' from d; sample direction along the segment"
+  },
+  {
+   "n": 7,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "g",
+    "g''"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "g"
+    ],
+    [
+     "neq",
+     "d",
+     "g''"
+    ],
+    [
+     "not_between",
+     "g",
+     "d",
+     "g''"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "g",
+     "g''"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 8,
+   "rule": "line_from_points",
+   "args": [
+    "e",
+    "g"
+   ],
+   "bindings": {
+    "L": "EG"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "e",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 22
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 9,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "peq",
+       "f",
+       "g"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "neq",
+     "f",
+     "g"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('peq', 'f', 'g')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 10,
+   "rule": "line_from_points",
+   "args": [
+    "f",
+    "g"
+   ],
+   "bindings": {
+    "L": "FG"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "f",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 23
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 11,
+   "rule": "proposition_4",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "g",
+    "AB",
+    "BC",
+    "AC",
+    "DE",
+    "EG",
+    "DG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_len",
+     "b",
+     "c",
+     "e",
+     "g"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "b",
+     "c",
+     "d",
+     "e",
+     "g"
+    ],
+    [
+     "eq_ang",
+     "a",
+     "c",
+     "b",
+     "d",
+     "g",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ],
+    [
+     "on_line",
+     "g",
+     "DG"
+    ],
+    [
+     "on_line",
+     "d",
+     "DG"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'b', 'd', 'e')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('a', 'c', 'd', 'g')"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('b', 'a', 'c', 'e', 'd', 'g')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 24
+   },
+   "placement_decision": "cited step (proposition_4 a b c d e g AB BC AC DE EG DG \u2014 SAS): |a-b| = |d-e| (hypothesis), |a-c| = |d-g| (the proposition_3 cut), and angle b:a:c = angle e:d:g (the copied angle of step 1, by the ray-equality chain), so triangle a-b-c congrues with d-e-g: |b-c| = |e-g| \u2014 the goal's hinge \u2014 and angle d:g:e = angle a:c:b"
+  },
+  {
+   "n": 12,
+   "rule": "proposition_5'",
+   "args": [
+    "d",
+    "g",
+    "f",
+    "DG",
+    "FG",
+    "DF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "d",
+     "g",
+     "f",
+     "d",
+     "f",
+     "g"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "g",
+     "DG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "d",
+     "DF"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', 'g', 'd', 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 25
+   },
+   "placement_decision": "cited step (proposition_5' d g f DG FG DF \u2014 the isosceles theorem): |d-g| = |a-c| (the cut) = |d-f| (hypothesis), so the base angles agree: angle d:g:f = angle d:f:g"
+  },
+  {
+   "n": 13,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "eq_ang",
+       "e",
+       "d",
+       "g",
+       "e",
+       "d",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "gt_ang",
+       "e",
+       "d",
+       "f",
+       "e",
+       "d",
+       "g"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "gt_ang",
+     "e",
+     "d",
+     "g",
+     "e",
+     "d",
+     "f"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 28
+   },
+   "placement_decision": "case split: assume [('eq_ang', 'e', 'd', 'g', 'e', 'd', 'f')] \u2014 refuted by ['contradiction in the store']; case split: assume [('gt_ang', 'e', 'd', 'f', 'e', 'd', 'g')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "Lean's euclid_assert \u2220 e:d:g > \u2220 e:d:f (Prop24.lean:28), rendered as a by_contra on the angle trichotomy"
+  },
+  {
+   "n": 14,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "opposing_sides",
+       "g",
+       "f",
+       "DE"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "same_side",
+     "g",
+     "f",
+     "DE"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 29
+   },
+   "placement_decision": "case split: assume [('opposing_sides', 'g', 'f', 'DE')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "Lean's euclid_assert g.sameSide f DE (Prop24.lean:29), closure-derived and exposed by contradicting its opposing_sides rendering"
+  },
+  {
+   "n": 15,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "on_line",
+       "g",
+       "DF"
+      ],
+      [
+       "between",
+       "g",
+       "d",
+       "f"
+      ]
+     ],
+     [
+      [
+       "pasch_3_opposing",
+       [
+        "g",
+        "d",
+        "f",
+        "DE"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "on_line",
+       "g",
+       "DF"
+      ],
+      [
+       "between",
+       "d",
+       "g",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "on_line",
+       "g",
+       "DF"
+      ],
+      [
+       "between",
+       "d",
+       "f",
+       "g"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "on_line",
+       "g",
+       "DF"
+      ],
+      [
+       "peq",
+       "g",
+       "f"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "not_on_line",
+     "g",
+     "DF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "case split: assume [('on_line', 'g', 'DF'), ('between', 'g', 'd', 'f')] \u2014 refuted by ['pasch_3_opposing']; case split: assume [('on_line', 'g', 'DF'), ('between', 'd', 'g', 'f')] \u2014 refuted by ['contradiction in the store']; case split: assume [('on_line', 'g', 'DF'), ('between', 'd', 'f', 'g')] \u2014 refuted by ['contradiction in the store']; case split: assume [('on_line', 'g', 'DF'), ('peq', 'g', 'f')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 16,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "same_side",
+       "g",
+       "e",
+       "DF"
+      ]
+     ],
+     [
+      [
+       "sum_angles_onlyif",
+       [
+        "d",
+        "e",
+        "f",
+        "g",
+        "DE",
+        "DF"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "opposing_sides",
+     "e",
+     "g",
+     "DF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 30
+   },
+   "placement_decision": "case split: assume [('same_side', 'g', 'e', 'DF')] \u2014 refuted by ['sum_angles_onlyif'] (refuted branches are not drawn)",
+   "lean_note": "Lean's `have hgf : \u00ac g.sameSide e DF` (Prop24.lean:30-33); the engine renders the conclusion as the positive opposing_sides e g DF, and the hgf proof's sum_angles_onlyif step stays inside this by_contra"
+  },
+  {
+   "n": 17,
+   "rule": "triple_incidence_2",
+   "args": [
+    "DE",
+    "DF",
+    "DG",
+    "d",
+    "e",
+    "f",
+    "g"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "e",
+     "f",
+     "DG"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "d",
+     "DF"
+    ],
+    [
+     "on_line",
+     "d",
+     "DG"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "g",
+     "DG"
+    ],
+    [
+     "same_side",
+     "f",
+     "g",
+     "DE"
+    ],
+    [
+     "opposing_sides",
+     "e",
+     "g",
+     "DF"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "DF"
+    ],
+    [
+     "neq",
+     "e",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 34
+   },
+   "placement_decision": "engine-only step (triple_incidence_2, Diagrammatic.lean:201): three lines through one point transfer the known side facts into the same_side premise the next angle split needs. Lean's euclid_assert / SMT closes this silently",
+   "lean_note": "Lean's euclid_assert f.sameSide e DG (Prop24.lean:34): the System E citation is triple_incidence_2 (Diagrammatic.lean:201) over (DE, DF, DG) at d"
+  },
+  {
+   "n": 18,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      "same_side",
+      "d",
+      "g",
+      "EF"
+     ]
+    ],
+    [
+     [
+      "not_same_side",
+      "d",
+      "g",
+      "EF"
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "_gt_len",
+     "b",
+     "c",
+     "e",
+     "f"
+    ]
+   ],
+   "facts_added": [
+    [
+     "_gt_len",
+     "b",
+     "c",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 35
+   },
+   "placement_decision": "case split (Prop24.lean:35, by_cases on d.sameSide g EF): branch 1 \u2014 d and g on the same side of EF \u2014 is EUCLID'S case and is drawn; branch 2 ('Omitted by Euclid', Prop24.lean:40-59: g on EF, or g off EF on the side opposite d) is handled by the engine on state copies, not drawn. Both branches conclude |b-c| > |e-f|"
+  },
+  {
+   "n": 19,
+   "rule": "triple_incidence_2",
+   "args": [
+    "EF",
+    "DF",
+    "FG",
+    "f",
+    "e",
+    "d",
+    "g"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "e",
+     "d",
+     "FG"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "on_line",
+     "d",
+     "DF"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "same_side",
+     "d",
+     "g",
+     "EF"
+    ],
+    [
+     "opposing_sides",
+     "e",
+     "g",
+     "DF"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "DF"
+    ],
+    [
+     "neq",
+     "e",
+     "f"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted; engine-only step (triple_incidence_2, Diagrammatic.lean:201): three lines through one point transfer the known side facts into the same_side premise the next angle split needs. Lean's euclid_assert / SMT closes this silently",
+   "case": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted",
+   "lean_note": "engine-only step (triple_incidence_2): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 20,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "f",
+    "e",
+    "g",
+    "d",
+    "EF",
+    "FG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "e",
+     "f",
+     "g",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "neq",
+     "f",
+     "e"
+    ],
+    [
+     "neq",
+     "f",
+     "g"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "EF"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "FG"
+    ],
+    [
+     "neq_line",
+     "EF",
+     "FG"
+    ],
+    [
+     "same_side",
+     "e",
+     "d",
+     "FG"
+    ],
+    [
+     "same_side",
+     "g",
+     "d",
+     "EF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted; engine-only step (sum_angles_onlyif, Transfer.lean:90): a point inside an angle splits it into a sum \u2014 the angle arithmetic behind the asserts. Lean's SMT discharges these rows silently",
+   "case": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 21,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "g",
+    "d",
+    "f",
+    "e",
+    "DG",
+    "FG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "d",
+     "g",
+     "f",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "g",
+     "DG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "on_line",
+     "d",
+     "DG"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "neq",
+     "g",
+     "d"
+    ],
+    [
+     "neq",
+     "g",
+     "f"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "DG"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "FG"
+    ],
+    [
+     "neq_line",
+     "DG",
+     "FG"
+    ],
+    [
+     "same_side",
+     "d",
+     "e",
+     "FG"
+    ],
+    [
+     "same_side",
+     "f",
+     "e",
+     "DG"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted; engine-only step (sum_angles_onlyif, Transfer.lean:90): a point inside an angle splits it into a sum \u2014 the angle arithmetic behind the asserts. Lean's SMT discharges these rows silently",
+   "case": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 22,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "eq_ang",
+       "d",
+       "f",
+       "g",
+       "e",
+       "g",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "gt_ang",
+       "e",
+       "g",
+       "f",
+       "d",
+       "f",
+       "g"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "gt_ang",
+     "d",
+     "f",
+     "g",
+     "e",
+     "g",
+     "f"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 36
+   },
+   "placement_decision": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted; case split: assume [('eq_ang', 'd', 'f', 'g', 'e', 'g', 'f')] \u2014 refuted by ['contradiction in the store']; case split: assume [('gt_ang', 'e', 'g', 'f', 'd', 'f', 'g')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted",
+   "lean_note": "Lean's euclid_assert \u2220 d:f:g > \u2220 e:g:f (Prop24.lean:36), rendered as a by_contra on the angle trichotomy"
+  },
+  {
+   "n": 23,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "eq_ang",
+       "e",
+       "f",
+       "g",
+       "e",
+       "g",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "gt_ang",
+       "e",
+       "g",
+       "f",
+       "e",
+       "f",
+       "g"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "gt_ang",
+     "e",
+     "f",
+     "g",
+     "e",
+     "g",
+     "f"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 37
+   },
+   "placement_decision": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted; case split: assume [('eq_ang', 'e', 'f', 'g', 'e', 'g', 'f')] \u2014 refuted by ['contradiction in the store']; case split: assume [('gt_ang', 'e', 'g', 'f', 'e', 'f', 'g')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted",
+   "lean_note": "Lean's euclid_assert \u2220 e:f:g > \u2220 e:g:f (Prop24.lean:37), rendered as a by_contra on the angle trichotomy"
+  },
+  {
+   "n": 24,
+   "rule": "proposition_19",
+   "args": [
+    "e",
+    "f",
+    "g",
+    "EF",
+    "FG",
+    "EG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_len",
+     "e",
+     "g",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ],
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "neq",
+     "f",
+     "g"
+    ],
+    [
+     "neq",
+     "e",
+     "g"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "EF"
+    ],
+    [
+     "entail",
+     "gt_ang",
+     "('e', 'f', 'g', 'f', 'g', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 38
+   },
+   "placement_decision": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted; cited step (proposition_19 e f g EF FG EG \u2014 the greater angle faces the greater side, in triangle e-f-g): angle e:f:g > angle e:g:f (the assert above), so |e-g| > |e-f|. The conclusion's why: |b-c| = |e-g| (the proposition_4 step) > |e-f| \u2014 the goal",
+   "case": "drawn case (branch 1: d sameSide g EF) \u2014 Euclid's own case; the second case is handled by the engine and only noted"
+  },
+  {
+   "n": 25,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      "on_line",
+      "g",
+      "EF"
+     ]
+    ],
+    [
+     [
+      "not_on_line",
+      "g",
+      "EF"
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "_gt_len",
+     "b",
+     "c",
+     "e",
+     "f"
+    ]
+   ],
+   "facts_added": [
+    [
+     "_gt_len",
+     "b",
+     "c",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 41
+   },
+   "placement_decision": "second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split (Prop24.lean:35, by_cases on d.sameSide g EF): branch 1 \u2014 d and g on the same side of EF \u2014 is EUCLID'S case and is drawn; branch 2 ('Omitted by Euclid', Prop24.lean:40-59: g on EF, or g off EF on the side opposite d) is handled by the engine on state copies, not drawn. Both branches conclude |b-c| > |e-f|",
+   "case": "second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  },
+  {
+   "n": 26,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "between",
+       "g",
+       "e",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "between",
+       "e",
+       "g",
+       "f"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "between",
+     "e",
+     "f",
+     "g"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 42
+   },
+   "placement_decision": "second case, sub-case g on EF (Prop24.lean:41-42): the goal itself closes it \u2014 g on EF forces between e f g, so |e-g| = |e-f| + |f-g| > |e-f| and |b-c| = |e-g|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('between', 'g', 'e', 'f')] \u2014 refuted by ['contradiction in the store']; case split: assume [('between', 'e', 'g', 'f')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g on EF (Prop24.lean:41-42): the goal itself closes it \u2014 g on EF forces between e f g, so |e-g| = |e-f| + |f-g| > |e-f| and |b-c| = |e-g|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "Lean's euclid_finish (Prop24.lean:42) closes this sub-case outright; the engine renders the between-trichotomy on EF as a by_contra deriving between e f g"
+  },
+  {
+   "n": 27,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "on_line",
+       "g",
+       "DF"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "not_on_line",
+     "g",
+     "DF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 45
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('on_line', 'g', 'DF')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "Lean's euclid_assert \u00ac(g.onLine DF) (Prop24.lean:45), exposed by contradicting on_line g DF"
+  },
+  {
+   "n": 28,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "on_line",
+       "e",
+       "DF"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "not_on_line",
+     "e",
+     "DF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 46
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('on_line', 'e', 'DF')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "Lean's euclid_assert \u00ac(e.onLine DF) (Prop24.lean:46), closure-derived"
+  },
+  {
+   "n": 29,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "same_side",
+       "g",
+       "e",
+       "DF"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "opposing_sides",
+     "g",
+     "e",
+     "DF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 47
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('same_side', 'g', 'e', 'DF')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "Lean's euclid_assert g.opposingSides e DF (Prop24.lean:47), hgf symmetrized"
+  },
+  {
+   "n": 30,
+   "rule": "extend_point",
+   "args": [
+    "FG",
+    "g",
+    "f"
+   ],
+   "bindings": {
+    "x": "h"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "h",
+     "FG"
+    ],
+    [
+     "between",
+     "g",
+     "f",
+     "h"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "g",
+     "f",
+     "FG"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 43
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); second case (not same_side d g EF \u2014 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  },
+  {
+   "n": 31,
+   "rule": "between_symm_parts",
+   "args": [
+    "g",
+    "f",
+    "h"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "g",
+     "f"
+    ],
+    [
+     "neq",
+     "g",
+     "h"
+    ],
+    [
+     "not_between",
+     "f",
+     "g",
+     "h"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "g",
+     "f",
+     "h"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 32,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "on_line",
+       "h",
+       "DF"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "not_on_line",
+     "h",
+     "DF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('on_line', 'h', 'DF')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 33,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "on_line",
+       "h",
+       "EF"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "not_on_line",
+     "h",
+     "EF"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('on_line', 'h', 'EF')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 34,
+   "rule": "opposing_sides_if",
+   "args": [
+    "d",
+    "g",
+    "EF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "d",
+     "g",
+     "EF"
+    ]
+   ],
+   "premises": [
+    [
+     "not_on_line",
+     "d",
+     "EF"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "EF"
+    ],
+    [
+     "not_same_side",
+     "d",
+     "g",
+     "EF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): opposing_sides_if only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (opposing_sides_if): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 35,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "g",
+    "f",
+    "h",
+    "DF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "g",
+     "h",
+     "DF"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "g",
+     "f",
+     "h"
+    ],
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "DF"
+    ],
+    [
+     "not_on_line",
+     "h",
+     "DF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 36,
+   "rule": "opposing_opposing_same_side",
+   "args": [
+    "e",
+    "g",
+    "h",
+    "DF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "e",
+     "h",
+     "DF"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "e",
+     "g",
+     "DF"
+    ],
+    [
+     "opposing_sides",
+     "g",
+     "h",
+     "DF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 48
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): opposing_opposing_same_side only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "Lean's euclid_assert h.sameSide e DF (Prop24.lean:48): h and e both oppose g across DF"
+  },
+  {
+   "n": 37,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "g",
+    "f",
+    "h",
+    "EF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "g",
+     "h",
+     "EF"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "g",
+     "f",
+     "h"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "EF"
+    ],
+    [
+     "not_on_line",
+     "h",
+     "EF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 38,
+   "rule": "opposing_opposing_same_side",
+   "args": [
+    "d",
+    "g",
+    "h",
+    "EF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "d",
+     "h",
+     "EF"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "d",
+     "g",
+     "EF"
+    ],
+    [
+     "opposing_sides",
+     "g",
+     "h",
+     "EF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): opposing_opposing_same_side only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (opposing_opposing_same_side): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 39,
+   "rule": "triple_incidence_2",
+   "args": [
+    "DE",
+    "EF",
+    "EG",
+    "e",
+    "d",
+    "f",
+    "g"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "d",
+     "f",
+     "EG"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ],
+    [
+     "same_side",
+     "f",
+     "g",
+     "DE"
+    ],
+    [
+     "opposing_sides",
+     "d",
+     "g",
+     "EF"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "EF"
+    ],
+    [
+     "neq",
+     "d",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); engine-only step (triple_incidence_2, Diagrammatic.lean:201): three lines through one point transfer the known side facts into the same_side premise the next angle split needs. Lean's euclid_assert / SMT closes this silently",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (triple_incidence_2): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 40,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "g",
+    "d",
+    "e",
+    "f",
+    "DG",
+    "EG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "d",
+     "g",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "g",
+     "DG"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ],
+    [
+     "on_line",
+     "d",
+     "DG"
+    ],
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "neq",
+     "g",
+     "d"
+    ],
+    [
+     "neq",
+     "g",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "DG"
+    ],
+    [
+     "not_on_line",
+     "f",
+     "EG"
+    ],
+    [
+     "neq_line",
+     "DG",
+     "EG"
+    ],
+    [
+     "same_side",
+     "d",
+     "f",
+     "EG"
+    ],
+    [
+     "same_side",
+     "e",
+     "f",
+     "DG"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); engine-only step (sum_angles_onlyif, Transfer.lean:90): a point inside an angle splits it into a sum \u2014 the angle arithmetic behind the asserts. Lean's SMT discharges these rows silently",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 41,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "f",
+    "d",
+    "e",
+    "h",
+    "DF",
+    "EF"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "d",
+     "f",
+     "e",
+     "h"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "d",
+     "DF"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "neq",
+     "f",
+     "d"
+    ],
+    [
+     "neq",
+     "f",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "h",
+     "DF"
+    ],
+    [
+     "not_on_line",
+     "h",
+     "EF"
+    ],
+    [
+     "neq_line",
+     "DF",
+     "EF"
+    ],
+    [
+     "same_side",
+     "d",
+     "h",
+     "EF"
+    ],
+    [
+     "same_side",
+     "e",
+     "h",
+     "DF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": null
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); engine-only step (sum_angles_onlyif, Transfer.lean:90): a point inside an angle splits it into a sum \u2014 the angle arithmetic behind the asserts. Lean's SMT discharges these rows silently",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "engine-only step (sum_angles_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 42,
+   "rule": "proposition_13",
+   "args": [
+    "d",
+    "f",
+    "g",
+    "h",
+    "DF",
+    "FG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "g",
+     "f",
+     "d",
+     "h"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "DF",
+     "FG"
+    ],
+    [
+     "dpl",
+     "d",
+     "f",
+     "DF"
+    ],
+    [
+     "dpl",
+     "g",
+     "h",
+     "FG"
+    ],
+    [
+     "between",
+     "h",
+     "f",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 50
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): proposition_13 only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  },
+  {
+   "n": 43,
+   "rule": "proposition_13",
+   "args": [
+    "e",
+    "f",
+    "g",
+    "h",
+    "EF",
+    "FG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "g",
+     "f",
+     "e",
+     "h"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "EF",
+     "FG"
+    ],
+    [
+     "dpl",
+     "e",
+     "f",
+     "EF"
+    ],
+    [
+     "dpl",
+     "g",
+     "h",
+     "FG"
+    ],
+    [
+     "between",
+     "h",
+     "f",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 51
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): proposition_13 only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  },
+  {
+   "n": 44,
+   "rule": "proposition_17",
+   "args": [
+    "d",
+    "g",
+    "e",
+    "DG",
+    "EG",
+    "DE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "lt_sum_rt_ang",
+     "d",
+     "g",
+     "e",
+     "g",
+     "e",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "g",
+     "DG"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ],
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "neq",
+     "g",
+     "e"
+    ],
+    [
+     "neq",
+     "d",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "DG"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 52
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): proposition_17 only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  },
+  {
+   "n": 45,
+   "rule": "proposition_17",
+   "args": [
+    "d",
+    "f",
+    "e",
+    "DF",
+    "EF",
+    "DE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "lt_sum_rt_ang",
+     "d",
+     "f",
+     "e",
+     "f",
+     "e",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "f",
+     "DF"
+    ],
+    [
+     "on_line",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "e",
+     "EF"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "neq",
+     "f",
+     "e"
+    ],
+    [
+     "neq",
+     "d",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "DF"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 53
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); forward-closure step (no new objects): proposition_17 only adds facts to the engine state",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  },
+  {
+   "n": 46,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "eq_ang",
+       "e",
+       "f",
+       "g",
+       "e",
+       "g",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "gt_ang",
+       "e",
+       "g",
+       "f",
+       "e",
+       "f",
+       "g"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "gt_ang",
+     "e",
+     "f",
+     "g",
+     "e",
+     "g",
+     "f"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 57
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); case split: assume [('eq_ang', 'e', 'f', 'g', 'e', 'g', 'f')] \u2014 refuted by ['contradiction in the store']; case split: assume [('gt_ang', 'e', 'g', 'f', 'e', 'f', 'g')] \u2014 refuted by ['contradiction in the store'] (refuted branches are not drawn)",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)",
+   "lean_note": "Lean's euclid_assert \u2220 e:f:g > \u2220 e:g:f (Prop24.lean:56), rendered as a by_contra on the angle trichotomy; the lines 53-55 asserts are LA intermediates the constraint store derives inside this check"
+  },
+  {
+   "n": 47,
+   "rule": "proposition_19",
+   "args": [
+    "e",
+    "f",
+    "g",
+    "EF",
+    "FG",
+    "EG"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_len",
+     "e",
+     "g",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "f",
+     "EF"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "EG"
+    ],
+    [
+     "on_line",
+     "e",
+     "EG"
+    ],
+    [
+     "neq",
+     "f",
+     "g"
+    ],
+    [
+     "neq",
+     "e",
+     "g"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "EF"
+    ],
+    [
+     "entail",
+     "gt_ang",
+     "('e', 'f', 'g', 'f', 'g', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop24.lean",
+    "line": 58
+   },
+   "placement_decision": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF); cited step (proposition_19 e f g EF FG EG \u2014 the greater angle faces the greater side, in triangle e-f-g): angle e:f:g > angle e:g:f (the assert above), so |e-g| > |e-f|. The conclusion's why: |b-c| = |e-g| (the proposition_4 step) > |e-f| \u2014 the goal",
+   "case": "second case, sub-case g off EF (Prop24.lean:43-59): the angle arithmetic of the two linear pairs at f and the two triangle angle sums forces angle e:f:g > angle e:g:f, so proposition_19 gives |e-g| > |e-f|; second case (not same_side d g EF \u2014 'Omitted by Euclid', Prop24.lean:40-59): handled by the engine, not drawn \u2014 the diagram shows Euclid's case (d and g on the same side of EF)"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.6,
+   0.0
+  ],
+  "c": [
+   0.37082039324993693,
+   1.141267819554184
+  ],
+  "d": [
+   3.0,
+   0.0
+  ],
+  "e": [
+   4.6,
+   0.0
+  ],
+  "f": [
+   3.80295672763063,
+   0.8917737905728731
+  ],
+  "g'": [
+   3.3090169943749475,
+   0.9510565162951535
+  ],
+  "DG": null,
+  "g''": [
+   3.8652475842498526,
+   2.6629582456264296
+  ],
+  "g": [
+   3.3708203932499368,
+   1.141267819554184
+  ],
+  "EG": null,
+  "FG": null
+ },
+ "verification": [
+  {
+   "check": "I.24: |a-b| = |d-e| (hypothesis, exact)",
+   "ok": true
+  },
+  {
+   "check": "I.24: |a-c| = |d-f| (hypothesis, exact)",
+   "ok": true
+  },
+  {
+   "check": "I.24: angle b:a:c > angle e:d:f with a visible margin (>= 5 degrees)",
+   "ok": true
+  },
+  {
+   "check": "I.24: genuine triangles (c off AB, f off DE)",
+   "ok": true
+  },
+  {
+   "check": "I.24: the two triangles stand apart (every cross-pair of vertices at least 0.5 apart)",
+   "ok": true
+  },
+  {
+   "check": "I.24: angle g':d:e = angle b:a:c (the proposition_23' copy)",
+   "ok": true
+  },
+  {
+   "check": "I.24: g' on f's side of DE (the resolved disjunct)",
+   "ok": true
+  },
+  {
+   "check": "I.24: the chain order d, g', g'' on DG with |g'-g''| > |a-c| (the extend_point_longer bound)",
+   "ok": true
+  },
+  {
+   "check": "I.24: |d-g| = |a-c| with g between d and g'' (the proposition_3 cut)",
+   "ok": true
+  },
+  {
+   "check": "I.24: the drawn case is branch 1 \u2014 d and g on the same side of EF, with a visible margin",
+   "ok": true
+  },
+  {
+   "check": "I.24: |b-c| = |e-g| (the proposition_4 copy)",
+   "ok": true
+  },
+  {
+   "check": "I.24: GOAL |b-c| > |e-f| with a visible margin (>= 0.15)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop24.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop03",
+  "import Book.Prop04",
+  "import Book.Prop05",
+  "import Book.Prop13",
+  "import Book.Prop17",
+  "import Book.Prop19",
+  "import Book.Prop23",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_24 : \u2200 (a b c d e f : Point) (AB BC AC DE EF DF : Line),",
+  "  formTriangle a b c AB BC AC \u2227 formTriangle d e f DE EF DF \u2227",
+  "  (|(a\u2500b)| = |(d\u2500e)|) \u2227 (|(a\u2500c)| = |(d\u2500f)|) \u2227 (\u2220 b:a:c > \u2220 e:d:f) \u2192",
+  "  |(b\u2500c)| > |(e\u2500f)| :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (proposition_23' d e a b c f DE AB AC) as g'",
+  "  euclid_apply (line_from_points d g') as DG",
+  "  euclid_apply (extend_point_longer DG d g' (a\u2500c)) as g''",
+  "  euclid_apply (proposition_3 d g'' a c DG AC) as g",
+  "  euclid_apply (line_from_points e g) as EG",
+  "  euclid_apply (line_from_points f g) as FG",
+  "  euclid_apply (proposition_4 a b c d e g AB BC AC DE EG DG)",
+  "  euclid_apply (proposition_5' d g f DG FG DF)",
+  "  -- If g were between the rays DE and DF, angle addition would contradict",
+  "  -- the strict angle comparison. Expose this before the diagrammatic case split.",
+  "  euclid_assert \u2220 e:d:g > \u2220 e:d:f",
+  "  euclid_assert g.sameSide f DE",
+  "  have hgf : \u00ac g.sameSide e DF := by",
+  "    by_contra h",
+  "    euclid_apply (sum_angles_onlyif d e f g DE DF)",
+  "    euclid_finish",
+  "  euclid_assert f.sameSide e DG",
+  "  by_cases (d.sameSide g EF)",
+  "  \u00b7 euclid_assert (\u2220 d:f:g > \u2220 e:g:f)",
+  "    euclid_assert (\u2220 e:f:g > \u2220 e:g:f)",
+  "    euclid_apply (proposition_19 e f g EF FG EG)",
+  "    euclid_finish",
+  "  \u00b7 -- Omitted by Euclid.",
+  "    by_cases g.onLine EF",
+  "    \u00b7 euclid_finish",
+  "    \u00b7 euclid_apply (extend_point FG g f) as h",
+  "      -- Not clear why these are needed.",
+  "      euclid_assert \u00ac(g.onLine DF)",
+  "      euclid_assert \u00ac(e.onLine DF)",
+  "      euclid_assert (g.opposingSides e DF)",
+  "      euclid_assert h.sameSide e DF",
+  "",
+  "      euclid_apply (proposition_13 d f g h DF FG)",
+  "      euclid_apply (proposition_13 e f g h EF FG)",
+  "      euclid_apply (proposition_17 d g e DG EG DE)",
+  "      euclid_apply (proposition_17 d f e DF EF DE)",
+  "      euclid_assert (\u2220 d:g:e < \u221f + \u221f)",
+  "      euclid_assert (\u2220 d:f:e < \u221f + \u221f)",
+  "      euclid_assert (\u2220 e:f:g + \u2220 g:f:d + \u2220 d:f:e = \u221f + \u221f + \u221f + \u221f)",
+  "      euclid_assert (\u2220 e:f:g > \u2220 e:g:f)",
+  "      euclid_apply (proposition_19 e f g EF FG EG)",
+  "      euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

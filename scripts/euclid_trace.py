@@ -460,6 +460,37 @@ FREE = {
     23: {"a": (0.0, 0.0), "b": (1.6, 0.0),
          "c": (0.3, 1.8), "d": (0.3 - math.cos(math.radians(30.0)), 2.3),
          "e": (0.3, 3.1)},
+    # I.24 (the hinge theorem): two triangles a-b-c and d-e-f standing
+    # apart (abc left, def right), with |a-b| = |d-e| = 1.6 and
+    # |a-c| = |d-f| = 1.2 exactly, and the given angle at a = 72 degrees
+    # visibly greater than the angle at d = 48 degrees (margin 24
+    # degrees >= 5). The construction copies the angle at a onto DE at
+    # d (proposition_23' places g' on f's side of DE — the drawn ray
+    # d->g' makes angle g':d:e = 72 degrees), extends to g'' and cuts
+    # |d-g| = |a-c| (proposition_3), all placed by place_step. The drawn
+    # case of the by_cases (Prop24.lean:35) is branch 1: d and g on the
+    # same side of EF (g lands at distance ~0.16 from EF on d's side).
+    # The goal holds visibly: |b-c| ~= 1.677 > |e-f| ~= 1.196.
+    24: {"a": (0.0, 0.0), "b": (1.6, 0.0),
+         "c": (1.2 * math.cos(math.radians(72.0)),
+               1.2 * math.sin(math.radians(72.0))),
+         "d": (3.0, 0.0), "e": (4.6, 0.0),
+         "f": (3.0 + 1.2 * math.cos(math.radians(48.0)),
+               1.2 * math.sin(math.radians(48.0)))},
+    # I.25 (the converse, by contradiction from I.4 and I.24): the same
+    # two-triangles shape, drawn in the TRUE configuration — here the
+    # hypothesis is the LENGTH comparison |b-c| > |e-f| (|a-b| = |d-e|,
+    # |a-c| = |d-f| as at I.24) and the goal is the angle comparison.
+    # Angle at a = 75 degrees, at d = 55 degrees (margin 20 degrees);
+    # |b-c| ~= 1.734 > |e-f| ~= 1.341 (margin ~0.39). Both refuted
+    # branches (angle equality; the reversed comparison) fail these
+    # checks, as they must.
+    25: {"a": (0.0, 0.0), "b": (1.6, 0.0),
+         "c": (1.2 * math.cos(math.radians(75.0)),
+               1.2 * math.sin(math.radians(75.0))),
+         "d": (3.0, 0.0), "e": (4.6, 0.0),
+         "f": (3.0 + 1.2 * math.cos(math.radians(55.0)),
+               1.2 * math.sin(math.radians(55.0)))},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -513,6 +544,12 @@ def hyps_and_steps(prop):
         return list(eng.PROP22_HYPS_DATA), list(eng.PROP22_STEPS_DATA)
     if prop == 23:
         return list(eng.PROP23_HYPS_DATA), list(eng.PROP23_STEPS_DATA)
+    if prop == 24:
+        # the COMPLETE I.24 replay (both branches of the closing
+        # by_cases) on PROP24A's hypotheses
+        return list(eng.PROP24A_HYPS_DATA), list(eng.PROP24_STEPS_DATA)
+    if prop == 25:
+        return list(eng.PROP25_HYPS_DATA), list(eng.PROP25_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -743,6 +780,20 @@ def objects_from_hyps(prop):
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("CD", ("d", "c")),
                               ("CE", ("c", "e")))]
+    if prop in (24, 25):
+        # the two hypothesis triangles and their six hypothesis lines
+        # (two formTriangles destructured, as at I.8); at I.24 the
+        # copied-angle points g', g'', g and lines DG, EG, FG are
+        # CONSTRUCTED by steps 1-10, and h lives only in the
+        # engine-handled second case; at I.25 nothing is constructed
+        # (a by_contra with two cited-lemma branches, as at I.19)
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d", "e", "f")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")), ("DE", ("d", "e")),
+                              ("EF", ("e", "f")), ("DF", ("d", "f")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -790,6 +841,47 @@ def place_step(prop, rule, args, bindings, added, xy, objects):
                 "handled by the engine, not drawn — the diagram shows "
                 "the general case (d off CE), in which the copied angle "
                 "at a is constructed by proposition_22'")
+    if prop == 24 and rule == "extend_point":
+        # I.24's second case ("Omitted by Euclid", Prop24.lean:40-59)
+        # constructs h (extend_point FG g f). That case is HANDLED by
+        # the engine on a state copy, not drawn — the drawn case is
+        # branch 1 (d sameSide g EF). Nothing is placed; placing h would
+        # add a point the drawn configuration has no use for.
+        return ("second case (not same_side d g EF — 'Omitted by "
+                "Euclid'): handled by the engine, not drawn — the "
+                "diagram shows Euclid's case (d and g on the same side "
+                "of EF)")
+    if rule == "proposition_23'":
+        # (d, e, a, b, c, f, DE, AB, AC) -> g' with g' != d,
+        # angle g':d:e = angle b:a:c, and g' on DE or on f's side of DE
+        # (Prop23.lean:35, cited at Prop24.lean:18). The engine's next
+        # step eliminates the on-line disjunct, so the sample sits on
+        # f's side. The rule fixes the angle and the side; the distance
+        # |d-g'| is a free parameter of the existential step (unit
+        # length chosen, as the engine places no coordinate).
+        (d, e, a, b, c, f, DE, _AB, _AC) = args
+        name = bindings["f"]
+        ang = _ang(xy, b, a, c)
+        base = math.atan2(xy[e][1] - xy[d][1], xy[e][0] - xy[d][0])
+        side = lambda p: ((p[0] - xy[d][0]) * (xy[e][1] - xy[d][1])
+                          - (p[1] - xy[d][1]) * (xy[e][0] - xy[d][0]))
+        cand = None
+        for sgn in (1.0, -1.0):
+            t = base + sgn * ang
+            p = _add(xy[d], (math.cos(t), math.sin(t)))
+            if side(p) * side(xy[f]) > 0:
+                cand = p
+                break
+        assert cand is not None
+        xy[name] = cand
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: |%s-%s| = 1 on "
+                "the ray from %s making angle %s:%s:%s = angle %s:%s:%s "
+                "with %s-%s, on %s's side of %s (the rule fixes the "
+                "angle and the side — the on-line disjunct is eliminated "
+                "by the next step — not the distance)"
+                % (d, name, d, name, d, e, b, a, c, d, e, f, DE))
     if rule == "arbitrary_point":
         # () -> a free point p. No fact constrains it at all; the sample
         # is chosen so the construction that follows stands apart from
@@ -1154,6 +1246,11 @@ dragging)" % (a, b)
                     "not drawable; the diagram shows the TRUE "
                     "configuration — angle a:b:c > angle b:c:a, hence "
                     "|a-c| > |a-b|)")
+        if prop == 25:
+            return ("; ".join(parts) + " (the refuted assumptions are "
+                    "not drawable; the diagram shows the TRUE "
+                    "configuration — |b-c| > |e-f|, hence "
+                    "angle b:a:c > angle e:d:f)")
         if prop == 6:
             return ("; ".join(parts) + " (the refuted assumptions are "
                     "not drawable; the diagram shows the TRUE "
@@ -1207,6 +1304,14 @@ dragging)" % (a, b)
                     "Euclid') is handled by the engine, not drawn; the "
                     "diagram shows the general case (d off CE), in "
                     "which proposition_22' constructs the copied angle")
+        if prop == 24:
+            return ("case split (Prop24.lean:35, by_cases on "
+                    "d.sameSide g EF): branch 1 — d and g on the same "
+                    "side of EF — is EUCLID'S case and is drawn; "
+                    "branch 2 ('Omitted by Euclid', Prop24.lean:40-59: "
+                    "g on EF, or g off EF on the side opposite d) is "
+                    "handled by the engine on state copies, not drawn. "
+                    "Both branches conclude |b-c| > |e-f|")
         return ("case split — the drawn diagram shows the general case; "
                 "the other cases are checked by the engine (see the case "
                 "note on each step), not drawn")
@@ -1267,10 +1372,12 @@ dragging)" % (a, b)
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
                 "proposition_4", "proposition_5", "proposition_5'",
                 "proposition_13", "proposition_15",
-                "proposition_16", "proposition_18", "proposition_19",
+                "proposition_16", "proposition_17", "proposition_18",
+                "proposition_19", "proposition_24",
                 "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
+                "opposing_sides_if",
                 "triple_incidence_1", "triple_incidence_2",
                 "angle_pair_on_line",
                 "proposition_8", "proposition_7", "perpendicular_if",
@@ -1314,6 +1421,51 @@ dragging)" % (a, b)
                     "strict inequalities among |c-d|, |c-e|, |e-d| that "
                     "proposition_22''s premises ask for"
                     % tuple(list(args)[:6]))
+        if rule == "proposition_4" and prop == 24:
+            return ("cited step (proposition_4 a b c d e g AB BC AC DE "
+                    "EG DG — SAS): |a-b| = |d-e| (hypothesis), |a-c| = "
+                    "|d-g| (the proposition_3 cut), and angle b:a:c = "
+                    "angle e:d:g (the copied angle of step 1, by the "
+                    "ray-equality chain), so triangle a-b-c congrues "
+                    "with d-e-g: |b-c| = |e-g| — the goal's hinge — "
+                    "and angle d:g:e = angle a:c:b")
+        if rule == "proposition_5'" and prop == 24:
+            return ("cited step (proposition_5' d g f DG FG DF — the "
+                    "isosceles theorem): |d-g| = |a-c| (the cut) = "
+                    "|d-f| (hypothesis), so the base angles agree: "
+                    "angle d:g:f = angle d:f:g")
+        if rule == "proposition_19" and prop == 24:
+            return ("cited step (proposition_19 e f g EF FG EG — the "
+                    "greater angle faces the greater side, in triangle "
+                    "e-f-g): angle e:f:g > angle e:g:f (the assert "
+                    "above), so |e-g| > |e-f|. The conclusion's why: "
+                    "|b-c| = |e-g| (the proposition_4 step) > |e-f| — "
+                    "the goal")
+        if rule == "triple_incidence_2" and prop == 24:
+            return ("engine-only step (triple_incidence_2, "
+                    "Diagrammatic.lean:201): three lines through one "
+                    "point transfer the known side facts into the "
+                    "same_side premise the next angle split needs. "
+                    "Lean's euclid_assert / SMT closes this silently")
+        if rule == "sum_angles_onlyif" and prop == 24:
+            return ("engine-only step (sum_angles_onlyif, "
+                    "Transfer.lean:90): a point inside an angle splits "
+                    "it into a sum — the angle arithmetic behind the "
+                    "asserts. Lean's SMT discharges these rows silently")
+        if rule == "proposition_4" and prop == 25:
+            return ("cited step (proposition_4 a b c d e f AB BC AC DE "
+                    "EF DF — SAS): under the branch assumption "
+                    "angle b:a:c = angle e:d:f, with |a-b| = |d-e| and "
+                    "|a-c| = |d-f| (hypotheses), the triangles congrue "
+                    "— so |b-c| = |e-f|, contradicting the hypothesis "
+                    "|b-c| > |e-f|")
+        if rule == "proposition_24" and prop == 25:
+            return ("cited step (proposition_24 d e f a b c DE EF DF "
+                    "AB BC AC — the hinge theorem, I.24, with the two "
+                    "triangles swapped): under the branch assumption "
+                    "angle e:d:f > angle b:a:c, with |d-e| = |a-b| and "
+                    "|d-f| = |a-c|, I.24 gives |e-f| > |b-c|, "
+                    "contradicting the hypothesis |b-c| > |e-f|")
         if rule == "proposition_8" and prop == 23:
             return ("cited step (proposition_8 c d e a f g CD DE CE FA "
                     "FG AB — SSS): |c-d| = |a-f|, |c-e| = |a-g|, "
@@ -2074,6 +2226,99 @@ def verify23(xy):
     ]
 
 
+def verify24(xy):
+    """I.24 (the hinge theorem): the drawn facts are the hypotheses —
+    two triangles a-b-c and d-e-f apart, with |a-b| = |d-e| and
+    |a-c| = |d-f| exactly and angle b:a:c > angle e:d:f by a visible
+    margin (>= 5 degrees) — plus the drawn construction: g' on f's
+    side of DE with angle g':d:e = angle b:a:c (the proposition_23'
+    copy), g'' past g' on DG, and g the proposition_3 cut with
+    |d-g| = |a-c|. The drawn case of the by_cases is branch 1: d and
+    g on the same side of EF. The goal numerically: |b-c| > |e-f|,
+    with |b-c| = |e-g| (the SAS copy). The second case ('Omitted by
+    Euclid') is handled by the engine, not drawn."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(l1, l2, p):
+        return ((xy[l2][0] - xy[l1][0]) * (xy[p][1] - xy[l1][1])
+                - (xy[l2][1] - xy[l1][1]) * (xy[p][0] - xy[l1][0]))
+
+    def mindist(P, Q):
+        return min(dist(p, q) for p in P for q in Q)
+    bac = _ang(xy, "b", "a", "c")
+    edf = _ang(xy, "e", "d", "f")
+    gde = _ang(xy, "g'", "d", "e")
+    return [
+        ("I.24: |a-b| = |d-e| (hypothesis, exact)",
+         abs(dist("a", "b") - dist("d", "e")) < EPS),
+        ("I.24: |a-c| = |d-f| (hypothesis, exact)",
+         abs(dist("a", "c") - dist("d", "f")) < EPS),
+        ("I.24: angle b:a:c > angle e:d:f with a visible margin "
+         "(>= 5 degrees)", bac > edf + math.radians(5.0)),
+        ("I.24: genuine triangles (c off AB, f off DE)",
+         abs(cross("a", "b", "c")) > EPS
+         and abs(cross("d", "e", "f")) > EPS),
+        ("I.24: the two triangles stand apart (every cross-pair of "
+         "vertices at least 0.5 apart)",
+         mindist(("a", "b", "c"), ("d", "e", "f")) > 0.5),
+        ("I.24: angle g':d:e = angle b:a:c (the proposition_23' copy)",
+         abs(gde - bac) < EPS),
+        ("I.24: g' on f's side of DE (the resolved disjunct)",
+         cross("d", "e", "g'") * cross("d", "e", "f") > 0),
+        ("I.24: the chain order d, g', g'' on DG with |g'-g''| > |a-c| "
+         "(the extend_point_longer bound)",
+         abs(dist("d", "g'") + dist("g'", "g''") - dist("d", "g''")) < EPS
+         and dist("g'", "g''") > dist("a", "c") + 0.1),
+        ("I.24: |d-g| = |a-c| with g between d and g'' (the "
+         "proposition_3 cut)",
+         abs(dist("d", "g") - dist("a", "c")) < EPS
+         and abs(dist("d", "g") + dist("g", "g''")
+                 - dist("d", "g''")) < EPS),
+        ("I.24: the drawn case is branch 1 — d and g on the same side "
+         "of EF, with a visible margin",
+         cross("e", "f", "d") * cross("e", "f", "g") > 0
+         and abs(cross("e", "f", "g")) / dist("e", "f") > 0.05),
+        ("I.24: |b-c| = |e-g| (the proposition_4 copy)",
+         abs(dist("b", "c") - dist("e", "g")) < EPS),
+        ("I.24: GOAL |b-c| > |e-f| with a visible margin (>= 0.15)",
+         dist("b", "c") > dist("e", "f") + 0.15),
+    ]
+
+
+def verify25(xy):
+    """I.25 (the converse of the hinge theorem, by contradiction): the
+    drawn facts are the hypotheses — two triangles a-b-c and d-e-f
+    apart, with |a-b| = |d-e| and |a-c| = |d-f| exactly and |b-c| >
+    |e-f| by a visible margin — plus the conclusion numerically:
+    angle b:a:c > angle e:d:f (the TRUE configuration; both refuted
+    branch assumptions — the angles equal, or the reversed comparison
+    — fail these checks, as they must)."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(l1, l2, p):
+        return ((xy[l2][0] - xy[l1][0]) * (xy[p][1] - xy[l1][1])
+                - (xy[l2][1] - xy[l1][1]) * (xy[p][0] - xy[l1][0]))
+    bac = _ang(xy, "b", "a", "c")
+    edf = _ang(xy, "e", "d", "f")
+    return [
+        ("I.25: |a-b| = |d-e| (hypothesis, exact)",
+         abs(dist("a", "b") - dist("d", "e")) < EPS),
+        ("I.25: |a-c| = |d-f| (hypothesis, exact)",
+         abs(dist("a", "c") - dist("d", "f")) < EPS),
+        ("I.25: |b-c| > |e-f| (hypothesis) with a visible margin "
+         "(>= 0.15)", dist("b", "c") > dist("e", "f") + 0.15),
+        ("I.25: genuine triangles (c off AB, f off DE)",
+         abs(cross("a", "b", "c")) > EPS
+         and abs(cross("d", "e", "f")) > EPS),
+        ("I.25: the two triangles stand apart (every cross-pair of "
+         "vertices at least 0.5 apart)",
+         min(dist(p, q) for p in ("a", "b", "c")
+           for q in ("d", "e", "f")) > 0.5),
+        ("I.25: GOAL angle b:a:c > angle e:d:f with a visible margin "
+         "(>= 5 degrees)", bac > edf + math.radians(5.0)),
+    ]
+
+
 def verify6(xy):
     """I.6 (equal base angles make equal sides — the converse of I.5, a
     by_contra drawn in the TRUE configuration): the drawn facts are the
@@ -2275,6 +2520,10 @@ def verify(prop, xy):
         return verify22(xy)
     if prop == 23:
         return verify23(xy)
+    if prop == 24:
+        return verify24(xy)
+    if prop == 25:
+        return verify25(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -2952,6 +3201,322 @@ def build_trace23_rows(hyps, steps):
     return rows, s
 
 
+# I.24 display decision (packet P-euclid-play-config-I24-I25): the two
+# triangles stand apart with the given angle at a visibly greater than
+# at d, and Euclid's own case is drawn — d and g on the same side of EF.
+# Lean's second bullet ("Omitted by Euclid", Prop24.lean:40-59) is
+# HANDLED by the engine on state copies, not drawn, and every
+# second-case step's bar says so (the I.23 degenerate-branch pattern).
+DRAWN24 = ("drawn case (branch 1: d sameSide g EF) — Euclid's own case; "
+           "the second case is handled by the engine and only noted")
+BR24_2 = ("second case (not same_side d g EF — 'Omitted by Euclid', "
+          "Prop24.lean:40-59): handled by the engine, not drawn — the "
+          "diagram shows Euclid's case (d and g on the same side of EF)")
+BR24_2_ON = ("second case, sub-case g on EF (Prop24.lean:41-42): the "
+             "goal itself closes it — g on EF forces between e f g, so "
+             "|e-g| = |e-f| + |f-g| > |e-f| and |b-c| = |e-g|; "
+             + BR24_2)
+BR24_2_OFF = ("second case, sub-case g off EF (Prop24.lean:43-59): the "
+              "angle arithmetic of the two linear pairs at f and the "
+              "two triangle angle sums forces angle e:f:g > angle "
+              "e:g:f, so proposition_19 gives |e-g| > |e-f|; "
+              + BR24_2)
+
+
+def build_trace24_rows(hyps, steps):
+    """I.24's replay is the common construction (17 steps) followed by a
+    two-branched by_cases on d.sameSide g EF whose second branch holds a
+    nested by_cases on g.onLine EF (see PROP24_STEPS_DATA). The trace
+    flattens it, as I.23: the common steps (drawn — they ARE Lean's
+    construction), the outer split (Lean's by_cases line), the drawn
+    branch 1's steps, then the second case's nested split and both
+    sub-branches' steps (handled by the engine, not drawn). Returns rows
+    of (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop24.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop24.lean"
+
+    def first(sub, start=0):
+        return next(i + 1 for i, l in enumerate(lean_lines)
+                    if i + 1 > start and sub in l)
+
+    ln_p23 = first("proposition_23'")
+    ln_dg = first("line_from_points d g'")
+    ln_ext = first("extend_point_longer")
+    ln_p3 = first("proposition_3")
+    ln_eg = first("line_from_points e g")
+    ln_fg = first("line_from_points f g")
+    ln_p4 = first("proposition_4")
+    ln_p5 = first("proposition_5'")
+    ln_a28 = first("∠ e:d:g > ∠ e:d:f")
+    ln_a29 = first("g.sameSide f DE")
+    ln_hgf = first("have hgf")
+    ln_a34 = first("f.sameSide e DG")
+    ln_split = first("by_cases (d.sameSide g EF)")
+    ln_a36 = first("∠ d:f:g > ∠ e:g:f")
+    efg = [i + 1 for i, l in enumerate(lean_lines)
+           if "∠ e:f:g > ∠ e:g:f" in l]
+    assert len(efg) == 2, efg
+    ln_a37, ln_a56 = efg
+    p19 = [i + 1 for i, l in enumerate(lean_lines) if "proposition_19" in l]
+    assert len(p19) == 2, p19
+    ln_p19a, ln_p19b = p19
+    ln_inner = first("by_cases g.onLine EF")
+    ln_fin42 = next(i + 1 for i, l in enumerate(lean_lines)
+                    if i + 1 > ln_inner and "euclid_finish" in l)
+    ln_exth = first("extend_point FG g f")
+    ln_a45 = first("¬(g.onLine DF)")
+    ln_a46 = first("¬(e.onLine DF)")
+    ln_a47 = first("g.opposingSides e DF")
+    ln_a48 = first("h.sameSide e DF")
+    p13 = [i + 1 for i, l in enumerate(lean_lines) if "proposition_13" in l]
+    assert len(p13) == 2, p13
+    p17 = [i + 1 for i, l in enumerate(lean_lines) if "proposition_17" in l]
+    assert len(p17) == 2, p17
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+
+    common, final = steps[:-1], steps[-1]
+    assert final[0] == "by_cases"
+    reps_common = eng.run_steps(s, common)
+    s1 = s.copy()  # the pre-split state: hypotheses + the common
+    # construction; both cases replay on copies of this (the by_cases
+    # itself runs them on private copies)
+    top = eng.run_steps(s, [final])[0]
+
+    # the common construction (drawn): Lean links by content; the
+    # engine-only steps (the disjunction resolution, the neq supports,
+    # the closure-derived asserts) get None and a note
+    common_locs = {
+        "proposition_23'": (rel, ln_p23),
+        "extend_point_longer": (rel, ln_ext),
+        "proposition_3": (rel, ln_p3),
+        "proposition_4": (rel, ln_p4),
+        "proposition_5'": (rel, ln_p5),
+        "triple_incidence_2": (rel, ln_a34,
+                               "note: Lean's euclid_assert f.sameSide e "
+                               "DG (Prop24.lean:34): the System E "
+                               "citation is triple_incidence_2 "
+                               "(Diagrammatic.lean:201) over (DE, DF, "
+                               "DG) at d"),
+    }
+    lfp = iter([(rel, ln_dg), (rel, ln_eg), (rel, ln_fg)])
+    rows = []
+    for (r, a, b), rep in zip(common, reps_common):
+        if r == "line_from_points":
+            loc = next(lfp)
+        elif r == "by_contra":
+            # which assert does this by_contra render? keyed by its
+            # conclusion
+            concl = b and [list(c) for c in b] or []
+            c0 = concl[0][0] if concl else None
+            if concl == [["same_side", "g'", "f", "DE"]]:
+                loc = None  # the disjunction resolution: no Lean line
+            elif concl == [["neq", "f", "g"]]:
+                loc = None  # the line_from_points f g premise: SMT
+            elif concl == [["gt_ang", "e", "d", "g", "e", "d", "f"]]:
+                loc = (rel, ln_a28,
+                       "note: Lean's euclid_assert ∠ e:d:g > ∠ e:d:f "
+                       "(Prop24.lean:28), rendered as a by_contra on "
+                       "the angle trichotomy")
+            elif concl == [["same_side", "g", "f", "DE"]]:
+                loc = (rel, ln_a29,
+                       "note: Lean's euclid_assert g.sameSide f DE "
+                       "(Prop24.lean:29), closure-derived and exposed "
+                       "by contradicting its opposing_sides rendering")
+            elif concl == [["not_on_line", "g", "DF"]]:
+                loc = None  # g off DF: closure-only, no Lean line
+            elif concl == [["opposing_sides", "e", "g", "DF"]]:
+                loc = (rel, ln_hgf,
+                       "note: Lean's `have hgf : ¬ g.sameSide e DF` "
+                       "(Prop24.lean:30-33); the engine renders the "
+                       "conclusion as the positive opposing_sides e g "
+                       "DF, and the hgf proof's sum_angles_onlyif step "
+                       "stays inside this by_contra")
+            else:
+                loc = None
+        else:
+            loc = common_locs.get(r)
+        rows.append((r, a, b, rep, loc, None))
+
+    # the outer split (Lean's by_cases line)
+    _tag, branches, conclusions = final
+    rows.append(("by_cases", [list(f) for f, _s in branches],
+                 [list(c) for c in conclusions], top, (rel, ln_split),
+                 None))
+
+    (drawn_assume, drawn_steps), (br2_assume, br2_steps) = branches
+
+    # branch 1 (d sameSide g EF): Euclid's case, drawn
+    drawn_locs = iter([(rel, ln_a36,
+                        "note: Lean's euclid_assert ∠ d:f:g > ∠ e:g:f "
+                        "(Prop24.lean:36), rendered as a by_contra on "
+                        "the angle trichotomy"),
+                       (rel, ln_a37,
+                        "note: Lean's euclid_assert ∠ e:f:g > ∠ e:g:f "
+                        "(Prop24.lean:37), rendered as a by_contra on "
+                        "the angle trichotomy"),
+                       (rel, ln_p19a)])
+    reps1 = _run_branch13(s1, drawn_assume, drawn_steps)
+    for (r, a, b), rep in zip(drawn_steps, reps1):
+        loc = next(drawn_locs) if r in ("by_contra", "proposition_19") \
+            else None
+        rows.append((r, a, b, rep, loc, DRAWN24))
+
+    # branch 2 (not sameSide d g EF): handled by the engine, not drawn
+    inner = br2_steps[0]
+    assert inner[0] == "by_cases"
+    rep_inner = _run_branch13(s1, br2_assume, [inner])[0]
+    rows.append(("by_cases", [list(f) for f, _s in inner[1]],
+                 [list(c) for c in inner[2]], rep_inner,
+                 (rel, ln_inner), BR24_2))
+    sub2 = s1.copy()
+    for f in br2_assume:
+        eng._assume_metric_or_fact(sub2, f, "by_cases assumption")
+    eng.close(sub2)
+    (on_assume, on_steps), (off_assume, off_steps) = inner[1]
+    # sub-case g on EF: the nested by_contra derives between e f g by
+    # line trichotomy; Lean's euclid_finish (Prop24.lean:42) closes it
+    reps_on = _run_branch13(sub2, on_assume, on_steps)
+    for (r, a, b), rep in zip(on_steps, reps_on):
+        loc = ((rel, ln_fin42,
+                "note: Lean's euclid_finish (Prop24.lean:42) closes "
+                "this sub-case outright; the engine renders the "
+                "between-trichotomy on EF as a by_contra deriving "
+                "between e f g")
+               if r == "by_contra" else None)
+        rows.append((r, a, b, rep, loc, BR24_2_ON))
+    # sub-case g off EF: Lean's lines 43-59
+    off_locs = {
+        ("extend_point",): (rel, ln_exth),
+    }
+    assert_locs = iter([(rel, ln_a45,
+                         "note: Lean's euclid_assert ¬(g.onLine DF) "
+                         "(Prop24.lean:45), exposed by contradicting "
+                         "on_line g DF"),
+                        (rel, ln_a46,
+                         "note: Lean's euclid_assert ¬(e.onLine DF) "
+                         "(Prop24.lean:46), closure-derived"),
+                        (rel, ln_a47,
+                         "note: Lean's euclid_assert g.opposingSides e "
+                         "DF (Prop24.lean:47), hgf symmetrized")])
+    p13i, p17i = iter(p13), iter(p17)
+    reps_off = _run_branch13(sub2, off_assume, off_steps)
+    for (r, a, b), rep in zip(off_steps, reps_off):
+        if r == "extend_point":
+            loc = (rel, ln_exth)
+        elif r == "by_contra":
+            concl = [list(c) for c in b]
+            if concl == [["not_on_line", "g", "DF"]] or \
+                    concl == [["not_on_line", "e", "DF"]] or \
+                    concl == [["opposing_sides", "g", "e", "DF"]]:
+                loc = next(assert_locs)
+            elif concl == [["gt_ang", "e", "f", "g", "e", "g", "f"]]:
+                loc = (rel, ln_a56,
+                       "note: Lean's euclid_assert ∠ e:f:g > ∠ e:g:f "
+                       "(Prop24.lean:56), rendered as a by_contra on "
+                       "the angle trichotomy; the lines 53-55 asserts "
+                       "are LA intermediates the constraint store "
+                       "derives inside this check")
+            else:
+                loc = None  # h off DF / off EF: closure-only
+        elif r == "opposing_opposing_same_side" and a[1] == "g" \
+                and a[2] == "h" and a[3] == "DF":
+            loc = (rel, ln_a48,
+                   "note: Lean's euclid_assert h.sameSide e DF "
+                   "(Prop24.lean:48): h and e both oppose g across DF")
+        elif r == "proposition_13":
+            loc = (rel, next(p13i))
+        elif r == "proposition_17":
+            loc = (rel, next(p17i))
+        elif r == "proposition_19":
+            loc = (rel, ln_p19b)
+        else:
+            loc = None
+        rows.append((r, a, b, rep, loc, BR24_2_OFF))
+    return rows, s
+
+
+# I.25 display decision (packet P-euclid-play-config-I24-I25): like
+# I.19, the proof is a by_contra whose two branches (Lean's by_cases
+# ∠b:a:c = ∠e:d:f split) each hold a single cited lemma, so the trace
+# draws the TRUE configuration — the two triangles apart with
+# |b-c| > |e-f|, hence angle b:a:c > angle e:d:f — and each branch
+# step's bar says which refuted assumption it runs under and which
+# hypothesis it contradicts.
+DRAWN25 = ("under an assumption the proof refutes; not drawn as such — "
+           "the diagram shows the TRUE configuration (|b-c| > |e-f|, "
+           "hence angle b:a:c > angle e:d:f)")
+BR25_1 = ("branch 1 (angle b:a:c = angle e:d:f): refuted — "
+          "proposition_4 (SAS) gives |b-c| = |e-f|, contradicting the "
+          "hypothesis |b-c| > |e-f|; " + DRAWN25)
+BR25_2 = ("branch 2 (angle e:d:f > angle b:a:c): refuted — "
+          "proposition_24 (the hinge theorem, I.24, with the triangles "
+          "swapped) gives |e-f| > |b-c|, contradicting the hypothesis "
+          "|b-c| > |e-f|; " + DRAWN25)
+
+
+def build_trace25_rows(hyps, steps):
+    """I.25 is a by_contra whose two branches (Lean's by_cases
+    ∠b:a:c = ∠e:d:f split) each hold a single cited lemma (see
+    PROP25_STEPS_DATA), exactly I.19's shape. The trace flattens it:
+    the by_contra (Lean's by_contra line), the split (Lean's by_cases
+    line), then both branches' steps, each replayed on a state copy and
+    exhibited contradictory. Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop25.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop25.lean"
+    ln_by_contra = next(i + 1 for i, l in enumerate(lean_lines)
+                        if l.strip().startswith("by_contra"))
+    ln_by_cases = next(i + 1 for i, l in enumerate(lean_lines)
+                       if l.strip().startswith("by_cases"))
+    ln_p4 = next(i + 1 for i, l in enumerate(lean_lines)
+                 if "proposition_4" in l)
+    ln_p24 = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "proposition_24" in l)
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+    top = eng.run_steps(s, steps)[0]  # the single outer by_contra report
+
+    _tag, branches, conclusions = steps[0]
+    rows = [("by_contra", branches, conclusions,
+             dict(top, added=[tuple(c) for c in conclusions]),
+             (rel, ln_by_contra),
+             DRAWN25 + "; the conclusion (angle b:a:c > angle e:d:f) "
+             "is what the diagram draws")]
+    rows.append(("by_cases", [list(f) for a, _ in branches for f in a],
+                 [list(f) for a, _ in branches for f in a], {},
+                 (rel, ln_by_cases),
+                 "Lean's `by_cases ∠ b:a:c = ∠ e:d:f` line; under the "
+                 "by_contra's assumption not angle b:a:c > angle "
+                 "e:d:f, trichotomy on the two angles leaves exactly "
+                 "these two branches; " + DRAWN25))
+    for (assume, bsteps), note, ln in zip(branches, (BR25_1, BR25_2),
+                                          (ln_p4, ln_p24)):
+        reps = _run_branch13(s0, assume, bsteps)
+        sub = s0.copy()
+        for f in assume:
+            eng._assume_metric_or_fact(sub, f, "by_contra assumption")
+        eng.close(sub)
+        eng.run_steps(sub, bsteps)
+        ok, _w = eng.contradictory(sub)
+        assert ok, "I.25 branch must end contradictory"
+        for (r, a, b), rep in zip(bsteps, reps):
+            rows.append((r, a, b, rep, (rel, ln), note))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
     if prop == 6:
@@ -2994,6 +3559,19 @@ def build_trace(prop):
         # Euclid") is handled by the engine on state copies, not drawn;
         # the main branch (d off CE) is drawn (see build_trace23_rows)
         rows, _s = build_trace23_rows(hyps, steps)
+        name_map = {}
+    elif prop == 24:
+        # the common construction is drawn, then the closing by_cases:
+        # branch 1 (d sameSide g EF) is Euclid's case, drawn; branch 2
+        # ("Omitted by Euclid") is handled by the engine on state
+        # copies, not drawn (see build_trace24_rows)
+        rows, _s = build_trace24_rows(hyps, steps)
+        name_map = {}
+    elif prop == 25:
+        # by_contra with two cited-lemma branches (see
+        # build_trace25_rows); each branch is replayed on a state copy
+        # and exhibited contradictory, as at I.19
+        rows, _s = build_trace25_rows(hyps, steps)
         name_map = {}
     else:
         # engine replay (premises checked, facts collected); props 4-5
