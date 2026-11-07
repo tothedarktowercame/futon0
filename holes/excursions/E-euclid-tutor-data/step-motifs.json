@@ -5,30 +5,12 @@
  "motifs": {
   "ngram": {
    "name": {
-    "circle_from_points -> circle_from_points": {
-     "support": 5,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop01.lean:10",
-      "Prop01.lean:23",
-      "Prop22.lean:23"
-     ]
-    },
     "point_on_circle_onlyif -> point_on_circle_onlyif": {
-     "support": 6,
+     "support": 3,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
+      "proposition_22"
      ],
      "examples": [
       "Prop01.lean:13",
@@ -36,43 +18,19 @@
       "Prop02.lean:19"
      ]
     },
-    "point_on_circle_onlyif -> use": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_3"
-     ],
-     "examples": [
-      "Prop01.lean:14",
-      "Prop01.lean:27",
-      "Prop03.lean:14"
-     ]
-    },
     "use -> euclid_finish": {
-     "support": 21,
+     "support": 10,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
-      "proposition_11''",
-      "proposition_11'''",
       "proposition_2",
-      "proposition_2'",
       "proposition_23",
-      "proposition_23'",
       "proposition_3",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop01.lean:15",
@@ -80,29 +38,15 @@
       "Prop02.lean:23"
      ]
     },
-    "point_on_circle_onlyif -> use -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_3"
-     ],
-     "examples": [
-      "Prop01.lean:14",
-      "Prop01.lean:27",
-      "Prop03.lean:14"
-     ]
-    },
     "euclid_intros -> line_from_points": {
-     "support": 8,
+     "support": 7,
      "propositions": [
       "proposition_2",
       "proposition_33",
-      "proposition_34'",
+      "proposition_34",
       "proposition_36",
-      "proposition_36'",
       "proposition_41",
-      "proposition_42'",
+      "proposition_42",
       "proposition_7"
      ],
      "examples": [
@@ -125,41 +69,23 @@
      ]
     },
     "line_from_points -> line_from_points": {
-     "support": 14,
+     "support": 10,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_36",
-      "proposition_36'",
       "proposition_47",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:13",
       "Prop05.lean:15",
       "Prop09.lean:19"
-     ]
-    },
-    "circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 4,
-     "propositions": [
-      "proposition_2",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop02.lean:15",
-      "Prop02.lean:17",
-      "Prop22.lean:24"
      ]
     },
     "proposition_1 -> line_from_points -> line_from_points": {
@@ -176,44 +102,17 @@
      ]
     },
     "euclid_intros -> by_cases": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_13",
-      "proposition_2'",
+      "proposition_2",
       "proposition_23",
-      "proposition_23'",
-      "proposition_37'"
+      "proposition_37"
      ],
      "examples": [
       "Prop02.lean:33",
       "Prop13.lean:10",
       "Prop23.lean:12"
-     ]
-    },
-    "by_cases -> use": {
-     "support": 3,
-     "propositions": [
-      "proposition_2'",
-      "proposition_23",
-      "proposition_23'"
-     ],
-     "examples": [
-      "Prop02.lean:34",
-      "Prop23.lean:15",
-      "Prop23.lean:42"
-     ]
-    },
-    "by_cases -> use -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_2'",
-      "proposition_23",
-      "proposition_23'"
-     ],
-     "examples": [
-      "Prop02.lean:34",
-      "Prop23.lean:15",
-      "Prop23.lean:42"
      ]
     },
     "euclid_assert -> euclid_assert": {
@@ -238,7 +137,7 @@
      "support": 7,
      "propositions": [
       "proposition_29",
-      "proposition_35'",
+      "proposition_35",
       "proposition_39",
       "proposition_4",
       "proposition_40",
@@ -252,13 +151,11 @@
      ]
     },
     "euclid_intros -> point_between_points_shorter_than": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:12",
@@ -267,13 +164,11 @@
      ]
     },
     "point_between_points_shorter_than -> proposition_3": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:13",
@@ -282,20 +177,18 @@
      ]
     },
     "proposition_3 -> line_from_points": {
-     "support": 12,
+     "support": 10,
      "propositions": [
       "proposition_16",
       "proposition_18",
       "proposition_20",
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:14",
@@ -304,12 +197,11 @@
      ]
     },
     "line_from_points -> proposition_4": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_5",
       "proposition_6"
      ],
@@ -334,39 +226,11 @@
      ]
     },
     "euclid_intros -> point_between_points_shorter_than -> proposition_3": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop05.lean:12",
-      "Prop09.lean:14",
-      "Prop09.lean:40"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_3 -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_5",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop05.lean:13",
-      "Prop09.lean:15",
-      "Prop09.lean:41"
-     ]
-    },
-    "euclid_intros -> point_between_points_shorter_than -> proposition_3 -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:12",
@@ -375,17 +239,12 @@
      ]
     },
     "euclid_intros -> extend_point": {
-     "support": 9,
+     "support": 4,
      "propositions": [
-      "proposition_11''",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_17",
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29'''",
-      "proposition_29''''",
-      "proposition_29'''''",
-      "proposition_5'"
+      "proposition_29",
+      "proposition_5"
      ],
      "examples": [
       "Prop05.lean:28",
@@ -394,45 +253,16 @@
      ]
     },
     "extend_point -> extend_point": {
-     "support": 5,
+     "support": 3,
      "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''",
-      "proposition_5'",
+      "proposition_29",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
       "Prop05.lean:29",
       "Prop07.lean:26",
       "Prop07.lean:34"
-     ]
-    },
-    "proposition_5 -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_5'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop05.lean:31",
-      "Prop09.lean:26",
-      "Prop09.lean:31"
-     ]
-    },
-    "euclid_intros -> extend_point -> extend_point": {
-     "support": 4,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''",
-      "proposition_5'"
-     ],
-     "examples": [
-      "Prop05.lean:28",
-      "Prop29.lean:46",
-      "Prop29.lean:68"
      ]
     },
     "euclid_intros -> by_contra": {
@@ -469,13 +299,12 @@
      ]
     },
     "proposition_4 -> euclid_finish": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_25",
       "proposition_26",
       "proposition_35",
-      "proposition_35'",
       "proposition_6"
      ],
      "examples": [
@@ -499,11 +328,10 @@
      ]
     },
     "proposition_3 -> line_from_points -> proposition_4": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_6"
      ],
      "examples": [
@@ -515,7 +343,7 @@
     "line_from_points -> by_cases": {
      "support": 3,
      "propositions": [
-      "proposition_36'",
+      "proposition_36",
       "proposition_41",
       "proposition_7"
      ],
@@ -529,7 +357,7 @@
      "support": 4,
      "propositions": [
       "proposition_24",
-      "proposition_35'",
+      "proposition_35",
       "proposition_39",
       "proposition_8"
      ],
@@ -544,7 +372,7 @@
      "propositions": [
       "proposition_13",
       "proposition_24",
-      "proposition_35'",
+      "proposition_35",
       "proposition_8"
      ],
      "examples": [
@@ -553,39 +381,12 @@
       "Prop24.lean:41"
      ]
     },
-    "proposition_1' -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop11.lean:32"
-     ]
-    },
-    "line_from_points -> use": {
-     "support": 3,
-     "propositions": [
-      "proposition_12",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:21",
-      "Prop09.lean:47",
-      "Prop12.lean:18"
-     ]
-    },
     "euclid_finish -> have": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_26",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:27",
@@ -606,115 +407,18 @@
       "Prop48.lean:24"
      ]
     },
-    "proposition_1' -> line_from_points -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop11.lean:32"
-     ]
-    },
     "line_from_points -> line_from_points -> line_from_points": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
-      "proposition_36'",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_36",
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:19",
       "Prop09.lean:45",
       "Prop11.lean:16"
-     ]
-    },
-    "line_from_points -> line_from_points -> use": {
-     "support": 3,
-     "propositions": [
-      "proposition_12",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:20",
-      "Prop09.lean:46",
-      "Prop12.lean:17"
-     ]
-    },
-    "proposition_1' -> line_from_points -> line_from_points -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop11.lean:32"
-     ]
-    },
-    "line_from_points -> line_from_points -> line_from_points -> use": {
-     "support": 3,
-     "propositions": [
-      "proposition_12",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:45",
-      "Prop12.lean:16"
-     ]
-    },
-    "exists -> euclid_intros": {
-     "support": 5,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_11''",
-      "proposition_11'''",
-      "proposition_12"
-     ],
-     "examples": [
-      "Prop11.lean:10",
-      "Prop11.lean:26",
-      "Prop11.lean:43"
-     ]
-    },
-    "line_from_points -> proposition_8": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_23",
-      "proposition_23'"
-     ],
-     "examples": [
-      "Prop11.lean:18",
-      "Prop11.lean:35",
-      "Prop23.lean:29"
-     ]
-    },
-    "line_from_points -> line_from_points -> proposition_8": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_23",
-      "proposition_23'"
-     ],
-     "examples": [
-      "Prop11.lean:17",
-      "Prop11.lean:34",
-      "Prop23.lean:28"
      ]
     },
     "proposition_10 -> line_from_points": {
@@ -746,15 +450,13 @@
      ]
     },
     "line_from_points -> extend_point_longer": {
-     "support": 7,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop16.lean:17",
@@ -763,18 +465,14 @@
      ]
     },
     "extend_point_longer -> proposition_3": {
-     "support": 11,
+     "support": 7,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -784,14 +482,12 @@
      ]
     },
     "line_from_points -> extend_point_longer -> proposition_3": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop16.lean:17",
@@ -800,13 +496,12 @@
      ]
     },
     "extend_point_longer -> proposition_3 -> line_from_points": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
@@ -816,43 +511,16 @@
      ]
     },
     "line_from_points -> extend_point_longer -> proposition_3 -> line_from_points": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:17",
       "Prop16.lean:27",
       "Prop24.lean:19"
-     ]
-    },
-    "euclid_intros -> extend_point_longer": {
-     "support": 3,
-     "propositions": [
-      "proposition_20",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop20.lean:11",
-      "Prop22.lean:42",
-      "Prop22.lean:66"
-     ]
-    },
-    "proposition_20 -> proposition_20": {
-     "support": 3,
-     "propositions": [
-      "proposition_21",
-      "proposition_23",
-      "proposition_23'"
-     ],
-     "examples": [
-      "Prop21.lean:14",
-      "Prop23.lean:24",
-      "Prop23.lean:25"
      ]
     },
     "proposition_16 -> euclid_finish": {
@@ -868,315 +536,15 @@
       "Prop26.lean:43"
      ]
     },
-    "extend_point_longer -> extend_point_longer": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:17",
-      "Prop22.lean:18",
-      "Prop22.lean:43"
-     ]
-    },
-    "proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:21",
-      "Prop22.lean:45"
-     ]
-    },
-    "proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop22.lean:47",
-      "Prop22.lean:71"
-     ]
-    },
-    "use -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:28",
-      "Prop22.lean:53",
-      "Prop22.lean:77"
-     ]
-    },
-    "point_on_circle_onlyif -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:30",
-      "Prop22.lean:55",
-      "Prop22.lean:79"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:43",
-      "Prop22.lean:67"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:19",
-      "Prop22.lean:44",
-      "Prop22.lean:68"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:45",
-      "Prop22.lean:69"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:46",
-      "Prop22.lean:70"
-     ]
-    },
-    "proposition_3 -> circle_from_points -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop22.lean:47",
-      "Prop22.lean:71"
-     ]
-    },
-    "circle_from_points -> circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:48",
-      "Prop22.lean:72"
-     ]
-    },
-    "use -> point_on_circle_onlyif -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:28",
-      "Prop22.lean:53",
-      "Prop22.lean:77"
-     ]
-    },
-    "point_on_circle_onlyif -> point_on_circle_onlyif -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:54",
-      "Prop22.lean:78"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:43",
-      "Prop22.lean:67"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:19",
-      "Prop22.lean:44",
-      "Prop22.lean:68"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:45",
-      "Prop22.lean:69"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> circle_from_points -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:46",
-      "Prop22.lean:70"
-     ]
-    },
-    "proposition_3 -> circle_from_points -> circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop22.lean:47",
-      "Prop22.lean:71"
-     ]
-    },
-    "use -> point_on_circle_onlyif -> point_on_circle_onlyif -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:28",
-      "Prop22.lean:53",
-      "Prop22.lean:77"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3 -> proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:43",
-      "Prop22.lean:67"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3 -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:19",
-      "Prop22.lean:44",
-      "Prop22.lean:68"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> proposition_3 -> circle_from_points -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:45",
-      "Prop22.lean:69"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> circle_from_points -> circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:46",
-      "Prop22.lean:70"
-     ]
-    },
     "euclid_finish -> euclid_assert": {
-     "support": 8,
+     "support": 7,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_25",
       "proposition_26",
       "proposition_29",
-      "proposition_35'",
+      "proposition_35",
       "proposition_39"
      ],
      "examples": [
@@ -1185,25 +553,11 @@
       "Prop24.lean:33"
      ]
     },
-    "extend_point -> use": {
+    "euclid_finish -> line_from_points": {
      "support": 3,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
-      "proposition_31"
-     ],
-     "examples": [
-      "Prop23.lean:19",
-      "Prop23.lean:46",
-      "Prop31.lean:17"
-     ]
-    },
-    "euclid_finish -> line_from_points": {
-     "support": 4,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_36'",
+      "proposition_36",
       "proposition_40"
      ],
      "examples": [
@@ -1213,13 +567,11 @@
      ]
     },
     "proposition_23' -> line_from_points": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_24",
       "proposition_31",
-      "proposition_42",
-      "proposition_42'",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop24.lean:18",
@@ -1259,7 +611,7 @@
      "propositions": [
       "proposition_24",
       "proposition_30",
-      "proposition_35'"
+      "proposition_35"
      ],
      "examples": [
       "Prop24.lean:39",
@@ -1271,7 +623,7 @@
      "support": 3,
      "propositions": [
       "proposition_27",
-      "proposition_35'",
+      "proposition_35",
       "proposition_40"
      ],
      "examples": [
@@ -1294,156 +646,10 @@
       "Prop30.lean:27"
      ]
     },
-    "extend_point -> proposition_29": {
-     "support": 4,
-     "propositions": [
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:37",
-      "Prop29.lean:49",
-      "Prop29.lean:71"
-     ]
-    },
-    "proposition_29 -> euclid_finish": {
-     "support": 4,
-     "propositions": [
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:38",
-      "Prop29.lean:50",
-      "Prop29.lean:72"
-     ]
-    },
-    "extend_point -> proposition_29 -> euclid_finish": {
-     "support": 4,
-     "propositions": [
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:37",
-      "Prop29.lean:49",
-      "Prop29.lean:71"
-     ]
-    },
-    "extend_point -> extend_point -> extend_point": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:47",
-      "Prop29.lean:69",
-      "Prop29.lean:81"
-     ]
-    },
-    "extend_point -> extend_point -> proposition_29": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:48",
-      "Prop29.lean:70",
-      "Prop29.lean:83"
-     ]
-    },
-    "euclid_intros -> extend_point -> extend_point -> extend_point": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:46",
-      "Prop29.lean:68",
-      "Prop29.lean:80"
-     ]
-    },
-    "extend_point -> extend_point -> extend_point -> proposition_29": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:47",
-      "Prop29.lean:69",
-      "Prop29.lean:82"
-     ]
-    },
-    "extend_point -> extend_point -> proposition_29 -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:48",
-      "Prop29.lean:70",
-      "Prop29.lean:83"
-     ]
-    },
-    "extend_point -> extend_point -> extend_point -> proposition_29 -> euclid_finish": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:47",
-      "Prop29.lean:69",
-      "Prop29.lean:82"
-     ]
-    },
-    "line_from_points -> proposition_23'": {
-     "support": 3,
-     "propositions": [
-      "proposition_31",
-      "proposition_42",
-      "proposition_42'"
-     ],
-     "examples": [
-      "Prop31.lean:14",
-      "Prop42.lean:19",
-      "Prop42.lean:39"
-     ]
-    },
-    "line_from_points -> proposition_23' -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_31",
-      "proposition_42",
-      "proposition_42'"
-     ],
-     "examples": [
-      "Prop31.lean:14",
-      "Prop42.lean:19",
-      "Prop42.lean:39"
-     ]
-    },
     "proposition_34 -> euclid_finish": {
      "support": 4,
      "propositions": [
-      "proposition_34'",
+      "proposition_34",
       "proposition_37",
       "proposition_38",
       "proposition_41"
@@ -1454,24 +660,10 @@
       "Prop38.lean:21"
      ]
     },
-    "proposition_34' -> proposition_34'": {
+    "proposition_34' -> euclid_assert": {
      "support": 3,
      "propositions": [
       "proposition_35",
-      "proposition_35'",
-      "proposition_45"
-     ],
-     "examples": [
-      "Prop35.lean:15",
-      "Prop35.lean:28",
-      "Prop45.lean:32"
-     ]
-    },
-    "proposition_34' -> euclid_assert": {
-     "support": 4,
-     "propositions": [
-      "proposition_35",
-      "proposition_35'",
       "proposition_36",
       "proposition_45"
      ],
@@ -1481,43 +673,15 @@
       "Prop36.lean:17"
      ]
     },
-    "proposition_34' -> proposition_34' -> euclid_assert": {
-     "support": 3,
-     "propositions": [
-      "proposition_35",
-      "proposition_35'",
-      "proposition_45"
-     ],
-     "examples": [
-      "Prop35.lean:15",
-      "Prop35.lean:28",
-      "Prop45.lean:32"
-     ]
-    },
-    "euclid_assert -> proposition_33": {
-     "support": 3,
-     "propositions": [
-      "proposition_36",
-      "proposition_36'",
-      "proposition_45"
-     ],
-     "examples": [
-      "Prop36.lean:18",
-      "Prop36.lean:35",
-      "Prop36.lean:45"
-     ]
-    },
     "proposition_31 -> intersection_lines": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop37.lean:15",
@@ -1526,14 +690,12 @@
      ]
     },
     "intersection_lines -> proposition_31": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop37.lean:16",
@@ -1555,12 +717,11 @@
      ]
     },
     "proposition_31 -> intersection_lines -> proposition_31": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_42",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop37.lean:15",
@@ -1569,12 +730,11 @@
      ]
     },
     "intersection_lines -> proposition_31 -> intersection_lines": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_42",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop37.lean:16",
@@ -1583,12 +743,11 @@
      ]
     },
     "proposition_31 -> intersection_lines -> proposition_31 -> intersection_lines": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_42",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop37.lean:15",
@@ -1597,12 +756,11 @@
      ]
     },
     "intersection_lines -> line_from_points": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_39",
       "proposition_40",
       "proposition_44",
-      "proposition_44'",
       "proposition_47"
      ],
      "examples": [
@@ -1610,138 +768,16 @@
       "Prop39.lean:25",
       "Prop40.lean:19"
      ]
-    },
-    "euclid_intros -> proposition_10": {
-     "support": 3,
-     "propositions": [
-      "proposition_42",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop42.lean:17",
-      "Prop42.lean:58",
-      "Prop42.lean:80"
-     ]
-    },
-    "proposition_31 -> proposition_30": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:20",
-      "Prop44.lean:26",
-      "Prop44.lean:43"
-     ]
-    },
-    "proposition_30 -> intersection_lines": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:21",
-      "Prop44.lean:27",
-      "Prop44.lean:44"
-     ]
-    },
-    "intersection_lines -> intersection_lines": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:28",
-      "Prop44.lean:51",
-      "Prop47.lean:63"
-     ]
-    },
-    "proposition_31 -> proposition_30 -> intersection_lines": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:20",
-      "Prop44.lean:26",
-      "Prop44.lean:43"
-     ]
-    },
-    "proposition_30 -> intersection_lines -> intersection_lines": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:27",
-      "Prop44.lean:50",
-      "Prop47.lean:62"
-     ]
-    },
-    "proposition_31 -> proposition_30 -> intersection_lines -> intersection_lines": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:26",
-      "Prop44.lean:49",
-      "Prop47.lean:61"
-     ]
     }
    },
    "class": {
-    "other -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_12"
-     ],
-     "examples": [
-      "Prop01.lean:9",
-      "Prop01.lean:22",
-      "Prop12.lean:12"
-     ]
-    },
-    "construct-circle -> construct-circle": {
+    "construct-circle -> intersect": {
      "support": 5,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop01.lean:10",
-      "Prop01.lean:23",
-      "Prop22.lean:23"
-     ]
-    },
-    "construct-circle -> intersect": {
-     "support": 8,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
       "proposition_12",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3"
      ],
      "examples": [
@@ -1751,10 +787,9 @@
      ]
     },
     "intersect -> metric/angle/area": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_3"
      ],
@@ -1765,14 +800,11 @@
      ]
     },
     "metric/angle/area -> metric/angle/area": {
-     "support": 9,
+     "support": 6,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_43",
       "proposition_47",
       "proposition_5"
@@ -1784,18 +816,14 @@
      ]
     },
     "metric/angle/area -> other": {
-     "support": 19,
+     "support": 15,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_11",
-      "proposition_11'",
       "proposition_14",
       "proposition_18",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
       "proposition_3",
       "proposition_39",
@@ -1813,26 +841,20 @@
      ]
     },
     "other -> other": {
-     "support": 51,
+     "support": 38,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
-      "proposition_11''",
-      "proposition_11'''",
       "proposition_12",
       "proposition_13",
       "proposition_14",
       "proposition_16",
       "proposition_19",
       "proposition_2",
-      "proposition_2'",
       "proposition_21",
       "proposition_22",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_25",
       "proposition_26",
@@ -1844,28 +866,21 @@
       "proposition_31",
       "proposition_32",
       "proposition_35",
-      "proposition_35'",
-      "proposition_37'",
+      "proposition_37",
       "proposition_39",
       "proposition_4",
       "proposition_40",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_43",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
       "proposition_6",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop01.lean:15",
@@ -1873,26 +888,10 @@
       "Prop02.lean:23"
      ]
     },
-    "construct-circle -> construct-circle -> intersect": {
-     "support": 5,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop01.lean:10",
-      "Prop01.lean:23",
-      "Prop22.lean:23"
-     ]
-    },
     "construct-circle -> intersect -> metric/angle/area": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_3"
      ],
@@ -1902,28 +901,12 @@
       "Prop02.lean:17"
      ]
     },
-    "intersect -> metric/angle/area -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_2"
-     ],
-     "examples": [
-      "Prop01.lean:12",
-      "Prop01.lean:25",
-      "Prop02.lean:18"
-     ]
-    },
     "metric/angle/area -> metric/angle/area -> other": {
-     "support": 9,
+     "support": 6,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_43",
       "proposition_47",
       "proposition_5"
@@ -1935,12 +918,10 @@
      ]
     },
     "metric/angle/area -> other -> other": {
-     "support": 12,
+     "support": 10,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_11",
-      "proposition_11'",
       "proposition_2",
       "proposition_24",
       "proposition_3",
@@ -1956,24 +937,10 @@
       "Prop02.lean:22"
      ]
     },
-    "construct-circle -> intersect -> metric/angle/area -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_1'",
-      "proposition_2"
-     ],
-     "examples": [
-      "Prop01.lean:11",
-      "Prop01.lean:24",
-      "Prop02.lean:17"
-     ]
-    },
     "metric/angle/area -> metric/angle/area -> other -> other": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_43",
       "proposition_47"
@@ -1985,20 +952,18 @@
      ]
     },
     "other -> construct-line": {
-     "support": 14,
+     "support": 12,
      "propositions": [
       "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_30",
       "proposition_31",
       "proposition_33",
-      "proposition_34'",
+      "proposition_34",
       "proposition_36",
-      "proposition_36'",
       "proposition_40",
       "proposition_41",
-      "proposition_42'",
+      "proposition_42",
       "proposition_47",
       "proposition_7"
      ],
@@ -2009,37 +974,29 @@
      ]
     },
     "construct-line -> cite-proposition": {
-     "support": 29,
+     "support": 21,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_16",
       "proposition_18",
       "proposition_2",
       "proposition_20",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_31",
       "proposition_33",
-      "proposition_34'",
+      "proposition_34",
       "proposition_36",
-      "proposition_36'",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_47",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:11",
@@ -2048,11 +1005,10 @@
      ]
     },
     "cite-proposition -> construct-line": {
-     "support": 25,
+     "support": 18,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_13",
       "proposition_16",
@@ -2060,21 +1016,15 @@
       "proposition_2",
       "proposition_20",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_31",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_46",
-      "proposition_46'",
       "proposition_48",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:12",
@@ -2083,22 +1033,18 @@
      ]
     },
     "construct-line -> construct-line": {
-     "support": 14,
+     "support": 10,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_36",
-      "proposition_36'",
       "proposition_47",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:13",
@@ -2107,17 +1053,16 @@
      ]
     },
     "other -> construct-line -> cite-proposition": {
-     "support": 9,
+     "support": 8,
      "propositions": [
       "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_31",
       "proposition_33",
-      "proposition_34'",
-      "proposition_36'",
+      "proposition_34",
+      "proposition_36",
       "proposition_40",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop02.lean:10",
@@ -2126,15 +1071,13 @@
      ]
     },
     "construct-line -> cite-proposition -> construct-line": {
-     "support": 7,
+     "support": 5,
      "propositions": [
       "proposition_10",
       "proposition_2",
       "proposition_31",
       "proposition_42",
-      "proposition_42'",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:11",
@@ -2143,19 +1086,16 @@
      ]
     },
     "cite-proposition -> construct-line -> construct-line": {
-     "support": 11,
+     "support": 8,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:12",
@@ -2181,25 +1121,12 @@
      "propositions": [
       "proposition_2",
       "proposition_31",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop02.lean:10",
       "Prop31.lean:13",
       "Prop42.lean:38"
-     ]
-    },
-    "construct-line -> cite-proposition -> construct-line -> construct-line": {
-     "support": 3,
-     "propositions": [
-      "proposition_2",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop02.lean:11",
-      "Prop09.lean:17",
-      "Prop09.lean:43"
      ]
     },
     "metric/angle/area -> metric/angle/area -> metric/angle/area -> metric/angle/area": {
@@ -2255,18 +1182,17 @@
      ]
     },
     "other -> cite-proposition": {
-     "support": 49,
+     "support": 39,
      "propositions": [
       "proposition_10",
-      "proposition_11'",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_12",
       "proposition_13",
       "proposition_15",
       "proposition_16",
       "proposition_18",
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_21",
       "proposition_24",
       "proposition_25",
@@ -2280,32 +1206,23 @@
       "proposition_32",
       "proposition_34",
       "proposition_35",
-      "proposition_35'",
       "proposition_36",
-      "proposition_36'",
       "proposition_37",
-      "proposition_37'",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_43",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
       "proposition_6",
       "proposition_7",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:36",
@@ -2314,66 +1231,48 @@
      ]
     },
     "cite-proposition -> other": {
-     "support": 58,
+     "support": 40,
      "propositions": [
       "proposition_10",
-      "proposition_11'",
-      "proposition_11''",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_12",
       "proposition_14",
       "proposition_15",
       "proposition_16",
       "proposition_17",
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_20",
       "proposition_21",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_25",
       "proposition_26",
       "proposition_27",
       "proposition_28",
       "proposition_29",
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29'''",
-      "proposition_29''''",
-      "proposition_29'''''",
       "proposition_30",
       "proposition_31",
       "proposition_32",
       "proposition_33",
       "proposition_34",
-      "proposition_34'",
       "proposition_35",
-      "proposition_35'",
       "proposition_36",
-      "proposition_36'",
       "proposition_37",
-      "proposition_37'",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
-      "proposition_5'",
+      "proposition_5",
       "proposition_6",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:37",
@@ -2382,14 +1281,13 @@
      ]
     },
     "other -> other -> other": {
-     "support": 22,
+     "support": 20,
      "propositions": [
       "proposition_12",
       "proposition_13",
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_25",
       "proposition_26",
@@ -2397,15 +1295,14 @@
       "proposition_30",
       "proposition_31",
       "proposition_32",
-      "proposition_35'",
+      "proposition_35",
       "proposition_39",
       "proposition_4",
       "proposition_43",
       "proposition_47",
       "proposition_6",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:33",
@@ -2414,12 +1311,12 @@
      ]
     },
     "other -> other -> cite-proposition": {
-     "support": 25,
+     "support": 24,
      "propositions": [
       "proposition_13",
       "proposition_16",
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_21",
       "proposition_24",
       "proposition_25",
@@ -2430,7 +1327,7 @@
       "proposition_31",
       "proposition_32",
       "proposition_35",
-      "proposition_37'",
+      "proposition_37",
       "proposition_39",
       "proposition_40",
       "proposition_41",
@@ -2439,8 +1336,7 @@
       "proposition_48",
       "proposition_6",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:35",
@@ -2451,10 +1347,10 @@
     "other -> cite-proposition -> other": {
      "support": 20,
      "propositions": [
-      "proposition_11'''",
+      "proposition_11",
       "proposition_12",
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_24",
       "proposition_25",
       "proposition_26",
@@ -2462,9 +1358,9 @@
       "proposition_29",
       "proposition_31",
       "proposition_32",
-      "proposition_35'",
-      "proposition_36'",
-      "proposition_37'",
+      "proposition_35",
+      "proposition_36",
+      "proposition_37",
       "proposition_41",
       "proposition_45",
       "proposition_47",
@@ -2479,15 +1375,14 @@
      ]
     },
     "other -> other -> other -> other": {
-     "support": 8,
+     "support": 7,
      "propositions": [
-      "proposition_2'",
+      "proposition_2",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_29",
-      "proposition_35'",
+      "proposition_35",
       "proposition_4"
      ],
      "examples": [
@@ -2497,11 +1392,11 @@
      ]
     },
     "other -> other -> other -> cite-proposition": {
-     "support": 15,
+     "support": 14,
      "propositions": [
       "proposition_13",
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_24",
       "proposition_25",
       "proposition_26",
@@ -2512,8 +1407,7 @@
       "proposition_47",
       "proposition_6",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:34",
@@ -2525,13 +1419,13 @@
      "support": 13,
      "propositions": [
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_24",
       "proposition_25",
       "proposition_29",
       "proposition_31",
       "proposition_32",
-      "proposition_37'",
+      "proposition_37",
       "proposition_41",
       "proposition_45",
       "proposition_47",
@@ -2547,7 +1441,7 @@
     "other -> other -> other -> other -> cite-proposition": {
      "support": 4,
      "propositions": [
-      "proposition_2'",
+      "proposition_2",
       "proposition_24",
       "proposition_26",
       "proposition_29"
@@ -2562,7 +1456,7 @@
      "support": 9,
      "propositions": [
       "proposition_19",
-      "proposition_2'",
+      "proposition_2",
       "proposition_24",
       "proposition_25",
       "proposition_29",
@@ -2577,37 +1471,19 @@
       "Prop19.lean:11"
      ]
     },
-    "cite-proposition -> construct-circle": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_3"
-     ],
-     "examples": [
-      "Prop03.lean:11",
-      "Prop22.lean:22",
-      "Prop22.lean:47"
-     ]
-    },
     "other -> metric/angle/area": {
-     "support": 14,
+     "support": 10,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_14",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
       "proposition_39",
       "proposition_4",
       "proposition_47",
       "proposition_5",
       "proposition_8",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop04.lean:10",
@@ -2674,10 +1550,9 @@
      ]
     },
     "other -> other -> other -> other -> other": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_29",
@@ -2690,16 +1565,14 @@
      ]
     },
     "metric/angle/area -> cite-proposition": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_20",
       "proposition_32",
       "proposition_5",
       "proposition_7",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:13",
@@ -2708,7 +1581,7 @@
      ]
     },
     "cite-proposition -> cite-proposition": {
-     "support": 40,
+     "support": 29,
      "propositions": [
       "proposition_11",
       "proposition_15",
@@ -2717,10 +1590,7 @@
       "proposition_18",
       "proposition_21",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_28",
@@ -2730,26 +1600,18 @@
       "proposition_33",
       "proposition_34",
       "proposition_35",
-      "proposition_35'",
       "proposition_36",
-      "proposition_36'",
       "proposition_37",
       "proposition_38",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_43",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:17",
@@ -2758,10 +1620,9 @@
      ]
     },
     "cite-proposition -> metric/angle/area": {
-     "support": 8,
+     "support": 7,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_18",
       "proposition_20",
       "proposition_32",
@@ -2776,13 +1637,11 @@
      ]
     },
     "other -> metric/angle/area -> cite-proposition": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:12",
@@ -2790,30 +1649,14 @@
       "Prop09.lean:40"
      ]
     },
-    "metric/angle/area -> cite-proposition -> construct-line": {
-     "support": 3,
-     "propositions": [
-      "proposition_5",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop05.lean:13",
-      "Prop09.lean:15",
-      "Prop09.lean:41"
-     ]
-    },
     "construct-line -> construct-line -> cite-proposition": {
-     "support": 10,
+     "support": 7,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_36",
-      "proposition_36'",
       "proposition_47",
       "proposition_5"
      ],
@@ -2824,17 +1667,15 @@
      ]
     },
     "construct-line -> cite-proposition -> cite-proposition": {
-     "support": 11,
+     "support": 9,
      "propositions": [
       "proposition_16",
       "proposition_18",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_33",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_47",
       "proposition_5"
      ],
@@ -2857,25 +1698,11 @@
       "Prop43.lean:14"
      ]
     },
-    "other -> metric/angle/area -> cite-proposition -> construct-line": {
-     "support": 3,
-     "propositions": [
-      "proposition_5",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop05.lean:12",
-      "Prop09.lean:14",
-      "Prop09.lean:40"
-     ]
-    },
     "cite-proposition -> construct-line -> construct-line -> cite-proposition": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_10",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_5"
      ],
@@ -2899,27 +1726,20 @@
      ]
     },
     "other -> extend": {
-     "support": 20,
+     "support": 13,
      "propositions": [
-      "proposition_11''",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_14",
       "proposition_17",
       "proposition_20",
-      "proposition_22'",
-      "proposition_22''",
+      "proposition_22",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_27",
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29'''",
-      "proposition_29''''",
-      "proposition_29'''''",
+      "proposition_29",
       "proposition_30",
       "proposition_47",
-      "proposition_5'",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -2929,16 +1749,12 @@
      ]
     },
     "extend -> extend": {
-     "support": 9,
+     "support": 5,
      "propositions": [
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''",
+      "proposition_29",
       "proposition_48",
-      "proposition_5'",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -2948,29 +1764,21 @@
      ]
     },
     "extend -> cite-proposition": {
-     "support": 22,
+     "support": 14,
      "propositions": [
-      "proposition_11''",
+      "proposition_11",
       "proposition_14",
       "proposition_16",
       "proposition_17",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29'''",
-      "proposition_29''''",
-      "proposition_29'''''",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_29",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
-      "proposition_5'",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -2980,14 +1788,11 @@
      ]
     },
     "other -> extend -> extend": {
-     "support": 7,
+     "support": 4,
      "propositions": [
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''",
-      "proposition_5'",
+      "proposition_22",
+      "proposition_29",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -2997,16 +1802,12 @@
      ]
     },
     "extend -> extend -> cite-proposition": {
-     "support": 9,
+     "support": 5,
      "propositions": [
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''",
+      "proposition_29",
       "proposition_48",
-      "proposition_5'",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -3016,18 +1817,14 @@
      ]
     },
     "extend -> cite-proposition -> other": {
-     "support": 10,
+     "support": 6,
      "propositions": [
-      "proposition_11''",
+      "proposition_11",
       "proposition_14",
       "proposition_16",
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29'''",
-      "proposition_29''''",
-      "proposition_29'''''",
+      "proposition_29",
       "proposition_47",
-      "proposition_5'"
+      "proposition_5"
      ],
      "examples": [
       "Prop05.lean:30",
@@ -3036,11 +1833,10 @@
      ]
     },
     "other -> extend -> extend -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_5'",
+      "proposition_22",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -3049,25 +1845,11 @@
       "Prop07.lean:32"
      ]
     },
-    "extend -> extend -> cite-proposition -> other": {
-     "support": 4,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''",
-      "proposition_5'"
-     ],
-     "examples": [
-      "Prop05.lean:29",
-      "Prop29.lean:48",
-      "Prop29.lean:70"
-     ]
-    },
     "other -> cite-proposition -> construct-line": {
-     "support": 12,
+     "support": 11,
      "propositions": [
       "proposition_10",
-      "proposition_11'",
+      "proposition_11",
       "proposition_13",
       "proposition_16",
       "proposition_18",
@@ -3075,7 +1857,6 @@
       "proposition_26",
       "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48",
       "proposition_6"
      ],
@@ -3086,19 +1867,15 @@
      ]
     },
     "cite-proposition -> construct-line -> cite-proposition": {
-     "support": 11,
+     "support": 7,
      "propositions": [
       "proposition_16",
       "proposition_18",
       "proposition_20",
       "proposition_26",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop06.lean:14",
@@ -3107,14 +1884,12 @@
      ]
     },
     "construct-line -> cite-proposition -> other": {
-     "support": 9,
+     "support": 7,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
       "proposition_26",
-      "proposition_34'",
+      "proposition_34",
       "proposition_36",
-      "proposition_36'",
       "proposition_39",
       "proposition_40",
       "proposition_6"
@@ -3126,26 +1901,24 @@
      ]
     },
     "cite-proposition -> other -> cite-proposition": {
-     "support": 18,
+     "support": 16,
      "propositions": [
-      "proposition_11'",
+      "proposition_11",
       "proposition_16",
       "proposition_19",
       "proposition_26",
       "proposition_27",
       "proposition_28",
       "proposition_30",
-      "proposition_35'",
+      "proposition_35",
       "proposition_36",
-      "proposition_36'",
-      "proposition_37'",
+      "proposition_37",
       "proposition_41",
       "proposition_45",
       "proposition_47",
       "proposition_48",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop06.lean:16",
@@ -3182,11 +1955,10 @@
      ]
     },
     "construct-line -> cite-proposition -> other -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_26",
       "proposition_36",
-      "proposition_36'",
       "proposition_6"
      ],
      "examples": [
@@ -3198,7 +1970,7 @@
     "cite-proposition -> other -> cite-proposition -> construct-line": {
      "support": 3,
      "propositions": [
-      "proposition_11'",
+      "proposition_11",
       "proposition_16",
       "proposition_6"
      ],
@@ -3222,16 +1994,15 @@
      ]
     },
     "construct-line -> other": {
-     "support": 8,
+     "support": 7,
      "propositions": [
       "proposition_12",
       "proposition_13",
-      "proposition_36'",
+      "proposition_36",
       "proposition_41",
       "proposition_48",
       "proposition_7",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop07.lean:12",
@@ -3253,10 +2024,9 @@
      ]
     },
     "cite-proposition -> metric/angle/area -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_18",
       "proposition_7"
      ],
@@ -3267,14 +2037,12 @@
      ]
     },
     "construct-line -> construct-line -> construct-line": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
-      "proposition_36'",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_36",
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:19",
@@ -3283,12 +2051,11 @@
      ]
     },
     "construct-line -> construct-line -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_12",
-      "proposition_36'",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_36",
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:20",
@@ -3297,12 +2064,11 @@
      ]
     },
     "construct-line -> other -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_41",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:21",
@@ -3311,7 +2077,7 @@
      ]
     },
     "other -> cite-proposition -> cite-proposition": {
-     "support": 21,
+     "support": 16,
      "propositions": [
       "proposition_15",
       "proposition_21",
@@ -3321,19 +2087,14 @@
       "proposition_30",
       "proposition_34",
       "proposition_35",
-      "proposition_35'",
       "proposition_36",
-      "proposition_36'",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
       "proposition_43",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:24",
@@ -3342,7 +2103,7 @@
      ]
     },
     "cite-proposition -> cite-proposition -> other": {
-     "support": 31,
+     "support": 23,
      "propositions": [
       "proposition_15",
       "proposition_16",
@@ -3357,24 +2118,16 @@
       "proposition_33",
       "proposition_34",
       "proposition_35",
-      "proposition_35'",
       "proposition_36",
-      "proposition_36'",
       "proposition_37",
       "proposition_38",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -3383,14 +2136,12 @@
      ]
     },
     "cite-proposition -> other -> other": {
-     "support": 28,
+     "support": 19,
      "propositions": [
       "proposition_10",
-      "proposition_11''",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_21",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_25",
       "proposition_26",
@@ -3398,21 +2149,14 @@
       "proposition_30",
       "proposition_32",
       "proposition_35",
-      "proposition_35'",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:26",
@@ -3420,27 +2164,12 @@
       "Prop10.lean:18"
      ]
     },
-    "cite-proposition -> construct-line -> cite-proposition -> construct-line": {
+    "cite-proposition -> construct-line -> construct-line -> construct-line": {
      "support": 3,
      "propositions": [
-      "proposition_42",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:16",
-      "Prop09.lean:42",
-      "Prop42.lean:18"
-     ]
-    },
-    "cite-proposition -> construct-line -> construct-line -> construct-line": {
-     "support": 5,
-     "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:18",
@@ -3448,21 +2177,8 @@
       "Prop11.lean:15"
      ]
     },
-    "construct-line -> construct-line -> construct-line -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_12",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:45",
-      "Prop12.lean:16"
-     ]
-    },
     "other -> other -> cite-proposition -> cite-proposition": {
-     "support": 9,
+     "support": 8,
      "propositions": [
       "proposition_21",
       "proposition_24",
@@ -3471,8 +2187,7 @@
       "proposition_30",
       "proposition_35",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:23",
@@ -3481,21 +2196,18 @@
      ]
     },
     "other -> cite-proposition -> cite-proposition -> other": {
-     "support": 13,
+     "support": 10,
      "propositions": [
       "proposition_21",
       "proposition_28",
       "proposition_29",
       "proposition_35",
-      "proposition_35'",
-      "proposition_36'",
+      "proposition_36",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
       "proposition_45",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:24",
@@ -3504,7 +2216,7 @@
      ]
     },
     "cite-proposition -> cite-proposition -> other -> other": {
-     "support": 19,
+     "support": 12,
      "propositions": [
       "proposition_21",
       "proposition_24",
@@ -3512,19 +2224,12 @@
       "proposition_30",
       "proposition_32",
       "proposition_35",
-      "proposition_35'",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -3533,17 +2238,16 @@
      ]
     },
     "cite-proposition -> other -> other -> other": {
-     "support": 9,
+     "support": 8,
      "propositions": [
       "proposition_24",
       "proposition_26",
       "proposition_29",
       "proposition_32",
-      "proposition_35'",
+      "proposition_35",
       "proposition_39",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:26",
@@ -3552,15 +2256,14 @@
      ]
     },
     "cite-proposition -> cite-proposition -> other -> cite-proposition": {
-     "support": 7,
+     "support": 6,
      "propositions": [
       "proposition_26",
       "proposition_28",
       "proposition_30",
       "proposition_45",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:30",
@@ -3574,8 +2277,8 @@
       "proposition_19",
       "proposition_26",
       "proposition_27",
-      "proposition_36'",
-      "proposition_37'",
+      "proposition_36",
+      "proposition_37",
       "proposition_45",
       "proposition_47",
       "proposition_48",
@@ -3587,41 +2290,14 @@
       "Prop26.lean:26"
      ]
     },
-    "cite-proposition -> construct-line -> construct-line -> construct-line -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_12",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop12.lean:15"
-     ]
-    },
-    "other -> other -> other -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_24",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:22",
-      "Prop09.lean:27",
-      "Prop09.lean:48"
-     ]
-    },
     "other -> other -> cite-proposition -> cite-proposition -> other": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_21",
       "proposition_28",
       "proposition_29",
       "proposition_35",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:23",
@@ -3630,15 +2306,12 @@
      ]
     },
     "other -> cite-proposition -> cite-proposition -> other -> other": {
-     "support": 7,
+     "support": 4,
      "propositions": [
       "proposition_35",
-      "proposition_35'",
       "proposition_42",
-      "proposition_42'",
       "proposition_45",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:24",
@@ -3647,13 +2320,12 @@
      ]
     },
     "cite-proposition -> cite-proposition -> other -> other -> other": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_24",
       "proposition_32",
-      "proposition_35'",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_35",
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -3662,13 +2334,12 @@
      ]
     },
     "cite-proposition -> other -> other -> other -> cite-proposition": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_32",
       "proposition_39",
       "proposition_47",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:26",
@@ -3677,12 +2348,11 @@
      ]
     },
     "other -> cite-proposition -> cite-proposition -> other -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_28",
       "proposition_45",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:29",
@@ -3705,20 +2375,17 @@
      ]
     },
     "cite-proposition -> intersect": {
-     "support": 12,
+     "support": 9,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:59",
@@ -3727,18 +2394,15 @@
      ]
     },
     "intersect -> other": {
-     "support": 10,
+     "support": 7,
      "propositions": [
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_27",
       "proposition_30",
-      "proposition_35'",
+      "proposition_35",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:60",
@@ -3753,7 +2417,7 @@
       "proposition_38",
       "proposition_39",
       "proposition_40",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:58",
@@ -3762,12 +2426,11 @@
      ]
     },
     "cite-proposition -> intersect -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:59",
@@ -3776,7 +2439,7 @@
      ]
     },
     "intersect -> cite-proposition": {
-     "support": 11,
+     "support": 8,
      "propositions": [
       "proposition_10",
       "proposition_12",
@@ -3784,11 +2447,8 @@
       "proposition_37",
       "proposition_38",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop10.lean:17",
@@ -3797,10 +2457,9 @@
      ]
     },
     "other -> other -> metric/angle/area": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_22",
       "proposition_24",
       "proposition_39"
@@ -3812,67 +2471,24 @@
      ]
     },
     "cite-proposition -> cite-proposition -> construct-line": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
       "proposition_23",
-      "proposition_23'",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop11.lean:14",
       "Prop23.lean:26",
       "Prop23.lean:53"
-     ]
-    },
-    "construct-line -> cite-proposition -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_20"
-     ],
-     "examples": [
-      "Prop11.lean:18",
-      "Prop11.lean:35",
-      "Prop20.lean:14"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-line -> construct-line": {
-     "support": 3,
-     "propositions": [
-      "proposition_11",
-      "proposition_23",
-      "proposition_23'"
-     ],
-     "examples": [
-      "Prop11.lean:14",
-      "Prop23.lean:26",
-      "Prop23.lean:53"
-     ]
-    },
-    "construct-line -> construct-line -> construct-line -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_36'"
-     ],
-     "examples": [
-      "Prop11.lean:16",
-      "Prop11.lean:33",
-      "Prop36.lean:41"
      ]
     },
     "other -> other -> extend": {
-     "support": 8,
+     "support": 6,
      "propositions": [
-      "proposition_11''",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_14",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_27",
       "proposition_47"
@@ -3884,14 +2500,13 @@
      ]
     },
     "other -> extend -> cite-proposition": {
-     "support": 7,
+     "support": 6,
      "propositions": [
-      "proposition_11''",
+      "proposition_11",
       "proposition_14",
       "proposition_17",
       "proposition_20",
-      "proposition_29'",
-      "proposition_29'''",
+      "proposition_29",
       "proposition_47"
      ],
      "examples": [
@@ -3903,7 +2518,7 @@
     "other -> other -> extend -> cite-proposition": {
      "support": 3,
      "propositions": [
-      "proposition_11''",
+      "proposition_11",
       "proposition_14",
       "proposition_47"
      ],
@@ -3914,12 +2529,11 @@
      ]
     },
     "other -> extend -> cite-proposition -> other": {
-     "support": 5,
+     "support": 4,
      "propositions": [
-      "proposition_11''",
+      "proposition_11",
       "proposition_14",
-      "proposition_29'",
-      "proposition_29'''",
+      "proposition_29",
       "proposition_47"
      ],
      "examples": [
@@ -3931,7 +2545,7 @@
     "other -> other -> extend -> cite-proposition -> other": {
      "support": 3,
      "propositions": [
-      "proposition_11''",
+      "proposition_11",
       "proposition_14",
       "proposition_47"
      ],
@@ -3942,11 +2556,10 @@
      ]
     },
     "extend -> other": {
-     "support": 6,
+     "support": 5,
      "propositions": [
-      "proposition_11'''",
+      "proposition_11",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_30",
       "proposition_31"
@@ -3958,11 +2571,10 @@
      ]
     },
     "other -> extend -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
-      "proposition_11'''",
+      "proposition_11",
       "proposition_23",
-      "proposition_23'",
       "proposition_24"
      ],
      "examples": [
@@ -3972,11 +2584,10 @@
      ]
     },
     "other -> other -> extend -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
-      "proposition_11'''",
+      "proposition_11",
       "proposition_23",
-      "proposition_23'",
       "proposition_24"
      ],
      "examples": [
@@ -3988,7 +2599,7 @@
     "other -> cite-proposition -> other -> other": {
      "support": 7,
      "propositions": [
-      "proposition_11'''",
+      "proposition_11",
       "proposition_24",
       "proposition_25",
       "proposition_26",
@@ -4003,14 +2614,11 @@
      ]
     },
     "cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 20,
+     "support": 15,
      "propositions": [
       "proposition_15",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_30",
       "proposition_33",
@@ -4020,10 +2628,8 @@
       "proposition_38",
       "proposition_43",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -4033,7 +2639,7 @@
      ]
     },
     "other -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 10,
+     "support": 9,
      "propositions": [
       "proposition_15",
       "proposition_24",
@@ -4042,7 +2648,6 @@
       "proposition_36",
       "proposition_43",
       "proposition_44",
-      "proposition_44'",
       "proposition_45",
       "proposition_47"
      ],
@@ -4053,7 +2658,7 @@
      ]
     },
     "cite-proposition -> cite-proposition -> cite-proposition -> other": {
-     "support": 12,
+     "support": 11,
      "propositions": [
       "proposition_15",
       "proposition_24",
@@ -4065,7 +2670,6 @@
       "proposition_38",
       "proposition_45",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -4091,16 +2695,14 @@
      ]
     },
     "construct-line -> extend": {
-     "support": 9,
+     "support": 7,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
       "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -4109,29 +2711,14 @@
       "Prop22.lean:16"
      ]
     },
-    "cite-proposition -> extend": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:22",
-      "Prop42.lean:59",
-      "Prop42.lean:61"
-     ]
-    },
     "cite-proposition -> construct-line -> extend": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_24",
       "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -4141,14 +2728,12 @@
      ]
     },
     "construct-line -> extend -> cite-proposition": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop16.lean:17",
@@ -4157,13 +2742,12 @@
      ]
     },
     "extend -> cite-proposition -> construct-line": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
@@ -4172,26 +2756,12 @@
       "Prop20.lean:12"
      ]
     },
-    "cite-proposition -> extend -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:22",
-      "Prop42.lean:59",
-      "Prop42.lean:61"
-     ]
-    },
     "other -> cite-proposition -> construct-line -> extend": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -4201,14 +2771,12 @@
      ]
     },
     "cite-proposition -> construct-line -> extend -> cite-proposition": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop16.lean:16",
@@ -4217,12 +2785,11 @@
      ]
     },
     "construct-line -> extend -> cite-proposition -> construct-line": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:17",
@@ -4231,12 +2798,11 @@
      ]
     },
     "extend -> cite-proposition -> construct-line -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_20",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:18",
@@ -4245,13 +2811,12 @@
      ]
     },
     "cite-proposition -> construct-line -> cite-proposition -> cite-proposition": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_18",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:19",
@@ -4260,13 +2825,12 @@
      ]
     },
     "construct-line -> cite-proposition -> cite-proposition -> other": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_47"
      ],
      "examples": [
@@ -4276,12 +2840,11 @@
      ]
     },
     "other -> cite-proposition -> construct-line -> extend -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop16.lean:14",
@@ -4290,12 +2853,11 @@
      ]
     },
     "cite-proposition -> construct-line -> extend -> cite-proposition -> construct-line": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:16",
@@ -4303,39 +2865,12 @@
       "Prop24.lean:18"
      ]
     },
-    "construct-line -> extend -> cite-proposition -> construct-line -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:17",
-      "Prop16.lean:27",
-      "Prop42.lean:65"
-     ]
-    },
-    "extend -> cite-proposition -> construct-line -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:18",
-      "Prop16.lean:28",
-      "Prop42.lean:66"
-     ]
-    },
     "cite-proposition -> construct-line -> cite-proposition -> cite-proposition -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:29",
@@ -4344,16 +2879,12 @@
      ]
     },
     "extend -> cite-proposition -> cite-proposition": {
-     "support": 8,
+     "support": 4,
      "propositions": [
       "proposition_17",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop17.lean:12",
@@ -4366,9 +2897,9 @@
      "propositions": [
       "proposition_19",
       "proposition_27",
-      "proposition_35'",
-      "proposition_36'",
-      "proposition_37'",
+      "proposition_35",
+      "proposition_36",
+      "proposition_37",
       "proposition_41",
       "proposition_45",
       "proposition_47",
@@ -4384,7 +2915,7 @@
      "support": 6,
      "propositions": [
       "proposition_19",
-      "proposition_37'",
+      "proposition_37",
       "proposition_41",
       "proposition_45",
       "proposition_47",
@@ -4401,7 +2932,7 @@
      "propositions": [
       "proposition_19",
       "proposition_27",
-      "proposition_37'",
+      "proposition_37",
       "proposition_45",
       "proposition_48"
      ],
@@ -4415,7 +2946,7 @@
      "support": 3,
      "propositions": [
       "proposition_21",
-      "proposition_35'",
+      "proposition_35",
       "proposition_40"
      ],
      "examples": [
@@ -4425,33 +2956,18 @@
      ]
     },
     "intersect -> cite-proposition -> cite-proposition": {
-     "support": 7,
+     "support": 5,
      "propositions": [
       "proposition_21",
       "proposition_37",
       "proposition_38",
       "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop21.lean:13",
       "Prop37.lean:18",
       "Prop38.lean:18"
-     ]
-    },
-    "intersect -> cite-proposition -> cite-proposition -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_21",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop21.lean:13",
-      "Prop44.lean:29",
-      "Prop44.lean:52"
      ]
     },
     "cite-proposition -> other -> other -> cite-proposition": {
@@ -4470,19 +2986,6 @@
       "Prop21.lean:15",
       "Prop25.lean:15",
       "Prop26.lean:20"
-     ]
-    },
-    "intersect -> cite-proposition -> cite-proposition -> other -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_21",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop21.lean:13",
-      "Prop44.lean:29",
-      "Prop44.lean:52"
      ]
     },
     "cite-proposition -> cite-proposition -> other -> other -> cite-proposition": {
@@ -4517,382 +3020,22 @@
      ]
     },
     "intersect -> intersect": {
-     "support": 6,
+     "support": 3,
      "propositions": [
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_44",
-      "proposition_44'",
       "proposition_47"
      ],
      "examples": [
       "Prop22.lean:26",
       "Prop22.lean:51",
       "Prop22.lean:75"
-     ]
-    },
-    "extend -> extend -> extend": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop22.lean:17",
-      "Prop29.lean:47",
-      "Prop29.lean:69"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:46",
-      "Prop22.lean:70"
-     ]
-    },
-    "cite-proposition -> construct-circle -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop22.lean:47",
-      "Prop22.lean:71"
-     ]
-    },
-    "construct-circle -> intersect -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:49",
-      "Prop22.lean:73"
-     ]
-    },
-    "intersect -> intersect -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:51",
-      "Prop22.lean:75"
-     ]
-    },
-    "intersect -> other -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:27",
-      "Prop22.lean:52",
-      "Prop22.lean:76"
-     ]
-    },
-    "other -> metric/angle/area -> metric/angle/area": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop22.lean:28",
-      "Prop22.lean:53",
-      "Prop22.lean:77"
-     ]
-    },
-    "extend -> extend -> extend -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop22.lean:17",
-      "Prop29.lean:47",
-      "Prop29.lean:69"
-     ]
-    },
-    "extend -> extend -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:43",
-      "Prop22.lean:67"
-     ]
-    },
-    "extend -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 5,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop22.lean:19",
-      "Prop22.lean:44",
-      "Prop22.lean:68"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:45",
-      "Prop22.lean:69"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-circle -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:46",
-      "Prop22.lean:70"
-     ]
-    },
-    "cite-proposition -> construct-circle -> construct-circle -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop22.lean:47",
-      "Prop22.lean:71"
-     ]
-    },
-    "construct-circle -> construct-circle -> intersect -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:48",
-      "Prop22.lean:72"
-     ]
-    },
-    "construct-circle -> intersect -> intersect -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:49",
-      "Prop22.lean:73"
-     ]
-    },
-    "intersect -> intersect -> other -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:51",
-      "Prop22.lean:75"
-     ]
-    },
-    "intersect -> other -> metric/angle/area -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:27",
-      "Prop22.lean:52",
-      "Prop22.lean:76"
-     ]
-    },
-    "other -> metric/angle/area -> metric/angle/area -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:28",
-      "Prop22.lean:53",
-      "Prop22.lean:77"
-     ]
-    },
-    "extend -> extend -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:43",
-      "Prop22.lean:67"
-     ]
-    },
-    "extend -> cite-proposition -> cite-proposition -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:19",
-      "Prop22.lean:44",
-      "Prop22.lean:68"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> cite-proposition -> construct-circle -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:45",
-      "Prop22.lean:69"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-circle -> construct-circle -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:46",
-      "Prop22.lean:70"
-     ]
-    },
-    "cite-proposition -> construct-circle -> construct-circle -> intersect -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop22.lean:47",
-      "Prop22.lean:71"
-     ]
-    },
-    "construct-circle -> construct-circle -> intersect -> intersect -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:48",
-      "Prop22.lean:72"
-     ]
-    },
-    "construct-circle -> intersect -> intersect -> other -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:49",
-      "Prop22.lean:73"
-     ]
-    },
-    "intersect -> intersect -> other -> metric/angle/area -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:51",
-      "Prop22.lean:75"
-     ]
-    },
-    "intersect -> other -> metric/angle/area -> metric/angle/area -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:27",
-      "Prop22.lean:52",
-      "Prop22.lean:76"
      ]
     },
     "extend -> other -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_31"
      ],
@@ -4903,10 +3046,9 @@
      ]
     },
     "other -> other -> construct-line": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
       "proposition_30",
       "proposition_31",
       "proposition_40"
@@ -4917,37 +3059,10 @@
       "Prop30.lean:13"
      ]
     },
-    "other -> other -> other -> extend": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_24"
-     ],
-     "examples": [
-      "Prop23.lean:16",
-      "Prop23.lean:43",
-      "Prop24.lean:39"
-     ]
-    },
-    "other -> extend -> other -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_24"
-     ],
-     "examples": [
-      "Prop23.lean:18",
-      "Prop23.lean:45",
-      "Prop24.lean:42"
-     ]
-    },
     "other -> other -> construct-line -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
       "proposition_31",
       "proposition_40"
      ],
@@ -4957,64 +3072,10 @@
       "Prop31.lean:12"
      ]
     },
-    "other -> construct-line -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_33"
-     ],
-     "examples": [
-      "Prop23.lean:21",
-      "Prop23.lean:48",
-      "Prop33.lean:15"
-     ]
-    },
-    "construct-line -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_33"
-     ],
-     "examples": [
-      "Prop23.lean:22",
-      "Prop23.lean:49",
-      "Prop33.lean:16"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_24"
-     ],
-     "examples": [
-      "Prop23.lean:24",
-      "Prop23.lean:51",
-      "Prop24.lean:50"
-     ]
-    },
-    "construct-line -> construct-line -> cite-proposition -> other": {
+    "construct-line -> cite-proposition -> other -> other": {
      "support": 4,
      "propositions": [
       "proposition_23",
-      "proposition_23'",
-      "proposition_36",
-      "proposition_36'"
-     ],
-     "examples": [
-      "Prop23.lean:28",
-      "Prop23.lean:55",
-      "Prop36.lean:15"
-     ]
-    },
-    "construct-line -> cite-proposition -> other -> other": {
-     "support": 5,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
       "proposition_26",
       "proposition_39",
       "proposition_40"
@@ -5025,52 +3086,12 @@
       "Prop26.lean:19"
      ]
     },
-    "other -> other -> other -> extend -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_24"
-     ],
-     "examples": [
-      "Prop23.lean:16",
-      "Prop23.lean:43",
-      "Prop24.lean:39"
-     ]
-    },
-    "other -> other -> extend -> other -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_24"
-     ],
-     "examples": [
-      "Prop23.lean:17",
-      "Prop23.lean:44",
-      "Prop24.lean:41"
-     ]
-    },
-    "other -> construct-line -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_23",
-      "proposition_23'",
-      "proposition_33"
-     ],
-     "examples": [
-      "Prop23.lean:21",
-      "Prop23.lean:48",
-      "Prop33.lean:15"
-     ]
-    },
     "construct-line -> cite-proposition -> cite-proposition -> other -> other": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_47"
      ],
      "examples": [
@@ -5085,7 +3106,7 @@
       "proposition_24",
       "proposition_26",
       "proposition_29",
-      "proposition_35'"
+      "proposition_35"
      ],
      "examples": [
       "Prop24.lean:25",
@@ -5122,12 +3143,11 @@
      ]
     },
     "cite-proposition -> cite-proposition -> cite-proposition -> other -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_24",
       "proposition_30",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop24.lean:51",
@@ -5162,12 +3182,11 @@
      ]
     },
     "intersect -> other -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_27",
-      "proposition_35'",
-      "proposition_42",
-      "proposition_42'"
+      "proposition_35",
+      "proposition_42"
      ],
      "examples": [
       "Prop27.lean:14",
@@ -5176,13 +3195,12 @@
      ]
     },
     "cite-proposition -> other -> cite-proposition -> cite-proposition": {
-     "support": 8,
+     "support": 7,
      "propositions": [
       "proposition_28",
       "proposition_30",
-      "proposition_35'",
+      "proposition_35",
       "proposition_36",
-      "proposition_36'",
       "proposition_41",
       "proposition_45",
       "proposition_47"
@@ -5197,8 +3215,8 @@
      "support": 6,
      "propositions": [
       "proposition_28",
-      "proposition_35'",
-      "proposition_36'",
+      "proposition_35",
+      "proposition_36",
       "proposition_41",
       "proposition_45",
       "proposition_47"
@@ -5207,32 +3225,6 @@
       "Prop28.lean:17",
       "Prop35.lean:34",
       "Prop35.lean:43"
-     ]
-    },
-    "other -> extend -> extend -> extend": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:46",
-      "Prop29.lean:68",
-      "Prop29.lean:80"
-     ]
-    },
-    "extend -> extend -> extend -> cite-proposition -> other": {
-     "support": 3,
-     "propositions": [
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:47",
-      "Prop29.lean:69",
-      "Prop29.lean:82"
      ]
     },
     "cite-proposition -> cite-proposition -> cite-proposition -> other -> cite-proposition": {
@@ -5264,8 +3256,8 @@
     "other -> construct-line -> cite-proposition -> other": {
      "support": 3,
      "propositions": [
-      "proposition_34'",
-      "proposition_36'",
+      "proposition_34",
+      "proposition_36",
       "proposition_40"
      ],
      "examples": [
@@ -5277,8 +3269,8 @@
     "other -> cite-proposition -> other -> cite-proposition -> cite-proposition": {
      "support": 5,
      "propositions": [
-      "proposition_35'",
-      "proposition_36'",
+      "proposition_35",
+      "proposition_36",
       "proposition_41",
       "proposition_45",
       "proposition_47"
@@ -5289,30 +3281,14 @@
       "Prop36.lean:35"
      ]
     },
-    "other -> construct-line -> construct-line": {
-     "support": 3,
-     "propositions": [
-      "proposition_36",
-      "proposition_36'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop36.lean:14",
-      "Prop36.lean:29",
-      "Prop36.lean:40"
-     ]
-    },
     "cite-proposition -> intersect -> cite-proposition": {
-     "support": 8,
+     "support": 5,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop37.lean:15",
@@ -5321,12 +3297,11 @@
      ]
     },
     "intersect -> cite-proposition -> intersect": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_42",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop37.lean:16",
@@ -5335,12 +3310,11 @@
      ]
     },
     "cite-proposition -> intersect -> cite-proposition -> intersect": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_42",
-      "proposition_42'"
+      "proposition_42"
      ],
      "examples": [
       "Prop37.lean:15",
@@ -5349,14 +3323,12 @@
      ]
     },
     "cite-proposition -> intersect -> cite-proposition -> cite-proposition": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop37.lean:17",
@@ -5365,12 +3337,11 @@
      ]
     },
     "intersect -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop37.lean:18",
@@ -5379,12 +3350,11 @@
      ]
     },
     "cite-proposition -> intersect -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop37.lean:17",
@@ -5393,12 +3363,11 @@
      ]
     },
     "intersect -> cite-proposition -> cite-proposition -> cite-proposition -> other": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_37",
       "proposition_38",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop37.lean:18",
@@ -5407,12 +3376,11 @@
      ]
     },
     "intersect -> construct-line": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_39",
       "proposition_40",
       "proposition_44",
-      "proposition_44'",
       "proposition_47"
      ],
      "examples": [
@@ -5421,26 +3389,12 @@
       "Prop40.lean:19"
      ]
     },
-    "cite-proposition -> intersect -> construct-line": {
+    "intersect -> construct-line -> cite-proposition": {
      "support": 3,
      "propositions": [
       "proposition_39",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop39.lean:16",
-      "Prop39.lean:24",
-      "Prop44.lean:21"
-     ]
-    },
-    "intersect -> construct-line -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:17",
@@ -5448,54 +3402,11 @@
       "Prop40.lean:19"
      ]
     },
-    "cite-proposition -> intersect -> construct-line -> cite-proposition": {
+    "cite-proposition -> cite-proposition -> intersect": {
      "support": 3,
      "propositions": [
-      "proposition_39",
       "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop39.lean:16",
-      "Prop39.lean:24",
-      "Prop44.lean:21"
-     ]
-    },
-    "construct-line -> cite-proposition -> intersect": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:21",
-      "Prop42.lean:41",
-      "Prop44.lean:23"
-     ]
-    },
-    "construct-line -> cite-proposition -> intersect -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:21",
-      "Prop42.lean:41",
-      "Prop44.lean:23"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> intersect": {
-     "support": 5,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -5503,104 +3414,22 @@
       "Prop44.lean:26",
       "Prop44.lean:43"
      ]
-    },
-    "cite-proposition -> intersect -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:27",
-      "Prop44.lean:50",
-      "Prop47.lean:62"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> cite-proposition -> intersect": {
-     "support": 4,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop44.lean:19",
-      "Prop44.lean:42",
-      "Prop46.lean:20"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> intersect -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:26",
-      "Prop44.lean:49",
-      "Prop47.lean:61"
-     ]
     }
    }
   },
   "chain": {
    "name": {
-    "circle_from_points -> intersection_circles": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_22",
-      "proposition_22'"
-     ],
-     "examples": [
-      "Prop01.lean:12",
-      "Prop01.lean:12",
-      "Prop22.lean:27"
-     ]
-    },
-    "circle_from_points -> intersection_circles -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_22",
-      "proposition_22'"
-     ],
-     "examples": [
-      "Prop01.lean:13",
-      "Prop01.lean:14",
-      "Prop01.lean:13"
-     ]
-    },
     "circle_from_points -> point_on_circle_onlyif": {
-     "support": 6,
+     "support": 3,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
+      "proposition_22"
      ],
      "examples": [
       "Prop01.lean:13",
       "Prop01.lean:14",
       "Prop01.lean:26"
-     ]
-    },
-    "intersection_circles -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_1",
-      "proposition_22",
-      "proposition_22'"
-     ],
-     "examples": [
-      "Prop01.lean:13",
-      "Prop01.lean:14",
-      "Prop22.lean:29"
      ]
     },
     "proposition_1 -> line_from_points": {
@@ -5616,28 +3445,12 @@
       "Prop10.lean:13"
      ]
     },
-    "circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 4,
-     "propositions": [
-      "proposition_2",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop02.lean:16",
-      "Prop02.lean:18",
-      "Prop22.lean:26"
-     ]
-    },
     "point_between_points_shorter_than -> proposition_3": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:14",
@@ -5646,13 +3459,11 @@
      ]
     },
     "point_between_points_shorter_than -> proposition_3 -> line_from_points": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:16",
@@ -5661,13 +3472,11 @@
      ]
     },
     "point_between_points_shorter_than -> line_from_points": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:15",
@@ -5676,22 +3485,19 @@
      ]
     },
     "proposition_3 -> line_from_points": {
-     "support": 14,
+     "support": 11,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_16",
       "proposition_18",
       "proposition_20",
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:16",
@@ -5700,13 +3506,12 @@
      ]
     },
     "proposition_3 -> line_from_points -> proposition_4": {
-     "support": 7,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_5",
       "proposition_6"
      ],
@@ -5717,13 +3522,12 @@
      ]
     },
     "proposition_3 -> proposition_4": {
-     "support": 7,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_24",
       "proposition_26",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_5",
       "proposition_6"
      ],
@@ -5747,15 +3551,14 @@
      ]
     },
     "line_from_points -> proposition_4": {
-     "support": 10,
+     "support": 9,
      "propositions": [
       "proposition_10",
       "proposition_16",
       "proposition_24",
       "proposition_26",
       "proposition_33",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_47",
       "proposition_5",
       "proposition_6"
@@ -5780,14 +3583,13 @@
      ]
     },
     "line_from_points -> proposition_5'": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_18",
       "proposition_20",
       "proposition_24",
       "proposition_7",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop07.lean:14",
@@ -5795,174 +3597,13 @@
       "Prop07.lean:20"
      ]
     },
-    "line_from_points -> proposition_5": {
-     "support": 3,
-     "propositions": [
-      "proposition_7",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop07.lean:28",
-      "Prop07.lean:36",
-      "Prop09.lean:26"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_3 -> proposition_1'": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop11.lean:32"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_3 -> proposition_1' -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:20",
-      "Prop09.lean:21"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_3 -> proposition_1' -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:36"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_3 -> line_from_points -> proposition_8": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:19"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_3 -> proposition_8": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:19"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_1'": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop11.lean:32"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_1' -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:20",
-      "Prop09.lean:21"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_1' -> line_from_points -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:33",
-      "Prop09.lean:33"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_1' -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:36"
-     ]
-    },
-    "point_between_points_shorter_than -> line_from_points -> proposition_8": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:19"
-     ]
-    },
-    "point_between_points_shorter_than -> proposition_8": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:19"
-     ]
-    },
     "proposition_3 -> line_from_points -> proposition_5'": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_18",
       "proposition_20",
       "proposition_24",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -5970,66 +3611,12 @@
       "Prop09.lean:25"
      ]
     },
-    "proposition_3 -> proposition_1'": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:18",
-      "Prop09.lean:44",
-      "Prop11.lean:32"
-     ]
-    },
-    "proposition_3 -> proposition_1' -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:20",
-      "Prop09.lean:21"
-     ]
-    },
-    "proposition_3 -> proposition_1' -> line_from_points -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:33",
-      "Prop09.lean:33"
-     ]
-    },
-    "proposition_3 -> proposition_1' -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:36"
-     ]
-    },
     "proposition_3 -> line_from_points -> proposition_8": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:33",
@@ -6038,13 +3625,12 @@
      ]
     },
     "proposition_3 -> proposition_5'": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_18",
       "proposition_20",
       "proposition_24",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -6053,13 +3639,11 @@
      ]
     },
     "proposition_3 -> proposition_8": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:33",
@@ -6067,56 +3651,14 @@
       "Prop11.lean:19"
      ]
     },
-    "proposition_1' -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:20",
-      "Prop09.lean:21"
-     ]
-    },
-    "proposition_1' -> line_from_points -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:33",
-      "Prop09.lean:33"
-     ]
-    },
-    "proposition_1' -> proposition_8": {
-     "support": 3,
-     "propositions": [
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:33",
-      "Prop09.lean:59",
-      "Prop11.lean:36"
-     ]
-    },
     "line_from_points -> proposition_8": {
-     "support": 8,
+     "support": 5,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_23",
-      "proposition_23'",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:33",
@@ -6125,15 +3667,13 @@
      ]
     },
     "line_from_points -> intersection_lines": {
-     "support": 7,
+     "support": 5,
      "propositions": [
       "proposition_10",
       "proposition_30",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:60",
@@ -6167,120 +3707,14 @@
       "Prop24.lean:50"
      ]
     },
-    "proposition_10 -> extend_point_longer": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:18",
-      "Prop16.lean:28",
-      "Prop16.lean:18"
-     ]
-    },
-    "proposition_10 -> extend_point_longer -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:19",
-      "Prop16.lean:29",
-      "Prop16.lean:19"
-     ]
-    },
-    "proposition_10 -> extend_point_longer -> proposition_3 -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:20",
-      "Prop16.lean:30",
-      "Prop16.lean:20"
-     ]
-    },
-    "proposition_10 -> extend_point_longer -> proposition_3 -> proposition_4": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:22",
-      "Prop16.lean:32",
-      "Prop16.lean:22"
-     ]
-    },
-    "proposition_10 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:19",
-      "Prop16.lean:29",
-      "Prop16.lean:19"
-     ]
-    },
-    "proposition_10 -> proposition_3 -> line_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:20",
-      "Prop16.lean:30",
-      "Prop16.lean:20"
-     ]
-    },
-    "proposition_10 -> proposition_3 -> line_from_points -> proposition_4": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:22",
-      "Prop16.lean:32",
-      "Prop16.lean:22"
-     ]
-    },
-    "proposition_10 -> proposition_3 -> proposition_4": {
-     "support": 3,
-     "propositions": [
-      "proposition_16",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop16.lean:22",
-      "Prop16.lean:32",
-      "Prop16.lean:22"
-     ]
-    },
     "line_from_points -> extend_point_longer": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -6290,62 +3724,56 @@
      ]
     },
     "line_from_points -> extend_point_longer -> proposition_3": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:19",
       "Prop16.lean:29",
-      "Prop16.lean:19"
+      "Prop22.lean:20"
      ]
     },
     "line_from_points -> extend_point_longer -> proposition_3 -> line_from_points": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:20",
       "Prop16.lean:30",
-      "Prop16.lean:20"
+      "Prop24.lean:22"
      ]
     },
     "line_from_points -> extend_point_longer -> proposition_3 -> proposition_4": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:22",
       "Prop16.lean:32",
-      "Prop16.lean:22"
+      "Prop24.lean:24"
      ]
     },
     "line_from_points -> proposition_3": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -6355,463 +3783,109 @@
      ]
     },
     "line_from_points -> proposition_3 -> line_from_points": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:20",
       "Prop16.lean:30",
-      "Prop16.lean:20"
+      "Prop24.lean:22"
      ]
     },
     "line_from_points -> proposition_3 -> line_from_points -> proposition_4": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:22",
       "Prop16.lean:32",
-      "Prop16.lean:22"
+      "Prop24.lean:24"
      ]
     },
     "line_from_points -> proposition_3 -> proposition_4": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:22",
       "Prop16.lean:32",
-      "Prop16.lean:22"
+      "Prop24.lean:24"
      ]
     },
     "extend_point_longer -> proposition_3": {
-     "support": 11,
+     "support": 7,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:19",
       "Prop16.lean:29",
-      "Prop16.lean:19"
+      "Prop20.lean:13"
      ]
     },
     "extend_point_longer -> proposition_3 -> line_from_points": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:20",
       "Prop16.lean:30",
-      "Prop16.lean:20"
+      "Prop20.lean:14"
      ]
     },
     "extend_point_longer -> proposition_3 -> line_from_points -> proposition_4": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:22",
       "Prop16.lean:32",
-      "Prop16.lean:22"
+      "Prop24.lean:24"
      ]
     },
     "extend_point_longer -> proposition_3 -> proposition_4": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:22",
       "Prop16.lean:32",
-      "Prop16.lean:22"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:19",
-      "Prop22.lean:44"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:21",
-      "Prop22.lean:22"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3 -> proposition_3": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:22",
-      "Prop22.lean:47"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:24",
-      "Prop22.lean:24"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3 -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "extend_point_longer -> extend_point_longer -> proposition_3 -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3": {
-     "support": 5,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:22",
-      "Prop22.lean:47"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:24",
-      "Prop22.lean:49"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3 -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> proposition_3 -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:30",
-      "Prop22.lean:30",
-      "Prop22.lean:55"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:24",
-      "Prop22.lean:24"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> circle_from_points -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "extend_point_longer -> proposition_3 -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "proposition_3 -> proposition_3": {
-     "support": 5,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:22",
-      "Prop22.lean:47"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:24",
-      "Prop22.lean:49"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> circle_from_points -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:30",
-      "Prop22.lean:30",
-      "Prop22.lean:55"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "proposition_3 -> proposition_3 -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:30",
-      "Prop22.lean:30",
-      "Prop22.lean:55"
-     ]
-    },
-    "proposition_3 -> circle_from_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:24",
-      "Prop22.lean:24"
-     ]
-    },
-    "proposition_3 -> circle_from_points -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "proposition_3 -> point_on_circle_onlyif": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "proposition_3 -> circle_from_points -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "proposition_3 -> intersection_circle_line_extending_points": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
+      "Prop24.lean:24"
      ]
     },
     "proposition_23' -> line_from_points": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_24",
       "proposition_31",
-      "proposition_42",
-      "proposition_42'",
-      "proposition_42'''"
+      "proposition_42"
      ],
      "examples": [
       "Prop24.lean:19",
@@ -6832,20 +3906,6 @@
       "Prop48.lean:16"
      ]
     },
-    "extend_point -> proposition_29": {
-     "support": 4,
-     "propositions": [
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29''''",
-      "proposition_29'''''"
-     ],
-     "examples": [
-      "Prop29.lean:38",
-      "Prop29.lean:50",
-      "Prop29.lean:50"
-     ]
-    },
     "line_from_points -> proposition_27": {
      "support": 3,
      "propositions": [
@@ -6862,8 +3922,8 @@
     "line_from_points -> proposition_34": {
      "support": 3,
      "propositions": [
-      "proposition_34'",
-      "proposition_36'",
+      "proposition_34",
+      "proposition_36",
       "proposition_41"
      ],
      "examples": [
@@ -6873,18 +3933,15 @@
      ]
     },
     "proposition_31 -> intersection_lines": {
-     "support": 11,
+     "support": 8,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -6894,262 +3951,40 @@
      ]
     },
     "proposition_31 -> intersection_lines -> line_from_points": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:18",
       "Prop39.lean:26",
-      "Prop39.lean:18"
+      "Prop40.lean:24"
      ]
     },
     "intersection_lines -> line_from_points": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:18",
       "Prop39.lean:26",
-      "Prop39.lean:18"
-     ]
-    },
-    "proposition_31 -> proposition_38": {
-     "support": 3,
-     "propositions": [
-      "proposition_40",
-      "proposition_42",
-      "proposition_42'"
-     ],
-     "examples": [
-      "Prop40.lean:21",
-      "Prop40.lean:25",
-      "Prop42.lean:27"
-     ]
-    },
-    "line_from_points -> proposition_38": {
-     "support": 3,
-     "propositions": [
-      "proposition_40",
-      "proposition_42",
-      "proposition_42'"
-     ],
-     "examples": [
-      "Prop40.lean:21",
-      "Prop40.lean:25",
-      "Prop42.lean:27"
-     ]
-    },
-    "line_from_points -> proposition_41": {
-     "support": 3,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:28",
-      "Prop42.lean:48"
-     ]
-    },
-    "line_from_points -> intersection_lines -> proposition_31": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:24",
-      "Prop42.lean:44",
-      "Prop44.lean:26"
-     ]
-    },
-    "line_from_points -> intersection_lines -> proposition_31 -> intersection_lines": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:25",
-      "Prop42.lean:45",
-      "Prop44.lean:28"
-     ]
-    },
-    "line_from_points -> proposition_31": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop42.lean:24",
-      "Prop42.lean:44",
-      "Prop46.lean:22"
-     ]
-    },
-    "line_from_points -> proposition_31 -> intersection_lines": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop42.lean:25",
-      "Prop42.lean:45",
-      "Prop46.lean:23"
-     ]
-    },
-    "proposition_31 -> intersection_lines -> proposition_41": {
-     "support": 3,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:28",
-      "Prop42.lean:28"
-     ]
-    },
-    "proposition_31 -> proposition_41": {
-     "support": 3,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:28",
-      "Prop42.lean:48"
-     ]
-    },
-    "intersection_lines -> proposition_31": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:24",
-      "Prop42.lean:44",
-      "Prop44.lean:26"
-     ]
-    },
-    "intersection_lines -> proposition_31 -> intersection_lines": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:25",
-      "Prop42.lean:45",
-      "Prop44.lean:28"
-     ]
-    },
-    "intersection_lines -> proposition_41": {
-     "support": 3,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:28",
-      "Prop42.lean:48"
-     ]
-    },
-    "proposition_31 -> proposition_30": {
-     "support": 3,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_47"
-     ],
-     "examples": [
-      "Prop44.lean:21",
-      "Prop44.lean:27",
-      "Prop44.lean:44"
-     ]
-    },
-    "proposition_31 -> intersection_lines -> proposition_29'''''": {
-     "support": 4,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop44.lean:24",
-      "Prop44.lean:47",
-      "Prop46.lean:25"
-     ]
-    },
-    "proposition_31 -> proposition_29'''''": {
-     "support": 4,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop44.lean:24",
-      "Prop44.lean:47",
-      "Prop46.lean:25"
-     ]
-    },
-    "intersection_lines -> proposition_29'''''": {
-     "support": 4,
-     "propositions": [
-      "proposition_44",
-      "proposition_44'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop44.lean:24",
-      "Prop44.lean:47",
-      "Prop46.lean:25"
+      "Prop40.lean:24"
      ]
     }
    },
    "class": {
     "construct-circle -> intersect": {
-     "support": 8,
+     "support": 5,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_12",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3"
      ],
      "examples": [
@@ -7159,14 +3994,11 @@
      ]
     },
     "construct-circle -> intersect -> metric/angle/area": {
-     "support": 7,
+     "support": 4,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3"
      ],
      "examples": [
@@ -7176,14 +4008,11 @@
      ]
     },
     "construct-circle -> metric/angle/area": {
-     "support": 6,
+     "support": 3,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
+      "proposition_22"
      ],
      "examples": [
       "Prop01.lean:13",
@@ -7192,14 +4021,11 @@
      ]
     },
     "intersect -> metric/angle/area": {
-     "support": 9,
+     "support": 6,
      "propositions": [
       "proposition_1",
-      "proposition_1'",
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3",
       "proposition_39",
       "proposition_47"
@@ -7211,11 +4037,10 @@
      ]
     },
     "construct-line -> cite-proposition": {
-     "support": 37,
+     "support": 28,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_16",
       "proposition_18",
@@ -7223,33 +4048,25 @@
       "proposition_20",
       "proposition_22",
       "proposition_23",
-      "proposition_23'",
       "proposition_24",
       "proposition_26",
       "proposition_30",
       "proposition_31",
       "proposition_33",
-      "proposition_34'",
+      "proposition_34",
       "proposition_36",
-      "proposition_36'",
       "proposition_39",
       "proposition_40",
       "proposition_41",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
       "proposition_5",
       "proposition_6",
       "proposition_7",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:12",
@@ -7258,18 +4075,16 @@
      ]
     },
     "construct-line -> cite-proposition -> construct-line": {
-     "support": 10,
+     "support": 8,
      "propositions": [
       "proposition_10",
       "proposition_16",
       "proposition_2",
       "proposition_24",
       "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:13",
@@ -7282,7 +4097,7 @@
      "propositions": [
       "proposition_10",
       "proposition_2",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:18",
@@ -7291,14 +4106,12 @@
      ]
     },
     "construct-line -> cite-proposition -> intersect": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_2",
       "proposition_22",
       "proposition_42",
-      "proposition_42'",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop02.lean:16",
@@ -7320,11 +4133,10 @@
      ]
     },
     "cite-proposition -> construct-line": {
-     "support": 23,
+     "support": 17,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_13",
       "proposition_16",
@@ -7335,16 +4147,11 @@
       "proposition_26",
       "proposition_31",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_46",
-      "proposition_46'",
       "proposition_48",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:13",
@@ -7353,13 +4160,12 @@
      ]
     },
     "cite-proposition -> construct-line -> intersect": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_10",
       "proposition_2",
       "proposition_42",
-      "proposition_42'",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:18",
@@ -7368,22 +4174,17 @@
      ]
     },
     "cite-proposition -> intersect": {
-     "support": 15,
+     "support": 10,
      "propositions": [
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_37",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -7396,7 +4197,7 @@
      "support": 4,
      "propositions": [
       "proposition_2",
-      "proposition_22''",
+      "proposition_22",
       "proposition_39",
       "proposition_47"
      ],
@@ -7407,12 +4208,10 @@
      ]
     },
     "cite-proposition -> construct-circle": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3"
      ],
      "examples": [
@@ -7422,12 +4221,10 @@
      ]
     },
     "cite-proposition -> construct-circle -> intersect": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3"
      ],
      "examples": [
@@ -7437,12 +4234,10 @@
      ]
     },
     "cite-proposition -> construct-circle -> intersect -> metric/angle/area": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_2",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_3"
      ],
      "examples": [
@@ -7451,31 +4246,14 @@
       "Prop03.lean:14"
      ]
     },
-    "cite-proposition -> construct-circle -> metric/angle/area": {
-     "support": 4,
-     "propositions": [
-      "proposition_2",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop02.lean:20",
-      "Prop22.lean:29",
-      "Prop22.lean:30"
-     ]
-    },
     "cite-proposition -> metric/angle/area": {
-     "support": 13,
+     "support": 10,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_18",
       "proposition_2",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
       "proposition_3",
       "proposition_32",
@@ -7489,17 +4267,15 @@
      ]
     },
     "construct-line -> intersect": {
-     "support": 9,
+     "support": 7,
      "propositions": [
       "proposition_10",
       "proposition_2",
       "proposition_22",
       "proposition_30",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop02.lean:18",
@@ -7508,15 +4284,13 @@
      ]
     },
     "metric/angle/area -> cite-proposition": {
-     "support": 7,
+     "support": 5,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_30",
       "proposition_32",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:14",
@@ -7525,13 +4299,11 @@
      ]
     },
     "metric/angle/area -> cite-proposition -> construct-line": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:16",
@@ -7540,13 +4312,11 @@
      ]
     },
     "metric/angle/area -> cite-proposition -> construct-line -> cite-proposition": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:17",
@@ -7555,13 +4325,11 @@
      ]
     },
     "metric/angle/area -> cite-proposition -> cite-proposition": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:17",
@@ -7569,28 +4337,13 @@
       "Prop09.lean:18"
      ]
     },
-    "metric/angle/area -> cite-proposition -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_5"
-     ],
-     "examples": [
-      "Prop05.lean:19",
-      "Prop11.lean:20",
-      "Prop11.lean:20"
-     ]
-    },
     "metric/angle/area -> construct-line": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_22",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:15",
@@ -7599,14 +4352,12 @@
      ]
     },
     "metric/angle/area -> construct-line -> cite-proposition": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_22",
       "proposition_5",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:17",
@@ -7614,25 +4365,11 @@
       "Prop09.lean:18"
      ]
     },
-    "metric/angle/area -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_5"
-     ],
-     "examples": [
-      "Prop05.lean:20",
-      "Prop11.lean:20",
-      "Prop11.lean:37"
-     ]
-    },
     "cite-proposition -> construct-line -> cite-proposition": {
-     "support": 21,
+     "support": 15,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_16",
       "proposition_18",
@@ -7641,16 +4378,11 @@
       "proposition_26",
       "proposition_31",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_46",
-      "proposition_46'",
       "proposition_48",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:17",
@@ -7659,18 +4391,15 @@
      ]
     },
     "cite-proposition -> cite-proposition": {
-     "support": 32,
+     "support": 23,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_12",
       "proposition_16",
       "proposition_18",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
       "proposition_26",
       "proposition_31",
@@ -7680,19 +4409,13 @@
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
       "proposition_5",
       "proposition_6",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop05.lean:17",
@@ -7715,31 +4438,22 @@
      ]
     },
     "extend -> cite-proposition": {
-     "support": 24,
+     "support": 15,
      "propositions": [
-      "proposition_11''",
-      "proposition_11'''",
+      "proposition_11",
       "proposition_14",
       "proposition_16",
       "proposition_17",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
-      "proposition_29'",
-      "proposition_29''",
-      "proposition_29'''",
-      "proposition_29''''",
-      "proposition_29'''''",
+      "proposition_29",
       "proposition_30",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_47",
       "proposition_48",
-      "proposition_5'",
+      "proposition_5",
       "proposition_7"
      ],
      "examples": [
@@ -7748,58 +4462,15 @@
       "Prop07.lean:28"
      ]
     },
-    "metric/angle/area -> cite-proposition -> cite-proposition -> construct-line": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:19",
-      "Prop09.lean:20",
-      "Prop09.lean:21"
-     ]
-    },
-    "metric/angle/area -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_11",
-      "proposition_11'",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:25",
-      "Prop09.lean:30",
-      "Prop09.lean:33"
-     ]
-    },
-    "metric/angle/area -> construct-line -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_9",
-      "proposition_9'"
-     ],
-     "examples": [
-      "Prop09.lean:25",
-      "Prop09.lean:30",
-      "Prop09.lean:33"
-     ]
-    },
     "cite-proposition -> construct-line -> cite-proposition -> construct-line": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_10",
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:19",
@@ -7808,19 +4479,14 @@
      ]
     },
     "cite-proposition -> construct-line -> cite-proposition -> cite-proposition": {
-     "support": 11,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_24",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_46",
-      "proposition_46'",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -7829,17 +4495,13 @@
      ]
     },
     "cite-proposition -> cite-proposition -> construct-line": {
-     "support": 9,
+     "support": 5,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_16",
       "proposition_42",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:19",
@@ -7848,17 +4510,13 @@
      ]
     },
     "cite-proposition -> cite-proposition -> construct-line -> cite-proposition": {
-     "support": 9,
+     "support": 5,
      "propositions": [
       "proposition_10",
       "proposition_11",
-      "proposition_11'",
       "proposition_16",
       "proposition_42",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -7867,19 +4525,14 @@
      ]
     },
     "cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 11,
+     "support": 6,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
       "proposition_16",
       "proposition_22",
       "proposition_42",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_46",
-      "proposition_46'",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -7888,17 +4541,15 @@
      ]
     },
     "construct-line -> cite-proposition -> construct-line -> cite-proposition": {
-     "support": 9,
+     "support": 7,
      "propositions": [
       "proposition_10",
       "proposition_16",
       "proposition_24",
       "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -7907,21 +4558,16 @@
      ]
     },
     "construct-line -> cite-proposition -> cite-proposition": {
-     "support": 13,
+     "support": 8,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
       "proposition_31",
       "proposition_42",
-      "proposition_42'",
-      "proposition_42''",
-      "proposition_42'''",
       "proposition_46",
-      "proposition_46'",
       "proposition_48",
-      "proposition_9",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:25",
@@ -7934,7 +4580,7 @@
      "propositions": [
       "proposition_10",
       "proposition_42",
-      "proposition_9'"
+      "proposition_9"
      ],
      "examples": [
       "Prop09.lean:60",
@@ -7942,28 +4588,13 @@
       "Prop42.lean:23"
      ]
     },
-    "cite-proposition -> construct-line -> intersect -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_10",
-      "proposition_42",
-      "proposition_42'"
-     ],
-     "examples": [
-      "Prop10.lean:18",
-      "Prop10.lean:18",
-      "Prop42.lean:24"
-     ]
-    },
     "construct-line -> intersect -> cite-proposition": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_10",
       "proposition_30",
       "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop10.lean:18",
@@ -7972,23 +4603,20 @@
      ]
     },
     "intersect -> cite-proposition": {
-     "support": 16,
+     "support": 13,
      "propositions": [
       "proposition_10",
       "proposition_21",
       "proposition_27",
       "proposition_30",
-      "proposition_35'",
+      "proposition_35",
       "proposition_37",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -7997,26 +4625,10 @@
       "Prop21.lean:15"
      ]
     },
-    "cite-proposition -> cite-proposition -> metric/angle/area": {
-     "support": 5,
+    "other -> cite-proposition": {
+     "support": 4,
      "propositions": [
       "proposition_11",
-      "proposition_11'",
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop11.lean:20",
-      "Prop11.lean:37",
-      "Prop22.lean:30"
-     ]
-    },
-    "other -> cite-proposition": {
-     "support": 5,
-     "propositions": [
-      "proposition_11'",
-      "proposition_11'''",
       "proposition_22",
       "proposition_30",
       "proposition_31"
@@ -8030,7 +4642,7 @@
     "other -> cite-proposition -> cite-proposition": {
      "support": 3,
      "propositions": [
-      "proposition_11'",
+      "proposition_11",
       "proposition_22",
       "proposition_31"
      ],
@@ -8041,97 +4653,86 @@
      ]
     },
     "cite-proposition -> construct-line -> extend": {
-     "support": 8,
-     "propositions": [
-      "proposition_16",
-      "proposition_24",
-      "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'",
-      "proposition_48"
-     ],
-     "examples": [
-      "Prop16.lean:18",
-      "Prop16.lean:28",
-      "Prop16.lean:18"
-     ]
-    },
-    "cite-proposition -> construct-line -> extend -> cite-proposition": {
-     "support": 7,
-     "propositions": [
-      "proposition_16",
-      "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'",
-      "proposition_48"
-     ],
-     "examples": [
-      "Prop16.lean:19",
-      "Prop16.lean:29",
-      "Prop16.lean:19"
-     ]
-    },
-    "cite-proposition -> extend": {
-     "support": 8,
-     "propositions": [
-      "proposition_16",
-      "proposition_24",
-      "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'",
-      "proposition_48"
-     ],
-     "examples": [
-      "Prop16.lean:18",
-      "Prop16.lean:28",
-      "Prop16.lean:18"
-     ]
-    },
-    "cite-proposition -> extend -> cite-proposition": {
      "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_31",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'"
+      "proposition_48"
+     ],
+     "examples": [
+      "Prop16.lean:18",
+      "Prop16.lean:28",
+      "Prop24.lean:20"
+     ]
+    },
+    "cite-proposition -> construct-line -> extend -> cite-proposition": {
+     "support": 5,
+     "propositions": [
+      "proposition_16",
+      "proposition_24",
+      "proposition_42",
+      "proposition_46",
+      "proposition_48"
      ],
      "examples": [
       "Prop16.lean:19",
       "Prop16.lean:29",
-      "Prop16.lean:19"
+      "Prop24.lean:21"
      ]
     },
-    "cite-proposition -> extend -> cite-proposition -> construct-line": {
+    "cite-proposition -> extend": {
+     "support": 6,
+     "propositions": [
+      "proposition_16",
+      "proposition_24",
+      "proposition_31",
+      "proposition_42",
+      "proposition_46",
+      "proposition_48"
+     ],
+     "examples": [
+      "Prop16.lean:18",
+      "Prop16.lean:28",
+      "Prop24.lean:20"
+     ]
+    },
+    "cite-proposition -> extend -> cite-proposition": {
      "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
+      "proposition_42",
+      "proposition_46"
+     ],
+     "examples": [
+      "Prop16.lean:19",
+      "Prop16.lean:29",
+      "Prop24.lean:21"
+     ]
+    },
+    "cite-proposition -> extend -> cite-proposition -> construct-line": {
+     "support": 3,
+     "propositions": [
+      "proposition_16",
+      "proposition_24",
+      "proposition_42"
      ],
      "examples": [
       "Prop16.lean:20",
       "Prop16.lean:30",
-      "Prop16.lean:20"
+      "Prop24.lean:22"
      ]
     },
     "cite-proposition -> extend -> cite-proposition -> cite-proposition": {
-     "support": 6,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop16.lean:21",
@@ -8140,16 +4741,14 @@
      ]
     },
     "construct-line -> extend": {
-     "support": 9,
+     "support": 7,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
       "proposition_31",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -8159,48 +4758,43 @@
      ]
     },
     "construct-line -> extend -> cite-proposition": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:19",
       "Prop16.lean:29",
-      "Prop16.lean:19"
+      "Prop22.lean:20"
      ]
     },
     "construct-line -> extend -> cite-proposition -> construct-line": {
-     "support": 5,
+     "support": 4,
      "propositions": [
       "proposition_16",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:20",
       "Prop16.lean:30",
-      "Prop16.lean:20"
+      "Prop24.lean:22"
      ]
     },
     "construct-line -> extend -> cite-proposition -> cite-proposition": {
-     "support": 8,
+     "support": 6,
      "propositions": [
       "proposition_16",
       "proposition_22",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -8210,50 +4804,44 @@
      ]
     },
     "extend -> cite-proposition -> construct-line": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:20",
       "Prop16.lean:30",
-      "Prop16.lean:20"
+      "Prop20.lean:14"
      ]
     },
     "extend -> cite-proposition -> construct-line -> cite-proposition": {
-     "support": 6,
+     "support": 5,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_48"
      ],
      "examples": [
       "Prop16.lean:22",
       "Prop16.lean:32",
-      "Prop16.lean:22"
+      "Prop20.lean:15"
      ]
     },
     "extend -> cite-proposition -> cite-proposition": {
-     "support": 11,
+     "support": 7,
      "propositions": [
       "proposition_16",
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24",
-      "proposition_42''",
-      "proposition_42'''",
+      "proposition_42",
       "proposition_46",
-      "proposition_46'",
       "proposition_48"
      ],
      "examples": [
@@ -8263,12 +4851,10 @@
      ]
     },
     "extend -> cite-proposition -> metric/angle/area": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_20",
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_24"
      ],
      "examples": [
@@ -8303,121 +4889,12 @@
       "Prop22.lean:22"
      ]
     },
-    "construct-line -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop22.lean:22",
-      "Prop46.lean:24",
-      "Prop46.lean:25"
-     ]
-    },
-    "construct-line -> cite-proposition -> cite-proposition -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop46.lean:23"
-     ]
-    },
-    "extend -> extend": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_48"
-     ],
-     "examples": [
-      "Prop22.lean:18",
-      "Prop22.lean:19",
-      "Prop22.lean:44"
-     ]
-    },
-    "extend -> extend -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_48"
-     ],
-     "examples": [
-      "Prop22.lean:20",
-      "Prop22.lean:21",
-      "Prop22.lean:22"
-     ]
-    },
-    "extend -> extend -> cite-proposition -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_48"
-     ],
-     "examples": [
-      "Prop22.lean:21",
-      "Prop22.lean:22",
-      "Prop22.lean:47"
-     ]
-    },
-    "extend -> extend -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:24",
-      "Prop22.lean:24"
-     ]
-    },
-    "extend -> extend -> cite-proposition -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "extend -> extend -> cite-proposition -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
     "extend -> cite-proposition -> cite-proposition -> cite-proposition": {
-     "support": 5,
+     "support": 3,
      "propositions": [
       "proposition_22",
-      "proposition_42''",
-      "proposition_42'''",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_42",
+      "proposition_46"
      ],
      "examples": [
       "Prop22.lean:22",
@@ -8425,219 +4902,29 @@
       "Prop42.lean:70"
      ]
     },
-    "extend -> cite-proposition -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:24",
-      "Prop22.lean:49"
-     ]
-    },
-    "extend -> cite-proposition -> cite-proposition -> intersect": {
-     "support": 5,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "extend -> cite-proposition -> cite-proposition -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:30",
-      "Prop22.lean:30",
-      "Prop22.lean:55"
-     ]
-    },
-    "extend -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:23",
-      "Prop22.lean:24",
-      "Prop22.lean:24"
-     ]
-    },
-    "extend -> cite-proposition -> construct-circle -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:27",
-      "Prop22.lean:26",
-      "Prop22.lean:27"
-     ]
-    },
-    "extend -> cite-proposition -> construct-circle -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:29",
-      "Prop22.lean:30",
-      "Prop22.lean:30"
-     ]
-    },
-    "extend -> cite-proposition -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:26",
-      "Prop22.lean:51"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-circle": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:24",
-      "Prop22.lean:24",
-      "Prop22.lean:49"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-circle -> intersect": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:26",
-      "Prop22.lean:27",
-      "Prop22.lean:26"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> construct-circle -> metric/angle/area": {
-     "support": 3,
-     "propositions": [
-      "proposition_22",
-      "proposition_22'",
-      "proposition_22''"
-     ],
-     "examples": [
-      "Prop22.lean:30",
-      "Prop22.lean:30",
-      "Prop22.lean:55"
-     ]
-    },
     "cite-proposition -> cite-proposition -> intersect": {
-     "support": 6,
+     "support": 3,
      "propositions": [
       "proposition_22",
-      "proposition_22'",
-      "proposition_22''",
       "proposition_42",
-      "proposition_46",
-      "proposition_46'"
+      "proposition_46"
      ],
      "examples": [
       "Prop22.lean:26",
       "Prop22.lean:26",
       "Prop22.lean:51"
-     ]
-    },
-    "cite-proposition -> extend -> cite-proposition -> extend": {
-     "support": 3,
-     "propositions": [
-      "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop24.lean:43",
-      "Prop42.lean:66",
-      "Prop42.lean:88"
-     ]
-    },
-    "extend -> cite-proposition -> construct-line -> extend": {
-     "support": 3,
-     "propositions": [
-      "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop24.lean:43",
-      "Prop42.lean:66",
-      "Prop42.lean:88"
-     ]
-    },
-    "extend -> cite-proposition -> extend": {
-     "support": 3,
-     "propositions": [
-      "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop24.lean:43",
-      "Prop42.lean:66",
-      "Prop42.lean:88"
-     ]
-    },
-    "extend -> cite-proposition -> extend -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_24",
-      "proposition_42''",
-      "proposition_42'''"
-     ],
-     "examples": [
-      "Prop24.lean:50",
-      "Prop24.lean:51",
-      "Prop42.lean:67"
      ]
     },
     "cite-proposition -> intersect -> cite-proposition": {
-     "support": 11,
+     "support": 8,
      "propositions": [
       "proposition_37",
       "proposition_38",
       "proposition_39",
       "proposition_40",
       "proposition_42",
-      "proposition_42'",
       "proposition_44",
-      "proposition_44'",
       "proposition_46",
-      "proposition_46'",
       "proposition_47"
      ],
      "examples": [
@@ -8647,170 +4934,55 @@
      ]
     },
     "cite-proposition -> intersect -> construct-line": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:18",
       "Prop39.lean:26",
-      "Prop39.lean:18"
+      "Prop40.lean:24"
      ]
     },
     "cite-proposition -> intersect -> construct-line -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:19",
       "Prop39.lean:27",
-      "Prop39.lean:19"
+      "Prop40.lean:25"
      ]
     },
     "intersect -> construct-line": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:18",
       "Prop39.lean:26",
-      "Prop39.lean:18"
+      "Prop40.lean:24"
      ]
     },
     "intersect -> construct-line -> cite-proposition": {
-     "support": 4,
+     "support": 3,
      "propositions": [
       "proposition_39",
       "proposition_40",
-      "proposition_44",
-      "proposition_44'"
+      "proposition_44"
      ],
      "examples": [
       "Prop39.lean:19",
       "Prop39.lean:27",
-      "Prop39.lean:19"
-     ]
-    },
-    "cite-proposition -> construct-line -> cite-proposition -> intersect": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop42.lean:25",
-      "Prop42.lean:25",
-      "Prop42.lean:45"
-     ]
-    },
-    "cite-proposition -> cite-proposition -> intersect -> cite-proposition": {
-     "support": 3,
-     "propositions": [
-      "proposition_42",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop46.lean:24",
-      "Prop46.lean:25"
-     ]
-    },
-    "construct-line -> intersect -> cite-proposition -> intersect": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:25",
-      "Prop42.lean:45",
-      "Prop44.lean:28"
-     ]
-    },
-    "construct-line -> intersect -> cite-proposition -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:48",
-      "Prop44.lean:27"
-     ]
-    },
-    "construct-line -> cite-proposition -> intersect -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_46",
-      "proposition_46'"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:48",
-      "Prop46.lean:24"
-     ]
-    },
-    "intersect -> cite-proposition -> intersect": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:25",
-      "Prop42.lean:45",
-      "Prop44.lean:28"
-     ]
-    },
-    "intersect -> cite-proposition -> intersect -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:48",
-      "Prop44.lean:30"
-     ]
-    },
-    "intersect -> cite-proposition -> cite-proposition": {
-     "support": 4,
-     "propositions": [
-      "proposition_42",
-      "proposition_42'",
-      "proposition_44",
-      "proposition_44'"
-     ],
-     "examples": [
-      "Prop42.lean:28",
-      "Prop42.lean:48",
-      "Prop44.lean:27"
+      "Prop40.lean:25"
      ]
     }
    }

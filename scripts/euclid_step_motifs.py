@@ -7,11 +7,12 @@ into an ordered list of tactic steps, and mines:
   * contiguous n-grams of steps (n = 2..5), at exact-name level and at
     class level;
   * data-flow chains (length 2..4 steps) along def-use edges: step B uses
-    an object bound by step A's `as` clause, regardless of source order
-    (source order is partly arbitrary, so edges are order-independent).
+    an object bound by an earlier step A's `as` clause (the latest binder of
+    that name). Edges follow data flow, so the order of independent steps
+    between A and B does not matter.
 
-Support = number of DISTINCT propositions (theorem names) a motif occurs
-in. Motifs with support >= MIN_SUPPORT are reported. Outputs JSON and a
+Support = number of DISTINCT propositions a motif occurs in; primed
+variants (proposition_42'', proposition_42''') count as one proposition. Motifs with support >= MIN_SUPPORT are reported. Outputs JSON and a
 human-readable markdown report.
 """
 
@@ -199,17 +200,19 @@ def ngrams(steps, n, key):
 
 
 def dataflow_edges(steps):
-    """Order-independent def-use edges: (i, j) means step j uses a name bound
-    by step i. Only euclid_apply steps participate (others bind nothing)."""
+    """Def-use edges: (i, j) means step j uses a name whose most recent
+    binding before j was made by step i (so i < j always). Source order of
+    independent steps does not matter because edges follow data flow, not
+    adjacency; but a use can only refer to an earlier binding. Shadowed
+    names (rebound in a later step or case branch) resolve to the latest
+    binder. Only euclid_apply steps bind names."""
     edges = []
-    for i, a in enumerate(steps):
-        if not a["bindings"]:
-            continue
-        for j, b in enumerate(steps):
-            if i == j:
-                continue
-            if a["bindings"] and (set(a["bindings"]) & b["uses"]):
-                edges.append((i, j))
+    latest = {}  # name -> index of the step that most recently bound it
+    for j, b in enumerate(steps):
+        for i in sorted({latest[n] for n in b["uses"] if n in latest}):
+            edges.append((i, j))
+        for n in b["bindings"]:
+            latest[n] = j
     return edges
 
 
@@ -238,6 +241,12 @@ def chains(steps, min_len=2, max_len=4):
     return out
 
 
+def proposition_of(theorem_name):
+    """Support counts propositions, not theorems: proposition_42'' and
+    proposition_42''' are variants of I.42 and share most of their steps."""
+    return theorem_name.rstrip("'")
+
+
 def mine(theorems, min_support=MIN_SUPPORT):
     """Returns motifs dict: kind -> level -> {motif: {support, examples}}."""
     motifs = {
@@ -256,11 +265,11 @@ def mine(theorems, min_support=MIN_SUPPORT):
         for n in range(2, 6):
             for key in ("name", "class"):
                 for g in ngrams(steps, n, key):
-                    motifs["ngram"][key][g].add(th["name"])
+                    motifs["ngram"][key][g].add(proposition_of(th["name"]))
         for path in chains(steps):
             for key in ("name", "class"):
                 g = tuple(steps[i][key] for i in path)
-                motifs["chain"][key][g].add(th["name"])
+                motifs["chain"][key][g].add(proposition_of(th["name"]))
                 ex = (
                     f'{Path(th["file"]).name}:{steps[path[-1]]["line"]}'
                 )
@@ -338,9 +347,10 @@ def render_md(motifs, theorems, i5, parse_count):
     lines.append(f"Parsed {len(theorems)} theorems, {parse_count} euclid_apply steps, "
                  f"{sum(len(t['steps']) for t in theorems)} steps total (all tactics).")
     lines.append("")
-    lines.append("Support = number of distinct propositions (theorem names, primed "
-                 "variants counted separately) the motif occurs in; threshold >= "
-                 f"{MIN_SUPPORT}. Data-flow chains use order-independent def-use edges.")
+    lines.append("Support = number of distinct propositions (primed variants of one "
+                 "proposition count once) the motif occurs in; threshold >= "
+                 f"{MIN_SUPPORT}. Data-flow chains follow def-use edges from each use "
+                 "to the latest earlier binder of the name.")
     lines.append("")
     for kind in ("ngram", "chain"):
         for key in ("class", "name"):

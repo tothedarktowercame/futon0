@@ -60,19 +60,25 @@ def _fixture_text():
        occurs in only 2 theorems and must NOT be reported."""
     parts = []
     # good chain, three theorems, different source orders.
+    # Every order is valid Lean (a name is bound before it is used); what
+    # varies is the variable names and where an unrelated step
+    # (extend_point, binding nothing the chain uses) is interleaved, so the
+    # chain is never a contiguous n-gram in orders 2 and 3.
     good_orders = [
-        # order 1: producer-first
+        # order 1: chain contiguous
         ["euclid_apply (arbitrary_point a b) as x",
          "euclid_apply (circle_from_points x y) as c",
          "euclid_apply (point_on_circle_onlyif x y z c)"],
-        # order 2: consumer of x written before circle, chain still by data flow
+        # order 2: unrelated step between producer and circle
         ["euclid_apply (arbitrary_point m n) as u",
-         "euclid_apply (point_on_circle_onlyif u w z cc)",
-         "euclid_apply (circle_from_points u v) as cc"],
-        # order 3: the using step comes first in source
-        ["euclid_apply (point_on_circle_onlyif p q r k)",
-         "euclid_apply (arbitrary_point p s) as k0",
-         "euclid_apply (circle_from_points k0 t) as k"],
+         "euclid_apply (extend_point L m n) as e",
+         "euclid_apply (circle_from_points u v) as cc",
+         "euclid_apply (point_on_circle_onlyif u w z cc)"],
+        # order 3: unrelated step between circle and its consumer
+        ["euclid_apply (arbitrary_point p s) as k0",
+         "euclid_apply (circle_from_points k0 t) as k",
+         "euclid_apply (extend_point M p s) as f",
+         "euclid_apply (point_on_circle_onlyif p q r k)"],
     ]
     for i, order in enumerate(good_orders, start=1):
         body = "\n".join("  " + ln for ln in order)
@@ -126,3 +132,38 @@ def test_fixture_bad_case_actually_constructed():
     bad = "construct-line -> intersect -> metric/angle/area"
     info = motifs2["chain"]["class"].get(bad)
     assert info is not None and info["support"] == 2
+
+
+def test_edges_never_point_backwards_and_respect_shadowing():
+    """Review fix (claude-9): a use refers to the latest EARLIER binding.
+    The original order-independent edges produced 25 backward edges on the
+    real Book (e.g. proposition_6 rebinds `d` after a step already used one)."""
+    steps = [
+        {"name": "p", "bindings": ["d"], "uses": set()},   # 0 binds d
+        {"name": "q", "bindings": [], "uses": {"d"}},      # 1 uses d from 0
+        {"name": "r", "bindings": ["d"], "uses": set()},   # 2 rebinds d
+        {"name": "s", "bindings": [], "uses": {"d"}},      # 3 uses d from 2
+    ]
+    assert module.dataflow_edges(steps) == [(0, 1), (2, 3)]
+    for th in module.parse_book(BOOK):
+        for i, j in module.dataflow_edges(th["steps"]):
+            assert i < j, (th["name"], i, j)
+
+
+PRIMED_FIXTURE = "\n".join(
+    f"theorem proposition_9{q} : goal :=\nby\n"
+    "  euclid_apply (line_from_points a b) as L\n"
+    "  euclid_apply (proposition_4 a b L)\n"
+    for q in ("", "'", "''"))
+
+
+def test_primed_variants_count_as_one_proposition():
+    """Review fix (claude-9): proposition_42'' and proposition_42''' share
+    their steps; counted separately they inflated support (the top class
+    chain read 37 against 28 distinct propositions)."""
+    theorems = module.parse_theorems(PRIMED_FIXTURE, "<fixture>")
+    assert len(theorems) == 3
+    motifs = module.mine(theorems, min_support=1)
+    info = motifs["chain"]["name"]["line_from_points -> proposition_4"]
+    assert info["support"] == 1
+    assert info["propositions"] == ["proposition_9"]
