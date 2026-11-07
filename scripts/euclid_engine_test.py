@@ -519,22 +519,63 @@ def test_contradictory_fmtoolarge_is_undecided(monkeypatch):
     assert eng.contradictory(s) == (False, None)
 
 
+PROP6_EXCLUDE_I18 = {"side_gt_angle_gt [SMT-bridge, Euclid I.18]"}
+
+
 def test_prop6_replay():
+    """I.6 replays the Lean way: side_gt_angle_gt (Book I.18 as a closure
+    rule) excluded; each by_contra branch closes by sum_angles_onlyif
+    (Transfer.lean:90) splitting the base angle around d plus angle_pos."""
     s, rep = eng.replay(eng.PROP6_HYPS_DATA, eng.PROP6_STEPS_DATA,
-                        [("_eq_len", "a", "b", "a", "c")])
+                        [("_eq_len", "a", "b", "a", "c")],
+                        exclude_rules=PROP6_EXCLUDE_I18)
     assert eng.la_entails_eq(s.la, "a", "b", "a", "c")
     assert rep[-1]["final"]
 
 
+def test_prop6_never_calls_side_gt_angle_gt(monkeypatch):
+    """Swap r_side_gt_angle_gt for a raiser: the I.6 replay (with the rule
+    also excluded) must never invoke it."""
+    def boom(s):
+        raise AssertionError("side_gt_angle_gt called during I.6 replay")
+    monkeypatch.setattr(eng, "FORWARD_RULES",
+                        [(n, boom if n in PROP6_EXCLUDE_I18 else f)
+                         for n, f in eng.FORWARD_RULES])
+    s, rep = eng.replay(eng.PROP6_HYPS_DATA, eng.PROP6_STEPS_DATA,
+                        [("_eq_len", "a", "b", "a", "c")],
+                        exclude_rules=PROP6_EXCLUDE_I18)
+    assert rep[-1]["final"]
+
+
+def test_prop6_control_dropped_sum_angles():
+    """Drop the sum_angles_onlyif step from branch 1: with I.18 excluded the
+    branch can no longer reach its contradiction -> ByContraFailure naming
+    that branch."""
+    steps = [("by_contra", [
+        ([("gt_len", "a", "b", "a", "c")], [
+            ("proposition_3", ("b", "a", "a", "c", "AB", "AC"), {"q": "d"}),
+            ("line_from_points", ("d", "c"), {"L": "DC"}),
+            ("proposition_4", ("b", "d", "c", "c", "a", "b",
+                               "AB", "DC", "BC", "AC", "AB", "BC"), {}),
+        ]),
+        eng.PROP6_STEPS_DATA[0][1][1],
+    ], eng.PROP6_STEPS_DATA[0][2])]
+    with pytest.raises(eng.ByContraFailure) as ei:
+        eng.replay(eng.PROP6_HYPS_DATA, steps,
+                   [("_eq_len", "a", "b", "a", "c")],
+                   exclude_rules=PROP6_EXCLUDE_I18)
+    assert ei.value.branch == [("gt_len", "a", "b", "a", "c")]
+
+
 def test_prop6_control_dropped_equal_angles():
     """I.6 without the equal-angles hypothesis: the by_contra branch gets
-    STUCK at proposition_4's angle entailment premise instead of reaching a
-    contradiction (side_gt_angle_gt alone then relates ∠a:c:b > ∠a:b:c with
-    nothing equating them)."""
+    STUCK at proposition_4's angle entailment premise (no route from
+    |ab|>|ac| to ∠d:b:c = ∠a:c:b without the hypothesis)."""
     hyps = [h for h in eng.PROP6_HYPS_DATA
             if h[0] != ("eq_ang", "a", "b", "c", "a", "c", "b")]
     with pytest.raises(eng.ByContraFailure) as ei:
-        eng.replay(hyps, eng.PROP6_STEPS_DATA, [("_eq_len", "a", "b", "a", "c")])
+        eng.replay(hyps, eng.PROP6_STEPS_DATA, [("_eq_len", "a", "b", "a", "c")],
+                   exclude_rules=PROP6_EXCLUDE_I18)
     assert "stuck" in str(ei.value)
 
 
@@ -707,7 +748,11 @@ def test_replay_fact_set_footprints():
     left default closure (P-euclid-straight-angle-out, claude-9 finishing
     kimi-4's edit): I.5 (442, 227) -> (394, 203), I.9 (236, 93) -> (224, 87),
     I.10 (163, 51) -> (161, 50), I.11 (318, 158) -> (298, 148),
-    I.12 (178, 68) -> (174, 66). Every main() goal still holds."""
+    I.12 (178, 68) -> (174, 66). Every main() goal still holds.
+    I.6 runs with side_gt_angle_gt [SMT-bridge, Euclid I.18] excluded
+    (E-kimi-task-388, the Lean way: sum_angles_onlyif around d); its
+    footprint is unchanged at (41, 11) — the branch work happens on
+    by_contra copies, so the final outer state is identical."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
