@@ -77,8 +77,9 @@ def prop_number(theorem_name):
 
 
 def theorems_before(n, book_dir=motifs.DEFAULT_BOOK_DIR):
-    """Theorems of propositions strictly < n (primed variants share the
-    proposition number, so proposition_2' is excluded when n=3)."""
+    """Theorems of propositions strictly < n. Primed variants share the
+    proposition number: proposition_2' is INCLUDED for n=3 and excluded
+    for n=2 (review fix, claude-9: the comment had this backwards)."""
     return [th for th in motifs.parse_book(book_dir)
             if (prop_number(th["name"]) or 999) < n]
 
