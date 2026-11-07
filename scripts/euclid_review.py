@@ -63,6 +63,7 @@ class Distance:
         self.rules, self.goal = kw["rules"], kw["goal"]
         self.max_depth, self.node_budget = max_depth, node_budget
         self._cache = {}
+        self._tainted = set()
         self.errors = []  # (rule, args, repr(exc)) of moves that CRASHED:
         # they are skipped, and a distance computed with skips is at best
         # an over-estimate — an exception here must never read as
@@ -72,9 +73,18 @@ class Distance:
         key = srch.state_key(state)
         if key in self._cache:
             return self._cache[key]
+        n0 = len(self.errors)
         d = self._search(state)
         self._cache[key] = d
+        if len(self.errors) > n0:
+            self._tainted.add(key)
         return d
+
+    def tainted(self, state):
+        """True if d(state) was computed with crashed moves skipped: the
+        value may be too large, so a progress label built on it is unsafe
+        (review fix, claude-9)."""
+        return srch.state_key(state) in self._tainted
 
     def _search(self, state):
         """BFS from `state` over legal moves (same generator/dedup/goal/
@@ -207,6 +217,10 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
             continue
         d_after = dist(trial)
         if d_before is None or d_after is None:
+            label = "unknown"
+        elif dist.tainted(state) or dist.tainted(trial):
+            # a skipped (crashed) move can only inflate a distance, so
+            # neither "progress" nor "no-progress" can be trusted here
             label = "unknown"
         elif d_after < d_before:
             label = "progress"

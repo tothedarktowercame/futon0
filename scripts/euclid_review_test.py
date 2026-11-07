@@ -189,5 +189,24 @@ def test_distance_exception_is_not_silent_no_progress(monkeypatch):
         and args == ("a", "b"))
     rep = rv.review("I.1", rv.fixture_i1_useless_step())
     assert rep["invalid_steps"] == 0
-    if rep["distance_move_errors"]:
-        assert rep["incomplete"] is True
+    # review (claude-9): this was under `if rep["distance_move_errors"]:`,
+    # which passes vacuously if the crash never fires
+    assert rep["distance_move_errors"] > 0
+    assert rep["incomplete"] is True
+
+
+def test_tainted_distance_never_labels_no_progress(monkeypatch):
+    """Review (claude-9): a crashed move skipped inside the BFS can only
+    make a distance too LARGE, so a finite but inflated d must not produce
+    "no-progress" (or "progress"). Fake a search that records a crash and
+    returns the same finite d everywhere: untainted, every Book I.1 step
+    would read no-progress (3 -> 3)."""
+    def fake_search(self, state):
+        self.errors.append(("circle_from_points", ("b", "a"), "KeyError"))
+        return 3
+
+    monkeypatch.setattr(rv.Distance, "_search", fake_search)
+    rep = rv.review("I.1", rv.fixture_book_i1())
+    labels = [r["progress"] for r in rep["steps"]]
+    assert labels == ["unknown"] * 3, labels
+    assert rep["incomplete"] is True
