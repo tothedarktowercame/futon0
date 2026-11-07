@@ -56,7 +56,7 @@ def test_case_props_reach_goal():
     """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (6, 7, 10, 13, 14, 19, 21):
+    for n in (6, 7, 8, 10, 13, 14, 19, 21):
         steps = tr.hyps_and_steps(n)[1]
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
@@ -161,7 +161,7 @@ def test_catalogue_splits_covered():
     """Every engine case split in the catalogue (I.10, 13, 14, 19, 21,
     nested blocks included) is covered; record the family each matched."""
     table = []
-    for n in (6, 7, 10, 13, 14, 19, 21):
+    for n in (6, 7, 8, 10, 13, 14, 19, 21):
         s = ep._start_state(n)
         found = []
         _walk_case_blocks(n, s, tr.hyps_and_steps(n)[1], (), found)

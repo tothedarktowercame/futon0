@@ -303,6 +303,11 @@ def _holds(s, f):
     f = tuple(f)
     if f[0] == "peq_line":
         return _peq_line_holds(s, f[1], f[2])
+    if f[0] in ("peq", "neq", "neq_line"):
+        # symmetric; the engine's raw lookup is order-sensitive (kimi-4,
+        # E-kimi-task-421: I.8's conclusion peq d c' vs the member peq c' d)
+        return eng._fact_holds(s, f) or \
+            eng._fact_holds(s, (f[0], f[2], f[1]))
     if f[0] in ("opposing_sides", "same_side", "not_same_side"):
         # symmetric in the two points (Relations.lean:13-14 for
         # opposing); the engine's closure symmetrizes same_side only
