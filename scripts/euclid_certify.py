@@ -175,6 +175,10 @@ PROPS = {
     # uses euclid_assert steps; the goal is closed by euclid_finish's SMT.
     "I.4": dict(imports=["SystemE"], statement=PROP4_STATEMENT,
                 book_steps=PROP4_BOOK_STEPS, witness=None),
+    # The ENGINE's own I.4 steps (euclid_engine.PROP4_STEPS_DATA, read live),
+    # bridges translated to euclid_assert. Same statement/imports as I.4.
+    "I.4-engine": dict(imports=["SystemE"], statement=PROP4_STATEMENT,
+                       book_steps=None, witness=None, engine="I.4"),
     # I.5 has no existential witness (goal is a conjunction of angle
     # equalities), so witness=None: emit_proof emits no `use` line.
     "I.5": dict(imports=["SystemE", "Book.Prop03", "Book.Prop04"],
@@ -212,6 +216,77 @@ def _step_lines(rule, args, bindings, term):
     if names:
         return [f"  euclid_apply ({rule} {terms}) as {names}"]
     return [f"  euclid_apply ({rule} {terms})"]
+
+
+# ---------------------------------------------------------------------------
+# Engine step translation ([SMT-bridge] -> euclid_assert)
+# ---------------------------------------------------------------------------
+
+# [SMT-bridge] engine rules are emitted as `euclid_assert` of their
+# point-equality conclusion (peq x y -> "x = y"); see
+# ~/notes/euclid-I4-reconcile.md (P-euclid-certify-engine-I4).
+BRIDGE_ASSERTS = {
+    "assert_point_eq_on_ray": lambda args: f"{args[0]} = {args[1]}",
+    "assert_point_eq_angle": lambda args: f"{args[0]} = {args[1]}",
+}
+
+# Engine binding names that differ from the Book's, renamed at emit time only
+# (the engine file names its fourth superposition object AC'; Book/Prop04.lean
+# names it DC'. The engine file is zai-11's, so the reconciliation lives here.)
+BINDING_RENAMES = {"AC'": "DC'"}
+
+
+def citable_apply_rules():
+    """Engine rules known to be Lean-citable (euclid_apply-able): every rule
+    that appears in a PROPS book-step list. Grown as PROPS grows."""
+    return {r for cfg in PROPS.values()
+            if cfg.get("book_steps")
+            for (r, _a, _b) in cfg["book_steps"]}
+
+
+def translate_engine_steps(steps):
+    """Engine (rule, args, bindings) steps -> emittable steps.
+
+    A bridge rule becomes an euclid_assert step; a citable rule keeps its
+    apply shape with binding renames applied; anything else raises (a rule
+    that is neither citable in Lean nor a known bridge must not be silently
+    dropped or mis-emitted)."""
+    citable = citable_apply_rules()
+    out = []
+    for rule, args, bindings in steps:
+        if rule in BRIDGE_ASSERTS:
+            out.append(("euclid_assert", (BRIDGE_ASSERTS[rule](args),), {}))
+        elif rule == "euclid_assert" or rule in citable:
+            b2 = {k: BINDING_RENAMES.get(v, v) for k, v in bindings.items()}
+            out.append((rule, args, b2))
+        else:
+            raise ValueError(
+                f"engine rule {rule!r} is neither a citable euclid_apply "
+                f"rule nor a known [SMT-bridge] (BRIDGE_ASSERTS)")
+    return out
+
+
+_ENGINE = None
+
+
+def _engine():
+    """Load euclid_engine lazily and cache it (monkeypatchable in tests)."""
+    global _ENGINE
+    if _ENGINE is None:
+        spec = importlib.util.spec_from_file_location(
+            "euclid_engine", FUTON0 / "scripts" / "euclid_engine.py")
+        _ENGINE = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_ENGINE)
+    return _ENGINE
+
+
+def engine_steps(prop):
+    """The engine's own step data for prop, translated for emission.
+    Read live from euclid_engine (never a hand copy)."""
+    eng = _engine()
+    if prop == "I.4" and hasattr(eng, "PROP4_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP4_STEPS_DATA)
+    raise ValueError(f"no engine step data registered for {prop}")
 
 
 def emit_step(rule, args, bindings):
@@ -313,8 +388,12 @@ def check_lean(source, name, timeout=600):
 def certify_book():
     results = {}
     for prop, cfg in PROPS.items():
-        r = check_lean(emit_proof(prop, cfg["book_steps"], cfg["witness"]),
-                       f"book_{prop.replace('.', '')}")
+        if cfg.get("engine"):
+            steps = engine_steps(cfg["engine"])
+        else:
+            steps = cfg["book_steps"]
+        r = check_lean(emit_proof(prop, steps, cfg["witness"]),
+                       f"book_{prop.replace('.', '').replace('-', '_')}")
         results[prop] = r
         _report(f"book {prop}", r)
     return results

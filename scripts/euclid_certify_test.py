@@ -184,6 +184,50 @@ def test_negative_sorry_only_warning():
 
 
 @pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i4_certifies():
+    # the ENGINE's own PROP4_STEPS_DATA, bridges as euclid_assert of their
+    # peq conclusions, AC' renamed DC' at emit time (P-euclid-certify-engine-I4)
+    r = cert.check_lean(
+        cert.emit_proof("I.4-engine", cert.engine_steps("I.4"), None),
+        "test_engine_I4")
+    assert r["certified"], r["output"]
+
+
+def test_engine_i4_asserts_come_from_engine_data(monkeypatch):
+    # monkeypatch the engine's PROP4_STEPS_DATA with swapped bridge args and
+    # show the emitted assert text follows the data (no hand copy)
+    eng = cert._engine()
+    swapped = [list(s) for s in eng.PROP4_STEPS_DATA]
+    swapped[1] = ("assert_point_eq_on_ray", ("c'", "f", "d", "DE"), {})
+    monkeypatch.setattr(eng, "PROP4_STEPS_DATA", swapped)
+    src = cert.emit_proof("I.4-engine", cert.engine_steps("I.4"), None)
+    assert "  euclid_assert c' = f" in src
+    assert "  euclid_assert b' = e" not in src
+
+
+def test_unknown_bridge_rule_raises():
+    # neither citable in Lean nor a known bridge: refuse, never silently drop
+    steps = [("assert_point_eq_line", ("b'", "DE"), {})]
+    with pytest.raises(ValueError, match="assert_point_eq_line"):
+        cert.translate_engine_steps(steps)
+
+
+def test_book_emission_i1_to_i5_unchanged():
+    # Review (claude-9): the first version only counted euclid_intros, which
+    # any emission change passes. Pin the exact text: sha256 prefixes of the
+    # Book I.1-I.5 emission, checked equal to the emitter before the engine
+    # path existed (HEAD 18f28d8's euclid_certify.py, emitted side by side).
+    import hashlib
+    pins = {"I.1": "3ab49c6eb35a0fda", "I.2": "fd0f8cb642ab2ebd",
+            "I.3": "ed76e074b17775f9", "I.4": "40bc26d1cde59686",
+            "I.5": "6231e666b3c26e7a"}
+    for prop, pin in pins.items():
+        cfg = cert.PROPS[prop]
+        src = cert.emit_proof(prop, cfg["book_steps"], cfg["witness"])
+        assert hashlib.sha256(src.encode()).hexdigest()[:16] == pin, prop
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
 def test_negative_prop4_false_assert():
     # asserting b' = d (not true of the superposed triangle) is refused.
     # Measured: the SMT solver hangs on the false assert, so this comes back
