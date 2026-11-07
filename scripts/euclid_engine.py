@@ -3758,7 +3758,7 @@ PROP21_HYPS_DATA = [
 #   4. pasch_4 BD AC e a c (Diagrammatic.lean:173): a, c oppose across
 #      BD, so between a e c. (BD ≠ AC: d on BD off AC, line_neq; the
 #      neqs a ≠ e, c ≠ e are off_line_neq from a, c off BD.)
-#   5. between b d e: trichotomy between_points (Diagrammatic.lean:95) on
+#   5. between b d e: trichotomy between_points (Diagrammatic.lean:87) on
 #      the distinct b, d, e on BD leaves three orders; the other two die:
 #      between b e d would put b opposing d across AC (pasch_3, e on AC)
 #      against hyp b.sameSide d AC; between e b d would put e opposing d
