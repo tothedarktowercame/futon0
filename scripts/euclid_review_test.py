@@ -227,3 +227,14 @@ def test_step_after_engine_error_is_not_blamed(monkeypatch):
     assert rep["invalid_steps"] == 0 and rep["blocked_steps"] == 1
     text = rv.format_report(rep)
     assert "INVALID" not in text and "not reviewed" in text
+
+
+def test_binding_clash_reads_as_a_name_clash():
+    """Review (claude-9, after 6342e2f): proposition_1 a b AB named b is a
+    clash; the reason names it in words, not as "('fresh', 'b')"."""
+    rep = rv.review("I.1", [("proposition_1", ("a", "b", "AB"), {"d": "b"})])
+    row = _row(rep, 1)
+    assert row["valid"] is False and row["progress"] == "invalid"
+    assert row["why"].startswith("names its new object b, but b already "
+                                 "exists"), row["why"]
+    assert "fresh" not in row["why"]

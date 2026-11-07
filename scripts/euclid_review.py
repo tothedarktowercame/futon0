@@ -130,6 +130,19 @@ def _fmt_step(rule, args):
     return f"{rule} {args}"
 
 
+def _missing_why(premise):
+    """Student-facing reason for a MissingPremise. A ("fresh", name)
+    premise is a binding clash (P-euclid-binding-clash-2): the step names
+    its new object after an existing one that it is not shown to equal.
+    Review (claude-9): this read "missing premise: ('fresh', 'b')"."""
+    if isinstance(premise, tuple) and len(premise) == 2 \
+            and premise[0] == "fresh":
+        return (f"names its new object {premise[1]}, but {premise[1]} "
+                f"already exists and the new object is not shown to be "
+                f"the same; use a new name")
+    return f"missing premise: {premise}"
+
+
 def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     """Review `steps` = [(rule, args, bindings?), ...] against proposition
     `prop` (a key of srch.prop_searches()). Returns a report dict.
@@ -196,15 +209,15 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         try:
             eng.apply_step(trial, i, rule, args, bindings)
         except eng.MissingPremise as e:
+            why = _missing_why(e.premise)
             if unapplied:
                 n_blocked += 1
-                rows.append(blocked_row(i, rule, args,
-                                        f"missing premise: {e.premise}"))
+                rows.append(blocked_row(i, rule, args, why))
                 continue
             n_invalid += 1
             rows.append({
                 "step": i, "rule": _fmt_step(rule, args),
-                "valid": False, "why": f"missing premise: {e.premise}",
+                "valid": False, "why": why,
                 "progress": "invalid",
                 "d_before": None, "d_after": None,
                 "state_note": ("step not applied; later steps are reviewed "
