@@ -707,7 +707,7 @@ def test_replay_fact_set_footprints():
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (442, 227), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (236, 93), "10": (163, 51),
-                "11": (318, 158)}
+                "11": (318, 158), "12": (178, 68)}
     got = {}
     old_argv = sys.argv
     try:
@@ -1122,6 +1122,180 @@ def test_prop11_other_nondegeneracies_derived():
                  ("neq", "f", "w"), ("neq", "g", "f"),
                  ("neq", "g", "e"), ("dpl", "g", "e", "AB")]:
         assert s.has(fact), fact
+
+
+# --- I.12: perpendicular from a point off a line ----------------------------
+
+
+def test_prop12_replay():
+    """Perpendicular from c off AB: ∃ h on AB with ∠e:h:c = RT (the
+    engine's substitute for Lean's disjunction ∠a:h:c = ∟ ∨ ∠b:h:c = ∟ —
+    h may coincide with a or b and System E gives such an angle no value;
+    e on AB with e ≠ h, so hc ⊥ AB at h gives whichever disjunct is
+    non-degenerate)."""
+    s, rep = eng.replay(eng.PROP12_HYPS_DATA, eng.PROP12_STEPS_DATA,
+                        [("_rt_ang", "e", "h", "c"),
+                         ("on_line", "h", "AB")])
+    assert s.has(("right_ang", "e", "h", "c"))
+    assert s.has(("on_line", "h", "AB"))
+    assert s.has(("between", "e", "h", "g"))
+    assert s.la.entails(eng.lin((eng.ang_atom("e", "h", "c"), 1),
+                                (eng.RT, -1)), 0, "=")
+    assert eng._fm_sat(s.la.rows)
+    assert rep[-1]["final"]
+
+
+def test_prop12_control_dropped_hyp():
+    """Without ¬(c.onLine AB) the first step (exists_point_opposite) stops
+    at its own premise."""
+    hyps = [h for h in eng.PROP12_HYPS_DATA
+            if h[0] != ("not_on_line", "c", "AB")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP12_STEPS_DATA,
+                   [("_rt_ang", "e", "h", "c")])
+    assert ei.value.rule == "exists_point_opposite"
+    assert ei.value.premise == ("not_on_line", "c", "AB")
+
+
+def test_prop12_control_dropped_step():
+    """Drop the intersection_circle_line_1 step: intersections_circle_line
+    stops at its intersects_lc premise (the line might miss the circle)."""
+    steps = [st for st in eng.PROP12_STEPS_DATA
+             if st[0] != "intersection_circle_line_1"]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(eng.PROP12_HYPS_DATA, steps,
+                   [("_rt_ang", "e", "h", "c")])
+    assert ei.value.rule == "intersections_circle_line"
+    assert ei.value.premise == ("intersects_lc", "AB", "EFG")
+
+
+def test_prop12_derived_facts():
+    """No h-sm inputs: both hypotheses are Lean's own (h). Every other
+    premise the steps need is cited or closure-derived (pinned here):
+    neq c d (opposing_parts), dpl e g AB (r_dpl from the made on_lines +
+    neq), on_line h AB (between_same_line_in), neq c g/h/e (off_line_neq),
+    neq_line CH AB (line_neq), not_on_line g CH / e CH
+    (two_lines_meet_once at h), radii |c-e| = |c-g| (poc_onlyif)."""
+    assert all(w == "h" for _, w in eng.PROP12_HYPS_DATA)
+    s, rep = eng.replay(eng.PROP12_HYPS_DATA, eng.PROP12_STEPS_DATA,
+                        [("_rt_ang", "e", "h", "c")])
+    for fact in [("neq", "c", "d"), ("dpl", "e", "g", "AB"),
+                 ("on_line", "h", "AB"),
+                 ("neq", "c", "g"), ("neq", "c", "h"), ("neq", "c", "e"),
+                 ("neq_line", "CH", "AB"),
+                 ("not_on_line", "g", "CH"), ("not_on_line", "e", "CH"),
+                 ("neq", "e", "h"), ("neq", "g", "h")]:
+        assert s.has(fact), fact
+    assert eng.la_entails_eq(s.la, "c", "e", "c", "g")   # radii
+    assert eng.la_entails_eq(s.la, "e", "h", "h", "g")   # bisection
+
+
+def test_exists_point_opposite_counterexamples():
+    """Points.lean:60: ¬(b.onLine L) → ∃ a, a.opposingSides b L.
+    Needed premise: b ON L — a point on L has no opposite side across L
+    (opposingSides gives ¬b.onLine L, contradicting on_line). The rule
+    must refuse; and with the premise the conclusion is consistent."""
+    s = _line_state([("on_line", "b", "L")])
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "exists_point_opposite", ("L", "b"),
+                       {"a": "a0"})
+    assert ei.value.premise == ("not_on_line", "b", "L")
+    # enough premises: b off L; the made opposing_sides is satisfiable and
+    # yields both off-line parts and a ≠ b (opposing_parts)
+    s2 = _line_state([("on_line", "p", "L"), ("on_line", "q", "L"),
+                      ("neq", "p", "q"), ("not_on_line", "b", "L")])
+    eng.apply_step(s2, 1, "exists_point_opposite", ("L", "b"), {"a": "a0"})
+    assert s2.has(("opposing_sides", "a0", "b", "L"))
+    assert s2.has(("not_on_line", "a0", "L"))
+    assert s2.has(("neq", "a0", "b"))
+    assert eng._fm_sat(s2.la.rows)
+    # the conclusion cannot be read back as same-side: asserting
+    # same_side a0 b L against the opposing_sides is contradictory
+    # (Relations.lean:13-14), so the rule's content is real.
+    s2.assume(("same_side", "a0", "b", "L"))
+    ok, _ = eng.contradictory(s2)
+    assert ok
+
+
+def test_intersection_circle_line_1_counterexamples():
+    """Diagrammatic.lean:297: a, b not outside α, opposing sides of L ⇒
+    L.intersectsCircle α.
+    Needed premises:
+    - drop opposing_sides (same side): a, b on the circle on one side of
+      L — L can miss α entirely; the rule must refuse.
+    - drop not_outside (a outside α): two outside points on opposing
+      sides (L crosses segment ab but can pass outside the circle... the
+      axiom's antecedent fails either way); the rule must refuse.
+    Enough premises: centre + point on circle opposing across L fires;
+    intersects_lc is consistent and feeds intersections_circle_line."""
+    base = [("centre", "c", "G"), ("on_circle", "d", "G"),
+            ("on_line", "p", "L"), ("on_line", "q", "L"), ("neq", "p", "q")]
+    # same side instead of opposing: refuse
+    s = _line_state(base + [("same_side", "d", "c", "L")])
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "intersection_circle_line_1",
+                       ("d", "c", "G", "L"), {})
+    assert ei.value.premise == ("opposing_sides", "d", "c", "L")
+    # a outside the circle: not_outside d G absent, refuse
+    s2 = _line_state([("centre", "c", "G"), ("outside", "d", "G"),
+                      ("opposing_sides", "d", "c", "L")])
+    with pytest.raises(eng.MissingPremise) as ei2:
+        eng.apply_step(s2, 1, "intersection_circle_line_1",
+                       ("d", "c", "G", "L"), {})
+    assert ei2.value.premise == ("not_outside", "d", "G")
+    # enough premises: fires (d on circle, c centre/inside, opposing)
+    s3 = _line_state(base + [("opposing_sides", "d", "c", "L")])
+    r = eng.apply_step(s3, 1, "intersection_circle_line_1",
+                       ("d", "c", "G", "L"), {})
+    assert ("intersects_lc", "L", "G") in r["added"]
+    assert eng._fm_sat(s3.la.rows)
+    # and the intersection points exist (Intersections.lean:6)
+    eng.apply_step(s3, 2, "intersections_circle_line", ("G", "L"),
+                   {"a": "e", "b": "g"})
+    assert eng._fm_sat(s3.la.rows)
+
+
+def test_intersections_circle_line_counterexamples():
+    """Intersections.lean:6 needs L.intersectsCircle α. Without it (a line
+    missing the circle) the rule must refuse; with it, the two made points
+    are on the circle and the line and distinct, with neq substituted to
+    the BOUND names (cross-base substitution in the None-base fact)."""
+    s = _line_state([("centre", "c", "G"), ("on_circle", "d", "G"),
+                     ("on_line", "p", "L")])
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "intersections_circle_line", ("G", "L"),
+                       {"a": "e", "b": "g"})
+    assert ei.value.premise == ("intersects_lc", "L", "G")
+    s.assume(("intersects_lc", "L", "G"))
+    r = eng.apply_step(s, 2, "intersections_circle_line", ("G", "L"),
+                       {"a": "e", "b": "g"})
+    assert ("neq", "e", "g") in r["added"]  # not the literal ("neq","a","b")
+    for f in [("on_circle", "e", "G"), ("on_line", "e", "L"),
+              ("on_circle", "g", "G"), ("on_line", "g", "L")]:
+        assert s.has(f), f
+    assert eng._fm_sat(s.la.rows)
+
+
+def test_proposition_10_cited_counterexamples():
+    """Book/Prop10.lean:7 cited: dpl a b AB ⇒ ∃ d, between a d b ∧
+    |a-d| = |d-b|.
+    Needed premise: a = b (no dpl) — a degenerate segment has between a d a
+    only with d = a (System E betweenness is strict: between_symm_parts
+    gives a ≠ b), so no midpoint exists; the rule must refuse.
+    Enough premises: the midpoint's two halves are equal — asserting them
+    UNEQUAL after the citation is unsat (the conclusion cannot be false)."""
+    s = _line_state([("on_line", "a", "AB"), ("peq", "a", "b")])
+    with pytest.raises(eng.MissingPremise):
+        eng.apply_step(s, 1, "proposition_10", ("a", "b", "AB"), {"d": "h"})
+    s2 = _line_state([("dpl", "a", "b", "AB")])
+    eng.apply_step(s2, 1, "proposition_10", ("a", "b", "AB"), {"d": "h"})
+    assert s2.has(("between", "a", "h", "b"))
+    assert eng.la_entails_eq(s2.la, "a", "h", "h", "b")
+    assert eng._fm_sat(s2.la.rows)
+    # try to make the conclusion false: |a-h| > |h-b|
+    s2.la.add(eng.lin((eng.len_atom("a", "h"), 1),
+                      (eng.len_atom("h", "b"), -1)), 0, ">")
+    assert not eng._fm_sat(s2.la.rows)
 
 
 def test_perpendicular_if_premises_exact():

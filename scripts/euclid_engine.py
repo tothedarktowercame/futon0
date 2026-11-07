@@ -1313,6 +1313,19 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b: [
             ("C", [("centre", a, "C"), ("on_circle", b, "C")])],
     },
+    # Book/Prop10.lean:7 — bisect a segment, cited as a lemma (the engine's
+    # own I.10 replay stands behind the citation). Statement verbatim:
+    #   ∀ (a b : Point) (AB : Line), distinctPointsOnLine a b AB →
+    #     ∃ d : Point, (between a d b) ∧ (|(a─d)| = |(d─b)|)
+    # Existential conclusion, so a construction when cited.
+    "proposition_10": {
+        "cite": "Book/Prop10.lean:7",
+        "args": ("a", "b", "AB"),
+        "premises": lambda s, a, b, AB: [_dpl_either(s, a, b, AB)],
+        "make": lambda s, a, b, AB: [
+            ("d", [("between", a, "d", b),
+                   ("_eq_len", a, "d", "d", b)])],
+    },
     # Constructions/Intersections.lean:17
     "intersection_circles": {
         "cite": "Intersections.lean:17",
@@ -1320,6 +1333,15 @@ CONSTRUCTIONS = {
         "premises": lambda s, a, b: [("intersects_cc", a, b)],
         "make": lambda s, a, b: [
             ("c", [("on_circle", "c", a), ("on_circle", "c", b)])],
+    },
+    # SystemE/Theory/Constructions/Points.lean:60 — exists_point_opposite
+    # verbatim: ¬(b.onLine L) → ∃ a : Point, a.opposingSides b L
+    "exists_point_opposite": {
+        "cite": "Points.lean:60",
+        "args": ("L", "b"),
+        "premises": lambda s, L, b: [("not_on_line", b, L)],
+        "make": lambda s, L, b: [
+            ("a", [("opposing_sides", "a", b, L)])],
     },
     # Intersections.lean:13 — inside point b on line L with c on L
     "intersection_circle_line_extending_points": {
@@ -1341,6 +1363,33 @@ CONSTRUCTIONS = {
         "make": lambda s, a, L, b, c: [
             ("e", [("on_circle", "e", a), ("on_line", "e", L),
                    ("between", b, "e", c)])],
+    },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:297 —
+    # intersection_circle_line_1 verbatim: ¬(a.outsideCircle α) ∧
+    # ¬(b.outsideCircle α) ∧ (a.opposingSides b L) → L.intersectsCircle α.
+    # In the I.12 replay Lean's SMT obtains AB.intersectsCircle EFG from
+    # opposingSides d c AB with d on the circle and c its centre (both
+    # not-outside); this cites the SystemE axiom that does exactly that.
+    "intersection_circle_line_1": {
+        "cite": "Diagrammatic.lean:297",
+        "args": ("a", "b", "alpha", "L"),
+        "premises": lambda s, a, b, alpha, L: [
+            ("not_outside", a, alpha), ("not_outside", b, alpha),
+            ("opposing_sides", a, b, L)],
+        "make": lambda s, a, b, alpha, L: [
+            (None, [("intersects_lc", L, alpha)])],
+    },
+    # SystemE/Theory/Constructions/Intersections.lean:6 —
+    # intersections_circle_line verbatim: L.intersectsCircle α →
+    # ∃ a b, a.onCircle α ∧ a.onLine L ∧ b.onCircle α ∧ b.onLine L ∧ a ≠ b.
+    "intersections_circle_line": {
+        "cite": "Intersections.lean:6",
+        "args": ("alpha", "L"),
+        "premises": lambda s, alpha, L: [("intersects_lc", L, alpha)],
+        "make": lambda s, alpha, L: [
+            ("a", [("on_circle", "a", alpha), ("on_line", "a", L)]),
+            ("b", [("on_circle", "b", alpha), ("on_line", "b", L)]),
+            (None, [("neq", "a", "b")])],
     },
     # Intersections.lean:24 — circle-circle crossing on the opposite side of L
     "intersection_opposite_side": {
@@ -1828,12 +1877,19 @@ def apply_step(s, i, rule, args, bindings):
             s.reserved.discard(name)  # h-sm reservation consumed, once
             s.declared.add(name)
     added = []
+    # Substitute EVERY fresh base in every made fact: a rule with two fresh
+    # objects (intersections_circle_line: e, g and their a ≠ b) names the
+    # other fresh object in a None-base fact, and the own-base-only
+    # substitution left those as the rule's literal names (superposition
+    # escaped this only because its replays bind b'/c' identically).
+    namemap = {base: name for (base, _), name in zip(made, fresh_names)
+               if base is not None}
     for (base, facts), name, ident in zip(made, fresh_names, identified):
         if ident is not None:
             continue  # identification accepted: the step adds nothing
         for fact in facts:
-            fact = tuple((name if x == base else x) if base is not None
-                         else x for x in fact)
+            fact = tuple(namemap.get(x, x) if isinstance(x, str) else x
+                         for x in fact)
             fact = tuple(restore.get(x, x) if isinstance(x, str) else x
                          for x in fact)
             if fact[0] == "_eq_len":
@@ -2433,6 +2489,52 @@ PROP11_STEPS_DATA = [
 ]
 
 
+# Book I.12 (Book/Prop12.lean): drop a perpendicular from c (off AB) onto
+# AB. d opposite c across AB (exists_point_opposite); circle EFG centre c
+# through d; AB meets EFG at e, g (intersections_circle_line, its
+# intersectsCircle premise cited from intersection_circle_line_1 — Lean's
+# SMT closes that premise; the engine cites the SystemE axiom, Diagrammatic.
+# lean:297, so this replay has NO h-sm input: every premise of every step
+# is either a hypothesis, a cited rule, or closure-derived). proposition_10
+# bisects eg at h (between e h g, |e-h| = |h-g|); proposition_8 (SSS on
+# h-c-g / h-c-e: |h-g| = |h-e| from the bisection, |c-g| = |c-e| radii,
+# |h-c| common) gives ∠c:h:g = ∠c:h:e; perpendicular_if concludes
+# ∠e:h:c = RT.
+# GOAL SUBSTITUTE (stated per the packet): Lean's goal is the DISJUNCTION
+# ∠ a:h:c = ∟ ∨ ∠ b:h:c = ∟ — h may coincide with a or b, and System E
+# gives an angle with coinciding points no value, so neither disjunct is
+# stated unconditionally. The engine has no disjunction fact (none is
+# invented here). Instead the replay proves ∠e:h:c = ∟, which implies
+# Lean's goal: h and e both lie on AB with e ≠ h, so hc ⊥ AB at h; for
+# any point x on AB with x ≠ h the angle ∠x:h:c is the angle between hc
+# and a ray of AB, hence ∟. Since a ≠ b at least one of a, b differs
+# from h, and that disjunct holds.
+# Derived (pinned by test_prop12_derived_facts), NOT inputs: neq c d
+# (opposing_parts), dpl e g AB (r_dpl from the made on_lines + neq),
+# on_line h AB (between_same_line_in), neq c g/h/e (off_line_neq),
+# neq_line CH AB (line_neq), not_on_line g CH / e CH (two_lines_meet_once
+# at h; neq e h / neq g h come from pos_neq off the between-order row
+# |eg| = |eh| + |hg| with the bisection's |eh| = |hg| and |eg| > 0),
+# radii |c-g| = |c-e| (poc_onlyif).
+PROP12_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),  # distinctPointsOnLine a b AB
+    (("not_on_line", "c", "AB"), "h"),
+]
+PROP12_STEPS_DATA = [
+    ("exists_point_opposite", ("AB", "c"), {"a": "d"}),
+    ("circle_from_points", ("c", "d"), {"C": "EFG"}),
+    ("intersection_circle_line_1", ("d", "c", "EFG", "AB"), {}),
+    ("intersections_circle_line", ("EFG", "AB"), {"a": "e", "b": "g"}),
+    ("proposition_10", ("e", "g", "AB"), {"d": "h"}),
+    ("line_from_points", ("c", "g"), {"L": "CG"}),
+    ("line_from_points", ("c", "h"), {"L": "CH"}),
+    ("line_from_points", ("c", "e"), {"L": "CE"}),
+    ("proposition_8", ("h", "c", "g", "h", "c", "e",
+                       "CH", "CG", "AB", "CH", "CE", "AB"), {}),
+    ("perpendicular_if", ("e", "g", "h", "c", "AB"), {}),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -2525,6 +2627,12 @@ def main():
             s, rep = replay(PROP11_HYPS_DATA, PROP11_STEPS_DATA,
                             [("not_on_line", "f", "AB"),
                              ("_rt_ang", "u", "w", "f")])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "12":
+            t0 = time.time()
+            s, rep = replay(PROP12_HYPS_DATA, PROP12_STEPS_DATA,
+                            [("_rt_ang", "e", "h", "c"),
+                             ("on_line", "h", "AB")])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
