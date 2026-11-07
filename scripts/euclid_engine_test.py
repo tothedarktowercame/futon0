@@ -3421,3 +3421,127 @@ def test_prop24a_final_state_not_contradictory():
                       eng.PROP24A_GOAL)
     contra, witness = eng.contradictory(s)
     assert not contra, witness
+
+
+# --- I.24 complete (Book/Prop24.lean:12-59, both by_cases branches) -------
+
+
+def _prop24_rebuilt(sub2_steps):
+    """PROP24_STEPS_DATA with the second branch's nested not_on_line g EF
+    sub-case steps replaced by sub2_steps (for drop-controls)."""
+    by = eng.PROP24_STEPS_DATA[-1]
+    branch1, (f2, steps2) = by[1]
+    nested = steps2[0]
+    (nf1, sub1), (nf2, _sub2) = nested[1]
+    nested = (nested[0], [(nf1, sub1), (nf2, sub2_steps)], nested[2])
+    by = (by[0], [branch1, (f2, [nested])], by[2])
+    return eng.PROP24_STEPS_DATA[:-1] + [by]
+
+
+def _prop24_branch2_sub2():
+    """The nested not_on_line g EF sub-case's step list."""
+    by = eng.PROP24_STEPS_DATA[-1]
+    nested = by[1][1][1][0]
+    return nested[1][1][1]
+
+
+def test_prop24_replay():
+    """The whole of I.24: both branches of the d.sameSide g EF split
+    conclude |b-c| > |e-f| (Prop24.lean:35-59)."""
+    s, rep = eng.replay(eng.PROP24A_HYPS_DATA, eng.PROP24_STEPS_DATA,
+                        eng.PROP24_GOAL)
+    assert eng.PROP24_STEPS_DATA[:-1] == eng.PROP24A_STEPS_DATA[:-1]
+    by = eng.PROP24_STEPS_DATA[-1]
+    assert by[1][0] == eng.PROP24A_STEPS_DATA[-1][1][0]  # branch 1 verbatim
+    assert by[1][1][0] == [("not_same_side", "d", "g", "EF")]
+    assert rep[-2]["rule"] == "by_cases" and rep[-2]["branches"] == 2
+    assert rep[-2]["conclusions"] == [("_gt_len", "b", "c", "e", "f")]
+    assert s.has(("gt_len", "b", "c", "e", "f"))
+    assert eng.la_entails_gt(s.la, "b", "c", "e", "f")
+    assert rep[-1]["final"]
+
+
+def test_prop24_branch2_angle_assert_rows():
+    """Prop24.lean:53-55 (d:g:e < 2r, d:f:e < 2r, and the 4r sum) are LA
+    consequences of the cited rows inside the second branch — pin them as
+    entailment queries on the branch state (no fact kind carries
+    angle-vs-2r comparisons)."""
+    by = eng.PROP24_STEPS_DATA[-1]
+    f2, steps2 = by[1][1]
+    nested = steps2[0]
+    nf2, sub2 = nested[1][1]
+    # replay the common part, enter branch 2 and the nested sub-case,
+    # run everything up to (not incl.) the line-56 by_contra
+    s = eng.State()
+    for f, w in eng.PROP24A_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.run_steps(s, eng.PROP24_STEPS_DATA[:-1])
+    eng.close(s)
+    for f in f2:
+        s.assume(f, "by_cases assumption")
+    eng.close(s)
+    for f in nf2:
+        s.assume(f, "by_cases assumption")
+    eng.close(s)
+    upto = [st for st in sub2
+            if not (st[0] == "by_contra"
+                    and st[2] == [("gt_ang", "e", "f", "g", "e", "g", "f")])
+            and st[0] != "proposition_19"]
+    eng.run_steps(s, upto)
+    eng.close(s)
+    A, lin, RT = eng.ang_atom, eng.lin, eng.RT
+    assert s.la.entails(lin((A("d", "g", "e"), 1), (RT, -2)), 0, "<")
+    assert s.la.entails(lin((A("d", "f", "e"), 1), (RT, -2)), 0, "<")
+    assert s.la.entails(lin((A("e", "f", "g"), 1), (A("g", "f", "d"), 1),
+                            (A("d", "f", "e"), 1), (RT, -4)), 0, "=")
+    assert s.la.entails(lin((A("e", "f", "g"), 1), (A("e", "g", "f"), -1)),
+                        0, ">")
+
+
+def test_prop24_control_dropped_proposition_13():
+    """Drop the second branch's proposition_13 d f g h DF FG: the 4r sum
+    row is gone, so the line-56 angle assert's by_contra branches no
+    longer contradict — refused at that assert."""
+    steps = _prop24_rebuilt(
+        [st for st in _prop24_branch2_sub2()
+         if st != ("proposition_13", ("d", "f", "g", "h", "DF", "FG"), {})])
+    with pytest.raises(eng.ByContraFailure) as ei:
+        eng.replay(eng.PROP24A_HYPS_DATA, steps, eng.PROP24_GOAL)
+    assert ei.value.entry[2] == [("gt_ang", "e", "f", "g", "e", "g", "f")]
+    assert ei.value.branch in ([("eq_ang", "e", "f", "g", "e", "g", "f")],
+                               [("gt_ang", "e", "g", "f", "e", "f", "g")])
+
+
+def test_prop24_control_dropped_proposition_17():
+    """Drop the second branch's proposition_17 d g e DG EG DE: the
+    d:g:e < 2r bound is gone, so the line-56 angle assert is refused."""
+    steps = _prop24_rebuilt(
+        [st for st in _prop24_branch2_sub2()
+         if st != ("proposition_17", ("d", "g", "e", "DG", "EG", "DE"), {})])
+    with pytest.raises(eng.ByContraFailure) as ei:
+        eng.replay(eng.PROP24A_HYPS_DATA, steps, eng.PROP24_GOAL)
+    assert ei.value.entry[2] == [("gt_ang", "e", "f", "g", "e", "g", "f")]
+    assert ei.value.branch in ([("eq_ang", "e", "f", "g", "e", "g", "f")],
+                               [("gt_ang", "e", "g", "f", "e", "f", "g")])
+
+
+def test_prop24_control_dropped_proposition_19():
+    """Drop the second branch's proposition_19 e f g EF FG EG: nothing
+    turns ang e:f:g > ang e:g:f into the length comparison, so the nested
+    by_cases' not_on_line g EF sub-case does not entail the goal."""
+    steps = _prop24_rebuilt(
+        [st for st in _prop24_branch2_sub2() if st[0] != "proposition_19"])
+    with pytest.raises(eng.ByCasesFailure) as ei:
+        eng.replay(eng.PROP24A_HYPS_DATA, steps, eng.PROP24_GOAL)
+    assert ei.value.branch == [("not_on_line", "g", "EF")]
+    assert ei.value.witness == ("not-entailed", ("_gt_len", "b", "c", "e", "f"))
+
+
+def test_prop24_final_state_not_contradictory():
+    """The final store (the two-branch by_cases concluded on the OUTER
+    state) stays consistent."""
+    s, _ = eng.replay(eng.PROP24A_HYPS_DATA, eng.PROP24_STEPS_DATA,
+                      eng.PROP24_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness

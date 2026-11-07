@@ -434,6 +434,14 @@ def _subst_rows(rows, var, sub_co, sub_c):
 #   ("inside", p, C) ("not_outside", p, C) ("outside", p, C)
 #   ("between", a, b, c) ("intersects_cc", C, D)
 #   ("neq", x, y) ("not_on_line", p, L) ("opposing_sides", p, q, L)
+#   ("not_same_side", p, q, L) — the literal negation of sameSide (Book
+#       I.24's second by_cases branch, Prop24.lean:40). The engine's usual
+#       rendering of ¬sameSide is the POSITIVE fact opposing_sides
+#       (Relations.lean:13-14: opposingSides := both off the line ∧
+#       ¬sameSide), used wherever both points are known off the line (hgf
+#       in I.24a, pasch_4, ...). In I.24's second branch g is NOT known
+#       off EF — that is exactly the nested case split of lines 41-42 — so
+#       the negation is kept literal.
 # Metric facts go into the LinearArithmetic store; provenance for a metric
 # derivation is ("arithmetic", n_constraints).
 
@@ -1224,7 +1232,7 @@ def _all_points(s):
             pts.update(fact[1:4])
         elif k in ("peq",):
             pts.update(fact[1:3])
-        elif k == "same_side":
+        elif k in ("same_side", "not_same_side"):
             pts.update(fact[1:3])
         elif k in ("eq_ang",):
             pts.update(fact[1:4]); pts.update(fact[4:7])
@@ -2040,6 +2048,21 @@ CONSTRUCTIONS = {
         "make": lambda s, x, y, z, L: [
             (None, [("same_side", x, z, L)])],
     },
+    # Relations.lean:13-14 — opposingSides a b L := ¬(a.onLine L) ∧
+    # ¬(b.onLine L) ∧ ¬(a.sameSide b L). This entry is the definition read
+    # FORWARD (intro rule): the three parts give opposingSides. Used where
+    # the ¬sameSide half of a classical by_cases is in scope as the literal
+    # fact kind not_same_side (Book I.24's second branch: d off EF from the
+    # common construction, g off EF from the nested split of lines 41-42).
+    "opposing_sides_if": {
+        "cite": "Relations.lean:13-14 (defn, intro)",
+        "args": ("a", "b", "L"),
+        "premises": lambda s, a, b, L: [
+            ("not_on_line", a, L), ("not_on_line", b, L),
+            ("not_same_side", a, b, L)],
+        "make": lambda s, a, b, L: [
+            (None, [("opposing_sides", a, b, L)])],
+    },
     # Book/Prop21.lean:6 — proposition_21 verbatim:
     #   ∀ (a b c d : Point) (AB BC AC BD DC : Line),
     #   formTriangle a b c AB BC AC ∧ (a.sameSide d BC) ∧
@@ -2136,6 +2159,7 @@ CONSTRUCTIONS = {
                     ("same_side", "f", x, AB)),
                    ("_eq_ang", "f", a, b, d, c, e)])],
     },
+
     # Book/Prop22.lean:58 — proposition_22'' verbatim (the same-side
     # variant I.23' cites): proposition_22' plus a point x off FE and the
     # extra conclusion k.sameSide x FE —
@@ -2658,7 +2682,9 @@ def contradictory(s):
                 return True, (fact, other)
         elif k == "same_side":
             for other in (("opposing_sides", fact[1], fact[2], fact[3]),
-                          ("opposing_sides", fact[2], fact[1], fact[3])):
+                          ("opposing_sides", fact[2], fact[1], fact[3]),
+                          ("not_same_side", fact[1], fact[2], fact[3]),
+                          ("not_same_side", fact[2], fact[1], fact[3])):
                 if s.has(other):
                     return True, (fact, other)
         elif k in ("on_circle", "inside"):
@@ -4813,6 +4839,155 @@ PROP24A_STEPS_DATA = [
 PROP24A_GOAL = [("_gt_len", "b", "c", "e", "f")]
 
 
+# ---------------------------------------------------------------------------
+# Book I.24 COMPLETE (Prop24.lean:12-59) — PROP24A's steps with the closing
+# by_cases given its SECOND branch (lines 40-59, "Omitted by Euclid"). As a
+# proof of I.24 this replay is the whole theorem: the split on
+# d.sameSide g EF is now two-branched.
+#
+# The second-branch hypothesis ¬(d.sameSide g EF) is the NEW fact kind
+# ("not_same_side", p, q, L) — the LITERAL negation, not the engine's
+# usual opposing_sides rendering (see the fact-kind comment at the top):
+# opposingSides would assert g off EF, but g's position on EF is exactly
+# the nested split of lines 41-42, and a by_cases branch may not be
+# contradictory (it would entail vacuously). Exhaustiveness of the outer
+# split: classical P v ~P on the sameSide proposition (Lean's by_cases is
+# the same classical split); no off-line side conditions are needed for
+# the literal negation.
+#
+# Line 41's nested by_cases g.onLine EF:
+#   - Sub-case on_line g EF (line 42, euclid_finish): the SMT closes the
+#     GOAL, not a contradiction: hgf (opposing_sides e g DF,
+#     Relations.lean:13-14) puts a point of DF between e and g; e, g on EF
+#     force that point onto EF, and EF != DF meet only at f
+#     (two_lines_meet_once, Diagrammatic.lean:14), so between e f g, whence
+#     |e-g| = |e-f| + |f-g| > |e-f| (between_if, Transfer.lean:16; |f-g| > 0
+#     from neq f g) and |b-c| = |e-g| (proposition_4). Rendered as a
+#     by_contra deriving between e f g by line trichotomy (g, e, f distinct
+#     on EF: neq e g from hgf's opposing parts, neq f g from the common
+#     construction; exactly one between order holds, caller-documented as
+#     at I.24a's g-on-DF split): between g e f puts f opposing g across DE
+#     (pasch_2/pasch_3_opposing closure) against step 29's same_side;
+#     between e g f puts g on e's side of DF (pasch_2 closure: between f g e,
+#     f on DF) against hgf. Then LA closes the goal.
+#   - Sub-case not_on_line g EF (lines 43-59): now d, g are BOTH off EF, so
+#     opposing_sides_if (Relations.lean:13-14 intro) renders the branch
+#     hypothesis as opposing_sides d g EF. extend_point FG g f as h
+#     (Points.lean:32). The four "Not clear why these are needed" asserts:
+#       45. ~(g.onLine DF): derived in the common construction (I.24a's
+#           step-15 by_contra); needed as pasch_3_opposing's off-line
+#           premise for opposing_sides g h DF and as proposition_13's
+#           neq_line DF FG support. Exposed by contradicting on_line g DF.
+#       46. ~(e.onLine DF): closure (two_lines_meet_once: DE != DF meet
+#           only at d, e != d); needed as proposition_17 d f e's off-line
+#           premise. Exposed by contradicting on_line e DF.
+#       47. g.opposingSides e DF: hgf symmetrized (the defn is symmetric);
+#           needed as opposing_opposing_same_side's first premise for
+#           assert 48. Exposed by contradicting same_side g e DF.
+#       48. h.sameSide e DF: between g f h crosses DF at f
+#           (pasch_3_opposing: opposing_sides g h DF, h off DF from
+#           two_lines_meet_once at f over FG != DF), so h and e both oppose
+#           g across DF (opposing_opposing_same_side, hgf symmetrized).
+#           Needed as sum_angles_onlyif f d e h DF EF's same_side e h DF
+#           premise (the angle split behind the line-55 assert).
+#     Then proposition_13 d f g h DF FG and e f g h EF FG
+#     (angle-on-a-line sums = 2r each), proposition_17 d g e DG EG DE and
+#     d f e DF EF DE (triangle angle sums < 2r), and the angle asserts.
+#     Lines 53-55 (d:g:e < 2r, d:f:e < 2r, and the 4r sum) are LINEAR
+#     consequences of the cited rows (angle_pos on g:e:d / f:e:d for the
+#     first two; the two proposition_13 rows plus sum_angles_onlyif
+#     f d e h DF EF's d:f:e = d:f:h + h:f:e for the third) — the engine's
+#     constraint store derives them inside the final assert's check, so
+#     they are pinned as LA entailments in the PROP24 tests rather than
+#     replay steps (no fact kind carries angle-vs-2r comparisons). The
+#     line-56 assert e:f:g > e:g:f is rendered as a by_contra on the angle
+#     trichotomy (as at I.24a's step 28): with the 4r sum, proposition_5''s
+#     d:g:f = d:f:g, and sum_angles_onlyif g d e f DG EG's
+#     d:g:e = d:g:f + f:g:e (premise same_side d f EG from
+#     triple_incidence_2 over (DE, EF, EG) at e: same_side f g DE is
+#     step 29 symmetrized, opposing_sides d g EF is the branch hypothesis
+#     rendered), e:f:g - e:g:f = 4r - d:g:e - d:f:e > 0. Then
+#     proposition_19 e f g EF FG EG makes |e-g| > |e-f| and
+#     |b-c| = |e-g| (proposition_4) is the goal, carried out of the nested
+#     by_cases and then the outer one as _gt_len.
+PROP24_STEPS_DATA = PROP24A_STEPS_DATA[:-1] + [
+    ("by_cases", [
+        PROP24A_STEPS_DATA[-1][1][0],  # the d.sameSide g EF branch, verbatim
+        ([("not_same_side", "d", "g", "EF")], [
+            ("by_cases", [
+                # Prop24.lean:41-42 — g.onLine EF, closed by the goal
+                ([("on_line", "g", "EF")], [
+                    ("by_contra", [
+                        ([("between", "g", "e", "f")], []),
+                        ([("between", "e", "g", "f")], []),
+                    ], [("between", "e", "f", "g")]),
+                ]),
+                # Prop24.lean:43-59 — g off EF
+                ([("not_on_line", "g", "EF")], [
+                    # line 45: assert ~(g.onLine DF) (already derived)
+                    ("by_contra", [
+                        ([("on_line", "g", "DF")], []),
+                    ], [("not_on_line", "g", "DF")]),
+                    # line 46: assert ~(e.onLine DF) (closure-derived)
+                    ("by_contra", [
+                        ([("on_line", "e", "DF")], []),
+                    ], [("not_on_line", "e", "DF")]),
+                    # line 47: assert g.opposingSides e DF (hgf symm)
+                    ("by_contra", [
+                        ([("same_side", "g", "e", "DF")], []),
+                    ], [("opposing_sides", "g", "e", "DF")]),
+                    # line 44
+                    ("extend_point", ("FG", "g", "f"), {"x": "h"}),
+                    ("between_symm_parts", ("g", "f", "h"), {}),  # neq f h
+                    # h off DF / off EF (two_lines_meet_once at f)
+                    ("by_contra", [
+                        ([("on_line", "h", "DF")], []),
+                    ], [("not_on_line", "h", "DF")]),
+                    ("by_contra", [
+                        ([("on_line", "h", "EF")], []),
+                    ], [("not_on_line", "h", "EF")]),
+                    # the branch hypothesis rendered positive (both off EF)
+                    ("opposing_sides_if", ("d", "g", "EF"), {}),
+                    # h across DF/EF from g; line 48: h.sameSide e DF
+                    ("pasch_3_opposing", ("g", "f", "h", "DF"), {}),
+                    ("opposing_opposing_same_side", ("e", "g", "h", "DF"),
+                     {}),
+                    ("pasch_3_opposing", ("g", "f", "h", "EF"), {}),
+                    ("opposing_opposing_same_side", ("d", "g", "h", "EF"),
+                     {}),
+                    # same_side d f EG (for the vertex-g angle split)
+                    ("triple_incidence_2", ("DE", "EF", "EG", "e",
+                                            "d", "f", "g"), {}),
+                    # d:g:e = d:g:f + f:g:e and d:f:e = d:f:h + h:f:e
+                    ("sum_angles_onlyif", ("g", "d", "e", "f", "DG", "EG"),
+                     {}),
+                    ("sum_angles_onlyif", ("f", "d", "e", "h", "DF", "EF"),
+                     {}),
+                    # Prop24.lean:49-52
+                    ("proposition_13", ("d", "f", "g", "h", "DF", "FG"), {}),
+                    ("proposition_13", ("e", "f", "g", "h", "EF", "FG"), {}),
+                    ("proposition_17", ("d", "g", "e", "DG", "EG", "DE"),
+                     {}),
+                    ("proposition_17", ("d", "f", "e", "DF", "EF", "DE"),
+                     {}),
+                    # Prop24.lean:56 — euclid_assert e:f:g > e:g:f (angle
+                    # trichotomy; lines 53-55 are LA intermediates, header)
+                    ("by_contra", [
+                        ([("eq_ang", "e", "f", "g", "e", "g", "f")], []),
+                        ([("gt_ang", "e", "g", "f", "e", "f", "g")], []),
+                    ], [("gt_ang", "e", "f", "g", "e", "g", "f")]),
+                    # Prop24.lean:57
+                    ("proposition_19", ("e", "f", "g", "EF", "FG", "EG"),
+                     {}),
+                ]),
+            ], [("_gt_len", "b", "c", "e", "f")]),
+        ]),
+    ], [("_gt_len", "b", "c", "e", "f")]),
+]
+# The goal: |b-c| > |e-f| — now unconditional (both branches conclude it).
+PROP24_GOAL = [("_gt_len", "b", "c", "e", "f")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -4991,6 +5166,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP24A_HYPS_DATA, PROP24A_STEPS_DATA,
                             PROP24A_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "24":
+            t0 = time.time()
+            s, rep = replay(PROP24A_HYPS_DATA, PROP24_STEPS_DATA,
+                            PROP24_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
