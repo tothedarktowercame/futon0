@@ -47,6 +47,10 @@
   #move-error { color: #8f130c; background: #fbeae9; border: 1px solid
                 #b6402f; border-radius: 4px; padding: 4px 8px; margin-top:
                 8px; display: none; }
+  #tutor-question { color: #4a3600; background: #fdf3dc; border: 1px solid
+                    #c9a44a; border-radius: 4px; padding: 4px 8px;
+                    margin-top: 8px; display: none; }
+  #tutor-question button { margin-left: 8px; }
   #solved-banner { display: none; background: #d4f0c8; color: #1c5e0f;
                    border: 1px solid #4e9b37; border-radius: 4px;
                    padding: 8px; margin-top: 8px; font-size: 16px;
@@ -125,6 +129,7 @@
         <button id="cb-cancel">cancel</button>
       </div>
       <div id="move-error"></div>
+      <div id="tutor-question"></div>
       <div id="solved-banner">Solved ✓</div>
       <div id="contra-note">the assumptions are contradictory — anything
         follows; undo a step.</div>
@@ -190,6 +195,15 @@ function factEnglish(f) {
     case "outside": return `${f[1]} is outside circle ${f[2]}`;
     case "not_outside": return `${f[1]} is on or inside circle ${f[2]}`;
     case "dpl": return `${f[1]} and ${f[2]} are distinct points on line ${f[3]}`;
+    case "peq": return `${f[1]} and ${f[2]} are the same point`;
+    case "neq_line": return `lines ${f[1]} and ${f[2]} are different`;
+    case "peq_line": return `lines ${f[1]} and ${f[2]} are the same line`;
+    case "eq_len": return `|${f[1]}${f[2]}| = |${f[3]}${f[4]}|`;
+    case "gt_len": return `|${f[1]}${f[2]}| > |${f[3]}${f[4]}|`;
+    case "lt_len": return `|${f[1]}${f[2]}| < |${f[3]}${f[4]}|`;
+    case "eq_ang": return `∠${f[1]}${f[2]}${f[3]} = ∠${f[4]}${f[5]}${f[6]}`;
+    case "gt_ang": return `∠${f[1]}${f[2]}${f[3]} > ∠${f[4]}${f[5]}${f[6]}`;
+    case "not_same_side": return `${f[1]} and ${f[2]} are not on the same side of ${f[3]}`;
     case "_eq_len": return `|${f[1]}${f[2]}| = |${f[3]}${f[4]}|`;
     case "_eq_ang": return `∠${f[1]}${f[2]}${f[3]} = ∠${f[4]}${f[5]}${f[6]}`;
     case "_rt_ang": return `∠${f[1]}${f[2]}${f[3]} is right`;
@@ -641,6 +655,58 @@ async function beginCase() {
   }
 }
 
+// ------------------------------------------- coverage: the tutor's question
+// A closed block whose split leaves a possibility out is refused with
+// "missing case"; the tutor asks about the missing case in plain words and
+// offers to open it as the block's next case.
+
+function hideTutorQuestion() {
+  document.getElementById("tutor-question").style.display = "none";
+}
+
+function showTutorQuestion(mc) {
+  const div = document.getElementById("tutor-question");
+  div.innerHTML = "";
+  div.style.display = "block";
+  if (!mc.family) {
+    div.textContent = "I can't tell whether these cases cover every " +
+      "possibility. Try splitting on where a point lies, which side of " +
+      "a line, or which length is bigger.";
+    return;
+  }
+  const head = document.createElement("div");
+  head.textContent = "These cases do not cover every possibility yet.";
+  div.appendChild(head);
+  for (const f of mc.missing) {
+    const row = document.createElement("div");
+    const q = document.createElement("span");
+    q.textContent = "What about the case where " +
+      factEnglish(f).replace(/^./, c => c.toLowerCase()) + "?";
+    const btn = document.createElement("button");
+    btn.textContent = "add this case";
+    btn.onclick = () => addMissingCase(f, btn);
+    row.appendChild(q);
+    row.appendChild(btn);
+    div.appendChild(row);
+  }
+}
+
+async function addMissingCase(f, btn) {
+  const b = openBlock();
+  if (!b) { hideTutorQuestion(); return; }
+  b.branches.push({ hyps: [f.slice()], moves: [] });
+  const res = await postPlay(cur.n, moves);
+  const ent = responseEntryFor(res, b);
+  if (ent && ent.ok && (ent.branches || []).length === b.branches.length) {
+    hideTutorQuestion();
+    saveProgress();
+    afterResult(res, null);
+  } else {
+    b.branches.pop();
+    afterResult(res, ent && ent.error ? ent.error : "refused");
+  }
+}
+
 async function closeBlock() {
   const b = openBlock();
   if (!b) return;
@@ -652,7 +718,12 @@ async function closeBlock() {
     afterResult(res, null);
   } else {
     b.open = true;  // refused: keep the block open, show why
-    afterResult(res, ent ? ent.error : "refused");
+    if (ent && ent.missing_case) {
+      afterResult(res, null);
+      showTutorQuestion(ent.missing_case);
+    } else {
+      afterResult(res, ent ? ent.error : "refused");
+    }
   }
 }
 
@@ -760,6 +831,7 @@ function afterResult(res, err) {
   draw();
   renderMoves();
   showError(err);
+  if (!err) hideTutorQuestion();
   document.getElementById("contra-note").style.display =
     res.contradictory ? "block" : "none";
   const banner = document.getElementById("solved-banner");
@@ -800,8 +872,13 @@ async function submitMove() {
     // refused: keep the move list unchanged, show the error in plain words
     target.pop();
     const outer = res.moves[res.moves.length - 1];
-    afterResult(res, lastM && lastM.error ? lastM.error
-        : (outer && outer.error) || "refused");
+    if (lastM && lastM.missing_case) {
+      afterResult(res, null);
+      showTutorQuestion(lastM.missing_case);
+    } else {
+      afterResult(res, lastM && lastM.error ? lastM.error
+          : (outer && outer.error) || "refused");
+    }
   }
 }
 

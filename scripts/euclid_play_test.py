@@ -130,6 +130,102 @@ def test_open_block_earlier_branch_must_close():
     assert "earlier case" in ent["error"]
 
 
+def _walk_case_blocks(n, s, steps, refuted, found):
+    """Replay engine step tuples on s, collecting (rule, move-dict,
+    state-copy, refuted) for every case block at the state where it
+    stands, nested blocks included (mirrors _coverage_check)."""
+    for i, st in enumerate(steps, 1):
+        if st[0] in ("by_contra", "by_cases"):
+            found.append((st[0], _engine_step_to_move(st), s.copy(),
+                          tuple(refuted)))
+            for hyps, bsteps in st[1]:
+                sub = s.copy()
+                for f in hyps:
+                    eng._assume_metric_or_fact(sub, f, st[0])
+                eng.close(sub)
+                sub_ref = tuple(refuted)
+                if st[0] == "by_cases" and not hyps:
+                    sub_ref += tuple(h for h, _s in st[1] if h)
+                _walk_case_blocks(n, sub, bsteps, sub_ref, found)
+            for c in st[2]:
+                if c[0] != "false":
+                    eng._assume_metric_or_fact(s, c, "walk")
+            eng.close(s)
+        else:
+            eng.apply_step(s, i, st[0], st[1], st[2])
+            eng.close(s)
+
+
+def test_catalogue_splits_covered():
+    """Every engine case split in the catalogue (I.10, 13, 14, 19, 21,
+    nested blocks included) is covered; record the family each matched."""
+    table = []
+    for n in (10, 13, 14, 19, 21):
+        s = ep._start_state(n)
+        found = []
+        _walk_case_blocks(n, s, tr.hyps_and_steps(n)[1], (), found)
+        for rule, mv, bs, refuted in found:
+            cov = ep.coverage(
+                bs, rule,
+                [[tuple(f) for f in b["hyps"]] for b in mv["branches"]],
+                [tuple(c) for c in mv["conclusion"]], refuted)
+            assert cov["covered"], (n, rule, mv["branches"], cov)
+            table.append((n, rule, cov["family"]))
+        # and the engine's steps still reach Solved under the referee
+        res = ep.play(n, [_engine_step_to_move(st)
+                          for st in tr.hyps_and_steps(n)[1]])
+        assert res["goal_reached"], n
+    print("\ncoverage table:", *["  I.%d %s -> %s" % t for t in table],
+          sep="\n")
+
+
+def test_missing_case_refusals():
+    """I.21 with either refuting case dropped is refused, naming exactly
+    the dropped between fact; I.19 with one case dropped names the
+    missing comparison."""
+    steps21 = [_engine_step_to_move(st)
+               for st in tr.hyps_and_steps(21)[1]]
+    bc = next(m for m in steps21 if m["rule"] == "by_contra")
+    pre = steps21[:steps21.index(bc)]
+    for drop, missing in ((0, ["between", "b", "e", "d"]),
+                          (1, ["between", "d", "b", "e"])):
+        bad = json.loads(json.dumps(bc))
+        del bad["branches"][drop]
+        res = ep.play(21, pre + [bad])
+        ent = res["moves"][-1]
+        assert not ent["ok"] and ent["error"] == "missing case"
+        assert ent["missing_case"]["missing"] == [missing], ent
+        assert ent["missing_case"]["family"] is not None
+        assert not res["goal_reached"]
+    # I.19: drop the |a-b| > |a-c| case
+    steps19 = [_engine_step_to_move(st)
+               for st in tr.hyps_and_steps(19)[1]]
+    bad19 = json.loads(json.dumps(steps19[0]))
+    del bad19["branches"][1]
+    res = ep.play(19, [bad19])
+    ent = res["moves"][-1]
+    assert not ent["ok"] and ent["error"] == "missing case"
+    assert ent["missing_case"]["missing"] == [["gt_len", "a", "b", "a", "c"]]
+    assert not res["goal_reached"]
+
+
+def test_coverage_family_edge_cases():
+    """A by_cases on same_side d g EF alone misses the opposing and
+    on_line members; a split of facts outside every family -> None."""
+    s = eng.State()
+    eng.close(s)
+    cov = ep.coverage(s, "by_cases", [[("same_side", "d", "g", "EF")]],
+                      [])
+    assert not cov["covered"]
+    assert cov["family"] is not None
+    assert [("opposing_sides", "d", "g", "EF"), ("on_line", "d", "EF"),
+            ("on_line", "g", "EF")] == [tuple(m) for m in cov["missing"]]
+    cov2 = ep.coverage(s, "by_cases", [[("dpl", "a", "b", "L")]],
+                       [("on_line", "x", "M")])
+    assert not cov2["covered"]
+    assert cov2["family"] is None and cov2["missing"] == []
+
+
 def test_engine_steps_reach_goal():
     """For every straight-line catalogue prop, replaying the engine's own
     steps reaches the goal."""

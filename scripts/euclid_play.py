@@ -216,6 +216,347 @@ def _empty_block(mv):
     return None
 
 
+# ---------------------------------------------------------------------------
+# Case-split coverage referee (E-kimi-task-419, packet
+# P-euclid-play-case-coverage from claude-9). The engine leaves
+# exhaustiveness of a case split to the caller (documented at
+# eng._by_contra / eng._by_cases); here the caller checks it against the
+# System E trichotomy families (between_points, Diagrammatic.lean:87;
+# same/opposing/on a line; length/angle comparison; a fact and its
+# negation). A family member counts as covered when a case's hypotheses
+# entail it on a closed copy of the state, when assuming it is already
+# contradictory, or (by_contra) when the conclusion entails it.
+# ---------------------------------------------------------------------------
+
+
+def _seg(x, y):
+    return tuple(sorted((x, y)))
+
+
+def _ang(x, v, y):
+    return (v,) + tuple(sorted((x, y)))
+
+
+def _norm(f):
+    """Canonical form for comparing case/member facts: between is
+    symmetric in the endpoints, same_side/opposing_sides/ne? in the two
+    points, eq_len/eq_ang in the two sides, lt is gt swapped. Angles keep
+    the vertex in front: (v, side1, side2) with side1 < side2."""
+    f = tuple(f)
+    k = f[0]
+    if k == "between" and f[3] < f[1]:
+        return ("between", f[3], f[2], f[1])
+    if k in ("same_side", "opposing_sides", "not_same_side") \
+            and f[2] < f[1]:
+        return (k, f[2], f[1], f[3])
+    if k in ("peq", "neq") and f[2] < f[1]:
+        return (k, f[2], f[1])
+    if k in ("eq_len", "_eq_len", "gt_len", "_gt_len", "lt_len"):
+        s1, s2 = _seg(f[1], f[2]), _seg(f[3], f[4])
+        if k in ("eq_len", "_eq_len") and s2 < s1:
+            s1, s2 = s2, s1
+        if k == "lt_len":
+            s1, s2 = s2, s1
+            k = "gt_len"
+        return (k,) + s1 + s2
+    if k in ("eq_ang", "_eq_ang", "gt_ang", "_gt_ang"):
+        a1, a2 = _ang(f[1], f[2], f[3]), _ang(f[4], f[5], f[6])
+        if k in ("eq_ang", "_eq_ang") and a2 < a1:
+            a1, a2 = a2, a1
+        return (k,) + a1 + a2
+    if k in ("neq_line", "peq_line") and f[2] < f[1]:
+        return (k, f[2], f[1])
+    return f
+
+
+def _peq_line_holds(s, L, M):
+    """Lines as sets of points: L = M when two distinct points lie on
+    both. (The engine has no line-equality fact; I.14's conclusion
+    "BC = BD" is exactly this, as mutual incidence.)"""
+    if L == M:
+        return True
+    on = {}
+    for f in s.facts:
+        if f[0] == "on_line":
+            on.setdefault(f[2], set()).add(f[1])
+        elif f[0] == "dpl":
+            on.setdefault(f[3], set()).update((f[1], f[2]))
+    common = on.get(L, set()) & on.get(M, set())
+    for p in common:
+        for q in common:
+            if p < q and (s.has(("neq", p, q)) or s.has(("neq", q, p))):
+                return True
+    return False
+
+
+_METRIC_HOLDS = {"eq_len": "_eq_len", "gt_len": "_gt_len",
+                 "lt_len": "_gt_len", "eq_ang": "_eq_ang",
+                 "gt_ang": "_gt_ang"}
+
+
+def _holds(s, f):
+    """_fact_holds with the plain metric names mapped to the LA-query
+    forms and the virtual peq_line fact."""
+    f = tuple(f)
+    if f[0] == "peq_line":
+        return _peq_line_holds(s, f[1], f[2])
+    if f[0] == "lt_len":  # |x-y| < |u-v| as _gt_len u v x y
+        return eng._fact_holds(s, ("_gt_len", f[3], f[4], f[1], f[2]))
+    return eng._fact_holds(s, (_METRIC_HOLDS.get(f[0], f[0]),) + f[1:])
+
+
+def _enrich(s, _depth=0):
+    """Referee-side derivations, all System E theorems the engine's
+    closure only reaches through cited steps (it cannot use them by
+    default: they are construction rules). Used ONLY on probe copies for
+    coverage questions, never on the played state:
+      between parts (Diagrammatic.lean:45-46, neqs from a between),
+      pasch_3 (between p q r, q on L, p off L => opposing_sides p r L),
+      opposing_same_side_trans,
+      right-angle transport along a line (right_ang x v y, z on the line
+      v-y, z != v => right_ang x v z) and across a between (right_ang
+      x v y, between x v r => right_ang r v y) — the two halves of
+      perpendicular_onlyif/perpendicular_if used in I.13's nested split.
+    Metric rows are added directly (ang_atom = RT) since
+    _assume_metric_or_fact has no _rt_ang case."""
+    if _depth > 8:
+        return
+    facts = list(s.facts)
+    add = []
+    for f in facts:
+        if f[0] == "between":
+            p, q, r = f[1:4]
+            for a, b in ((p, q), (q, r), (p, r)):
+                if not s.has(("neq", a, b)):
+                    add.append(("neq", a, b))
+    for f in facts:
+        if f[0] != "between":
+            continue
+        p, q, r = f[1:4]
+        for g in facts:
+            if g[0] == "on_line" and g[1] == q \
+                    and s.has(("not_on_line", p, g[2])):
+                cand = ("opposing_sides", p, r, g[2])
+                if not s.has(cand):
+                    add.append(cand)
+    for f in facts:
+        if f[0] != "opposing_sides":
+            continue
+        p, q, L = f[1:4]
+        for g in facts:
+            if g[0] == "same_side" and g[3] == L:
+                if g[2] == q and not s.has(("opposing_sides", g[1], p, L)):
+                    add.append(("opposing_sides", g[1], p, L))
+                if g[1] == q and not s.has(("opposing_sides", g[2], p, L)):
+                    add.append(("opposing_sides", g[2], p, L))
+    for f in add:
+        s.add(f, "coverage referee", [])
+    rts = [f for f in facts if f[0] == "right_ang"]
+    metric = []
+    for f in rts:
+        x, v, y = f[1:4]
+        for g in facts:
+            if g[0] == "on_line" and g[1] == v \
+                    and s.has(("on_line", y, g[2])):
+                for h in facts:
+                    if h[0] == "on_line" and h[2] == g[2] \
+                            and h[1] not in (v, y) \
+                            and s.has(("neq", h[1], v)):
+                        cand = ("right_ang", x, v, h[1])
+                        if cand not in s.facts and cand not in metric:
+                            metric.append(cand)
+        for g in facts:
+            if g[0] == "between" and g[1] == x and g[2] == v:
+                cand = ("right_ang", g[3], v, y)
+                if cand not in s.facts and cand not in metric:
+                    metric.append(cand)
+    for c in metric:
+        x, v, y = c[1:4]
+        s.la.add(eng.lin((eng.ang_atom(x, v, y), 1), (eng.RT, -1)), 0, "=")
+        s.add(c, "coverage referee", [])
+    if add or metric:
+        eng.close(s)
+        _enrich(s, _depth + 1)
+
+
+def _probe(s, facts, enrich=True):
+    """A copy of s with `facts` assumed and closed; with enrich, also
+    referee-enriched (_enrich). The contradiction probe uses the plain
+    engine close ONLY (packet: "eng.contradictory after close") — the
+    enrichment would already refute e.g. I.21's dropped between case via
+    pasch_3, hiding it from "missing"."""
+    t = s.copy()
+    for f in facts:
+        eng._assume_metric_or_fact(t, tuple(f), "coverage probe")
+    eng.close(t)
+    if enrich:
+        _enrich(t)
+    return t
+
+
+def _families(rule, cases, conclusion):
+    """Candidate System E trichotomy families touching the case (and, for
+    by_contra, conclusion) facts, in packet order: between, two points
+    and a line, length/angle comparison, a fact and its negation."""
+    pool = [tuple(f) for c in cases for f in c]
+    if rule == "by_contra":
+        pool += list(conclusion)
+    fams, seen = [], set()
+
+    def add(name, members, key):
+        if key not in seen:
+            seen.add(key)
+            fams.append((name, members))
+
+    for f in pool:
+        k = f[0]
+        if k == "between":
+            p, q, r = sorted(f[1:4])
+            add("where %s, %s and %s lie on their line" % (p, q, r),
+                [("between", p, q, r), ("between", q, p, r),
+                 ("between", p, r, q)], ("between", p, q, r))
+        elif k in ("same_side", "opposing_sides", "not_same_side"):
+            p, q, L = f[1], f[2], f[3]
+            a, b = min(p, q), max(p, q)
+            add("which side of %s %s and %s are on" % (L, a, b),
+                [("same_side", a, b, L), ("opposing_sides", a, b, L),
+                 ("on_line", a, L), ("on_line", b, L)],
+                ("sides", a, b, L))
+        elif k in ("eq_len", "_eq_len", "gt_len", "_gt_len", "lt_len"):
+            s1, s2 = _seg(f[1], f[2]), _seg(f[3], f[4])
+            add("|%s%s| against |%s%s|" % (s1 + s2),
+                [("eq_len",) + s1 + s2, ("gt_len",) + s1 + s2,
+                 ("gt_len",) + s2 + s1], ("len", s1, s2))
+        elif k in ("eq_ang", "_eq_ang", "gt_ang", "_gt_ang"):
+            (v1, x1, y1), (v2, x2, y2) = _ang(*f[1:4]), _ang(*f[4:7])
+            a1 = (x1, v1, y1)
+            a2 = (x2, v2, y2)
+            add("∠%s%s%s against ∠%s%s%s" % (a1 + a2),
+                [("eq_ang",) + a1 + a2, ("gt_ang",) + a1 + a2,
+                 ("gt_ang",) + a2 + a1], ("ang", a1, a2))
+        elif k in ("peq", "neq"):
+            a, b = min(f[1:3]), max(f[1:3])
+            add("whether %s and %s are the same point" % (a, b),
+                [("peq", a, b), ("neq", a, b)], ("pt", a, b))
+        elif k in ("on_line", "not_on_line"):
+            add("whether %s is on %s" % (f[1], f[2]),
+                [("on_line", f[1], f[2]), ("not_on_line", f[1], f[2])],
+                ("ol", f[1], f[2]))
+        elif k == "neq_line":
+            a, b = min(f[1:3]), max(f[1:3])
+            add("whether %s and %s are the same line" % (a, b),
+                [("neq_line", a, b), ("peq_line", a, b)], ("ln", a, b))
+    return fams
+
+
+def coverage(s, rule, cases, conclusion, refuted=()):
+    """Is the case split exhaustive? cases: list of hypothesis-fact
+    lists; conclusion: the by_contra conclusions (the not-any-case side).
+    refuted: conjunctions known NOT to hold in this context (a fact a
+    member would contradict, e.g. the sibling cases of an enclosing
+    by_cases catch-all branch). Returns {"covered": bool, "missing":
+    [uncovered member facts], "family": name or None}."""
+    cases = [[tuple(f) for f in c] for c in cases]
+    concl = [tuple(f) for f in (conclusion or ()) if f[0] != "false"]
+    norm_pool = {_norm(f) for c in cases for f in c}
+    if rule == "by_contra":
+        norm_pool |= {_norm(f) for f in concl}
+    catch_all = rule == "by_cases" and any(not c for c in cases) \
+        and any(c for c in cases)
+
+    def member_covered(m):
+        for hyps in cases:
+            if hyps and _holds(_probe(s, hyps), m):
+                return True
+        if eng.contradictory(_probe(s, [m], enrich=False))[0]:
+            return True
+        if refuted:
+            t = _probe(s, [m])
+            for r in refuted:
+                if r and all(_holds(t, f) for f in r):
+                    return True
+        if rule == "by_contra" and concl and _holds(_probe(s, concl), m):
+            return True
+        return False
+
+    matching = [(name, members) for name, members in
+                _families(rule, cases, concl)
+                if any(_norm(m) in norm_pool for m in members)]
+    if not matching:
+        return {"covered": False, "missing": [], "family": None}
+    best = None
+    for name, members in matching:
+        missing = [list(m) for m in members if not member_covered(m)]
+        if missing and catch_all:
+            missing = []  # an "otherwise" case takes everything left
+        if not missing:
+            return {"covered": True, "missing": [], "family": name}
+        if best is None or len(missing) < len(best[1]):
+            best = (name, missing)
+    return {"covered": False, "missing": best[1], "family": best[0]}
+
+
+def _coverage_check_moves(n, s, moves, refuted, i):
+    """Replay moves on (a copy of) s, checking every closed case block's
+    coverage at the state where it stands; nested blocks recurse. The
+    engine's own refusal paths stay authoritative: a move that fails to
+    apply stops the walk (run_steps will word the error)."""
+    for mv in moves:
+        if mv.get("rule") in CASE_RULES:
+            err = _coverage_check(n, s, mv, refuted, i)
+            if err:
+                return err
+            # approximate the block's effect for later siblings: assume
+            # the conclusions, as the engine does on success
+            for c in mv.get("conclusion") or []:
+                if tuple(c)[0] != "false":
+                    try:
+                        eng._assume_metric_or_fact(s, tuple(c),
+                                                   "coverage walk")
+                    except Exception:
+                        pass
+            eng.close(s)
+        else:
+            try:
+                eng.apply_step(s, i, mv["rule"], tuple(mv.get("args") or ()),
+                               dict(mv.get("bindings") or {}))
+                eng.close(s)
+            except Exception:
+                return None
+    return None
+
+
+def _coverage_check(n, s, mv, refuted, i):
+    """Check one closed case block at state s. Returns None, or a
+    structured {"rule", "family", "missing"} for a split that does not
+    cover every possibility."""
+    rule = mv["rule"]
+    branches = mv.get("branches") or []
+    concl = [tuple(c) for c in mv.get("conclusion") or []]
+    cases = [[tuple(f) for f in b.get("hyps") or []] for b in branches]
+    cov = coverage(s, rule, cases, concl, refuted)
+    if not cov["covered"]:
+        return {"rule": rule, "family": cov["family"],
+                "missing": cov["missing"]}
+    for hyps, b in zip(cases, branches):
+        sub = s.copy()
+        try:
+            for f in hyps:
+                eng._assume_metric_or_fact(sub, f, rule + " assumption")
+            eng.close(sub)
+        except Exception:
+            continue  # the engine's own path will report this
+        sub_refuted = refuted
+        if rule == "by_cases" and not hyps:
+            # a catch-all branch: every sibling case is refuted in it
+            sub_refuted = tuple(refuted) + tuple(h for h in cases if h)
+        err = _coverage_check_moves(n, sub, b.get("moves") or [],
+                                    sub_refuted, i + 1)
+        if err:
+            return err
+    return None
+
+
 def _close_branch(n, s, rule, hyps, steps, concl, i):
     """Check one CLOSED branch on a copy of s, as eng._by_contra /
     eng._by_cases do: assume the hypotheses, run the steps, then require
@@ -248,27 +589,43 @@ def _close_branch(n, s, rule, hyps, steps, concl, i):
     return None
 
 
-def _open_block(n, s, mv, objects, xy, pal, i):
+def _open_block(n, s, mv, objects, xy, pal, i, refuted=()):
     """Report on an OPEN case move without touching the outer state.
     Every branch but the last must already close (checked on copies);
     for the last branch the hypotheses are assumed on a copy and its
     moves applied, and the branch is reported (contradiction? conclusion
-    reached? its objects). Returns (ok, error, branch_reports, view)
-    where view is (objects, xy) of the deepest open branch to show, or
-    None."""
+    reached? its objects). Returns (ok, error, branch_reports, view,
+    missing_case) where view is the (objects, xy) of the deepest open
+    branch to show, or None; missing_case is the structured coverage
+    refusal when a nested closed block's split leaves a possibility
+    out."""
     rule = mv["rule"]
     branches = mv.get("branches") or []
     concl = [tuple(c) for c in mv.get("conclusion") or []]
     breps = []
     if not branches:
-        return False, "an open case move needs at least one case", breps, None
+        return (False, "an open case move needs at least one case",
+                breps, None, None)
     for b in branches[:-1]:
         hyps = [tuple(f) for f in b.get("hyps") or []]
+        # coverage of closed blocks nested inside this closed case
+        cov_s = s.copy()
+        for f in hyps:
+            eng._assume_metric_or_fact(cov_s, f, rule + " assumption")
+        eng.close(cov_s)
+        cov_ref = tuple(refuted)
+        if rule == "by_cases" and not hyps:
+            cov_ref += tuple([tuple(f) for f in bb.get("hyps") or []]
+                             for bb in branches if bb.get("hyps"))
+        cerr = _coverage_check_moves(n, cov_s, b.get("moves") or [],
+                                     cov_ref, i + 1)
+        if cerr is not None:
+            return False, "missing case", breps, None, cerr
         steps = [_move_to_step(m) for m in b.get("moves") or []]
         err = _close_branch(n, s, rule, hyps, steps, concl, i)
         if err:
             return False, "an earlier case must close first: " + err, \
-                breps, None
+                breps, None, None
         breps.append({"hyps": [list(f) for f in hyps], "closed": True})
     last = branches[-1]
     hyps = [tuple(f) for f in last.get("hyps") or []]
@@ -281,19 +638,29 @@ def _open_block(n, s, mv, objects, xy, pal, i):
         eng.close(sub)
     except Exception as e:
         return False, ("bad case hypothesis %s: %s"
-                       % ([list(f) for f in hyps], e)), breps, None
+                       % ([list(f) for f in hyps], e)), breps, None, None
+    last_refuted = tuple(refuted)
+    if rule == "by_cases" and not hyps:
+        # the catch-all case: its siblings are refuted inside it
+        last_refuted += tuple([tuple(f) for f in b.get("hyps") or []]
+                              for b in branches[:-1] if b.get("hyps"))
     bentries, deeper = _apply_moves(n, sub, last.get("moves") or [],
-                                    bobjects, bxy, pal, i + 1)
+                                    bobjects, bxy, pal, i + 1,
+                                    last_refuted)
     contra, _w = eng.contradictory(sub)
     goal = bool(concl) and all(eng._fact_holds(sub, c) for c in concl)
     breps.append({"hyps": [list(f) for f in hyps], "closed": False,
                   "moves": bentries,
                   "branch_contradictory": contra,
                   "branch_goal_reached": goal})
-    return True, None, breps, deeper or (bobjects, bxy)
+    miss = None
+    for e in bentries:
+        if e.get("missing_case"):
+            miss = e["missing_case"]
+    return True, None, breps, deeper or (bobjects, bxy), miss
 
 
-def _apply_moves(n, s, moves, objects, xy, pal, i0=1):
+def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
     """Apply moves to s (in place), placing new objects, stopping at the
     first failure. Returns (entries, view); view is the (objects, xy) of
     the deepest open case branch when the last move is an open block,
@@ -312,10 +679,18 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1):
                 entry["error"] = ("a %s needs at least one case"
                                   % empty["rule"])
             elif mv.get("open"):
-                ok, err, breps, view = _open_block(n, s, mv, objects, xy,
-                                                   pal, i)
+                ok, err, breps, view, miss = _open_block(
+                    n, s, mv, objects, xy, pal, i, refuted)
                 entry.update(ok=ok, error=err, open=True, branches=breps)
+                if miss:
+                    entry["missing_case"] = miss
             else:
+                cerr = _coverage_check(n, s, mv, refuted, i)
+                if cerr is not None:
+                    entry["error"] = "missing case"
+                    entry["missing_case"] = cerr
+                    entries.append(entry)
+                    break
                 try:
                     rep = eng.run_steps(s, [_block_to_engine(mv)])[0]
                     entry["ok"] = True
