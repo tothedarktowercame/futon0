@@ -121,19 +121,26 @@ class TrustingClone(ec.Clone):
         """eng.apply_step, but a MissingPremise of a trusted kind that
         holds in the picture is assumed (and recorded) and the step
         retried. Anything else still raises."""
+        # Review fix (claude-9): work on a copy, so a step that is refused
+        # after some premises were trusted leaves neither the trusted facts
+        # in the caller's state nor entries in trust_log.
+        work = srch.clone_state(state)
+        pending = []
         while True:
             try:
-                rep = eng.apply_step(state, i, rule, args, bindings)
+                rep = eng.apply_step(work, i, rule, args, bindings)
                 break
             except eng.MissingPremise as e:
                 p = e.premise
                 if (isinstance(p, tuple) and p and isinstance(p[0], str)
                         and p[0] in self.trusted_kinds
                         and self.holds_in_picture(p) is True):
-                    state.assume(p, "student diagram trust")
-                    self.trust_log.append(f"trusted from the picture: {p}")
+                    work.assume(p, "student diagram trust")
+                    pending.append(f"trusted from the picture: {p}")
                 else:
                     raise
+        state.__dict__.update(work.__dict__)
+        self.trust_log.extend(pending)
         if advance_picture:
             try:
                 tr.place_step({"I.1": 1, "I.2": 2, "I.3": 3}[self.prop],
@@ -160,6 +167,7 @@ class TrustingClone(ec.Clone):
         filtered (slice spec: keep it simple)."""
         assert prop == self.prop
         moves = set()
+        saved_log = list(self.trust_log)  # predictions are hypothetical
         for rname in self.rules(prop):
             for args in srch.CANDIDATES[rname](state):
                 trial = srch.clone_state(state)
@@ -169,6 +177,7 @@ class TrustingClone(ec.Clone):
                 except eng.MissingPremise:
                     continue
                 moves.add(ec.canon_step(rname, args))
+        self.trust_log = saved_log
         return moves
 
 

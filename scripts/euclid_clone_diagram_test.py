@@ -6,6 +6,7 @@ python3 -m pytest euclid_clone_diagram_test.py -q
 """
 
 import importlib.util
+import pytest
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location(
@@ -100,3 +101,22 @@ def test_d_trusting_predicts_at_least_the_full_engine_on_book_i1():
     pred = tc.predict("I.1", root)
     assert ("circle_from_points", ("a", "b")) in pred
     assert ("circle_from_points", ("b", "a")) in pred
+
+
+def test_refused_step_leaves_no_trust_behind():
+    """Review fix (claude-9): I.2, line AB and circle CGH (centre b through
+    c), then intersection_circle_line_between_points(CGH, AB, a, b). The
+    picture has a inside CGH (trusted) but b is the centre, so the outside
+    premise fails and the step is refused. Before the fix the trusted
+    inside fact stayed in the state and in trust_log."""
+    tc = cd.TrustingClone("trusting", "I.2")
+    s = cd.rv.initial_state("I.2")
+    tc.apply_step(s, 1, "line_from_points", ("a", "b"), {"L": "AB"})
+    tc.apply_step(s, 2, "circle_from_points", ("b", "c"), {"C": "CGH"})
+    assert tc.holds_in_picture(("inside", "a", "CGH")) is True
+    before = dict(s.facts)
+    with pytest.raises(cd.eng.MissingPremise):
+        tc.apply_step(s, 3, "intersection_circle_line_between_points",
+                      ("CGH", "AB", "a", "b"), {"e": "e"})
+    assert s.facts == before
+    assert tc.trust_log == []
