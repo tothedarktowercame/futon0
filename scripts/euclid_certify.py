@@ -114,7 +114,7 @@ PROP3_BOOK_STEPS = [
 # Superposition's Book proof names its four fresh objects in one grouped
 # binding `as (b', c', BC', DC')`; the emitter emits grouped bindings
 # (parenthesised, comma-separated) for rules in GROUPED_BINDINGS_RULES.
-GROUPED_BINDINGS_RULES = {"superposition"}
+GROUPED_BINDINGS_RULES = {"superposition", "intersections_circle_line"}
 
 PROP4_STATEMENT = """\
 theorem proposition_4 : ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
@@ -141,6 +141,37 @@ theorem proposition_5 : ∀ (a b c d e : Point) (AB BC AC : Line),
   formTriangle a b c AB BC AC ∧ (|(a─b)| = |(a─c)|) ∧
   (between a b d) ∧ (between a c e) →
   (∠ a:b:c = ∠ a:c:b) ∧ (∠ c:b:d = ∠ b:c:e) :="""
+
+# Book/Prop12.lean verbatim (disjunctive goal: one of the two angles at the
+# foot h is right).
+PROP12_STATEMENT = """\
+theorem proposition_12 : ∀ (a b c : Point) (AB : Line),
+  distinctPointsOnLine a b AB ∧ ¬(c.onLine AB) →
+  exists h : Point, h.onLine AB ∧ (∠ a:h:c = ∟ ∨ ∠ b:h:c = ∟) :="""
+
+# The engine's own I.12 steps (euclid_engine.PROP12_STEPS_DATA, read live).
+# Every rule in PROP12_STEPS_DATA is Lean-citable; the two engine-only steps
+# are SystemE axioms:
+#   intersection_circle_line_1 (Diagrammatic.lean:297) and
+#   perpendicular_if           (Transfer.lean:102)
+# Both emit as `euclid_apply (<axiom> ...)` — euclid_apply accepts an axiom
+# (Book precedent: Prop11.lean:20,37 applies perpendicular_if itself), and
+# each axiom's conclusion (L.intersectsCircle α resp. ∠a:c:d = ∟) is the
+# fact downstream steps/euclid_finish consume; euclid_assert would delegate
+# the same fact to SMT without recording which axiom justified it.
+# Engine arg orders match the Lean signatures:
+#   intersection_circle_line_1 (a b α L) <- engine (d c EFG AB)
+#     [d on EFG, c centre-inside, opposingSides d c AB]
+#   perpendicular_if (a b c d L) <- engine (e g h c AB)
+#     [between e h g, c off AB, ∠e:h:c = ∠c:h:g]
+#   proposition_10 (a b AB)    <- engine (e g AB), witness h
+PROP12_ENGINE_CITABLE = [
+    "exists_point_opposite", "circle_from_points",
+    "intersection_circle_line_1", "intersections_circle_line",
+    "proposition_10", "line_from_points", "proposition_8",
+    "perpendicular_if",
+]
+
 
 # Copied verbatim from euclid_engine.PROP5_STEPS_DATA (zai-11 owns the engine
 # file and may have it mid-edit; the copy is pinned and test-asserted equal to
@@ -184,6 +215,12 @@ PROPS = {
     "I.5": dict(imports=["SystemE", "Book.Prop03", "Book.Prop04"],
                 statement=PROP5_STATEMENT, book_steps=PROP5_BOOK_STEPS,
                 witness=None),
+    # The ENGINE's own I.12 steps (euclid_engine.PROP12_STEPS_DATA, read
+    # live); statement/imports as Book/Prop12.lean, witness h.
+    "I.12-engine": dict(imports=["SystemE", "Book.Prop08", "Book.Prop10"],
+                        statement=PROP12_STATEMENT, book_steps=None,
+                        witness="h", engine="I.12",
+                        engine_citable=PROP12_ENGINE_CITABLE),
 }
 
 
@@ -240,8 +277,10 @@ def citable_apply_rules():
     """Engine rules known to be Lean-citable (euclid_apply-able): every rule
     that appears in a PROPS book-step list. Grown as PROPS grows."""
     return {r for cfg in PROPS.values()
-            if cfg.get("book_steps")
-            for (r, _a, _b) in cfg["book_steps"]}
+            for r in (cfg.get("engine_citable") or ())
+            } | {r for cfg in PROPS.values()
+                 if cfg.get("book_steps")
+                 for (r, _a, _b) in cfg["book_steps"]}
 
 
 def translate_engine_steps(steps):
@@ -286,6 +325,8 @@ def engine_steps(prop):
     eng = _engine()
     if prop == "I.4" and hasattr(eng, "PROP4_STEPS_DATA"):
         return translate_engine_steps(eng.PROP4_STEPS_DATA)
+    if prop == "I.12" and hasattr(eng, "PROP12_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP12_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
 
 

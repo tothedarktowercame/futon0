@@ -212,6 +212,63 @@ def test_unknown_bridge_rule_raises():
         cert.translate_engine_steps(steps)
 
 
+# --- I.12-engine (E-kimi-task-376) ------------------------------------------
+
+def test_emit_engine_i12_emission_pinned():
+    # The engine's own I.12 steps emit as the Book proof plus the two
+    # engine-only SystemE axioms as euclid_apply (Book precedent for
+    # euclid_apply on an axiom: Prop11.lean:20,37 applies perpendicular_if).
+    steps = cert.engine_steps("I.12")
+    src = cert.emit_proof("I.12-engine", steps, "h")
+    assert "  euclid_apply (intersection_circle_line_1 d c EFG AB)\n" in src
+    assert "  euclid_apply (perpendicular_if e g h c AB)\n" in src
+    assert "  euclid_apply (intersections_circle_line EFG AB) as (e, g)\n" in src
+    assert "  use h\n" in src
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "d2261316dae9cd24"
+
+
+def test_engine_i12_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP12_STEPS_DATA and show the emission follows
+    eng = cert._engine()
+    swapped = [list(s) for s in eng.PROP12_STEPS_DATA]
+    swapped[4] = ("proposition_10", ("e", "c", "AB"), {"d": "h"})
+    monkeypatch.setattr(eng, "PROP12_STEPS_DATA", swapped)
+    src = cert.emit_proof("I.12-engine", cert.engine_steps("I.12"), "h")
+    assert "(proposition_10 e c AB) as h" in src
+    assert "(proposition_10 e g AB) as h" not in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i12_certifies():
+    # the ENGINE's own PROP12_STEPS_DATA certified against LeanEuclid
+    r = cert.check_lean(
+        cert.emit_proof("I.12-engine", cert.engine_steps("I.12"), "h"),
+        "test_engine_I12")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i12_perpendicular_if_wrong_foot():
+    # perpendicular_if with foot e (not h): claims between e e g — false.
+    # Must NOT certify, and no lean process may survive the timeout.
+    steps = [("perpendicular_if", ("e", "g", "e", "c", "AB"), b)
+             if r_ == "perpendicular_if" else (r_, a, b)
+             for (r_, a, b) in cert.engine_steps("I.12")]
+    r = cert.check_lean(cert.emit_proof("I.12-engine", steps, "h"),
+                        "test_neg_I12_foot", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I12_foot.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+
 def test_book_emission_i1_to_i5_unchanged():
     # Review (claude-9): the first version only counted euclid_intros, which
     # any emission change passes. Pin the exact text: sha256 prefixes of the
