@@ -266,6 +266,46 @@ PROP13_ENGINE_CITABLE = [
     "perpendicular_onlyif",
 ]
 
+# Book/Prop14.lean verbatim: if two straight lines meeting at b make the
+# adjacent angles equal to two right angles with a common arm, the two
+# 'outer' lines BC, BD are one straight line (conclusion BC = BD).
+PROP14_STATEMENT = """\
+theorem proposition_14 : ∀ (a b c d : Point) (AB BC BD : Line),
+  distinctPointsOnLine a b AB ∧ distinctPointsOnLine b c BC ∧ distinctPointsOnLine b d BD ∧ (c.opposingSides d AB) ∧
+  (∠ a:b:c + ∠ a:b:d) = ∟ + ∟ →
+  BC = BD :="""
+
+# The engine's own I.14 steps (euclid_engine.PROP14_STEPS_DATA, read live):
+# an outer by_contra (assume neq_line BC BD — Lean's `by_contra` supplies
+# exactly ¬(BC = BD)) containing a NESTED engine by_contra over
+# same_side/opposing_sides a e BD, emitted as Lean's `by_cases a.sameSide e
+# BD` (both engine branches prove False; (P → ⊥) ∧ (¬P → ⊥) ⊢ ⊥ is the
+# split). See emit_proof14. Engine-only rules:
+#   between_symm_parts (c b e), (e b c) -> euclid_apply (between_symm ...):
+#     the whole axiom, neq parts included (same choice as I.11/I.13).
+#   pasch_3_opposing (c b e AB) -> euclid_apply (pasch_3 c b e AB): the
+#     SystemE axiom itself, conclusion ¬(c.sameSide e AB) — ENGINE_RULE_TO_LEAN.
+#   opposing_opposing_same_side (d c e AB) is DERIVED -> CHECKED
+#     euclid_assert d.sameSide e AB — BRIDGE_ASSERTS (see there).
+#   triple_incidence_2 (AB BD BC b a d e) as is: SystemE axiom
+#     (Diagrammatic.lean:199). Its ¬(b.sameSide d M) premise is exactly
+#     what Lean's negative by_cases branch supplies (¬(a.sameSide e BD)),
+#     so branch 2's engine fact (opposing_sides a e BD) needs NO assert —
+#     the packet's "extra the engine used" is the opposing_opposing_same_side
+#     assert above. euclid_apply's premise discharge SMT-derives the
+#     remaining premises (¬(e.onLine BD) from BC ≠ BD, b ≠ a from the dpl).
+# Branch 1 (a.sameSide e BD, free from the by_cases): sum_angles_onlyif
+#   b a d e AB BD; the arithmetic (with proposition_13's row and the
+#   hypothesis) forces ∠e:b:d = 0 against angle_pos — euclid_finish.
+# Branch 2: triple_incidence_2 then sum_angles_onlyif b a e d AB BC;
+#   euclid_finish. Both branches end with euclid_finish (no trailing
+#   finish after the by_cases: the branches close the False goal that
+#   by_contra installed).
+PROP14_ENGINE_CITABLE = [
+    "extend_point", "between_symm", "pasch_3", "proposition_13",
+    "sum_angles_onlyif", "triple_incidence_2",
+]
+
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
                 book_steps=PROP1_BOOK_STEPS, witness="c"),
@@ -316,6 +356,15 @@ PROPS = {
                         witness=None, engine="I.13",
                         engine_citable=PROP13_ENGINE_CITABLE,
                         emitter="by_cases"),
+    # The ENGINE's own I.14 steps (euclid_engine.PROP14_STEPS_DATA, read
+    # live): outer by_contra + inner split, emitted by emit_proof14
+    # (emitter="by_contra"); no existential witness, statement/imports as
+    # Book/Prop14.lean. See the comment above PROP14_ENGINE_CITABLE.
+    "I.14-engine": dict(imports=["SystemE", "Book.Prop13"],
+                        statement=PROP14_STATEMENT, book_steps=None,
+                        witness=None, engine="I.14",
+                        engine_citable=PROP14_ENGINE_CITABLE,
+                        emitter="by_contra"),
 }
 
 
@@ -365,6 +414,13 @@ BRIDGE_ASSERTS = {
     # Emitted as a CHECKED euclid_assert of the conclusion its consumer
     # (triple_incidence_2) needs; see the comment above PROP13_ENGINE_CITABLE.
     "opposing_same_side_trans": lambda args: f"¬({args[0]}.sameSide {args[2]} {args[3]})",
+    # I.14: opposing_opposing_same_side is DERIVED (c, d opposingSides of L
+    # and c, e opposingSides of L -> d.sameSide e L: both on the far side
+    # from c), not a SystemE name. Emitted as a CHECKED euclid_assert of
+    # its conclusion; BOTH branches consume it (branch 1's
+    # sum_angles_onlyif side premise, branch 2's triple_incidence_2
+    # c.sameSide d L premise). Args (d, c, e, AB) -> "d.sameSide e AB".
+    "opposing_opposing_same_side": lambda args: f"{args[0]}.sameSide {args[2]} {args[3]}",
 }
 
 # Engine binding names that differ from the Book's, renamed at emit time only
@@ -568,6 +624,68 @@ def emit_proof13():
     return "\n".join(lines) + "\n"
 
 
+# ---------------------------------------------------------------------------
+# I.14-engine: outer by_contra + inner split emission (E-kimi-task-387)
+# ---------------------------------------------------------------------------
+
+
+def engine_steps14():
+    """The engine's PROP14_STEPS_DATA as translated steps for emit_proof14.
+
+    The data is a single outer by_contra whose one branch holds flat steps
+    ending in a NESTED by_contra over same_side/opposing_sides a e BD.
+    The nested by_contra becomes a ("by_cases", ...) node (both branches
+    prove False, so (P -> ⊥) ∧ (¬P -> ⊥) ⊢ ⊥ IS the split, as in
+    Book/Prop14.lean:14-18); branch 2's opposing_sides fact is DROPPED —
+    Lean's negative by_cases branch supplies exactly ¬(a.sameSide e BD),
+    which is the premise shape triple_incidence_2 needs. Flat steps are
+    translated (bridges -> checked euclid_asserts).
+    """
+    eng = _engine()
+    data = eng.PROP14_STEPS_DATA
+    if (len(data) != 1 or data[0][0] != "by_contra"
+            or len(data[0][1]) != 1):
+        raise ValueError("PROP14_STEPS_DATA must be a single outer "
+                         "by_contra with one branch")
+    _, branches, _ = data[0]
+    ((_, steps),) = branches
+    out = []
+    for s in steps:
+        if s[0] in ("by_contra", "by_cases"):
+            _, branches, conclusions = s
+            conv = []
+            for i, (facts, bsteps) in enumerate(branches):
+                kept = list(facts) if i == 0 else []
+                tb = []
+                for bs in bsteps:
+                    tb.extend(translate_engine_steps([bs]))
+                conv.append((kept, tb))
+            out.append(("by_cases", conv, conclusions))
+        else:
+            out.extend(translate_engine_steps([s]))
+    return out
+
+
+def emit_proof14():
+    """The full Lean source for I.14-engine (by_contra emitter)."""
+    cfg = PROPS["I.14-engine"]
+    lines = [f"import {imp}" for imp in cfg["imports"]]
+    lines.append("")
+    lines.append("namespace Elements.Book1")
+    lines.append("")
+    lines.append(cfg["statement"])
+    lines.append("by")
+    lines.append("  euclid_intros")
+    # Lean's by_contra supplies ¬(BC = BD) — the engine's outer-branch
+    # assumption (neq_line BC BD). The by_cases branches inside close the
+    # False goal; no trailing euclid_finish.
+    lines.append("  by_contra")
+    lines.extend(_emit_block(engine_steps14(), 1))
+    lines.append("")
+    lines.append("end Elements.Book1")
+    return "\n".join(lines) + "\n"
+
+
 def emit_step(rule, args, bindings):
     """One euclid_apply line from an engine step."""
     return "\n".join(_step_lines(rule, args, bindings, lean))
@@ -670,6 +788,8 @@ def certify_book():
     for prop, cfg in PROPS.items():
         if cfg.get("emitter") == "by_cases":
             src = emit_proof13()
+        elif cfg.get("emitter") == "by_contra":
+            src = emit_proof14()
         elif cfg.get("engine"):
             src = emit_proof(prop, engine_steps(cfg["engine"]), cfg["witness"],
                              finish=cfg.get("finish", "euclid_finish"))

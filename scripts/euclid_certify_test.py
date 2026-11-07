@@ -503,3 +503,100 @@ def test_negative_engine_i13_false_case_fact():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.14-engine (E-kimi-task-387) ------------------------------------------
+
+def test_emit_engine_i14_emission_pinned():
+    # The engine's outer by_contra emits as Lean's `by_contra`; the nested
+    # engine by_contra over same_side/opposing_sides a e BD emits as
+    # `by_cases a.sameSide e BD`; the derived opposing_opposing_same_side
+    # emits as a CHECKED euclid_assert of its conclusion; branch 2's
+    # opposing_sides fact is dropped (Lean's negative branch supplies
+    # exactly ¬(a.sameSide e BD), triple_incidence_2's premise shape);
+    # each by_cases branch ends with euclid_finish, and there is no
+    # trailing finish after the by_cases (the branches close the False
+    # goal by_contra installed).
+    src = cert.emit_proof14()
+    assert "  by_contra\n" in src
+    assert "  by_cases a.sameSide e BD\n" in src
+    assert "  euclid_apply (extend_point BC c b) as e\n" in src
+    assert "  euclid_apply (between_symm c b e)\n" in src
+    assert "  euclid_apply (pasch_3 c b e AB)\n" in src
+    assert "  euclid_assert d.sameSide e AB\n" in src
+    assert "  euclid_apply (proposition_13 a b e c AB BC)\n" in src
+    assert "  . euclid_apply (sum_angles_onlyif b a d e AB BD)\n" in src
+    assert "  . euclid_apply (triple_incidence_2 AB BD BC b a d e)\n" in src
+    assert "    euclid_apply (sum_angles_onlyif b a e d AB BC)\n" in src
+    assert "opposingSides a e BD" not in src  # branch-2 fact dropped
+    assert src.count("euclid_finish") == 2  # one per by_cases branch
+    assert not src.rstrip().endswith("euclid_finish")
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "aa4b6085a2d3b502"
+
+
+def test_engine_i14_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP14_STEPS_DATA and show the emission follows
+    eng = cert._engine()
+    (kind, branches, conclusions), = eng.PROP14_STEPS_DATA
+    (facts, steps), = branches
+    mutated = (facts, [(s[0], tuple("BD" if a == "AB" else a for a in s[1]),
+                        s[2])
+                       if s[0] == "pasch_3_opposing" else s
+                       for s in steps])
+    monkeypatch.setattr(eng, "PROP14_STEPS_DATA",
+                        [(kind, [mutated], conclusions)])
+    src = cert.emit_proof14()
+    assert "(pasch_3 c b e BD)" in src
+    assert "(pasch_3 c b e AB)" not in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i14_certifies():
+    # the ENGINE's own PROP14_STEPS_DATA (by_contra + case split) certified
+    # against LeanEuclid
+    r = cert.check_lean(cert.emit_proof14(), "test_engine_I14")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i14_false_asserted_fact():
+    # The packet's bad case: replace the DERIVED same-side assert
+    # (opposing_opposing_same_side's conclusion d.sameSide e AB) with the
+    # false e.sameSide c AB — c and e are on OPPOSING sides of AB
+    # (pasch_3). Must NOT certify (the SMT solver answers unknown ->
+    # timeout), and no lean process may survive.
+    src = cert.emit_proof14()
+    bad = src.replace("euclid_assert d.sameSide e AB",
+                      "euclid_assert e.sameSide c AB")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I14_assert", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I14_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i14_no_by_contra():
+    # My own bad case: drop `by_contra` — the goal stays BC = BD and the
+    # by_cases branches' euclid_finish (closing False) cannot close it.
+    # Must NOT certify, and no lean process may survive.
+    src = cert.emit_proof14()
+    bad = src.replace("  by_contra\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I14_nocontra", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I14_nocontra.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
