@@ -36,6 +36,95 @@ def _straight_line(n):
                for r, _a, _b in tr.hyps_and_steps(n)[1])
 
 
+def _engine_step_to_move(st):
+    """An engine step tuple as a play() move dict; case moves become
+    {rule, branches, conclusion, open: False}."""
+    if st[0] in ("by_contra", "by_cases"):
+        return {"rule": st[0],
+                "branches": [{"hyps": [list(f) for f in h],
+                              "moves": [_engine_step_to_move(x)
+                                        for x in steps]}
+                             for h, steps in st[1]],
+                "conclusion": [list(c) for c in st[2]],
+                "open": False}
+    return _move(st[0], st[1], st[2])
+
+
+def test_case_props_reach_goal():
+    """I.10, 13, 14, 19, 21 played with the engine's own steps (case
+    moves as closed blocks) reach the goal."""
+    reached = []
+    for n in (10, 13, 14, 19, 21):
+        steps = tr.hyps_and_steps(n)[1]
+        res = ep.play(n, [_engine_step_to_move(st) for st in steps])
+        assert res["goal_reached"], \
+            "I.%d: engine replay did not reach the goal: %s" % (n, res)
+        assert all(m["ok"] for m in res["moves"]), \
+            "I.%d: a move failed: %s" % (n, res["moves"])
+        reached.append(n)
+    print("\ncase props reached:", reached)
+
+
+def test_open_block_reports_branch():
+    """I.21 with its by_contra's last branch open and its moves missing
+    reports branch_contradictory false; with them, true."""
+    steps = [_engine_step_to_move(st) for st in tr.hyps_and_steps(21)[1]]
+    bc = next(m for m in steps if m["rule"] == "by_contra")
+    pre = steps[:steps.index(bc)]
+    # last branch open, its moves missing
+    open_bc = json.loads(json.dumps(bc))
+    open_bc["open"] = True
+    open_bc["branches"][-1]["moves"] = []
+    res = ep.play(21, pre + [open_bc])
+    ent = res["moves"][-1]
+    assert ent["ok"] and ent["open"]
+    assert ent["branches"][0]["closed"] is True
+    last = ent["branches"][-1]
+    assert last["closed"] is False
+    assert last["branch_contradictory"] is False
+    assert last["branch_goal_reached"] is False
+    assert not res["goal_reached"]
+    # with the branch's moves, the branch contradicts
+    open_bc2 = json.loads(json.dumps(bc))
+    open_bc2["open"] = True
+    res = ep.play(21, pre + [open_bc2])
+    ent = res["moves"][-1]
+    assert ent["ok"]
+    assert ent["branches"][-1]["branch_contradictory"] is True
+    assert not res["goal_reached"]  # block still open: no conclusion yet
+
+
+def test_closed_by_contra_without_contradiction_refused():
+    """A closed by_contra whose branch does not contradict is refused
+    with the engine's own wording."""
+    mv = {"rule": "by_contra",
+          "branches": [{"hyps": [["between", "b", "e", "d"]],
+                        "moves": []}],
+          "conclusion": [["between", "b", "d", "e"]],
+          "open": False}
+    res = ep.play(21, [mv])
+    ent = res["moves"][-1]
+    assert not ent["ok"]
+    assert "by_contra branch" in ent["error"]
+    assert "did not reach a contradiction" in ent["error"]
+    assert not res["goal_reached"]
+
+
+def test_open_block_earlier_branch_must_close():
+    """An open by_contra whose first branch does not close is an error,
+    not an ok open block."""
+    steps = [_engine_step_to_move(st) for st in tr.hyps_and_steps(21)[1]]
+    bc = next(m for m in steps if m["rule"] == "by_contra")
+    pre = steps[:steps.index(bc)]
+    bad = json.loads(json.dumps(bc))
+    bad["open"] = True
+    bad["branches"][0]["moves"] = []  # first branch no longer closes
+    res = ep.play(21, pre + [bad])
+    ent = res["moves"][-1]
+    assert not ent["ok"]
+    assert "earlier case" in ent["error"]
+
+
 def test_engine_steps_reach_goal():
     """For every straight-line catalogue prop, replaying the engine's own
     steps reaches the goal."""

@@ -170,43 +170,158 @@ def _start_state(n):
     return s
 
 
-def play(n, moves):
-    """Stateless: rebuild N's start state, apply each move
-    {rule, args, bindings} with eng.apply_step + close, stop at the first
-    failure. by_contra/by_cases moves go through eng.run_steps (the same
-    tuples the engine uses)."""
-    pal = set(palette(n))
-    s = _start_state(n)
-    objects = tr.objects_from_hyps(n)
-    xy = {k: v for k, v in tr.FREE[n].items()}
-    tr.derived_free_points(n, xy)
-    out_moves = []
-    for i, mv in enumerate(moves, 1):
+CASE_RULES = ("by_contra", "by_cases")
+
+
+def _move_to_step(m):
+    """A move dict as an engine step tuple. Case moves become the
+    ("by_contra"/"by_cases", branches, conclusions) triples the engine's
+    own STEPS_DATA uses (nested case moves recurse); anything else is
+    (rule, args, bindings)."""
+    if m["rule"] in CASE_RULES:
+        return _block_to_engine(m)
+    return (m["rule"], tuple(m.get("args") or ()),
+            dict(m.get("bindings") or {}))
+
+
+def _block_to_engine(mv):
+    """{rule, branches: [{hyps, moves}], conclusion} as the engine's
+    (rule, [(assumption-facts, steps), ...], conclusions) tuple."""
+    branches = []
+    for b in mv.get("branches") or []:
+        hyps = [tuple(f) for f in b.get("hyps") or []]
+        steps = [_move_to_step(m) for m in b.get("moves") or []]
+        branches.append((hyps, steps))
+    concl = [tuple(c) for c in mv.get("conclusion") or []]
+    return (mv["rule"], branches, concl)
+
+
+def _close_branch(n, s, rule, hyps, steps, concl, i):
+    """Check one CLOSED branch on a copy of s, as eng._by_contra /
+    eng._by_cases do: assume the hypotheses, run the steps, then require
+    a contradiction (by_contra) or every conclusion with no contradiction
+    (by_cases). Returns None on success, an error string otherwise."""
+    sub = s.copy()
+    try:
+        for f in hyps:
+            eng._assume_metric_or_fact(sub, f, rule + " assumption")
+        eng.close(sub)
+        eng.run_steps(sub, steps, i + 1)
+    except eng.MissingPremise as e:
+        return ("the case %s is stuck: %s"
+                % ([list(f) for f in hyps], e))
+    except (eng.ByContraFailure, eng.ByCasesFailure) as e:
+        return "in the case %s: %s" % ([list(f) for f in hyps], e)
+    contra, _w = eng.contradictory(sub)
+    if rule == "by_contra":
+        if not contra:
+            return ("the case %s does not reach a contradiction"
+                    % [list(f) for f in hyps])
+    else:
+        if contra:
+            return ("the case %s is contradictory — it would entail "
+                    "anything" % [list(f) for f in hyps])
+        for c in concl:
+            if not eng._fact_holds(sub, c):
+                return ("the case %s does not reach the conclusion %s"
+                        % ([list(f) for f in hyps], list(c)))
+    return None
+
+
+def _open_block(n, s, mv, objects, xy, pal, i):
+    """Report on an OPEN case move without touching the outer state.
+    Every branch but the last must already close (checked on copies);
+    for the last branch the hypotheses are assumed on a copy and its
+    moves applied, and the branch is reported (contradiction? conclusion
+    reached? its objects). Returns (ok, error, branch_reports, view)
+    where view is (objects, xy) of the deepest open branch to show, or
+    None."""
+    rule = mv["rule"]
+    branches = mv.get("branches") or []
+    concl = [tuple(c) for c in mv.get("conclusion") or []]
+    breps = []
+    if not branches:
+        return False, "an open case move needs at least one case", breps, None
+    for b in branches[:-1]:
+        hyps = [tuple(f) for f in b.get("hyps") or []]
+        steps = [_move_to_step(m) for m in b.get("moves") or []]
+        err = _close_branch(n, s, rule, hyps, steps, concl, i)
+        if err:
+            return False, "an earlier case must close first: " + err, \
+                breps, None
+        breps.append({"hyps": [list(f) for f in hyps], "closed": True})
+    last = branches[-1]
+    hyps = [tuple(f) for f in last.get("hyps") or []]
+    sub = s.copy()
+    bobjects = [dict(o) for o in objects]
+    bxy = dict(xy)
+    try:
+        for f in hyps:
+            eng._assume_metric_or_fact(sub, f, rule + " assumption")
+        eng.close(sub)
+    except Exception as e:
+        return False, ("bad case hypothesis %s: %s"
+                       % ([list(f) for f in hyps], e)), breps, None
+    bentries, deeper = _apply_moves(n, sub, last.get("moves") or [],
+                                    bobjects, bxy, pal, i + 1)
+    contra, _w = eng.contradictory(sub)
+    goal = bool(concl) and all(eng._fact_holds(sub, c) for c in concl)
+    breps.append({"hyps": [list(f) for f in hyps], "closed": False,
+                  "moves": bentries,
+                  "branch_contradictory": contra,
+                  "branch_goal_reached": goal})
+    return True, None, breps, deeper or (bobjects, bxy)
+
+
+def _apply_moves(n, s, moves, objects, xy, pal, i0=1):
+    """Apply moves to s (in place), placing new objects, stopping at the
+    first failure. Returns (entries, view); view is the (objects, xy) of
+    the deepest open case branch when the last move is an open block,
+    else None. Entries mirror the submitted move list (case moves carry
+    per-branch reports)."""
+    entries = []
+    view = None
+    for i, mv in enumerate(moves, i0):
         rule = mv["rule"]
-        args = tuple(mv.get("args") or ())
-        bindings = dict(mv.get("bindings") or {})
         entry = {"n": i, "rule": rule, "ok": False, "added": [],
                  "error": None}
         m = _PROP_RE.match(rule)
-        if m and rule not in pal:
+        if rule in CASE_RULES:
+            if mv.get("open"):
+                ok, err, breps, view = _open_block(n, s, mv, objects, xy,
+                                                   pal, i)
+                entry.update(ok=ok, error=err, open=True, branches=breps)
+            else:
+                try:
+                    rep = eng.run_steps(s, [_block_to_engine(mv)])[0]
+                    entry["ok"] = True
+                    entry["added"] = [list(c)
+                                      for c in rep.get("conclusions", [])]
+                    entry["conclusions"] = entry["added"]
+                except eng.MissingPremise as e:
+                    entry["error"] = (list(e.premise)
+                                      if isinstance(e.premise, tuple)
+                                      else str(e.premise))
+                except (eng.ByContraFailure, eng.ByCasesFailure) as e:
+                    entry["error"] = str(e)
+                except TypeError as e:
+                    entry["error"] = ("bad case move for %s: %s" % (rule, e))
+        elif m and rule not in pal:
             entry["error"] = "I.%d is not proved yet" % int(m.group(1))
-        elif rule not in pal and rule not in ("by_contra", "by_cases"):
+        elif rule not in pal:
             entry["error"] = ("unknown rule %r (not in I.%d's palette)"
                               % (rule, n))
         else:
+            args = tuple(mv.get("args") or ())
+            bindings = dict(mv.get("bindings") or {})
             try:
-                if rule in ("by_contra", "by_cases"):
-                    rep = eng.run_steps(s, [(rule, list(args), bindings)])[0]
-                    added = rep.get("added", [])
-                else:
-                    rep = eng.apply_step(s, i, rule, args, bindings)
-                    eng.close(s)
-                    added = rep["added"]
-                    tr.place_step(n, rule, args, bindings, added, xy,
-                                  objects)
-                    for o in objects:
-                        if o["def_step"] is None:
-                            o["def_step"] = i
+                rep = eng.apply_step(s, i, rule, args, bindings)
+                eng.close(s)
+                added = rep["added"]
+                tr.place_step(n, rule, args, bindings, added, xy, objects)
+                for o in objects:
+                    if o["def_step"] is None:
+                        o["def_step"] = i
                 entry["ok"] = True
                 entry["added"] = [list(f) for f in added]
             except eng.MissingPremise as e:
@@ -215,11 +330,30 @@ def play(n, moves):
                                   else str(e.premise))
             except TypeError as e:
                 entry["error"] = ("bad arity for %s: %s" % (rule, e))
-        out_moves.append(entry)
+        entries.append(entry)
         if not entry["ok"]:
             break
+    return entries, view
+
+
+def play(n, moves):
+    """Stateless: rebuild N's start state, apply each move
+    {rule, args, bindings} with eng.apply_step + close, stop at the first
+    failure. Case moves are {rule: "by_contra"|"by_cases", branches:
+    [{hyps, moves}], conclusion, open}; closed blocks go through
+    eng.run_steps (the same tuples the engine uses, refusals as the
+    engine words them), open blocks are reported on without touching the
+    outer state (see _open_block)."""
+    pal = set(palette(n))
+    s = _start_state(n)
+    objects = tr.objects_from_hyps(n)
+    xy = {k: v for k, v in tr.FREE[n].items()}
+    tr.derived_free_points(n, xy)
+    out_moves, view = _apply_moves(n, s, moves, objects, xy, pal)
     goal_reached = all(eng._fact_holds(s, g) for g in GOALS[n])
     contradict = eng.contradictory(s)[0]
+    if view is not None:
+        objects, xy = view
     out_objects = []
     for o in objects:
         d = dict(o)

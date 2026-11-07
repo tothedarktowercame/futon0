@@ -24,7 +24,6 @@
   .prop-item.locked:hover { background: none; }
   .prop-item.current { background: #dde8f6; }
   .prop-item .tick { color: #1c5e0f; font-weight: bold; margin-right: 4px; }
-  .prop-item .casenote { display: block; font-size: 11px; color: #7a5300; }
   #centre { flex: 1; display: flex; flex-direction: column; min-width: 0; }
   #board-wrap { flex: 1; position: relative; }
   #jxgbox { position: absolute; inset: 6px; border: 1px solid #999;
@@ -53,6 +52,14 @@
                    padding: 8px; margin-top: 8px; font-size: 16px;
                    font-weight: bold; text-align: center; }
   #contra-note { display: none; color: #8f130c; margin-top: 6px; }
+  #case-bar { display: none; margin-top: 8px; }
+  #branch-status { margin-top: 6px; }
+  #case-builder { display: none; margin-top: 8px; border: 1px solid #b9a;
+                  border-radius: 4px; padding: 6px; background: #fbf7ef; }
+  .fact-builder { margin: 4px 0; }
+  .fact-builder input { width: 42px; font-family: monospace; }
+  .fact-builder ul { margin: 4px 0; padding-left: 18px; }
+  .fb-label { font-size: 12px; color: #555; margin-top: 6px; }
   #reset-progress { font-size: 12px; }
   button { font-size: 13px; }
 </style>
@@ -75,14 +82,48 @@
   <div id="side">
     <div id="prop-title" style="font-weight:bold;margin-bottom:4px"></div>
     <div id="statement"></div>
-    <div id="case-note" style="color:#7a5300;font-size:12px;margin-top:4px;
-         display:none">needs a case move, coming next</div>
     <div id="move-panel">
       <select id="rule-select"></select>
       <div id="cite" style="font-size:11px;color:#777;margin:2px 0"></div>
       <table id="args-table"></table>
       <button id="btn-do">do move</button>
+      <button id="btn-suppose">suppose…</button>
       <button id="btn-undo">undo last move</button>
+      <div id="case-bar">
+        <span id="case-desc" style="font-size:12px;color:#555"></span><br>
+        <button id="btn-next-case">next case</button>
+        <button id="btn-close-block">close</button>
+      </div>
+      <div id="branch-status"></div>
+      <div id="case-builder">
+        <div id="cb-rule-row">kind:
+          <select id="cb-rule">
+            <option value="by_contra">by_contra — every case must reach
+              a contradiction</option>
+            <option value="by_cases">by_cases — every case must reach the
+              conclusion</option>
+          </select>
+        </div>
+        <div class="fb-label" id="cb-hyps-label">this case's hypotheses:
+        </div>
+        <div class="fact-builder" id="cb-hyps">
+          <select class="fb-kind"></select>
+          <span class="fb-args"></span>
+          <button class="fb-add">add hypothesis</button>
+          <ul class="fb-list"></ul>
+        </div>
+        <div id="cb-concl-wrap">
+          <div class="fb-label">conclusion (what the block proves):</div>
+          <div class="fact-builder" id="cb-concl">
+            <select class="fb-kind"></select>
+            <span class="fb-args"></span>
+            <button class="fb-add">add conclusion</button>
+            <ul class="fb-list"></ul>
+          </div>
+        </div>
+        <button id="cb-begin">begin case</button>
+        <button id="cb-cancel">cancel</button>
+      </div>
       <div id="move-error"></div>
       <div id="solved-banner">Solved ✓</div>
       <div id="contra-note">the assumptions are contradictory — anything
@@ -93,7 +134,6 @@
 <script>
 "use strict";
 
-const CASE_PROPS = new Set([10, 13, 14, 19, 21]);
 const STORE_KEY = "euclid-play-v1";
 
 let catalogue = null;     // /api/catalogue
@@ -366,14 +406,253 @@ function renderRuleInputs() {
 
 function fillArg(name) {
   let inp = activeInput;
+  // stay inside the form (rule args or a case-builder fact) being filled
+  const cls = inp && inp.classList.contains("fact-in") ? ".fact-in"
+                                                       : ".arg-in";
   if (!inp || inp.value) {
-    inp = [...document.querySelectorAll(".arg-in")]
+    inp = [...document.querySelectorAll(cls)]
       .find(i => !i.value) || activeInput;
   }
   if (inp) {
     inp.value = name;
-    activeInput = [...document.querySelectorAll(".arg-in")]
+    activeInput = [...document.querySelectorAll(cls)]
       .find(i => !i.value) || inp;
+  }
+}
+
+// ----------------------------------------------------- case moves (blocks)
+// A case move lives in the move list as
+//   {rule: "by_contra"|"by_cases", branches: [{hyps, moves}],
+//    conclusion: [...facts], open: bool}
+// While one is open, new moves go into its last branch.
+
+const FACT_KINDS = {
+  between: ["a", "b", "c"],
+  same_side: ["a", "b", "L"],
+  opposing_sides: ["a", "b", "L"],
+  on_line: ["a", "L"],
+  eq_len: ["a", "b", "c", "d"],
+  gt_len: ["a", "b", "c", "d"],
+  eq_ang: ["a", "b", "c", "d", "e", "f"],
+  gt_ang: ["a", "b", "c", "d", "e", "f"],
+  peq: ["a", "b"],
+};
+
+let cbMode = null;    // null | "new" (starting a block) | "next" (new case)
+const cbHyps = [];    // facts built in the case builder
+const cbConcl = [];
+
+function openBlockAt(list) {
+  const m = list[list.length - 1];
+  return m && (m.rule === "by_contra" || m.rule === "by_cases") && m.open
+    ? m : null;
+}
+
+function openBlock() {   // the deepest open block, following last branches
+  let list = moves, b = null, cur2;
+  while ((cur2 = openBlockAt(list))) {
+    b = cur2;
+    list = cur2.branches[cur2.branches.length - 1].moves;
+  }
+  return b;
+}
+
+function currentMoveList() {  // where a new move goes
+  let list = moves;
+  for (;;) {
+    const b = openBlockAt(list);
+    if (!b) return list;
+    list = b.branches[b.branches.length - 1].moves;
+  }
+}
+
+function currentResultList(res) {  // the response entries for that list
+  let lres = res.moves, list = moves;
+  for (;;) {
+    const b = openBlockAt(list);
+    if (!b) return lres;
+    const ent = lres[lres.length - 1];
+    if (!ent || !ent.branches || !ent.branches.length) return [];
+    const br = ent.branches[ent.branches.length - 1];
+    lres = br.moves || [];
+    list = b.branches[b.branches.length - 1].moves;
+  }
+}
+
+function wireFactBuilder(rootId, list, addLabel) {
+  const root = document.getElementById(rootId);
+  const kind = root.querySelector(".fb-kind");
+  for (const k of Object.keys(FACT_KINDS)) {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = k;
+    kind.appendChild(opt);
+  }
+  const argsEl = root.querySelector(".fb-args");
+  function renderArgs() {
+    argsEl.innerHTML = "";
+    for (const a of FACT_KINDS[kind.value]) {
+      const inp = document.createElement("input");
+      inp.className = "fact-in";
+      inp.placeholder = a;
+      inp.addEventListener("focusin", () => { activeInput = inp; });
+      argsEl.appendChild(inp);
+    }
+  }
+  kind.onchange = renderArgs;
+  renderArgs();
+  const ul = root.querySelector(".fb-list");
+  function renderList() {
+    ul.innerHTML = "";
+    list.forEach((f, i) => {
+      const li = document.createElement("li");
+      const s = document.createElement("span");
+      s.className = "fact";
+      s.textContent = factEnglish(f);
+      const x = document.createElement("a");
+      x.href = "#";
+      x.textContent = " ✕";
+      x.onclick = ev => {
+        ev.preventDefault();
+        list.splice(i, 1);
+        renderList();
+      };
+      li.appendChild(s);
+      li.appendChild(x);
+      ul.appendChild(li);
+    });
+  }
+  const addBtn = root.querySelector(".fb-add");
+  addBtn.textContent = addLabel;
+  addBtn.onclick = () => {
+    const ins = [...argsEl.querySelectorAll(".fact-in")];
+    const vals = ins.map(i => i.value.trim());
+    if (vals.some(v => !v)) return;
+    list.push([kind.value].concat(vals));
+    ins.forEach(i => { i.value = ""; });
+    renderList();
+  };
+  renderList();
+}
+
+function showCaseBuilder(mode) {
+  cbMode = mode;
+  cbHyps.length = 0;
+  document.getElementById("cb-rule-row").style.display =
+    mode === "new" ? "block" : "none";
+  document.getElementById("cb-concl-wrap").style.display =
+    mode === "new" ? "block" : "none";
+  document.getElementById("cb-hyps-label").textContent =
+    mode === "new" ? "this case's hypotheses:"
+                   : "the next case's hypotheses:";
+  document.getElementById("cb-begin").textContent =
+    mode === "new" ? "begin case" : "begin next case";
+  document.getElementById("case-builder").style.display = "block";
+  updateCaseBar();
+}
+
+function hideCaseBuilder() {
+  cbMode = null;
+  document.getElementById("case-builder").style.display = "none";
+  updateCaseBar();
+}
+
+function updateCaseBar() {
+  const b = openBlock();
+  document.getElementById("case-bar").style.display =
+    b && cbMode === null ? "block" : "none";
+  if (b) {
+    document.getElementById("case-desc").textContent =
+      `a ${b.rule} block is open — moves go into case ` +
+      `${b.branches.length}`;
+  }
+}
+
+function updateBranchStatus() {
+  const bs = document.getElementById("branch-status");
+  const b = openBlock();
+  bs.textContent = "";
+  if (!b || !lastResult) return;
+  const ent = lastResult.moves[lastResult.moves.length - 1];
+  if (!ent || !ent.open || !ent.branches || !ent.branches.length) return;
+  const br = ent.branches[ent.branches.length - 1];
+  if (br.closed) return;
+  let txt, ok;
+  if (b.rule === "by_contra") {
+    ok = br.branch_contradictory;
+    txt = ok ? "this case is contradictory ✓"
+             : "this case is not yet contradictory";
+  } else {
+    ok = br.branch_goal_reached;
+    txt = ok ? "the conclusion holds in this case ✓"
+             : "the conclusion does not hold in this case yet";
+  }
+  bs.textContent = txt;
+  bs.style.color = ok ? "#1c5e0f" : "#7a5300";
+}
+
+function responseEntryFor(res, block) {
+  // the response entry mirroring a given open block object
+  let lres = res.moves, local = moves;
+  for (;;) {
+    const b = openBlockAt(local);
+    if (!b) return null;
+    const ent = lres[lres.length - 1];
+    if (b === block) return ent;
+    if (!ent || !ent.branches || !ent.branches.length) return null;
+    lres = ent.branches[ent.branches.length - 1].moves || [];
+    local = b.branches[b.branches.length - 1].moves;
+  }
+}
+
+async function beginCase() {
+  if (!cbHyps.length) {
+    showError("a case needs at least one hypothesis");
+    return;
+  }
+  let block, rollback;
+  if (cbMode === "new") {
+    if (!cbConcl.length) {
+      showError("state the conclusion the block will prove");
+      return;
+    }
+    block = { rule: document.getElementById("cb-rule").value,
+              branches: [{ hyps: cbHyps.slice(), moves: [] }],
+              conclusion: cbConcl.slice(), open: true };
+    const target = currentMoveList();
+    target.push(block);
+    rollback = () => target.pop();
+  } else {
+    block = openBlock();
+    if (!block) { hideCaseBuilder(); return; }
+    block.branches.push({ hyps: cbHyps.slice(), moves: [] });
+    rollback = () => block.branches.pop();
+  }
+  const res = await postPlay(cur.n, moves);
+  const ent = responseEntryFor(res, block);
+  if (ent && ent.ok &&
+      (ent.branches || []).length === block.branches.length) {
+    hideCaseBuilder();
+    saveProgress();
+    afterResult(res, null);
+  } else {
+    rollback();
+    afterResult(res, ent && ent.error ? ent.error : "refused");
+  }
+}
+
+async function closeBlock() {
+  const b = openBlock();
+  if (!b) return;
+  b.open = false;
+  const res = await postPlay(cur.n, moves);
+  const ent = res.moves[res.moves.length - 1];
+  if (ent && ent.ok && !ent.open) {
+    saveProgress();
+    afterResult(res, null);
+  } else {
+    b.open = true;  // refused: keep the block open, show why
+    afterResult(res, ent ? ent.error : "refused");
   }
 }
 
@@ -398,18 +677,64 @@ function showError(err) {
     div.textContent = String(err);
 }
 
-function renderMoves() {
-  const div = document.getElementById("moves");
-  div.innerHTML = "";
-  if (!lastResult) return;
-  for (const m of lastResult.moves) {
+function renderMoveList(div, local, entries, depth) {
+  const n = Math.min(local.length, entries.length);
+  for (let k = 0; k < n; k++) {
+    const lm = local[k], m = entries[k];
     if (!m.ok) continue;
     const row = document.createElement("div");
     row.className = "mv";
-    const args = (moves[m.n - 1].args || []).join(" ");
+    row.style.marginLeft = (depth * 18) + "px";
     const head = document.createElement("span");
     head.className = "rule";
-    head.textContent = `${m.n}. ${m.rule} ${args}`;
+    if (lm.rule === "by_contra" || lm.rule === "by_cases") {
+      head.textContent = `${m.n}. ${lm.rule}${m.open ? " (open)" : ""}`;
+      row.appendChild(head);
+      for (const f of (m.open ? lm.conclusion : (m.added || []))) {
+        const s = document.createElement("span");
+        s.className = "fact";
+        s.textContent = (m.open ? "⟹ " : "") + factEnglish(f);
+        row.appendChild(s);
+      }
+      div.appendChild(row);
+      const breps = m.branches || [];
+      lm.branches.forEach((br, bi) => {
+        const brep = breps[bi];
+        const bh = document.createElement("div");
+        bh.className = "mv";
+        bh.style.marginLeft = ((depth + 1) * 18) + "px";
+        const bhHead = document.createElement("span");
+        bhHead.className = "rule";
+        bhHead.textContent = `case ${bi + 1}: suppose`;
+        bh.appendChild(bhHead);
+        for (const f of br.hyps) {
+          const s = document.createElement("span");
+          s.className = "fact";
+          s.textContent = factEnglish(f);
+          bh.appendChild(s);
+        }
+        if (brep) {
+          const st = document.createElement("span");
+          if (brep.closed) {
+            st.textContent = " — closes ✓";
+            st.style.color = "#1c5e0f";
+          } else if (lm.rule === "by_contra" &&
+                     brep.branch_contradictory) {
+            st.textContent = " — contradictory ✓";
+            st.style.color = "#1c5e0f";
+          } else if (lm.rule === "by_cases" && brep.branch_goal_reached) {
+            st.textContent = " — conclusion holds ✓";
+            st.style.color = "#1c5e0f";
+          }
+          bh.appendChild(st);
+        }
+        div.appendChild(bh);
+        if (brep && brep.moves)
+          renderMoveList(div, br.moves, brep.moves, depth + 2);
+      });
+      continue;
+    }
+    head.textContent = `${m.n}. ${m.rule} ${(lm.args || []).join(" ")}`;
     row.appendChild(head);
     for (const f of m.added) {
       const s = document.createElement("span");
@@ -419,6 +744,13 @@ function renderMoves() {
     }
     div.appendChild(row);
   }
+}
+
+function renderMoves() {
+  const div = document.getElementById("moves");
+  div.innerHTML = "";
+  if (!lastResult) return;
+  renderMoveList(div, moves, lastResult.moves, 0);
 }
 
 function afterResult(res, err) {
@@ -438,11 +770,13 @@ function afterResult(res, err) {
   } else {
     banner.style.display = "none";
   }
+  updateCaseBar();
+  updateBranchStatus();
 }
 
 async function submitMove() {
   const rule = document.getElementById("rule-select").value;
-  const args = [...document.querySelectorAll(".arg-in")]
+  const args = [...document.querySelectorAll("#args-table .arg-in")]
     .map(i => i.value.trim());
   const bindings = {};
   const bindIns = [...document.querySelectorAll(".bind-in")];
@@ -453,22 +787,46 @@ async function submitMove() {
       if (i.value.trim()) bindings[i.dataset.base] = i.value.trim();
   }
   const mv = { rule, args, bindings };
-  const res = await postPlay(cur.n, moves.concat([mv]));
-  const lastM = res.moves[res.moves.length - 1];
-  if (lastM && lastM.ok && res.moves.length === moves.length + 1) {
-    moves.push(mv);
+  const target = currentMoveList();
+  target.push(mv);
+  const res = await postPlay(cur.n, moves);
+  const rl = currentResultList(res);
+  const lastM = rl[rl.length - 1];
+  if (lastM && lastM.ok && rl.length === target.length) {
     saveProgress();
     afterResult(res, null);
     renderRuleInputs();  // fresh prefills for the next move
   } else {
     // refused: keep the move list unchanged, show the error in plain words
-    afterResult(res, lastM ? lastM.error : "refused");
+    target.pop();
+    const outer = res.moves[res.moves.length - 1];
+    afterResult(res, lastM && lastM.error ? lastM.error
+        : (outer && outer.error) || "refused");
   }
 }
 
 async function undo() {
-  if (!moves.length) return;
-  moves.pop();
+  // pop from the deepest open block's current case (an empty last case
+  // is dropped; a block with one empty case is removed whole), else
+  // from the top level
+  let list = moves, parent = null, block = null;
+  for (;;) {
+    const b = openBlockAt(list);
+    if (!b) break;
+    parent = list;
+    block = b;
+    list = b.branches[b.branches.length - 1].moves;
+  }
+  if (!block) {
+    if (!moves.length) return;
+    moves.pop();
+  } else if (list.length) {
+    list.pop();
+  } else if (block.branches.length > 1) {
+    block.branches.pop();
+  } else {
+    parent.pop();
+  }
   saveProgress();
   const res = await postPlay(cur.n, moves);
   afterResult(res, null);
@@ -489,12 +847,6 @@ function renderPropList() {
     item.dataset.n = e.n;
     const tick = p.solved[e.n] ? '<span class="tick">✓</span>' : "";
     item.innerHTML = `${tick}${e.title}`;
-    if (CASE_PROPS.has(e.n)) {
-      const note = document.createElement("span");
-      note.className = "casenote";
-      note.textContent = "needs a case move, coming next";
-      item.appendChild(note);
-    }
     if (unlocked) item.onclick = () => selectProp(i);
     div.appendChild(item);
   });
@@ -503,13 +855,10 @@ function renderPropList() {
 async function selectProp(i) {
   cur = catalogue[i];
   const p = loadProgress();
-  moves = (p.moves[cur.n] || []).map(m => ({
-    rule: m.rule, args: m.args || [], bindings: m.bindings || {},
-  }));
+  moves = JSON.parse(JSON.stringify(p.moves[cur.n] || []));
+  hideCaseBuilder();
   document.getElementById("prop-title").textContent = cur.title;
   document.getElementById("statement").textContent = cur.statement;
-  document.getElementById("case-note").style.display =
-    CASE_PROPS.has(cur.n) ? "block" : "none";
   renderPropList();
   renderMovePanel();
   const res = await postPlay(cur.n, moves);
@@ -520,6 +869,14 @@ async function selectProp(i) {
 
 document.getElementById("btn-do").onclick = submitMove;
 document.getElementById("btn-undo").onclick = undo;
+document.getElementById("btn-suppose").onclick = () => showCaseBuilder("new");
+document.getElementById("btn-next-case").onclick = () =>
+  showCaseBuilder("next");
+document.getElementById("btn-close-block").onclick = closeBlock;
+document.getElementById("cb-begin").onclick = beginCase;
+document.getElementById("cb-cancel").onclick = hideCaseBuilder;
+wireFactBuilder("cb-hyps", cbHyps, "add hypothesis");
+wireFactBuilder("cb-concl", cbConcl, "add conclusion");
 document.getElementById("rule-select").onchange = renderRuleInputs;
 document.getElementById("toggle-aux").onchange = () => draw();
 document.getElementById("reset-progress").onclick = ev => {
