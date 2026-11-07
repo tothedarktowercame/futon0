@@ -507,9 +507,9 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
             # repair ONLY when such a derivation was found and replayed.
             # I.10 step 6 (intersection_lines CD AB) decision: it stays
             # INVALID with the missing premise — its gap (intersects_ll
-            # CD AB) is closed in Lean by a by_contra case split whose
-            # branch cites proposition_7 and in the engine by new lines
-            # plus by_contra (replay steps 5-13); that is a proof tactic
+            # CD AB) is closed in Lean by SMT alone (Prop10.lean has no
+            # case split; review fix, claude-9) and in the engine by new
+            # lines plus by_contra (replay steps 5-13); that is a proof tactic
             # with new objects, not a fact-only forward derivation, so no
             # repair exists and "undecided" would claim we still might
             # find one in this search space, which we cannot.

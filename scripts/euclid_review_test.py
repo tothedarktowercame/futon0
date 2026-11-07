@@ -297,8 +297,8 @@ def test_i11_full_engine_replay_all_valid():
 def test_i10_lean_cited_steps_step6_stays_invalid():
     """(b) I.10's Lean proof, Lean-cited steps only (P-euclid-review-smt-
     repair): step 6 (intersection_lines CD AB) stays INVALID. Decision:
-    its gap (intersects_ll CD AB) is closed in Lean by a by_contra case
-    split whose branch cites proposition_7, and in the engine by the
+    its gap (intersects_ll CD AB) is closed in Lean by SMT alone (no case
+    split in Prop10.lean), and in the engine by the
     by_contra at replay step 12 plus intersection_lines_opposing — a proof
     tactic with case splits and new lines, NOT a fact-only forward
     derivation, so no repair exists and the firm rule (never valid without
