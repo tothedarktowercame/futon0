@@ -1791,3 +1791,34 @@ def test_triple_incidence_2_needs_the_opposing_sides():
     eng.apply_step(s, 1, "triple_incidence_2",
                    ("L", "M", "N", "o", "p", "q", "r"), {})
     assert s.has(("same_side", "p", "q", "N"))
+
+
+def test_prop13_exclusion_really_removes_straight_angle():
+    """Review (claude-9): with the exclusion the hypotheses alone do NOT
+    entail the goal, and the excluded rule's function is never called."""
+    X = {"straight_angle [SMT-bridge]"}
+    s, _ = eng.replay(eng.PROP13_HYPS_DATA, [], [], exclude_rules=X)
+    assert not eng._fact_holds(s, eng.PROP13_GOAL)
+    orig = eng.r_straight_angle
+    saved = list(eng.FORWARD_RULES)
+
+    def boom(_s):
+        raise AssertionError("straight_angle called despite exclusion")
+    eng.FORWARD_RULES[:] = [(n, boom if f is orig else f) for n, f in saved]
+    try:
+        eng.replay(eng.PROP13_HYPS_DATA, eng.PROP13_STEPS_DATA,
+                   [eng.PROP13_GOAL], exclude_rules=X)
+    finally:
+        eng.FORWARD_RULES[:] = saved
+
+
+def test_prop13_branch1_without_perpendicular_if_refused():
+    """Review (claude-9): Lean's first branch (∠c:b:a = ∠a:b:d) needs
+    perpendicular_if; with it removed the branch does not entail the sum
+    and the whole by_cases is refused."""
+    import copy
+    st = copy.deepcopy(eng.PROP13_STEPS_DATA)
+    st[0][1][0] = (st[0][1][0][0], [])
+    with pytest.raises(eng.ByCasesFailure):
+        eng.replay(eng.PROP13_HYPS_DATA, st, [eng.PROP13_GOAL],
+                   exclude_rules={"straight_angle [SMT-bridge]"})
