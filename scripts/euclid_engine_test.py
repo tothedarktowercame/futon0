@@ -691,6 +691,32 @@ def test_by_contra_conclusion_reaches_closure():
     assert eng.la_entails_eq_ang(s.la, "e", "c'", "b'", "e", "d", "b'")
 
 
+def test_replay_fact_set_footprints():
+    """Speed work on the closure/FM internals must not change what a replay
+    derives: (fact count, constraint count) per proposition, verified
+    unchanged across the engine-speed commits by sorted full-fact-dump
+    comparison (I.1-I.9, dumps identical before/after)."""
+    import io, contextlib, sys
+    expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
+                "5": (1432, 640), "6": (41, 11), "7": (113, 26),
+                "8": (210, 82), "9": (236, 93)}
+    got = {}
+    old_argv = sys.argv
+    try:
+        for p in sorted(expected):
+            buf = io.StringIO()
+            sys.argv = ["euclid_engine.py", p]
+            with contextlib.redirect_stdout(buf):
+                eng.main()
+            line = [l for l in buf.getvalue().splitlines() if "facts" in l][-1]
+            nf = int(line.split("'facts': ")[1].split(",")[0])
+            nc = int(line.split("'constraints': ")[1].split(",")[0])
+            got[p] = (nf, nc)
+    finally:
+        sys.argv = old_argv
+    assert got == expected, got
+
+
 # --- counterexample tests for the three new [SMT-bridge] rules ------------
 
 

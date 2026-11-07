@@ -61,8 +61,31 @@ def len_atom(a, b):
 
 def norm(coeffs, const):
     """Normalize a linear form to a tuple of (sorted) (atom, coeff) pairs + const."""
-    items = tuple(sorted((a, c) for a, c in coeffs.items() if c != 0))
+    n = len(coeffs)
+    if n > 2:
+        items = tuple(sorted((a, c) for a, c in coeffs.items() if c != 0))
+    elif n == 2:
+        # fast paths (the overwhelmingly common FM cases): 0/1 items need no
+        # sort at all, 2 items need only a comparison — sorted() here was
+        # 7.7M calls in the search profile
+        it = iter(coeffs.items())
+        (a1, c1), (a2, c2) = next(it), next(it)
+        if c1 == 0 and c2 == 0:
+            items = ()
+        elif c1 == 0:
+            items = ((a2, c2),)
+        elif c2 == 0 or a1 < a2:
+            items = ((a1, c1), (a2, c2)) if c2 != 0 else ((a1, c1),)
+        else:
+            items = ((a2, c2), (a1, c1))
+    elif n == 1:
+        items = tuple((a, c) for a, c in coeffs.items() if c != 0)
+    else:
+        items = ()
     return items, const
+
+
+_ENT_GLOBAL = {}
 
 
 class LinearArithmetic:
@@ -70,14 +93,22 @@ class LinearArithmetic:
 
     def __init__(self):
         self.rows = []  # each: (norm-items, const, op)
+        # entailment memo, keyed (row count, query). Sound per store because
+        # rows are append-only, so within one store's lifetime a given row
+        # count always names the same row list. Copies/snapshots get their
+        # own fresh dict: their rows diverge from the parent's from then on.
+        self._ent = {}
 
     def add(self, coeffs, const, op):
         if op == ">":
             coeffs, const, op = {k: -v for k, v in coeffs.items()}, -const, "<"
         elif op == ">=":
             coeffs, const, op = {k: -v for k, v in coeffs.items()}, -const, "<="
-        # rows are stored as: sum(coeff*atom) + const ~ 0
-        items, c = norm(coeffs, -Fraction(const))
+        # rows are stored as: sum(coeff*atom) + const ~ 0 (consts stay int
+        # when they are ints: int arithmetic is exact and cheaper than
+        # Fraction, and Fraction(n) == n for hashing)
+        items, c = norm(coeffs, -const if type(const) is int
+                        else -Fraction(const))
         if not items:
             ok = (c == 0) if op == "=" else ((c <= 0) if op == "<=" else (c < 0))
             return ok
@@ -88,7 +119,41 @@ class LinearArithmetic:
 
     def entails(self, coeffs, const, op):
         """Is `sum coeffs*atom ~ const` entailed? Decided by checking
-        satisfiability of the store plus the negation (Fourier-Motzkin)."""
+        satisfiability of the store plus the negation (Fourier-Motzkin).
+        Memoised per store on (row count, query); rows only grow. A second,
+        global memo keyed on the full row content catches the repeats that
+        cross state boundaries (search clones share row prefixes)."""
+        if op in (">", ">="):
+            coeffs, const, op = ({k: -v for k, v in coeffs.items()}, -const,
+                                 "<" if op == ">" else "<=")
+        q = (tuple(sorted((a, c) for a, c in coeffs.items() if c != 0)),
+             const, op)
+        key = (len(self.rows), q)
+        hit = self._ent.get(key)
+        if hit is not None:
+            return hit
+        gkey = (tuple(self.rows), q)
+        hit = _ENT_GLOBAL.get(gkey)
+        if hit is not None:
+            self._ent[key] = hit
+            return hit
+        # direct single-row witness: if the store contains this very row the
+        # entailment holds trivially (an O(R) scan beats a Fourier-Motzkin
+        # run; r_classify's radii comparisons hit this constantly)
+        items, c = norm(coeffs, -Fraction(const))
+        if (items, c, op) in self.rows or \
+                (op == "<=" and (items, c, "=") in self.rows):
+            self._ent[key] = True
+            _ENT_GLOBAL[gkey] = True
+            return True
+        r = self._entails_run(coeffs, const, op)
+        self._ent[key] = r
+        if len(_ENT_GLOBAL) > 500000:
+            _ENT_GLOBAL.clear()
+        _ENT_GLOBAL[gkey] = r
+        return r
+
+    def _entails_run(self, coeffs, const, op):
         if op in ("=",):
             negs = [(coeffs, const, "<"), ({k: -v for k, v in coeffs.items()}, -const, "<")]
         elif op in ("<", "<="):
@@ -110,7 +175,8 @@ class LinearArithmetic:
 
 
 def _row_of(coeffs, const, op):
-    items, c = norm(coeffs, -Fraction(const))
+    items, c = norm(coeffs, -const if type(const) is int
+                    else -Fraction(const))
     return (items, c, op)
 
 
@@ -126,6 +192,17 @@ class FMTooLarge(Exception):
     """Fourier-Motzkin elimination grew past its row limit: undecided."""
 
 
+def _exdiv(a, b):
+    """Exact division that stays int when it can (int/int `/` would be a
+    float, and float cancellation once manufactured a false unsat)."""
+    if type(a) is int and type(b) is int and a % b == 0:
+        return a // b
+    return a / b
+
+
+_FM_CONV_CACHE = {}
+
+
 def _fm_sat(rows):
     """Fourier-Motzkin satisfiability over rational linear constraints.
     All arithmetic is exact: coefficients and constants are coerced to
@@ -133,31 +210,27 @@ def _fm_sat(rows):
     once produced floats, and float cancellation manufactured rows like
     x = 0 that contradicted x > 0 — a false 'unsat' that made every
     entailment hold vacuously; regression: euclid_search_test.py)."""
-    def frac(x):
-        return x if isinstance(x, Fraction) else Fraction(x)
-    rows = [(tuple((at, frac(co)) for at, co in items), frac(c), op)
-            for items, c, op in rows]
-    rows = list(rows)
-    # equalities: eliminate by substitution
-    changed = True
-    while changed:
-        changed = False
-        for i, (items, c, op) in enumerate(rows):
-            if op == "=":
-                var = items[0][0]
-                co = dict(items)
-                if co[var] != 1:
-                    div = co[var]
-                    co = {k: v / div for k, v in co.items()}
-                    c = c / div
-                co.pop(var)
-                rows = [r for j, r in enumerate(rows) if j != i]
-                # var + sum(co) + c = 0  =>  var = -c - sum(co)
-                rows = _subst_rows(rows, var, {k: -v for k, v in co.items()}, -c)
-                if rows is None:
-                    return False
-                changed = True
-                break
+    conv = _FM_CONV_CACHE
+    out_rows = []
+    for row in rows:
+        r2 = conv.get(row)
+        if r2 is None:
+            items, c, op = row
+            # exactness: ints stay ints (int arithmetic is exact and 3x
+            # faster than Fraction); anything else must become a Fraction
+            r2 = (tuple((at, co if type(co) in (int, Fraction) else Fraction(co))
+                        for at, co in items),
+                  c if type(c) in (int, Fraction) else Fraction(c), op)
+            conv[row] = r2
+        out_rows.append(r2)
+    rows = out_rows
+    # equalities: eliminate by substitution. An atom index sends each
+    # substitution only to the rows that mention the variable (the old
+    # rescan-from-zero pass visited every row per equality: most of the
+    # I.5 replay's runtime).
+    rows = _elim_equalities(rows)
+    if rows is None:
+        return False
     # inequalities: eliminate variables one at a time
     while True:
         vars_ = sorted({a for items, _, _ in rows for a, _ in items})
@@ -184,11 +257,11 @@ def _fm_sat(rows):
                 # combined: S1/a1 + S2/a2 <= 0
                 co = {}
                 for at, v in i1:
-                    co[at] = co.get(at, 0) + v / a1
+                    co[at] = co.get(at, 0) + _exdiv(v, a1)
                 for at, v in i2:
-                    co[at] = co.get(at, 0) + v / a2
+                    co[at] = co.get(at, 0) + _exdiv(v, a2)
                 strict = op1 == "<" or op2 == "<"
-                new.append(_row_of(co, -(c1 / a1 + c2 / a2),
+                new.append(_row_of(co, -(_exdiv(c1, a1) + _exdiv(c2, a2)),
                                    "<" if strict else "<="))
         if len(new) > 400:
             # Too large to decide. Raising (rather than answering "sat")
@@ -199,6 +272,77 @@ def _fm_sat(rows):
         rows = new
 
 
+def _subst_one(row, var, sub_co, sub_c):
+    """Substitute var in one row; None = unsat constant, () = drop row,
+    else the substituted row."""
+    items, c, op = row
+    d = dict(items)
+    v = d.pop(var)
+    for at, w in sub_co.items():
+        nw = d.get(at, 0) + v * w
+        if nw:
+            d[at] = nw
+        else:
+            d.pop(at, None)
+    c = c + v * sub_c
+    items2, c2 = norm(d, c)
+    if items2:
+        return (items2, c2, op)
+    return None if not _check_const(c2, op) else ()
+
+
+def _elim_equalities(rows):
+    """Eliminate all equality rows by substitution, choosing each equality's
+    first (sorted) atom as its variable — same choice the old rescan loop
+    made. Returns the surviving inequality rows, or None for unsat."""
+    table = {}
+    idx = {}
+    nid = 0
+    if not any(op == "=" for _, _, op in rows):
+        return list(rows)  # nothing to eliminate: skip the index build
+    for r in rows:
+        table[nid] = r
+        for at, _ in r[0]:
+            idx.setdefault(at, set()).add(nid)
+        nid += 1
+    queue = [i for i, r in table.items() if r[2] == "="]
+    qi = 0
+    while qi < len(queue):
+        i = queue[qi]
+        qi += 1
+        row = table.pop(i, None)
+        if row is None:
+            continue
+        for at, _ in row[0]:
+            idx[at].discard(i)
+        items, c, _op = row
+        co = dict(items)
+        var = items[0][0]
+        div = co.pop(var)
+        if div != 1:
+            co = {k: _exdiv(v, div) for k, v in co.items()}
+            c = _exdiv(c, div)
+        # var + sum(co) + c = 0  =>  var = -c - sum(co)
+        sub_co = {k: -v for k, v in co.items()}
+        sub_c = -c
+        for j in list(idx.get(var, ())):
+            r = table.pop(j)
+            for at, _ in r[0]:
+                idx[at].discard(j)
+            nr = _subst_one(r, var, sub_co, sub_c)
+            if nr is None:
+                return None
+            if nr == ():
+                continue
+            table[nid] = nr
+            for at, _ in nr[0]:
+                idx.setdefault(at, set()).add(nid)
+            if nr[2] == "=":
+                queue.append(nid)
+            nid += 1
+    return list(table.values())
+
+
 def _subst_rows(rows, var, sub_co, sub_c):
     """Substitute var = sum(sub_co) + sub_c in all rows. sub_co: dict.
     A row v*var + S + c ~ 0 becomes v*(sub_co) + S + (c + v*sub_c) ~ 0.
@@ -206,16 +350,26 @@ def _subst_rows(rows, var, sub_co, sub_c):
     previous substitution makes sub_c nonzero, i.e. exactly in multi-step
     substitution chains; replay constants were all 0, so it hid until the
     search layered circle equalities. Regression: euclid_search_test.py
-    test_engine_regression_no_line_names_as_points.)"""
+    test_engine_regression_no_line_names_as_points.)
+    Rows not mentioning var pass through untouched (they are already in
+    canonical norm form — re-normalising them was 4.4M sorted() calls in
+    the I.5 replay)."""
     out = []
-    for items, c, op in rows:
-        co = dict(items)
-        if var in co:
-            v = co.pop(var)
-            for at, w in sub_co.items():
-                co[at] = co.get(at, 0) + v * w
-            c = c + v * sub_c
-        items2, c2 = norm(co, c)
+    for row in rows:
+        items, c, op = row
+        d = dict(items)
+        if var not in d:
+            out.append(row)
+            continue
+        v = d.pop(var)
+        for at, w in sub_co.items():
+            nw = d.get(at, 0) + v * w
+            if nw:
+                d[at] = nw
+            else:
+                d.pop(at, None)
+        c = c + v * sub_c
+        items2, c2 = norm(d, c)
         if items2:
             out.append((items2, c2, op))
         elif not _check_const(c2, op):
@@ -440,8 +594,15 @@ def r_classify(s):
         if not witnesses:
             continue
         w = witnesses[0]
+        # Entailments over atoms absent from every row can only be vacuous
+        # (an unsat store entails everything); the store-unsat case is what
+        # close() early-stops for, so skip those points (three Fourier-Motzkin
+        # runs per unrelated point was most of the search's closure cost).
+        live = {at for items, _, _ in s.la.rows for at, _ in items}
         for p in _all_points(s):
             if any(s.has((k, p, alpha)) for k in ("on_circle", "inside", "outside")):
+                continue
+            if len_atom(o, p) not in live or len_atom(o, w) not in live:
                 continue
             if la_entails_eq(s.la, o, p, o, w):
                 yield (("on_circle", p, alpha),
@@ -457,12 +618,15 @@ def r_classify(s):
 def r_pos_neq(s):
     # Metric.lean:21,25 — |a-b| > 0 ⇒ a ≠ b.
     la = s.la
+    live = {at for items, _, _ in la.rows for at, _ in items}
     for a in _all_points(s):
         for b in _all_points(s):
             if a == b or s.has(("neq", a, b)) or s.has(("neq", b, a)):
                 continue
             if a > b:
                 continue
+            if len_atom(a, b) not in live:
+                continue  # no row mentions |a-b|: only vacuous (store-unsat)
             if la.entails({len_atom(a, b): 1}, 0, ">"):
                 for pair in ((a, b), (b, a)):
                     if not s.has(("neq", *pair)):
@@ -1009,6 +1173,9 @@ def _all_points(s):
     (classify/poc_onlyif) and could make the store inconsistent, after which
     every entailment holds vacuously. Regression: see euclid_search_test.py
     test_engine_regression_no_line_names_as_points."""
+    c = getattr(s, "_apc", None)
+    if c is not None and c[0] == len(s.facts):
+        return c[1]
     pts = set()
     for fact in s.facts:
         k = fact[0]
@@ -1038,6 +1205,7 @@ def _all_points(s):
         elif k in ("subang",):
             pts.update(fact[1][1:])
         # intersects_cc, neq_line: circle/line names only
+    s._apc = (len(s.facts), pts)
     return pts
 
 
