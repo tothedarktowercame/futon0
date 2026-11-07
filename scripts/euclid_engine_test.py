@@ -823,6 +823,37 @@ def test_la_entails_gt_sum_len_bad_cases():
     assert not eng.la_entails_gt_sum_len(s.la, "b", "a", "a", "c", "b", "c")
 
 
+def test_proposition_20_citation_fires():
+    """The cited lemma makes exactly the _gt_sum_len conclusion (the
+    theorem PROP20_STEPS_DATA proves): the strict row plus the
+    gt_sum_len fact form."""
+    s = eng.State()
+    for f, w in eng.PROP20_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_20",
+                   ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert eng.la_entails_gt_sum_len(s.la, "b", "a", "a", "c", "b", "c")
+    assert s.has(("gt_sum_len", "b", "a", "a", "c", "b", "c"))
+
+
+def test_proposition_20_citation_refused_degenerate():
+    """Cited with c ON AB (degenerate triangle — the formTriangle
+    premise not_on_line c AB fails) proposition_20 is refused: the
+    conclusion |b-a| + |a-c| > |b-c| is false for collinear c between
+    a and b (equality holds there)."""
+    s = eng.State()
+    for f, w in eng.PROP20_HYPS_DATA:
+        if f == ("not_on_line", "c", "AB"):
+            f = ("on_line", "c", "AB")
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_20",
+                       ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert ei.value.premise == ("not_on_line", "c", "AB")
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))

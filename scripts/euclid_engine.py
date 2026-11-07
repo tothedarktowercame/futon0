@@ -1881,6 +1881,28 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, AB, BC, AC: [
             (None, [("_gt_len", a, c, a, b)])],
     },
+    # Book/Prop20.lean:6 — proposition_20 verbatim (triangle inequality):
+    #   ∀ (a b c : Point) (AB BC AC : Line),
+    #   formTriangle a b c AB BC AC → |(b─a)| + |(a─c)| > |(b─c)|
+    # Cited as a lemma (the engine's own I.20 replay, PROP20_STEPS_DATA,
+    # is the proof — extend_point_longer + proposition_3 + proposition_5'
+    # + sum_angles_onlyif + proposition_19). formTriangle destructured as
+    # at proposition_19. The conclusion is the metric tuple _gt_sum_len:
+    # the strict LA row |b─a| + |a─c| − |b─c| > 0 plus the gt_sum_len
+    # fact form (apply_step's make loop handles it). No fresh objects,
+    # forward-style citation.
+    "proposition_20": {
+        "cite": "Book/Prop20.lean:6",
+        "args": ("a", "b", "c", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, AB, BC, AC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB)],
+        "make": lambda s, a, b, c, AB, BC, AC: [
+            (None, [("_gt_sum_len", b, a, a, c, b, c)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
     #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
     # Rendered as the POSITIVE fact opposing_sides a c L (same rendering as
