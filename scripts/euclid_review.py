@@ -5,8 +5,12 @@ Like a Go engine reviewing a game: for each step of a construction, report
 (1) valid or invalid (and why), and (2) progress or no progress towards the
 goal (with the numbers, not only the label).
 
-- valid: euclid_engine.apply_step succeeds on the state so far. Invalid: it
-  raises MissingPremise (the missing fact is named) or another engine error.
+- valid: euclid_engine.apply_step succeeds on the state so far — directly,
+  or after a fact-only repair (depth ≤ 2, bindings {}) standing in for
+  Lean's SMT; repaired rows are valid with progress "valid-needs-smt" and
+  their why names the helper step(s). Invalid: apply_step raises
+  MissingPremise (the missing fact is named) that no repair closes, or
+  another engine error.
   After an invalid step the remaining steps are reviewed against the state
   WITHOUT the invalid step (later steps may still be fine); the row says so.
 - distance d(state): the depth at which a breadth-first search — the same
@@ -164,8 +168,234 @@ def _missing_why(premise):
     return f"missing premise: {premise}"
 
 
+# --- fact-only premise repair (P-euclid-review-smt-repair) ------------------
+#
+# Lean's SMT closes small FACT premises of cited rules (e.g. w ≠ u from
+# between u w v in I.11) that the engine only derives by citing a forward
+# rule explicitly. When a reviewed step fails with a missing FACT premise,
+# search for a short sequence of FACT-ONLY engine moves (depth ≤ 2, seconds
+# not minutes) after which the step applies; if found, the step is valid
+# with progress label "valid-needs-smt" and the state carries the helper
+# facts forward — exactly what Lean's state has after its SMT step.
+#
+# Fact-only means the rule's make introduces no fresh object (every make
+# entry has base None). The candidate move set (from CONSTRUCTIONS):
+#   between_symm_parts          neq / not_between from a between
+#   intersection_lines_opposing intersects_ll from opposing_sides
+#   intersection_circle_line_1  intersects_lc from opposing_sides
+#   pasch_4                     between from opposing_sides
+#   perpendicular_if            right_ang
+#   sum_angles_onlyif           sum_ang
+#   angle_pair_on_line          eq_ang along a line
+#   assert_point_eq_on_ray      peq
+#   assert_point_eq_angle       peq
+# Excluded: proposition_7 derives ("false",) — repairing by explosion is
+# not what Lean's SMT does; proposition_4/5/5'/8 are fact-only but metric
+# (8–12 arguments, congruence value) — no cheap candidate set, and the
+# observed SMT gaps are diagrammatic. A repair NEVER creates an object
+# (bindings are {} throughout), so a step whose gap is a missing object
+# stays invalid.
+REPAIR_RULES = [
+    "between_symm_parts",
+    "intersection_lines_opposing",
+    "intersection_circle_line_1",
+    "pasch_4",
+    "perpendicular_if",
+    "sum_angles_onlyif",
+    "angle_pair_on_line",
+    "assert_point_eq_on_ray",
+    "assert_point_eq_angle",
+]
+
+REPAIR_MAX_DEPTH = 2
+REPAIR_NODE_BUDGET = 200
+REPAIR_TIME_BUDGET = 2.0
+
+
+def _is_fact_premise(p):
+    """A MissingPremise premise that repair may supply: a fact tuple, not
+    a ("fresh", name) binding clash, not an ("entail", ...) arithmetic
+    failure, not the "(unknown rule)" string."""
+    return (isinstance(p, tuple) and len(p) >= 2
+            and isinstance(p[0], str) and p[0] not in ("fresh", "entail"))
+
+
+def _on_line_index(s):
+    on = {}
+    for f in s.facts:
+        if f[0] == "on_line":
+            on.setdefault(f[2], set()).add(f[1])
+    return on
+
+
+def _repair_candidates(s, rname):
+    """Rough candidate argument tuples for a fact-only repair rule, drawn
+    from facts already in the state (premise filtering happens in
+    repair_premise, mirroring srch.legal_moves)."""
+    pts, lns, crs = srch.object_kinds(s)
+    facts = sorted(s.facts)
+    if rname == "between_symm_parts":
+        for f in facts:
+            if f[0] == "between":
+                yield (f[1], f[2], f[3])
+    elif rname == "intersection_lines_opposing":
+        for f in facts:
+            if f[0] != "opposing_sides":
+                continue
+            _, a, b, L = f
+            for M in sorted(lns):
+                if s.has(("on_line", a, M)) and s.has(("on_line", b, M)):
+                    yield (a, b, L, M)
+    elif rname == "intersection_circle_line_1":
+        for f in facts:
+            if f[0] != "opposing_sides":
+                continue
+            _, a, b, L = f
+            for al in sorted(crs):
+                if s.has(("not_outside", a, al)) and \
+                        s.has(("not_outside", b, al)):
+                    yield (a, b, al, L)
+    elif rname == "pasch_4":
+        on = _on_line_index(s)
+        for f in facts:
+            if f[0] != "opposing_sides":
+                continue
+            _, a, c, L = f
+            for M in sorted(lns):
+                if M == L or not s.has(("dpl", a, c, M)):
+                    continue
+                for b in sorted(on.get(L, ()) & on.get(M, ())):
+                    yield (a, b, c, L, M)
+    elif rname == "perpendicular_if":
+        for f in facts:
+            if f[0] != "between":
+                continue
+            _, a, c, b = f
+            for L in sorted(lns):
+                if not (s.has(("on_line", a, L))
+                        and s.has(("on_line", b, L))):
+                    continue
+                for d in sorted(pts):
+                    if s.has(("not_on_line", d, L)):
+                        yield (a, b, c, d, L)
+    elif rname == "sum_angles_onlyif":
+        on = _on_line_index(s)
+        ss = [f for f in facts if f[0] == "same_side"]
+        for _, b, d, M in ss:
+            for _, c, d2, L in ss:
+                if d2 != d or L == M or not s.has(("neq_line", L, M)):
+                    continue
+                for a in sorted(on.get(L, ()) & on.get(M, ())):
+                    yield (a, b, c, d, L, M)
+    elif rname == "angle_pair_on_line":
+        on = _on_line_index(s)
+        for L in sorted(lns):
+            P = sorted(on.get(L, ()))
+            off = [p for p in sorted(pts) if s.has(("not_on_line", p, L))]
+            for v in P:
+                for x in P:
+                    if x == v or not s.has(("neq", v, x)):
+                        continue
+                    for u in P:
+                        if u in (v, x) or not s.has(("neq", v, u)):
+                            continue
+                        for z in off:
+                            for w in off:
+                                yield (z, w, v, x, u, L)
+    elif rname == "assert_point_eq_on_ray":
+        on = _on_line_index(s)
+        for L in sorted(lns):
+            P = sorted(on.get(L, ()))
+            for z in P:
+                for x in P:
+                    if x == z:
+                        continue
+                    for y in P:
+                        if y in (x, z):
+                            continue
+                        if s.has(("not_between", x, z, y)):
+                            yield (x, y, z, L)
+    elif rname == "assert_point_eq_angle":
+        on = _on_line_index(s)
+        for f in facts:
+            if f[0] != "same_side":
+                continue
+            _, x, y, L = f
+            P = sorted(on.get(L, ()))
+            for z in P:
+                for w in P:
+                    if w == z or not s.has(("neq", z, w)):
+                        continue
+                    if s.has(("neq", z, x)) and s.has(("neq", z, y)):
+                        yield (x, y, w, z, L)
+
+
+def repair_premise(state, i, rule, args, bindings,
+                   max_depth=REPAIR_MAX_DEPTH, node_budget=REPAIR_NODE_BUDGET,
+                   time_budget=REPAIR_TIME_BUDGET):
+    """BFS over fact-only moves from `state`; returns (helpers, trial) where
+    helpers is a non-empty list of (rule, args) moves (bindings {}) and
+    trial is a clone of `state` with the helpers AND the original step
+    applied — or None when no repair is found in budget. A helper that
+    changes nothing (same dedup key) is skipped: it cannot unblock the
+    step. Seconds, not minutes: the deadline is checked per candidate."""
+    import time as _time
+    t0 = _time.perf_counter()
+
+    def over_budget():
+        return _time.perf_counter() - t0 > time_budget
+
+    def attempt(s):
+        t = srch.clone_state(s)
+        try:
+            eng.apply_step(t, i, rule, args, bindings)
+        except Exception:
+            return None
+        return t
+
+    seen = {srch.state_key(state)}
+    frontier = [(state, ())]
+    nodes = 0
+    while frontier:
+        if nodes >= node_budget or over_budget():
+            return None
+        s, path = frontier.pop(0)
+        nodes += 1
+        if len(path) >= max_depth:
+            continue
+        k0 = srch.state_key(s)
+        for rname in REPAIR_RULES:
+            spec = eng.CONSTRUCTIONS[rname]
+            for cargs in _repair_candidates(s, rname):
+                if over_budget():
+                    return None
+                try:
+                    prems = spec["premises"](s, *cargs)
+                except Exception:
+                    continue
+                if not all(s.has(pf) for pf in prems):
+                    continue
+                s2 = srch.clone_state(s)
+                try:
+                    eng.apply_step(s2, i, rname, cargs, {})
+                except Exception:
+                    continue  # entailment premise failed, or engine error
+                k = srch.state_key(s2)
+                if k == k0 or k in seen:
+                    continue
+                seen.add(k)
+                t = attempt(s2)
+                if t is not None:
+                    return (list(path) + [(rname, cargs)], t)
+                frontier.append((s2, path + ((rname, cargs),)))
+    return None
+
+
 def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
-           time_budget=None):
+           time_budget=None, repair=True,
+           repair_max_depth=REPAIR_MAX_DEPTH,
+           repair_node_budget=REPAIR_NODE_BUDGET,
+           repair_time_budget=REPAIR_TIME_BUDGET):
     """Review `steps` = [(rule, args, bindings?), ...] against proposition
     `prop` (a key of srch.prop_searches()). Returns a report dict.
 
@@ -192,6 +422,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
     n_undecided = 0
     n_engine_errors = 0
     n_blocked = 0
+    n_smt = 0  # steps valid only via a fact-only SMT repair
     unapplied = []  # steps the ENGINE could not apply (error/undecided)
 
     def blocked_row(i, fmt, reason):
@@ -238,6 +469,8 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
             })
             continue
         trial = srch.clone_state(state)
+        smt_helpers = None
+        e_premise = None
         try:
             if rule == "by_contra":
                 eng._by_contra(trial, i, step)
@@ -267,16 +500,37 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
                 n_blocked += 1
                 rows.append(blocked_row(i, fmt, why))
                 continue
-            n_invalid += 1
-            rows.append({
-                "step": i, "rule": fmt,
-                "valid": False, "why": why,
-                "progress": "invalid",
-                "d_before": None, "d_after": None,
-                "state_note": ("step not applied; later steps are reviewed "
-                               "against the state without it"),
-            })
-            continue  # state unchanged
+            # Fact-only premise repair (P-euclid-review-smt-repair): Lean's
+            # SMT closes small fact premises the engine only derives by
+            # citing a forward rule. Repair searches for a fact-only
+            # derivation; the firm rule is that a step is marked valid via
+            # repair ONLY when such a derivation was found and replayed.
+            # I.10 step 6 (intersection_lines CD AB) decision: it stays
+            # INVALID with the missing premise — its gap (intersects_ll
+            # CD AB) is closed in Lean by a by_contra case split whose
+            # branch cites proposition_7 and in the engine by new lines
+            # plus by_contra (replay steps 5-13); that is a proof tactic
+            # with new objects, not a fact-only forward derivation, so no
+            # repair exists and "undecided" would claim we still might
+            # find one in this search space, which we cannot.
+            if repair and _is_fact_premise(e.premise):
+                fixed = repair_premise(state, i, rule, args, bindings,
+                                       repair_max_depth, repair_node_budget,
+                                       repair_time_budget)
+                if fixed is not None:
+                    smt_helpers, trial = fixed
+                    e_premise = e.premise
+            if smt_helpers is None:
+                n_invalid += 1
+                rows.append({
+                    "step": i, "rule": fmt,
+                    "valid": False, "why": why,
+                    "progress": "invalid",
+                    "d_before": None, "d_after": None,
+                    "state_note": ("step not applied; later steps are "
+                                   "reviewed against the state without it"),
+                })
+                continue  # state unchanged
         except eng.FMTooLarge as e:
             n_undecided += 1
             unapplied.append(i)
@@ -317,9 +571,19 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
             label = "progress"
         else:
             label = "no-progress"
+        if smt_helpers is not None:
+            n_smt += 1
+            helper_txt = "; ".join(
+                f"{r} {' '.join(str(x) for x in a)}" for r, a in smt_helpers)
+            premise_txt = " ".join(str(x) for x in e_premise)
+            why = (f"valid; Lean's SMT supplies {premise_txt} "
+                   f"(engine: {helper_txt})")
+            label = "valid-needs-smt"
+        else:
+            why = "apply_step succeeded"
         rows.append({
             "step": i, "rule": fmt,
-            "valid": True, "why": "apply_step succeeded",
+            "valid": True, "why": why,
             "progress": label,
             "d_before": d_before, "d_after": d_after,
         })
@@ -332,6 +596,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
         "undecided_steps": n_undecided,
         "engine_errors": n_engine_errors,
         "blocked_steps": n_blocked,
+        "smt_repairs": n_smt,
         "incomplete": bool(n_undecided or n_engine_errors or n_blocked
                            or dist.errors),
         "distance_move_errors": len(dist.errors),

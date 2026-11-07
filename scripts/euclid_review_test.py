@@ -7,6 +7,7 @@ Run from scripts/: python3 -m pytest euclid_review_test.py -q
 """
 
 import importlib.util
+import time
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location(
@@ -293,14 +294,22 @@ def test_i11_full_engine_replay_all_valid():
     assert rep["remaining_distance"] == 0
 
 
-def test_i10_lean_cited_steps_pinned_wrong_verdict():
-    """(b) CHARACTERIZATION of a verdict that is WRONG: the I.10 Lean proof
-    is certified by Lean, but review marks step 6 invalid because the
-    engine cannot derive intersects_ll CD AB without the engine-only
-    steps (opposing_sides from the by_contra at replay step 12) that the
-    Lean proof gets by SMT. The next packet fixes this (the "valid, needs
-    SMT" class); until then this pins today's behaviour."""
+def test_i10_lean_cited_steps_step6_stays_invalid():
+    """(b) I.10's Lean proof, Lean-cited steps only (P-euclid-review-smt-
+    repair): step 6 (intersection_lines CD AB) stays INVALID. Decision:
+    its gap (intersects_ll CD AB) is closed in Lean by a by_contra case
+    split whose branch cites proposition_7, and in the engine by the
+    by_contra at replay step 12 plus intersection_lines_opposing — a proof
+    tactic with case splits and new lines, NOT a fact-only forward
+    derivation, so no repair exists and the firm rule (never valid without
+    a found derivation) keeps it invalid with the missing premise.
+    "undecided: needs case split" was rejected: it would claim the
+    fact-only search space still might close it, which it cannot.
+    Step 7 then names d, which step 6 would have constructed."""
+    t0 = time.perf_counter()
     rep = rv.review("I.10", I10_LEAN_STEPS, **I10_I11_BUDGET)
+    wall = time.perf_counter() - t0
+    assert wall < 60, f"I.10 Lean-cited review took {wall:.1f}s"
     assert rep["goal_held"] is False
     assert rep["invalid_steps"] == 2
     bad = _row(rep, 6)
@@ -308,25 +317,86 @@ def test_i10_lean_cited_steps_pinned_wrong_verdict():
     assert bad["valid"] is False and bad["progress"] == "invalid"
     assert bad["why"] == "missing premise: ('intersects_ll', 'CD', 'AB')", \
         bad["why"]
+    after = _row(rep, 7)
+    assert after["valid"] is False and after["progress"] == "invalid"
+    assert "uses d" in after["why"] and "before it exists" in after["why"]
     # the steps before it (the Lean-visible prefix) are all valid
     for i in (1, 2, 3, 4, 5):
         assert _row(rep, i)["valid"] is True, (i, _row(rep, i))
 
 
-def test_i11_lean_cited_steps_pinned_wrong_verdict():
-    """(b) CHARACTERIZATION of a verdict that is WRONG: the I.11 Lean proof
-    is certified by Lean, but review marks the very first step invalid:
-    Lean gets w != u from between u w v by SMT (between_symm_parts is one
-    of the engine-only steps the Lean proof never cites), so the engine
-    asks for ('dpl', 'w', 'u', 'AB'). The next packet fixes this; until
-    then this pins today's behaviour."""
+def test_i11_lean_cited_steps_valid_via_smt_repair():
+    """(b) I.11's Lean proof, Lean-cited steps only (P-euclid-review-smt-
+    repair): every step valid, goal_held True. Steps 1-2 are
+    valid-needs-smt: Lean gets w != u, w != v and w != g by SMT from the
+    between facts; the repair replays the engine-only between_symm_parts
+    moves (fact-only, bindings {}) that the Lean proof never cites."""
+    t0 = time.perf_counter()
     rep = rv.review("I.11", I11_LEAN_STEPS, **I10_I11_BUDGET)
-    assert rep["goal_held"] is False
+    wall = time.perf_counter() - t0
+    assert wall < 60, f"I.11 Lean-cited review took {wall:.1f}s"
+    assert rep["invalid_steps"] == 0
+    assert rep["goal_held"] is True
+    first = _row(rep, 1)
+    assert first["rule"].startswith("point_between_points_shorter_than")
+    assert first["valid"] is True
+    assert first["progress"] == "valid-needs-smt"
+    assert "Lean's SMT supplies dpl w u AB" in first["why"]
+    assert "between_symm_parts u w v" in first["why"]
+    second = _row(rep, 2)
+    assert second["valid"] is True
+    assert second["progress"] == "valid-needs-smt"
+    assert "between_symm_parts w g u" in second["why"]
+    for i in range(3, len(I11_LEAN_STEPS) + 1):
+        r = _row(rep, i)
+        assert r["valid"] is True, (i, r)
+        assert r["progress"] != "valid-needs-smt", (i, r)
+    assert rep["smt_repairs"] == 2
+
+
+# -- repair bad cases (P-euclid-review-smt-repair) ----------------------------
+
+def test_repair_never_repairs_a_false_premise():
+    """Bad case (a): the missing premise is FALSE in the state — f is
+    stated off AB (hypothesis), so dpl f u AB is not merely absent, it is
+    contradicted. No fact-only move can add on_line f AB, so the step
+    stays invalid."""
+    rep = rv.review("I.11", [
+        ("point_between_points_shorter_than", ("AB", "f", "u", "w", "v"),
+         {"a": "g"}),
+    ], **I10_I11_BUDGET)
     bad = _row(rep, 1)
-    assert bad["rule"].startswith("point_between_points_shorter_than")
     assert bad["valid"] is False and bad["progress"] == "invalid"
-    assert bad["why"] == "missing premise: ('dpl', 'w', 'u', 'AB')", \
+    assert bad["why"] == "missing premise: ('dpl', 'f', 'u', 'AB')", \
         bad["why"]
+    assert rep["smt_repairs"] == 0
+
+
+def test_repair_never_creates_an_object():
+    """Bad case (b): the student drops I.11's proposition_1 (which makes
+    the equilateral apex f). Repair adds facts, never objects, and f's
+    name is only RESERVED (the h-sm hypothesis not_on_line f AB), so the
+    omission surfaces where f's missing facts are needed: proposition_8's
+    entailment premise |g-f| = |e-f| fails, then perpendicular_if's angle
+    entailment fails. Entailment premises are never repaired (they are
+    arithmetic, not facts), and no fact-only move can conjure the
+    equilateral's equalities, so both steps stay invalid and the goal is
+    not reached."""
+    steps = [s for s in I11_LEAN_STEPS if s[0] != "proposition_1"]
+    rep = rv.review("I.11", steps, **I10_I11_BUDGET)
+    p8 = [r for r in rep["steps"] if r["rule"].startswith("proposition_8")]
+    assert len(p8) == 1
+    assert p8[0]["valid"] is False and p8[0]["progress"] == "invalid"
+    assert "entail" in p8[0]["why"], p8[0]["why"]
+    perp = [r for r in rep["steps"]
+            if r["rule"].startswith("perpendicular_if")]
+    assert len(perp) == 1
+    assert perp[0]["valid"] is False
+    assert rep["goal_held"] is False
+    # the repairable prefix is still repaired (repair is per-step), and
+    # nothing past the omitted construction is
+    assert rep["smt_repairs"] == 2
+    assert _row(rep, 1)["progress"] == "valid-needs-smt"
 
 
 def test_i12_still_keyerror():
