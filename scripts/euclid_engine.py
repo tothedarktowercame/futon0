@@ -699,22 +699,27 @@ def r_peq_subst(s):
         if fact[0] != "peq":
             continue
         x, y = fact[1], fact[2]
-        for a in atoms:
-            if a[0] == "len" and x in (a[1], a[2]):
-                other = tuple(y if t == x else t for t in a[1:3])
-                a2 = ("len",) + tuple(sorted(other))
-                marker = ("sublen", a, x, y)
-                if not s.has(marker):
-                    s.la.add({a: 1, a2: -1}, 0, "=")
-                    yield marker, [fact]
-            elif a[0] == "ang" and x in a[1:]:
-                legs, vert = (a[1], a[3]), a[2]
-                sub = tuple(y if t == x else t for t in (legs[0], vert, legs[1]))
-                a2 = ang_atom(*sub)
-                marker = ("subang", a, x, y)
-                if not s.has(marker):
-                    s.la.add({a: 1, a2: -1}, 0, "=")
-                    yield marker, [fact]
+        # both substitution directions: linking rows are needed whichever of
+        # the two names the existing atoms happen to mention (I.8: peq d c'
+        # must rewrite ∠e:c':b' to ∠e:d:b')
+        for src, dst in ((x, y), (y, x)):
+            for a in atoms:
+                if a[0] == "len" and src in (a[1], a[2]):
+                    other = tuple(dst if t == src else t for t in a[1:3])
+                    a2 = ("len",) + tuple(sorted(other))
+                    marker = ("sublen", a, src, dst)
+                    if not s.has(marker):
+                        s.la.add({a: 1, a2: -1}, 0, "=")
+                        yield marker, [fact]
+                elif a[0] == "ang" and src in a[1:]:
+                    legs, vert = (a[1], a[3]), a[2]
+                    sub = tuple(dst if t == src else t
+                                for t in (legs[0], vert, legs[1]))
+                    a2 = ang_atom(*sub)
+                    marker = ("subang", a, src, dst)
+                    if not s.has(marker):
+                        s.la.add({a: 1, a2: -1}, 0, "=")
+                        yield marker, [fact]
 
 
 def r_same_side_not_on_line(s):
@@ -901,6 +906,37 @@ def r_off_line_pair_same_side(s):
                             ("neq", c, d)])
 
 
+def r_peq_subst_diagram(s):
+    # [logic] point equality x = y substitutes into diagrammatic facts:
+    # on_line / not_on_line / dpl (either point slot). Mirrors r_peq_subst,
+    # which substitutes into length/angle atoms. Needed when a proposition
+    # rule's premise names a point that an assert has since identified with
+    # another (I.8: superposition's dpl b' c' BC' vs proposition_7's
+    # dpl d b DB after b' = f).
+    peqs = [f for f in s.facts if f[0] == "peq"]
+    if not peqs:
+        return
+    for f in s.facts:
+        k = f[0]
+        if k in ("on_line", "not_on_line"):
+            x, L = f[1], f[2]
+            for pf in peqs:
+                if pf[1] == x and not s.has((k, pf[2], L)):
+                    yield ((k, pf[2], L), [f, pf])
+                if pf[2] == x and not s.has((k, pf[1], L)):
+                    yield ((k, pf[1], L), [f, pf])
+        elif k == "dpl":
+            for pf in peqs:
+                for old, new in ((pf[1], pf[2]), (pf[2], pf[1])):
+                    for pos in (1, 2):
+                        if f[pos] != old:
+                            continue
+                        t = tuple(new if j == pos else v
+                                  for j, v in enumerate(f))
+                        if t not in s.facts:
+                            yield (t, [f, pf])
+
+
 FORWARD_RULES = [
     ("center_inside_circle [Diagrammatic.lean:28]", r_center_inside),
     ("not_outside [Relations.lean:35]", r_not_outside),
@@ -934,6 +970,7 @@ FORWARD_RULES = [
     ("angle_pos [SMT-bridge]", r_angle_pos),
     ("side_gt_angle_gt [SMT-bridge, Euclid I.18]", r_side_gt_angle_gt),
     ("off_line_pair_same_side [SMT-bridge]", r_off_line_pair_same_side),
+    ("peq_subst_diagram [logic]", r_peq_subst_diagram),
 ]
 
 
@@ -1242,6 +1279,22 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, AB, BC, AC: [
             (None, [("_eq_ang", a, b, c, a, c, b)])],
     },
+    # Book/Prop07.lean:5 — the triangle inequality on a point (SSS falsifies
+    # a second triangle on the same base side). Conclusion False, so cited as
+    # a rule it ends whatever branch applies it (contradictory() reports the
+    # ("false",) fact).
+    "proposition_7": {
+        "cite": "Book/Prop07.lean:5",
+        "args": ("a", "b", "c", "d", "AB", "AC", "CB", "AD", "DB"),
+        "premises": lambda s, a, b, c, d, AB, AC, CB, AD, DB: [
+            ("dpl", a, b, AB), ("dpl", a, c, AC), ("dpl", c, b, CB),
+            ("dpl", a, d, AD), ("dpl", d, b, DB),
+            ("same_side", c, d, AB), ("neq", c, d)],
+        "entail": lambda s, a, b, c, d, AB, AC, CB, AD, DB: [
+            ("eq_len", (a, c, a, d)), ("eq_len", (c, b, d, b))],
+        "make": lambda s, a, b, c, d, AB, AC, CB, AD, DB: [
+            (None, [("false",)])],
+    },
     # SystemE/Theory/Inferences/Transfer.lean:90
     "sum_angles_onlyif": {
         "cite": "Transfer.lean:90",
@@ -1369,6 +1422,10 @@ def contradictory(s):
         sat = None  # undecided: not certified contradictory
     if sat is False:
         return True, ("store-unsat", len(s.la.rows))
+    if s.has(("false",)):
+        # a rule whose conclusion is False (e.g. proposition_7 cited as a
+        # rule): the argument it stands for has reached a contradiction
+        return True, (("false",),)
     for fact in list(s.facts):
         k = fact[0]
         if k == "peq":
@@ -1437,6 +1494,7 @@ def _by_contra(s, i, entry):
         sub = s.copy()
         for f in facts:
             _assume_metric_or_fact(sub, f, "by_contra assumption")
+        close(sub)  # assumptions must be closed before the steps run
         try:
             run_steps(sub, steps, i + 1)
         except MissingPremise as mp:
@@ -1453,6 +1511,7 @@ def _by_contra(s, i, entry):
             continue
         _assume_metric_or_fact(s, c, "by_contra")
         s.facts[c] = ("by_contra", witnesses)
+    close(s)  # conclusions (e.g. peq) must reach their substitution rules
     return {"step": i, "rule": "by_contra",
             "branches": len(branches), "witnesses": witnesses,
             "conclusions": conclusions}
@@ -1490,6 +1549,8 @@ def replay(hyps, steps, verify):
             assert ok, f"final state not contradictory: {w}"
         elif q[0] == "_eq_len":
             assert la_entails_eq(s.la, *q[1:]), f"conclusion not entailed: {q}"
+        elif q[0] == "_eq_ang":
+            assert la_entails_eq_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
         else:
             assert s.has(q), f"conclusion fact missing: {q}"
     report.append({"final": True, "facts": len(s.facts),
@@ -1701,6 +1762,46 @@ PROP7_STEPS_DATA = [
 ]
 
 
+# Book I.8 (Book/Prop08.lean): SSS. Superposition maps triangle (b,c,a) with
+# apex b onto (e, b', c') over base EF (b' is the image of c, c' the image of
+# a). Lean's euclid_assert c' = f is assert_point_eq_on_ray: b' and f are on
+# EF at equal distance and ¬between b' e f ships with the bundle. Lean's
+# by_cases d = g becomes a one-branch by_contra on d ≠ c' citing
+# proposition_7 (its sameSide premise is exactly superposition's
+# c'.sameSide d EF); the conclusion peq d c' then substitutes through the
+# bundle's ∠b:a:c = ∠e:c':b' to give ∠b:a:c = ∠e:d:f.
+PROP8_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("not_on_line", "c", "AB"), "h"),  # formTriangle a b c
+    (("dpl", "d", "e", "DE"), "h"),
+    (("on_line", "e", "EF"), "h"), (("on_line", "f", "EF"), "h"),
+    (("on_line", "f", "DF"), "h"), (("on_line", "d", "DF"), "h"),
+    (("not_on_line", "f", "DE"), "h"),  # formTriangle d e f
+    (("eq_len", "a", "b", "d", "e"), "h"),
+    (("eq_len", "a", "c", "d", "f"), "h"),
+    (("eq_len", "b", "c", "e", "f"), "h"),
+]
+PROP8_STEPS_DATA = [
+    ("superposition", ("b", "c", "a", "e", "f", "d", "BC", "AC", "AB", "EF"),
+     {"b'": "b'", "c'": "c'", "BC'": "CG", "AC'": "EG"}),
+    # Lean's euclid_assert c' = f: b' and f are both on EF, ¬between b' e f
+    # comes with the superposition bundle, and |e-b'| = |e-f| follows from
+    # |b-c| = |e-b'| (bundle) and |b-c| = |e-f| (hypothesis).
+    ("assert_point_eq_on_ray", ("b'", "f", "e", "EF"), {}),
+    # Lean's by_cases d = g: the d ≠ c' case cites proposition_7 on the
+    # SSS triangle (e, f | d, c'), whose sameSide premise is exactly the
+    # superposition's c'.sameSide d EF.
+    ("by_contra", [
+        ([("neq", "d", "c'")], [
+            ("proposition_7", ("e", "f", "d", "c'", "EF", "DE", "DF",
+                               "EG", "CG"), {}),
+        ]),
+    ], [("peq", "d", "c'")]),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -1770,6 +1871,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP7_HYPS_DATA, PROP7_STEPS_DATA,
                             [("false",)])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "8":
+            t0 = time.time()
+            s, rep = replay(PROP8_HYPS_DATA, PROP8_STEPS_DATA,
+                            [("_eq_ang", "b", "a", "c", "e", "d", "f")])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

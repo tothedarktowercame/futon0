@@ -541,6 +541,94 @@ def test_prop7_replay():
     assert rep[-1]["final"]
 
 
+# --- I.8 (Book/Prop08.lean) -------------------------------------------------
+
+
+def test_prop8_replay():
+    """SSS: |ab|=|de|, |ac|=|df|, |bc|=|ef| ⇒ ∠b:a:c = ∠e:d:f."""
+    s, rep = eng.replay(eng.PROP8_HYPS_DATA, eng.PROP8_STEPS_DATA,
+                        [("_eq_ang", "b", "a", "c", "e", "d", "f")])
+    assert eng.la_entails_eq_ang(s.la, "b", "a", "c", "e", "d", "f")
+    assert rep[-1]["final"]
+
+
+def test_prop8_control_dropped_base_length():
+    """I.8 without |b-c| = |e-f|: the assert b' = f goes STUCK — the equal
+    distance |e-b'| = |e-f| is no longer entailed (|e-b'| comes from the
+    bundle's |b-c| = |e-b'| chained to the dropped hypothesis, and nothing
+    else relates the two)."""
+    hyps = [h for h in eng.PROP8_HYPS_DATA
+            if h[0] != ("eq_len", "b", "c", "e", "f")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP8_STEPS_DATA,
+                   [("_eq_ang", "b", "a", "c", "e", "d", "f")])
+    assert ei.value.rule == "assert_point_eq_on_ray"
+    assert "eq_len" in str(ei.value.premise)
+
+
+def test_prop8_control_dropped_nondegeneracy():
+    """I.8 without the target triangle's non-degeneracy ¬(f.onLine DE): the
+    first step STUCKs — superposition's own ¬h.onLine L premise (h = d, the
+    apex, off the base EF) was derived from ¬(f.onLine DE) via
+    two_lines_meet_once, and nothing else supplies it."""
+    hyps = [h for h in eng.PROP8_HYPS_DATA
+            if h[0] != ("not_on_line", "f", "DE")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP8_STEPS_DATA,
+                   [("_eq_ang", "b", "a", "c", "e", "d", "f")])
+    assert ei.value.rule == "superposition"
+    assert ei.value.premise == ("not_on_line", "d", "EF")
+
+
+def test_proposition_7_rule_needs_equal_lengths():
+    """proposition_7 as a rule: dropping an equal-length entailment premise
+    must stop with MissingPremise (the SSS core of the proposition)."""
+    # take the I.7 hypotheses of the full replay but break |a-c| = |a-d|
+    hyps = [h for h in eng.PROP7_HYPS_DATA
+            if h[0] != ("eq_len", "a", "c", "a", "d")]
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "line_from_points", ("c", "d"), {"L": "CD"})
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 2, "proposition_7",
+                       ("a", "b", "c", "d", "AB", "AC", "CB", "AD", "DB"), {})
+    assert ei.value.rule == "proposition_7"
+
+
+def test_peq_subst_diagram():
+    """peq substitutes into on_line / not_on_line / dpl (both directions of
+    the equality, both point slots)."""
+    s = eng.State()
+    for f in [("on_line", "x", "L"), ("not_on_line", "x", "M"),
+              ("dpl", "x", "z", "N"), ("peq", "x", "y")]:
+        s.assume(f)
+    eng.close(s)
+    assert s.has(("on_line", "y", "L"))
+    assert s.has(("not_on_line", "y", "M"))
+    assert s.has(("dpl", "y", "z", "N"))
+    # and no substitution happens without the peq
+    s2 = eng.State()
+    for f in [("on_line", "x", "L"), ("neq", "x", "y")]:
+        s2.assume(f)
+    eng.close(s2)
+    assert not s2.has(("on_line", "y", "L"))
+
+
+def test_by_contra_conclusion_reaches_closure():
+    """A by_contra conclusion (peq) must be closed: the peq substitution
+    rules fire on it in the same step (regression: I.8's final angle needed
+    the c'→d rewrite of the superposition bundle's ∠e:c':b')."""
+    s = eng.State()
+    for f, w in eng.PROP8_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.run_steps(s, eng.PROP8_STEPS_DATA)  # includes the peq d c' by_contra
+    # peq d c' links the bundle angle to the d-vertex version
+    assert eng.la_entails_eq_ang(s.la, "e", "c'", "b'", "e", "d", "b'")
+
+
 # --- counterexample tests for the three new [SMT-bridge] rules ------------
 
 
