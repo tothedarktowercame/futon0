@@ -192,8 +192,13 @@ function drawAngles(pairs) {
     for (const tri of [[p1, apex, p2], [q1, qex, q2]]) {
       const ps = tri.map(n => built[n]);
       if (ps.some(x => !x)) continue;
-      const el = board.create("angle", ps,
-        {radius: 0.9, type: "sector", fillColor: HI, fillOpacity: 0.35,
+      // review fix (claude-9): "angle" sweeps counterclockwise p1 -> p2 and
+      // drew reflex sectors (near-full discs in I.5); radius 0.9 swamped
+      // short arms. Use the non-reflex angle, radius from the arms.
+      const arm = (a, b) => Math.hypot(a.X() - b.X(), a.Y() - b.Y());
+      const r = 0.35 * Math.min(arm(ps[0], ps[1]), arm(ps[2], ps[1]));
+      const el = board.create("nonreflexangle", ps,
+        {radius: r, type: "sector", fillColor: HI, fillOpacity: 0.35,
          strokeColor: HI, strokeWidth: 2, withLabel: false, fixed: true,
          highlightFillColor: HI, visible: true});
       extras.push(el);

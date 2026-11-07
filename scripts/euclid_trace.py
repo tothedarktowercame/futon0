@@ -488,6 +488,37 @@ def verify5(xy):
     return checks
 
 
+def metric_facts_hold(trace_steps, xy):
+    """Review addition (claude-9): check every between / eq_len / eq_ang /
+    lt_len fact the steps add against the placement. verify5 checks only
+    the conclusion, which holds for any symmetric placement, so swapping
+    f and g (or d and f, or b and c) in prop05.json went unnoticed.
+    Returns a list of (fact, ok); facts naming unplaced objects are skipped."""
+    out = []
+    dist = lambda a, b: _norm(_sub(xy[a], xy[b]))
+    for s in trace_steps:
+        for f in s.get("facts_added", []):
+            names = [x for x in f[1:] if isinstance(x, str)]
+            kind = f[0]
+            if kind not in ("between", "eq_len", "eq_ang", "lt_len"):
+                continue
+            if kind == "between":
+                if not all(n in xy and xy[n] for n in f[1:4]):
+                    continue
+                ok = fact_holds(f, xy)
+            else:
+                if not all(n in xy and xy[n] for n in names):
+                    continue
+                if kind == "eq_len":
+                    ok = abs(dist(f[1], f[2]) - dist(f[3], f[4])) < EPS
+                elif kind == "lt_len":
+                    ok = dist(f[1], f[2]) < dist(f[3], f[4]) - EPS
+                else:
+                    ok = abs(_ang(xy, *f[1:4]) - _ang(xy, *f[4:7])) < EPS
+            out.append((tuple(f), bool(ok)))
+    return out
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""

@@ -264,3 +264,22 @@ def test_bad_case_prop1_flip_keeps_metric_but_is_flagged():
                                 bad[p][1] - bad[q][1])
     assert abs(d("c", "a") - d("a", "b")) < 1e-9  # still equilateral
     assert "no distinguishing fact" in step["placement_decision"]
+
+
+def test_step_facts_hold_in_every_trace_and_swaps_are_caught():
+    """Review (claude-9): verify5 checks only I.5's conclusion, which holds
+    for any symmetric placement; swapping f and g, d and f, or b and c in
+    prop05.json passed it. metric_facts_hold checks every between / eq_len /
+    eq_ang / lt_len fact the steps add."""
+    for prop in (2, 3, 4, 5):
+        tr_ = load(prop)
+        xy = {k: tuple(v) for k, v in tr_["placement"].items() if v}
+        res = tr.metric_facts_hold(tr_["steps"], xy)
+        assert res, prop
+        assert all(ok for _, ok in res), (prop, [f for f, ok in res if not ok])
+    t5 = load(5)
+    xy = {k: tuple(v) for k, v in t5["placement"].items() if v}
+    for a, b in (("f", "g"), ("d", "f"), ("b", "c")):
+        x = dict(xy)
+        x[a], x[b] = x[b], x[a]
+        assert not all(ok for _, ok in tr.metric_facts_hold(t5["steps"], x)), (a, b)
