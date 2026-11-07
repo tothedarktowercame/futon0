@@ -306,6 +306,18 @@ PROP14_ENGINE_CITABLE = [
     "sum_angles_onlyif", "triple_incidence_2",
 ]
 
+PROP15_ENGINE_CITABLE = [
+    "between_symm", "proposition_13",
+]
+
+# Book/Prop15.lean verbatim: at the crossing of AB and CD (e between a, b
+# and between d, c), the vertical angles are equal — both conjuncts.
+PROP15_STATEMENT = """\
+theorem proposition_15 : ∀ (a b c d e : Point) (AB CD : Line),
+  distinctPointsOnLine a b AB ∧ distinctPointsOnLine c d CD ∧ e.onLine AB ∧ e.onLine CD ∧
+  CD ≠ AB ∧ (between d e c) ∧ (between a e b) →
+  (∠ a:e:c = ∠ d:e:b) ∧ (∠ c:e:b = ∠ a:e:d) :="""
+
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
                 book_steps=PROP1_BOOK_STEPS, witness="c"),
@@ -365,6 +377,17 @@ PROPS = {
                         witness=None, engine="I.14",
                         engine_citable=PROP14_ENGINE_CITABLE,
                         emitter="by_contra"),
+    # The ENGINE's own I.15 steps (euclid_engine.PROP15_STEPS_DATA, read
+    # live): flat — three between_symm_parts (emitted as the whole
+    # between_symm axiom, as at I.11/I.13/I.14) then three proposition_13
+    # citations in exactly Lean's argument orders (Book/Prop15.lean:12-14:
+    # (a e c d AB CD), (d e a b CD AB), (c e a b CD AB)); euclid_finish's
+    # LA closes the conjunction of vertical-angle equalities from the three
+    # sum-to-2∟ rows. No witness, no by_cases, no bridges.
+    "I.15-engine": dict(imports=["SystemE", "Book.Prop13"],
+                        statement=PROP15_STATEMENT, book_steps=None,
+                        witness=None, engine="I.15",
+                        engine_citable=PROP15_ENGINE_CITABLE),
 }
 
 
@@ -529,6 +552,8 @@ def engine_steps(prop):
         return _insert_hsm_asserts(steps, hsm, PROP11_GIVEN)
     if prop == "I.12" and hasattr(eng, "PROP12_STEPS_DATA"):
         return translate_engine_steps(eng.PROP12_STEPS_DATA)
+    if prop == "I.15" and hasattr(eng, "PROP15_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP15_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
 
 

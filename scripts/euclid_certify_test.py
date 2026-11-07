@@ -600,3 +600,92 @@ def test_negative_engine_i14_no_by_contra():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.15-engine (E-kimi-task-393) ------------------------------------------
+
+def test_emit_engine_i15_emission_pinned():
+    # Flat proof: three between_symm (whole axiom for the engine's
+    # between_symm_parts), then the three proposition_13 citations in
+    # exactly Lean's argument orders (Book/Prop15.lean:12-14), then
+    # euclid_finish closes the conjunction by LA on the three 2∟ rows.
+    steps = cert.engine_steps("I.15")
+    src = cert.emit_proof("I.15-engine", steps, None)
+    assert "  euclid_apply (between_symm a e b)\n" in src
+    assert "  euclid_apply (between_symm d e c)\n" in src
+    assert "  euclid_apply (between_symm c e d)\n" in src
+    assert "  euclid_apply (proposition_13 a e c d AB CD)\n" in src
+    assert "  euclid_apply (proposition_13 d e a b CD AB)\n" in src
+    assert "  euclid_apply (proposition_13 c e a b CD AB)\n" in src
+    assert "import Book.Prop13\n" in src
+    assert "euclid_assert" not in src  # no derived facts needed asserting
+    assert src.count("euclid_finish") == 1
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "1c3e0ad593c3de2e"
+
+
+def test_engine_i15_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP15_STEPS_DATA and show the emission follows
+    eng = cert._engine()
+    data = [(r, tuple("AC" if a == "CD" else a for a in args), b)
+            if r == "proposition_13" and args[0] == "a" else (r, args, b)
+            for (r, args, b) in eng.PROP15_STEPS_DATA]
+    monkeypatch.setattr(eng, "PROP15_STEPS_DATA", data)
+    src = cert.emit_proof("I.15-engine", cert.engine_steps("I.15"), None)
+    assert "(proposition_13 a e c d AB AC)" in src
+    assert "(proposition_13 a e c d AB CD)" not in src
+    # untouched steps unchanged
+    assert "(proposition_13 d e a b CD AB)" in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i15_certifies():
+    # the ENGINE's own PROP15_STEPS_DATA certified against LeanEuclid
+    r = cert.check_lean(
+        cert.emit_proof("I.15-engine", cert.engine_steps("I.15"), None),
+        "test_engine_I15")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i15_false_asserted_fact():
+    # The packet's bad case (my choice of step): replace the first
+    # between_symm apply with a CHECKED euclid_assert claiming between a b e
+    # — false (the hypothesis is between a e b). Must NOT certify (SMT
+    # refutes or answers unknown), and no lean process may survive.
+    src = cert.emit_proof("I.15-engine", cert.engine_steps("I.15"), None)
+    bad = src.replace("  euclid_apply (between_symm a e b)\n",
+                      "  euclid_assert between a b e\n")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I15_assert", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f",
+                               "test_neg_I15_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i15_dropped_proposition_13():
+    # The packet's second bad case: drop the third proposition_13 citation.
+    # The remaining two rows give only ∠a:e:c = ∠d:e:b; without the
+    # ∠a:e:c + ∠c:e:b = 2∟ row euclid_finish's LA cannot close the
+    # conjunction. Must NOT certify, and no lean process may survive.
+    src = cert.emit_proof("I.15-engine", cert.engine_steps("I.15"), None)
+    bad = src.replace("  euclid_apply (proposition_13 c e a b CD AB)\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I15_drop13", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I15_drop13.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
