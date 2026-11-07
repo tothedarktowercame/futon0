@@ -703,7 +703,8 @@ def test_replay_fact_set_footprints():
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (442, 227), "6": (41, 11), "7": (113, 26),
-                "8": (210, 82), "9": (236, 93), "10": (163, 51)}
+                "8": (210, 82), "9": (236, 93), "10": (163, 51),
+                "11": (318, 158)}
     got = {}
     old_argv = sys.argv
     try:
@@ -1066,3 +1067,142 @@ def test_bridge_angle_pair_on_line_refuses_z_on_the_line():
         eng.apply_step(s, 1, "angle_pair_on_line",
                        ("z", "w", "v", "x", "u", "L"), {})
     assert ei.value.premise == ("not_on_line", "z", "L")
+
+
+# --- I.11: perpendicular at a point on a line -------------------------------
+
+
+def test_prop11_replay():
+    """Erect a perpendicular: ∃ f, ¬(f.onLine AB) ∧ ∠u:w:f = RT."""
+    s, rep = eng.replay(eng.PROP11_HYPS_DATA, eng.PROP11_STEPS_DATA,
+                        [("not_on_line", "f", "AB"),
+                         ("_rt_ang", "u", "w", "f")])
+    assert s.has(("not_on_line", "f", "AB"))
+    assert s.has(("right_ang", "u", "w", "f"))
+    assert s.la.entails(eng.lin((eng.ang_atom("u", "w", "f"), 1),
+                                (eng.RT, -1)), 0, "=")
+    assert rep[-1]["final"]
+
+
+def test_prop11_control_dropped_between():
+    """Without between u w v the first cited rule (between_symm_parts)
+    stops the replay at its own premise."""
+    hyps = [h for h in eng.PROP11_HYPS_DATA
+            if h[0] != ("between", "u", "w", "v")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP11_STEPS_DATA, [("_rt_ang", "u", "w", "f")])
+    assert ei.value.rule == "between_symm_parts"
+    assert ei.value.premise == ("between", "u", "w", "v")
+
+
+def test_prop11_control_dropped_apex_off_line():
+    """Without ¬(f.onLine AB) (SMT-sourced input) proposition_8's
+    formTriangle premise stops the replay."""
+    hyps = [h for h in eng.PROP11_HYPS_DATA
+            if h[0] != ("not_on_line", "f", "AB")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP11_STEPS_DATA, [("_rt_ang", "u", "w", "f")])
+    assert ei.value.rule == "line_from_points"
+    assert ei.value.premise == ("neq", "f", "w")
+
+
+def test_prop11_other_nondegeneracies_derived():
+    """Only one input is stated (not_on_line f AB). Every other
+    non-degeneracy the steps need is cited from between_symm_parts or
+    derived: u≠w, w≠v, w≠g (cited), dpl w g AB, dpl w e AB (r_dpl from
+    on_line + those neqs), f≠w (off_line_neq), and g≠e from the
+    between-order rows (|ge| = |gw| + |we| with |gw| > 0)."""
+    s, rep = eng.replay(eng.PROP11_HYPS_DATA, eng.PROP11_STEPS_DATA,
+                        [("_rt_ang", "u", "w", "f")])
+    for fact in [("neq", "u", "w"), ("neq", "w", "v"), ("neq", "w", "g"),
+                 ("dpl", "w", "g", "AB"), ("dpl", "w", "e", "AB"),
+                 ("neq", "f", "w"), ("neq", "g", "f"),
+                 ("neq", "g", "e"), ("dpl", "g", "e", "AB")]:
+        assert s.has(fact), fact
+
+
+def test_perpendicular_if_premises_exact():
+    """perpendicular_if (Transfer.lean:102) premises are exactly the axiom's
+    destructed hypotheses; the angle premise is an entailment."""
+    spec = eng.CONSTRUCTIONS["perpendicular_if"]
+    probe = eng.State()
+    prem = spec["premises"](probe, "a", "b", "c", "d", "L")
+    assert set(prem) == {("on_line", "a", "L"), ("on_line", "b", "L"),
+                         ("between", "a", "c", "b"),
+                         ("not_on_line", "d", "L")}
+    assert spec["entail"](probe, "a", "b", "c", "d", "L") == \
+        [("eq_ang", ("a", "c", "d", "d", "c", "b"))]
+
+
+def test_perpendicular_if_counterexamples():
+    """perpendicular_if: needed-premise checks (each dropped premise stops
+    the rule; the states are realisable), plus the enough-premises
+    attempt: with every premise in place the conclusion is forced in the
+    arithmetic store — adding the negation (∠u:w:f = RT − 1) makes it
+    unsat. No geometric counterexample can exist: the rule is a verbatim
+    SystemE axiom (Transfer.lean:102), not an SMT reconstruction."""
+    def mk(extra=(), angrow=True):
+        s = eng.State()
+        base = [("on_line", "u", "AB"), ("on_line", "v", "AB"),
+                ("between", "u", "w", "v"), ("not_on_line", "f", "AB")]
+        for fact in base:
+            if fact not in extra:
+                s.assume(fact)
+        if angrow:
+            s.la.add(eng.lin((eng.ang_atom("u", "w", "f"), 1),
+                             (eng.ang_atom("f", "w", "v"), -1)), 0, "=")
+        eng.close(s)
+        return s
+
+    s = mk()
+    assert eng.contradictory(s)[0] is False  # realisable, no conclusion yet
+    rep = eng.apply_step(s, 1, "perpendicular_if",
+                         ("u", "v", "w", "f", "AB"), {})
+    assert rep["added"] == [("right_ang", "u", "w", "f")]
+
+    # drop between: refuses (nothing pins w between the endpoints)
+    s_b = mk(extra=[("between", "u", "w", "v")])
+    assert eng.contradictory(s_b)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_b, 1, "perpendicular_if",
+                       ("u", "v", "w", "f", "AB"), {})
+    assert ei.value.premise == ("between", "u", "w", "v")
+
+    # drop not_on_line: refuses (f on AB makes both angles straight-side)
+    s_f = mk(extra=[("not_on_line", "f", "AB")])
+    assert eng.contradictory(s_f)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_f, 1, "perpendicular_if",
+                       ("u", "v", "w", "f", "AB"), {})
+    assert ei.value.premise == ("not_on_line", "f", "AB")
+
+    # drop the angle row: the entailment premise refuses
+    s_a = mk(angrow=False)
+    assert eng.contradictory(s_a)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s_a, 1, "perpendicular_if",
+                       ("u", "v", "w", "f", "AB"), {})
+    assert "arithmetic" in str(ei.value)
+
+    # enough-premises: conclusion forced; its negation breaks the store
+    s_e = mk()
+    eng.apply_step(s_e, 1, "perpendicular_if", ("u", "v", "w", "f", "AB"), {})
+    s_e.la.add(eng.lin((eng.ang_atom("u", "w", "f"), 1), (eng.RT, -1)),
+               -1, "=")
+    ok, w = eng.contradictory(s_e)
+    assert ok and w[0] == "store-unsat"
+
+
+def test_between_symm_parts_premises_exact():
+    """between_symm_parts (Diagrammatic.lean:45-46): premise exactly the
+    between fact; conclusions the axiom's ≠ parts and the not_between."""
+    s = eng.State()
+    s.assume(("between", "a", "b", "c"))
+    eng.close(s)
+    rep = eng.apply_step(s, 1, "between_symm_parts", ("a", "b", "c"), {})
+    assert set(rep["added"]) == {("neq", "a", "b"), ("neq", "a", "c"),
+                                 ("not_between", "b", "a", "c")}
+    s2 = eng.State()
+    eng.close(s2)
+    with pytest.raises(eng.MissingPremise):
+        eng.apply_step(s2, 1, "between_symm_parts", ("a", "b", "c"), {})

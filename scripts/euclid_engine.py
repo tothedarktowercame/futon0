@@ -1621,6 +1621,35 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, L, M: [
             (None, [("between", a, b, c)])],
     },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:45-46 — the parts of
+    # between_symm besides the reversal (which is the closure rule
+    # r_between_symm): between a b c → a ≠ b ∧ a ≠ c ∧ ¬(between b a c).
+    # A closure rule would add facts to every earlier replay (footprints
+    # are pinned), so this is cited per use instead.
+    "between_symm_parts": {
+        "cite": "Diagrammatic.lean:45-46",
+        "args": ("a", "b", "c"),
+        "premises": lambda s, a, b, c: [("between", a, b, c)],
+        "make": lambda s, a, b, c: [
+            (None, [("neq", a, b), ("neq", a, c),
+                    ("not_between", b, a, c)])],
+    },
+    # SystemE/Theory/Inferences/Transfer.lean:102 — perpendicular_if
+    # verbatim: (a.onLine L) ∧ (b.onLine L) ∧ (between a c b) ∧
+    # ¬(d.onLine L) ∧ (∠ a:c:d = ∠ d:c:b) → ∠ a:c:d = ∟
+    # The angle premise is an entailment premise; the conclusion is the
+    # row ∠a:c:d = RT with the fact ("right_ang", a, c, d).
+    "perpendicular_if": {
+        "cite": "Transfer.lean:102",
+        "args": ("a", "b", "c", "d", "L"),
+        "premises": lambda s, a, b, c, d, L: [
+            ("on_line", a, L), ("on_line", b, L), ("between", a, c, b),
+            ("not_on_line", d, L)],
+        "entail": lambda s, a, b, c, d, L: [
+            ("eq_ang", (a, c, d, d, c, b))],
+        "make": lambda s, a, b, c, d, L: [
+            (None, [("_rt_ang", a, c, d)])],
+    },
     # SystemE/Theory/Inferences/Transfer.lean:90
     "sum_angles_onlyif": {
         "cite": "Transfer.lean:90",
@@ -1712,6 +1741,11 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("sum_ang", *fact[1:]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("sum_ang", *fact[1:]))
+            elif fact[0] == "_rt_ang":
+                s.la.add(lin((ang_atom(*fact[1:4]), 1), (RT, -1)), 0, "=")
+                s.add(("right_ang", *fact[1:4]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("right_ang", *fact[1:4]))
             else:
                 s.add(fact, f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(fact)
@@ -1877,6 +1911,9 @@ def replay(hyps, steps, verify):
             assert la_entails_eq(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_eq_ang":
             assert la_entails_eq_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
+        elif q[0] == "_rt_ang":
+            assert s.la.entails(lin((ang_atom(*q[1:4]), 1), (RT, -1)),
+                                0, "="), f"conclusion not entailed: {q}"
         else:
             assert s.has(q), f"conclusion fact missing: {q}"
     report.append({"final": True, "facts": len(s.facts),
@@ -2230,6 +2267,50 @@ PROP10_STEPS_DATA = [
 ]
 
 
+# Book I.11 (Book/Prop11.lean): erect a perpendicular at c on AB. d on AB
+# toward a with |c-d| < |c-b|; e on AB toward b with |c-e| = |c-d|
+# (proposition_3); f the equilateral apex on de (proposition_1);
+# proposition_8 (SSS on c-d-f / c-e-f) gives ∠d:c:f = ∠e:c:f; the rays
+# c→d ≡ c→a and c→e ≡ c→b (angle_ray_eq from the two between facts) carry
+# it to ∠a:c:f = ∠f:c:b, and perpendicular_if concludes ∠a:c:f = RT.
+# Lean cites perpendicular_if as (d e c f AB); the engine cites it as
+# (a b c f AB) — the same axiom with the base endpoints instead of the
+# equal-distance points, because the engine has no rule for "c between d
+# and e" (d, e on opposite rays at equal distance: between c d a,
+# between c e b, between a c b), while between a c b is a hypothesis.
+# SMT-sourced input Lean derives (flagged in the bell-back):
+#   not_on_line f AB — the equilateral apex on ge is off its base (as in
+#   I.10). Everything else is derived or cited: the non-degeneracies
+#   u≠w, w≠v, w≠g come from between_symm_parts (Diagrammatic.lean:45-46,
+#   cited per use so earlier footprints stay pinned), and g≠e follows in
+#   the store (between-order rows give |ge| = |gw| + |we| with |gw| > 0).
+PROP11_HYPS_DATA = [
+    (("dpl", "u", "v", "AB"), "h"),  # distinctPointsOnLine a b AB
+    (("between", "u", "w", "v"), "h"),
+    (("not_on_line", "f", "AB"), "h-sm"),
+]
+# Point names are renamed from Lean's (a b c d e f -> u v w g e f): the
+# substitution in apply_step replaces the rule's base name in every slot
+# of a made fact, and bases "a" (point_between_points_shorter_than,
+# proposition_1), "q" (proposition_3) and "d" (proposition_1) would also
+# rewrite our own points of the same name (I.9 hit the same collision).
+PROP11_STEPS_DATA = [
+    ("between_symm_parts", ("u", "w", "v"), {}),   # u≠w, u≠v
+    ("between_symm_parts", ("v", "w", "u"), {}),   # w≠v (between v w u via symm)
+    ("point_between_points_shorter_than", ("AB", "w", "u", "w", "v"),
+     {"a": "g"}),
+    ("between_symm_parts", ("w", "g", "u"), {}),   # w≠g, w≠u
+    ("proposition_3", ("w", "v", "w", "g", "AB", "AB"), {"q": "e"}),
+    ("proposition_1", ("g", "e", "AB"), {"d": "f"}),
+    ("line_from_points", ("g", "f"), {"L": "DF"}),
+    ("line_from_points", ("f", "e"), {"L": "FE"}),
+    ("line_from_points", ("f", "w"), {"L": "FC"}),
+    ("proposition_8", ("w", "g", "f", "w", "e", "f",
+                       "AB", "DF", "FC", "AB", "FE", "FC"), {}),
+    ("perpendicular_if", ("u", "v", "w", "f", "AB"), {}),
+]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -2316,6 +2397,12 @@ def main():
             s, rep = replay(PROP10_HYPS_DATA, PROP10_STEPS_DATA,
                             [("between", "a", "d", "b"),
                              ("_eq_len", "a", "d", "d", "b")])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "11":
+            t0 = time.time()
+            s, rep = replay(PROP11_HYPS_DATA, PROP11_STEPS_DATA,
+                            [("not_on_line", "f", "AB"),
+                             ("_rt_ang", "u", "w", "f")])
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
