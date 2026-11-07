@@ -3336,3 +3336,88 @@ def test_proposition_17_control_c_on_AB():
                      {})],
                    [("_lt_sum_rt_ang", "a", "b", "c", "b", "c", "a")])
     assert ei.value.rule == "proposition_17"
+
+
+def test_prop24a_replay():
+    """I.24a (Prop24.lean:18-39, FIRST HALF ONLY): the common construction
+    (proposition_23' -> line_from_points DG -> extend_point_longer ->
+    proposition_3 -> EG/FG -> proposition_4 -> proposition_5', the
+    euclid_asserts at 28/29/34 and the hgf by_contra) and the ONE branch
+    Euclid treats (d.sameSide g EF, lines 36-39). The closing by_cases is
+    deliberately one-branched: the second bullet (lines 40-59, "Omitted
+    by Euclid") is the next packet, so this is NOT the whole proof of
+    I.24 — the goal |b-c| > |e-f| is carried out of the branch case
+    only."""
+    s, rep = eng.replay(eng.PROP24A_HYPS_DATA, eng.PROP24A_STEPS_DATA,
+                        eng.PROP24A_GOAL)
+    kinds = [r["rule"].split(" ")[0] for r in rep[:-1]]
+    assert kinds == [
+        "proposition_23'", "by_contra", "line_from_points",
+        "extend_point_longer", "between_symm_parts", "proposition_3",
+        "between_symm_parts", "line_from_points", "by_contra",
+        "line_from_points", "proposition_4", "proposition_5'",
+        "by_contra", "by_contra", "by_contra", "by_contra",
+        "triple_incidence_2", "by_cases",
+    ]
+    assert rep[-2]["rule"] == "by_cases" and rep[-2]["branches"] == 1
+    assert rep[-2]["conclusions"] == [("_gt_len", "b", "c", "e", "f")]
+    assert s.has(("gt_len", "b", "c", "e", "f"))
+    assert s.has(("same_side", "g'", "f", "DE"))   # disjunction resolved
+    assert s.has(("opposing_sides", "e", "g", "DF"))   # hgf
+    assert s.has(("same_side", "f", "e", "DG"))   # assert 34
+    assert eng.la_entails_gt(s.la, "b", "c", "e", "f")
+    assert rep[-1]["final"]
+
+
+def test_prop24a_hyps_alone_do_not_entail_goal():
+    """The I.24 hypotheses alone do not entail |b-c| > |e-f| (g does not
+    exist before the construction; nothing links |b-c| to the second
+    triangle)."""
+    s = eng.State()
+    for f, w in eng.PROP24A_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_gt(s.la, "b", "c", "e", "f")
+
+
+def test_prop24a_control_dropped_proposition_5p():
+    """Drop proposition_5' (the isosceles base-angle equality
+    |d-g| = |d-f|): the line-36 angle assert's by_contra branches no
+    longer contradict — refused where its conclusion is used."""
+    steps = [st for st in eng.PROP24A_STEPS_DATA
+             if not (isinstance(st, tuple) and st[0] == "proposition_5'")]
+    with pytest.raises(eng.ByContraFailure) as ei:
+        eng.replay(eng.PROP24A_HYPS_DATA, steps, eng.PROP24A_GOAL)
+    assert ei.value.branch in ([("eq_ang", "d", "f", "g", "e", "g", "f")],
+                               [("gt_ang", "e", "g", "f", "d", "f", "g")])
+
+
+def test_prop24a_control_dropped_hgf():
+    """Drop the hgf by_contra (lines 30-33): the line-34 assert's
+    triple_incidence_2 is refused at its opposing_sides e g DF premise —
+    exactly where hgf's conclusion is used."""
+    steps = [st for st in eng.PROP24A_STEPS_DATA
+             if not (st[0] == "by_contra" and
+                     st[2] == [("opposing_sides", "e", "g", "DF")])]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(eng.PROP24A_HYPS_DATA, steps, eng.PROP24A_GOAL)
+    assert ei.value.premise == ("opposing_sides", "e", "g", "DF")
+    assert ei.value.rule == "triple_incidence_2"
+
+
+def test_prop24a_control_dropped_branch_split():
+    """Drop the closing one-branch by_cases: the goal is not entailed in
+    the outer state (the branch hypothesis d.sameSide g EF is what feeds
+    the line 36-39 angle chain through to proposition_19)."""
+    steps = eng.PROP24A_STEPS_DATA[:-1]
+    with pytest.raises(AssertionError):
+        eng.replay(eng.PROP24A_HYPS_DATA, steps, eng.PROP24A_GOAL)
+
+
+def test_prop24a_final_state_not_contradictory():
+    """The final store (the one-branch by_cases concluded on the OUTER
+    state) stays consistent."""
+    s, _ = eng.replay(eng.PROP24A_HYPS_DATA, eng.PROP24A_STEPS_DATA,
+                      eng.PROP24A_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness
