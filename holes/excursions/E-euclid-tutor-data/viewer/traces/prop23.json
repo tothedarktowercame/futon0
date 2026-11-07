@@ -1,0 +1,1332 @@
+{
+ "prop": 23,
+ "title": "Elements I.23 (LeanEuclid Book/Prop23.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "CD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "CE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "e"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e"
+    ]
+   },
+   "def_step": 9
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 13
+  },
+  {
+   "name": "g",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 13
+  },
+  {
+   "name": "FA",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "f"
+    ]
+   },
+   "def_step": 14
+  },
+  {
+   "name": "FG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "f",
+     "g"
+    ]
+   },
+   "def_step": 15
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      "on_line",
+      "d",
+      "CE"
+     ]
+    ],
+    [
+     [
+      "not_on_line",
+      "d",
+      "CE"
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "neq",
+     "f",
+     "a"
+    ],
+    [
+     "_eq_ang",
+     "f",
+     "a",
+     "b",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "facts_added": [
+    [
+     "neq",
+     "f",
+     "a"
+    ],
+    [
+     "_eq_ang",
+     "f",
+     "a",
+     "b",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 13
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; the degenerate branch (d on CE, 'Omitted by Euclid') is handled by the engine, not drawn; the diagram shows the general case (d off CE), in which proposition_22' constructs the copied angle",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 2,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      "_zero_ang",
+      "d",
+      "c",
+      "e"
+     ]
+    ],
+    [
+     [
+      "between",
+      "d",
+      "c",
+      "e"
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "neq",
+     "f",
+     "a"
+    ],
+    [
+     "_eq_ang",
+     "f",
+     "a",
+     "b",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "facts_added": [
+    [
+     "neq",
+     "f",
+     "a"
+    ],
+    [
+     "_eq_ang",
+     "f",
+     "a",
+     "b",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 15
+   },
+   "placement_decision": "degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); the nested split of the degenerate branch (Prop23.lean:15, by_cases on angle d:c:e = 0): both sub-cases are handled by the engine \u2014 witness b when the angle is 0, the extension of AB past a when it is straight \u2014 and not drawn; the diagram shows the general case (d off CE)",
+   "case": "degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)"
+  },
+  {
+   "n": 3,
+   "rule": "angle_self_zero",
+   "args": [
+    "b",
+    "a"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "zero_ang",
+     "b",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "a"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": null
+   },
+   "placement_decision": "degenerate sub-case angle d:c:e = 0: the witness is b itself (angle b:a:b = 0, the SMT-bridge angle_self_zero); degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); degenerate branch (d on CE, 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE), in which the copied angle at a is constructed by proposition_22'",
+   "case": "degenerate sub-case angle d:c:e = 0: the witness is b itself (angle b:a:b = 0, the SMT-bridge angle_self_zero); degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)",
+   "lean_note": "engine-only step (angle_self_zero): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 4,
+   "rule": "use_witness",
+   "args": [
+    "f",
+    "b",
+    "a",
+    "d",
+    "c",
+    "e",
+    "AB"
+   ],
+   "bindings": {
+    "f": "f"
+   },
+   "facts_added": [
+    [
+     "neq",
+     "f",
+     "a"
+    ],
+    [
+     "on_line",
+     "f",
+     "AB"
+    ],
+    [
+     "eq_ang",
+     "f",
+     "a",
+     "b",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('b', 'a', 'b', 'd', 'c', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 16
+   },
+   "placement_decision": "degenerate sub-case angle d:c:e = 0: the witness is b itself (angle b:a:b = 0, the SMT-bridge angle_self_zero); degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); degenerate branch (d on CE, 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE), in which the copied angle at a is constructed by proposition_22'",
+   "case": "degenerate sub-case angle d:c:e = 0: the witness is b itself (angle b:a:b = 0, the SMT-bridge angle_self_zero); degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)",
+   "lean_note": "Lean's `use b` (Prop23.lean:16) supplies this sub-case's witness: the goal's conjuncts restated about b under the witness name f; the angle equality is angle b:a:b = 0 = angle d:c:e, closed by Lean's euclid_finish (line 17) \u2014 the SMT angle_self_zero step above"
+  },
+  {
+   "n": 5,
+   "rule": "flat_angle_onlyif",
+   "args": [
+    "d",
+    "c",
+    "e"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "flat_ang",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "c",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 18
+   },
+   "placement_decision": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); degenerate branch (d on CE, 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE), in which the copied angle at a is constructed by proposition_22'",
+   "case": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)",
+   "lean_note": "Lean's euclid_assert \u2220 d:c:e = \u221f + \u221f (Prop23.lean:18): the System E citation is flat_angle_onlyif (Transfer.lean:124) \u2014 between d c e gives the straight angle directly; proposition_13 is not needed"
+  },
+  {
+   "n": 6,
+   "rule": "extend_point",
+   "args": [
+    "AB",
+    "b",
+    "a"
+   ],
+   "bindings": {
+    "x": "f"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "AB"
+    ],
+    [
+     "between",
+     "b",
+     "a",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "a",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 19
+   },
+   "placement_decision": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); degenerate branch (d on CE, 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE), in which the copied angle at a is constructed by proposition_22'",
+   "case": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)"
+  },
+  {
+   "n": 7,
+   "rule": "flat_angle_onlyif",
+   "args": [
+    "b",
+    "a",
+    "f"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "flat_ang",
+     "b",
+     "a",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "b",
+     "a",
+     "f"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": null
+   },
+   "placement_decision": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); degenerate branch (d on CE, 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE), in which the copied angle at a is constructed by proposition_22'",
+   "case": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)",
+   "lean_note": "engine-only step (flat_angle_onlyif): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 8,
+   "rule": "between_symm_parts",
+   "args": [
+    "f",
+    "a",
+    "b"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "f",
+     "a"
+    ],
+    [
+     "neq",
+     "f",
+     "b"
+    ],
+    [
+     "not_between",
+     "a",
+     "f",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "f",
+     "a",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": null
+   },
+   "placement_decision": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE); degenerate branch (d on CE, 'Omitted by Euclid'): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE), in which the copied angle at a is constructed by proposition_22'",
+   "case": "degenerate sub-case angle d:c:e straight (between d c e): the witness is the extension of AB past a; degenerate branch (d on CE \u2014 'Omitted by Euclid', Prop23.lean:14-21): handled by the engine, not drawn \u2014 the diagram shows the general case (d off CE)",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 9,
+   "rule": "line_from_points",
+   "args": [
+    "d",
+    "e"
+   ],
+   "bindings": {
+    "L": "DE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "d",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 22
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; line drawn through existing points",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 10,
+   "rule": "proposition_20",
+   "args": [
+    "c",
+    "d",
+    "e",
+    "CD",
+    "DE",
+    "CE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_sum_len",
+     "d",
+     "c",
+     "c",
+     "e",
+     "d",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "CE"
+    ],
+    [
+     "on_line",
+     "c",
+     "CE"
+    ],
+    [
+     "neq",
+     "d",
+     "e"
+    ],
+    [
+     "neq",
+     "c",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 24
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; cited step (proposition_20 c d e CD DE CE \u2014 Euclid leaves the triangle inequalities implicit; Lean's comment flags them): one of the three strict inequalities among |c-d|, |c-e|, |e-d| that proposition_22''s premises ask for",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 11,
+   "rule": "proposition_20",
+   "args": [
+    "d",
+    "e",
+    "c",
+    "DE",
+    "CE",
+    "CD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_sum_len",
+     "e",
+     "d",
+     "d",
+     "c",
+     "e",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "CE"
+    ],
+    [
+     "on_line",
+     "c",
+     "CE"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "neq",
+     "e",
+     "c"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 25
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; cited step (proposition_20 d e c DE CE CD \u2014 Euclid leaves the triangle inequalities implicit; Lean's comment flags them): one of the three strict inequalities among |c-d|, |c-e|, |e-d| that proposition_22''s premises ask for",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 12,
+   "rule": "proposition_20",
+   "args": [
+    "e",
+    "c",
+    "d",
+    "CE",
+    "CD",
+    "DE"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_sum_len",
+     "c",
+     "e",
+     "e",
+     "d",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "c",
+     "CE"
+    ],
+    [
+     "on_line",
+     "c",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "neq",
+     "e",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "CE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 26
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; cited step (proposition_20 e c d CE CD DE \u2014 Euclid leaves the triangle inequalities implicit; Lean's comment flags them): one of the three strict inequalities among |c-d|, |c-e|, |e-d| that proposition_22''s premises ask for",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 13,
+   "rule": "proposition_22'",
+   "args": [
+    "c",
+    "d",
+    "c",
+    "e",
+    "e",
+    "d",
+    "a",
+    "b",
+    "CD",
+    "CE",
+    "DE",
+    "AB"
+   ],
+   "bindings": {
+    "k": "f",
+    "g": "g"
+   },
+   "facts_added": [
+    [
+     "eq_len",
+     "a",
+     "f",
+     "c",
+     "d"
+    ],
+    [
+     "eq_len",
+     "f",
+     "g",
+     "e",
+     "d"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "not_between",
+     "g",
+     "a",
+     "b"
+    ],
+    [
+     "eq_len",
+     "a",
+     "g",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "d",
+     "CD"
+    ],
+    [
+     "dpl",
+     "c",
+     "e",
+     "CE"
+    ],
+    [
+     "dpl",
+     "e",
+     "d",
+     "DE"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "entail",
+     "gt_sum_len",
+     "('c', 'd', 'c', 'e', 'e', 'd')"
+    ],
+    [
+     "entail",
+     "gt_sum_len",
+     "('c', 'd', 'e', 'd', 'c', 'e')"
+    ],
+    [
+     "entail",
+     "gt_sum_len",
+     "('c', 'e', 'e', 'd', 'c', 'd')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 27
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; I.22' construction: g on the ray a->b with |a-g| = |c-e| (fixed exactly by not between g a b); f the circles' meet with |a-f| = |c-d|, |f-g| = |e-d| \u2014 fixed up to reflection across AB; the side is a free choice (the rule does not decide it \u2014 I.23' adds same_side), sampled on the given angle's side of AB",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 14,
+   "rule": "line_from_points",
+   "args": [
+    "a",
+    "f"
+   ],
+   "bindings": {
+    "L": "FA"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "a",
+     "FA"
+    ],
+    [
+     "on_line",
+     "f",
+     "FA"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "a",
+     "f"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 28
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; line drawn through existing points",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 15,
+   "rule": "line_from_points",
+   "args": [
+    "f",
+    "g"
+   ],
+   "bindings": {
+    "L": "FG"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "f",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 29
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; line drawn through existing points",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  },
+  {
+   "n": 16,
+   "rule": "off_line_strict_triangle",
+   "args": [
+    "f",
+    "a",
+    "g",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "not_on_line",
+     "f",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "neq",
+     "a",
+     "g"
+    ],
+    [
+     "entail",
+     "gt_sum_len",
+     "('a', 'f', 'f', 'g', 'a', 'g')"
+    ],
+    [
+     "entail",
+     "gt_sum_len",
+     "('a', 'f', 'a', 'g', 'f', 'g')"
+    ],
+    [
+     "entail",
+     "gt_sum_len",
+     "('f', 'g', 'a', 'g', 'a', 'f')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": null
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; engine-only step (off_line_strict_triangle f a g AB): the three strict triangle inequalities among |a-f|, |a-g|, |f-g| (the proposition_20 rows through the I.22' equalities) put f off AB \u2014 the premise Lean's SMT closes inside euclid_apply (proposition_8 ...) at Prop23.lean:30",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted",
+   "lean_note": "engine-only step (off_line_strict_triangle): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 17,
+   "rule": "degenerated_angle_if",
+   "args": [
+    "a",
+    "g",
+    "b",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "zero_ang",
+     "g",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "a",
+     "g"
+    ],
+    [
+     "neq",
+     "a",
+     "b"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "not_between",
+     "g",
+     "a",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": null
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; engine-only step (degenerated_angle_if a g b AB, Transfer.lean:63): g on AB with not between g a b (I.22''s conclusion) makes angle g:a:b = 0 \u2014 the rays a->g and a->b coincide. Lean's euclid_finish closes this silently",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted",
+   "lean_note": "engine-only step (degenerated_angle_if): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 18,
+   "rule": "angle_ray_eq_zero",
+   "args": [
+    "g",
+    "a",
+    "b",
+    "f"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "f",
+     "a",
+     "g",
+     "f",
+     "a",
+     "b"
+    ]
+   ],
+   "premises": [
+    [
+     "zero_ang",
+     "g",
+     "a",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": null
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; engine-only step (angle_ray_eq_zero g a b f): since angle g:a:b = 0, angle f:a:g = angle f:a:b \u2014 the copied angle is measured against the target ray. Lean's euclid_finish closes this silently",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted",
+   "lean_note": "engine-only step (angle_ray_eq_zero): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 19,
+   "rule": "proposition_8",
+   "args": [
+    "c",
+    "d",
+    "e",
+    "a",
+    "f",
+    "g",
+    "CD",
+    "DE",
+    "CE",
+    "FA",
+    "FG",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "d",
+     "c",
+     "e",
+     "f",
+     "a",
+     "g"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "d",
+     "CD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e",
+     "CE"
+    ],
+    [
+     "on_line",
+     "c",
+     "CE"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CD"
+    ],
+    [
+     "dpl",
+     "a",
+     "f",
+     "FA"
+    ],
+    [
+     "on_line",
+     "f",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "FG"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "FA"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', 'd', 'a', 'f')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', 'e', 'a', 'g')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('d', 'e', 'f', 'g')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop23.lean",
+    "line": 30
+   },
+   "placement_decision": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted; cited step (proposition_8 c d e a f g CD DE CE FA FG AB \u2014 SSS): |c-d| = |a-f|, |c-e| = |a-g|, |e-d| = |f-g| (the I.22' construction), so angle d:c:e = angle f:a:g. The conclusion's why: angle f:a:b = angle f:a:g (the zero-angle rewrite above) = angle d:c:e \u2014 the goal",
+   "case": "drawn case (branch 2: d off CE) \u2014 the general case; the degenerate branch is handled by the engine and only noted"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   0.0
+  ],
+  "b": [
+   1.6,
+   0.0
+  ],
+  "c": [
+   0.3,
+   1.8
+  ],
+  "d": [
+   -0.5660254037844388,
+   2.3
+  ],
+  "e": [
+   0.3,
+   3.1
+  ],
+  "DE": null,
+  "g": [
+   1.3,
+   0.0
+  ],
+  "f": [
+   0.49999999999999983,
+   0.8660254037844388
+  ],
+  "FA": null,
+  "FG": null
+ },
+ "verification": [
+  {
+   "check": "I.23: the given angle is non-degenerate: 0.2 rad < angle d:c:e < pi - 0.2 (neither 0 nor straight)",
+   "ok": true
+  },
+  {
+   "check": "I.23: d off CE (the drawn main branch, not the degenerate case)",
+   "ok": true
+  },
+  {
+   "check": "I.23: the given angle stands apart from AB (c, d, e at least 0.5 off the line)",
+   "ok": true
+  },
+  {
+   "check": "I.23: g on AB (the I.22' conclusion g.onLine AB)",
+   "ok": true
+  },
+  {
+   "check": "I.23: |a-g| = |c-e| and g on the ray a->b",
+   "ok": true
+  },
+  {
+   "check": "I.23: |a-f| = |c-d| and |f-g| = |e-d| (the I.22' construction)",
+   "ok": true
+  },
+  {
+   "check": "I.23: f off AB, on the given angle's side of it",
+   "ok": true
+  },
+  {
+   "check": "I.23: f != a",
+   "ok": true
+  },
+  {
+   "check": "I.23: GOAL angle f:a:b = angle d:c:e",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop23.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop08",
+  "import Book.Prop20",
+  "import Book.Prop22",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_23 : \u2200 (a b c d e : Point) (AB CD CE : Line),",
+  "  distinctPointsOnLine a b AB \u2227 formRectilinearAngle d c e CD CE \u2192",
+  "  \u2203 f : Point, f \u2260 a \u2227 (\u2220 f:a:b = \u2220 d:c:e) :=",
+  "by",
+  "  euclid_intros",
+  "  by_cases (d.onLine CE)",
+  "  \u00b7 -- Omitted by Euclid.",
+  "    by_cases (\u2220 d:c:e = 0)",
+  "    \u00b7 use b",
+  "      euclid_finish",
+  "    \u00b7 euclid_assert \u2220 d:c:e = \u221f + \u221f",
+  "      euclid_apply (extend_point AB b a) as b'",
+  "      use b'",
+  "      euclid_finish",
+  "  euclid_apply (line_from_points d e) as DE",
+  "  -- Euclid didn't explicitly apply proposition_20.",
+  "  euclid_apply (proposition_20 c d e CD DE CE)",
+  "  euclid_apply (proposition_20 d e c DE CE CD)",
+  "  euclid_apply (proposition_20 e c d CE CD DE)",
+  "  euclid_apply (proposition_22' c d c e e d a b CD CE DE AB) as (f, g)",
+  "  euclid_apply (line_from_points a f) as FA",
+  "  euclid_apply (line_from_points f g) as FG",
+  "  euclid_apply (proposition_8 c d e a f g CD DE CE FA FG AB)",
+  "  use f",
+  "  euclid_finish",
+  "",
+  "-- An extension of proposition_23 that allows the angle to be constructed on either side of AB.",
+  "theorem proposition_23' : \u2200 (a b c d e x : Point) (AB CD CE : Line),",
+  "  distinctPointsOnLine a b AB \u2227 formRectilinearAngle d c e CD CE \u2227 \u00ac(x.onLine AB) \u2192",
+  "  \u2203 f : Point, f \u2260 a \u2227 (f.onLine AB \u2228 f.sameSide x AB) \u2227 (\u2220 f:a:b = \u2220 d:c:e) :=",
+  "by",
+  "  euclid_intros",
+  "  by_cases (d.onLine CE)",
+  "  . -- Omitted by Euclid.",
+  "    by_cases (\u2220 d:c:e = 0)",
+  "    . use b",
+  "      euclid_finish",
+  "    . euclid_assert \u2220 d:c:e = \u221f + \u221f",
+  "      euclid_apply (extend_point AB b a) as b'",
+  "      use b'",
+  "      euclid_finish",
+  "  euclid_apply (line_from_points d e) as DE",
+  "  -- Euclid didn't explicitly apply proposition_20.",
+  "  euclid_apply (proposition_20 c d e CD DE CE)",
+  "  euclid_apply (proposition_20 d e c DE CE CD)",
+  "  euclid_apply (proposition_20 e c d CE CD DE)",
+  "  euclid_apply (proposition_22'' c d c e e d a b x CD CE DE AB) as (f, g)",
+  "  euclid_apply (line_from_points a f) as AF",
+  "  euclid_apply (line_from_points f g) as FG",
+  "  euclid_apply (proposition_8 c d e a f g CD DE CE AF FG AB)",
+  "  use f",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

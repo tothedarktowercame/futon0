@@ -436,6 +436,30 @@ FREE = {
     # ~= 69 deg.
     21: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1),
          "d": (0.7, 0.35)},
+    # I.22 (triangle from three lengths): the three given segments a-a',
+    # b-b', c-c' stand apart (up top, non-parallel) from the construction
+    # line DE (drawn along y = -1.2 by steps 1-3 — d and e' are
+    # CONSTRUCTED by arbitrary_point / distinct_points, placed by
+    # place_step). Triangle inequalities with visible margins >= 0.15:
+    # |aa'| = 1.0, |bb'| = sqrt(1.25) ~= 1.118, |cc'| = sqrt(0.9) ~=
+    # 0.949: 1.0 + 1.118 - 0.949 ~= 1.17; 1.0 + 0.949 - 1.118 ~= 0.83;
+    # 1.118 + 0.949 - 1.0 ~= 1.07. The drawn case of the by_cases is
+    # branch 2 (i between g and f), since |cc'| < |bb'| (margin ~0.17).
+    22: {"a": (0.0, 2.2), "a'": (1.0, 2.2),
+         "b": (2.4, 2.0), "b'": (2.9, 3.0),
+         "c": (0.2, 3.2), "c'": (1.1, 3.5)},
+    # I.23 (copy an angle): the target line AB along y = 0 and the given
+    # angle d:c:e up top, apart from it. The angle at c is exactly 60
+    # degrees (the ray c->d at 150 degrees, the ray c->e at 90 degrees;
+    # |c-d| = 1.0, |c-e| = 1.3, |e-d| = sqrt(1.39) ~= 1.179): visibly
+    # non-degenerate (neither 0 nor straight). The drawn case is the main
+    # branch (d off CE); the degenerate branch (d on CE) is handled by
+    # the engine, not drawn. f and g are CONSTRUCTED by proposition_22'
+    # (place_step): g on the ray a->b with |a-g| = |c-e| = 1.3, f the
+    # circles' meet with |a-f| = |c-d| = 1.0, |f-g| = |e-d|.
+    23: {"a": (0.0, 0.0), "b": (1.6, 0.0),
+         "c": (0.3, 1.8), "d": (0.3 - math.cos(math.radians(30.0)), 2.3),
+         "e": (0.3, 3.1)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -485,6 +509,10 @@ def hyps_and_steps(prop):
         return list(eng.PROP20_HYPS_DATA), list(eng.PROP20_STEPS_DATA)
     if prop == 21:
         return list(eng.PROP21_HYPS_DATA), list(eng.PROP21_STEPS_DATA)
+    if prop == 22:
+        return list(eng.PROP22_HYPS_DATA), list(eng.PROP22_STEPS_DATA)
+    if prop == 23:
+        return list(eng.PROP23_HYPS_DATA), list(eng.PROP23_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -693,6 +721,28 @@ def objects_from_hyps(prop):
                 for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
                               ("AC", ("a", "c")), ("BD", ("b", "d")),
                               ("DC", ("d", "c")))]
+    if prop == 22:
+        # the six hypothesis points (the three given segments) and the
+        # three hypothesis lines A, B, C they lie on; d, e', DE and the
+        # whole construction are CONSTRUCTED by steps 1-3 and on
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0}
+                for n in ("a", "a'", "b", "b'", "c", "c'")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("A", ("a", "a'")), ("B", ("b", "b'")),
+                              ("C", ("c", "c'")))]
+    if prop == 23:
+        # the target line AB (dpl a b AB) and the given angle's vertex c
+        # with d, e and the two hypothesis lines CD, CE
+        # (formRectilinearAngle destructured: dpl d c CD, dpl c e CE);
+        # DE, f, g, FA, FG are CONSTRUCTED by the main branch's steps
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d", "e")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("CD", ("d", "c")),
+                              ("CE", ("c", "e")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -724,6 +774,79 @@ def place_step(prop, rule, args, bindings, added, xy, objects):
                 "would lie past CD; the diagram shows the hypothesis "
                 "configuration (c, d on the same side of AB, "
                 "|a-c| = |a-d|)")
+    if prop == 23 and rule in ("angle_self_zero", "use_witness",
+                               "flat_angle_onlyif", "extend_point",
+                               "between_symm_parts"):
+        # I.23's degenerate branch (d on CE — "Omitted by Euclid",
+        # Prop23.lean:14-21): the branch is HANDLED (each sub-case
+        # supplies its own witness: b itself when angle d:c:e = 0, the
+        # extension of AB past a when angle d:c:e is straight), not
+        # refuted — but it is not the drawn case. Its steps run on a
+        # state copy; nothing is placed. In particular the branch's
+        # witness name f (the extension point) is NOT the drawn f (the
+        # main branch's proposition_22' meet), so placing it would
+        # clobber the drawn construction.
+        return ("degenerate branch (d on CE, 'Omitted by Euclid'): "
+                "handled by the engine, not drawn — the diagram shows "
+                "the general case (d off CE), in which the copied angle "
+                "at a is constructed by proposition_22'")
+    if rule == "arbitrary_point":
+        # () -> a free point p. No fact constrains it at all; the sample
+        # is chosen so the construction that follows stands apart from
+        # the hypothesis figure (I.22: below the three given segments).
+        name = bindings["p"]
+        assert prop == 22, "arbitrary_point placement only sampled for I.22"
+        xy[name] = (0.0, -1.2)
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: an arbitrary "
+                "point; the sample sits below the three given segments "
+                "so the construction line DE stands apart from them")
+    if rule == "distinct_points":
+        # (p,) -> a point q != p. The rule fixes only the inequality;
+        # the sample sits at unit distance along the x-axis (I.22: so
+        # the construction line DE through d and e' is horizontal, apart
+        # from the given segments).
+        (p,), name = args, bindings["q"]
+        assert prop == 22, "distinct_points placement only sampled for I.22"
+        xy[name] = _add(xy[p], (1.0, 0.0))
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: any point "
+                "distinct from %s; the sample sits at unit distance "
+                "along the x-axis, so DE is horizontal" % p)
+    if rule == "proposition_22'":
+        # I.23's construction step: (c d c e e d a b CD CE DE AB) ->
+        # k (= f, the circles' meet) and g with g on AB,
+        # not between g a b, |a-f| = |c-d|, |a-g| = |c-e|,
+        # |f-g| = |e-d| (Prop22.lean:34, the variant I.23 cites). g is
+        # fixed exactly on the ray a->b (not between g a b forces g onto
+        # b's side of a); f is one of two circle meets mirrored across
+        # AB — the rule does NOT fix the side (that is I.23''s
+        # refinement, proposition_22'', used by I.23'): the sample takes
+        # the given angle's side of AB, so the copy and the original
+        # open the same way.
+        (c, d, _c2, e, _e2, _d2, a, b, _CD, _CE, _DE, AB) = args
+        f, g = bindings["k"], bindings["g"]
+        xy[g] = _add(xy[a], _mul(_unit(_sub(xy[b], xy[a])),
+                                 _norm(_sub(xy[e], xy[c]))))
+        cands = circle_circle(xy[a], _norm(_sub(xy[d], xy[c])),
+                              xy[g], _norm(_sub(xy[d], xy[e])))
+        abvec = _sub(xy[b], xy[a])
+        side = lambda p: (abvec[0] * (p[1] - xy[a][1])
+                          - abvec[1] * (p[0] - xy[a][0]))
+        pick = cands[0] if side(cands[0]) * side(xy[c]) > 0 else cands[1]
+        xy[f] = pick
+        objects.append({"name": f, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        objects.append({"name": g, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("I.22' construction: g on the ray a->b with |a-g| = "
+                "|c-e| (fixed exactly by not between g a b); f the "
+                "circles' meet with |a-f| = |c-d|, |f-g| = |e-d| — fixed "
+                "up to reflection across AB; the side is a free choice "
+                "(the rule does not decide it — I.23' adds same_side), "
+                "sampled on the given angle's side of AB")
     if rule == "line_from_points":
         (p, q), L = args, bindings["L"]
         xy[L] = None  # lines have no coordinates; drawn from points
@@ -1059,6 +1182,31 @@ dragging)" % (a, b)
         # no drawing for the split itself: the DRAWN case is branch 2 in
         # general position (see the entry's case note); the other branches
         # are checked by the engine on state copies and only noted
+        if prop == 22:
+            return ("engine-only case split (no euclid_apply line — it "
+                    "renders the intersects_cc premise Lean's SMT closes "
+                    "inside euclid_apply (intersection_circles KLH DKL), "
+                    "Prop22.lean:27): where does DE's second meet i with "
+                    "KLH fall relative to f? f and i both lie on DE on "
+                    "the side of g opposite h, so trichotomy leaves "
+                    "three cases: f between g and i (needs |c-c'| > "
+                    "|b-b'|), i between g and f (needs |c-c'| < |b-b'| — "
+                    "the DRAWN case), and f = i (needs |c-c'| = |b-b'|). "
+                    "Each case puts i inside DKL; the split changes no "
+                    "drawing")
+        if prop == 23:
+            if args and args[0] and args[0][0][0] == "_zero_ang":
+                return ("the nested split of the degenerate branch "
+                        "(Prop23.lean:15, by_cases on angle d:c:e = 0): "
+                        "both sub-cases are handled by the engine — "
+                        "witness b when the angle is 0, the extension "
+                        "of AB past a when it is straight — and not "
+                        "drawn; the diagram shows the general case "
+                        "(d off CE)")
+            return ("the degenerate branch (d on CE, 'Omitted by "
+                    "Euclid') is handled by the engine, not drawn; the "
+                    "diagram shows the general case (d off CE), in "
+                    "which proposition_22' constructs the copied angle")
         return ("case split — the drawn diagram shows the general case; "
                 "the other cases are checked by the engine (see the case "
                 "note on each step), not drawn")
@@ -1128,8 +1276,51 @@ dragging)" % (a, b)
                 "proposition_8", "proposition_7", "perpendicular_if",
                 "perpendicular_onlyif", "proposition_20",
                 "intersection_lines_opposing",
+                "intersection_circle_circle_1",
+                "off_line_strict_triangle", "degenerated_angle_if",
+                "angle_ray_eq_zero",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
+        if rule == "intersection_circle_circle_1" and prop == 22:
+            return ("engine-only step (intersection_circle_circle_1 i h "
+                    "KLH DKL, Diagrammatic.lean:312): i is inside DKL "
+                    "(the by_cases above) and not outside KLH (it is ON "
+                    "KLH), h is on KLH and outside DKL (|f-h| = "
+                    "|b-b'| + |c-c'| > |a-a'| by inequality 3) — so the "
+                    "circles meet. This is the intersects_cc premise "
+                    "Lean's SMT closes silently at Prop22.lean:27")
+        if rule == "off_line_strict_triangle" and prop == 23:
+            return ("engine-only step (off_line_strict_triangle f a g "
+                    "AB): the three strict triangle inequalities among "
+                    "|a-f|, |a-g|, |f-g| (the proposition_20 rows "
+                    "through the I.22' equalities) put f off AB — the "
+                    "premise Lean's SMT closes inside euclid_apply "
+                    "(proposition_8 ...) at Prop23.lean:30")
+        if rule == "degenerated_angle_if" and prop == 23:
+            return ("engine-only step (degenerated_angle_if a g b AB, "
+                    "Transfer.lean:63): g on AB with not between g a b "
+                    "(I.22''s conclusion) makes angle g:a:b = 0 — the "
+                    "rays a->g and a->b coincide. Lean's euclid_finish "
+                    "closes this silently")
+        if rule == "angle_ray_eq_zero" and prop == 23:
+            return ("engine-only step (angle_ray_eq_zero g a b f): "
+                    "since angle g:a:b = 0, angle f:a:g = angle f:a:b — "
+                    "the copied angle is measured against the target "
+                    "ray. Lean's euclid_finish closes this silently")
+        if rule == "proposition_20" and prop == 23:
+            return ("cited step (proposition_20 %s %s %s %s %s %s — "
+                    "Euclid leaves the triangle inequalities implicit; "
+                    "Lean's comment flags them): one of the three "
+                    "strict inequalities among |c-d|, |c-e|, |e-d| that "
+                    "proposition_22''s premises ask for"
+                    % tuple(list(args)[:6]))
+        if rule == "proposition_8" and prop == 23:
+            return ("cited step (proposition_8 c d e a f g CD DE CE FA "
+                    "FG AB — SSS): |c-d| = |a-f|, |c-e| = |a-g|, "
+                    "|e-d| = |f-g| (the I.22' construction), so angle "
+                    "d:c:e = angle f:a:g. The conclusion's why: angle "
+                    "f:a:b = angle f:a:g (the zero-angle rewrite above) "
+                    "= angle d:c:e — the goal")
         if rule == "assert_point_eq_on_ray" and prop == 8:
             return ("cited assertion (Lean's euclid_assert c' = f): b' "
                     "and f both lie on EF on the same ray from e with "
@@ -1776,6 +1967,113 @@ def verify21(xy):
     ]
 
 
+def verify22(xy):
+    """I.22 (a triangle from three lengths): the drawn facts are the
+    hypotheses — three segments a-a', b-b', c-c' apart from the
+    construction line DE, with each triangle inequality holding by a
+    visible margin (>= 0.15) — plus the construction: the chain
+    d, f, g, h on DE with the three proposition_3 cuts, the two circles
+    (DKL centre f radius |a-a'|, KLH centre g radius |c-c'|), i the
+    second meet of DE with KLH (the drawn by_cases branch 2: i between
+    g and f, since |c-c'| < |b-b'|), and k the circles' meet. The goal
+    numerically: |f-k| = |a-a'|, |f-g| = |b-b'|, |k-g| = |c-c'|."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+    aa, bb, cc = dist("a", "a'"), dist("b", "b'"), dist("c", "c'")
+
+    def off_de(p):
+        # distance of p from the construction line DE (through d, e')
+        d_, e_ = xy["d"], xy["e'"]
+        v = _sub(e_, d_)
+        return abs(v[0] * (xy[p][1] - d_[1]) - v[1] * (xy[p][0] - d_[0]))
+    return [
+        ("I.22: |a-a'| + |b-b'| > |c-c'| with margin >= 0.15",
+         aa + bb > cc + 0.15),
+        ("I.22: |a-a'| + |c-c'| > |b-b'| with margin >= 0.15",
+         aa + cc > bb + 0.15),
+        ("I.22: |b-b'| + |c-c'| > |a-a'| with margin >= 0.15",
+         bb + cc > aa + 0.15),
+        ("I.22: the three given segments stand apart from DE (every "
+         "given point at least 0.5 off the line)",
+         all(off_de(p) > 0.5
+             for p in ("a", "a'", "b", "b'", "c", "c'"))),
+        ("I.22: the chain order d, f, g, h, e on DE",
+         abs(dist("d", "f") + dist("f", "g") + dist("g", "h")
+             + dist("h", "e") - dist("d", "e")) < EPS),
+        ("I.22: |d-f| = |a-a'| (the first proposition_3 cut)",
+         abs(dist("d", "f") - aa) < EPS),
+        ("I.22: |f-g| = |b-b'| (the second proposition_3 cut)",
+         abs(dist("f", "g") - bb) < EPS),
+        ("I.22: |g-h| = |c-c'| (the third proposition_3 cut)",
+         abs(dist("g", "h") - cc) < EPS),
+        ("I.22: |d-e| exceeds each given length (the extend_point_longer "
+         "bounds)", min(dist("d", "e") - aa, dist("d", "e") - bb,
+                        dist("d", "e") - cc) > 0.1),
+        ("I.22: i between g and h on DE with |g-i| = |g-h| (the second "
+         "meet)",
+         abs(dist("i", "g") + dist("g", "h") - dist("i", "h")) < EPS
+         and abs(dist("g", "i") - dist("g", "h")) < EPS),
+        ("I.22: the drawn by_cases branch is branch 2 — i between g "
+         "and f, since |c-c'| < |b-b'| with a visible margin",
+         cc < bb - 0.15
+         and abs(dist("g", "i") + dist("i", "f") - dist("g", "f")) < EPS),
+        ("I.22: GOAL |f-k| = |a-a'| (k on circle DKL)",
+         abs(dist("f", "k") - aa) < EPS),
+        ("I.22: GOAL |f-g| = |b-b'| (the witness g)",
+         abs(dist("f", "g") - bb) < EPS),
+        ("I.22: GOAL |k-g| = |c-c'| (k on circle KLH)",
+         abs(dist("k", "g") - cc) < EPS),
+    ]
+
+
+def verify23(xy):
+    """I.23 (copy an angle onto a line at a point): the drawn facts are
+    the hypotheses — the target line AB and the given angle d:c:e apart
+    from it, visibly non-degenerate (60 degrees, off both 0 and
+    straight; d off CE, the drawn main branch) — plus the main branch's
+    construction: g on AB on the ray a->b with |a-g| = |c-e|, f with
+    |a-f| = |c-d| and |f-g| = |e-d| on the given angle's side of AB.
+    The goal numerically: angle f:a:b = angle d:c:e, f != a. The
+    degenerate branch (d on CE) is handled by the engine, not drawn."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(l1, l2, p):
+        return ((xy[l2][0] - xy[l1][0]) * (xy[p][1] - xy[l1][1])
+                - (xy[l2][1] - xy[l1][1]) * (xy[p][0] - xy[l1][0]))
+
+    def off_line(p, l1, l2):
+        v = _sub(xy[l2], xy[l1])
+        return abs(v[0] * (xy[p][1] - xy[l1][1])
+                   - v[1] * (xy[p][0] - xy[l1][0])) / _norm(v)
+    dce = _ang(xy, "d", "c", "e")
+    fab = _ang(xy, "f", "a", "b")
+    return [
+        ("I.23: the given angle is non-degenerate: 0.2 rad < angle "
+         "d:c:e < pi - 0.2 (neither 0 nor straight)",
+         0.2 < dce < math.pi - 0.2),
+        ("I.23: d off CE (the drawn main branch, not the degenerate "
+         "case)", abs(cross("c", "e", "d")) > EPS),
+        ("I.23: the given angle stands apart from AB (c, d, e at least "
+         "0.5 off the line)",
+         all(off_line(p, "a", "b") > 0.5 for p in ("c", "d", "e"))),
+        ("I.23: g on AB (the I.22' conclusion g.onLine AB)",
+         abs(cross("a", "b", "g")) < EPS * dist("a", "b")),
+        ("I.23: |a-g| = |c-e| and g on the ray a->b",
+         abs(dist("a", "g") - dist("c", "e")) < EPS
+         and (xy["g"][0] - xy["a"][0]) * (xy["b"][0] - xy["a"][0])
+         + (xy["g"][1] - xy["a"][1]) * (xy["b"][1] - xy["a"][1]) > 0),
+        ("I.23: |a-f| = |c-d| and |f-g| = |e-d| (the I.22' "
+         "construction)",
+         abs(dist("a", "f") - dist("c", "d")) < EPS
+         and abs(dist("f", "g") - dist("e", "d")) < EPS),
+        ("I.23: f off AB, on the given angle's side of it",
+         abs(cross("a", "b", "f")) > EPS
+         and cross("a", "b", "f") * cross("a", "b", "c") > 0),
+        ("I.23: f != a", dist("f", "a") > 0.1),
+        ("I.23: GOAL angle f:a:b = angle d:c:e",
+         abs(fab - dce) < EPS),
+    ]
+
+
 def verify6(xy):
     """I.6 (equal base angles make equal sides — the converse of I.5, a
     by_contra drawn in the TRUE configuration): the drawn facts are the
@@ -1973,6 +2271,10 @@ def verify(prop, xy):
         return verify20(xy)
     if prop == 21:
         return verify21(xy)
+    if prop == 22:
+        return verify22(xy)
+    if prop == 23:
+        return verify23(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -2508,6 +2810,148 @@ def build_trace8_rows(hyps, steps):
     return rows, s
 
 
+# I.23 display decision (packet P-euclid-play-config-I22-I23): like
+# I.14/I.19, the true (non-degenerate) configuration is drawn — d off CE,
+# the given angle visibly neither 0 nor straight — and every
+# degenerate-branch step says in the info bar that its branch (d on CE,
+# "Omitted by Euclid") is HANDLED by the engine on a state copy, not
+# drawn. The branch is not refuted (it is a genuinely possible case,
+# closed in Lean with its own witnesses), so the notes say "handled",
+# not "refuted".
+DRAWN23 = ("drawn case (branch 2: d off CE) — the general case; the "
+           "degenerate branch is handled by the engine and only noted")
+DEGEN23 = ("degenerate branch (d on CE — 'Omitted by Euclid', "
+           "Prop23.lean:14-21): handled by the engine, not drawn — the "
+           "diagram shows the general case (d off CE)")
+DEGEN23_ZERO = ("degenerate sub-case angle d:c:e = 0: the witness is b "
+                "itself (angle b:a:b = 0, the SMT-bridge "
+                "angle_self_zero); " + DEGEN23)
+DEGEN23_FLAT = ("degenerate sub-case angle d:c:e straight (between d c "
+                "e): the witness is the extension of AB past a; "
+                + DEGEN23)
+
+
+def build_trace23_rows(hyps, steps):
+    """I.23 is an outer by_cases (Prop23.lean:13, on d.onLine CE) whose
+    degenerate branch holds a nested by_cases (Prop23.lean:15, on
+    angle d:c:e = 0) — see PROP23_STEPS_DATA. The trace flattens it, as
+    I.13: the outer split (Lean's by_cases line), the inner split
+    (Lean's nested by_cases line), the two degenerate sub-branches'
+    steps (handled by the engine, not drawn), then the main branch's
+    eleven steps (drawn — they ARE Lean's construction). Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop23.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop23.lean"
+    # only the first theorem (proposition_23, lines 8-32): Prop23.lean
+    # continues with proposition_23', whose by_cases/apply lines repeat
+    # the same shapes
+    end = next(i + 1 for i, l in enumerate(lean_lines)
+               if l.startswith("theorem proposition_23'"))
+    lean_lines = lean_lines[:end]
+    by_cases = [i + 1 for i, l in enumerate(lean_lines)
+                if l.strip().startswith("by_cases")]
+    assert len(by_cases) == 2, by_cases
+    ln_outer, ln_inner = by_cases
+    ln_use_b = next(i + 1 for i, l in enumerate(lean_lines)
+                    if l.strip() in ("· use b", "use b"))
+    ln_assert = next(i + 1 for i, l in enumerate(lean_lines)
+                     if "euclid_assert" in l)
+    ln_ext = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "extend_point" in l)
+    ln_de = next(i + 1 for i, l in enumerate(lean_lines)
+                 if "line_from_points d e" in l)
+    p20 = [i + 1 for i, l in enumerate(lean_lines)
+           if "euclid_apply" in l and "proposition_20" in l]
+    assert len(p20) == 3, p20
+    ln_p22 = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "proposition_22'" in l)
+    ln_fa = next(i + 1 for i, l in enumerate(lean_lines)
+                 if "line_from_points a f" in l)
+    ln_fg = next(i + 1 for i, l in enumerate(lean_lines)
+                 if "line_from_points f g" in l)
+    ln_p8 = next(i + 1 for i, l in enumerate(lean_lines)
+                 if "proposition_8" in l)
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+    top = eng.run_steps(s, steps)[0]  # the single outer by_cases report
+
+    _tag, branches, conclusions = steps[0]
+    degen_assume, degen_steps = branches[0]
+    main_assume, main_steps = branches[1]
+    inner = degen_steps[0]  # ("by_cases", inner_branches, PROP23_GOAL)
+    zero_assume, zero_steps = inner[1][0]
+    flat_assume, flat_steps = inner[1][1]
+
+    rows = [("by_cases", [b[0] for b in branches],
+             [list(c) for c in conclusions], top, (rel, ln_outer),
+             DRAWN23)]
+    rep_inner = _run_branch13(s0, degen_assume, [inner])[0]
+    rows.append(("by_cases", [b[0] for b in inner[1]],
+                 [list(c) for c in inner[2]], rep_inner, (rel, ln_inner),
+                 DEGEN23))
+    # degenerate sub-branch 1 (angle d:c:e = 0): angle_self_zero is the
+    # SMT inside Lean's euclid_finish (line 17); use_witness is Lean's
+    # `use b` (line 16)
+    sub_deg = s0.copy()
+    for f in degen_assume:
+        eng._assume_metric_or_fact(sub_deg, f, "by_cases assumption")
+    eng.close(sub_deg)
+    reps_zero = _run_branch13(sub_deg, zero_assume, zero_steps)
+    for (r, a, b), rep in zip(zero_steps, reps_zero):
+        loc = ((rel, ln_use_b,
+                "note: Lean's `use b` (Prop23.lean:16) supplies this "
+                "sub-case's witness: the goal's conjuncts restated "
+                "about b under the witness name f; the angle equality "
+                "is angle b:a:b = 0 = angle d:c:e, closed by Lean's "
+                "euclid_finish (line 17) — the SMT angle_self_zero "
+                "step above")
+               if r == "use_witness" else None)
+        rows.append((r, a, b, rep, loc, DEGEN23_ZERO))
+    # degenerate sub-branch 2 (between d c e): the first
+    # flat_angle_onlyif is Lean's euclid_assert (line 18); extend_point
+    # is Lean's line 19; the rest is euclid_finish (line 21, SMT)
+    reps_flat = _run_branch13(sub_deg, flat_assume, flat_steps)
+    for (r, a, b), rep in zip(flat_steps, reps_flat):
+        if r == "flat_angle_onlyif" and a == ("d", "c", "e"):
+            loc = (rel, ln_assert,
+                   "note: Lean's euclid_assert ∠ d:c:e = ∟ + ∟ "
+                   "(Prop23.lean:18): the System E citation is "
+                   "flat_angle_onlyif (Transfer.lean:124) — between "
+                   "d c e gives the straight angle directly; "
+                   "proposition_13 is not needed")
+        elif r == "extend_point":
+            loc = (rel, ln_ext)
+        else:
+            loc = None
+        rows.append((r, a, b, rep, loc, DEGEN23_FLAT))
+    # main branch (d off CE): Lean's construction, drawn
+    main_locs = {"line_from_points d e": (rel, ln_de),
+                 "line_from_points a f": (rel, ln_fa),
+                 "line_from_points f g": (rel, ln_fg)}
+    p20i = iter(p20)
+    reps_main = _run_branch13(s0, main_assume, main_steps)
+    for (r, a, b), rep in zip(main_steps, reps_main):
+        key = r + " " + " ".join(str(x) for x in a[:2])
+        if r == "line_from_points":
+            loc = main_locs[key]
+        elif r == "proposition_20":
+            loc = (rel, next(p20i))
+        elif r == "proposition_22'":
+            loc = (rel, ln_p22)
+        elif r == "proposition_8":
+            loc = (rel, ln_p8)
+        else:
+            loc = None
+        rows.append((r, a, b, rep, loc, DRAWN23))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
     if prop == 6:
@@ -2545,6 +2989,12 @@ def build_trace(prop):
         # and exhibited contradictory
         rows, _s = build_trace19_rows(hyps, steps)
         name_map = {}
+    elif prop == 23:
+        # nested by_cases: the degenerate branch (d on CE, "Omitted by
+        # Euclid") is handled by the engine on state copies, not drawn;
+        # the main branch (d off CE) is drawn (see build_trace23_rows)
+        rows, _s = build_trace23_rows(hyps, steps)
+        name_map = {}
     else:
         # engine replay (premises checked, facts collected); props 4-5
         # have metric hypotheses (eq_len / eq_ang) that must enter the
@@ -2559,7 +3009,7 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (9, 10, 11, 12, 15, 16, 17, 18, 20, 21):
+        if prop in (9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
@@ -2588,7 +3038,8 @@ def build_trace(prop):
                        17: list(eng.PROP17_GOAL),
                        18: list(eng.PROP18_GOAL),
                        20: list(eng.PROP20_GOAL),
-                       21: list(eng.PROP21_GOAL)}[prop]
+                       21: list(eng.PROP21_GOAL),
+                       22: list(eng.PROP22_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:
@@ -2608,7 +3059,7 @@ def build_trace(prop):
                                         after=after16)
         else:
             lean = (lean_lines_for_named(prop, steps, name_map)
-                    if prop in (9, 10, 11, 12, 15, 17, 18, 21)
+                    if prop in (9, 10, 11, 12, 15, 17, 18, 21, 22)
                     else lean_lines_for(prop, [r for r, _, _ in steps]))
         if prop == 18:
             # the engine's last step is sum_angles_onlyif where Lean

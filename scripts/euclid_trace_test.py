@@ -1594,3 +1594,182 @@ def test_bad_case_prop9_moved_c_breaks_bisection():
     assert any("GOAL angle b:v:f = angle c:v:f" in d for d in fails), \
         fails
     assert any("e on segment v-c" in d for d in fails), fails
+
+
+# -- I.22 / I.23 (E-kimi-task-422, P-euclid-play-config-I22-I23) -----------
+# I.22: the three given segments stand apart from the construction line
+# DE, the three triangle inequalities visible (margins >= 0.15); the
+# by_cases on where DE's second meet i falls relative to f is
+# engine-only (Lean's SMT closes the intersects_cc premise), drawn in
+# branch 2 (|c-c'| < |b-b'|). I.23 draws the true, non-degenerate
+# configuration (angle d:c:e = 60 degrees, d off CE); the degenerate
+# branch (d on CE, "Omitted by Euclid") is handled by the engine, not
+# drawn, and every degenerate-branch step's case note says so.
+
+TR22, TR23 = load(22), load(23)
+
+
+def test_prop22_rebuild_matches_disk():
+    rebuilt = tr.build_trace(22)
+    assert rebuilt["placement"] == TR22["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR22["steps"]
+
+
+def test_prop23_rebuild_matches_disk():
+    rebuilt = tr.build_trace(23)
+    assert rebuilt["placement"] == TR23["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR23["steps"]
+
+
+def test_prop22_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR22["lean_file"])
+    with open(path) as fh:
+        lines = fh.read().splitlines()
+    linked = []
+    for s in TR22["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            # engine-only: the four between_symm_parts (dpl premises
+            # Lean's SMT supplies), the by_cases and the
+            # intersection_circle_circle_1 (the intersects_cc premise
+            # Lean's SMT closes at Prop22.lean:27)
+            assert s["rule"] in ("between_symm_parts", "by_cases",
+                                 "intersection_circle_circle_1"), s
+            assert "engine-only" in s["lean_note"], s
+            continue
+        assert s["rule"] in lines[ln - 1], s
+        linked.append(ln)
+    # every euclid_apply line of the FIRST theorem (proposition_22;
+    # Prop22.lean continues with 22' and 22'') linked, in order, except
+    # the two point_on_circle_onlyif lines (Prop22.lean:29-30), which
+    # the engine's closure rule r_poc_onlyif renders with no explicit
+    # step
+    end = next(i + 1 for i, l in enumerate(lines)
+               if l.startswith("theorem proposition_22'"))
+    applies = {i + 1 for i, l in enumerate(lines[:end - 1])
+               if "euclid_apply" in l}
+    poc = {i + 1 for i, l in enumerate(lines[:end - 1])
+           if "point_on_circle_onlyif" in l}
+    assert applies - set(linked) == poc, (applies - set(linked), poc)
+    assert linked == sorted(linked) and len(set(linked)) == len(linked)
+
+
+def test_prop23_lean_lines_cover_the_first_theorem():
+    path = os.path.join(LEAN_DIR, TR23["lean_file"])
+    with open(path) as fh:
+        lines = fh.read().splitlines()
+    end = next(i + 1 for i, l in enumerate(lines)
+               if l.startswith("theorem proposition_23'"))
+    for s in TR23["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            assert s["rule"] in ("angle_self_zero", "flat_angle_onlyif",
+                                 "between_symm_parts",
+                                 "off_line_strict_triangle",
+                                 "degenerated_angle_if",
+                                 "angle_ray_eq_zero"), s
+            continue
+        line = lines[ln - 1]
+        if s["rule"] == "by_cases":
+            assert line.strip().startswith("by_cases"), s
+        elif s["rule"] == "use_witness":
+            assert "use b" in line, s
+        elif s["rule"] == "flat_angle_onlyif":
+            assert "euclid_assert" in line, s
+        else:
+            assert s["rule"] in line, (s, line)
+        assert ln < end, s
+    # every euclid_apply line of the FIRST theorem is linked, in order
+    applies = [i + 1 for i, l in enumerate(lines[:end - 1])
+               if "euclid_apply" in l]
+    got = [s["lean"]["line"] for s in TR23["steps"]
+           if s["lean"]["line"] in applies]
+    assert got == applies, (got, applies)
+    # and the split/witness/assert lines are the first theorem's
+    assert TR23["steps"][0]["lean"]["line"] == 13   # by_cases d.onLine CE
+    assert TR23["steps"][1]["lean"]["line"] == 15   # by_cases ang = 0
+    assert TR23["steps"][3]["lean"]["line"] == 16   # use b
+    assert TR23["steps"][4]["lean"]["line"] == 18   # euclid_assert flat
+
+
+def test_prop22_23_cases_recorded():
+    # I.22's by_cases is engine-only; its bar explains the three cases
+    s22 = next(s for s in TR22["steps"] if s["rule"] == "by_cases")
+    assert s22["lean"]["line"] is None
+    assert "engine-only" in s22["lean_note"]
+    assert "intersects_cc" in s22["placement_decision"]
+    # I.23: every degenerate-branch step says it is handled, not drawn;
+    # the outer split and the main branch say the main branch is drawn
+    for s in TR23["steps"][1:8]:
+        assert "handled by the engine, not drawn" in s["case"], s
+    assert TR23["steps"][0]["case"].startswith("drawn case")
+    for s in TR23["steps"][8:]:
+        assert s["case"].startswith("drawn case"), s
+
+
+def test_prop22_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR22["placement"].items() if v}
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR22["steps"], xy)
+           if not ok]
+    assert not bad, bad
+    assert all(ok for _, ok in tr.verify22(xy))
+    # the icc1 step's bar names the premise it renders
+    s18 = TR22["steps"][17]
+    assert s18["rule"] == "intersection_circle_circle_1"
+    assert "intersects_cc" in s18["placement_decision"]
+
+
+def test_prop23_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR23["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify23(xy))
+    # the DRAWN steps' metric facts hold (the degenerate branch's facts
+    # live on state copies and are not drawn — the I.6/I.7 pattern)
+    drawn = [s for s in TR23["steps"]
+             if "degenerate" not in (s.get("case") or "")]
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(drawn, xy)
+           if not ok]
+    assert not bad, bad
+    # the degenerate branch's witness construction is NOT the drawn f:
+    # its extension fact between b a f fails against the drawn
+    # main-branch f (the proposition_22' meet)
+    assert not tr.fact_holds(("between", "b", "a", "f"), xy)
+    # the copied angle equals the given angle, numerically
+    assert abs(tr._ang(xy, "f", "a", "b")
+               - tr._ang(xy, "d", "c", "e")) < tr.EPS
+
+
+def test_bad_case_prop22_long_b_breaks_inequality():
+    xy = {k: tuple(v) for k, v in TR22["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify22(xy))
+    # make |b-b'| = 4, so |a-a'| + |c-c'| > |b-b'| fails (a triangle
+    # from these three lengths does not exist)
+    xy["b'"] = (6.4, 2.0)
+    fails = [d for d, ok in tr.verify22(xy) if not ok]
+    assert any("|a-a'| + |c-c'| > |b-b'|" in d for d in fails), fails
+
+
+def test_bad_case_prop22_f_wrong_cut_fails():
+    xy = {k: tuple(v) for k, v in TR22["placement"].items() if v}
+    # f moved along DE: the first cut no longer matches |a-a'|
+    xy["f"] = (1.3, -1.2)
+    fails = [d for d, ok in tr.verify22(xy) if not ok]
+    assert any("|d-f| = |a-a'|" in d for d in fails), fails
+
+
+def test_bad_case_prop23_d_on_ce_fails():
+    xy = {k: tuple(v) for k, v in TR23["placement"].items() if v}
+    assert all(ok for _, ok in tr.verify23(xy))
+    # the degenerate case itself: d ON CE must fail the drawn-case check
+    cx, cy = xy["c"]
+    ex, ey = xy["e"]
+    xy["d"] = ((cx + ex) / 2, (cy + ey) / 2)
+    fails = [d for d, ok in tr.verify23(xy) if not ok]
+    assert any("d off CE" in d for d in fails), fails
+
+
+def test_bad_case_prop23_wrong_copy_fails():
+    xy = {k: tuple(v) for k, v in TR23["placement"].items() if v}
+    # f lowered: angle f:a:b no longer equals angle d:c:e
+    xy["f"] = (0.5, 0.3)
+    fails = [d for d, ok in tr.verify23(xy) if not ok]
+    assert any("GOAL" in d for d in fails), fails

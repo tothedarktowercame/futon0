@@ -626,3 +626,71 @@ def test_metric_and_either_refusals_in_plain_words():
         assert words in text, text
         for bad in ("('", "[(", "[[", "None", "entail"):
             assert bad not in text, text
+
+
+def test_catalogue_lists_22_and_23():
+    """I.22 and I.23 join the catalogue after 21 (E-kimi-task-422)."""
+    ns = [e["n"] for e in ep.catalogue()]
+    assert ns.index(21) < ns.index(22) < ns.index(23)
+    assert ep.GOALS[22] == list(eng.PROP22_GOAL)
+    assert ep.GOALS[23] == list(eng.PROP23_GOAL)
+
+
+def test_palette_23():
+    """palette(23) contains proposition_22's primed variants (the I.23
+    proof cites proposition_22', proposition_20 and proposition_8);
+    proposition_22 itself is replay-only (not in CONSTRUCTIONS), and
+    proposition_23 itself stays out."""
+    pal = ep.palette(23)
+    # proposition_22 itself is replay-only (not in CONSTRUCTIONS); its
+    # citable variants are
+    assert "proposition_22" not in pal
+    assert "proposition_22'" in pal
+    assert "proposition_22''" in pal
+    assert "proposition_20" in pal
+    assert "proposition_8" in pal
+    assert "proposition_23" not in pal
+    assert "proposition_23'" not in pal
+
+
+def test_play_22_23_splits_await_referee():
+    """E-kimi-task-422: the engine replays of I.22 and I.23 reach the
+    goal (the trace build asserts exactly that), but the play referee
+    refuses the engine's own closed case blocks; coverage code is
+    claude-9's, so these are REPORTED, not routed around:
+
+    - I.22's three-way by_cases (where DE's second meet i falls relative
+      to f) misses family member between f g i of "where f, g and i lie
+      on their line": that order forces i = h (i and h on the same ray
+      from g with |g-i| = |g-h| = |c-c'|, against neq i h), an
+      equidistant-same-ray point identity neither the engine closure
+      nor the referee derives.
+
+    - I.23's inner by_cases (angle d:c:e = 0 vs between d c e, inside
+      the degenerate branch) misses between c d e and between c e d of
+      "where c, d and e lie on their line": both put d, e on the same
+      ray from c, so angle d:c:e = 0 — the closure rule
+      r_degenerated_angle does add the LA row and the zero_ang marker —
+      but _holds/_fact_holds have no _zero_ang query case, so the
+      referee cannot see the zero-angle case cover them.
+
+    When the referee learns these, add 22 and 23 to
+    test_case_props_reach_goal / test_catalogue_splits_covered.
+    """
+    steps22 = [_engine_step_to_move(st) for st in tr.hyps_and_steps(22)[1]]
+    res = ep.play(22, steps22)
+    ent = res["moves"][-1]
+    assert not res["goal_reached"]
+    assert ent["rule"] == "by_cases" and ent["error"] == "missing case"
+    assert ent["missing_case"]["missing"] == [["between", "f", "g", "i"]]
+    assert ent["missing_case"]["family"] == \
+        "where f, g and i lie on their line"
+    steps23 = [_engine_step_to_move(st) for st in tr.hyps_and_steps(23)[1]]
+    res = ep.play(23, steps23)
+    ent = res["moves"][0]
+    assert not res["goal_reached"]
+    assert ent["rule"] == "by_cases" and ent["error"] == "missing case"
+    assert ent["missing_case"]["missing"] == [["between", "c", "d", "e"],
+                                              ["between", "c", "e", "d"]]
+    assert ent["missing_case"]["family"] == \
+        "where c, d and e lie on their line"

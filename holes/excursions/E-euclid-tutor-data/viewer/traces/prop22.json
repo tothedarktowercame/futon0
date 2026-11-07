@@ -1,0 +1,1232 @@
+{
+ "prop": 22,
+ "title": "Elements I.22 (LeanEuclid Book/Prop22.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "a'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "A",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "a'"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "B",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "b'"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "C",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "c'"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "e'",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "DE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "e'"
+    ]
+   },
+   "def_step": 3
+  },
+  {
+   "name": "e''",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 4
+  },
+  {
+   "name": "e'''",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 5
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 6
+  },
+  {
+   "name": "f",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 8
+  },
+  {
+   "name": "g",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 10
+  },
+  {
+   "name": "h",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 12
+  },
+  {
+   "name": "DKL",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "f",
+    "through": "d"
+   },
+   "def_step": 14
+  },
+  {
+   "name": "KLH",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "g",
+    "through": "h"
+   },
+   "def_step": 15
+  },
+  {
+   "name": "i",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "KLH",
+     "DE"
+    ],
+    "idx": 1
+   },
+   "def_step": 16
+  },
+  {
+   "name": "k",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "KLH",
+     "DKL"
+    ],
+    "idx": 0
+   },
+   "def_step": 19
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "arbitrary_point",
+   "args": [],
+   "bindings": {
+    "p": "d"
+   },
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 14
+   },
+   "placement_decision": "free parameter of the existential step: an arbitrary point; the sample sits below the three given segments so the construction line DE stands apart from them"
+  },
+  {
+   "n": 2,
+   "rule": "distinct_points",
+   "args": [
+    "d"
+   ],
+   "bindings": {
+    "q": "e'"
+   },
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "e'"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 15
+   },
+   "placement_decision": "free parameter of the existential step: any point distinct from d; the sample sits at unit distance along the x-axis, so DE is horizontal"
+  },
+  {
+   "n": 3,
+   "rule": "line_from_points",
+   "args": [
+    "d",
+    "e'"
+   ],
+   "bindings": {
+    "L": "DE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "DE"
+    ],
+    [
+     "on_line",
+     "e'",
+     "DE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "d",
+     "e'"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 16
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 4,
+   "rule": "extend_point_longer",
+   "args": [
+    "DE",
+    "d",
+    "e'",
+    "a",
+    "a'"
+   ],
+   "bindings": {
+    "x": "e''"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e''",
+     "DE"
+    ],
+    [
+     "between",
+     "d",
+     "e'",
+     "e''"
+    ],
+    [
+     "gt_len",
+     "e'",
+     "e''",
+     "a",
+     "a'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e'",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 17
+   },
+   "placement_decision": "free parameter of the existential step: |e'-e''| = 1.5|a-a'| > |a-a'| on the ray from d through e' (the rule fixes between d e' e'' and the lower bound, not the distance)"
+  },
+  {
+   "n": 5,
+   "rule": "extend_point_longer",
+   "args": [
+    "DE",
+    "d",
+    "e''",
+    "b",
+    "b'"
+   ],
+   "bindings": {
+    "x": "e'''"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e'''",
+     "DE"
+    ],
+    [
+     "between",
+     "d",
+     "e''",
+     "e'''"
+    ],
+    [
+     "gt_len",
+     "e''",
+     "e'''",
+     "b",
+     "b'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e''",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 18
+   },
+   "placement_decision": "free parameter of the existential step: |e''-e'''| = 1.5|b-b'| > |b-b'| on the ray from d through e'' (the rule fixes between d e'' e''' and the lower bound, not the distance)"
+  },
+  {
+   "n": 6,
+   "rule": "extend_point_longer",
+   "args": [
+    "DE",
+    "d",
+    "e'''",
+    "c",
+    "c'"
+   ],
+   "bindings": {
+    "x": "e"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e",
+     "DE"
+    ],
+    [
+     "between",
+     "d",
+     "e'''",
+     "e"
+    ],
+    [
+     "gt_len",
+     "e'''",
+     "e",
+     "c",
+     "c'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e'''",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 19
+   },
+   "placement_decision": "free parameter of the existential step: |e'''-e| = 1.5|c-c'| > |c-c'| on the ray from d through e''' (the rule fixes between d e''' e and the lower bound, not the distance)"
+  },
+  {
+   "n": 7,
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "e'''",
+    "e"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "d",
+     "e'''"
+    ],
+    [
+     "neq",
+     "d",
+     "e"
+    ],
+    [
+     "not_between",
+     "e'''",
+     "d",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "d",
+     "e'''",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 8,
+   "rule": "proposition_3",
+   "args": [
+    "d",
+    "e",
+    "a",
+    "a'",
+    "DE",
+    "A"
+   ],
+   "bindings": {
+    "q": "f"
+   },
+   "facts_added": [
+    [
+     "between",
+     "d",
+     "f",
+     "e"
+    ],
+    [
+     "eq_len",
+     "d",
+     "f",
+     "a",
+     "a'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "d",
+     "e",
+     "DE"
+    ],
+    [
+     "dpl",
+     "a",
+     "a'",
+     "A"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('d', 'e', 'a', \"a'\")"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 20
+   },
+   "placement_decision": "cut |a-a'| off segment d-e from d; sample direction along the segment"
+  },
+  {
+   "n": 9,
+   "rule": "between_symm_parts",
+   "args": [
+    "e",
+    "f",
+    "d"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "e",
+     "f"
+    ],
+    [
+     "neq",
+     "e",
+     "d"
+    ],
+    [
+     "not_between",
+     "f",
+     "e",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "e",
+     "f",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 10,
+   "rule": "proposition_3",
+   "args": [
+    "f",
+    "e",
+    "b",
+    "b'",
+    "DE",
+    "B"
+   ],
+   "bindings": {
+    "q": "g"
+   },
+   "facts_added": [
+    [
+     "between",
+     "f",
+     "g",
+     "e"
+    ],
+    [
+     "eq_len",
+     "f",
+     "g",
+     "b",
+     "b'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "f",
+     "e",
+     "DE"
+    ],
+    [
+     "dpl",
+     "b",
+     "b'",
+     "B"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('f', 'e', 'b', \"b'\")"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 21
+   },
+   "placement_decision": "cut |b-b'| off segment f-e from f; sample direction along the segment"
+  },
+  {
+   "n": 11,
+   "rule": "between_symm_parts",
+   "args": [
+    "e",
+    "g",
+    "f"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "e",
+     "g"
+    ],
+    [
+     "neq",
+     "e",
+     "f"
+    ],
+    [
+     "not_between",
+     "g",
+     "e",
+     "f"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "e",
+     "g",
+     "f"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 12,
+   "rule": "proposition_3",
+   "args": [
+    "g",
+    "e",
+    "c",
+    "c'",
+    "DE",
+    "C"
+   ],
+   "bindings": {
+    "q": "h"
+   },
+   "facts_added": [
+    [
+     "between",
+     "g",
+     "h",
+     "e"
+    ],
+    [
+     "eq_len",
+     "g",
+     "h",
+     "c",
+     "c'"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "g",
+     "e",
+     "DE"
+    ],
+    [
+     "dpl",
+     "c",
+     "c'",
+     "C"
+    ],
+    [
+     "entail",
+     "gt_len",
+     "('g', 'e', 'c', \"c'\")"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 22
+   },
+   "placement_decision": "cut |c-c'| off segment g-e from g; sample direction along the segment"
+  },
+  {
+   "n": 13,
+   "rule": "between_symm_parts",
+   "args": [
+    "g",
+    "h",
+    "e"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "g",
+     "h"
+    ],
+    [
+     "neq",
+     "g",
+     "e"
+    ],
+    [
+     "not_between",
+     "h",
+     "g",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "g",
+     "h",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 14,
+   "rule": "circle_from_points",
+   "args": [
+    "f",
+    "d"
+   ],
+   "bindings": {
+    "C": "DKL"
+   },
+   "facts_added": [
+    [
+     "centre",
+     "f",
+     "DKL"
+    ],
+    [
+     "on_circle",
+     "d",
+     "DKL"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "f",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 23
+   },
+   "placement_decision": "circle with centre f through d (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 15,
+   "rule": "circle_from_points",
+   "args": [
+    "g",
+    "h"
+   ],
+   "bindings": {
+    "C": "KLH"
+   },
+   "facts_added": [
+    [
+     "centre",
+     "g",
+     "KLH"
+    ],
+    [
+     "on_circle",
+     "h",
+     "KLH"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "g",
+     "h"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 24
+   },
+   "placement_decision": "circle with centre g through h (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 16,
+   "rule": "intersection_circle_line_extending_points",
+   "args": [
+    "KLH",
+    "DE",
+    "g",
+    "h"
+   ],
+   "bindings": {
+    "g": "i"
+   },
+   "facts_added": [
+    [
+     "on_circle",
+     "i",
+     "KLH"
+    ],
+    [
+     "on_line",
+     "i",
+     "DE"
+    ],
+    [
+     "between",
+     "i",
+     "g",
+     "h"
+    ]
+   ],
+   "premises": [
+    [
+     "inside",
+     "g",
+     "KLH"
+    ],
+    [
+     "dpl",
+     "g",
+     "h",
+     "DE"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 26
+   },
+   "placement_decision": "fact ('between', 'i', 'g', 'h') decided"
+  },
+  {
+   "n": 17,
+   "rule": "by_cases",
+   "args": [
+    [
+     [
+      [
+       "between",
+       "g",
+       "f",
+       "i"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "between",
+       "g",
+       "i",
+       "f"
+      ]
+     ],
+     []
+    ],
+    [
+     [
+      [
+       "peq",
+       "f",
+       "i"
+      ]
+     ],
+     []
+    ]
+   ],
+   "bindings": [
+    [
+     "inside",
+     "i",
+     "DKL"
+    ]
+   ],
+   "facts_added": [
+    [
+     "inside",
+     "i",
+     "DKL"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only case split (no euclid_apply line \u2014 it renders the intersects_cc premise Lean's SMT closes inside euclid_apply (intersection_circles KLH DKL), Prop22.lean:27): where does DE's second meet i with KLH fall relative to f? f and i both lie on DE on the side of g opposite h, so trichotomy leaves three cases: f between g and i (needs |c-c'| > |b-b'|), i between g and f (needs |c-c'| < |b-b'| \u2014 the DRAWN case), and f = i (needs |c-c'| = |b-b'|). Each case puts i inside DKL; the split changes no drawing",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 18,
+   "rule": "intersection_circle_circle_1",
+   "args": [
+    "i",
+    "h",
+    "KLH",
+    "DKL"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "intersects_cc",
+     "KLH",
+     "DKL"
+    ]
+   ],
+   "premises": [
+    [
+     "on_circle",
+     "i",
+     "KLH"
+    ],
+    [
+     "not_outside",
+     "h",
+     "KLH"
+    ],
+    [
+     "inside",
+     "i",
+     "DKL"
+    ],
+    [
+     "outside",
+     "h",
+     "DKL"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only step (intersection_circle_circle_1 i h KLH DKL, Diagrammatic.lean:312): i is inside DKL (the by_cases above) and not outside KLH (it is ON KLH), h is on KLH and outside DKL (|f-h| = |b-b'| + |c-c'| > |a-a'| by inequality 3) \u2014 so the circles meet. This is the intersects_cc premise Lean's SMT closes silently at Prop22.lean:27",
+   "lean_note": "engine-only step (intersection_circle_circle_1): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 19,
+   "rule": "intersection_circles",
+   "args": [
+    "KLH",
+    "DKL"
+   ],
+   "bindings": {
+    "c": "k"
+   },
+   "facts_added": [
+    [
+     "on_circle",
+     "k",
+     "KLH"
+    ],
+    [
+     "on_circle",
+     "k",
+     "DKL"
+    ]
+   ],
+   "premises": [
+    [
+     "intersects_cc",
+     "KLH",
+     "DKL"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop22.lean",
+    "line": 27
+   },
+   "placement_decision": "no distinguishing fact recorded (arbitrary pick; both candidates satisfy every fact of the step)"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.0,
+   2.2
+  ],
+  "a'": [
+   1.0,
+   2.2
+  ],
+  "b": [
+   2.4,
+   2.0
+  ],
+  "b'": [
+   2.9,
+   3.0
+  ],
+  "c": [
+   0.2,
+   3.2
+  ],
+  "c'": [
+   1.1,
+   3.5
+  ],
+  "d": [
+   0.0,
+   -1.2
+  ],
+  "e'": [
+   1.0,
+   -1.2
+  ],
+  "DE": null,
+  "e''": [
+   2.5,
+   -1.2
+  ],
+  "e'''": [
+   4.177050983124842,
+   -1.2
+  ],
+  "e": [
+   5.600075930200613,
+   -1.2
+  ],
+  "f": [
+   1.0,
+   -1.2
+  ],
+  "g": [
+   2.118033988749895,
+   -1.2
+  ],
+  "h": [
+   3.066717286800409,
+   -1.2
+  ],
+  "DKL": null,
+  "KLH": null,
+  "i": [
+   1.169350690699381,
+   -1.2
+  ],
+  "k": [
+   1.603738353924943,
+   -1.9971825386948714
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.22: |a-a'| + |b-b'| > |c-c'| with margin >= 0.15",
+   "ok": true
+  },
+  {
+   "check": "I.22: |a-a'| + |c-c'| > |b-b'| with margin >= 0.15",
+   "ok": true
+  },
+  {
+   "check": "I.22: |b-b'| + |c-c'| > |a-a'| with margin >= 0.15",
+   "ok": true
+  },
+  {
+   "check": "I.22: the three given segments stand apart from DE (every given point at least 0.5 off the line)",
+   "ok": true
+  },
+  {
+   "check": "I.22: the chain order d, f, g, h, e on DE",
+   "ok": true
+  },
+  {
+   "check": "I.22: |d-f| = |a-a'| (the first proposition_3 cut)",
+   "ok": true
+  },
+  {
+   "check": "I.22: |f-g| = |b-b'| (the second proposition_3 cut)",
+   "ok": true
+  },
+  {
+   "check": "I.22: |g-h| = |c-c'| (the third proposition_3 cut)",
+   "ok": true
+  },
+  {
+   "check": "I.22: |d-e| exceeds each given length (the extend_point_longer bounds)",
+   "ok": true
+  },
+  {
+   "check": "I.22: i between g and h on DE with |g-i| = |g-h| (the second meet)",
+   "ok": true
+  },
+  {
+   "check": "I.22: the drawn by_cases branch is branch 2 \u2014 i between g and f, since |c-c'| < |b-b'| with a visible margin",
+   "ok": true
+  },
+  {
+   "check": "I.22: GOAL |f-k| = |a-a'| (k on circle DKL)",
+   "ok": true
+  },
+  {
+   "check": "I.22: GOAL |f-g| = |b-b'| (the witness g)",
+   "ok": true
+  },
+  {
+   "check": "I.22: GOAL |k-g| = |c-c'| (k on circle KLH)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop22.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop03",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_22 : \u2200 (a a' b b' c c' : Point) (A B C : Line),",
+  "  distinctPointsOnLine a a' A \u2227 distinctPointsOnLine b b' B \u2227 distinctPointsOnLine c c' C \u2227",
+  "  (|(a\u2500a')| + |(b\u2500b')| > |(c\u2500c')|) \u2227",
+  "  (|(a\u2500a')| + |(c\u2500c')| > |(b\u2500b')|) \u2227",
+  "  (|(b\u2500b')| + |(c\u2500c')| > |(a\u2500a')|) \u2192",
+  "  \u2203 (k f g : Point), (|(f\u2500k)| = |(a\u2500a')|) \u2227 (|(f\u2500g)| = |(b\u2500b')|) \u2227 (|(k\u2500g)| = |(c\u2500c')|) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply arbitrary_point as d",
+  "  euclid_apply (distinct_points d) as e'",
+  "  euclid_apply (line_from_points d e') as DE",
+  "  euclid_apply (extend_point_longer DE d e' (a\u2500a')) as e''",
+  "  euclid_apply (extend_point_longer DE d e'' (b\u2500b')) as e'''",
+  "  euclid_apply (extend_point_longer DE d e''' (c\u2500c')) as e",
+  "  euclid_apply (proposition_3 d e a a' DE A ) as f",
+  "  euclid_apply (proposition_3 f e b b' DE B) as g",
+  "  euclid_apply (proposition_3 g e c c' DE C) as h",
+  "  euclid_apply (circle_from_points f d) as DKL",
+  "  euclid_apply (circle_from_points g h) as KLH",
+  "  -- Euclid didn't need to explicitly note the existence of i.",
+  "  euclid_apply (intersection_circle_line_extending_points KLH DE g h) as i",
+  "  euclid_apply (intersection_circles KLH DKL) as k",
+  "  use k, f, g",
+  "  euclid_apply (point_on_circle_onlyif f d k DKL)",
+  "  euclid_apply (point_on_circle_onlyif g k h KLH)",
+  "  euclid_finish",
+  "",
+  "-- An extension of proposition 22 given a line and two points on it.",
+  "theorem proposition_22' : \u2200 (a a' b b' c c' f e : Point) (A B C FE : Line),",
+  "  distinctPointsOnLine a a' A \u2227 distinctPointsOnLine b b' B \u2227 distinctPointsOnLine c c' C \u2227 distinctPointsOnLine f e FE \u2227",
+  "  (|(a\u2500a')| + |(b\u2500b')| > |(c\u2500c')|) \u2227",
+  "  (|(a\u2500a')| + |(c\u2500c')| > |(b\u2500b')|) \u2227",
+  "  (|(b\u2500b')| + |(c\u2500c')| > |(a\u2500a')|) \u2192",
+  "  \u2203 (k g : Point), g.onLine FE \u2227 \u00ac(between g f e) \u2227",
+  "  (|(f\u2500k)| = |(a\u2500a')|) \u2227 (|(f\u2500g)| = |(b\u2500b')|) \u2227 (|(k\u2500g)| = |(c\u2500c')|) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (extend_point_longer FE f e (b\u2500b')) as e'",
+  "  euclid_apply (extend_point_longer FE f e' (c\u2500c')) as e''",
+  "  euclid_apply (proposition_3 f e'' a a' FE A) as d",
+  "  euclid_apply (proposition_3 f e'' b b' FE B) as g",
+  "  euclid_apply (proposition_3 g e'' c c' FE C) as h",
+  "  euclid_apply (circle_from_points f d) as DKL",
+  "  euclid_apply (circle_from_points g h) as KLH",
+  "  -- Euclid didn't need to explicitly note the existence of i.",
+  "  euclid_apply (intersection_circle_line_extending_points KLH FE g h) as i",
+  "  euclid_apply (intersection_circles KLH DKL) as k",
+  "  use k, g",
+  "  euclid_apply (point_on_circle_onlyif f d k DKL)",
+  "  euclid_apply (point_on_circle_onlyif g k h KLH)",
+  "  euclid_finish",
+  "",
+  "theorem proposition_22'' : \u2200 (a a' b b' c c' f e x : Point) (A B C FE : Line),",
+  "  distinctPointsOnLine a a' A \u2227 distinctPointsOnLine b b' B \u2227 distinctPointsOnLine c c' C \u2227 distinctPointsOnLine f e FE \u2227 \u00ac(x.onLine FE) \u2227",
+  "  (|(a\u2500a')| + |(b\u2500b')| > |(c\u2500c')|) \u2227",
+  "  (|(a\u2500a')| + |(c\u2500c')| > |(b\u2500b')|) \u2227",
+  "  (|(b\u2500b')| + |(c\u2500c')| > |(a\u2500a')|) \u2192",
+  "  \u2203 (k g : Point), g.onLine FE \u2227 \u00ac(between g f e) \u2227 (k.sameSide x FE) \u2227",
+  "  (|(f\u2500k)| = |(a\u2500a')|) \u2227 (|(f\u2500g)| = |(b\u2500b')|) \u2227 (|(k\u2500g)| = |(c\u2500c')|) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (extend_point_longer FE f e (b\u2500b')) as e'",
+  "  euclid_apply (extend_point_longer FE f e' (c\u2500c')) as e''",
+  "  euclid_apply (proposition_3 f e'' a a' FE A) as d",
+  "  euclid_apply (proposition_3 f e'' b b' FE B) as g",
+  "  euclid_apply (proposition_3 g e'' c c' FE C) as h",
+  "  euclid_apply (circle_from_points f d) as DKL",
+  "  euclid_apply (circle_from_points g h) as KLH",
+  "  -- Euclid didn't need to explicitly note the existence of i.",
+  "  euclid_apply (intersection_circle_line_extending_points KLH FE g h) as i",
+  "  euclid_apply (intersection_same_side KLH DKL x g f FE) as k",
+  "  use k, g",
+  "  euclid_apply (point_on_circle_onlyif f d k DKL)",
+  "  euclid_apply (point_on_circle_onlyif g k h KLH)",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}
