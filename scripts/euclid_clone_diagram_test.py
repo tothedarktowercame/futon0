@@ -112,7 +112,10 @@ def test_refused_step_leaves_no_trust_behind():
     picture has a inside CGH (trusted) but b is the centre, so the outside
     premise fails and the step is refused. Before the fix the trusted
     inside fact stayed in the state and in trust_log."""
-    tc = cd.TrustingClone("trusting", "I.2")
+    # explicit picture (a inside CGH): the default I.2 placement moved in
+    # 94fe35f, and this test is about the refusal, not the default picture
+    tc = cd.TrustingClone("trusting", "I.2",
+                          xy={"a": (0.3, 0.9), "b": (0.0, 0.0), "c": (1.0, 0.0)})
     s = cd.rv.initial_state("I.2")
     tc.apply_step(s, 1, "line_from_points", ("a", "b"), {"L": "AB"})
     tc.apply_step(s, 2, "circle_from_points", ("b", "c"), {"C": "CGH"})

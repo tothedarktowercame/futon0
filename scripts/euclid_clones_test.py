@@ -114,3 +114,24 @@ def test_e_predict_does_not_read_the_book_steps(monkeypatch):
                         raising=True)
     after = {c.name: c.predict("I.1", state) for c in env.clones}
     assert before == after
+
+
+def test_book_i1_probabilities_by_hand():
+    """Review (claude-9): per-step probabilities on the Book's I.1, computed
+    by hand from |P| and |legal| (eps = 0.05):
+      full-engine: step 1 |P|=2 -> 0.95/2; steps 2, 3 |P|=1 -> 0.95.
+      no-intersection_circles: guesses on steps 1, 2 (1/3, 1/4); step 3 is
+      outside its action space -> eps/|legal| = 0.05/5.
+    zai-2's bell-back table had no-intersection tied with depth-1; it is
+    about 100x lower, since it cannot make the intersection."""
+    env = ec.standard_envelope()
+    state = rv.initial_state("I.1")
+    probs = []
+    for i, step in enumerate(rv.fixture_book_i1(), start=1):
+        probs.append(env.observe("I.1", state, step)["probabilities"])
+        state = _advance(state, step, i)
+    assert [round(p["full-engine"], 4) for p in probs] == [0.475, 0.95, 0.95]
+    assert [round(p["no-intersection_circles"], 4) for p in probs] == \
+        [0.3333, 0.25, 0.01]
+    post = env.events[-1]["posterior"]
+    assert post["no-intersection_circles"] < post["depth-1"] / 50
