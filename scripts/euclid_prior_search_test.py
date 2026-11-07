@@ -119,5 +119,72 @@ class PriorBehaviourTest(unittest.TestCase):
             eps.es.verify_path(kw["hyps"], path, kw["goal"])
 
 
+class StructuralPriorTest(unittest.TestCase):
+    def test_bonus_grows_with_recency(self):
+        self.assertGreater(eps.structural_bonus("proposition_2'"),
+                           eps.structural_bonus("proposition_1"))
+        for r in ("line_from_points", "circle_from_points",
+                  "intersection_circles"):
+            self.assertEqual(eps.structural_bonus(r), 0.0)
+        # parse works for higher cites too — but they must never be offered
+        self.assertEqual(eps.structural_bonus("proposition_3"), 3.0)
+
+    def test_i3_rule_universe_has_no_proposition_3_or_higher(self):
+        """Leakage: the structural prior consults only the NAMES of
+        propositions k < n; the rule list for I.3 offers proposition_1 and
+        proposition_2' only, so nothing >= 3 can ever be proposed."""
+        rules = eps.es.prop_searches()["I.3"]["rules"]
+        for r in rules:
+            m = re.match(r"proposition_(\d+)", r)
+            if m:
+                self.assertLess(int(m.group(1)), 3, r)
+
+    def test_i3_structural_run_never_proposes_high_cites(self):
+        """Watched bad case: wrap legal_moves and record every rule offered
+        during a real (small-budget) structural run for I.3."""
+        offered = []
+        orig = eps.es.legal_moves
+
+        def spy(s, rules):
+            mv = orig(s, rules)
+            offered.extend(r for r, _ in mv)
+            return mv
+
+        eps.es.legal_moves = spy
+        try:
+            kw = dict(eps.es.prop_searches()["I.3"])
+            kw["node_budget"] = 50
+            kw["time_budget"] = 60.0
+            eps.search_prior(prior=eps.structural_prior(), **kw)
+        finally:
+            eps.es.legal_moves = orig
+        self.assertTrue(offered)
+        for r in set(offered):
+            m = re.match(r"proposition_(\d+)", r)
+            self.assertFalse(m and int(m.group(1)) >= 3, r)
+
+    def test_structural_i1_matches_uninformed(self):
+        """I.1's rules are axioms only, so the structural bonus is 0 for
+        every move and the search reproduces the uninformed BFS."""
+        kw = eps.es.prop_searches()["I.1"]
+        f0, p0, s0 = eps.es.search(**kw)
+        f1, p1, s1 = eps.search_prior(prior=eps.structural_prior(), **kw)
+        self.assertTrue(f0 and f1)
+        self.assertEqual(len(p0), len(p1))
+        self.assertEqual(s1["nodes"], s0["nodes"])
+
+    def test_combined_finds_i3_and_verifies(self):
+        """The one positive result: motif + structural finds I.3 (the
+        structural term rescues the proposition_2' first move that the
+        motif prior alone starved). Slow (~45 s) — pinned deliberately."""
+        kw = eps.es.prop_searches()["I.3"]
+        mined, _ = eps.build_prior(3)
+        comb = dict(mined)
+        comb["structural"] = True
+        found, path, st = eps.search_prior(prior=comb, **kw)
+        self.assertTrue(found, st)
+        eps.es.verify_path(kw["hyps"], path, kw["goal"], kw.get("extra_la"))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

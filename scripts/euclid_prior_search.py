@@ -32,15 +32,19 @@ Usage:
   python3 scripts/euclid_prior_search.py            # table for I.1-I.3
   python3 scripts/euclid_prior_search.py --prior-only
 
-RESULT (2026-11-07, same budgets as euclid_search.prop_searches): the prior
-does NOT help on this corpus. I.1: prior empty -> search identical to
-uninformed BFS (same nodes). I.2: not found either way within the 30 000
-node / 600 s budget. I.3: REGRESSION — uninformed BFS finds it at depth 3 in
-484 nodes; the prior (from I.1+I.2 only) scores circle_from_points above
-proposition_2' as a first move, and best-first then exhausts the 20 000-node
-budget in circle subtrees without reaching the Book's cite-I.2-first path.
-With only one or two earlier propositions, unigram counts are dominated by
-their proof shapes, not by evidence about the target.
+RESULT (2026-11-07, same budgets as euclid_search.prop_searches()):
+motif prior alone: does NOT help (I.3 regresses — see above).
+structural prior (bonus k for citing proposition_k, 0 for constructions):
+I.1 identical (axioms only, bonus 0 everywhere). I.2 not found within
+30 000 nodes / 600 s. I.3 still not found within 20 000 nodes — the bonus
+is constant across a path, so it only reorders siblings and the
+proposition_2' subtree still starves behind circle subtrees at equal
+depth ordering.
+motif + structural: I.3 IS found (depth 4, 16 948 nodes, ~45 s; a path
+that applies proposition_2' twice — worse than uninformed BFS's 484
+nodes at depth 3, but found). I.2 still not found. So: the structural
+prior fixes the I.3 regression only in combination; nothing finds I.2.
+
 """
 
 import argparse
@@ -65,6 +69,20 @@ es = _load("euclid_search", _HERE / "euclid_search.py")
 motifs = _load("euclid_step_motifs", _HERE / "euclid_step_motifs.py")
 
 BETA = 0.5
+
+# Structural prior (teacher's heuristic: the last thing proved is probably
+# useful now): a citation proposition_k scores k (growing with k, so the
+# most recent earlier proposition is highest), constructions score 0.
+# Leakage: it reads only the NAMES of earlier propositions (k < n); the
+# rule universe for target n is euclid_search's, whose citable rules are
+# proposition_1 and proposition_2' only, so nothing >= n can ever be
+# proposed. Mined proofs are not consulted.
+STRUCT_W = 1.0
+
+
+def structural_bonus(rule):
+    m = re.match(r"proposition_(\d+)'*$", rule)
+    return float(m.group(1)) if m else 0.0
 
 
 # --- prior construction -------------------------------------------------------
@@ -148,7 +166,13 @@ def _bigram_counts(mined):
 
 
 def move_score(prior, prev_rule, rule):
-    """Documented formula. prev_rule None = START."""
+    """Documented formula. prev_rule None = START.
+
+    Motif part: log1p(name bigram/unigram count) + BETA*log1p(class
+    back-off). Structural part (when prior["structural"] is set):
+    + STRUCT_W * structural_bonus(rule) — k for a citation proposition_k,
+    0 for constructions; constant across the path, it only orders siblings.
+    """
     cls = motifs.classify
     if prev_rule is None:
         n_name = prior["name_unigram"].get(rule, 0)
@@ -157,7 +181,10 @@ def move_score(prior, prev_rule, rule):
         n_name = prior["name_bigram"].get((prev_rule, rule), 0)
         n_cls = prior["class_bigram"].get(
             (cls(prev_rule), cls(rule)), 0)
-    return math.log1p(n_name) + BETA * math.log1p(n_cls)
+    sc = math.log1p(n_name) + BETA * math.log1p(n_cls)
+    if prior.get("structural"):
+        sc += STRUCT_W * structural_bonus(rule)
+    return sc
 
 
 # --- best-first search ---------------------------------------------------------
@@ -220,30 +247,45 @@ def search_prior(hyps, rules, goal, max_depth, node_budget,
     return False, None, es._stats(nodes, branch, time.perf_counter() - t0)
 
 
+def structural_prior():
+    """Structural-only prior: no mined counts, just the recency bonus."""
+    return {"name_bigram": {}, "class_bigram": {},
+            "name_unigram": {}, "class_unigram": {}, "structural": True}
+
+
 # --- comparison table -----------------------------------------------------------
 
 PROP_N = {"I.1": 1, "I.2": 2, "I.3": 3}
 
 
-def run_table(props=("I.1", "I.2", "I.3")):
+def run_table(props=("I.1", "I.2", "I.3"),
+              variants=("uninformed", "motif", "structural", "motif+struct")):
     searches = es.prop_searches()
     rows = []
     for name in props:
         kw = searches[name]
         n = PROP_N[name]
-        prior, prov = build_prior(n)
-        found, path, st = search_prior(prior=prior, **kw)
-        rows.append((name, "prior", found, path, st, prior))
-        print(f"--- {name} [prior from props < {n}]: "
-              f"{'FOUND' if found else 'not found'}")
-        print(f"    depth={len(path) if found else '-'} nodes={st['nodes']} "
-              f"branch(mean/max)={st['branch_mean']:.1f}/{st['branch_max']} "
-              f"wall={st['wall_s']:.2f}s entails={st['entails_s']:.2f}s")
-        if found:
-            for i, (r, a, b) in enumerate(path, 1):
-                print(f"    {i}. {r} {a} {b}")
-            es.verify_path(kw["hyps"], path, kw["goal"], kw.get("extra_la"))
-            print("    replay: OK")
+        mined, _ = build_prior(n)
+        for var in variants:
+            if var == "uninformed":
+                found, path, st = es.search(**kw)
+            elif var == "structural":
+                found, path, st = search_prior(prior=structural_prior(), **kw)
+            elif var == "motif":
+                found, path, st = search_prior(prior=mined, **kw)
+            else:  # motif+struct
+                comb = dict(mined)
+                comb["structural"] = True
+                found, path, st = search_prior(prior=comb, **kw)
+            rows.append((name, var, found, path, st))
+            print(f"--- {name} [{var}]: {'FOUND' if found else 'not found'}")
+            print(f"    depth={len(path) if found else '-'} nodes={st['nodes']} "
+                  f"wall={st['wall_s']:.2f}s entails={st['entails_s']:.2f}s")
+            if found:
+                for i, (r, a, b) in enumerate(path, 1):
+                    print(f"    {i}. {r} {a} {b}")
+                es.verify_path(kw["hyps"], path, kw["goal"], kw.get("extra_la"))
+                print("    replay: OK")
     return rows
 
 
@@ -260,13 +302,6 @@ def main():
             for k in ("name_unigram", "name_bigram", "class_bigram"):
                 print(f"  {k}: {prior[k]}")
         return
-    # uninformed baseline for the same table
-    searches = es.prop_searches()
-    for name in ("I.1", "I.2", "I.3"):
-        found, path, st = es.search(**searches[name])
-        print(f"--- {name} [uninformed]: {'FOUND' if found else 'not found'}")
-        print(f"    depth={len(path) if found else '-'} nodes={st['nodes']} "
-              f"wall={st['wall_s']:.2f}s entails={st['entails_s']:.2f}s")
     run_table()
 
 
