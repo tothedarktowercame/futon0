@@ -1852,6 +1852,29 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, AB, BC, AC: [
             (None, [("_gt_ang", a, b, c, b, c, a)])],
     },
+    # Book/Prop19.lean:6 — proposition_19 verbatim:
+    #   ∀ (a b c : Point) (AB BC AC : Line),
+    #   formTriangle a b c AB BC AC ∧ (∠ a:b:c > ∠ b:c:a) →
+    #   (|(a─c)| > |(a─b)|)
+    # Cited as a lemma (the engine's own I.19 replay, PROP19_STEPS_DATA,
+    # is the proof — by_contra citing proposition_5' and proposition_18).
+    # formTriangle destructured as at proposition_18; the angle
+    # comparison is an entailment premise. The conclusion is the metric
+    # tuple _gt_len. No fresh objects, forward-style citation.
+    "proposition_19": {
+        "cite": "Book/Prop19.lean:6",
+        "args": ("a", "b", "c", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, AB, BC, AC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB)],
+        "entail": lambda s, a, b, c, AB, BC, AC: [
+            ("gt_ang", (a, b, c, b, c, a))],
+        "make": lambda s, a, b, c, AB, BC, AC: [
+            (None, [("_gt_len", a, c, a, b)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
     #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
     # Rendered as the POSITIVE fact opposing_sides a c L (same rendering as

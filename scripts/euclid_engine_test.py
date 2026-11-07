@@ -701,6 +701,51 @@ def test_prop19_reverse_not_entailed():
     assert not eng.la_entails_gt(s.la, "a", "b", "a", "c")
 
 
+def test_proposition_19_citation_fires():
+    """The cited lemma makes exactly the _gt_len conclusion (the
+    theorem PROP19_STEPS_DATA proves)."""
+    s = eng.State()
+    for f, w in eng.PROP19_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_19",
+                   ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert eng.la_entails_gt(s.la, "a", "c", "a", "b")
+
+
+def test_proposition_19_citation_refused_wrong_way():
+    """CONSTRUCTIONS['proposition_19'] cited with the angle comparison
+    the wrong way (∠b:c:a > ∠a:b:c instead of ∠a:b:c > ∠b:c:a) is
+    refused: the gt_ang entailment premise fails."""
+    s = eng.State()
+    for f, w in eng.PROP19_HYPS_DATA:
+        if f[0] == "gt_ang":
+            f = ("gt_ang", "b", "c", "a", "a", "b", "c")  # reversed
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_19",
+                       ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert "gt_ang" in str(ei.value.premise)
+
+
+def test_proposition_19_citation_refused_on_equal_angles():
+    """Cited with the angles EQUAL (∠a:b:c = ∠b:c:a, no strict
+    inequality) proposition_19 is refused: a strict gt_ang premise is
+    not entailed by an equality (and the conclusion would be false —
+    isosceles, |a-c| = |a-b|)."""
+    s = eng.State()
+    for f, w in eng.PROP19_HYPS_DATA:
+        if f[0] == "gt_ang":
+            f = ("eq_ang", "a", "b", "c", "b", "c", "a")
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_19",
+                       ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert "gt_ang" in str(ei.value.premise)
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))
@@ -879,14 +924,18 @@ def test_replay_fact_set_footprints():
     closure and added the I.18 replay. Only I.9's footprint changed:
     (224, 87) -> (223, 86) — the one angord marker/row the rule had been
     adding there is gone. Every other replay is unchanged and every
-    main() goal still holds. I.18 joins the pin at (97, 32)."""
+    main() goal still holds. I.18 joins the pin at (97, 32).
+    E-kimi-task-390 added the I.19 replay (by_contra citing
+    proposition_5' and the proposition_18 lemma). No replay changed;
+    I.19 joins the pin at (41, 11)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (223, 86), "10": (161, 50),
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
-                "16a": (546, 281), "17": (70, 24), "18": (97, 32)}
+                "16a": (546, 281), "17": (70, 24), "18": (97, 32),
+                "19": (41, 11)}
     got = {}
     old_argv = sys.argv
     try:
