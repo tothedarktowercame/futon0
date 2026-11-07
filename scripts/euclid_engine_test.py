@@ -713,7 +713,7 @@ def test_replay_fact_set_footprints():
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (224, 87), "10": (161, 50),
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
-                "14": (70, 21)}
+                "14": (70, 21), "15": (104, 47)}
     got = {}
     old_argv = sys.argv
     try:
@@ -1922,3 +1922,59 @@ def test_prop14_inner_branch_removed_is_not_refused():
     s, rep = _prop14(steps=st)  # accepted: exhaustiveness is on the caller
     assert s.has(("on_line", "d", "BC"))
     assert rep[-1]["final"]
+
+
+# --- Book I.15 (vertical angles) --------------------------------------------
+
+
+def _prop15(steps=eng.PROP15_STEPS_DATA, hyps=eng.PROP15_HYPS_DATA,
+            goal=eng.PROP15_GOAL):
+    return eng.replay(hyps, steps, goal)
+
+
+def test_prop15_replay():
+    s, rep = _prop15()
+    assert rep[-1]["final"]
+    assert eng._fm_sat(s.la.rows)
+    assert eng.la_entails_eq_ang(s.la, "a", "e", "c", "d", "e", "b")
+    assert eng.la_entails_eq_ang(s.la, "c", "e", "b", "a", "e", "d")
+    # the hypotheses ALONE (no steps) entail neither equality
+    s2, _ = eng.replay(eng.PROP15_HYPS_DATA, [], [])
+    assert not eng.la_entails_eq_ang(s2.la, "a", "e", "c", "d", "e", "b")
+    assert not eng.la_entails_eq_ang(s2.la, "c", "e", "b", "a", "e", "d")
+
+
+def test_prop15_control_dropped_second_proposition_13():
+    """Bad case (a): drop the second proposition_13 citation
+    (∠a:e:d + ∠d:e:b = 2∟). The FIRST equality ∠a:e:c = ∠d:e:b is no
+    longer entailed (nothing pins ∠d:e:b), while the second equality still
+    is (sums 1 and 3 suffice for it) — the replay fails on the first goal."""
+    steps = [x for x in eng.PROP15_STEPS_DATA
+             if x != ("proposition_13", ("d", "e", "a", "b", "CD", "AB"), {})]
+    with pytest.raises(AssertionError) as ei:
+        _prop15(steps=steps)
+    # the failed goal is the FIRST equality ∠a:e:c = ∠d:e:b
+    assert "('_eq_ang', 'a', 'e', 'c', 'd', 'e', 'b')" in str(ei.value)
+
+
+def test_prop15_control_between_reversed():
+    """Bad case (b): between a e b replaced by between e a b. Refused:
+    between_symm_parts (a, e, b) has no premise (the reversal the closure
+    supplies of between e a b is between b a e, not between a e b), and
+    without a ≠ e no dpl a e AB for the first citation. The constructed bad
+    case raises MissingPremise at step 1."""
+    hyps = [(((("between", "e", "a", "b"), "h"))
+             if f == ("between", "a", "e", "b") else (f, w))
+            for f, w in eng.PROP15_HYPS_DATA]
+    with pytest.raises(eng.MissingPremise):
+        _prop15(hyps=hyps)
+
+
+def test_prop15_control_wrong_equality_not_entailed():
+    """Bad case (c, reviewer's): the WRONG equality ∠a:e:c = ∠c:e:b (the
+    two angles are supplementary, not equal) is not entailed by the full
+    proof — the goal check is not vacuously passing any eq_ang query."""
+    s, _ = _prop15()
+    assert not eng.la_entails_eq_ang(s.la, "a", "e", "c", "c", "e", "b")
+    with pytest.raises(AssertionError):
+        _prop15(goal=[("_eq_ang", "a", "e", "c", "c", "e", "b")])

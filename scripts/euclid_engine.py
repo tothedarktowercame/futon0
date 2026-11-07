@@ -3011,6 +3011,57 @@ PROP14_STEPS_DATA = [
 PROP14_GOAL = [("on_line", "d", "BC"), ("on_line", "c", "BD")]
 
 
+# ---------------------------------------------------------------------------
+# Book I.15 as data (Book/Prop15.lean:6 — vertical angles)
+# ---------------------------------------------------------------------------
+# proposition_15 : dpl a b AB ∧ dpl c d CD ∧ e.onLine AB ∧ e.onLine CD ∧
+#   CD ≠ AB ∧ (between d e c) ∧ (between a e b) →
+#   (∠ a:e:c = ∠ d:e:b) ∧ (∠ c:e:b = ∠ a:e:d)
+# neq_line is given in BOTH directions (the engine's neq_line is directed,
+# as at PROP13): Lean's CD ≠ AB premise justifies neq_line CD AB directly,
+# and neq_line AB CD is the same inequality read the other way (Lean's ≠
+# is symmetric; the directed rendering is the engine's). Call 1 matches on
+# AB ≠ CD, calls 2-3 on CD ≠ AB.
+PROP15_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),     # distinctPointsOnLine a b AB
+    (("dpl", "c", "d", "CD"), "h"),     # distinctPointsOnLine c d CD
+    (("on_line", "e", "AB"), "h"),      # e.onLine AB
+    (("on_line", "e", "CD"), "h"),      # e.onLine CD
+    (("neq_line", "CD", "AB"), "h"),    # CD ≠ AB
+    (("neq_line", "AB", "CD"), "h"),    #   the same ≠, other direction
+    (("between", "d", "e", "c"), "h"),  # between d e c
+    (("between", "a", "e", "b"), "h"),  # between a e b
+]
+# Lean's shape (Book/Prop15.lean:10-14): three citations of proposition_13
+# then euclid_finish (the arithmetic):
+#   proposition_13 a e c d AB CD : ∠c:e:a + ∠a:e:d = 2∟
+#   proposition_13 d e a b CD AB : ∠a:e:d + ∠d:e:b = 2∟
+#   proposition_13 c e a b CD AB : ∠a:e:c + ∠c:e:b = 2∟
+# (with angle_symm, ∠c:e:a = ∠a:e:c as canonical atoms). From the first
+# two, ∠a:e:c = 2∟ − ∠a:e:d = ∠d:e:b; from the first and third,
+# ∠c:e:b = 2∟ − ∠a:e:c = ∠a:e:d.
+# Engine-only steps: the three between_symm_parts citations supply the neqs
+# the closure does not derive from between (see PROP13/PROP14) so r_dpl can
+# rebuild the dpl premises proposition_13 matches on:
+#   (a, e, b) → a ≠ e  for dpl a e AB (call 1)
+#   (d, e, c) → d ≠ e  for dpl d e CD (call 2)
+#   (c, e, d) → c ≠ e  for dpl c e CD (call 3; between c e d is the closure
+#     reversal of the hypothesis between d e c, r_between_symm)
+# The reversed between b e a that calls 2-3 need as their between premise
+# is likewise closure (r_between_symm), so it is not a cited step.
+PROP15_STEPS_DATA = [
+    ("between_symm_parts", ("a", "e", "b"), {}),
+    ("between_symm_parts", ("d", "e", "c"), {}),
+    ("between_symm_parts", ("c", "e", "d"), {}),
+    ("proposition_13", ("a", "e", "c", "d", "AB", "CD"), {}),
+    ("proposition_13", ("d", "e", "a", "b", "CD", "AB"), {}),
+    ("proposition_13", ("c", "e", "a", "b", "CD", "AB"), {}),
+]
+# Both halves of the conjunction, as LA entailment queries.
+PROP15_GOAL = [("_eq_ang", "a", "e", "c", "d", "e", "b"),
+               ("_eq_ang", "c", "e", "b", "a", "e", "d")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3119,6 +3170,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP14_HYPS_DATA, PROP14_STEPS_DATA,
                             PROP14_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "15":
+            t0 = time.time()
+            s, rep = replay(PROP15_HYPS_DATA, PROP15_STEPS_DATA,
+                            PROP15_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
