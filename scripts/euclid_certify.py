@@ -221,8 +221,12 @@ PROP5_BOOK_STEPS = [
 ]
 
 # Rules whose Lean signature ends in a Segment built from the engine's last
-# two (Point) args (SystemE Theory/Constructions/Points.lean:28).
-SEGMENT_TAIL_RULES = {"point_between_points_shorter_than"}
+# two (Point) args (SystemE Theory/Constructions/Points.lean:28 for
+# point_between_points_shorter_than, :43 for extend_point_longer — its
+# (L b c (s : Segment)) shape is why the I.16b engine data carries the
+# (b─e) segment as its two endpoints).
+SEGMENT_TAIL_RULES = {"point_between_points_shorter_than",
+                      "extend_point_longer"}
 
 # Book/Prop13.lean verbatim: angles on a straight line sum to two rights.
 PROP13_STATEMENT = """\
@@ -318,6 +322,51 @@ theorem proposition_15 : ∀ (a b c d e : Point) (AB CD : Line),
   CD ≠ AB ∧ (between d e c) ∧ (between a e b) →
   (∠ a:e:c = ∠ d:e:b) ∧ (∠ c:e:b = ∠ a:e:d) :="""
 
+# Book/Prop16.lean: the exterior angle exceeds each interior opposite angle
+# — BOTH conjuncts. The ENGINE proves only the second (euclid_engine
+# PROP16B_STEPS_DATA), so the I.16b-engine theorem below carries the SECOND
+# conjunct alone as its statement, renamed proposition_16b; Prop16.lean is
+# not changed. Statement hypotheses verbatim from Book/Prop16.lean:9-11.
+PROP16_STATEMENT = """\
+theorem proposition_16 : ∀ (a b c d : Point) (AB BC AC: Line),
+  formTriangle a b c AB BC AC ∧ (between b c d) →
+  (∠ a:c:d > ∠ c:b:a) ∧ (∠ a:c:d > ∠ b:a:c) :="""
+
+PROP16B_STATEMENT = """\
+theorem proposition_16b : ∀ (a b c d : Point) (AB BC AC: Line),
+  formTriangle a b c AB BC AC ∧ (between b c d) →
+  ∠ a:c:d > ∠ b:a:c :="""
+
+# The engine's own I.16b steps (euclid_engine.PROP16B_STEPS_DATA, read
+# live): flat — proposition_10 bisects AC at e, line BE, extend_point_longer
+# past e to f' with |e-f'| > |b-e| (the (b─e) segment as a SEGMENT_TAIL —
+# see SEGMENT_TAIL_RULES), proposition_3 cuts |b-e| off e-f' giving f,
+# line FC, vertical angles at e (proposition_15), SAS (proposition_4) for
+# ∠e:a:b = ∠e:c:f, and sum_angles_onlyif c a d f AC BC splits
+# ∠a:c:d = ∠a:c:f + ∠f:c:d with ∠f:c:d > 0 — euclid_finish's LA closes the
+# strict inequality. Every engine apply's args match Lean's second-conjunct
+# bullet (Book/Prop16.lean:26-32) EXACTLY (checked 2026-11-06):
+#   proposition_10 a c AC            == Prop16.lean:26
+#   line_from_points b e as BE       == :27
+#   extend_point_longer BE b e (b─e) == :28  (engine carries (b─e) as "b","e")
+#   proposition_3 e f' b e BE BE     == :29
+#   proposition_15 a c b f e AC BE   == :31
+#   proposition_4 e b a e f c BE AB AC BE FC AC == :32
+# Engine-only rules (mapped as at I.14):
+#   between_symm_parts -> euclid_apply of between_symm (whole axiom).
+#   pasch_3_opposing (b c d AC), (b e f AC) -> euclid_apply (pasch_3 ...):
+#     the SystemE axiom, conclusions ¬(b.sameSide d AC) / ¬(b.sameSide f AC).
+#   opposing_opposing_same_side (d b f AC) is DERIVED -> CHECKED
+#     euclid_assert d.sameSide f AC (BRIDGE_ASSERTS) — the side fact
+#     sum_angles_onlyif's premise needs; SMT proves it from the two pasch_3
+#     conclusions.
+PROP16B_ENGINE_CITABLE = [
+    "proposition_10", "between_symm", "line_from_points",
+    "extend_point_longer", "proposition_3", "pasch_3", "proposition_15",
+    "proposition_4", "sum_angles_onlyif",
+]
+
+
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
                 book_steps=PROP1_BOOK_STEPS, witness="c"),
@@ -388,6 +437,19 @@ PROPS = {
                         statement=PROP15_STATEMENT, book_steps=None,
                         witness=None, engine="I.15",
                         engine_citable=PROP15_ENGINE_CITABLE),
+    # The ENGINE's own I.16 SECOND-CONJUNCT steps (euclid_engine
+    # PROP16B_STEPS_DATA, read live): flat proof of ∠a:c:d > ∠b:a:c only
+    # (the engine does not prove the first conjunct, so the theorem is
+    # proposition_16b — the second conjunct of Book/Prop16.lean's
+    # proposition_16 — and Prop16.lean is unchanged). Imports are exactly
+    # those of Book/Prop16.lean:1-5. No witness, no by_cases; the derived
+    # opposing_opposing_same_side step is a CHECKED euclid_assert. See the
+    # comment above PROP16B_ENGINE_CITABLE.
+    "I.16b-engine": dict(imports=["SystemE", "Book.Prop03", "Book.Prop04",
+                                  "Book.Prop10", "Book.Prop15"],
+                         statement=PROP16B_STATEMENT, book_steps=None,
+                         witness=None, engine="I.16b",
+                         engine_citable=PROP16B_ENGINE_CITABLE),
 }
 
 
@@ -554,6 +616,8 @@ def engine_steps(prop):
         return translate_engine_steps(eng.PROP12_STEPS_DATA)
     if prop == "I.15" and hasattr(eng, "PROP15_STEPS_DATA"):
         return translate_engine_steps(eng.PROP15_STEPS_DATA)
+    if prop == "I.16b" and hasattr(eng, "PROP16B_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP16B_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
 
 

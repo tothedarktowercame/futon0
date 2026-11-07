@@ -689,3 +689,111 @@ def test_negative_engine_i15_dropped_proposition_13():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.16b-engine (E-kimi-task-397) -----------------------------------------
+
+def test_emit_engine_i16b_emission_pinned():
+    # Flat proof of the SECOND conjunct of proposition_16 only (the engine
+    # proves ∠a:c:d > ∠b:a:c; the theorem is named proposition_16b and
+    # Book/Prop16.lean is unchanged). proposition_10/line/extend_point_longer
+    # (segment tail (b─e))/proposition_3/line, the three between_symm (whole
+    # axiom for the engine's between_symm_parts), two pasch_3 (the engine's
+    # pasch_3_opposing), one CHECKED euclid_assert for the DERIVED
+    # opposing_opposing_same_side (d.sameSide f AC), then proposition_15,
+    # proposition_4, sum_angles_onlyif; euclid_finish's LA closes the strict
+    # inequality. Engine args match Book/Prop16.lean:26-32 exactly.
+    steps = cert.engine_steps("I.16b")
+    src = cert.emit_proof("I.16b-engine", steps, None)
+    assert "theorem proposition_16b :" in src
+    assert "∠ a:c:d > ∠ b:a:c :=\n" in src
+    assert "∠ a:c:d > ∠ c:b:a" not in src  # first conjunct NOT claimed
+    assert "  euclid_apply (proposition_10 a c AC) as e\n" in src
+    assert "  euclid_apply (between_symm a e c)\n" in src
+    assert "  euclid_apply (between_symm c e a)\n" in src
+    assert "  euclid_apply (between_symm d c b)\n" in src
+    assert "  euclid_apply (extend_point_longer BE b e (b─e)) as f'\n" in src
+    assert "  euclid_apply (proposition_3 e f' b e BE BE) as f\n" in src
+    assert "  euclid_apply (pasch_3 b c d AC)\n" in src
+    assert "  euclid_apply (pasch_3 b e f AC)\n" in src
+    assert src.count("euclid_assert") == 1
+    assert "  euclid_assert d.sameSide f AC\n" in src
+    assert "  euclid_apply (proposition_15 a c b f e AC BE)\n" in src
+    assert ("  euclid_apply (proposition_4 e b a e f c BE AB AC BE FC AC)\n"
+            in src)
+    assert "  euclid_apply (sum_angles_onlyif c a d f AC BC)\n" in src
+    assert "import Book.Prop15\n" in src
+    assert src.count("euclid_finish") == 1
+    # sha of the emitted source == sha of the file actually written
+    # (/home/joe/code/LeanEuclid/tmp-certify/test_engine_I16b.lean).
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "9d4f690deb225128"
+
+
+def test_engine_i16b_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP16B_STEPS_DATA and show emission follows
+    eng = cert._engine()
+    data = [("proposition_15", tuple("BC" if a == "AC" else a for a in args),
+             b) if r == "proposition_15" else (r, args, b)
+            for (r, args, b) in eng.PROP16B_STEPS_DATA]
+    monkeypatch.setattr(eng, "PROP16B_STEPS_DATA", data)
+    src = cert.emit_proof("I.16b-engine", cert.engine_steps("I.16b"), None)
+    assert "(proposition_15 a c b f e BC BE)" in src
+    assert "(proposition_15 a c b f e AC BE)" not in src
+    # untouched steps unchanged
+    assert "(proposition_4 e b a e f c BE AB AC BE FC AC)" in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i16b_certifies():
+    # the ENGINE's own PROP16B_STEPS_DATA certified against LeanEuclid
+    r = cert.check_lean(
+        cert.emit_proof("I.16b-engine", cert.engine_steps("I.16b"), None),
+        "test_engine_I16b")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i16b_false_same_side_assert():
+    # The derived same-side fact IS load-bearing: replace the checked
+    # euclid_assert d.sameSide f AC (from opposing_opposing_same_side) with
+    # the FALSE a.sameSide f AC (a and f are on opposite sides of BC — wait,
+    # of AC: pasch_2 puts e~f AC and e~a AC hence a~f AC? No: a is ON AC).
+    # a is on AC (between a e c), so a.sameSide f AC is FALSE — SMT refuses.
+    # Must NOT certify, and no lean process may survive.
+    src = cert.emit_proof("I.16b-engine", cert.engine_steps("I.16b"), None)
+    bad = src.replace("  euclid_assert d.sameSide f AC\n",
+                      "  euclid_assert a.sameSide f AC\n")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I16b_assert", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f",
+                               "test_neg_I16b_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i16b_dropped_proposition_4():
+    # Drop the proposition_4 (SAS) citation: without ∠e:a:b = ∠e:c:f the LA
+    # cannot relate ∠a:c:f to ∠b:a:c and the strict inequality fails. Must
+    # NOT certify, and no lean process may survive.
+    src = cert.emit_proof("I.16b-engine", cert.engine_steps("I.16b"), None)
+    bad = src.replace(
+        "  euclid_apply (proposition_4 e b a e f c BE AB AC BE FC AC)\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I16b_drop4", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I16b_drop4.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
