@@ -854,6 +854,112 @@ def test_proposition_20_citation_refused_degenerate():
     assert ei.value.premise == ("not_on_line", "c", "AB")
 
 
+# --- I.21 (Book/Prop21.lean) -----------------------------------------------
+
+
+def test_prop21_replay():
+    """I.21 replays the Lean way: triple_incidence_1 turns the sameSide
+    hypotheses into opposing_sides a c BD, intersection_lines_opposing +
+    intersection_lines produce e = BD ∩ AC, pasch_4 gives between a e c,
+    a two-branch by_contra (the dead orders of between_points trichotomy)
+    gives between b d e, then the cited lemmas proposition_20 (twice) and
+    proposition_16 (twice) feed the arithmetic for both conjuncts."""
+    s, rep = eng.replay(eng.PROP21_HYPS_DATA, eng.PROP21_STEPS_DATA,
+                        eng.PROP21_GOAL)
+    assert eng.la_entails_lt_sum_sum_len(s.la, "b", "d", "d", "c",
+                                         "b", "a", "a", "c")
+    assert eng.la_entails_gt_ang(s.la, "b", "d", "c", "b", "a", "c")
+    assert rep[-1]["final"]
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == [
+        "triple_incidence_1", "intersection_lines_opposing",
+        "intersection_lines", "pasch_4", "by_contra",
+        "proposition_20", "proposition_20",
+        "proposition_16", "proposition_16"]
+
+
+def test_prop21_hyps_alone_do_not_entail_goal():
+    """The I.21 hypotheses alone entail NEITHER conjunct — the
+    construction carries the proof (the replay is not vacuous)."""
+    s = eng.State()
+    for f, w in eng.PROP21_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_lt_sum_sum_len(s.la, "b", "d", "d", "c",
+                                             "b", "a", "a", "c")
+    assert not eng.la_entails_gt_ang(s.la, "b", "d", "c", "b", "a", "c")
+
+
+def test_prop21_control_dropped_second_proposition_20():
+    """Drop the second proposition_20 citation (|d-e| + |e-c| > |d-c|):
+    without it the arithmetic cannot chain |b-e| + |e-c| past |b-d| +
+    |d-c|, so the first conjunct is not entailed."""
+    seen = [0]
+    steps = []
+    for st in eng.PROP21_STEPS_DATA:
+        if st[0] == "proposition_20":
+            seen[0] += 1
+            if seen[0] == 2:
+                continue
+        steps.append(st)
+    s = eng.State()
+    for f, w in eng.PROP21_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.run_steps(s, steps)
+    assert not eng.la_entails_lt_sum_sum_len(s.la, "b", "d", "d", "c",
+                                             "b", "a", "a", "c")
+
+
+def test_prop21_control_dropped_proposition_16():
+    """Drop either proposition_16 citation: the angle chain
+    ∠b:d:c > ∠d:e:c = ∠b:e:c > ∠e:a:b = ∠b:a:c breaks at the dropped
+    link, so the second conjunct is not entailed."""
+    for drop in ("first", "second"):
+        seen = [0]
+        steps = []
+        for st in eng.PROP21_STEPS_DATA:
+            if st[0] == "proposition_16":
+                seen[0] += 1
+                if (drop == "first") == (seen[0] == 1):
+                    continue
+            steps.append(st)
+        s = eng.State()
+        for f, w in eng.PROP21_HYPS_DATA:
+            eng._assume_metric_or_fact(s, f, w)
+        eng.close(s)
+        eng.run_steps(s, steps)
+        assert not eng.la_entails_gt_ang(s.la, "b", "d", "c", "b", "a", "c")
+
+
+def test_prop21_equality_and_reversed_not_entailed():
+    """After the full I.21 replay neither the EQUALITY
+    |b-d| + |d-c| = |b-a| + |a-c| nor the REVERSED strict comparison
+    |b-a| + |a-c| < |b-d| + |d-c| is entailed (the inequality is
+    strict and one-way: d strictly inside the triangle)."""
+    s, rep = eng.replay(eng.PROP21_HYPS_DATA, eng.PROP21_STEPS_DATA,
+                        eng.PROP21_GOAL)
+    assert not s.la.entails(
+        eng.lin((eng.len_atom("b", "d"), 1), (eng.len_atom("d", "c"), 1),
+                (eng.len_atom("b", "a"), -1), (eng.len_atom("a", "c"), -1)),
+        0, "=")
+    assert eng.la_entails_lt_sum_sum_len(s.la, "b", "d", "d", "c",
+                                         "b", "a", "a", "c")
+    assert not eng.la_entails_lt_sum_sum_len(s.la, "b", "a", "a", "c",
+                                             "b", "d", "d", "c")
+
+
+def test_la_entails_lt_sum_sum_len_bad_case():
+    """The new LA helper's own bad case: a store where the two sums are
+    EQUAL (an explicit row |b-d| + |d-c| - |b-a| - |a-c| = 0) does not
+    entail the strict <."""
+    s = _line_state([], [(eng.lin((eng.len_atom("b", "d"), 1),
+                                  (eng.len_atom("d", "c"), 1),
+                                  (eng.len_atom("b", "a"), -1),
+                                  (eng.len_atom("a", "c"), -1)), 0, "=")])
+    assert not eng.la_entails_lt_sum_sum_len(s.la, "b", "d", "d", "c",
+                                             "b", "a", "a", "c")
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))
@@ -1038,7 +1144,10 @@ def test_replay_fact_set_footprints():
     I.19 joins the pin at (41, 11).
     E-kimi-task-392 added the I.20 replay (extend_point_longer +
     proposition_3 + the cited proposition_19 lemma). No replay changed;
-    I.20 joins the pin at (173, 71)."""
+    I.20 joins the pin at (173, 71).
+    E-kimi-task-394 added the I.21 replay (triple_incidence_1 +
+    intersection_lines + pasch_4 + the cited proposition_20/proposition_16
+    lemmas). No replay changed; I.21 joins the pin at (181, 64)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
@@ -1046,7 +1155,7 @@ def test_replay_fact_set_footprints():
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
                 "16a": (546, 281), "17": (70, 24), "18": (97, 32),
-                "19": (41, 11), "20": (173, 71)}
+                "19": (41, 11), "20": (173, 71), "21": (181, 64)}
     got = {}
     old_argv = sys.argv
     try:

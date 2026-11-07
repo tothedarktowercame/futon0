@@ -546,6 +546,14 @@ def la_entails_gt_sum_len(la, x, y, u, v, p, q):
                           (len_atom(p, q), -1)), 0, ">")
 
 
+def la_entails_lt_sum_sum_len(la, x, y, u, v, p, q, r, s2):
+    """|x─y| + |u─v| < |p─q| + |r─s| (Book I.21's first conjunct shape)
+    as an LA query."""
+    return la.entails(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
+                          (len_atom(p, q), -1), (len_atom(r, s2), -1)),
+                      0, "<")
+
+
 # ---------------------------------------------------------------------------
 # Forward closure. Every rule cites LeanEuclid SystemE (or Book) file:line.
 # Each rule is fn(state) -> iterable of (new_fact, [premise facts]).
@@ -1950,6 +1958,30 @@ CONSTRUCTIONS = {
         "make": lambda s, x, y, z, L: [
             (None, [("same_side", x, z, L)])],
     },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:187 — triple_incidence_1
+    # verbatim:
+    #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧
+    #   (c.onLine M) ∧ (d.onLine N) ∧ (c.sameSide d L) ∧
+    #   (b.sameSide c N) → ¬(b.sameSide d M)
+    # ¬(b.sameSide d M) is rendered as the POSITIVE fact opposing_sides
+    # b d M (same rendering as pasch_3_opposing): opposingSides carries
+    # the two off-line parts (Relations.lean:13-14), which the axiom does
+    # not state, so they are added as premises and the conclusion carries
+    # exactly triple_incidence_1's content plus them. Cited per use (a
+    # closure rule would add facts to every earlier replay; footprints are
+    # pinned). First use: Book I.21 (lines AB, BD, BC meeting at b turn
+    # c.sameSide d AB and a.sameSide d BC into opposing_sides a c BD).
+    "triple_incidence_1": {
+        "cite": "Diagrammatic.lean:187 + Relations.lean:13-14",
+        "args": ("L", "M", "N", "a", "b", "c", "d"),
+        "premises": lambda s, L, M, N, a, b, c, d: [
+            ("on_line", a, L), ("on_line", a, M), ("on_line", a, N),
+            ("on_line", b, L), ("on_line", c, M), ("on_line", d, N),
+            ("same_side", c, d, L), ("same_side", b, c, N),
+            ("not_on_line", b, M), ("not_on_line", d, M)],
+        "make": lambda s, L, M, N, a, b, c, d: [
+            (None, [("opposing_sides", b, d, M)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:201 — triple_incidence_2
     # verbatim:
     #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧
@@ -2027,6 +2059,8 @@ def _fact_holds(s, fact):
             return la_entails_gt_ang(s.la, *fact[1:])
         if k == "_gt_sum_len":
             return la_entails_gt_sum_len(s.la, *fact[1:])
+        if k == "_lt_sum_sum_len":
+            return la_entails_lt_sum_sum_len(s.la, *fact[1:])
         if k == "_lt_sum_rt_ang":
             return la_entails_lt_sum_rt_ang(s.la, *fact[1:])
     except FMTooLarge:
@@ -2202,6 +2236,16 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("gt_sum_len", *fact[1:7]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("gt_sum_len", *fact[1:7]))
+            elif fact[0] == "_lt_sum_sum_len":
+                # |x─y| + |u─v| < |p─q| + |r─s| (Book I.21's first
+                # conjunct shape): the strict LA row plus the fact form.
+                x, y, u, v, p, q, r, s2 = fact[1:9]
+                s.la.add(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
+                             (len_atom(p, q), -1), (len_atom(r, s2), -1)),
+                         0, "<")
+                s.add(("lt_sum_sum_len", *fact[1:9]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("lt_sum_sum_len", *fact[1:9]))
             elif fact[0] == "_sum_ang":
                 b, a0, c, d = fact[1:]
                 s.la.add(lin((ang_atom(b, a0, c), 1),
@@ -2323,6 +2367,12 @@ def _assume_metric_or_fact(s, fact, why):
         x, y, u, v, p, q = fact[1:7]
         s.la.add(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
                      (len_atom(p, q), -1)), 0, ">")
+    elif fact[0] == "lt_sum_sum_len":
+        # |x─y| + |u─v| < |p─q| + |r─s| as a hypothesis/assumption (the
+        # plain tuple form of Book I.21's first conjunct shape).
+        x, y, u, v, p, q, r, s2 = fact[1:9]
+        s.la.add(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
+                     (len_atom(p, q), -1), (len_atom(r, s2), -1)), 0, "<")
     elif fact[0] == "_sum_rt_ang":
         # ∠(u:v:x) + ∠(x:v:w) = 2∟ as a hypothesis/assumption (Book I.14
         # states its angle-sum hypothesis in this shape).
@@ -2503,6 +2553,9 @@ def replay(hyps, steps, verify, exclude_rules=None):
             assert la_entails_gt_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_gt_sum_len":
             assert la_entails_gt_sum_len(s.la, *q[1:]), \
+                f"conclusion not entailed: {q}"
+        elif q[0] == "_lt_sum_sum_len":
+            assert la_entails_lt_sum_sum_len(s.la, *q[1:]), \
                 f"conclusion not entailed: {q}"
         elif q[0] == "_lt_sum_rt_ang":
             assert la_entails_lt_sum_rt_ang(s.la, *q[1:]), \
@@ -3635,6 +3688,104 @@ PROP20_STEPS_DATA = [
 PROP20_GOAL = [("_gt_sum_len", "b", "a", "a", "c", "b", "c")]
 
 
+# ---------------------------------------------------------------------------
+# I.21 (Book/Prop21.lean) — from the cited proposition_20 and
+# proposition_16 lemmas
+# ---------------------------------------------------------------------------
+# proposition_21 : formTriangle a b c AB BC AC ∧ a.sameSide d BC ∧
+#   c.sameSide d AB ∧ b.sameSide d AC ∧ distinctPointsOnLine b d BD ∧
+#   distinctPointsOnLine d c DC →
+#   (|(b─d)| + |(d─c)| < |(b─a)| + |(a─c)|) ∧ (∠ b:d:c > ∠ b:a:c)
+# formTriangle destructured exactly as at PROP18-20; the three sameSide
+# hypotheses and the two dpls ship as facts.
+PROP21_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),     # distinctPointsOnLine a b AB
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"),   # formTriangle non-degeneracy
+    (("neq", "a", "c"), "h"),   # formTriangle non-degeneracy
+    (("not_on_line", "c", "AB"), "h"),  # formTriangle: c not on AB
+    (("same_side", "a", "d", "BC"), "h"),   # a.sameSide d BC
+    (("same_side", "c", "d", "AB"), "h"),   # c.sameSide d AB
+    (("same_side", "b", "d", "AC"), "h"),   # b.sameSide d AC
+    (("dpl", "b", "d", "BD"), "h"),   # distinctPointsOnLine b d BD
+    (("dpl", "d", "c", "DC"), "h"),   # distinctPointsOnLine d c DC
+]
+# Lean's shape (Book/Prop21.lean:11-20), argument orders exactly as
+# Lean's. Lean's euclid_apply(intersection_lines BD AC) closes the
+# premise BD.intersectsLine AC by SMT; the engine renders that premise
+# explicitly (as I.10 did with intersection_lines_opposing before
+# intersection_lines):
+#   1. triple_incidence_1 AB BD BC b a d c (Diagrammatic.lean:187):
+#      AB, BD, BC meet at b; d on BD, c on BC, a on AB; d.sameSide c AB
+#      (hyp c.sameSide d AB, symm) and a.sameSide d BC (hyp) give
+#      opposing_sides a c BD. The off-line premises a, c off BD are
+#      closure: d off AB/BC (same_side_not_on_line on the hyps) gives
+#      BD ≠ AB and BD ≠ BC (line_neq), then two_lines_meet_once at b
+#      puts a and c off BD (a ≠ b from the dpl, b ≠ c hyp).
+#   2-3. intersection_lines_opposing a c BD AC (Diagrammatic.lean:267)
+#      gives intersects_ll BD AC; intersection_lines BD AC as e
+#      (Intersections.lean:3) gives e on BD and on AC.
+#   4. pasch_4 BD AC e a c (Diagrammatic.lean:173): a, c oppose across
+#      BD, so between a e c. (BD ≠ AC: d on BD off AC, line_neq; the
+#      neqs a ≠ e, c ≠ e are off_line_neq from a, c off BD.)
+#   5. between b d e: trichotomy between_points (Diagrammatic.lean:95) on
+#      the distinct b, d, e on BD leaves three orders; the other two die:
+#      between b e d would put b opposing d across AC (pasch_3, e on AC)
+#      against hyp b.sameSide d AC; between e b d would put e opposing d
+#      across AB (pasch_3, b on AB) against same_side e d AB (closure:
+#      pasch_2 on between a e c with a on AB gives e~c AB — e off AB
+#      from two_lines_meet_once at a with AB ≠ AC — then
+#      same_side_trans with hyp c~d AB). Rendered as a by_contra whose
+#      branches are the two dead orders, exactly the I.14 split pattern.
+#   6-7. proposition_20 a b e AB BD AC and proposition_20 e d c BD DC AC
+#      (Book/Prop20.lean:6, cited lemmas): |b─a|+|a─e|>|b─e| and
+#      |d─e|+|e─c|>|d─c|.
+#   8-9. proposition_16 c e d b AC BD DC and proposition_16 b a e c
+#      AB AC BD (Book/Prop16.lean:8, cited lemmas): ∠c:d:b > ∠d:e:c and
+#      ∠b:e:c > ∠e:a:b (the between e d b premise of the first is the
+#      reversal of step 5, closure between_symm).
+# constructor (Prop21.lean:17) just splits the conjunction goal into two
+# goals over the same final state; the engine's goal list is already a
+# conjunction, so it needs nothing.
+# euclid_finish, conjunct 1: |b─a|+|a─c| = |b─a|+|a─e|+|e─c| (between
+#   a e c, r_between_if Transfer.lean:16) > |b─e|+|e─c| (step 6) =
+#   |b─d|+|d─e|+|e─c| (between b d e) > |b─d|+|d─c| (step 7).
+# euclid_finish, conjunct 2: ∠b:d:c = ∠c:d:b (canonical atom) > ∠d:e:c
+#   (step 8) = ∠b:e:c (angle_ray_eq on between e d b) > ∠e:a:b (step 9)
+#   = ∠b:a:c (angle_ray_eq on between a e c, canonical atom).
+# Engine-only steps: NONE beyond Lean's — steps 1-5 are the explicit
+# rendering of premises Lean's SMT closes inside euclid_apply /
+# euclid_finish; every rule cited is System E or a Book lemma.
+PROP21_STEPS_DATA = [
+    ("triple_incidence_1", ("AB", "BD", "BC", "b", "a", "d", "c"), {}),
+    ("intersection_lines_opposing", ("a", "c", "BD", "AC"), {}),
+    ("intersection_lines", ("BD", "AC"), {"a": "e"}),
+    ("pasch_4", ("a", "e", "c", "BD", "AC"), {}),
+    ("by_contra", [
+        # between b e d ⇒ opposing_sides b d AC (pasch_3, e on AC),
+        # against the hypothesis b.sameSide d AC
+        ([("between", "b", "e", "d")], [
+            ("pasch_3_opposing", ("b", "e", "d", "AC"), {}),
+        ]),
+        # between e b d ⇒ opposing_sides e d AB (pasch_3, b on AB),
+        # against same_side e d AB (closure: pasch_2 + same_side_trans)
+        ([("between", "e", "b", "d")], [
+            ("pasch_3_opposing", ("e", "b", "d", "AB"), {}),
+        ]),
+    ], [("between", "b", "d", "e")]),
+    ("proposition_20", ("a", "b", "e", "AB", "BD", "AC"), {}),
+    ("proposition_20", ("e", "d", "c", "BD", "DC", "AC"), {}),
+    ("proposition_16", ("c", "e", "d", "b", "AC", "BD", "DC"), {}),
+    ("proposition_16", ("b", "a", "e", "c", "AB", "AC", "BD"), {}),
+]
+# The goals as LA entailment queries: |b─d| + |d─c| < |b─a| + |a─c| and
+# ∠b:d:c > ∠b:a:c. The tuple ("_lt_sum_sum_len", x, y, u, v, p, q, r, s)
+# reads |x─y| + |u─v| < |p─q| + |r─s|.
+PROP21_GOAL = [("_lt_sum_sum_len", "b", "d", "d", "c", "b", "a", "a", "c"),
+               ("_gt_ang", "b", "d", "c", "b", "a", "c")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3778,6 +3929,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP20_HYPS_DATA, PROP20_STEPS_DATA,
                             PROP20_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "21":
+            t0 = time.time()
+            s, rep = replay(PROP21_HYPS_DATA, PROP21_STEPS_DATA,
+                            PROP21_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
