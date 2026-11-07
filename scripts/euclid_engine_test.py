@@ -993,9 +993,10 @@ def test_bridge_angle_pair_on_line_counterexamples():
       the neq the rule would force unrelated angles equal, so it must
       refuse."""
     base = [("on_line", "v", "L"), ("on_line", "x", "L"),
-            ("on_line", "u", "L"), ("neq", "v", "x"), ("neq", "v", "u")]
-    eqrow = [({eng.ang_atom("z", "v", "x"): 1,
-               eng.ang_atom("w", "v", "x"): -1}, 0, "=")]
+            ("on_line", "u", "L"), ("neq", "v", "x"), ("neq", "v", "u"),
+            ("not_on_line", "z", "L"), ("not_on_line", "w", "L")]
+    eqrow = [(eng.lin((eng.ang_atom("z", "v", "x"), 1),
+                      (eng.ang_atom("w", "v", "x"), -1)), 0, "=")]
     s = eng.State()
     for f in base:
         s.assume(f)
@@ -1041,3 +1042,27 @@ def test_bridge_angle_pair_on_line_counterexamples():
         eng.apply_step(s_e, 1, "angle_pair_on_line",
                        ("z", "w", "v", "x", "u", "L"), {})
     assert "arithmetic" in str(ei.value)
+
+
+def test_bridge_angle_pair_on_line_refuses_z_on_the_line():
+    """Review (claude-9), a soundness counterexample with the premises the
+    rule had in a91de03: z on L beyond v (between z v x), w off L, u on z's
+    side (between u v x). System E gives the straight angle ∠z:v:x no value
+    (degenerated_angle_if, Transfer.lean:63, only fixes 0 on the ray), so
+    ∠z:v:x = ∠w:v:x is satisfiable; but ∠z:v:u = 0 while ∠w:v:u > 0. The
+    state is realisable and the rule must refuse, naming z off L."""
+    s = eng.State()
+    for f in [("on_line", "v", "L"), ("on_line", "x", "L"),
+              ("on_line", "u", "L"), ("on_line", "z", "L"),
+              ("neq", "v", "x"), ("neq", "v", "u"), ("neq", "z", "v"),
+              ("between", "z", "v", "x"), ("between", "u", "v", "x"),
+              ("not_on_line", "w", "L")]:
+        s.assume(f)
+    s.la.add(eng.lin((eng.ang_atom("z", "v", "x"), 1),
+                     (eng.ang_atom("w", "v", "x"), -1)), 0, "=")
+    eng.close(s)
+    assert eng.contradictory(s)[0] is False
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "angle_pair_on_line",
+                       ("z", "w", "v", "x", "u", "L"), {})
+    assert ei.value.premise == ("not_on_line", "z", "L")

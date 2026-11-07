@@ -1590,9 +1590,15 @@ CONSTRUCTIONS = {
     "angle_pair_on_line": {
         "cite": "euclid_assert [SMT-bridge]",
         "args": ("z", "w", "v", "x", "u", "L"),
+        # review (claude-9): z and w must be off L. System E gives no
+        # value to a straight angle (between z v x) or to an angle with
+        # z = v; only degenerated_angle_if (Transfer.lean:63) fixes 0 on
+        # the ray. With z on L beyond v, ∠z:v:x = ∠w:v:x is satisfiable
+        # with w off L, yet for u on z's ray ∠z:v:u = 0 ≠ ∠w:v:u.
         "premises": lambda s, z, w, v, x, u, L: [
             ("on_line", v, L), ("on_line", x, L), ("on_line", u, L),
-            ("neq", v, x), ("neq", v, u)],
+            ("neq", v, x), ("neq", v, u),
+            ("not_on_line", z, L), ("not_on_line", w, L)],
         "entail": lambda s, z, w, v, x, u, L: [
             ("eq_ang", (z, v, x, w, v, x))],
         "make": lambda s, z, w, v, x, u, L: [
