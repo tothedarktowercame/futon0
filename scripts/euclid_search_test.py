@@ -108,25 +108,38 @@ def test_I4_book_path_verifies():
     assert kw["goal"](s)
 
 
-def test_I5_book_path_replays_goal_holds_store_refused():
-    """The Book's I.5 steps replay without a missing premise and the goal
-    holds on the final state, BUT the store becomes UNSAT in the forward
-    closure at the second proposition_4 (side_gt_angle_gt, the I.18
-    [SMT-bridge], adds ang a:c:e > ang c:a:e and its reverse), so
-    verify_path — correctly — refuses to certify: entailments on an unsat
-    store are vacuous. Reported to claude-9; the engine is zai-11's."""
+def test_I5_book_path_verifies_on_a_consistent_store():
+    """The Book's I.5 steps pass verify_path, and the store stays
+    satisfiable after every step. (zai-2's 1b32dd6 pinned an UNSAT store
+    here as correct refusal; the cause was an engine bug: the dict literal
+    {len(b,c): 1, len(c,b): -1} collapsed to |bc| = 0 at the second
+    proposition_4. Fixed with eng.lin(); claude-9.)"""
     kw = srch.prop_searches()["I.5"]
     s = eng.State()
     for f, w in kw["hyps"]:
         eng._assume_metric_or_fact(s, f, w)
     eng.close(s)
     for i, (r, a, b) in enumerate(eng.PROP5_STEPS_DATA, 1):
-        eng.apply_step(s, i, r, a, b)  # no MissingPremise anywhere
+        eng.apply_step(s, i, r, a, b)
+        assert srch.store_consistent(s.la), f"unsat after step {i}"
     assert kw["goal"](s)
-    assert srch.store_consistent(s.la) is False  # certification refused
-    with pytest.raises(AssertionError, match="unsatisfiable"):
-        srch.verify_path(kw["hyps"], eng.PROP5_STEPS_DATA, kw["goal"])
+    s2, n = srch.verify_path(kw["hyps"], eng.PROP5_STEPS_DATA, kw["goal"])
+    assert n == 8
 
+
+def test_lin_accumulates_identical_atoms():
+    """The collision itself: |bc| = |cb| must add no row (0 = 0), not
+    |bc| = 0; |bc| < |cb| must make the store unsat, not |bc| > 0."""
+    X, Y = eng.len_atom("b", "c"), eng.len_atom("c", "b")
+    assert X == Y
+    la = eng.LinearArithmetic()
+    la.add(eng.lin((X, 1), (Y, -1)), 0, "=")
+    assert la.rows == []
+    la.add({X: 1}, 0, ">")
+    assert eng._fm_sat(la.rows)
+    la.add(eng.lin((X, 1), (Y, -1)), 0, "<")
+    assert not eng._fm_sat(la.rows)
+    assert eng.la_entails_eq(eng.LinearArithmetic(), "b", "c", "c", "b")
 
 def test_uninformed_search_I5_within_budget():
     """Uninformed search is NOT required to find I.5. It must simply run

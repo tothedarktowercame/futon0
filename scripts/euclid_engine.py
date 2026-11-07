@@ -44,13 +44,13 @@ RT = ("rt",)  # the right angle, a constant atom in the arithmetic store
 
 def eq_ang(la, a, b, c, d, e, f):
     """Add ∠(a:b:c) = ∠(d:e:f)."""
-    la.add({ang_atom(a, b, c): 1, ang_atom(d, e, f): -1}, 0, "=")
+    la.add(lin((ang_atom(a, b, c), 1), (ang_atom(d, e, f), -1)), 0, "=")
 
 
 def la_entails_eq_ang(la, a, b, c, d, e, f):
     if ang_atom(a, b, c) == ang_atom(d, e, f):
         return True  # same atom: a dict literal would collapse the terms
-    return la.entails({ang_atom(a, b, c): 1, ang_atom(d, e, f): -1}, 0, "=")
+    return la.entails(lin((ang_atom(a, b, c), 1), (ang_atom(d, e, f), -1)), 0, "=")
 
 
 def len_atom(a, b):
@@ -85,6 +85,19 @@ def norm(coeffs, const):
     return items, const
 
 
+def lin(*pairs):
+    """Coefficient dict from (atom, coeff) pairs, ACCUMULATING repeated
+    atoms. Review fix (claude-9): rows were written as dict literals
+    {X: 1, Y: -1}; when X and Y canonicalise to the same atom (|bc| = |cb|,
+    from proposition_4 f b c g c b in I.5) the literal keeps only the last
+    value, giving |bc| = 0, and the store went unsat. Every multi-atom row
+    is built with lin()."""
+    d = {}
+    for a, c in pairs:
+        d[a] = d.get(a, 0) + c
+    return d
+
+
 _ENT_GLOBAL = {}
 
 
@@ -111,6 +124,13 @@ class LinearArithmetic:
                         else -Fraction(const))
         if not items:
             ok = (c == 0) if op == "=" else ((c <= 0) if op == "<=" else (c < 0))
+            if not ok:
+                # a false constant row (e.g. |x| < |x| after lin() cancels)
+                # is a contradiction: record it so _fm_sat sees it, rather
+                # than returning False to callers that ignore the value
+                row = ((), c, op)
+                if row not in self.rows:
+                    self.rows.append(row)
             return ok
         row = (items, c, op)
         if row not in self.rows:
@@ -128,6 +148,12 @@ class LinearArithmetic:
                                  "<" if op == ">" else "<=")
         q = (tuple(sorted((a, c) for a, c in coeffs.items() if c != 0)),
              const, op)
+        if getattr(self, "_ent_rows", None) is not self.rows:
+            # review fix (claude-9): the (row count, query) key assumes this
+            # rows list only grows; if it was REPLACED (l.rows = other), a
+            # same-count key would answer for the old rows
+            self._ent = {}
+            self._ent_rows = self.rows
         key = (len(self.rows), q)
         hit = self._ent.get(key)
         if hit is not None:
@@ -445,25 +471,25 @@ class State:
 
 def eq_len(la, x, y, u, v):
     """Add |x-y| = |u-v|."""
-    la.add({len_atom(x, y): 1, len_atom(u, v): -1}, 0, "=")
+    la.add(lin((len_atom(x, y), 1), (len_atom(u, v), -1)), 0, "=")
 
 
 def la_entails_eq(la, x, y, u, v):
     if len_atom(x, y) == len_atom(u, v):
         return True  # same atom: a dict literal would collapse the terms
-    return la.entails({len_atom(x, y): 1, len_atom(u, v): -1}, 0, "=")
+    return la.entails(lin((len_atom(x, y), 1), (len_atom(u, v), -1)), 0, "=")
 
 
 def la_entails_lt(la, x, y, u, v):
     if len_atom(x, y) == len_atom(u, v):
         return False
-    return la.entails({len_atom(x, y): 1, len_atom(u, v): -1}, 0, "<")
+    return la.entails(lin((len_atom(x, y), 1), (len_atom(u, v), -1)), 0, "<")
 
 
 def la_entails_gt(la, x, y, u, v):
     if len_atom(x, y) == len_atom(u, v):
         return False
-    return la.entails({len_atom(x, y): 1, len_atom(u, v): -1}, 0, ">")
+    return la.entails(lin((len_atom(x, y), 1), (len_atom(u, v), -1)), 0, ">")
 
 
 # ---------------------------------------------------------------------------
@@ -549,8 +575,8 @@ def r_between_if(s):
             a, b, c = fact[1], fact[2], fact[3]
             marker = ("len_sum", a, b, c)
             if not s.has(marker):
-                s.la.add({len_atom(a, b): 1, len_atom(b, c): 1,
-                          len_atom(a, c): -1}, 0, "=")
+                s.la.add(lin((len_atom(a, b), 1), (len_atom(b, c), 1),
+                             (len_atom(a, c), -1)), 0, "=")
                 yield marker, [fact]
 
 
@@ -576,7 +602,7 @@ def r_poc_onlyif(s):
                 continue
             marker = ("radii", alpha, min(p, q), max(p, q))
             if not s.has(marker):
-                s.la.add({len_atom(o, p): 1, len_atom(o, q): -1}, 0, "=")
+                s.la.add(lin((len_atom(o, p), 1), (len_atom(o, q), -1)), 0, "=")
                 yield marker, [fact, f2, ("centre", o, alpha)]
 
 
@@ -797,7 +823,7 @@ def r_angle_ray_eq(s):
                 continue
             marker = ("rayang", v, x, y, z)
             if not s.has(marker):
-                s.la.add({ang_atom(z, v, x): 1, ang_atom(z, v, y): -1},
+                s.la.add(lin((ang_atom(z, v, x), 1), (ang_atom(z, v, y), -1)),
                          0, "=")
                 yield marker, [fact]
 
@@ -835,8 +861,8 @@ def r_straight_angle(s):
                 continue
             marker = ("strang", u, v, w, x, L)
             if not s.has(marker):
-                s.la.add({ang_atom(u, v, x): 1, ang_atom(x, v, w): 1,
-                          RT: -2}, 0, "=")
+                s.la.add(lin((ang_atom(u, v, x), 1), (ang_atom(x, v, w), 1),
+                             (RT, -2)), 0, "=")
                 yield marker, [fact, f2, ("on_line", u, L),
                                ("on_line", v, L), ("on_line", w, L)]
 
@@ -873,7 +899,7 @@ def r_peq_subst(s):
                     a2 = ("len",) + tuple(sorted(other))
                     marker = ("sublen", a, src, dst)
                     if not s.has(marker):
-                        s.la.add({a: 1, a2: -1}, 0, "=")
+                        s.la.add(lin((a, 1), (a2, -1)), 0, "=")
                         yield marker, [fact]
                 elif a[0] == "ang" and src in a[1:]:
                     legs, vert = (a[1], a[3]), a[2]
@@ -882,7 +908,7 @@ def r_peq_subst(s):
                     a2 = ang_atom(*sub)
                     marker = ("subang", a, src, dst)
                     if not s.has(marker):
-                        s.la.add({a: 1, a2: -1}, 0, "=")
+                        s.la.add(lin((a, 1), (a2, -1)), 0, "=")
                         yield marker, [fact]
 
 
@@ -1018,7 +1044,7 @@ def r_side_gt_angle_gt(s):
                     s.rule_cache[key] = False
                     continue
                 s.rule_cache[key] = True
-                s.la.add({ang_atom(p, q, r): 1, ang_atom(q, r, p): -1},
+                s.la.add(lin((ang_atom(p, q, r), 1), (ang_atom(q, r, p), -1)),
                          0, "<")
                 yield marker, [("neq", p, q), ("neq", q, r), ("neq", p, r),
                                ("on_line", p, tri), ("on_line", q, tri),
@@ -1575,16 +1601,16 @@ def apply_step(s, i, rule, args, bindings):
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("eq_ang", *fact[1:]))
             elif fact[0] == "_lt_len":
-                s.la.add({len_atom(fact[1], fact[2]): 1,
-                          len_atom(fact[3], fact[4]): -1}, 0, "<")
+                s.la.add(lin((len_atom(fact[1], fact[2]), 1),
+                             (len_atom(fact[3], fact[4]), -1)), 0, "<")
                 s.add(("lt_len", *fact[1:]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("lt_len", *fact[1:]))
             elif fact[0] == "_sum_ang":
                 b, a0, c, d = fact[1:]
-                s.la.add({ang_atom(b, a0, c): 1,
-                          ang_atom(b, a0, d): -1,
-                          ang_atom(d, a0, c): -1}, 0, "=")
+                s.la.add(lin((ang_atom(b, a0, c), 1),
+                             (ang_atom(b, a0, d), -1),
+                             (ang_atom(d, a0, c), -1)), 0, "=")
                 s.add(("sum_ang", *fact[1:]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("sum_ang", *fact[1:]))
@@ -1664,11 +1690,11 @@ def _assume_metric_or_fact(s, fact, why):
     if fact[0] == "eq_len":
         eq_len(s.la, *fact[1:])
     elif fact[0] == "lt_len":
-        s.la.add({len_atom(fact[1], fact[2]): 1,
-                  len_atom(fact[3], fact[4]): -1}, 0, "<")
+        s.la.add(lin((len_atom(fact[1], fact[2]), 1),
+                     (len_atom(fact[3], fact[4]), -1)), 0, "<")
     elif fact[0] == "gt_len":
-        s.la.add({len_atom(fact[1], fact[2]): 1,
-                  len_atom(fact[3], fact[4]): -1}, 0, ">")
+        s.la.add(lin((len_atom(fact[1], fact[2]), 1),
+                     (len_atom(fact[3], fact[4]), -1)), 0, ">")
     elif fact[0] == "eq_ang":
         eq_ang(s.la, *fact[1:])
     s.assume(fact, why)
@@ -2123,7 +2149,7 @@ def main():
             s = State()
             for f, w in PROP3_HYPS_DATA:
                 s.assume(f, w)
-            s.la.add({len_atom("a", "b"): 1, len_atom("c0", "c1"): -1},
+            s.la.add(lin((len_atom("a", "b"), 1), (len_atom("c0", "c1"), -1)),
                      0, ">")
             close(s)
             t0 = time.time()
@@ -2134,6 +2160,13 @@ def main():
                         "seconds": round(time.time() - t0, 4)})
             assert s.has(("between", "a", "e", "b")), "I.3 between"
             assert la_entails_eq(s.la, "a", "e", "c0", "c1"), "I.3 length"
+        # review fix (claude-9): an entailment on an unsat store holds
+        # vacuously. The I.5 replay "proved" its goal on such a store for
+        # weeks (|bc| = 0 from a dict-literal collision). Every replay's
+        # final store must be satisfiable, except I.7, whose hypotheses are
+        # contradictory by design (Lean's proposition_7 concludes False).
+        if p != "7":
+            assert _fm_sat(s.la.rows), f"I.{p}: final store is unsat"
         for r in rep:
             print(r)
         print()

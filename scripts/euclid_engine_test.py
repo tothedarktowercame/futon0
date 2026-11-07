@@ -695,10 +695,14 @@ def test_replay_fact_set_footprints():
     """Speed work on the closure/FM internals must not change what a replay
     derives: (fact count, constraint count) per proposition, verified
     unchanged across the engine-speed commits by sorted full-fact-dump
-    comparison (I.1-I.9, dumps identical before/after)."""
+    comparison (I.1-I.9, dumps identical before/after).
+    I.5 changed from (1432, 640) to (442, 227) with the lin() fix
+    (claude-9): the old store was unsat from step 6 (|bc| = 0) and the
+    closure kept deriving from it. eng.main() now asserts every replay's
+    final store is satisfiable (except I.7)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
-                "5": (1432, 640), "6": (41, 11), "7": (113, 26),
+                "5": (442, 227), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (236, 93)}
     got = {}
     old_argv = sys.argv
@@ -834,3 +838,18 @@ def test_bridge_side_gt_angle_gt_rejects_collinear():
     s.la.add({eng.ang_atom("p", "q", "r"): 1,
               eng.ang_atom("q", "r", "p"): -1}, 0, ">")
     assert eng.contradictory(s)[0] is True
+
+
+def test_entails_memo_not_stale_after_rows_replaced():
+    """Review (claude-9): the per-store memo key is (row count, query). Two
+    stores with the same count but different rows must not share answers,
+    and a store whose rows list is REPLACED must not answer from the old
+    rows (it did before the guard: |ab| <= 2 stayed entailed)."""
+    X = eng.len_atom("a", "b")
+    l1 = eng.LinearArithmetic(); l1.add({X: 1}, 1, "<=")
+    l2 = eng.LinearArithmetic(); l2.add({X: 1}, 3, "<=")
+    assert l1.entails({X: 1}, 2, "<=") and not l2.entails({X: 1}, 2, "<=")
+    l3 = eng.LinearArithmetic(); l3.add({X: 1}, 1, "<=")
+    assert l3.entails({X: 1}, 2, "<=")
+    l3.rows = list(l2.rows)
+    assert not l3.entails({X: 1}, 2, "<=")
