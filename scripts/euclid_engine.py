@@ -540,6 +540,12 @@ def la_entails_gt(la, x, y, u, v):
     return la.entails(lin((len_atom(x, y), 1), (len_atom(u, v), -1)), 0, ">")
 
 
+def la_entails_gt_sum_len(la, x, y, u, v, p, q):
+    """|x─y| + |u─v| > |p─q| (Book I.20's goal shape) as an LA query."""
+    return la.entails(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
+                          (len_atom(p, q), -1)), 0, ">")
+
+
 # ---------------------------------------------------------------------------
 # Forward closure. Every rule cites LeanEuclid SystemE (or Book) file:line.
 # Each rule is fn(state) -> iterable of (new_fact, [premise facts]).
@@ -1997,6 +2003,8 @@ def _fact_holds(s, fact):
             return la_entails_gt(s.la, *fact[1:])
         if k == "_gt_ang":
             return la_entails_gt_ang(s.la, *fact[1:])
+        if k == "_gt_sum_len":
+            return la_entails_gt_sum_len(s.la, *fact[1:])
         if k == "_lt_sum_rt_ang":
             return la_entails_lt_sum_rt_ang(s.la, *fact[1:])
     except FMTooLarge:
@@ -2163,6 +2171,15 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("gt_ang", *fact[1:]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("gt_ang", *fact[1:]))
+            elif fact[0] == "_gt_sum_len":
+                # |x─y| + |u─v| > |p─q| (Book I.20's conclusion shape):
+                # the strict LA row plus the fact form.
+                x, y, u, v, p, q = fact[1:7]
+                s.la.add(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
+                             (len_atom(p, q), -1)), 0, ">")
+                s.add(("gt_sum_len", *fact[1:7]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("gt_sum_len", *fact[1:7]))
             elif fact[0] == "_sum_ang":
                 b, a0, c, d = fact[1:]
                 s.la.add(lin((ang_atom(b, a0, c), 1),
@@ -2278,6 +2295,12 @@ def _assume_metric_or_fact(s, fact, why):
     elif fact[0] == "gt_ang":
         s.la.add(lin((ang_atom(fact[1], fact[2], fact[3]), 1),
                      (ang_atom(fact[4], fact[5], fact[6]), -1)), 0, ">")
+    elif fact[0] == "gt_sum_len":
+        # |x─y| + |u─v| > |p─q| as a hypothesis/assumption (the plain
+        # tuple form of Book I.20's conclusion shape).
+        x, y, u, v, p, q = fact[1:7]
+        s.la.add(lin((len_atom(x, y), 1), (len_atom(u, v), 1),
+                     (len_atom(p, q), -1)), 0, ">")
     elif fact[0] == "_sum_rt_ang":
         # ∠(u:v:x) + ∠(x:v:w) = 2∟ as a hypothesis/assumption (Book I.14
         # states its angle-sum hypothesis in this shape).
@@ -2456,6 +2479,9 @@ def replay(hyps, steps, verify, exclude_rules=None):
             assert la_entails_gt(s.la, *q[1:]), f"conclusion not entailed: {q}"
         elif q[0] == "_gt_ang":
             assert la_entails_gt_ang(s.la, *q[1:]), f"conclusion not entailed: {q}"
+        elif q[0] == "_gt_sum_len":
+            assert la_entails_gt_sum_len(s.la, *q[1:]), \
+                f"conclusion not entailed: {q}"
         elif q[0] == "_lt_sum_rt_ang":
             assert la_entails_lt_sum_rt_ang(s.la, *q[1:]), \
                 f"conclusion not entailed: {q}"
@@ -3532,6 +3558,61 @@ PROP19_STEPS_DATA = [
 PROP19_GOAL = [("_gt_len", "a", "c", "a", "b")]
 
 
+# ---------------------------------------------------------------------------
+# I.20 (the triangle inequality) — from the cited proposition_19 lemma
+# ---------------------------------------------------------------------------
+# proposition_20 : formTriangle a b c AB BC AC → |(b─a)| + |(a─c)| > |(b─c)|.
+# formTriangle destructured exactly as at PROP18/PROP19 (dpl a b AB + the
+# four on_lines + the two non-degeneracy neqs + c off AB); no metric
+# hypothesis.
+PROP20_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),     # distinctPointsOnLine a b AB
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"),   # formTriangle non-degeneracy
+    (("neq", "a", "c"), "h"),   # formTriangle non-degeneracy
+    (("not_on_line", "c", "AB"), "h"),  # formTriangle: c not on AB
+]
+# Lean's shape (Book/Prop20.lean:10-15), argument orders exactly as Lean's:
+#   extend_point_longer AB b a (c─a) as d' : d' on AB, between b a d',
+#       |a─d'| > |c─a| (Points.lean:43; the segment (c─a) is passed as its
+#       two endpoints, as at PROP16)
+#   proposition_3 a d' a c AB AC as d : between a d d', |a─d| = |a─c|
+#       (Prop03.lean:5; the |a─d'| > |a─c| entailment premise is step 1's
+#       conclusion, |c─a| = |a─c| by the sorted len_atom)
+#   line_from_points d c as DC
+#   proposition_5' a c d AC DC AB : ∠a:c:d = ∠a:d:c (Prop05.lean:50; the
+#       |a─c| = |a─d| entailment premise is step 2's conclusion)
+#   sum_angles_onlyif c b d a BC DC : ∠b:c:d = ∠b:c:a + ∠a:c:d
+#       (Transfer.lean:90; side premises close from between b a d via
+#       Pasch_2, as at PROP18's sum_angles_onlyif step)
+#   proposition_19 b c d BC DC AB : |b─d| > |b─c| (Prop19.lean:6). Its
+#       angle entailment premise ∠b:c:d > ∠c:d:b closes arithmetically:
+#       ∠b:c:d = ∠b:c:a + ∠a:c:d (step 5) > ∠a:c:d (r_angle_pos on
+#       ∠b:c:a) = ∠a:d:c (step 4) = ∠b:d:c (r_angle_ray_eq on between
+#       d a b) = ∠c:d:b (canonical atom).
+# euclid_finish: |b─a| + |a─c| = |b─a| + |a─d| (step 2) = |b─d| (the
+#   betweenness sum |b─a| + |a─d| = |b─d| is the closure rule
+#   r_between_if, Transfer.lean:16, on between b a d) > |b─c| (step 6).
+# Engine-only steps: NONE beyond Lean's — the between facts closure needs
+# are derived, not cited: between b d d' from between b a d' ∧ between
+# a d d' (r_between_trans_in, Diagrammatic.lean:69, on the reversals),
+# then between b a d from r_between_order (between b a d' ∧ between b d d'
+# ∧ |b─a| < |b─d|, the comparison entailed by the three betweenness sums
+# and |a─d| = |a─c| > 0).
+PROP20_STEPS_DATA = [
+    ("extend_point_longer", ("AB", "b", "a", "c", "a"), {"x": "d'"}),
+    ("proposition_3", ("a", "d'", "a", "c", "AB", "AC"), {"q": "d"}),
+    ("line_from_points", ("d", "c"), {"L": "DC"}),
+    ("proposition_5'", ("a", "c", "d", "AC", "DC", "AB"), {}),
+    ("sum_angles_onlyif", ("c", "b", "d", "a", "BC", "DC"), {}),
+    ("proposition_19", ("b", "c", "d", "BC", "DC", "AB"), {}),
+]
+# The goal as an LA entailment query: |b─a| + |a─c| > |b─c|. The tuple
+# ("_gt_sum_len", x, y, u, v, p, q) reads |x─y| + |u─v| > |p─q|.
+PROP20_GOAL = [("_gt_sum_len", "b", "a", "a", "c", "b", "c")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3670,6 +3751,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP19_HYPS_DATA, PROP19_STEPS_DATA,
                             PROP19_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "20":
+            t0 = time.time()
+            s, rep = replay(PROP20_HYPS_DATA, PROP20_STEPS_DATA,
+                            PROP20_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

@@ -746,6 +746,83 @@ def test_proposition_19_citation_refused_on_equal_angles():
     assert "gt_ang" in str(ei.value.premise)
 
 
+# --- I.20 (Book/Prop20.lean) -----------------------------------------------
+
+
+def test_prop20_replay():
+    """I.20 (triangle inequality) replays the Lean way: extend AB past a
+    to d' with |a-d'| > |a-c| (extend_point_longer), cut |a-d| = |a-c| off
+    it (proposition_3), isosceles ∠a:c:d = ∠a:d:c (proposition_5'), the
+    angle sum ∠b:c:d = ∠b:c:a + ∠a:c:d (sum_angles_onlyif), then the cited
+    I.19 lemma proposition_19 b c d BC DC AB turns ∠b:c:d > ∠c:d:b into
+    |b-d| > |b-c|, and |b-d| = |b-a| + |a-d| = |b-a| + |a-c| (the
+    betweenness sum is closure rule r_between_if, Transfer.lean:16, on
+    between b a d)."""
+    s, rep = eng.replay(eng.PROP20_HYPS_DATA, eng.PROP20_STEPS_DATA,
+                        eng.PROP20_GOAL)
+    assert eng.la_entails_gt_sum_len(s.la, "b", "a", "a", "c", "b", "c")
+    assert rep[-1]["final"]
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == [
+        "extend_point_longer", "proposition_3", "line_from_points",
+        "proposition_5'", "sum_angles_onlyif", "proposition_19"]
+
+
+def test_prop20_hyps_alone_do_not_entail_goal():
+    """The I.20 hypotheses alone do NOT entail |b-a| + |a-c| > |b-c| —
+    the construction carries the proof (the replay is not vacuous)."""
+    s = eng.State()
+    for f, w in eng.PROP20_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_gt_sum_len(s.la, "b", "a", "a", "c", "b", "c")
+
+
+def test_prop20_control_dropped_proposition_19():
+    """Drop the proposition_19 citation: nothing turns the angle
+    comparison into |b-d| > |b-c|, so the goal sum is not entailed."""
+    steps = [st for st in eng.PROP20_STEPS_DATA if st[0] != "proposition_19"]
+    with pytest.raises(AssertionError):
+        eng.replay(eng.PROP20_HYPS_DATA, steps, eng.PROP20_GOAL)
+
+
+def test_prop20_control_dropped_sum_angles_onlyif():
+    """Drop the sum_angles_onlyif step: without the row
+    ∠b:c:d = ∠b:c:a + ∠a:c:d the gt_ang entailment premise of
+    proposition_19 fails -> MissingPremise."""
+    steps = [st for st in eng.PROP20_STEPS_DATA
+             if st[0] != "sum_angles_onlyif"]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(eng.PROP20_HYPS_DATA, steps, eng.PROP20_GOAL)
+    assert "gt_ang" in str(ei.value.premise)
+
+
+def test_prop20_sum_equality_not_entailed():
+    """After the full I.20 replay the EQUALITY |b-a| + |a-c| = |b-c| is
+    not entailed (the inequality is strict — a degenerate triangle would
+    be needed for equality, and formTriangle forbids it)."""
+    s, rep = eng.replay(eng.PROP20_HYPS_DATA, eng.PROP20_STEPS_DATA,
+                        eng.PROP20_GOAL)
+    assert not s.la.entails(
+        eng.lin((eng.len_atom("b", "a"), 1), (eng.len_atom("a", "c"), 1),
+                (eng.len_atom("b", "c"), -1)), 0, "=")
+
+
+def test_la_entails_gt_sum_len_bad_cases():
+    """The new LA helper's own bad cases: a store where the sum is only
+    EQUAL to the compared length (degenerate: between b a c gives
+    |b-a| + |a-c| = |b-c|) does not entail the strict >; and the
+    comparison running the other way (|b-c| > the sum, from an assumed
+    gt row) does not entail it either."""
+    # bad case 1: sum only equal (between b a c -> |b-a| + |a-c| = |b-c|)
+    s = _line_state([("between", "b", "a", "c")])
+    assert not eng.la_entails_gt_sum_len(s.la, "b", "a", "a", "c", "b", "c")
+    # bad case 2: the comparison runs the other way
+    s = _line_state([], [(eng.lin((eng.len_atom("b", "c"), 1),
+                                  (eng.len_atom("b", "a"), -1),
+                                  (eng.len_atom("a", "c"), -1)), 0, ">")])
+    assert not eng.la_entails_gt_sum_len(s.la, "b", "a", "a", "c", "b", "c")
+
+
 def test_prop7_replay():
     s, rep = eng.replay(eng.PROP7_HYPS_DATA, eng.PROP7_STEPS_DATA, [("false",)])
     assert s.has(("false",))
@@ -927,7 +1004,10 @@ def test_replay_fact_set_footprints():
     main() goal still holds. I.18 joins the pin at (97, 32).
     E-kimi-task-390 added the I.19 replay (by_contra citing
     proposition_5' and the proposition_18 lemma). No replay changed;
-    I.19 joins the pin at (41, 11)."""
+    I.19 joins the pin at (41, 11).
+    E-kimi-task-392 added the I.20 replay (extend_point_longer +
+    proposition_3 + the cited proposition_19 lemma). No replay changed;
+    I.20 joins the pin at (173, 71)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
@@ -935,7 +1015,7 @@ def test_replay_fact_set_footprints():
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
                 "16a": (546, 281), "17": (70, 24), "18": (97, 32),
-                "19": (41, 11)}
+                "19": (41, 11), "20": (173, 71)}
     got = {}
     old_argv = sys.argv
     try:
