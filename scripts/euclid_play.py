@@ -115,6 +115,24 @@ def _lean_statement(n):
     return "\n".join(lines)
 
 
+def rule_info(name):
+    """{args, cite, binds} for a rule. binds are the base names the rule's
+    make introduces, read off the make lambda's returned pairs on a
+    throwaway state (euclid_engine.py is NOT modified). If the make
+    lambda cannot be run that way, binds is [] — the page then shows one
+    free "name" field instead of per-bind inputs."""
+    spec = eng.CONSTRUCTIONS[name]
+    binds = []
+    try:
+        made = spec["make"](eng.State(),
+                            *["#arg%d" % k for k in range(len(spec["args"]))])
+        binds = [b for b, _facts in made if b is not None]
+    except Exception:
+        binds = []
+    return {"args": list(spec["args"]), "cite": spec["cite"],
+            "binds": binds}
+
+
 def catalogue():
     """Ordered list, one entry per proposition N in tr.FREE."""
     titles = _titles()
@@ -127,7 +145,8 @@ def catalogue():
             "statement": _lean_statement(n),
             "hyps": [list(f) for f, _w in hyps],
             "goals": [list(g) for g in GOALS[n]],
-            "palette": palette(n),
+            "palette": [dict({"name": nm}, **rule_info(nm))
+                        for nm in palette(n)],
         })
     return out
 

@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>E-euclid-tutor — play Book I</title>
+<!-- JSXGraph pinned to 1.11.1 (jsdelivr). No build step.
+     Drawing code adapted from viewer.js (same look); index.html and
+     viewer.js are NOT modified. -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraph.css">
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraphcore.js"></script>
+<style>
+  body { font-family: sans-serif; margin: 0; display: flex; flex-direction:
+         column; height: 100vh; }
+  header { padding: 6px 12px; border-bottom: 1px solid #ccc; display: flex;
+           gap: 10px; align-items: center; }
+  #main { display: flex; flex: 1; min-height: 0; }
+  #props { width: 210px; overflow: auto; border-right: 1px solid #ccc;
+           padding: 6px; font-size: 14px; }
+  .prop-item { padding: 3px 6px; border-radius: 4px; cursor: pointer;
+               white-space: nowrap; }
+  .prop-item:hover { background: #eee; }
+  .prop-item.locked { color: #aaa; cursor: default; }
+  .prop-item.locked:hover { background: none; }
+  .prop-item.current { background: #dde8f6; }
+  .prop-item .tick { color: #1c5e0f; font-weight: bold; margin-right: 4px; }
+  .prop-item .casenote { display: block; font-size: 11px; color: #7a5300; }
+  #centre { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #board-wrap { flex: 1; position: relative; }
+  #jxgbox { position: absolute; inset: 6px; border: 1px solid #999;
+            border-radius: 4px; }
+  #moves { max-height: 30%; overflow: auto; border-top: 1px solid #ccc;
+           padding: 4px 12px; font-size: 13px; }
+  #moves .mv { margin: 2px 0; }
+  #moves .mv .rule { font-family: monospace; }
+  .fact { font-family: monospace; background: #f2f2f2; padding: 0 4px;
+          border-radius: 3px; margin-right: 6px; }
+  #side { width: 400px; overflow: auto; border-left: 1px solid #ccc;
+          padding: 6px 10px; font-size: 13px; display: flex;
+          flex-direction: column; }
+  #statement { font-family: monospace; font-size: 12px; background: #f8f8f8;
+               border: 1px solid #ddd; border-radius: 4px; padding: 6px;
+               white-space: pre-wrap; }
+  #move-panel { margin-top: 10px; }
+  #move-panel select { font-size: 13px; max-width: 100%; }
+  #args-table td { padding: 2px 4px; }
+  #args-table input { width: 90px; font-family: monospace; }
+  #move-error { color: #8f130c; background: #fbeae9; border: 1px solid
+                #b6402f; border-radius: 4px; padding: 4px 8px; margin-top:
+                8px; display: none; }
+  #solved-banner { display: none; background: #d4f0c8; color: #1c5e0f;
+                   border: 1px solid #4e9b37; border-radius: 4px;
+                   padding: 8px; margin-top: 8px; font-size: 16px;
+                   font-weight: bold; text-align: center; }
+  #contra-note { display: none; color: #8f130c; margin-top: 6px; }
+  #reset-progress { font-size: 12px; }
+  button { font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <b>E-euclid-tutor — play Book I</b>
+  <span style="font-size:12px;color:#555">solve each proposition to open
+    the next</span>
+  <a href="#" id="reset-progress">reset progress</a>
+  <label style="font-size:12px"><input type="checkbox" id="toggle-aux">
+    show auxiliary</label>
+</header>
+<div id="main">
+  <div id="props"></div>
+  <div id="centre">
+    <div id="board-wrap"><div id="jxgbox"></div></div>
+    <div id="moves"></div>
+  </div>
+  <div id="side">
+    <div id="prop-title" style="font-weight:bold;margin-bottom:4px"></div>
+    <div id="statement"></div>
+    <div id="case-note" style="color:#7a5300;font-size:12px;margin-top:4px;
+         display:none">needs a case move, coming next</div>
+    <div id="move-panel">
+      <select id="rule-select"></select>
+      <div id="cite" style="font-size:11px;color:#777;margin:2px 0"></div>
+      <table id="args-table"></table>
+      <button id="btn-do">do move</button>
+      <button id="btn-undo">undo last move</button>
+      <div id="move-error"></div>
+      <div id="solved-banner">Solved ✓</div>
+      <div id="contra-note">the assumptions are contradictory — anything
+        follows; undo a step.</div>
+    </div>
+  </div>
+</div>
+<script>
+"use strict";
+
+const CASE_PROPS = new Set([10, 13, 14, 19, 21]);
+const STORE_KEY = "euclid-play-v1";
+
+let catalogue = null;     // /api/catalogue
+let cur = null;           // current catalogue entry
+let moves = [];           // accepted moves for cur.n
+let lastResult = null;    // last /api/play response for cur.n
+let board = null;
+let built = {};           // name -> JSXGraph element
+let activeInput = null;   // the argument input a board click fills
+
+const HI = "#ff9500";
+
+// ------------------------------------------------------------ progress
+
+function loadProgress() {
+  try {
+    const p = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    return { solved: p.solved || {}, moves: p.moves || {} };
+  } catch (e) { return { solved: {}, moves: {} }; }
+}
+function saveProgress() {
+  const p = loadProgress();
+  if (cur) p.moves[cur.n] = moves;
+  localStorage.setItem(STORE_KEY, JSON.stringify(p));
+}
+function markSolved(n) {
+  const p = loadProgress();
+  p.solved[n] = true;
+  localStorage.setItem(STORE_KEY, JSON.stringify(p));
+}
+function isUnlocked(i) {
+  if (i === 0) return true;
+  const p = loadProgress();
+  return !!p.solved[catalogue[i - 1].n];
+}
+
+// -------------------------------------------------------- fact -> English
+
+function factEnglish(f) {
+  if (!Array.isArray(f)) return String(f);
+  const k = f[0];
+  switch (k) {
+    case "neq": return `${f[1]} ≠ ${f[2]}`;
+    case "on_line": return `${f[1]} is on line ${f[2]}`;
+    case "not_on_line": return `${f[1]} is not on line ${f[2]}`;
+    case "on_circle": return `${f[1]} is on circle ${f[2]}`;
+    case "centre": return `${f[1]} is the centre of circle ${f[2]}`;
+    case "between": return `${f[2]} is between ${f[1]} and ${f[3]}`;
+    case "same_side": return `${f[1]} and ${f[2]} are on the same side of ${f[3]}`;
+    case "opposing_sides": return `${f[1]} and ${f[2]} are on opposite sides of ${f[3]}`;
+    case "intersects_cc": return `the circles ${f[1]} and ${f[2]} intersect`;
+    case "intersects_lc": return `line ${f[1]} meets circle ${f[2]}`;
+    case "inside": return `${f[1]} is inside circle ${f[2]}`;
+    case "outside": return `${f[1]} is outside circle ${f[2]}`;
+    case "not_outside": return `${f[1]} is on or inside circle ${f[2]}`;
+    case "dpl": return `${f[1]} and ${f[2]} are distinct points on line ${f[3]}`;
+    case "_eq_len": return `|${f[1]}${f[2]}| = |${f[3]}${f[4]}|`;
+    case "_eq_ang": return `∠${f[1]}${f[2]}${f[3]} = ∠${f[4]}${f[5]}${f[6]}`;
+    case "_rt_ang": return `∠${f[1]}${f[2]}${f[3]} is right`;
+    case "fresh": return `${f[1]} already names an object, and this step's facts do not already hold for it`;
+    default: return f.join(" ");
+  }
+}
+
+// -------------------------------------------------------------- drawing
+// Adapted from viewer.js: fitBBox + mk over the play() objects (which
+// carry the same jsx recipes; points carry their own xy).
+
+function placement() {
+  const P = {};
+  for (const o of (lastResult ? lastResult.objects : [])) {
+    if (o.kind === "point" && Array.isArray(o.xy)) P[o.name] = o.xy;
+  }
+  return P;
+}
+
+function fitBBox() {
+  const objs = lastResult ? lastResult.objects : [];
+  const P = placement();
+  const pts = Object.values(P);
+  if (!pts.length) return [-2.5, 3.5, 7, -3];
+  for (const o of objs) {
+    const j = o.jsx;
+    if (!j || j.type !== "circle") continue;
+    const ends = j.radius_from || [j.center, j.through];
+    const c = P[j.center], p1 = P[ends[0]], p2 = P[ends[1]];
+    if (!Array.isArray(c) || !Array.isArray(p1) || !Array.isArray(p2))
+      continue;
+    const r = Math.hypot(p1[0] - p2[0], p1[1] - p2[1]);
+    pts.push([c[0] - r, c[1] - r], [c[0] + r, c[1] + r]);
+  }
+  let xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs);
+  let y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const m = 0.15 * Math.max(x1 - x0, y1 - y0);
+  x0 -= m; x1 += m; y0 -= m; y1 += m;
+  const box = document.getElementById("jxgbox");
+  const aspect = box.clientWidth / Math.max(1, box.clientHeight);
+  const bw = x1 - x0, bh = y1 - y0;
+  if (bw < bh * aspect) {
+    const c = (x0 + x1) / 2, half = bh * aspect / 2;
+    x0 = c - half; x1 = c + half;
+  } else {
+    const c = (y0 + y1) / 2, half = bw / aspect / 2;
+    y0 = c - half; y1 = c + half;
+  }
+  return [x0, y1, x1, y0];
+}
+
+function mk(o) {
+  const j = o.jsx;
+  const P = placement();
+  const base = { name: o.name, withLabel: true, strokeColor: "#3366aa",
+                 highlightStrokeColor: HI };
+  switch (j.type) {
+    case "point": {
+      if (!Array.isArray(P[o.name])) return null;
+      return board.create("point", [P[o.name][0], P[o.name][1]],
+        Object.assign(base, { fillColor: "#3366aa",
+                              highlightFillColor: HI,
+                              fixed: o.def_step !== 0 }));
+    }
+    case "line":
+      return board.create("line", [built[j.p[0]], built[j.p[1]]],
+        Object.assign(base, { strokeColor: o.hyp ? "#999" : "#3366aa" }));
+    case "circle":
+      if (j.radius_from) {
+        const p1 = built[j.radius_from[0]], p2 = built[j.radius_from[1]];
+        const rad = function () { return p1.Dist(p2); };
+        return board.create("circle", [built[j.center], rad],
+                            Object.assign(base, {}));
+      }
+      return board.create("circle", [built[j.center], built[j.through]],
+                          Object.assign(base, {}));
+    case "compass":
+      return board.create("compass",
+        [built[j.from[0]], built[j.from[1]], built[j.center]],
+        Object.assign(base, {}));
+    case "glider":
+      return board.create("glider",
+        [P[o.name][0], P[o.name][1], built[j.on]],
+        Object.assign(base, { fillColor: "#3366aa" }));
+    case "intersection": {
+      const parents = j.parents.map(p => built[p]);
+      // as viewer.js: JSXGraph's index order is not the engine's; take
+      // whichever index lies nearer the recorded placement
+      const Pt = P[o.name];
+      let idx = j.idx;
+      if (Array.isArray(Pt)) {
+        const d = k => {
+          const t = board.create("intersection", parents.concat([k]),
+                                 { visible: false, withLabel: false });
+          const r = Math.hypot(t.X() - Pt[0], t.Y() - Pt[1]);
+          board.removeObject(t);
+          return isNaN(r) ? Infinity : r;
+        };
+        idx = d(0) <= d(1) ? 0 : 1;
+      }
+      return board.create("intersection", parents.concat([idx]),
+                          Object.assign(base, { fillColor: "#3366aa" }));
+    }
+    default:
+      return null;
+  }
+}
+
+function draw() {
+  if (board) JXG.JSXGraph.freeBoard(board);
+  const jx = document.getElementById("jxgbox");
+  jx.innerHTML = "";
+  const wrapEl = document.getElementById("board-wrap");
+  jx.style.width = (wrapEl.clientWidth - 12) + "px";
+  jx.style.height = (wrapEl.clientHeight - 12) + "px";
+  board = JXG.JSXGraph.initBoard("jxgbox", {
+    boundingbox: [-2.5, 3.5, 7, -3], axis: false,
+    showCopyright: false, showNavigation: true,
+  });
+  const box = document.getElementById("jxgbox");
+  board.resizeContainer(box.clientWidth, box.clientHeight);
+  board.setBoundingBox(fitBBox(), true);
+  built = {};
+  window.__BOARD = board;  // for the headless check only
+  const showAux = document.getElementById("toggle-aux").checked;
+  for (const o of (lastResult ? lastResult.objects : [])) {
+    const el = mk(o);
+    if (!el) continue;
+    built[o.name] = el;
+    if (o.aux && !showAux) el.setAttribute({ visible: false });
+    // clicking an object fills the argument being filled with its name
+    // ("down" only: a click would fire again after it and fill twice)
+    el.on("down", () => fillArg(o.name));
+  }
+}
+
+// ------------------------------------------------------------- move panel
+
+function usedNames() {
+  const s = new Set();
+  for (const o of (lastResult ? lastResult.objects : [])) s.add(o.name);
+  return s;
+}
+
+function freshName(base) {
+  const used = usedNames();
+  if (base.length === 1 && base >= "A" && base <= "Z") {
+    for (const c of "CDEFGHLMNPQRSTUVWXYZAB")
+      if (!used.has(c)) return c;
+  }
+  if (base.length === 1 && base >= "a" && base <= "z") {
+    for (const c of "defghijklmnpqrstuvwxyzabc")
+      if (!used.has(c)) return c;
+  }
+  return base;
+}
+
+function ruleLabel(e) {
+  const m = /^proposition_(\d+)('*)/.exec(e.name);
+  if (m) return `proposition_${m[1]}${m[2]}  (I.${m[1]})`;
+  return e.name;
+}
+
+function renderMovePanel() {
+  const sel = document.getElementById("rule-select");
+  sel.innerHTML = "";
+  for (const e of cur.palette) {
+    const opt = document.createElement("option");
+    opt.value = e.name;
+    opt.textContent = ruleLabel(e);
+    sel.appendChild(opt);
+  }
+  renderRuleInputs();
+}
+
+function renderRuleInputs() {
+  const name = document.getElementById("rule-select").value;
+  const e = cur.palette.find(p => p.name === name);
+  document.getElementById("cite").textContent = e ? e.cite : "";
+  const tbl = document.getElementById("args-table");
+  tbl.innerHTML = "";
+  if (!e) return;
+  for (const a of e.args) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${a}</td>`;
+    const td = document.createElement("td");
+    const inp = document.createElement("input");
+    inp.className = "arg-in";
+    inp.dataset.arg = a;
+    inp.addEventListener("focusin", () => { activeInput = inp; });
+    td.appendChild(inp);
+    tr.appendChild(td);
+    tbl.appendChild(tr);
+  }
+  // one input per new object to name (prefilled fresh); when the backend
+  // found no binds, one free "name" field
+  const binds = e.binds && e.binds.length ? e.binds : [null];
+  for (const b of binds) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${b === null ? "name" : "new " + b}</td>`;
+    const td = document.createElement("td");
+    const inp = document.createElement("input");
+    inp.className = "bind-in";
+    inp.dataset.base = b === null ? "" : b;
+    inp.value = b === null ? "" : freshName(b);
+    td.appendChild(inp);
+    tr.appendChild(td);
+    tbl.appendChild(tr);
+  }
+  activeInput = tbl.querySelector(".arg-in");
+}
+
+function fillArg(name) {
+  let inp = activeInput;
+  if (!inp || inp.value) {
+    inp = [...document.querySelectorAll(".arg-in")]
+      .find(i => !i.value) || activeInput;
+  }
+  if (inp) {
+    inp.value = name;
+    activeInput = [...document.querySelectorAll(".arg-in")]
+      .find(i => !i.value) || inp;
+  }
+}
+
+// ------------------------------------------------------------- play flow
+
+async function postPlay(n, mv) {
+  const r = await fetch("/api/play", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ n: n, moves: mv }),
+  });
+  return r.json();
+}
+
+function showError(err) {
+  const div = document.getElementById("move-error");
+  if (!err) { div.style.display = "none"; return; }
+  div.style.display = "block";
+  if (Array.isArray(err))
+    div.textContent = "Not yet shown: " + factEnglish(err);
+  else
+    div.textContent = String(err);
+}
+
+function renderMoves() {
+  const div = document.getElementById("moves");
+  div.innerHTML = "";
+  if (!lastResult) return;
+  for (const m of lastResult.moves) {
+    if (!m.ok) continue;
+    const row = document.createElement("div");
+    row.className = "mv";
+    const args = (moves[m.n - 1].args || []).join(" ");
+    const head = document.createElement("span");
+    head.className = "rule";
+    head.textContent = `${m.n}. ${m.rule} ${args}`;
+    row.appendChild(head);
+    for (const f of m.added) {
+      const s = document.createElement("span");
+      s.className = "fact";
+      s.textContent = factEnglish(f);
+      row.appendChild(s);
+    }
+    div.appendChild(row);
+  }
+}
+
+function afterResult(res, err) {
+  lastResult = res;
+  window.__LAST = res;  // for the headless check only
+  window.__MOVECOUNT = (window.__MOVECOUNT || 0) + 1;  // ditto
+  draw();
+  renderMoves();
+  showError(err);
+  document.getElementById("contra-note").style.display =
+    res.contradictory ? "block" : "none";
+  const banner = document.getElementById("solved-banner");
+  if (res.goal_reached) {
+    banner.style.display = "block";
+    markSolved(cur.n);
+    renderPropList();
+  } else {
+    banner.style.display = "none";
+  }
+}
+
+async function submitMove() {
+  const rule = document.getElementById("rule-select").value;
+  const args = [...document.querySelectorAll(".arg-in")]
+    .map(i => i.value.trim());
+  const bindings = {};
+  const bindIns = [...document.querySelectorAll(".bind-in")];
+  if (bindIns.length === 1 && bindIns[0].dataset.base === "") {
+    if (bindIns[0].value.trim()) bindings["name"] = bindIns[0].value.trim();
+  } else {
+    for (const i of bindIns)
+      if (i.value.trim()) bindings[i.dataset.base] = i.value.trim();
+  }
+  const mv = { rule, args, bindings };
+  const res = await postPlay(cur.n, moves.concat([mv]));
+  const lastM = res.moves[res.moves.length - 1];
+  if (lastM && lastM.ok && res.moves.length === moves.length + 1) {
+    moves.push(mv);
+    saveProgress();
+    afterResult(res, null);
+    renderRuleInputs();  // fresh prefills for the next move
+  } else {
+    // refused: keep the move list unchanged, show the error in plain words
+    afterResult(res, lastM ? lastM.error : "refused");
+  }
+}
+
+async function undo() {
+  if (!moves.length) return;
+  moves.pop();
+  saveProgress();
+  const res = await postPlay(cur.n, moves);
+  afterResult(res, null);
+  renderRuleInputs();
+}
+
+// ------------------------------------------------------------- prop list
+
+function renderPropList() {
+  const div = document.getElementById("props");
+  const p = loadProgress();
+  div.innerHTML = "";
+  catalogue.forEach((e, i) => {
+    const item = document.createElement("div");
+    const unlocked = isUnlocked(i);
+    item.className = "prop-item" + (unlocked ? "" : " locked") +
+      (cur && cur.n === e.n ? " current" : "");
+    item.dataset.n = e.n;
+    const tick = p.solved[e.n] ? '<span class="tick">✓</span>' : "";
+    item.innerHTML = `${tick}${e.title}`;
+    if (CASE_PROPS.has(e.n)) {
+      const note = document.createElement("span");
+      note.className = "casenote";
+      note.textContent = "needs a case move, coming next";
+      item.appendChild(note);
+    }
+    if (unlocked) item.onclick = () => selectProp(i);
+    div.appendChild(item);
+  });
+}
+
+async function selectProp(i) {
+  cur = catalogue[i];
+  const p = loadProgress();
+  moves = (p.moves[cur.n] || []).map(m => ({
+    rule: m.rule, args: m.args || [], bindings: m.bindings || {},
+  }));
+  document.getElementById("prop-title").textContent = cur.title;
+  document.getElementById("statement").textContent = cur.statement;
+  document.getElementById("case-note").style.display =
+    CASE_PROPS.has(cur.n) ? "block" : "none";
+  renderPropList();
+  renderMovePanel();
+  const res = await postPlay(cur.n, moves);
+  afterResult(res, null);
+}
+
+// ------------------------------------------------------------------ boot
+
+document.getElementById("btn-do").onclick = submitMove;
+document.getElementById("btn-undo").onclick = undo;
+document.getElementById("rule-select").onchange = renderRuleInputs;
+document.getElementById("toggle-aux").onchange = () => draw();
+document.getElementById("reset-progress").onclick = ev => {
+  ev.preventDefault();
+  localStorage.removeItem(STORE_KEY);
+  selectProp(0);
+};
+
+fetch("/api/catalogue").then(r => r.json()).then(cat => {
+  catalogue = cat;
+  window.__CAT = cat;  // for the headless check only
+  // open at the first unlocked-but-unsolved proposition
+  const p = loadProgress();
+  let i = cat.findIndex((e, k) => isUnlocked(k) && !p.solved[e.n]);
+  if (i < 0) i = 0;
+  selectProp(i);
+}).catch(e => {
+  document.getElementById("statement").textContent =
+    "failed to load /api/catalogue — serve with euclid_play.py: " + e;
+});
+</script>
+</body>
+</html>

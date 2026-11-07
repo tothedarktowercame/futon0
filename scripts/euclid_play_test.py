@@ -95,6 +95,41 @@ def test_missing_premise_returns_the_fact():
     assert not res["goal_reached"]
 
 
+def test_rule_info():
+    # constructions: args and the base names the make introduces
+    li = ep.rule_info("line_from_points")
+    assert li["args"] == ["a", "b"]
+    assert li["binds"] == ["L"]
+    assert li["cite"] == "LinesAndCircles.lean:3"
+    ci = ep.rule_info("circle_from_points")
+    assert ci["args"] == ["a", "b"]
+    assert ci["binds"] == ["C"]
+    ii = ep.rule_info("intersection_circles")
+    assert ii["args"] == ["alpha", "beta"]
+    assert ii["binds"] == ["c"]
+    # a proposition: proposition_1 binds d
+    pi = ep.rule_info("proposition_1")
+    assert pi["args"] == ["a", "b", "AB"]
+    assert pi["binds"] == ["d"]
+    assert pi["cite"] == "Book/Prop01.lean:5"
+
+
+def test_catalogue_palette_carries_rule_info():
+    cat = ep.catalogue()
+    p1 = next(e for e in cat if e["n"] == 1)
+    assert all(set(e) == {"name", "args", "cite", "binds"}
+               for e in p1["palette"])
+    names = [e["name"] for e in p1["palette"]]
+    assert names == ep.palette(1)  # constructions first, then propositions
+    lfp = next(e for e in p1["palette"] if e["name"] == "line_from_points")
+    assert lfp["binds"] == ["L"]
+    # nothing citable from the future: no proposition entries at I.1
+    assert not any(n.startswith("proposition_") for n in names)
+    p5 = next(e for e in cat if e["n"] == 5)
+    p4 = next(e for e in p5["palette"] if e["name"] == "proposition_4")
+    assert p4["cite"].startswith("Book/Prop04")
+
+
 def _server_pid(port):
     out = subprocess.check_output(["ss", "-ltnp"]).decode()
     for line in out.splitlines():
