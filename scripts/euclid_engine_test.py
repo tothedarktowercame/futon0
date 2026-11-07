@@ -3575,3 +3575,80 @@ def test_proposition_24_citation_refused_wrong_way():
                        ("a", "b", "c", "d", "e", "f",
                         "AB", "BC", "AC", "DE", "EF", "DF"), {})
     assert "gt_ang" in str(ei.value.premise)
+
+
+def test_prop25_replay():
+    """I.25 replays the Lean way: by_contra on the goal, splitting
+    ¬(∠b:a:c > ∠e:d:f) into ∠b:a:c = ∠e:d:f (proposition_4 gives
+    |b-c| = |e-f| against the hypothesis |b-c| > |e-f|) and
+    ∠e:d:f > ∠b:a:c (proposition_24 d e f a b c DE EF DF AB BC AC — the
+    cited I.24 lemma — gives |e-f| > |b-c| against the hypothesis).
+    Both branches end arithmetically contradictory; exhaustiveness is
+    trichotomy, the caller's responsibility as documented at
+    PROP25_STEPS_DATA."""
+    s, rep = eng.replay(eng.PROP25_HYPS_DATA, eng.PROP25_STEPS_DATA,
+                        eng.PROP25_GOAL)
+    assert eng.la_entails_gt_ang(s.la, "b", "a", "c", "e", "d", "f")
+    assert rep[-1]["final"]
+    assert rep[0]["rule"] == "by_contra" and rep[0]["branches"] == 2
+
+
+def test_prop25_hyps_alone_do_not_entail_goal():
+    """The I.25 hypotheses alone do NOT entail ∠b:a:c > ∠e:d:f — the
+    by_contra carries the proof (the replay is not vacuous)."""
+    s = eng.State()
+    for f, w in eng.PROP25_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not eng.la_entails_gt_ang(s.la, "b", "a", "c", "e", "d", "f")
+
+
+def test_prop25_control_dropped_proposition_4():
+    """Drop branch 1's proposition_4 citation: with ∠b:a:c = ∠e:d:f
+    assumed and no way to turn it into |b-c| = |e-f| against the
+    hypothesis, the branch cannot reach a contradiction -> by_contra
+    refused (ByContraFailure)."""
+    steps = [("by_contra", [
+        (assumps, [st for st in br_steps
+                   if st[0] != "proposition_4"])
+        for assumps, br_steps in eng.PROP25_STEPS_DATA[0][1]],
+        eng.PROP25_STEPS_DATA[0][2])]
+    with pytest.raises(eng.ByContraFailure):
+        eng.replay(eng.PROP25_HYPS_DATA, steps, eng.PROP25_GOAL)
+
+
+def test_prop25_control_dropped_proposition_24():
+    """Drop branch 2's proposition_24 citation: with ∠e:d:f > ∠b:a:c
+    assumed and no way to turn it into |e-f| > |b-c| against the
+    hypothesis, the branch cannot reach a contradiction -> by_contra
+    refused (ByContraFailure)."""
+    steps = [("by_contra", [
+        (assumps, [st for st in br_steps
+                   if st[0] != "proposition_24"])
+        for assumps, br_steps in eng.PROP25_STEPS_DATA[0][1]],
+        eng.PROP25_STEPS_DATA[0][2])]
+    with pytest.raises(eng.ByContraFailure):
+        eng.replay(eng.PROP25_HYPS_DATA, steps, eng.PROP25_GOAL)
+
+
+def test_prop25_control_swapped_length_hypothesis():
+    """Swap the length hypothesis (|e-f| > |b-c| instead of
+    |b-c| > |e-f|): branch 2's proposition_24 conclusion |e-f| > |b-c|
+    is now exactly consistent with the hypothesis, so the branch cannot
+    reach a contradiction -> by_contra refused. The replay is not
+    vacuous in its hypothesis (and the swapped statement is false —
+    that is I.24's configuration, with the hinge opening the other
+    way)."""
+    hyps = [(("gt_len", "e", "f", "b", "c") if f[0] == "gt_len" else f, w)
+            for f, w in eng.PROP25_HYPS_DATA]
+    with pytest.raises(eng.ByContraFailure):
+        eng.replay(hyps, eng.PROP25_STEPS_DATA, eng.PROP25_GOAL)
+
+
+def test_prop25_final_state_not_contradictory():
+    """The final store (the by_contra concluded on the OUTER state)
+    stays consistent."""
+    s, _ = eng.replay(eng.PROP25_HYPS_DATA, eng.PROP25_STEPS_DATA,
+                      eng.PROP25_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness

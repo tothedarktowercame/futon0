@@ -5020,6 +5020,78 @@ PROP24_STEPS_DATA = PROP24A_STEPS_DATA[:-1] + [
 PROP24_GOAL = [("_gt_len", "b", "c", "e", "f")]
 
 
+# ---------------------------------------------------------------------------
+# I.25 (converse of the hinge theorem) — from the cited proposition_4 and
+# proposition_24 lemmas
+# ---------------------------------------------------------------------------
+# Book/Prop25.lean:7-21 — proposition_25 verbatim:
+#   ∀ (a b c d e f : Point) (AB BC AC DE EF DF : Line),
+#   formTriangle a b c AB BC AC ∧ formTriangle d e f DE EF DF ∧
+#   (|(a─b)| = |(d─e)|) ∧ (|(a─c)| = |(d─f)|) ∧ (|(b─c)| > |(e─f)|) →
+#   (∠ b:a:c > ∠ e:d:f)
+# The two formTriangles destructure exactly as at PROP24A (dpl + the four
+# on_lines + the two non-degeneracy neqs + the off-line fact), once per
+# triangle; the two length equalities and the length comparison are
+# metric hypotheses (the plain tuple forms _assume_metric_or_fact
+# installs rows for).
+PROP25_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),     # formTriangle a b c AB BC AC
+    (("on_line", "b", "BC"), "h"), (("on_line", "c", "BC"), "h"),
+    (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
+    (("neq", "b", "c"), "h"), (("neq", "a", "c"), "h"),
+    (("not_on_line", "c", "AB"), "h"),
+    (("dpl", "d", "e", "DE"), "h"),     # formTriangle d e f DE EF DF
+    (("on_line", "e", "EF"), "h"), (("on_line", "f", "EF"), "h"),
+    (("on_line", "f", "DF"), "h"), (("on_line", "d", "DF"), "h"),
+    (("neq", "e", "f"), "h"), (("neq", "d", "f"), "h"),
+    (("not_on_line", "f", "DE"), "h"),
+    (("eq_len", "a", "b", "d", "e"), "h"),   # |a─b| = |d─e|
+    (("eq_len", "a", "c", "d", "f"), "h"),   # |a─c| = |d─f|
+    (("gt_len", "b", "c", "e", "f"), "h"),   # |b─c| > |e─f|
+]
+# Lean's shape (Prop25.lean:13-20): by_contra on the goal, then by_cases
+# on ∠b:a:c = ∠e:d:f. The negated goal enters exactly as at PROP19:
+# Lean's by_contra assumes ¬(∠b:a:c > ∠e:d:f) and the by_cases splits it
+# — branch 1's assumption is the equality; branch 2's is Lean's other
+# case (¬(>) ∧ ¬(=)) rendered directly as ∠e:d:f > ∠b:a:c. The two
+# branches split ¬(∠b:a:c > ∠e:d:f) exactly, and their exhaustiveness is
+# trichotomy on the two angles — the caller's responsibility, documented
+# here as at every by_contra use site.
+# Branch 1 (∠b:a:c = ∠e:d:f): proposition_4 a b c d e f AB BC AC DE EF
+#   DF (Lean's argument order, Prop25.lean:15) — the formTriangle
+#   premises close from the hypotheses, the two length entailments are
+#   the hypotheses, and the angle entailment is the branch assumption —
+#   gives |b─c| = |e─f| against the hypothesis |b─c| > |e─f| — store
+#   unsat.
+# Branch 2 (∠e:d:f > ∠b:a:c): euclid_assert (Prop25.lean:18) IS the
+#   branch assumption here — there is nothing to derive, the assumption
+#   is already the strict angle row. proposition_24 d e f a b c DE EF DF
+#   AB BC AC (Lean's argument order, Prop25.lean:19): the formTriangle
+#   premises close from the hypotheses; the length entailments
+#   |d─e| = |a─b| and |d─f| = |a─c| are the hypotheses' equalities
+#   (symmetric); the angle entailment is the branch assumption exactly —
+#   gives |e─f| > |b─c| against the hypothesis — store unsat. Both
+#   contradictions are arithmetic (euclid_finish's SMT in Lean), so no
+#   further steps are named. The by_contra conclusion is the goal
+#   itself.
+PROP25_STEPS_DATA = [
+    ("by_contra", [
+        # branch 1: ∠b:a:c = ∠e:d:f
+        ([("eq_ang", "b", "a", "c", "e", "d", "f")], [
+            ("proposition_4", ("a", "b", "c", "d", "e", "f",
+                               "AB", "BC", "AC", "DE", "EF", "DF"), {}),
+        ]),
+        # branch 2: ∠e:d:f > ∠b:a:c (Lean's ¬(>) ∧ ¬(=) case)
+        ([("gt_ang", "e", "d", "f", "b", "a", "c")], [
+            ("proposition_24", ("d", "e", "f", "a", "b", "c",
+                                "DE", "EF", "DF", "AB", "BC", "AC"), {}),
+        ]),
+    ], [("gt_ang", "b", "a", "c", "e", "d", "f")]),
+]
+# The goal as an LA entailment query: ∠b:a:c > ∠e:d:f.
+PROP25_GOAL = [("_gt_ang", "b", "a", "c", "e", "d", "f")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -5203,6 +5275,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP24A_HYPS_DATA, PROP24_STEPS_DATA,
                             PROP24_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "25":
+            t0 = time.time()
+            s, rep = replay(PROP25_HYPS_DATA, PROP25_STEPS_DATA,
+                            PROP25_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
