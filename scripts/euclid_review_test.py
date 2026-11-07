@@ -108,3 +108,86 @@ def test_diagram_trusting_intersection_of_existing_circles():
     bad = _row(rep, 3)
     assert bad["valid"] is False
     assert "intersects_cc" in bad["why"], bad["why"]
+
+
+# -- an engine failure is not a verdict (review fix, claude-9) -----------------
+
+def _patched_engine(monkeypatch, exc, when):
+    """Wrap rv.eng.apply_step so that `when(state, i, rule, args)` triggers
+    `exc`; the review's Distance BFS calls apply_step too, so gate narrowly."""
+    orig = rv.eng.apply_step
+
+    def fake(state, i, rule, args, bindings):
+        if when(rule, args):
+            raise exc
+        return orig(state, i, rule, args, bindings)
+
+    monkeypatch.setattr(rv.eng, "apply_step", fake)
+
+
+def test_engine_runtime_error_is_not_invalid(monkeypatch):
+    """(a) apply_step raising RuntimeError on the reviewed step: the row is
+    valid=None / engine-error (never 'invalid'), n_invalid unchanged, the
+    error text is visible, and the report is marked incomplete. Injected
+    on the useless line step so the other steps stay reviewable."""
+    _patched_engine(
+        monkeypatch, RuntimeError("engine bug!"),
+        when=lambda rule, args: rule == "line_from_points"
+        and args == ("a", "b"))
+    steps = rv.fixture_i1_useless_step()
+    rep = rv.review("I.1", steps)
+    row = _row(rep, 2)
+    assert row["valid"] is None
+    assert row["progress"] == "engine-error"
+    assert "engine bug!" in row["why"]
+    assert rep["invalid_steps"] == 0
+    assert rep["engine_errors"] == 1
+    assert rep["incomplete"] is True
+    # the OTHER steps are still reviewed (that is why we emit a row)
+    assert _row(rep, 1)["valid"] is True
+    assert _row(rep, 3)["valid"] is True
+
+
+def test_undecided_fm_too_large_is_not_invalid(monkeypatch):
+    """(b) eng.FMTooLarge (undecided arithmetic): valid=None /
+    progress='undecided', counted in undecided_steps, not invalid_steps."""
+    _patched_engine(
+        monkeypatch, rv.eng.FMTooLarge(999),
+        when=lambda rule, args: rule == "line_from_points"
+        and args == ("a", "b"))
+    rep = rv.review("I.1", rv.fixture_i1_useless_step())
+    row = _row(rep, 2)
+    assert row["valid"] is None
+    assert row["progress"] == "undecided"
+    assert "could not decide" in row["why"]
+    assert rep["undecided_steps"] == 1
+    assert rep["invalid_steps"] == 0
+    assert rep["engine_errors"] == 0
+
+
+def test_formatter_never_shows_none_as_invalid(monkeypatch):
+    """The formatted report says UNDECIDED / ENGINE ERROR and declares the
+    review incomplete; it can never print INVALID for valid=None."""
+    _patched_engine(
+        monkeypatch, RuntimeError("boom"),
+        when=lambda rule, args: rule == "line_from_points"
+        and args == ("a", "b"))
+    text = rv.format_report(rv.review("I.1", rv.fixture_i1_useless_step()))
+    assert "ENGINE ERROR" in text
+    assert "REVIEW INCOMPLETE" in text
+    row2 = [l for l in text.splitlines() if l.strip().startswith("2.")][0]
+    assert "INVALID" not in row2
+
+
+def test_distance_exception_is_not_silent_no_progress(monkeypatch):
+    """A crash inside the Distance BFS is recorded in dist.errors and
+    skipped; it never converts a distance into a fabricated value, and
+    None still reads as 'unknown', not 'no-progress'."""
+    _patched_engine(
+        monkeypatch, KeyError("bogus"),
+        when=lambda rule, args: rule == "line_from_points"
+        and args == ("a", "b"))
+    rep = rv.review("I.1", rv.fixture_i1_useless_step())
+    assert rep["invalid_steps"] == 0
+    if rep["distance_move_errors"]:
+        assert rep["incomplete"] is True

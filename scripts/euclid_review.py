@@ -63,6 +63,10 @@ class Distance:
         self.rules, self.goal = kw["rules"], kw["goal"]
         self.max_depth, self.node_budget = max_depth, node_budget
         self._cache = {}
+        self.errors = []  # (rule, args, repr(exc)) of moves that CRASHED:
+        # they are skipped, and a distance computed with skips is at best
+        # an over-estimate — an exception here must never read as
+        # "no-progress" (None stays None = unknown)
 
     def __call__(self, state):
         key = srch.state_key(state)
@@ -93,6 +97,15 @@ class Distance:
                     eng.apply_step(s2, 1, rname, args, {})
                 except eng.MissingPremise:
                     continue  # premise withdrawn under us: cannot happen
+                except eng.FMTooLarge as e:
+                    # undecided arithmetic inside the BFS: skip the move,
+                    # record it — the distance can only get less reliable
+                    # (never silently "no-progress": None means unknown)
+                    self.errors.append((rname, args, repr(e)))
+                    continue
+                except Exception as e:
+                    self.errors.append((rname, args, repr(e)))
+                    continue
                 k = srch.state_key(s2)
                 if k in seen:
                     continue
@@ -109,7 +122,21 @@ def _fmt_step(rule, args):
 
 def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     """Review `steps` = [(rule, args, bindings?), ...] against proposition
-    `prop` (a key of srch.prop_searches()). Returns a report dict."""
+    `prop` (a key of srch.prop_searches()). Returns a report dict.
+
+    Verdicts vs engine failures (review fix, claude-9):
+      * MissingPremise IS a verdict: the step is invalid.
+      * eng.FMTooLarge means the engine could not DECIDE (undecided
+        arithmetic): the row is valid=None / progress="undecided" and is
+        counted in undecided_steps, never in invalid_steps.
+      * Any other exception is an engine bug, not a judgement on the
+        student's step: the row is valid=None / progress="engine-error"
+        with the traceback summary, counted in engine_errors, and the
+        report is marked incomplete. We emit a row rather than re-raise
+        so the tutor still sees the fate of the student's OTHER steps
+        (re-raising would discard the whole review); with valid=None the
+        formatter prints ENGINE ERROR, so this can never be shown as
+        "invalid"."""
     kw = srch.prop_searches()[prop]
     goal = kw["goal"]
     dist = Distance(prop, max_depth, node_budget)
@@ -117,6 +144,8 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     d_before = dist(state)
     rows = []
     n_invalid = 0
+    n_undecided = 0
+    n_engine_errors = 0
     for i, step in enumerate(steps, start=1):
         rule, args = step[0], step[1]
         bindings = step[2] if len(step) > 2 else {}
@@ -149,15 +178,31 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
                                "against the state without it"),
             })
             continue  # state unchanged
-        except Exception as e:  # other engine errors are invalid too
-            n_invalid += 1
+        except eng.FMTooLarge as e:
+            n_undecided += 1
             rows.append({
                 "step": i, "rule": _fmt_step(rule, args),
-                "valid": False, "why": f"engine error: {type(e).__name__}: {e}",
-                "progress": "invalid",
+                "valid": None,
+                "why": f"engine could not decide: {type(e).__name__}: {e}",
+                "progress": "undecided",
                 "d_before": None, "d_after": None,
-                "state_note": ("step not applied; later steps are reviewed "
-                               "against the state without it"),
+                "state_note": ("step not applied (undecided); later steps "
+                               "are reviewed against the state without it"),
+            })
+            continue
+        except Exception as e:  # engine bug: NOT a verdict on the step
+            import traceback
+            n_engine_errors += 1
+            rows.append({
+                "step": i, "rule": _fmt_step(rule, args),
+                "valid": None,
+                "why": (f"engine error: {type(e).__name__}: {e} — "
+                        + traceback.format_exc().strip().splitlines()[-1]),
+                "progress": "engine-error",
+                "d_before": None, "d_after": None,
+                "state_note": ("step not applied (engine error); later "
+                               "steps are reviewed against the state "
+                               "without it"),
             })
             continue
         d_after = dist(trial)
@@ -179,6 +224,10 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         "prop": prop,
         "steps": rows,
         "invalid_steps": n_invalid,
+        "undecided_steps": n_undecided,
+        "engine_errors": n_engine_errors,
+        "incomplete": bool(n_undecided or n_engine_errors or dist.errors),
+        "distance_move_errors": len(dist.errors),
         "goal_held": bool(goal_held),
         "remaining_distance": d_before,
         "max_depth": max_depth,
@@ -190,18 +239,33 @@ def format_report(rep):
     lines = [f"review {rep['prop']}  (d-budget: depth {rep['max_depth']}, "
              f"{rep['node_budget']} nodes)"]
     for r in rep["steps"]:
+        verdict = {True: "VALID", False: "INVALID", None: None}
+        label = verdict[r["valid"]] or (
+            "UNDECIDED" if r["progress"] == "undecided" else "ENGINE ERROR")
         lines.append(
             f"  {r['step']}. {r['rule']}: "
-            f"{'VALID' if r['valid'] else 'INVALID'} "
+            f"{label} "
             f"({r['why']}) | {r['progress']}"
             + (f" d {r['d_before']}->{r['d_after']}"
                if r["d_before"] is not None or r["d_after"] is not None
                else ""))
-        if not r["valid"]:
+        if r["valid"] is not True:
             lines.append(f"     ({r['state_note']})")
     lines.append(f"goal {'HOLDS' if rep['goal_held'] else 'NOT reached'}; "
                  f"remaining distance {rep['remaining_distance']}; "
                  f"{rep['invalid_steps']} invalid step(s)")
+    if rep.get("incomplete"):
+        lines.append(
+            "REVIEW INCOMPLETE: "
+            + "; ".join(x for x in (
+                f"{rep['undecided_steps']} undecided step(s)"
+                if rep.get("undecided_steps") else None,
+                f"{rep['engine_errors']} engine error(s)"
+                if rep.get("engine_errors") else None,
+                f"{rep.get('distance_move_errors', 0)} distance move(s) "
+                f"skipped after engine errors"
+                if rep.get("distance_move_errors") else None,
+            ) if x))
     return "\n".join(lines)
 
 
