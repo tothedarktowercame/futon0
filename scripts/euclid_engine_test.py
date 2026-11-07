@@ -240,3 +240,21 @@ def test_metric_arithmetic_bounds():
     assert la.entails({eng.len_atom("a", "c"): 1,
                        eng.len_atom("a", "b"): -1}, 0, ">")
     assert not la.entails({eng.len_atom("a", "c"): 1}, 6, "=")
+
+
+def test_prop3_needs_strict_length_hypothesis():
+    """Review (claude-9): I.3 needs |ab| > |c0c1| so that b lies OUTSIDE the
+    circle of radius |c0c1| about a. With only >=, b may lie on the circle and
+    intersection_circle_line_between_points must not fire."""
+    for rel in (None, ">="):
+        s = eng.State()
+        for f, w in eng.PROP3_HYPS_DATA:
+            s.assume(f, w)
+        if rel:
+            s.la.add({eng.len_atom("a", "b"): 1,
+                      eng.len_atom("c0", "c1"): -1}, 0, rel)
+        eng.close(s)
+        with pytest.raises(eng.MissingPremise) as ei:
+            for i, (r, a, b) in enumerate(eng.PROP3_STEPS_DATA, 1):
+                eng.apply_step(s, i, r, a, b)
+        assert "('outside', 'b', 'DEF')" in str(ei.value)
