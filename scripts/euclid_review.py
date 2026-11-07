@@ -21,6 +21,11 @@ goal (with the numbers, not only the label).
   fixed within one review).
 - progress: d(after) < d(before). no-progress: d(after) >= d(before).
   unknown: either distance is None. Invalid steps carry no distances.
+- goal: held iff the goal test passes on the final state with a consistent
+  store — directly, or via a goal repair (P-euclid-review-I12): the same
+  fact-only BFS with the goal as target, for goals Lean reaches only
+  inside euclid_finish (I.12's ∠e:h:c = ∟). goal_via_smt names the helper
+  steps; never held without a found derivation.
 
 euclid_engine.py and euclid_search.py are imported read-only by path (the
 same importlib shape euclid_certify.py uses); neither is edited here.
@@ -391,6 +396,61 @@ def repair_premise(state, i, rule, args, bindings,
     return None
 
 
+def repair_goal(state, goal,
+                max_depth=REPAIR_MAX_DEPTH, node_budget=REPAIR_NODE_BUDGET,
+                time_budget=REPAIR_TIME_BUDGET):
+    """Goal repair (P-euclid-review-I12): when the goal does not hold after
+    the last step, BFS over the same fact-only moves as repair_premise with
+    the GOAL as target — Lean reaches some goals only inside euclid_finish
+    (I.12: ∠e:h:c = ∟ comes from perpendicular_if, which the Lean proof
+    never cites as a step). Returns (helpers, trial) with helpers a
+    non-empty list of (rule, args) and trial a clone of `state` with the
+    helpers applied and goal(trial) True on a consistent store — or None.
+    The firm rule stands: a goal is NEVER reported held via SMT without a
+    found derivation, and a repair never creates an object."""
+    import time as _time
+    t0 = _time.perf_counter()
+
+    def over_budget():
+        return _time.perf_counter() - t0 > time_budget
+
+    seen = {srch.state_key(state)}
+    frontier = [(state, ())]
+    nodes = 0
+    while frontier:
+        if nodes >= node_budget or over_budget():
+            return None
+        s, path = frontier.pop(0)
+        nodes += 1
+        if len(path) >= max_depth:
+            continue
+        k0 = srch.state_key(s)
+        for rname in REPAIR_RULES:
+            spec = eng.CONSTRUCTIONS[rname]
+            for cargs in _repair_candidates(s, rname):
+                if over_budget():
+                    return None
+                try:
+                    prems = spec["premises"](s, *cargs)
+                except Exception:
+                    continue
+                if not all(s.has(pf) for pf in prems):
+                    continue
+                s2 = srch.clone_state(s)
+                try:
+                    eng.apply_step(s2, 1, rname, cargs, {})
+                except Exception:
+                    continue  # entailment premise failed, or engine error
+                k = srch.state_key(s2)
+                if k == k0 or k in seen:
+                    continue
+                seen.add(k)
+                if goal(s2) and srch.store_consistent(s2.la):
+                    return (list(path) + [(rname, cargs)], s2)
+                frontier.append((s2, path + ((rname, cargs),)))
+    return None
+
+
 def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
            time_budget=None, repair=True,
            repair_max_depth=REPAIR_MAX_DEPTH,
@@ -589,6 +649,22 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
         })
         state, d_before = trial, d_after
     goal_held = goal(state) and srch.store_consistent(state.la)
+    goal_via_smt = None
+    if not goal_held and repair:
+        # Goal repair (P-euclid-review-I12): Lean reaches some goals only
+        # inside euclid_finish, not via a cited step (I.12: perpendicular_if
+        # e g h c AB). Run the same fact-only BFS with the goal as target;
+        # held ONLY when a derivation was found and replayed. It never
+        # fires when the steps already reached the goal (I.1-I.5/I.10/I.11
+        # full replays), and it never creates an object.
+        fixed = repair_goal(state, goal, repair_max_depth,
+                            repair_node_budget, repair_time_budget)
+        if fixed is not None:
+            goal_helpers, state = fixed
+            goal_via_smt = [f"{r} {' '.join(str(x) for x in a)}"
+                            for r, a in goal_helpers]
+            goal_held = True
+            d_before = 0
     return {
         "prop": prop,
         "steps": rows,
@@ -601,6 +677,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
                            or dist.errors),
         "distance_move_errors": len(dist.errors),
         "goal_held": bool(goal_held),
+        "goal_via_smt": goal_via_smt,
         "remaining_distance": d_before,
         "max_depth": max_depth,
         "node_budget": node_budget,
@@ -624,8 +701,10 @@ def format_report(rep):
                else ""))
         if r["valid"] is not True:
             lines.append(f"     ({r['state_note']})")
-    lines.append(f"goal {'HOLDS' if rep['goal_held'] else 'NOT reached'}; "
-                 f"remaining distance {rep['remaining_distance']}; "
+    lines.append(f"goal {'HOLDS' if rep['goal_held'] else 'NOT reached'}"
+                 + (f" via SMT ({'; '.join(rep['goal_via_smt'])})"
+                    if rep.get("goal_via_smt") else "")
+                 + f"; remaining distance {rep['remaining_distance']}; "
                  f"{rep['invalid_steps']} invalid step(s)")
     if rep.get("incomplete"):
         lines.append(

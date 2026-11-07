@@ -323,10 +323,11 @@ CANDIDATES = {
     "sum_angles_onlyif": _c_sum_ang,
 }
 
-# Rules the I.10/I.11 replays cite that have no candidate enumerator yet
-# (P-euclid-review-I10-I11): they are citable in a reviewed step (apply_step
-# checks premises), but the BFS does not generate them as moves, so a
-# distance for I.10/I.11 reads None ("unknown") rather than a number.
+# Rules the I.10/I.11/I.12 replays cite that have no candidate enumerator
+# yet (P-euclid-review-I10-I11, P-euclid-review-I12): they are citable in a
+# reviewed step (apply_step checks premises), but the BFS does not generate
+# them as moves, so a distance for I.10/I.11/I.12 reads None ("unknown")
+# rather than a number.
 # Writing real enumerators is future work; by_contra is a proof tactic
 # (the engine driver special-cases it), never a search move.
 def _c_none(s):
@@ -336,7 +337,9 @@ def _c_none(s):
 
 for _r in ("proposition_9'", "proposition_7", "intersection_lines_opposing",
            "intersection_lines", "pasch_4", "angle_pair_on_line",
-           "between_symm_parts", "proposition_8", "perpendicular_if"):
+           "between_symm_parts", "proposition_8", "perpendicular_if",
+           "exists_point_opposite", "intersection_circle_line_1",
+           "intersections_circle_line", "proposition_10"):
     CANDIDATES.setdefault(_r, _c_none)
 
 AXIOM_MOVES = ["line_from_points", "circle_from_points",
@@ -430,6 +433,18 @@ def goal_prop11(s, u="u", v="v", w="w", f="f", AB="AB"):
     return (s.has(("not_on_line", f, AB))
             and s.la.entails(
                 eng.lin((eng.ang_atom(u, w, f), 1), (eng.RT, -1)), 0, "="))
+
+
+def goal_prop12(s, e="e", h="h", c="c", AB="AB"):
+    """I.12 (Book/Prop12.lean): the queries the engine's main() replays —
+    the angle ∠e:h:c is a right angle (entailed) and h lies on AB. Per the
+    engine's goal-substitute comment this implies Lean's disjunctive goal
+    ∠a:h:c = ∟ ∨ ∠b:h:c = ∟: h and e both lie on AB with e ≠ h (derived:
+    neq e h from the bisection), so hc ⊥ AB at h and at least one of a, b
+    differs from h. The engine has no disjunction fact; none is invented."""
+    return (s.has(("on_line", h, AB))
+            and s.la.entails(
+                eng.lin((eng.ang_atom(e, h, c), 1), (eng.RT, -1)), 0, "="))
 
 
 # --- the search ----------------------------------------------------------------
@@ -604,15 +619,29 @@ def prop_searches():
                                           "perpendicular_if"],
                      goal=goal_prop11,
                      max_depth=2, node_budget=300, time_budget=5.0),
+        # I.12 (P-euclid-review-I12): review-only entry like I.10/I.11 —
+        # hypotheses and goal mirror the engine's main() I.12 replay
+        # queries; rules are AXIOM_MOVES plus every rule the replay cites
+        # (all _c_none except line/circle_from_points). euclid_search.main()
+        # SKIPS it (see below).
+        "I.12": dict(hyps=list(eng.PROP12_HYPS_DATA),
+                     rules=AXIOM_MOVES + ["exists_point_opposite",
+                                          "intersection_circle_line_1",
+                                          "intersections_circle_line",
+                                          "proposition_10", "proposition_8",
+                                          "perpendicular_if"],
+                     goal=goal_prop12,
+                     max_depth=2, node_budget=300, time_budget=5.0),
     }
 
 
 def main():
     for name, kw in prop_searches().items():
-        if name in ("I.10", "I.11"):
-            # review-only entries (P-euclid-review-I10-I11): the Book proofs
-            # are 17/11 steps, beyond any search depth here, and most cited
-            # rules have no candidate enumerator — skipped, not kept cheap.
+        if name in ("I.10", "I.11", "I.12"):
+            # review-only entries (P-euclid-review-I10-I11, -I12): the Book
+            # proofs are 17/11/10 steps, beyond any search depth here, and
+            # most cited rules have no candidate enumerator — skipped, not
+            # kept cheap.
             print(f"--- {name}: skipped (review-only entry; the distance "
                   f"BFS cannot find these proofs)")
             continue

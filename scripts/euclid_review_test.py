@@ -399,12 +399,135 @@ def test_repair_never_creates_an_object():
     assert _row(rep, 1)["progress"] == "valid-needs-smt"
 
 
-def test_i12_still_keyerror():
-    """(c) I.12 has no prop_searches entry yet: review raises KeyError,
-    not a silently empty report."""
-    import pytest
-    with pytest.raises(KeyError):
-        rv.review("I.12", [])
+# -- I.12: review() runs it (P-euclid-review-I12) ------------------------------
+
+# The Lean-cited steps of the engine replay (trace prop12.json): all of
+# PROP12_STEPS_DATA except the two engine-only steps — step 3
+# (intersection_circle_line_1: Lean's SMT supplies the intersects_lc
+# premise of intersections_circle_line) and step 10 (perpendicular_if:
+# Lean's euclid_finish). `use h` at Prop12.lean:19 is not a step.
+I12_LEAN_STEPS = [rv.eng.PROP12_STEPS_DATA[i - 1]
+                  for i in (1, 2, 4, 5, 6, 7, 8, 9)]
+
+
+def test_i12_full_engine_replay_all_valid_goal_held():
+    """(a) review() of the full I.12 engine replay: every step valid,
+    goal_held True WITHOUT the goal repair (perpendicular_if is a cited
+    step here), in well under a minute."""
+    t0 = time.perf_counter()
+    rep = rv.review("I.12", rv.eng.PROP12_STEPS_DATA, **I10_I11_BUDGET)
+    wall = time.perf_counter() - t0
+    assert wall < 60, f"I.12 review took {wall:.1f}s"
+    assert rep["invalid_steps"] == 0
+    assert rep["undecided_steps"] == 0
+    assert rep["engine_errors"] == 0
+    assert rep["blocked_steps"] == 0
+    for r in rep["steps"]:
+        assert r["valid"] is True, r
+    assert rep["goal_held"] is True
+    assert rep["goal_via_smt"] is None
+    assert rep["remaining_distance"] == 0
+
+
+def test_i12_lean_cited_steps_goal_via_smt_repair():
+    """(b) I.12's Lean proof, Lean-cited steps only (P-euclid-review-I12):
+    every step valid. Step 3 (intersections_circle_line) is
+    valid-needs-smt: Lean's SMT supplies intersects_lc EFG AB, repaired by
+    the engine-only intersection_circle_line_1.
+    GOAL NOTE (found while implementing the packet, which expected
+    goal_held False + a goal repair naming perpendicular_if): the goal
+    ALREADY holds after proposition_8. The engine's closure adds, for
+    between e h g, the supplementary row ang c:h:e + ang c:h:g = 2RT; with
+    proposition_8's eq_ang the store entails ang e:h:c = RT on its own
+    (verified: consistent store, no right_ang/sum_ang facts needed).
+    perpendicular_if -- what Lean's euclid_finish does -- is metrically
+    redundant in the engine; it only adds the right_ang FACT. So
+    goal_held is True with goal_via_smt None: the goal repair runs only
+    when the goal genuinely fails, and here it never fires."""
+    t0 = time.perf_counter()
+    rep = rv.review("I.12", I12_LEAN_STEPS, **I10_I11_BUDGET)
+    wall = time.perf_counter() - t0
+    assert wall < 60, f"I.12 Lean-cited review took {wall:.1f}s"
+    assert rep["invalid_steps"] == 0
+    for r in rep["steps"]:
+        assert r["valid"] is True, r
+    third = _row(rep, 3)
+    assert third["rule"].startswith("intersections_circle_line")
+    assert third["progress"] == "valid-needs-smt"
+    assert "intersection_circle_line_1" in third["why"], third["why"]
+    assert rep["smt_repairs"] == 1
+    assert rep["goal_held"] is True
+    assert rep["goal_via_smt"] is None
+    assert rep["remaining_distance"] == 0
+
+
+def test_goal_repair_finds_perpendicular_if_for_the_right_ang_fact():
+    """Goal repair positive case (P-euclid-review-I12): with the goal
+    taken as the right_ang FACT (what Lean's euclid_finish adds via
+    perpendicular_if -- metrically redundant here, see the goal note in
+    test_i12_lean_cited_steps_goal_via_smt_repair), repair_goal on the
+    post-proposition_8 state finds perpendicular_if e g h c AB. Held only
+    with the derivation found and replayed."""
+    s = rv.initial_state("I.12")
+    for i, (r, a, b) in enumerate(I12_LEAN_STEPS, 1):
+        try:
+            rv.eng.apply_step(s, i, r, a, b)
+        except rv.eng.MissingPremise:
+            s = rv.repair_premise(s, i, r, a, b)[1]
+    rt_goal = lambda st: st.has(("right_ang", "e", "h", "c"))
+    assert not rt_goal(s)
+    fixed = rv.repair_goal(s, rt_goal)
+    assert fixed is not None
+    helpers, trial = fixed
+    assert helpers == [("perpendicular_if", ("e", "g", "h", "c", "AB"))]
+    assert rt_goal(trial)
+
+
+def test_i12_goal_needs_proposition_8():
+    """Bad case (a): drop proposition_8 from the Lean-cited steps. The
+    angle equality ∠c:h:g = ∠c:h:e is never derived, so perpendicular_if's
+    entailment premise fails and the goal repair must NOT fire: goal not
+    held, no goal_via_smt."""
+    steps = [s for s in I12_LEAN_STEPS if s[0] != "proposition_8"]
+    rep = rv.review("I.12", steps, **I10_I11_BUDGET)
+    assert rep["invalid_steps"] == 0
+    assert rep["goal_held"] is False
+    assert rep["goal_via_smt"] is None
+
+
+def test_i12_goal_needs_proposition_10():
+    """Bad case (b): drop proposition_10 (which bisects eg at h). h never
+    exists, so the steps naming h are invalid, and the goal repair cannot
+    conjure h (repairs never create objects): goal not held."""
+    steps = [s for s in I12_LEAN_STEPS if s[0] != "proposition_10"]
+    rep = rv.review("I.12", steps, **I10_I11_BUDGET)
+    naming_h = [r for r in rep["steps"]
+                if "'h'" in r["rule"] or " h" in r["rule"]]
+    assert naming_h, "expected steps naming h"
+    for r in naming_h:
+        assert r["valid"] is False, r
+        assert "uses h" in r["why"] and "before it exists" in r["why"], r
+    assert rep["goal_held"] is False
+    assert rep["goal_via_smt"] is None
+
+
+def test_i12_goal_false_on_bare_hypotheses():
+    """Bad case (c): goal_prop12 on the hypotheses alone is False (the
+    goal test is not vacuous)."""
+    s = rv.initial_state("I.12")
+    assert rv.srch.prop_searches()["I.12"]["goal"](s) is False
+
+
+def test_goal_repair_never_fires_when_steps_reach_the_goal():
+    """Bad case (d): the goal repair must not fire for reviews whose steps
+    already reach the goal — goal_via_smt stays None (I.1 fixture and the
+    full I.11 engine replay)."""
+    rep1 = rv.review("I.1", rv.fixture_book_i1())
+    assert rep1["goal_held"] is True
+    assert rep1["goal_via_smt"] is None
+    rep11 = rv.review("I.11", rv.eng.PROP11_STEPS_DATA, **I10_I11_BUDGET)
+    assert rep11["goal_held"] is True
+    assert rep11["goal_via_smt"] is None
 
 
 def test_i10_goal_needs_the_last_proposition_4():
