@@ -713,7 +713,7 @@ def test_replay_fact_set_footprints():
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (224, 87), "10": (161, 50),
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
-                "14": (70, 21), "15": (104, 47)}
+                "14": (70, 21), "15": (104, 47), "16b": (406, 191)}
     got = {}
     old_argv = sys.argv
     try:
@@ -1978,3 +1978,69 @@ def test_prop15_control_wrong_equality_not_entailed():
     assert not eng.la_entails_eq_ang(s.la, "a", "e", "c", "c", "e", "b")
     with pytest.raises(AssertionError):
         _prop15(goal=[("_eq_ang", "a", "e", "c", "c", "e", "b")])
+
+
+# --- Book I.16b (exterior angle, second conjunct) ---------------------------
+
+
+def _prop16b(steps=eng.PROP16B_STEPS_DATA, hyps=eng.PROP16B_HYPS_DATA,
+             goal=eng.PROP16B_GOAL):
+    return eng.replay(hyps, steps, goal)
+
+
+def test_prop16b_replay():
+    s, rep = _prop16b()
+    assert rep[-1]["final"]
+    assert eng._fm_sat(s.la.rows)
+    assert eng.la_entails_gt_ang(s.la, "a", "c", "d", "b", "a", "c")
+    # the hypotheses ALONE (no steps) do not entail the inequality
+    s2, _ = eng.replay(eng.PROP16B_HYPS_DATA, [], [])
+    assert not eng.la_entails_gt_ang(s2.la, "a", "c", "d", "b", "a", "c")
+    # nor do the construction steps without proposition_15/proposition_4
+    s3, _ = eng.replay(eng.PROP16B_HYPS_DATA, eng.PROP16B_STEPS_DATA[:11], [])
+    assert not eng.la_entails_gt_ang(s3.la, "a", "c", "d", "b", "a", "c")
+
+
+def test_prop16b_control_dropped_proposition_4():
+    """Bad case (a): drop the proposition_4 (SAS) citation. Nothing then
+    equates ∠a:c:f with ∠b:a:c, so ∠a:c:d > ∠b:a:c is not entailed."""
+    steps = [x for x in eng.PROP16B_STEPS_DATA if x[0] != "proposition_4"]
+    with pytest.raises(AssertionError) as ei:
+        _prop16b(steps=steps)
+    assert "('_gt_ang', 'a', 'c', 'd', 'b', 'a', 'c')" in str(ei.value)
+
+
+def test_prop16b_control_dropped_proposition_15():
+    """Bad case (b): drop the proposition_15 citation. proposition_4's
+    entailment premise ∠b:e:a = ∠f:e:c (vertical angles) is then
+    underivable, so the replay is REFUSED at the proposition_4 step before
+    the goal is ever checked."""
+    steps = [x for x in eng.PROP16B_STEPS_DATA if x[0] != "proposition_15"]
+    with pytest.raises(eng.MissingPremise) as ei:
+        _prop16b(steps=steps)
+    assert ei.value.rule == "proposition_4"
+
+
+def test_prop16b_control_wrong_direction_not_entailed():
+    """Bad case (c): the REVERSED inequality ∠b:a:c > ∠a:c:d is not
+    entailed by the full proof, and the store stays satisfiable — the
+    strict goal check is not vacuous."""
+    s, _ = _prop16b()
+    assert eng._fm_sat(s.la.rows)
+    assert not eng.la_entails_gt_ang(s.la, "b", "a", "c", "a", "c", "d")
+    with pytest.raises(AssertionError):
+        _prop16b(goal=[("_gt_ang", "b", "a", "c", "a", "c", "d")])
+
+
+def test_proposition_15_control_between_reversed():
+    """Bad case for the cited lemma CONSTRUCTIONS["proposition_15"]: with
+    between a e b replaced by between e a b (the closure's reversal of
+    that is between b a e, not between a e b), the citation is refused."""
+    hyps = [((("between", "e", "a", "b"), "h"))
+            if f == ("between", "a", "e", "b") else (f, w)
+            for f, w in eng.PROP15_HYPS_DATA]
+    with pytest.raises(eng.MissingPremise):
+        eng.replay(hyps, [("proposition_15",
+                           ("a", "b", "c", "d", "e", "AB", "CD"), {})],
+                   eng.PROP15_GOAL[:1])
+
