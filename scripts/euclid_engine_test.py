@@ -335,10 +335,13 @@ PROP5_HYPS_DATA = [
     # extensions (the engine takes them as stated inputs)
     (("not_on_line", "c", "AB"), "h"),
     (("not_on_line", "b", "AC"), "h"),
-    (("not_on_line", "c", "GB"), "h"),
-    (("not_on_line", "b", "FC"), "h"),
-    (("neq_line", "AB", "AC"), "h"), (("neq_line", "AB", "GB"), "h"),
-    (("neq_line", "AC", "FC"), "h"),
+    # h-sm for GB/FC (not h): those lines are constructed by the STEPS
+    # (line_from_points below), so their names are reserved for that one
+    # binding rather than declared (P-euclid-binding-clash)
+    (("not_on_line", "c", "GB"), "h-sm"),
+    (("not_on_line", "b", "FC"), "h-sm"),
+    (("neq_line", "AB", "AC"), "h"), (("neq_line", "AB", "GB"), "h-sm"),
+    (("neq_line", "AC", "FC"), "h-sm"),
     # the Book hypotheses
     (("between", "a", "b", "d"), "h"),
     (("between", "a", "c", "e"), "h"),
@@ -1225,3 +1228,110 @@ def test_base_name_capture_does_not_rename_student_points():
     added = eng.apply_step(s2, 1, "proposition_1", ("d", "e", "AB"), {})["added"]
     assert all(f[1] == "d" or f[3] == "d" for f in added), added
     assert eng._fm_sat(s.la.rows) and eng._fm_sat(s2.la.rows)
+
+
+def test_fresh_binding_to_declared_name_refused():
+    """P-euclid-binding-clash (claude-9): a step must not bind its fresh
+    object to a name that already names an object. proposition_1 (a, b, AB)
+    with bindings {"d": "b"} would silently identify the new point with b
+    (|ab| = |bb|-style rows) and drive the store unsat, after which the
+    entailment check holds vacuously — everything is entailed."""
+    s = eng.State()
+    s.assume(("dpl", "a", "b", "AB"))
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_1", ("a", "b", "AB"), {"d": "b"})
+    assert ei.value.premise == ("fresh", "b")
+    assert "b" in str(ei.value)
+    # the state is untouched: no poisoned rows, store still satisfiable
+    assert ("eq_len", "a", "b", "b", "b") not in s.facts
+    assert eng._fm_sat(s.la.rows)
+
+
+def test_fresh_binding_repeat_accepted_as_noop_identification():
+    """Design amendment (P-euclid-binding-clash-2, claude-9): a binding to a
+    DECLARED name is an identification claim, accepted iff every fact the
+    step would add already holds of that object (the step is existential;
+    an existing object satisfying its facts is a valid witness). Repeating
+    proposition_1 with the same binding is exactly such a no-op: the step
+    is valid and adds nothing."""
+    s = eng.State()
+    s.assume(("dpl", "a", "b", "AB"))
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_1", ("a", "b", "AB"), {"d": "x"})
+    assert "x" in s.declared
+    nfacts, nrows = len(s.facts), len(s.la.rows)
+    rep = eng.apply_step(s, 2, "proposition_1", ("a", "b", "AB"), {"d": "x"})
+    assert rep["added"] == []
+    assert len(s.facts) == nfacts and len(s.la.rows) == nrows
+
+
+def test_fresh_binding_identification_refused_when_facts_do_not_hold():
+    """The other half of the amendment: binding a fresh object to a
+    declared name that does NOT satisfy the step's facts refuses. Here
+    line_from_points a x as AB would identify the new line with AB, but
+    x (the I.1 apex) is not on AB."""
+    s = eng.State()
+    s.assume(("dpl", "a", "b", "AB"))
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_1", ("a", "b", "AB"), {"d": "x"})
+    s.assume(("neq", "a", "x"), "h")
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 2, "line_from_points", ("a", "x"), {"L": "AB"})
+    assert ei.value.premise == ("fresh", "AB")
+
+
+def test_h_sm_reservation_binding_allowed_exactly_once():
+    """Design (P-euclid-binding-clash): a non-hypothesis stated input
+    ("h-sm" SMT source, as in I.9/I.10/I.11) may forward-reference an
+    object the STEPS construct later. The name is RESERVED, not declared,
+    so the one later binding that constructs it is allowed; a second
+    binding of that name whose facts do not hold of it is then refused
+    (P-euclid-binding-clash-2: the identification check fails)."""
+    s = eng.State()
+    s.assume(("dpl", "a", "b", "AB"))
+    s.assume(("not_on_line", "c", "AB"), "h-sm")  # c built later, as in I.10
+    eng.close(s)
+    assert "c" in s.reserved and "c" not in s.declared
+    rep = eng.apply_step(s, 1, "proposition_1", ("a", "b", "AB"), {"d": "c"})
+    assert ("eq_len", "a", "c", "a", "b") in rep["added"]
+    assert "c" in s.declared and "c" not in s.reserved
+    # second binding: circle_from_points b a as c would put centre b on c;
+    # c is the I.1 apex point, not a circle — the facts do not hold, so
+    # the identification is refused.
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 2, "circle_from_points", ("b", "a"), {"C": "c"})
+    assert ei.value.premise == ("fresh", "c")
+
+
+def test_identification_useless_line_step_accepted_noop():
+    """The review fixture (P-euclid-binding-clash-2): line_from_points a b
+    bound as AB when the hypothesis line AB already exists. a and b are
+    already on AB (two distinct points determine the line), so the
+    identification is sound and the step adds nothing."""
+    s = eng.State()
+    s.assume(("dpl", "a", "b", "AB"))
+    eng.close(s)
+    assert "AB" in s.declared
+    nfacts = len(s.facts)
+    rep = eng.apply_step(s, 1, "line_from_points", ("a", "b"), {"L": "AB"})
+    assert rep["added"] == []
+    assert len(s.facts) == nfacts
+
+
+def test_identification_proposition_1_with_existing_witness_accepted():
+    """Must-accept (P-euclid-binding-clash-2): proposition_1 a b AB bound
+    to an existing point c that already has |c-a| = |a-b| = |c-b|. The
+    step is existential; c is a valid witness, so the step adds nothing."""
+    s = eng.State()
+    s.assume(("dpl", "a", "b", "AB"))
+    eng.close(s)
+    # construct c as the equilateral apex, then re-run the step naming c
+    eng.apply_step(s, 1, "proposition_1", ("a", "b", "AB"), {"d": "c"})
+    assert eng.la_entails_eq(s.la, "c", "a", "a", "b")
+    assert eng.la_entails_eq(s.la, "c", "b", "a", "b")
+    nfacts, nrows = len(s.facts), len(s.la.rows)
+    rep = eng.apply_step(s, 2, "proposition_1", ("a", "b", "AB"), {"d": "c"})
+    assert rep["added"] == []
+    assert len(s.facts) == nfacts and len(s.la.rows) == nrows

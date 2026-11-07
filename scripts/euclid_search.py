@@ -72,6 +72,10 @@ def clone_state(s):
     s2.facts = dict(s.facts)          # provenance values are never mutated
     s2.la.rows = list(s.la.rows)      # rows are immutable tuples
     s2.fresh = s.fresh
+    # object-name discipline (P-euclid-binding-clash): a clone that drops
+    # declared/reserved silently loses the fresh-binding clash check
+    s2.declared = set(s.declared)
+    s2.reserved = set(s.reserved)
     return s2
 
 

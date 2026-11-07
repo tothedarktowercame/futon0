@@ -428,8 +428,35 @@ class State:
         self.la = LinearArithmetic()
         self.fresh = 0
         self.rule_cache = {}   # (rule, nrows, query) -> bool; rows only grow
+        # Object-name discipline (P-euclid-binding-clash, claude-9). A name
+        # either DECLARED (names an object that exists: introduced by an
+        # assume with ordinary hypothesis provenance, or created by a step)
+        # or RESERVED (mentioned only by non-hypothesis stated inputs,
+        # which may forward-reference objects constructed later: "h-sm"
+        # SMT sources like I.5's FC/GB and I.9/I.10's witness/apex points,
+        # I.7's by_contra branch facts about e/f, student-diagram trust).
+        # A reserved name is NOT an object yet: binding a fresh object to
+        # it is allowed exactly once (the binding consumes the reservation
+        # and declares the name); a second binding, or a binding to a
+        # DECLARED name, is refused by apply_step. "Mentioned in a fact"
+        # is deliberately NOT "declared": only hypothesis-provenance
+        # assumptions declare, and derived facts never do.
+        self.declared = set()  # names of objects that exist
+        self.reserved = set()  # names awaiting their one later binding
 
     def assume(self, fact, why="hypothesis"):
+        names = {x for x in fact[1:] if isinstance(x, str)}
+        if why in ("h", "hypothesis", "given"):
+            # A genuine hypothesis asserts facts about objects that exist:
+            # every name it mentions is declared.
+            self.declared |= names
+            self.reserved -= names
+        else:
+            # Any other stated input ("h-sm" SMT source, a by_contra branch
+            # assumption, a student-diagram trust) may forward-reference an
+            # object constructed later (I.5's FC/GB, I.7 branch 3's e/f):
+            # names it alone introduces are reserved, not declared.
+            self.reserved |= names - self.declared - self.reserved
         self.facts[fact] = (why, [])
 
     def add(self, fact, rule, premises):
@@ -445,6 +472,8 @@ class State:
         s2 = State()
         s2.facts = dict(self.facts)
         s2.fresh = self.fresh
+        s2.declared = set(self.declared)
+        s2.reserved = set(self.reserved)
         s2.la.rows = list(self.la.rows)
         s2.rule_cache = dict(getattr(self, "rule_cache", {}))
         return s2
@@ -1696,6 +1725,32 @@ def _entail_check(s, i, rule, q):
     return ("entail",) + q
 
 
+def _fact_holds(s, fact):
+    """Does `fact` already hold in s? Relational facts: present in the
+    (closed) store. Metric facts: entailed by the linear-arithmetic store,
+    exactly as the engine's own premise checks do (_entail_check). An
+    FMTooLarge verdict is undecided, so it does NOT certify the fact.
+    Used by apply_step's identification check (P-euclid-binding-clash-2).
+    """
+    k = fact[0]
+    try:
+        if k == "_eq_len":
+            return la_entails_eq(s.la, *fact[1:])
+        if k == "_eq_ang":
+            return la_entails_eq_ang(s.la, *fact[1:])
+        if k == "_lt_len":
+            return la_entails_lt(s.la, *fact[1:])
+        if k == "_gt_len":
+            return la_entails_gt(s.la, *fact[1:])
+    except FMTooLarge:
+        return False  # undecided is not entailed
+    if k == "_sum_ang":
+        return ("sum_ang",) + tuple(fact[1:]) in s.facts
+    if k == "_rt_ang":
+        return ("right_ang",) + tuple(fact[1:]) in s.facts
+    return fact in s.facts
+
+
 def apply_step(s, i, rule, args, bindings):
     """Apply one euclid_apply-style step. Returns a report dict.
     Raises MissingPremise if a premise is not in the closed state or an
@@ -1726,11 +1781,56 @@ def apply_step(s, i, rule, args, bindings):
             else:
                 ph.append(a)
         made = spec["make"](s, *ph)
-    added = []
+    # Resolve each fresh object's name (binding, or an auto-minted one).
+    # A binding to a name that already names an object is an
+    # IDENTIFICATION claim (P-euclid-binding-clash-2, claude-9): the step
+    # is existential, so the claim is sound iff the existing object is a
+    # witness — every fact the step would add, with the base replaced by
+    # the name, must already hold (relational facts present in the store,
+    # metric facts entailed by the arithmetic, via _fact_holds). Accepted:
+    # the step adds nothing (the made facts are skipped below). Refused:
+    # MissingPremise(("fresh", name)) — without this the new point is
+    # silently identified with the old one (|ab| = |bb|-style rows) and
+    # the store goes unsat, after which everything is entailed. A name
+    # only RESERVED (h-sm input about a not-yet-built object) may take
+    # its one binding here.
+    fresh_names = []
+    identified = []  # per made-object: name it is identified with, else None
     for base, facts in made:
-        name = bindings.get(base) if base is not None else None
-        if base is not None and name is None:
+        if base is None:
+            fresh_names.append(None)
+            identified.append(None)
+            continue
+        name = bindings.get(base)
+        if name is None:
             name = s.new(base)
+        if name in s.declared:
+            concrete = [tuple((name if x == base else x) for x in f)
+                        for f in facts]
+            concrete = [tuple(restore.get(x, x) if isinstance(x, str) else x
+                              for x in f) for f in concrete]
+            if all(_fact_holds(s, f) for f in concrete):
+                fresh_names.append(name)
+                identified.append(name)
+                continue
+            raise MissingPremise(
+                i, rule, ("fresh", name),
+                f"(the step would identify its fresh object {base!r} with "
+                f"the existing {name!r}, but not every fact it states "
+                f"about {base!r} already holds of {name!r}; give the new "
+                f"object a new name)")
+        fresh_names.append(name)
+        identified.append(None)
+    # all names validated: declare the genuinely new ones and consume
+    # their reservations
+    for name, ident in zip(fresh_names, identified):
+        if name is not None and ident is None:
+            s.reserved.discard(name)  # h-sm reservation consumed, once
+            s.declared.add(name)
+    added = []
+    for (base, facts), name, ident in zip(made, fresh_names, identified):
+        if ident is not None:
+            continue  # identification accepted: the step adds nothing
         for fact in facts:
             fact = tuple((name if x == base else x) if base is not None
                          else x for x in fact)
@@ -2013,10 +2113,13 @@ PROP5_HYPS_DATA = [
     (("on_line", "c", "AC"), "h"), (("on_line", "a", "AC"), "h"),
     (("not_on_line", "c", "AB"), "h"),
     (("not_on_line", "b", "AC"), "h"),
-    (("not_on_line", "c", "GB"), "h"),
-    (("not_on_line", "b", "FC"), "h"),
-    (("neq_line", "AB", "AC"), "h"), (("neq_line", "AB", "GB"), "h"),
-    (("neq_line", "AC", "FC"), "h"),
+    # h-sm (not h): these name the lines GB / FC, which the STEPS construct
+    # later (line_from_points below); as h-sm their names are reserved for
+    # that one binding instead of declared up front (P-euclid-binding-clash).
+    (("not_on_line", "c", "GB"), "h-sm"),
+    (("not_on_line", "b", "FC"), "h-sm"),
+    (("neq_line", "AB", "AC"), "h"), (("neq_line", "AB", "GB"), "h-sm"),
+    (("neq_line", "AC", "FC"), "h-sm"),
     (("between", "a", "b", "d"), "h"),
     (("between", "a", "c", "e"), "h"),
     (("neq", "b", "d"), "h"), (("neq", "c", "e"), "h"),
