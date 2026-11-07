@@ -1,0 +1,687 @@
+{
+ "prop": 12,
+ "title": "Elements I.12 (LeanEuclid Book/Prop12.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 1
+  },
+  {
+   "name": "EFG",
+   "kind": "circle",
+   "jsx": {
+    "type": "circle",
+    "center": "c",
+    "through": "d"
+   },
+   "def_step": 2
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "EFG",
+     "AB"
+    ],
+    "idx": 0
+   },
+   "def_step": 4
+  },
+  {
+   "name": "g",
+   "kind": "point",
+   "jsx": {
+    "type": "intersection",
+    "parents": [
+     "EFG",
+     "AB"
+    ],
+    "idx": 1
+   },
+   "def_step": 4
+  },
+  {
+   "name": "h",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 5
+  },
+  {
+   "name": "CG",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "g"
+    ]
+   },
+   "def_step": 6
+  },
+  {
+   "name": "CH",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "h"
+    ]
+   },
+   "def_step": 7
+  },
+  {
+   "name": "CE",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "c",
+     "e"
+    ]
+   },
+   "def_step": 8
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "exists_point_opposite",
+   "args": [
+    "AB",
+    "c"
+   ],
+   "bindings": {
+    "a": "d"
+   },
+   "facts_added": [
+    [
+     "opposing_sides",
+     "d",
+     "c",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "not_on_line",
+     "c",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 12
+   },
+   "placement_decision": "free parameter of the existential step: d is c reflected across AB (the rule fixes only the side, not the distance; the mirror point is the canonical choice)"
+  },
+  {
+   "n": 2,
+   "rule": "circle_from_points",
+   "args": [
+    "c",
+    "d"
+   ],
+   "bindings": {
+    "C": "EFG"
+   },
+   "facts_added": [
+    [
+     "centre",
+     "c",
+     "EFG"
+    ],
+    [
+     "on_circle",
+     "d",
+     "EFG"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "d"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 13
+   },
+   "placement_decision": "circle with centre c through d (JSXGraph keeps it under dragging)"
+  },
+  {
+   "n": 3,
+   "rule": "intersection_circle_line_1",
+   "args": [
+    "d",
+    "c",
+    "EFG",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "intersects_lc",
+     "AB",
+     "EFG"
+    ]
+   ],
+   "premises": [
+    [
+     "not_outside",
+     "d",
+     "EFG"
+    ],
+    [
+     "not_outside",
+     "c",
+     "EFG"
+    ],
+    [
+     "opposing_sides",
+     "d",
+     "c",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): intersection_circle_line_1 only adds facts to the engine state",
+   "lean_note": "engine-only step (intersection_circle_line_1): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 4,
+   "rule": "intersections_circle_line",
+   "args": [
+    "EFG",
+    "AB"
+   ],
+   "bindings": {
+    "a": "e",
+    "b": "g"
+   },
+   "facts_added": [
+    [
+     "on_circle",
+     "e",
+     "EFG"
+    ],
+    [
+     "on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "on_circle",
+     "g",
+     "EFG"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "neq",
+     "e",
+     "g"
+    ]
+   ],
+   "premises": [
+    [
+     "intersects_lc",
+     "AB",
+     "EFG"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 14
+   },
+   "placement_decision": "no distinguishing fact recorded (arbitrary pick; the step's facts are symmetric in e and g \u2014 both lie on the circle and the line): e = candidate 0, g = candidate 1"
+  },
+  {
+   "n": 5,
+   "rule": "proposition_10",
+   "args": [
+    "e",
+    "g",
+    "AB"
+   ],
+   "bindings": {
+    "d": "h"
+   },
+   "facts_added": [
+    [
+     "between",
+     "e",
+     "h",
+     "g"
+    ],
+    [
+     "eq_len",
+     "e",
+     "h",
+     "h",
+     "g"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "g",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 15
+   },
+   "placement_decision": "midpoint of e-g (the proposition_10 construction fixed exactly)"
+  },
+  {
+   "n": 6,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "g"
+   ],
+   "bindings": {
+    "L": "CG"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "CG"
+    ],
+    [
+     "on_line",
+     "g",
+     "CG"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "g"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 16
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 7,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "h"
+   ],
+   "bindings": {
+    "L": "CH"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "CH"
+    ],
+    [
+     "on_line",
+     "h",
+     "CH"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "h"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 17
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 8,
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "e"
+   ],
+   "bindings": {
+    "L": "CE"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "c",
+     "CE"
+    ],
+    [
+     "on_line",
+     "e",
+     "CE"
+    ]
+   ],
+   "premises": [
+    [
+     "neq",
+     "c",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 18
+   },
+   "placement_decision": "line drawn through existing points"
+  },
+  {
+   "n": 9,
+   "rule": "proposition_8",
+   "args": [
+    "h",
+    "c",
+    "g",
+    "h",
+    "c",
+    "e",
+    "CH",
+    "CG",
+    "AB",
+    "CH",
+    "CE",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "eq_ang",
+     "c",
+     "h",
+     "g",
+     "c",
+     "h",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "h",
+     "c",
+     "CH"
+    ],
+    [
+     "on_line",
+     "c",
+     "CG"
+    ],
+    [
+     "on_line",
+     "g",
+     "CG"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "on_line",
+     "h",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "g",
+     "CH"
+    ],
+    [
+     "dpl",
+     "h",
+     "c",
+     "CH"
+    ],
+    [
+     "on_line",
+     "c",
+     "CE"
+    ],
+    [
+     "on_line",
+     "e",
+     "CE"
+    ],
+    [
+     "on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "on_line",
+     "h",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "CH"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('h', 'c', 'h', 'c')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('h', 'g', 'h', 'e')"
+    ],
+    [
+     "entail",
+     "eq_len",
+     "('c', 'g', 'c', 'e')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": 20
+   },
+   "placement_decision": "forward-closure step (no new objects): proposition_8 only adds facts to the engine state"
+  },
+  {
+   "n": 10,
+   "rule": "perpendicular_if",
+   "args": [
+    "e",
+    "g",
+    "h",
+    "c",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "right_ang",
+     "e",
+     "h",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "on_line",
+     "g",
+     "AB"
+    ],
+    [
+     "between",
+     "e",
+     "h",
+     "g"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "AB"
+    ],
+    [
+     "entail",
+     "eq_ang",
+     "('e', 'h', 'c', 'c', 'h', 'g')"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop12.lean",
+    "line": null
+   },
+   "placement_decision": "forward-closure step (no new objects): perpendicular_if only adds facts to the engine state",
+   "lean_note": "engine-only step (perpendicular_if): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  }
+ ],
+ "placement": {
+  "a": [
+   -2.2,
+   0.0
+  ],
+  "b": [
+   2.2,
+   0.0
+  ],
+  "c": [
+   0.4,
+   0.9
+  ],
+  "d": [
+   0.4000000000000007,
+   -0.9
+  ],
+  "EFG": null,
+  "e": [
+   1.9588457268119894,
+   0.0
+  ],
+  "g": [
+   -1.1588457268119898,
+   0.0
+  ],
+  "h": [
+   0.3999999999999998,
+   0.0
+  ],
+  "CG": null,
+  "CH": null,
+  "CE": null
+ },
+ "verification": [
+  {
+   "check": "I.12: h on AB (distance to line a-b = 0)",
+   "ok": true
+  },
+  {
+   "check": "I.12: |h-e| = |h-g|",
+   "ok": true
+  },
+  {
+   "check": "I.12: |c-e| = |c-g|",
+   "ok": true
+  },
+  {
+   "check": "I.12: angle e-h-c is right",
+   "ok": true
+  },
+  {
+   "check": "I.12: c and d on opposite sides of AB",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop12.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop08",
+  "import Book.Prop10",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_12 : \u2200 (a b c : Point) (AB : Line),",
+  "  distinctPointsOnLine a b AB \u2227 \u00ac(c.onLine AB) \u2192",
+  "  exists h : Point, h.onLine AB \u2227 (\u2220 a:h:c = \u221f \u2228 \u2220 b:h:c = \u221f) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (exists_point_opposite AB c) as d",
+  "  euclid_apply (circle_from_points c d) as EFG",
+  "  euclid_apply (intersections_circle_line EFG AB) as (e, g)",
+  "  euclid_apply (proposition_10 e g AB) as h",
+  "  euclid_apply (line_from_points c g) as CG",
+  "  euclid_apply (line_from_points c h) as CH",
+  "  euclid_apply (line_from_points c e) as CE",
+  "  use h",
+  "  euclid_apply (proposition_8 h c g h c e CH CG AB CH CE AB)",
+  "  euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

@@ -371,3 +371,77 @@ def test_bad_case_prop11_f_tilted_or_on_ab_fails():
     x["f"] = (0.7, 0.0)
     off = [ok for d, ok in tr.verify11(x) if "off AB" in d]
     assert off == [False]
+
+
+# -- I.12 (kimi-1, packet P-euclid-viewer-I12) --------------------------------
+
+TR12 = load(12)
+
+
+def test_prop12_rebuild_matches_disk():
+    rebuilt = tr.build_trace(12)
+    assert rebuilt["placement"] == TR12["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR12["steps"]
+
+
+def test_prop12_lean_lines_name_the_rule_and_cover_the_proof():
+    """Every linked line names the step's rule; links are distinct and in
+    order; every euclid_apply line of Prop12.lean is linked. The `use h`
+    line (19) sits BEFORE proposition_8's euclid_apply (line 20): the
+    order test still holds because `use h` is not an euclid_apply line and
+    the engine's step order matches the euclid_apply order around it
+    (line_from_points c e at 18, proposition_8 at 20).
+    intersection_circle_line_1 (Lean closes the premise by SMT) and
+    perpendicular_if (Lean's euclid_finish) have no Lean line and say so.
+    """
+    path = os.path.join(LEAN_DIR, TR12["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = [s["lean"]["line"] for s in TR12["steps"] if s["lean"]["line"]]
+    assert linked == sorted(linked) and len(set(linked)) == len(linked)
+    for s in TR12["steps"]:
+        if s["lean"]["line"]:
+            assert s["rule"] in lines[s["lean"]["line"] - 1], s
+        else:
+            assert "engine-only" in s["lean_note"], s
+    applies = [i + 1 for i, l in enumerate(lines) if "euclid_apply" in l]
+    assert set(applies) == set(linked), (applies, linked)
+    engine_only = {s["rule"] for s in TR12["steps"] if not s["lean"]["line"]}
+    assert engine_only == {"intersection_circle_line_1", "perpendicular_if"}
+    # the `use h` line really does sit between steps 8 and 9's Lean lines
+    use_line = next(i + 1 for i, l in enumerate(lines)
+                    if l.strip().startswith("use "))
+    assert TR12["steps"][7]["lean"]["line"] < use_line < \
+        TR12["steps"][8]["lean"]["line"]
+
+
+def test_prop12_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR12["placement"].items() if v}
+    res = tr.metric_facts_hold(TR12["steps"], xy)
+    assert res and all(ok for _, ok in res), \
+        [f for f, ok in res if not ok]
+    assert all(ok for _, ok in tr.verify12(xy))
+
+
+def test_bad_case_prop12_h_moved_along_ab_fails():
+    xy = {k: tuple(v) for k, v in TR12["placement"].items() if v}
+    x = dict(xy)
+    x["h"] = (xy["h"][0] + 0.15, xy["h"][1])  # along AB, off the midpoint
+    fails = [d for d, ok in tr.verify12(x) if not ok]
+    assert any("|h-e| = |h-g|" in d for d in fails), fails
+    assert any("right" in d for d in fails), fails
+
+
+def test_bad_case_prop12_c_moved_angle_not_right_fails():
+    xy = {k: tuple(v) for k, v in TR12["placement"].items() if v}
+    x = dict(xy)
+    x["c"] = (xy["c"][0] + 0.3, xy["c"][1])  # c no longer above h
+    fails = [d for d, ok in tr.verify12(x) if not ok]
+    assert any("right" in d for d in fails), fails
+
+
+def test_bad_case_prop12_d_on_cs_side_fails():
+    xy = {k: tuple(v) for k, v in TR12["placement"].items() if v}
+    x = dict(xy)
+    x["d"] = (xy["d"][0], -xy["d"][1])  # reflected onto c's side of AB
+    fails = [d for d, ok in tr.verify12(x) if not ok]
+    assert any("opposite sides" in d for d in fails), fails

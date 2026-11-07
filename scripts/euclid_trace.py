@@ -302,6 +302,11 @@ FREE = {
     # |w-g| = |w-e| = |w-v|/2, f is the equilateral apex on g-e (verify11
     # checks angle u-w-f is a right angle).
     11: {"u": (-1.0, 0.0), "v": (1.0, 0.0), "w": (0.0, 0.0)},
+    # I.12: a-b the line (long, so the circle's intersections e, g sit
+    # strictly inside it), c off it. d is c reflected across AB (see
+    # place_step), so the circle centre c through d meets AB at e, g with
+    # midpoint h the foot of c on AB: angle e-h-c is exactly right.
+    12: {"a": (-2.2, 0.0), "b": (2.2, 0.0), "c": (0.4, 0.9)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -321,6 +326,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP10_HYPS_DATA), list(eng.PROP10_STEPS_DATA)
     if prop == 11:
         return list(eng.PROP11_HYPS_DATA), list(eng.PROP11_STEPS_DATA)
+    if prop == 12:
+        return list(eng.PROP12_HYPS_DATA), list(eng.PROP12_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -386,6 +393,13 @@ def objects_from_hyps(prop):
                  "def_step": 0} for n in ("u", "v", "w")] + [
                 {"name": "AB", "kind": "line", "jsx": {"type": "line",
                   "p": ["u", "v"]}, "def_step": 0, "hyp": True}]
+    if prop == 12:
+        # c is a hypothesis here (off AB by hypothesis); d is constructed
+        # by step 1 (exists_point_opposite)
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c")] + [
+                {"name": "AB", "kind": "line", "jsx": {"type": "line",
+                  "p": ["a", "b"]}, "def_step": 0, "hyp": True}]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -574,6 +588,53 @@ dragging)" % (a, b)
         objects.append({"name": name, "kind": "point",
                         "jsx": {"type": "point"}, "def_step": None})
         return "intersection of the drawn lines %s and %s" % (L1, L2)
+    if rule == "exists_point_opposite":
+        # (L, c) -> point on the other side of L from c. The rule fixes
+        # only the side; the distance is a free parameter of the
+        # existential step. Reflected across L at c's own distance — the
+        # canonical symmetric choice, so I.12's circle (centre c through
+        # d) is bisected by L exactly at the foot of c.
+        (L, c), name = args, bindings["a"]
+        p1, p2 = _line_objects(objects, L)
+        xy[name] = _reflect(xy[c], xy[p1], xy[p2])
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: %s is c "
+                "reflected across %s (the rule fixes only the side, not "
+                "the distance; the mirror point is the canonical choice)"
+                % (name, L))
+    if rule == "intersections_circle_line":
+        # (C, L) -> the two points where circle C meets line L. The step's
+        # facts are symmetric in the two names (e/g: both on the circle
+        # and the line, e != g), so which candidate gets which name is a
+        # free choice, recorded as I.1 records its pick. Drawn with
+        # JSXGraph circle-line intersections, so dragging keeps them on
+        # both.
+        (C, L), (e, g) = args, (bindings["a"], bindings["b"])
+        ca = next(o["jsx"]["center"] for o in objects if o["name"] == C)
+        ra = _norm(_sub(xy[next(o["jsx"]["through"]
+                                 for o in objects if o["name"] == C)],
+                        xy[ca]))
+        l1, l2 = _line_objects(objects, L)
+        cands = circle_line(xy[ca], ra, xy[l1], xy[l2])
+        xy[e], xy[g] = cands[0], cands[1]
+        for name, idx in ((e, 0), (g, 1)):
+            objects.append({"name": name, "kind": "point",
+                            "jsx": {"type": "intersection",
+                                    "parents": [C, L], "idx": idx},
+                            "def_step": None})
+        return ("no distinguishing fact recorded (arbitrary pick; the "
+                "step's facts are symmetric in %s and %s — both lie on "
+                "the circle and the line): %s = candidate 0, %s = "
+                "candidate 1" % (e, g, e, g))
+    if rule == "proposition_10":
+        # bisect segment args[0]-args[1]: the new point is the midpoint.
+        (p, q, _AB), name = args, bindings["d"]
+        xy[name] = _mul(_add(xy[p], xy[q]), 0.5)
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("midpoint of %s-%s (the proposition_10 construction "
+                "fixed exactly)" % (p, q))
     if rule == "by_contra":
         # no drawing: refuted branches are not drawn, only noted
         branches, _concl = args, bindings
@@ -588,7 +649,8 @@ dragging)" % (a, b)
                 "proposition_4", "sum_angles_onlyif",
                 "between_symm_parts", "pasch_4", "angle_pair_on_line",
                 "proposition_8", "proposition_7", "perpendicular_if",
-                "intersection_lines_opposing"):
+                "intersection_lines_opposing",
+                "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
         return ("forward-closure step (no new objects): %s only adds facts "
                 "to the engine state" % rule)
@@ -597,6 +659,15 @@ dragging)" % (a, b)
 
 # auxiliary circle names for the proposition_1 sub-construction inside I.2
 CIRC_AUX = {"d": ("aux_da", "aux_db")}
+
+
+def _reflect(p, p1, p2):
+    """Mirror point p across the line through p1, p2 (numeric)."""
+    d = _sub(p2, p1)
+    dd = d[0] * d[0] + d[1] * d[1]
+    t = ((p[0] - p1[0]) * d[0] + (p[1] - p1[1]) * d[1]) / dd
+    foot = _add(p1, _mul(d, t))
+    return (2 * foot[0] - p[0], 2 * foot[1] - p[1])
 
 
 def _line_line(p1, p2, q1, q2):
@@ -715,6 +786,26 @@ def verify11(xy):
     ]
 
 
+def verify12(xy):
+    """I.12: h on AB with |h-e| = |h-g|, |c-e| = |c-g| (radii), the angle
+    e-h-c right, and c, d on opposite sides of AB — all to EPS."""
+    def off_line(p):
+        dvec = _sub(xy["b"], xy["a"])
+        return abs(dvec[0] * (p[1] - xy["a"][1])
+                   - dvec[1] * (p[0] - xy["a"][0])) / _norm(dvec)
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+    return [
+        ("I.12: h on AB (distance to line a-b = 0)",
+         off_line(xy["h"]) < EPS),
+        ("I.12: |h-e| = |h-g|", abs(dist("h", "e") - dist("h", "g")) < EPS),
+        ("I.12: |c-e| = |c-g|", abs(dist("c", "e") - dist("c", "g")) < EPS),
+        ("I.12: angle e-h-c is right",
+         abs(_ang(xy, "e", "h", "c") - math.pi / 2) < EPS),
+        ("I.12: c and d on opposite sides of AB",
+         fact_holds(("opposing_sides", "c", "d", "a", "b"), xy)),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -732,6 +823,8 @@ def verify(prop, xy):
         return verify10(xy)
     if prop == 11:
         return verify11(xy)
+    if prop == 12:
+        return verify12(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -756,13 +849,18 @@ def build_trace(prop):
         s.la.add({eng.len_atom("a", "b"): 1,
                   eng.len_atom("c0", "c1"): -1}, 0, ">")
     eng.close(s)
-    if prop in (10, 11):
+    if prop in (10, 11, 12):
         # replay() also drives the by_contra steps and asserts the Book
-        # conclusion (same queries the engine's own main() uses)
+        # conclusion (same queries the engine's own main() uses). I.12's
+        # goal substitute is stated in PROP12_STEPS_DATA's comment: the
+        # replay proves rt e h c with h on AB, which implies Lean's
+        # disjunction (h and e both on AB, e != h, a != b).
         queries = {10: [("between", "a", "d", "b"),
                         ("_eq_len", "a", "d", "d", "b")],
                    11: [("not_on_line", "f", "AB"),
-                        ("_rt_ang", "u", "w", "f")]}[prop]
+                        ("_rt_ang", "u", "w", "f")],
+                   12: [("_rt_ang", "e", "h", "c"),
+                        ("on_line", "h", "AB")]}[prop]
         _s, reports_all = eng.replay(hyps, steps, queries)
         reports = reports_all[:-1]  # drop the {"final": ...} entry
     else:
@@ -771,7 +869,7 @@ def build_trace(prop):
 
     name_map = PROP11_NAME_MAP if prop == 11 else {}
     lean = (lean_lines_for_named(prop, steps, name_map)
-            if prop in (10, 11)
+            if prop in (10, 11, 12)
             else lean_lines_for(prop, [r for r, _, _ in steps]))
 
     objects = objects_from_hyps(prop)
