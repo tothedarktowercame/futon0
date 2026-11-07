@@ -1060,6 +1060,123 @@ def test_prop22_icc1_bad_case():
     assert ei.value.premise == ("inside", "h", "DKL")
 
 
+# --- I.22' (Book/Prop22.lean:34, the variant I.23 cites) --------------------
+
+
+def test_prop22p_replay():
+    """I.22' replays the Lean way: from the GIVEN segment f-e on FE, two
+    extend_point_longer extensions and three proposition_3 cuts along FE,
+    the two circles, i = the far meet of FE with KLH, the same three-case
+    by_cases as I.22 for inside i DKL, the cited
+    intersection_circle_circle_1 (what Lean's SMT closes silently at
+    Prop22.lean:52) and intersection_circles as k, and euclid_finish's
+    not_between g f e rendered as a by_contra citing between_trans_out
+    (Diagrammatic.lean:78) and between_symm_parts. The goals are on_line
+    g FE, not_between g f e, and the three witness equalities over the
+    named k, g."""
+    s, rep = eng.replay(eng.PROP22P_HYPS_DATA, eng.PROP22P_STEPS_DATA,
+                        eng.PROP22P_GOAL)
+    assert s.has(("on_line", "g", "FE"))
+    assert s.has(("not_between", "g", "f", "e"))
+    assert eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+    assert rep[-1]["final"]
+    assert [r["rule"].split(" ")[0] for r in rep[:-1]] == [
+        "extend_point_longer", "between_symm_parts",
+        "extend_point_longer", "between_symm_parts",
+        "proposition_3", "proposition_3", "between_symm_parts",
+        "proposition_3", "between_symm_parts",
+        "circle_from_points", "circle_from_points",
+        "intersection_circle_line_extending_points", "by_cases",
+        "intersection_circle_circle_1", "intersection_circles",
+        "by_contra"]
+
+
+def test_prop22p_hyps_alone_do_not_entail_goal():
+    """The I.22' hypotheses alone entail NONE of the goal conjuncts — the
+    construction carries the proof (and k, g do not even exist before
+    it)."""
+    s = eng.State()
+    for f, w in eng.PROP22P_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    assert not s.has(("on_line", "g", "FE"))
+    assert not s.has(("not_between", "g", "f", "e"))
+    assert not eng.la_entails_eq(s.la, "f", "k", "a", "a'")
+    assert not eng.la_entails_eq(s.la, "f", "g", "b", "b'")
+    assert not eng.la_entails_eq(s.la, "k", "g", "c", "c'")
+
+
+def test_prop22p_control_dropped_inequality_3():
+    """Drop |b-b'| + |c-c'| > |a-a'| (inequality 3): it is consumed FIRST
+    at the d-cut — |f-e''| > |b-b'| + |c-c'| exceeds |a-a'| only by this
+    inequality — so the first proposition_3 is refused at its gt_len
+    entailment premise (it is consumed AGAIN at outside h DKL for the
+    cited intersection_circle_circle_1, as in I.22, but the replay never
+    gets there)."""
+    hyps = [h for h in eng.PROP22P_HYPS_DATA
+            if h[0] != ("gt_sum_len", "b", "b'", "c", "c'", "a", "a'")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps, eng.PROP22P_STEPS_DATA, eng.PROP22P_GOAL)
+    assert ei.value.rule == "proposition_3"
+    assert ei.value.premise == ("entail", "gt_len", ("f", "e''", "a", "a'"))
+
+
+def test_prop22p_control_dropped_inequality_1_or_2():
+    """Inequalities 1 and 2 are consumed in the by_cases exactly as in
+    I.22: dropping |a-a'| + |b-b'| > |c-c'| kills the between g f i
+    branch; dropping |a-a'| + |c-c'| > |b-b'| kills the between g i f
+    branch."""
+    for dropped, branch in (
+            (("gt_sum_len", "a", "a'", "b", "b'", "c", "c'"),
+             [("between", "g", "f", "i")]),
+            (("gt_sum_len", "a", "a'", "c", "c'", "b", "b'"),
+             [("between", "g", "i", "f")])):
+        hyps = [h for h in eng.PROP22P_HYPS_DATA if h[0] != dropped]
+        with pytest.raises(eng.ByCasesFailure) as ei:
+            eng.replay(hyps, eng.PROP22P_STEPS_DATA, eng.PROP22P_GOAL)
+        assert ei.value.branch == branch
+        assert ei.value.witness[0] == "not-entailed"
+
+
+def test_prop22p_control_without_point_on_circle_onlyif():
+    """As in I.22, r_poc_onlyif (Transfer.lean:39) is load-bearing twice:
+    Lean's two closing point_on_circle_onlyif steps (Prop22.lean:54-55)
+    are closure, and the radii row |g-i| = |g-h| feeds the by_cases."""
+    with pytest.raises(eng.ByCasesFailure):
+        eng.replay(eng.PROP22P_HYPS_DATA, eng.PROP22P_STEPS_DATA, [],
+                   exclude_rules={"point_on_circle_onlyif [Transfer.lean:39]"})
+
+
+def test_prop22p_between_trans_out_bad_case():
+    """between_trans_out's own bad case: between a b c and between b c d
+    are BOTH required, in that chaining order — asking to chain
+    between f g e'' with between g e'' e (e'' is the chain's FAR end; the
+    state holds the reversal between e'' e f instead) is refused at the
+    second premise against the real replay state."""
+    s = eng.State()
+    for f, w in eng.PROP22P_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.run_steps(s, eng.PROP22P_STEPS_DATA[:-1])  # through the circles' meet
+    assert s.has(("between", "f", "g", "e''"))
+    assert s.has(("between", "e''", "e", "f"))  # the reversed wrong order
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 99, "between_trans_out", ("f", "g", "e''", "e"), {})
+    assert ei.value.premise == ("between", "g", "e''", "e")
+
+
+def test_prop22p_final_state_not_contradictory():
+    """main() asserts store satisfiability for every replay; make the
+    diagram-fact side explicit here too (the by_contra concludes
+    not_between on the OUTER state, which stays consistent)."""
+    s, _ = eng.replay(eng.PROP22P_HYPS_DATA, eng.PROP22P_STEPS_DATA,
+                      eng.PROP22P_GOAL)
+    contra, witness = eng.contradictory(s)
+    assert not contra, witness
+
+
 def test_proposition_21_citation_fires():
     """The cited lemma makes exactly the two I.21 conclusions (the
     theorem PROP21_STEPS_DATA proves): the strict rows plus the
@@ -1292,7 +1409,13 @@ def test_replay_fact_set_footprints():
     the row guard), and r_peq_subst_diagram also substitutes peq into
     inside facts (fires only where a peq stands; no pinned replay
     derives a new fact). No replay changed; I.22 joins the pin at
-    (1172, 906)."""
+    (1172, 906).
+    E-kimi-task-399 added the I.22' replay (the same construction from a
+    given segment, plus euclid_finish's not_between g f e rendered as a
+    by_contra citing the new per-use between_trans_out rule,
+    Diagrammatic.lean:78 — cited, not closure, so no pinned replay
+    derives a new fact). No replay changed; I.22' joins the pin at
+    (624, 434)."""
     import io, contextlib, sys
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
@@ -1301,7 +1424,7 @@ def test_replay_fact_set_footprints():
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
                 "16a": (546, 281), "17": (70, 24), "18": (97, 32),
                 "19": (41, 11), "20": (173, 71), "21": (181, 64),
-                "22": (1172, 906)}
+                "22": (1172, 906), "22'": (624, 434)}
     got = {}
     old_argv = sys.argv
     try:

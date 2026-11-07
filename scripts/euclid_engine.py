@@ -1747,6 +1747,20 @@ CONSTRUCTIONS = {
             (None, [("neq", a, b), ("neq", a, c),
                     ("not_between", b, a, c)])],
     },
+    # SystemE/Theory/Inferences/Diagrammatic.lean:78 — between_trans_out
+    # verbatim: between a b c ∧ between b c d → between a b d. A closure
+    # rule would add facts to every earlier replay (footprints are
+    # pinned), so this is cited per use. First use: proposition_22',
+    # where euclid_finish's ¬between g f e is rendered as a by_contra
+    # whose branch chains between g f e (assumed) with between f e e''.
+    "between_trans_out": {
+        "cite": "Diagrammatic.lean:78",
+        "args": ("a", "b", "c", "d"),
+        "premises": lambda s, a, b, c, d: [
+            ("between", a, b, c), ("between", b, c, d)],
+        "make": lambda s, a, b, c, d: [
+            (None, [("between", a, b, d)])],
+    },
     # SystemE/Theory/Inferences/Transfer.lean:102 — perpendicular_if
     # verbatim: (a.onLine L) ∧ (b.onLine L) ∧ (between a c b) ∧
     # ¬(d.onLine L) ∧ (∠ a:c:d = ∠ d:c:b) → ∠ a:c:d = ∟
@@ -3977,6 +3991,110 @@ PROP22_GOAL = [("_eq_len", "f", "k", "a", "a'"),
                ("_eq_len", "k", "g", "c", "c'")]
 
 
+# ---------------------------------------------------------------------------
+# proposition_22' (Prop22.lean:34, the variant I.23 cites):
+#   distinctPointsOnLine a a' A ∧ ... ∧ distinctPointsOnLine f e FE ∧
+#   (|aa'| + |bb'| > |cc'|) ∧ (|aa'| + |cc'| > |bb'|) ∧ (|bb'| + |cc'| > |aa'|)
+#   → ∃ k g, g.onLine FE ∧ ¬(between g f e) ∧
+#     |f─k| = |a─a'| ∧ |f─g| = |b─b'| ∧ |k─g| = |c─c'|
+# I.22's construction started from the GIVEN segment f─e on FE instead of
+# an arbitrary point: e' extends FE past e by more than |bb'|, e'' past e'
+# by more than |cc'| (so |f─e''| > |bb'| + |cc'| exceeds each of the three
+# lengths — |aa'| via INEQUALITY 3 — and the three proposition_3 cuts
+# succeed); d, g, h cut |f─d| = |aa'|, |f─g| = |bb'|, |g─h| = |cc'| along
+# FE; DKL = circle centre f through d, KLH = centre g through h; i is the
+# second meet of FE with KLH (between i g h); k = the two circles' meet.
+# The ∃ is witnessed by the named k, g.
+# What Lean's SMT closes silently, the engine renders explicitly, exactly
+# as in I.22:
+#   * the dpl premises' neqs are cited diagrammatically via
+#     between_symm_parts (Diagrammatic.lean:45-46), the f/g neqs off the
+#     closure reversals (r_between_symm) as in I.22;
+#   * inside i DKL by the same three-case by_cases (between_points
+#     trichotomy, Diagrammatic.lean:87, on the collinear g, f, i; the
+#     fourth order between f g i is dead — it puts i on h's side of g at
+#     distance |cc'| = |g─h|, i.e. i = h, against i ≠ h): between g f i
+#     gives |f─i| = |cc'| − |bb'| < |aa'| (INEQUALITY 1), between g i f
+#     gives |f─i| = |bb'| − |cc'| < |aa'| (INEQUALITY 2), peq f i puts i
+#     at DKL's centre (r_center_inside Diagrammatic.lean:28 +
+#     r_peq_subst_diagram);
+#   * intersects_cc KLH DKL for intersection_circles (Prop22.lean:52) by
+#     the cited intersection_circle_circle_1 (Diagrammatic.lean:312) with
+#     witnesses a = i, b = h — outside h DKL from between f g h (closure:
+#     between f h e'' by between_symm + between_trans_in on the chain,
+#     then between_order with |f─g| < |f─h| = |f─g| + |g─h|), so
+#     |f─h| = |bb'| + |cc'| > |aa'| = |f─d| (INEQUALITY 3), r_classify;
+#   * ¬between g f e (the goal's second conjunct; euclid_finish,
+#     Prop22.lean:56) as a by_contra: assume between g f e; with
+#     between f e e'' (closure: between_trans_in on between f e' e'' and
+#     between f e e'), the cited between_trans_out (Diagrammatic.lean:78)
+#     gives between g f e'', while between_symm_parts on between f g e''
+#     (g's proposition_3 cut) gives ¬between g f e'' — the exclusive pair.
+#     Exhaustiveness: the single branch is the classical negation of the
+#     conclusion. The goal query itself needs NO new goal kind:
+#     not_between is a first-class fact kind (superposition's make,
+#     Superposition.lean:7) and replay's verify loop checks plain facts
+#     with s.has; the positive route between f g e → between_symm_parts
+#     cannot serve here because |f─e| vs |bb'| is not fixed by the
+#     hypotheses, so the between f g e / between f e g case split would
+#     be genuine — the negation is proved directly instead.
+# The closing point_on_circle_onlyif steps (Prop22.lean:54-55) are the
+# engine's closure rule r_poc_onlyif (Transfer.lean:39) — no explicit
+# steps, as in I.22.
+PROP22P_HYPS_DATA = [
+    (("dpl", "a", "a'", "A"), "h"),   # distinctPointsOnLine a a' A
+    (("dpl", "b", "b'", "B"), "h"),   # distinctPointsOnLine b b' B
+    (("dpl", "c", "c'", "C"), "h"),   # distinctPointsOnLine c c' C
+    (("dpl", "f", "e", "FE"), "h"),   # distinctPointsOnLine f e FE
+    # |a─a'| + |b─b'| > |c─c'|  (inequality 1)
+    (("gt_sum_len", "a", "a'", "b", "b'", "c", "c'"), "h"),
+    # |a─a'| + |c─c'| > |b─b'|  (inequality 2)
+    (("gt_sum_len", "a", "a'", "c", "c'", "b", "b'"), "h"),
+    # |b─b'| + |c─c'| > |a─a'|  (inequality 3)
+    (("gt_sum_len", "b", "b'", "c", "c'", "a", "a'"), "h"),
+]
+# Lean's shape (Prop22.lean:42-55), argument orders exactly as Lean's,
+# with the SMT-closed premises rendered explicitly as documented above.
+PROP22P_STEPS_DATA = [
+    ("extend_point_longer", ("FE", "f", "e", "b", "b'"), {"x": "e'"}),
+    ("between_symm_parts", ("f", "e", "e'"), {}),   # neq f e' (dpl f e' FE)
+    ("extend_point_longer", ("FE", "f", "e'", "c", "c'"), {"x": "e''"}),
+    # neq f e'' (dpl f e'' FE for the first two proposition_3 cuts)
+    ("between_symm_parts", ("f", "e'", "e''"), {}),
+    ("proposition_3", ("f", "e''", "a", "a'", "FE", "A"), {"q": "d"}),
+    ("proposition_3", ("f", "e''", "b", "b'", "FE", "B"), {"q": "g"}),
+    # neq g e'' off the REVERSAL of between f g e'' (closure
+    # r_between_symm + neq_symm), for the third cut's dpl g e'' FE
+    ("between_symm_parts", ("e''", "g", "f"), {}),
+    ("proposition_3", ("g", "e''", "c", "c'", "FE", "C"), {"q": "h"}),
+    ("between_symm_parts", ("g", "h", "e''"), {}),  # neq g h (dpl g h FE)
+    ("circle_from_points", ("f", "d"), {"C": "DKL"}),
+    ("circle_from_points", ("g", "h"), {"C": "KLH"}),
+    ("intersection_circle_line_extending_points", ("KLH", "FE", "g", "h"),
+     {"g": "i"}),
+    # inside i DKL by the three-case trichotomy documented above
+    ("by_cases", [
+        ([("between", "g", "f", "i")], []),
+        ([("between", "g", "i", "f")], []),
+        ([("peq", "f", "i")], []),
+    ], [("inside", "i", "DKL")]),
+    ("intersection_circle_circle_1", ("i", "h", "KLH", "DKL"), {}),
+    ("intersection_circles", ("KLH", "DKL"), {"c": "k"}),
+    # euclid_finish's ¬between g f e, rendered as a by_contra
+    ("by_contra", [
+        ([("between", "g", "f", "e")],
+         [("between_trans_out", ("g", "f", "e", "e''"), {}),
+          ("between_symm_parts", ("f", "g", "e''"), {})]),
+    ], [("not_between", "g", "f", "e")]),
+]
+# The goals as LA entailment queries plus the two diagram facts:
+# on_line g FE and not_between g f e over the named witnesses k, g.
+PROP22P_GOAL = [("on_line", "g", "FE"), ("not_between", "g", "f", "e"),
+                ("_eq_len", "f", "k", "a", "a'"),
+                ("_eq_len", "f", "g", "b", "b'"),
+                ("_eq_len", "k", "g", "c", "c'")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -4130,6 +4248,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP22_HYPS_DATA, PROP22_STEPS_DATA,
                             PROP22_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "22'":
+            t0 = time.time()
+            s, rep = replay(PROP22P_HYPS_DATA, PROP22P_STEPS_DATA,
+                            PROP22P_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
