@@ -313,6 +313,15 @@ FREE = {
     # that is drawn); e is placed straight up over b by proposition_11'.
     13: {"a": (1.2, 0.9), "b": (0.0, 0.0), "c": (2.0, 0.0),
          "d": (-1.5, 0.0)},
+    # I.14: the TRUE configuration is drawn (the proof is a by_contra, so
+    # no diagram can show the refuted assumption BC != BD — see the case
+    # notes). b at the origin; c and d on the same line through b with b
+    # between (the theorem's content: BC = BD); a off that line in GENERAL
+    # position (angle a:b:c not right); c, d on opposing sides of AB by
+    # construction. e (extend_point BC c b) is placed by the rule, between
+    # b and d and distinct from both.
+    14: {"a": (0.6, 0.8), "b": (0.0, 0.0), "c": (1.5, 0.0),
+         "d": (-1.8, 0.0)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -336,6 +345,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP12_HYPS_DATA), list(eng.PROP12_STEPS_DATA)
     if prop == 13:
         return list(eng.PROP13_HYPS_DATA), list(eng.PROP13_STEPS_DATA)
+    if prop == 14:
+        return list(eng.PROP14_HYPS_DATA), list(eng.PROP14_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -416,6 +427,16 @@ def objects_from_hyps(prop):
                 {"name": L, "kind": "line", "jsx": {"type": "line",
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("CD", ("c", "d")))]
+    if prop == 14:
+        # three hypothesis lines (dpl a b AB, dpl b c BC, dpl b d BD); in
+        # the drawn TRUE configuration BC and BD are the same straight
+        # line through b — drawn as the two named lines, overlapping
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("BD", ("b", "d")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -652,7 +673,9 @@ dragging)" % (a, b)
         return ("midpoint of %s-%s (the proposition_10 construction "
                 "fixed exactly)" % (p, q))
     if rule == "by_contra":
-        # no drawing: refuted branches are not drawn, only noted
+        # no drawing for the split itself; I.14's branch steps ARE drawn
+        # (in the true configuration — see the case notes), earlier
+        # props' refuted branches are only noted
         branches, _concl = args, bindings
         parts = []
         for facts, bsteps in branches:
@@ -660,6 +683,10 @@ dragging)" % (a, b)
             parts.append("case split: assume %s — refuted by %s"
                          % (list(facts), rules or
                             ["contradiction in the store"]))
+        if prop == 14:
+            return ("; ".join(parts) + " (the assumption is not drawable; "
+                    "the branch's construction steps are drawn in the "
+                    "true configuration)")
         return "; ".join(parts) + " (refuted branches are not drawn)"
     if rule == "by_cases":
         # no drawing for the split itself: the DRAWN case is branch 2 in
@@ -689,10 +716,26 @@ dragging)" % (a, b)
                 "the perpendicular to %s at %s, on %s's side of %s (the "
                 "rule fixes the side and the right angle, not the "
                 "distance)" % (c, name, AB, c, x, AB))
+    if rule == "extend_point":
+        # (L, p, q) -> x on L with between p q x: the rule fixes the line
+        # and the side; the distance |q-x| is a free parameter of the
+        # existential step (0.6 |p-q| chosen, as the engine places no
+        # coordinate). For I.14 this lands e on the drawn line BC between
+        # b and d — the true configuration, where e's ray IS d's ray.
+        (L, p, q), name = args, bindings["x"]
+        seg = _sub(xy[q], xy[p])
+        xy[name] = _add(xy[q], _mul(_unit(seg), 0.6 * _norm(seg)))
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "point"}, "def_step": None})
+        return ("free parameter of the existential step: |%s-%s| = "
+                "0.6|%s-%s| on the ray from %s through %s (the rule fixes "
+                "between %s %s %s, not the distance)"
+                % (q, name, p, q, p, q, p, q, name))
     if rule in ("assert_point_eq_on_ray", "assert_point_eq_angle",
-                "proposition_4", "sum_angles_onlyif",
+                "proposition_4", "proposition_13", "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
-                "opposing_same_side_trans", "triple_incidence_2",
+                "opposing_same_side_trans", "opposing_opposing_same_side",
+                "triple_incidence_2",
                 "angle_pair_on_line",
                 "proposition_8", "proposition_7", "perpendicular_if",
                 "perpendicular_onlyif",
@@ -893,6 +936,41 @@ def verify13(xy):
     ]
 
 
+def verify14(xy):
+    """I.14, drawn in the TRUE configuration (the by_contra's assumption
+    BC != BD is refuted, hence not drawable — see the case notes): b lies
+    between c and d on one straight line (the theorem's content, BC = BD),
+    c and d on opposing sides of AB, a off the line c-d, the angle sum
+    angle a:b:c + angle a:b:d = 180 degrees numerically, general position
+    (angle a:b:c not right), and e (extend_point BC c b) between b and d,
+    distinct from d."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def side(p, l1, l2):
+        dvec = _sub(xy[l2], xy[l1])
+        return (dvec[0] * (xy[p][1] - xy[l1][1])
+                - dvec[1] * (xy[p][0] - xy[l1][0]))
+
+    ang_sum = _ang(xy, "a", "b", "c") + _ang(xy, "a", "b", "d")
+    return [
+        ("I.14: between c b d (d on the extension of c-b beyond b — the "
+         "theorem's content, drawn)",
+         abs(dist("c", "b") + dist("b", "d") - dist("c", "d")) < EPS),
+        ("I.14: c and d on opposing sides of AB",
+         side("c", "a", "b") * side("d", "a", "b") < 0),
+        ("I.14: a off the line c-d (distance > 0)",
+         abs(side("a", "c", "d")) / dist("c", "d") > EPS),
+        ("I.14: angle a-b-c + angle a-b-d = 180 degrees",
+         abs(ang_sum - math.pi) < EPS),
+        ("I.14: general position (angle a-b-c not right)",
+         abs(_ang(xy, "a", "b", "c") - math.pi / 2) > EPS),
+        ("I.14: between c b e (extend_point BC c b)",
+         abs(dist("c", "b") + dist("b", "e") - dist("c", "e")) < EPS),
+        ("I.14: e between b and d, distinct from both",
+         abs(dist("b", "e") + dist("e", "d") - dist("b", "d")) < EPS),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -914,6 +992,8 @@ def verify(prop, xy):
         return verify12(xy)
     if prop == 13:
         return verify13(xy)
+    if prop == 14:
+        return verify14(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1006,12 +1086,119 @@ def build_trace13_rows(hyps, steps):
     return rows, s
 
 
+def _run_branch14(s, facts, steps):
+    """Re-run one by_contra branch on a copy of the state to get per-step
+    reports (the real by_contra runs branches on private copies and
+    reports only witnesses). Returns (reports, branch_state): the branch
+    state is closed after the steps so the caller can exhibit the
+    contradiction that refutes the branch."""
+    sub = s.copy()
+    for f in facts:
+        eng._assume_metric_or_fact(sub, f, "by_contra assumption")
+    eng.close(sub)
+    reps = eng.run_steps(sub, steps)
+    eng.close(sub)
+    return reps, sub
+
+
+# I.14 display decision (packet P-euclid-viewer-I14): the true diagram has
+# d on line BC — that IS the theorem — but every proof step runs under the
+# assumption BC != BD. Drawing a "false" BD slightly off BC would put a
+# non-fact in the diagram (the picture would violate the very fact the
+# metric check verifies: the angle sum = 180 degrees forces d onto BC).
+# So the trace draws the TRUE configuration and every step inside the
+# by_contra says in the info bar that it runs under the refuted
+# assumption, which is not drawn as such.
+DRAWN14 = ("under the assumption BC != BD, which the proof refutes; not "
+           "drawn as such — the diagram shows the TRUE configuration "
+           "(d on the extension of c-b beyond b, i.e. BC = BD)")
+INNER14_1 = ("inner branch 1 (same_side a e BD): refuted by the "
+             "arithmetic (angle e:b:d forced to 0); " + DRAWN14)
+INNER14_2 = ("inner branch 2 (opposing_sides a e BD — Euclid's omitted "
+             "case): refuted by the arithmetic (angle d:b:e forced to "
+             "0); " + DRAWN14)
+
+
+def build_trace14_rows(hyps, steps):
+    """I.14 is a by_contra containing a nested by_contra (the engine's
+    rendering of Lean's by_cases a.sameSide e BD — see PROP14_STEPS_DATA).
+    The trace flattens it: the outer by_contra (Lean's by_contra line),
+    the branch's six steps (extend_point and proposition_13 are Lean's;
+    the two between_symm_parts, pasch_3_opposing and
+    opposing_opposing_same_side are engine-only — Lean's SMT produces
+    those silently), the inner split (Lean's by_cases line), then both
+    inner branches' steps. Returns rows of
+    (rule, args, bindings, report, loc, case_note)."""
+    lean_file = os.path.join(LEAN_DIR, "Book", "Prop14.lean")
+    with open(lean_file) as fh:
+        lean_lines = fh.read().splitlines()
+    rel = "Book/Prop14.lean"
+    ln_by_contra = next(i + 1 for i, l in enumerate(lean_lines)
+                        if l.strip().startswith("by_contra"))
+    ln_ext = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "extend_point" in l)
+    ln_p13 = next(i + 1 for i, l in enumerate(lean_lines)
+                  if "proposition_13" in l)
+    ln_bycases = next(i + 1 for i, l in enumerate(lean_lines)
+                      if l.strip().startswith("by_cases"))
+    sao = [i + 1 for i, l in enumerate(lean_lines)
+           if "sum_angles_onlyif" in l]
+    assert len(sao) == 2, sao
+
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    s0 = s.copy()
+    top = eng.run_steps(s, steps)[0]  # the single outer by_contra report
+
+    _tag, branches, conclusions = steps[0]
+    outer_assume, outer_steps = branches[0]
+    inner = outer_steps[6]  # ("by_contra", inner_branches, [("false",)])
+
+    rows = [("by_contra", branches, conclusions,
+             dict(top, added=[tuple(c) for c in conclusions]),
+             (rel, ln_by_contra),
+             DRAWN14 + "; the conclusion (BC = BD, as mutual incidence "
+             "on_line d BC / on_line c BD) is what the diagram draws")]
+    reps, sub = _run_branch14(s0, outer_assume, outer_steps[:6])
+    locs = [(rel, ln_ext), None, None, None, None, (rel, ln_p13)]
+    for (r, a, b), rep, loc in zip(outer_steps[:6], reps, locs):
+        rows.append((r, a, b, rep, loc, DRAWN14))
+    rep_inner = eng._by_contra(sub.copy(), 7, inner)
+    rows.append(("by_contra", inner[1], inner[2],
+                 dict(rep_inner, added=[("false",)]),
+                 (rel, ln_bycases),
+                 "Lean's `by_cases a.sameSide e BD` line; the engine "
+                 "renders the split as a nested by_contra concluding "
+                 "False, because both branches are refuted (a by_cases "
+                 "branch must ENTAIL, not contradict). Exhaustiveness: "
+                 "a and e are both off BD, so System E's trichotomy "
+                 "leaves exactly the two branches; " + DRAWN14))
+    for (assume, bsteps), note in zip(inner[1], (INNER14_1, INNER14_2)):
+        breps, bstate = _run_branch14(sub, assume, bsteps)
+        ok, _w = eng.contradictory(bstate)
+        assert ok, "I.14 inner branch must end contradictory"
+        for (r, a, b), rep in zip(bsteps, breps):
+            loc = ((rel, sao[0]) if r == "sum_angles_onlyif"
+                   and note is INNER14_1 else
+                   (rel, sao[1]) if r == "sum_angles_onlyif" else None)
+            rows.append((r, a, b, rep, loc, note))
+    return rows, s
+
+
 def build_trace(prop):
     hyps, steps = hyps_and_steps(prop)
     if prop == 13:
         # nested by_cases: rows built by replaying each branch on a state
         # copy (see build_trace13_rows); the replay itself is the check
         rows, _s = build_trace13_rows(hyps, steps)
+        name_map = {}
+    elif prop == 14:
+        # nested by_contra: rows built by replaying each branch on a
+        # state copy (see build_trace14_rows); the replay itself is the
+        # check (each inner branch is exhibited contradictory)
+        rows, _s = build_trace14_rows(hyps, steps)
         name_map = {}
     else:
         # engine replay (premises checked, facts collected); props 4-5

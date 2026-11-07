@@ -1,0 +1,952 @@
+{
+ "prop": 14,
+ "title": "Elements I.14 (LeanEuclid Book/Prop14.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "d"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 2
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "neq_line",
+       "BC",
+       "BD"
+      ]
+     ],
+     [
+      [
+       "extend_point",
+       [
+        "BC",
+        "c",
+        "b"
+       ],
+       {
+        "x": "e"
+       }
+      ],
+      [
+       "between_symm_parts",
+       [
+        "c",
+        "b",
+        "e"
+       ],
+       {}
+      ],
+      [
+       "between_symm_parts",
+       [
+        "e",
+        "b",
+        "c"
+       ],
+       {}
+      ],
+      [
+       "pasch_3_opposing",
+       [
+        "c",
+        "b",
+        "e",
+        "AB"
+       ],
+       {}
+      ],
+      [
+       "opposing_opposing_same_side",
+       [
+        "d",
+        "c",
+        "e",
+        "AB"
+       ],
+       {}
+      ],
+      [
+       "proposition_13",
+       [
+        "a",
+        "b",
+        "e",
+        "c",
+        "AB",
+        "BC"
+       ],
+       {}
+      ],
+      [
+       "by_contra",
+       [
+        [
+         [
+          [
+           "same_side",
+           "a",
+           "e",
+           "BD"
+          ]
+         ],
+         [
+          [
+           "sum_angles_onlyif",
+           [
+            "b",
+            "a",
+            "d",
+            "e",
+            "AB",
+            "BD"
+           ],
+           {}
+          ]
+         ]
+        ],
+        [
+         [
+          [
+           "opposing_sides",
+           "a",
+           "e",
+           "BD"
+          ]
+         ],
+         [
+          [
+           "triple_incidence_2",
+           [
+            "AB",
+            "BD",
+            "BC",
+            "b",
+            "a",
+            "d",
+            "e"
+           ],
+           {}
+          ],
+          [
+           "sum_angles_onlyif",
+           [
+            "b",
+            "a",
+            "e",
+            "d",
+            "AB",
+            "BC"
+           ],
+           {}
+          ]
+         ]
+        ]
+       ],
+       [
+        [
+         "false"
+        ]
+       ]
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BD"
+    ]
+   ],
+   "facts_added": [
+    [
+     "on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "on_line",
+     "c",
+     "BD"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": 12
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); the conclusion (BC = BD, as mutual incidence on_line d BC / on_line c BD) is what the diagram draws; case split: assume [('neq_line', 'BC', 'BD')] \u2014 refuted by ['extend_point', 'between_symm_parts', 'between_symm_parts', 'pasch_3_opposing', 'opposing_opposing_same_side', 'proposition_13', 'by_contra'] (the assumption is not drawable; the branch's construction steps are drawn in the true configuration)",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); the conclusion (BC = BD, as mutual incidence on_line d BC / on_line c BD) is what the diagram draws"
+  },
+  {
+   "n": 2,
+   "rule": "extend_point",
+   "args": [
+    "BC",
+    "c",
+    "b"
+   ],
+   "bindings": {
+    "x": "e"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e",
+     "BC"
+    ],
+    [
+     "between",
+     "c",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "b",
+     "BC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": 13
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); free parameter of the existential step: |b-e| = 0.6|c-b| on the ray from c through b (the rule fixes between c b e, not the distance)",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)"
+  },
+  {
+   "n": 3,
+   "rule": "between_symm_parts",
+   "args": [
+    "c",
+    "b",
+    "e"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "c",
+     "b"
+    ],
+    [
+     "neq",
+     "c",
+     "e"
+    ],
+    [
+     "not_between",
+     "b",
+     "c",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "b",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": null
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 4,
+   "rule": "between_symm_parts",
+   "args": [
+    "e",
+    "b",
+    "c"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "neq",
+     "e",
+     "b"
+    ],
+    [
+     "neq",
+     "e",
+     "c"
+    ],
+    [
+     "not_between",
+     "b",
+     "e",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "e",
+     "b",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": null
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): between_symm_parts only adds facts to the engine state",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)",
+   "lean_note": "engine-only step (between_symm_parts): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 5,
+   "rule": "pasch_3_opposing",
+   "args": [
+    "c",
+    "b",
+    "e",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "c",
+     "e",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "between",
+     "c",
+     "b",
+     "e"
+    ],
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": null
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): pasch_3_opposing only adds facts to the engine state",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)",
+   "lean_note": "engine-only step (pasch_3_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 6,
+   "rule": "opposing_opposing_same_side",
+   "args": [
+    "d",
+    "c",
+    "e",
+    "AB"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "d",
+     "e",
+     "AB"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "c",
+     "d",
+     "AB"
+    ],
+    [
+     "opposing_sides",
+     "c",
+     "e",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": null
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): opposing_opposing_same_side only adds facts to the engine state",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)",
+   "lean_note": "engine-only step (opposing_opposing_same_side): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 7,
+   "rule": "proposition_13",
+   "args": [
+    "a",
+    "b",
+    "e",
+    "c",
+    "AB",
+    "BC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_rt_ang",
+     "e",
+     "b",
+     "a",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "AB",
+     "BC"
+    ],
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "dpl",
+     "e",
+     "c",
+     "BC"
+    ],
+    [
+     "between",
+     "c",
+     "b",
+     "e"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": 14
+   },
+   "placement_decision": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): proposition_13 only adds facts to the engine state",
+   "case": "under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)"
+  },
+  {
+   "n": 8,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "same_side",
+       "a",
+       "e",
+       "BD"
+      ]
+     ],
+     [
+      [
+       "sum_angles_onlyif",
+       [
+        "b",
+        "a",
+        "d",
+        "e",
+        "AB",
+        "BD"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "opposing_sides",
+       "a",
+       "e",
+       "BD"
+      ]
+     ],
+     [
+      [
+       "triple_incidence_2",
+       [
+        "AB",
+        "BD",
+        "BC",
+        "b",
+        "a",
+        "d",
+        "e"
+       ],
+       {}
+      ],
+      [
+       "sum_angles_onlyif",
+       [
+        "b",
+        "a",
+        "e",
+        "d",
+        "AB",
+        "BC"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "false"
+    ]
+   ],
+   "facts_added": [
+    [
+     "false"
+    ]
+   ],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": 15
+   },
+   "placement_decision": "Lean's `by_cases a.sameSide e BD` line; the engine renders the split as a nested by_contra concluding False, because both branches are refuted (a by_cases branch must ENTAIL, not contradict). Exhaustiveness: a and e are both off BD, so System E's trichotomy leaves exactly the two branches; under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); case split: assume [('same_side', 'a', 'e', 'BD')] \u2014 refuted by ['sum_angles_onlyif']; case split: assume [('opposing_sides', 'a', 'e', 'BD')] \u2014 refuted by ['triple_incidence_2', 'sum_angles_onlyif'] (the assumption is not drawable; the branch's construction steps are drawn in the true configuration)",
+   "case": "Lean's `by_cases a.sameSide e BD` line; the engine renders the split as a nested by_contra concluding False, because both branches are refuted (a by_cases branch must ENTAIL, not contradict). Exhaustiveness: a and e are both off BD, so System E's trichotomy leaves exactly the two branches; under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)"
+  },
+  {
+   "n": 9,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "a",
+    "d",
+    "e",
+    "AB",
+    "BD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "b",
+     "d",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ],
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "neq",
+     "b",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "neq_line",
+     "AB",
+     "BD"
+    ],
+    [
+     "same_side",
+     "a",
+     "e",
+     "BD"
+    ],
+    [
+     "same_side",
+     "d",
+     "e",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": 16
+   },
+   "placement_decision": "inner branch 1 (same_side a e BD): refuted by the arithmetic (angle e:b:d forced to 0); under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "inner branch 1 (same_side a e BD): refuted by the arithmetic (angle e:b:d forced to 0); under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)"
+  },
+  {
+   "n": 10,
+   "rule": "triple_incidence_2",
+   "args": [
+    "AB",
+    "BD",
+    "BC",
+    "b",
+    "a",
+    "d",
+    "e"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "same_side",
+     "a",
+     "d",
+     "BC"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ],
+    [
+     "on_line",
+     "e",
+     "BC"
+    ],
+    [
+     "same_side",
+     "d",
+     "e",
+     "AB"
+    ],
+    [
+     "opposing_sides",
+     "a",
+     "e",
+     "BD"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "neq",
+     "a",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": null
+   },
+   "placement_decision": "inner branch 2 (opposing_sides a e BD \u2014 Euclid's omitted case): refuted by the arithmetic (angle d:b:e forced to 0); under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): triple_incidence_2 only adds facts to the engine state",
+   "case": "inner branch 2 (opposing_sides a e BD \u2014 Euclid's omitted case): refuted by the arithmetic (angle d:b:e forced to 0); under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)",
+   "lean_note": "engine-only step (triple_incidence_2): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 11,
+   "rule": "sum_angles_onlyif",
+   "args": [
+    "b",
+    "a",
+    "e",
+    "d",
+    "AB",
+    "BC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "sum_ang",
+     "a",
+     "b",
+     "e",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "e",
+     "BC"
+    ],
+    [
+     "neq",
+     "b",
+     "a"
+    ],
+    [
+     "neq",
+     "b",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "AB"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "BC"
+    ],
+    [
+     "neq_line",
+     "AB",
+     "BC"
+    ],
+    [
+     "same_side",
+     "a",
+     "d",
+     "BC"
+    ],
+    [
+     "same_side",
+     "e",
+     "d",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop14.lean",
+    "line": 19
+   },
+   "placement_decision": "inner branch 2 (opposing_sides a e BD \u2014 Euclid's omitted case): refuted by the arithmetic (angle d:b:e forced to 0); under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD); forward-closure step (no new objects): sum_angles_onlyif only adds facts to the engine state",
+   "case": "inner branch 2 (opposing_sides a e BD \u2014 Euclid's omitted case): refuted by the arithmetic (angle d:b:e forced to 0); under the assumption BC != BD, which the proof refutes; not drawn as such \u2014 the diagram shows the TRUE configuration (d on the extension of c-b beyond b, i.e. BC = BD)"
+  }
+ ],
+ "placement": {
+  "a": [
+   0.6,
+   0.8
+  ],
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.5,
+   0.0
+  ],
+  "d": [
+   -1.8,
+   0.0
+  ],
+  "e": [
+   -0.8999999999999999,
+   0.0
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.14: between c b d (d on the extension of c-b beyond b \u2014 the theorem's content, drawn)",
+   "ok": true
+  },
+  {
+   "check": "I.14: c and d on opposing sides of AB",
+   "ok": true
+  },
+  {
+   "check": "I.14: a off the line c-d (distance > 0)",
+   "ok": true
+  },
+  {
+   "check": "I.14: angle a-b-c + angle a-b-d = 180 degrees",
+   "ok": true
+  },
+  {
+   "check": "I.14: general position (angle a-b-c not right)",
+   "ok": true
+  },
+  {
+   "check": "I.14: between c b e (extend_point BC c b)",
+   "ok": true
+  },
+  {
+   "check": "I.14: e between b and d, distinct from both",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop14.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop13",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_14 : \u2200 (a b c d : Point) (AB BC BD : Line),",
+  "  distinctPointsOnLine a b AB \u2227 distinctPointsOnLine b c BC \u2227 distinctPointsOnLine b d BD \u2227 (c.opposingSides d AB) \u2227",
+  "  (\u2220 a:b:c + \u2220 a:b:d) = \u221f + \u221f \u2192",
+  "  BC = BD :=",
+  "by",
+  "  euclid_intros",
+  "  by_contra",
+  "  euclid_apply (extend_point BC c b) as e",
+  "  euclid_apply (proposition_13 a b e c AB BC)",
+  "  by_cases a.sameSide e BD",
+  "  . euclid_apply (sum_angles_onlyif b a d e AB BD)",
+  "    euclid_finish",
+  "  . -- Omitted by Euclid.",
+  "    euclid_apply (sum_angles_onlyif b a e d AB BC)",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

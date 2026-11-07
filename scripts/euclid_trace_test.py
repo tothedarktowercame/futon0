@@ -561,3 +561,111 @@ def test_bad_case_prop13_a_on_ds_side_of_be_fails():
     x["a"] = (-0.8, 0.9)  # the mirror case: a on d's side of BE
     fails = [d for d, ok in tr.verify13(x) if not ok]
     assert fails == ["I.13: drawn case: a on c's side of BE"], fails
+
+
+# -- I.14 (kimi-2, packet P-euclid-viewer-I14) --------------------------------
+# I.14's trace is a FLATTENED nested by_contra: the outer by_contra (Lean's
+# by_contra line), its branch's six steps (extend_point / proposition_13
+# are Lean's lines; between_symm_parts x2, pasch_3_opposing and
+# opposing_opposing_same_side are engine-only), the inner split (Lean's
+# by_cases line; the engine renders it as a by_contra concluding False),
+# then both inner branches' steps. Drawn in the TRUE configuration (d on
+# the extension of c-b beyond b): a "false" BD off BC would violate the
+# angle-sum fact the placement verifies, so the refuted assumption is
+# carried by the case notes instead of the picture.
+
+TR14 = load(14)
+
+
+def test_prop14_rebuild_matches_disk():
+    rebuilt = tr.build_trace(14)
+    assert rebuilt["placement"] == TR14["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR14["steps"]
+
+
+def test_prop14_lean_lines_cover_the_apply_lines_and_the_splits():
+    path = os.path.join(LEAN_DIR, TR14["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = {s["lean"]["line"] for s in TR14["steps"]
+              if s["lean"]["line"]}
+    # every linked line names the step's rule (or is a split line)
+    for s in TR14["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            assert "engine-only" in s["lean_note"], s
+        elif s["rule"] == "by_contra":
+            assert (lines[ln - 1].strip().startswith("by_contra")
+                    or lines[ln - 1].strip().startswith("by_cases")), s
+        else:
+            assert s["rule"] in lines[ln - 1], s
+    # every euclid_apply line of Prop14.lean is linked, and the by_contra
+    # and by_cases lines are linked by the two splits
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert applies <= linked, (applies, linked)
+    assert len(linked) == len(applies) + 2
+    # the drawn construction step is extend_point; proposition_13 is a
+    # cited lemma with a Lean line but no drawing
+    drawn = {s["rule"] for s in TR14["steps"]
+             if s["lean"]["line"] in applies}
+    assert drawn == {"extend_point", "proposition_13", "sum_angles_onlyif"}
+
+
+def test_prop14_cases_recorded():
+    """Every step carries the drawing decision: the steps run under the
+    refuted assumption BC != BD and the diagram draws the true
+    configuration instead."""
+    for s in TR14["steps"]:
+        assert s.get("case"), s
+        assert s["case"] in s["placement_decision"]
+        assert "BC != BD" in s["case"], s
+    assert any("Euclid's omitted case" in s["case"] for s in TR14["steps"])
+    # the outer by_contra's conclusions are the goal as mutual incidence
+    outer = TR14["steps"][0]
+    assert outer["rule"] == "by_contra"
+    assert outer["facts_added"] == [["on_line", "d", "BC"],
+                                    ["on_line", "c", "BD"]]
+    # the inner split concludes False (both branches refuted)
+    inner = [s for s in TR14["steps"]
+             if s["rule"] == "by_contra"][1]
+    assert inner["facts_added"] == [["false"]]
+
+
+def test_prop14_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR14["placement"].items() if v}
+    res = tr.metric_facts_hold(TR14["steps"], xy)
+    assert res and all(ok for _, ok in res), \
+        [f for f, ok in res if not ok]
+    assert all(ok for _, ok in tr.verify14(xy))
+
+
+def _xy14():
+    return {k: tuple(v) for k, v in TR14["placement"].items() if v}
+
+
+def test_bad_case_prop14_c_d_same_side_of_ab_fails():
+    x = _xy14()
+    assert all(ok for _, ok in tr.verify14(x))
+    x["d"] = (1.8, 0.0)  # d on c's side of AB (and off the extension)
+    fails = [d for d, ok in tr.verify14(x) if not ok]
+    assert any("opposing sides of AB" in d for d in fails), fails
+
+
+def test_bad_case_prop14_angle_sum_not_180_fails():
+    x = _xy14()
+    x["d"] = (-1.8, 0.4)  # d off the line c-b: the sum breaks
+    fails = [d for d, ok in tr.verify14(x) if not ok]
+    assert any("180 degrees" in d for d in fails), fails
+
+
+def test_bad_case_prop14_d_not_past_b_fails():
+    x = _xy14()
+    x["d"] = (0.7, 0.0)  # d between b and c: b no longer between c and d
+    fails = [d for d, ok in tr.verify14(x) if not ok]
+    assert any("between c b d" in d for d in fails), fails
+
+
+def test_bad_case_prop14_a_on_the_line_fails():
+    x = _xy14()
+    x["a"] = (0.6, 0.0)  # a on the line c-d: no triangle, no angles
+    fails = [d for d, ok in tr.verify14(x) if not ok]
+    assert any("a off the line c-d" in d for d in fails), fails
