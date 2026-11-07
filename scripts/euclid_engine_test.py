@@ -712,7 +712,8 @@ def test_replay_fact_set_footprints():
     expected = {"1": (37, 8), "2": (112, 38), "3": (60, 22), "4": (198, 79),
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (224, 87), "10": (161, 50),
-                "11": (298, 148), "12": (174, 66), "13": (43, 16)}
+                "11": (298, 148), "12": (174, 66), "13": (43, 16),
+                "14": (70, 21)}
     got = {}
     old_argv = sys.argv
     try:
@@ -1841,3 +1842,83 @@ def test_prop13_branch1_without_perpendicular_if_refused():
     st[0][1][0] = (st[0][1][0][0], [])
     with pytest.raises(eng.ByCasesFailure):
         eng.replay(eng.PROP13_HYPS_DATA, st, [eng.PROP13_GOAL])
+
+
+# --- Book I.14 (Book/Prop14.lean:6, replay citing proposition_13) ---------
+# BC = BD is represented as the by_contra on neq_line BC BD with the
+# mutual-incidence conclusions on_line d BC / on_line c BD (see the
+# representation comment at PROP14_HYPS_DATA in the engine).
+
+
+def _prop14(steps=eng.PROP14_STEPS_DATA, hyps=eng.PROP14_HYPS_DATA):
+    return eng.replay(hyps, steps, eng.PROP14_GOAL)
+
+
+def test_prop14_replay():
+    s, rep = _prop14()
+    assert s.has(("on_line", "d", "BC"))
+    assert s.has(("on_line", "c", "BD"))
+    assert eng._fm_sat(s.la.rows)
+    assert rep[-1]["final"]
+    # the hypotheses ALONE (no steps) do not produce the incidence facts:
+    # closure cannot identify the lines without the angle argument
+    s2, _ = eng.replay(eng.PROP14_HYPS_DATA, [], [])
+    assert not s2.has(("on_line", "d", "BC"))
+    assert not s2.has(("on_line", "c", "BD"))
+
+
+def test_prop14_control_dropped_proposition_13():
+    """Bad case (a): drop the proposition_13 citation. Without its row
+    (∠e:b:a + ∠a:b:c = 2∟) neither case branch forces a zero angle, so the
+    by_contra branch is not contradictory and the replay is refused."""
+    import copy
+    st = copy.deepcopy(eng.PROP14_STEPS_DATA)
+    facts, steps = st[0][1][0]
+    st[0][1][0] = (facts,
+                   [x for x in steps if x[0] != "proposition_13"])
+    with pytest.raises(eng.ByContraFailure) as ei:
+        _prop14(steps=st)
+    # the refusal surfaces in the inner case split: without the cited sum,
+    # the same_side branch's arithmetic never forces ∠e:b:d = 0
+    assert ei.value.branch == [("same_side", "a", "e", "BD")]
+
+
+def test_prop14_control_dropped_angle_sum():
+    """Bad case (b): drop the angle-sum hypothesis
+    (∠a:b:c + ∠a:b:d = ∟+∟). proposition_13's row alone cannot pin
+    ∠e:b:d or ∠d:b:e to 0, so no branch contradicts: refused."""
+    hyps = [h for h in eng.PROP14_HYPS_DATA
+            if h[0] != ("_sum_rt_ang", "c", "b", "a", "d")]
+    with pytest.raises(eng.ByContraFailure):
+        _prop14(hyps=hyps)
+
+
+def test_prop14_control_same_side_not_opposing():
+    """Bad case (c): c and d on the SAME side of AB instead of opposing.
+    The theorem is false there (the angle sum can hold with BC ≠ BD), and
+    the replay is refused: opposing_opposing_same_side has no
+    opposing_sides c d AB to work from, so the by_contra reports a stuck
+    branch (the constructed bad case the check is named for)."""
+    hyps = [((("same_side", "c", "d", "AB"), "h")
+             if f == ("opposing_sides", "c", "d", "AB") else (f, w))
+            for f, w in eng.PROP14_HYPS_DATA]
+    with pytest.raises(eng.ByContraFailure) as ei:
+        _prop14(hyps=hyps)
+    assert ei.value.witness[0] == "stuck"
+
+
+def test_prop14_inner_branch_removed_is_not_refused():
+    """Bad case (d): remove one branch of the inner case split. The engine
+    does NOT refuse: like by_cases, by_contra does not check exhaustiveness
+    of the branch assumptions — that is the caller's documented
+    responsibility (see PROP14_STEPS_DATA). The remaining branch still
+    contradicts, so the replay is accepted with a HOLE IN THE PROOF, not an
+    engine error. This pins the current behaviour, as for I.13."""
+    import copy
+    st = copy.deepcopy(eng.PROP14_STEPS_DATA)
+    inner = st[0][1][0][1][-1]  # the inner by_contra step
+    one_branch = ("by_contra", [inner[1][0]], inner[2])
+    st[0][1][0][1][-1] = one_branch
+    s, rep = _prop14(steps=st)  # accepted: exhaustiveness is on the caller
+    assert s.has(("on_line", "d", "BC"))
+    assert rep[-1]["final"]

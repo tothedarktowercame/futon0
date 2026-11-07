@@ -1282,6 +1282,16 @@ def _dpl_either(s, p, q, L):
     return ("dpl", q, p, L)
 
 
+def _opposing_either(s, p, q, L):
+    # opposingSides (Relations.lean:13-14) is symmetric in its points
+    # (¬p.onLine L ∧ ¬q.onLine L ∧ ¬p.sameSide q L); premise tuples name a
+    # direction, so accept whichever the state holds.
+    f = ("opposing_sides", p, q, L)
+    if s.has(f):
+        return f
+    return ("opposing_sides", q, p, L)
+
+
 def _need(s, i, rule, fact):
     if not s.has(fact):
         raise MissingPremise(i, rule, fact, "(no forward rule derives it)")
@@ -1815,6 +1825,23 @@ CONSTRUCTIONS = {
         "make": lambda s, x, y, z, L: [
             (None, [("opposing_sides", x, z, L)])],
     },
+    # [derived: Diagrammatic.lean:127 (sameSide transitivity) double
+    # contrapositive + Relations.lean:13-14] x and z both opposing y across
+    # L are on the SAME side of L:
+    #   opposingSides x y L ∧ opposingSides z y L → sameSide x z L
+    # (sameSide is an equivalence on the points off L — Diagrammatic.lean:
+    # 112,120,127 — so with y off L, ¬(x~y) ∧ ¬(z~y) forces x~z; the
+    # off-line parts ship with the opposingSides premises). Cited per use
+    # (a closure rule would add facts to every earlier replay; footprints
+    # are pinned). First use: Book I.14 (d and e both oppose c across AB).
+    "opposing_opposing_same_side": {
+        "cite": "derived, Diagrammatic.lean:127 double contrapositive",
+        "args": ("x", "y", "z", "L"),
+        "premises": lambda s, x, y, z, L: [
+            _opposing_either(s, x, y, L), _opposing_either(s, z, y, L)],
+        "make": lambda s, x, y, z, L: [
+            (None, [("same_side", x, z, L)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:201 — triple_incidence_2
     # verbatim:
     #   (a.onLine L) ∧ (a.onLine M) ∧ (a.onLine N) ∧ (b.onLine L) ∧
@@ -2140,6 +2167,12 @@ def _assume_metric_or_fact(s, fact, why):
                      (len_atom(fact[3], fact[4]), -1)), 0, ">")
     elif fact[0] == "eq_ang":
         eq_ang(s.la, *fact[1:])
+    elif fact[0] == "_sum_rt_ang":
+        # ∠(u:v:x) + ∠(x:v:w) = 2∟ as a hypothesis/assumption (Book I.14
+        # states its angle-sum hypothesis in this shape).
+        u, v, x, w = fact[1:5]
+        s.la.add(lin((ang_atom(u, v, x), 1), (ang_atom(x, v, w), 1),
+                     (RT, -2)), 0, "=")
     s.assume(fact, why)
 
 
@@ -2860,6 +2893,124 @@ PROP13_STEPS_DATA = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Book I.14 (Book/Prop14.lean:6) — if ∠a:b:c + ∠a:b:d = 2∟ with c, d on
+# opposing sides of AB, then BC = BD (c and d lie on one line through b).
+#
+# REPRESENTATION of the conclusion "BC = BD": option (a) of the packet —
+# the engine has no line-EQUALITY fact kind, so the goal is the by_contra
+# whose single branch assumes ("neq_line", "BC", "BD") and must reach a
+# contradiction; the outer conclusions are the mutual-incidence facts
+# on_line d BC and on_line c BD. For lines through the two distinct points
+# b, c (resp. b, d) that is exactly what BC = BD says
+# (two_points_determine_line, Diagrammatic.lean:14 — the same theorem the
+# neq_line machinery is the contrapositive of). A new "eq_line" fact kind
+# (option (b)) was rejected: every forward rule matching on line names
+# would have to be quotiented by it, and nothing else in the engine needs
+# line equality.
+# SOUNDNESS: no forward rule can derive anything from these conclusions
+# that BC = BD would not justify — on_line d BC and on_line c BD are
+# precisely the facts the state would hold if the lines had been one line
+# from the start.
+#
+# HYPOTHESES: euclid_intros of Prop14.lean:6, destructed. No "h-sm" inputs
+# and no extra "h" facts: the neq_lines the proof needs are DERIVED in
+# closure — opposing_sides c d AB puts c, d off AB (opposing_parts), so
+# line_neq gives BC ≠ AB and BD ≠ AB (c, d resp.), and then
+# two_lines_meet_once at b puts a off BC and off BD (a ≠ b from the dpl),
+# so line_neq also gives AB ≠ BC and AB ≠ BD (the directed forms
+# proposition_13 and sum_angles_onlyif match on).
+# The angle-sum hypothesis ∠a:b:c + ∠a:b:d = ∟+∟ is the metric tuple
+# ("_sum_rt_ang", "c", "b", "a", "d"): the row is ∠c:b:a + ∠a:b:d = 2∟ and
+# ∠c:b:a = ∠a:b:c as canonical atoms (angle_symm, Metric.lean:46).
+PROP14_HYPS_DATA = [
+    (("dpl", "a", "b", "AB"), "h"),   # distinctPointsOnLine a b AB
+    (("dpl", "b", "c", "BC"), "h"),   # distinctPointsOnLine b c BC
+    (("dpl", "b", "d", "BD"), "h"),   # distinctPointsOnLine b d BD
+    (("opposing_sides", "c", "d", "AB"), "h"),   # c.opposingSides d AB
+    (("_sum_rt_ang", "c", "b", "a", "d"), "h"),  # ∠a:b:c + ∠a:b:d = ∟+∟
+]
+
+# Lean's shape (Book/Prop14.lean:9-18): by_contra BC ≠ BD; extend_point
+# BC c b as e (between c b e); proposition_13 a b e c AB BC
+# (∠e:b:a + ∠a:b:c = 2∟); then the case split on a.sameSide e BD, each
+# branch closed by sum_angles_onlyif + the arithmetic.
+#
+# The inner split is rendered as a by_contra (branches = the two cases,
+# conclusions = [("false",)]), NOT a by_cases: in Lean both branches are
+# finished by euclid_finish reaching False, and the engine's by_cases
+# REFUSES a contradictory branch (it would entail everything vacuously).
+# (P → ⊥) ∧ (¬P → ⊥) ⊢ ⊥ is exactly a by_contra with False conclusion.
+#
+# EXHAUSTIVENESS of the split (caller's responsibility, as at I.13): a is
+# NOT on BD — closure derives not_on_line a BD (two_lines_meet_once at b
+# from BD ≠ AB; a on BD with a ≠ b would make AB = BD and put d on AB,
+# contradicting c.opposingSides d AB). With a and e both off BD (e off BD
+# from the assumed BC ≠ BD, two_lines_meet_once at b), System E's
+# trichotomy on the points off a line leaves exactly sameSide a e BD and
+# ¬sameSide a e BD — the latter rendered as the positive fact
+# opposing_sides a e BD (Relations.lean:13-14, the same rendering pasch_4
+# and triple_incidence_2 use, since the engine has no negated sameSide
+# fact kind). There is no third case.
+#
+# Branch steps before the split (both branches use them):
+#   1. extend_point BC c b as e: on_line e BC, between c b e
+#      (Points.lean:32).
+#   2-3. between_symm_parts on both orientations of between c b e: the
+#      engine's closure does not derive neqs from between (see PROP13);
+#      sum_angles_onlyif needs neq b e, proposition_13's dpl premise needs
+#      neq c e (r_dpl rebuilds dpl c e BC / dpl e c BC from the parts).
+#   4. pasch_3_opposing: between c b e with b on AB (c, e off AB) gives
+#      opposing_sides c e AB.
+#   5. opposing_opposing_same_side: c d AB and c e AB opposing give
+#      same_side d e AB (d and e are both on the far side of AB from c).
+#      This is the fact Lean's SMT produces silently.
+#   6. proposition_13 a b e c AB BC: ∠e:b:a + ∠a:b:c = 2∟
+#      (Book/Prop13.lean:6, cited as a lemma; between c b e is the
+#      between d b c of the statement).
+# Branch 1 (same_side a e BD): sum_angles_onlyif b a d e AB BD gives
+#   ∠a:b:d = ∠a:b:e + ∠e:b:d; with the hypothesis and step 6 the
+#   arithmetic forces ∠e:b:d = 0, against angle_pos ∠e:b:d > 0
+#   (e off BD, b ≠ d, b ≠ e) — the store is unsat.
+#   Its side premises are the branch assumption (same_side a e BD) and
+#   step 5 (same_side d e AB).
+# Branch 2 (opposing_sides a e BD — Lean's "Omitted by Euclid" branch):
+#   triple_incidence_2 over (AB, BD, BC) at b with d-witness e turns
+#   same_side d e AB and opposing_sides a e BD into same_side a d BC;
+#   then sum_angles_onlyif b a e d AB BC gives
+#   ∠a:b:e = ∠a:b:d + ∠d:b:e, so ∠d:b:e = 0 against angle_pos
+#   (d off BC from the assumed BC ≠ BD) — unsat.
+PROP14_STEPS_DATA = [
+    ("by_contra", [
+        ([("neq_line", "BC", "BD")], [
+            ("extend_point", ("BC", "c", "b"), {"x": "e"}),
+            ("between_symm_parts", ("c", "b", "e"), {}),
+            ("between_symm_parts", ("e", "b", "c"), {}),
+            ("pasch_3_opposing", ("c", "b", "e", "AB"), {}),
+            ("opposing_opposing_same_side", ("d", "c", "e", "AB"), {}),
+            ("proposition_13", ("a", "b", "e", "c", "AB", "BC"), {}),
+            ("by_contra", [
+                # branch 1: a.sameSide e BD
+                ([("same_side", "a", "e", "BD")], [
+                    ("sum_angles_onlyif", ("b", "a", "d", "e", "AB", "BD"),
+                     {}),
+                ]),
+                # branch 2: ¬(a.sameSide e BD) — "Omitted by Euclid"
+                ([("opposing_sides", "a", "e", "BD")], [
+                    ("triple_incidence_2",
+                     ("AB", "BD", "BC", "b", "a", "d", "e"), {}),
+                    ("sum_angles_onlyif", ("b", "a", "e", "d", "AB", "BC"),
+                     {}),
+                ]),
+            ], [("false",)]),
+        ]),
+    ], [("on_line", "d", "BC"), ("on_line", "c", "BD")]),
+]
+# The goal rows the replay verifies: BC = BD as mutual incidence (see the
+# representation comment above).
+PROP14_GOAL = [("on_line", "d", "BC"), ("on_line", "c", "BD")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -2963,6 +3114,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP13_HYPS_DATA, PROP13_STEPS_DATA,
                             [PROP13_GOAL])
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "14":
+            t0 = time.time()
+            s, rep = replay(PROP14_HYPS_DATA, PROP14_STEPS_DATA,
+                            PROP14_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()
