@@ -714,7 +714,7 @@ def test_replay_fact_set_footprints():
                 "8": (210, 82), "9": (224, 87), "10": (161, 50),
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
                 "14": (70, 21), "15": (104, 47), "16b": (406, 191),
-                "16a": (546, 281)}
+                "16a": (546, 281), "17": (70, 24)}
     got = {}
     old_argv = sys.argv
     try:
@@ -2143,3 +2143,100 @@ def test_proposition_16_control_between_reversed():
                      ("a", "b", "c", "d", "AB", "BC", "AC"), {})],
                    [("_gt_ang", "a", "c", "d", "c", "b", "a")])
     assert ei.value.rule == "proposition_16"
+
+
+# --- Book I.17 (two angles of a triangle < two right angles) ---------------
+
+
+def _prop17(steps=eng.PROP17_STEPS_DATA, hyps=eng.PROP17_HYPS_DATA,
+            goal=eng.PROP17_GOAL):
+    return eng.replay(hyps, steps, goal)
+
+
+def test_prop17_replay():
+    s, rep = _prop17()
+    assert rep[-1]["final"]
+    assert eng._fm_sat(s.la.rows)
+    assert eng.la_entails_lt_sum_rt_ang(s.la, "a", "b", "c", "b", "c", "a")
+    # _fact_holds answers the goal too (the 8d2ada7 lesson: not only
+    # replay's own goal branch)
+    assert eng._fact_holds(s, eng.PROP17_GOAL[0])
+    # bad case (d): the hypotheses ALONE (no steps) do not entail the goal
+    s2, _ = eng.replay(eng.PROP17_HYPS_DATA, [], [])
+    assert eng._fm_sat(s2.la.rows)
+    assert not eng.la_entails_lt_sum_rt_ang(s2.la, "a", "b", "c",
+                                            "b", "c", "a")
+    assert not eng._fact_holds(s2, eng.PROP17_GOAL[0])
+
+
+def test_prop17_control_dropped_proposition_16():
+    """Bad case (a): drop the proposition_16 citation. Nothing then bounds
+    ∠a:b:c strictly below ∠a:c:d, so the goal is NOT ENTAILED at the goal
+    check (the steps all still apply — extend_point and proposition_13 do
+    not depend on proposition_16) and the store stays satisfiable."""
+    steps = [x for x in eng.PROP17_STEPS_DATA if x[0] != "proposition_16"]
+    s, _ = eng.replay(eng.PROP17_HYPS_DATA, steps, [])
+    assert eng._fm_sat(s.la.rows)
+    assert not eng.la_entails_lt_sum_rt_ang(s.la, "a", "b", "c",
+                                            "b", "c", "a")
+    with pytest.raises(AssertionError) as ei:
+        _prop17(steps=steps)
+    assert "('_lt_sum_rt_ang', 'a', 'b', 'c', 'b', 'c', 'a')" in str(ei.value)
+
+
+def test_prop17_control_dropped_proposition_13():
+    """Bad case (b): drop the proposition_13 citation. Nothing then equates
+    ∠b:c:a + ∠a:c:d with 2∟, so the goal is NOT ENTAILED at the goal check
+    (the steps all still apply) and the store stays satisfiable."""
+    steps = [x for x in eng.PROP17_STEPS_DATA if x[0] != "proposition_13"]
+    s, _ = eng.replay(eng.PROP17_HYPS_DATA, steps, [])
+    assert eng._fm_sat(s.la.rows)
+    assert not eng.la_entails_lt_sum_rt_ang(s.la, "a", "b", "c",
+                                            "b", "c", "a")
+    with pytest.raises(AssertionError) as ei:
+        _prop17(steps=steps)
+    assert "('_lt_sum_rt_ang', 'a', 'b', 'c', 'b', 'c', 'a')" in str(ei.value)
+
+
+def test_prop17_control_wrong_forms_not_entailed():
+    """Bad case (c): the non-strict/wrong forms are not entailed by the
+    full proof, and the store stays satisfiable — the strict goal check
+    is not vacuous. The >-form is a _gt_ang on the sum-minus-2∟ row read
+    off directly; the =-form is the _sum_rt_ang-shaped equality of the
+    two triangle angles with 2∟."""
+    s, _ = _prop17()
+    assert eng._fm_sat(s.la.rows)
+    # sum > 2∟ (the reverse strict inequality) is not entailed
+    assert not s.la.entails(
+        eng.lin((eng.ang_atom("a", "b", "c"), 1),
+                (eng.ang_atom("b", "c", "a"), 1), (eng.RT, -2)), 0, ">")
+    # sum = 2∟ (the non-strict boundary) is not entailed either
+    assert not s.la.entails(
+        eng.lin((eng.ang_atom("a", "b", "c"), 1),
+                (eng.ang_atom("b", "c", "a"), 1), (eng.RT, -2)), 0, "=")
+
+
+def test_proposition_17_lemma_citation():
+    """CONSTRUCTIONS["proposition_17"] cited as a lemma on the I.17
+    hypotheses: the sum bound is entailed afterwards, store sat."""
+    s, rep = eng.replay(
+        eng.PROP17_HYPS_DATA,
+        [("proposition_17", ("a", "b", "c", "AB", "BC", "AC"), {})],
+        [("_lt_sum_rt_ang", "a", "b", "c", "b", "c", "a")])
+    assert rep[-1]["final"]
+    assert eng._fm_sat(s.la.rows)
+
+
+def test_proposition_17_control_c_on_AB():
+    """Bad case for the cited lemma CONSTRUCTIONS["proposition_17"]: with
+    c ON AB (formTriangle's not_on_line premise violated), the citation
+    is refused."""
+    hyps = [(("on_line", "c", "AB"), "h")
+            if f == ("not_on_line", "c", "AB") else (f, w)
+            for f, w in eng.PROP17_HYPS_DATA]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps,
+                   [("proposition_17", ("a", "b", "c", "AB", "BC", "AC"),
+                     {})],
+                   [("_lt_sum_rt_ang", "a", "b", "c", "b", "c", "a")])
+    assert ei.value.rule == "proposition_17"
