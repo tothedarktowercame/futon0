@@ -238,3 +238,100 @@ def test_binding_clash_reads_as_a_name_clash():
     assert row["why"].startswith("names its new object b, but b already "
                                  "exists"), row["why"]
     assert "fresh" not in row["why"]
+
+
+# -- I.10 / I.11: review() runs them (P-euclid-review-I10-I11) -----------------
+
+# The Lean-cited steps of the engine replays (trace prop10.json/prop11.json:
+# steps whose lean.line is non-null). I.10: 7 of 17 (the rest are
+# engine-only: by_contra splits, auxiliary lines, pasch_4, ...). I.11: 8 of
+# 11 (engine-only: the three between_symm_parts, which Lean gets by SMT).
+I10_LEAN_STEPS = [rv.eng.PROP10_STEPS_DATA[i - 1]
+                  for i in (1, 2, 3, 4, 6, 14, 17)]
+I11_LEAN_STEPS = [rv.eng.PROP11_STEPS_DATA[i - 1]
+                  for i in (3, 5, 6, 7, 8, 9, 10, 11)]
+
+# Small budgets on purpose: the distance BFS cannot find these proofs (most
+# cited rules have no candidate enumerator), so every distance must read
+# None/"unknown" after a couple of seconds, not after minutes.
+I10_I11_BUDGET = dict(max_depth=2, node_budget=300, time_budget=2.0)
+
+
+def test_i10_full_engine_replay_all_valid():
+    """(a) review() of the full I.10 engine replay: every step valid (the
+    by_contra tactics included), goal_held True, in well under 2 minutes."""
+    import time
+    t0 = time.perf_counter()
+    rep = rv.review("I.10", rv.eng.PROP10_STEPS_DATA, **I10_I11_BUDGET)
+    wall = time.perf_counter() - t0
+    assert wall < 120, f"I.10 review took {wall:.1f}s"
+    assert rep["invalid_steps"] == 0
+    assert rep["undecided_steps"] == 0
+    assert rep["engine_errors"] == 0
+    assert rep["blocked_steps"] == 0
+    for r in rep["steps"]:
+        assert r["valid"] is True, r
+    assert rep["goal_held"] is True
+    assert rep["remaining_distance"] == 0
+
+
+def test_i11_full_engine_replay_all_valid():
+    """(a) review() of the full I.11 engine replay: every step valid,
+    goal_held True, in well under 2 minutes."""
+    import time
+    t0 = time.perf_counter()
+    rep = rv.review("I.11", rv.eng.PROP11_STEPS_DATA, **I10_I11_BUDGET)
+    wall = time.perf_counter() - t0
+    assert wall < 120, f"I.11 review took {wall:.1f}s"
+    assert rep["invalid_steps"] == 0
+    assert rep["undecided_steps"] == 0
+    assert rep["engine_errors"] == 0
+    assert rep["blocked_steps"] == 0
+    for r in rep["steps"]:
+        assert r["valid"] is True, r
+    assert rep["goal_held"] is True
+    assert rep["remaining_distance"] == 0
+
+
+def test_i10_lean_cited_steps_pinned_wrong_verdict():
+    """(b) CHARACTERIZATION of a verdict that is WRONG: the I.10 Lean proof
+    is certified by Lean, but review marks step 6 invalid because the
+    engine cannot derive intersects_ll CD AB without the engine-only
+    steps (opposing_sides from the by_contra at replay step 12) that the
+    Lean proof gets by SMT. The next packet fixes this (the "valid, needs
+    SMT" class); until then this pins today's behaviour."""
+    rep = rv.review("I.10", I10_LEAN_STEPS, **I10_I11_BUDGET)
+    assert rep["goal_held"] is False
+    assert rep["invalid_steps"] == 2
+    bad = _row(rep, 6)
+    assert bad["rule"].startswith("intersection_lines")
+    assert bad["valid"] is False and bad["progress"] == "invalid"
+    assert bad["why"] == "missing premise: ('intersects_ll', 'CD', 'AB')", \
+        bad["why"]
+    # the steps before it (the Lean-visible prefix) are all valid
+    for i in (1, 2, 3, 4, 5):
+        assert _row(rep, i)["valid"] is True, (i, _row(rep, i))
+
+
+def test_i11_lean_cited_steps_pinned_wrong_verdict():
+    """(b) CHARACTERIZATION of a verdict that is WRONG: the I.11 Lean proof
+    is certified by Lean, but review marks the very first step invalid:
+    Lean gets w != u from between u w v by SMT (between_symm_parts is one
+    of the engine-only steps the Lean proof never cites), so the engine
+    asks for ('dpl', 'w', 'u', 'AB'). The next packet fixes this; until
+    then this pins today's behaviour."""
+    rep = rv.review("I.11", I11_LEAN_STEPS, **I10_I11_BUDGET)
+    assert rep["goal_held"] is False
+    bad = _row(rep, 1)
+    assert bad["rule"].startswith("point_between_points_shorter_than")
+    assert bad["valid"] is False and bad["progress"] == "invalid"
+    assert bad["why"] == "missing premise: ('dpl', 'w', 'u', 'AB')", \
+        bad["why"]
+
+
+def test_i12_still_keyerror():
+    """(c) I.12 has no prop_searches entry yet: review raises KeyError,
+    not a silently empty report."""
+    import pytest
+    with pytest.raises(KeyError):
+        rv.review("I.12", [])

@@ -58,10 +58,17 @@ def initial_state(prop):
 class Distance:
     """d(state) with a per-review cache keyed by the search dedup key."""
 
-    def __init__(self, prop, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
+    def __init__(self, prop, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
+                 time_budget=None):
         kw = srch.prop_searches()[prop]
         self.rules, self.goal = kw["rules"], kw["goal"]
         self.max_depth, self.node_budget = max_depth, node_budget
+        # wall-clock cap per distance call (P-euclid-review-I10-I11): on
+        # large states (the I.10/I.11 replays) even a small node budget
+        # costs minutes, because each node applies every legal move with
+        # full closure. A cut-off returns None = "unknown", never a
+        # fabricated distance.
+        self.time_budget = time_budget
         self._cache = {}
         self._tainted = set()
         self.errors = []  # (rule, args, repr(exc)) of moves that CRASHED:
@@ -91,17 +98,28 @@ class Distance:
         consistency gate as srch.search); depth of the first goal state."""
         if self.goal(state):
             return 0
+        import time as _time
+        t0 = _time.perf_counter()
         seen = {srch.state_key(state)}
         queue = [(state, 0)]
         nodes = 0
         while queue:
             if nodes >= self.node_budget:
                 return None
+            if self.time_budget and _time.perf_counter() - t0 > \
+                    self.time_budget:
+                return None
             s, depth = queue.pop(0)
             nodes += 1
             if depth >= self.max_depth:
                 continue
             for rname, args in srch.legal_moves(s, self.rules):
+                if self.time_budget and _time.perf_counter() - t0 > \
+                        self.time_budget:
+                    # a single node's expansion can itself take minutes on
+                    # a large state (every legal move is applied with full
+                    # closure): cut mid-expansion too. None = unknown.
+                    return None
                 s2 = srch.clone_state(s)
                 try:
                     eng.apply_step(s2, 1, rname, args, {})
@@ -143,7 +161,8 @@ def _missing_why(premise):
     return f"missing premise: {premise}"
 
 
-def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
+def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET,
+           time_budget=None):
     """Review `steps` = [(rule, args, bindings?), ...] against proposition
     `prop` (a key of srch.prop_searches()). Returns a report dict.
 
@@ -162,7 +181,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         "invalid"."""
     kw = srch.prop_searches()[prop]
     goal = kw["goal"]
-    dist = Distance(prop, max_depth, node_budget)
+    dist = Distance(prop, max_depth, node_budget, time_budget)
     state = initial_state(prop)
     d_before = dist(state)
     rows = []
@@ -172,11 +191,11 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     n_blocked = 0
     unapplied = []  # steps the ENGINE could not apply (error/undecided)
 
-    def blocked_row(i, rule, args, reason):
+    def blocked_row(i, fmt, reason):
         # review fix (claude-9): once the engine failed to apply an earlier
         # step, the state is not the student's; a later "missing" object or
         # premise may be one that step would have supplied. Not a verdict.
-        return {"step": i, "rule": _fmt_step(rule, args), "valid": None,
+        return {"step": i, "rule": fmt, "valid": None,
                 "why": (f"{reason}; may depend on step(s) {unapplied}, "
                         "which the engine could not apply"),
                 "progress": "blocked", "d_before": None, "d_after": None,
@@ -185,18 +204,28 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     for i, step in enumerate(steps, start=1):
         rule, args = step[0], step[1]
         bindings = step[2] if len(step) > 2 else {}
-        pts, lns, crs = srch.object_kinds(state)
-        unknown = [x for x in args if x not in pts | lns | crs]
+        if rule == "by_contra":
+            # by_contra is a tactic, not a CONSTRUCTIONS rule: the engine
+            # driver run_steps special-cases it, and review must too (the
+            # I.10 replay cites it). Its "args" are branch (facts, steps)
+            # pairs, not object names, so the unknown-object check below
+            # does not apply.
+            unknown = []
+            fmt = (f"by_contra ({len(step[1])} branch(es) "
+                   f"-> {list(step[2]) if len(step) > 2 else []})")
+        else:
+            pts, lns, crs = srch.object_kinds(state)
+            unknown = [x for x in args if x not in pts | lns | crs]
+            fmt = _fmt_step(rule, args)
         if unknown and unapplied:
             n_blocked += 1
-            rows.append(blocked_row(i, rule, args,
-                                    f"uses {', '.join(unknown)}"))
+            rows.append(blocked_row(i, fmt, f"uses {', '.join(unknown)}"))
             continue
         if unknown:  # review fix (claude-9): say the object does not exist,
             # rather than reporting a missing premise that mentions it
             n_invalid += 1
             rows.append({
-                "step": i, "rule": _fmt_step(rule, args),
+                "step": i, "rule": fmt,
                 "valid": False,
                 "why": f"uses {', '.join(unknown)} before it exists",
                 "progress": "invalid",
@@ -207,16 +236,37 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
             continue
         trial = srch.clone_state(state)
         try:
-            eng.apply_step(trial, i, rule, args, bindings)
+            if rule == "by_contra":
+                eng._by_contra(trial, i, step)
+            else:
+                eng.apply_step(trial, i, rule, args, bindings)
+        except eng.ByContraFailure as e:
+            # a by_contra whose branch fails to contradict IS a verdict:
+            # the case split does not close. Same shape as MissingPremise.
+            why = f"by_contra failed: {e}"
+            if unapplied:
+                n_blocked += 1
+                rows.append(blocked_row(i, fmt, why))
+                continue
+            n_invalid += 1
+            rows.append({
+                "step": i, "rule": fmt,
+                "valid": False, "why": why,
+                "progress": "invalid",
+                "d_before": None, "d_after": None,
+                "state_note": ("step not applied; later steps are reviewed "
+                               "against the state without it"),
+            })
+            continue
         except eng.MissingPremise as e:
             why = _missing_why(e.premise)
             if unapplied:
                 n_blocked += 1
-                rows.append(blocked_row(i, rule, args, why))
+                rows.append(blocked_row(i, fmt, why))
                 continue
             n_invalid += 1
             rows.append({
-                "step": i, "rule": _fmt_step(rule, args),
+                "step": i, "rule": fmt,
                 "valid": False, "why": why,
                 "progress": "invalid",
                 "d_before": None, "d_after": None,
@@ -228,7 +278,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
             n_undecided += 1
             unapplied.append(i)
             rows.append({
-                "step": i, "rule": _fmt_step(rule, args),
+                "step": i, "rule": fmt,
                 "valid": None,
                 "why": f"engine could not decide: {type(e).__name__}: {e}",
                 "progress": "undecided",
@@ -242,7 +292,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
             n_engine_errors += 1
             unapplied.append(i)
             rows.append({
-                "step": i, "rule": _fmt_step(rule, args),
+                "step": i, "rule": fmt,
                 "valid": None,
                 "why": (f"engine error: {type(e).__name__}: {e} — "
                         + traceback.format_exc().strip().splitlines()[-1]),
@@ -265,7 +315,7 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
         else:
             label = "no-progress"
         rows.append({
-            "step": i, "rule": _fmt_step(rule, args),
+            "step": i, "rule": fmt,
             "valid": True, "why": "apply_step succeeded",
             "progress": label,
             "d_before": d_before, "d_after": d_after,

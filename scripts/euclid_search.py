@@ -323,6 +323,22 @@ CANDIDATES = {
     "sum_angles_onlyif": _c_sum_ang,
 }
 
+# Rules the I.10/I.11 replays cite that have no candidate enumerator yet
+# (P-euclid-review-I10-I11): they are citable in a reviewed step (apply_step
+# checks premises), but the BFS does not generate them as moves, so a
+# distance for I.10/I.11 reads None ("unknown") rather than a number.
+# Writing real enumerators is future work; by_contra is a proof tactic
+# (the engine driver special-cases it), never a search move.
+def _c_none(s):
+    return ()
+    yield  # pragma: no cover - marks this a generator
+
+
+for _r in ("proposition_9'", "proposition_7", "intersection_lines_opposing",
+           "intersection_lines", "pasch_4", "angle_pair_on_line",
+           "between_symm_parts", "proposition_8", "perpendicular_if"):
+    CANDIDATES.setdefault(_r, _c_none)
+
 AXIOM_MOVES = ["line_from_points", "circle_from_points",
                "intersection_circles",
                "intersection_circle_line_extending_points",
@@ -398,6 +414,22 @@ def goal_prop5(s, a="a", b="b", c="c", d="d", e="e"):
     exterior-angle equality: ang a:b:c = ang a:c:b, ang c:b:d = ang b:c:e."""
     return (eng.la_entails_eq_ang(s.la, a, b, c, a, c, b)
             and eng.la_entails_eq_ang(s.la, c, b, d, b, c, e))
+
+
+def goal_prop10(s, a="a", b="b", d="d"):
+    """I.10 (Book/Prop10.lean): d bisects ab — between a d b holds and
+    |a-d| = |d-b| is entailed (the queries the engine's main() replays)."""
+    return (s.has(("between", a, d, b))
+            and eng.la_entails_eq(s.la, a, d, d, b))
+
+
+def goal_prop11(s, u="u", v="v", w="w", f="f", AB="AB"):
+    """I.11 (Book/Prop11.lean): f off AB and the angle at w is a right
+    angle (engine names u v w = Lean a b c), the queries the engine's
+    main() replays."""
+    return (s.has(("not_on_line", f, AB))
+            and s.la.entails(
+                eng.lin((eng.ang_atom(u, w, f), 1), (eng.RT, -1)), 0, "="))
 
 
 # --- the search ----------------------------------------------------------------
@@ -547,11 +579,43 @@ def prop_searches():
                                          "sum_angles_onlyif"],
                     goal=goal_prop5,
                     max_depth=8, node_budget=100000, time_budget=120.0),
+        # I.10/I.11 (P-euclid-review-I10-I11): entries exist so
+        # euclid_review.review("I.10"/"I.11", steps) works — hypotheses and
+        # goal test mirror the engine's main() replay queries. The rules
+        # are AXIOM_MOVES plus every rule the replays cite; most cited
+        # rules have no candidate enumerator (see _c_none), and by_contra
+        # is a tactic, not a move — so the distance BFS cannot find these
+        # proofs and reports "unknown". Budgets are tiny on purpose: a
+        # review must take seconds, not minutes. euclid_search.main()
+        # SKIPS these two entries (see below).
+        "I.10": dict(hyps=list(eng.PROP10_HYPS_DATA),
+                     rules=AXIOM_MOVES + ["proposition_1", "proposition_9'",
+                                          "proposition_4", "proposition_7",
+                                          "intersection_lines_opposing",
+                                          "intersection_lines", "pasch_4",
+                                          "angle_pair_on_line"],
+                     goal=goal_prop10,
+                     max_depth=2, node_budget=300, time_budget=5.0),
+        "I.11": dict(hyps=list(eng.PROP11_HYPS_DATA),
+                     rules=AXIOM_MOVES + ["between_symm_parts",
+                                          "point_between_points_shorter_than",
+                                          "proposition_3", "proposition_1",
+                                          "proposition_8",
+                                          "perpendicular_if"],
+                     goal=goal_prop11,
+                     max_depth=2, node_budget=300, time_budget=5.0),
     }
 
 
 def main():
     for name, kw in prop_searches().items():
+        if name in ("I.10", "I.11"):
+            # review-only entries (P-euclid-review-I10-I11): the Book proofs
+            # are 17/11 steps, beyond any search depth here, and most cited
+            # rules have no candidate enumerator — skipped, not kept cheap.
+            print(f"--- {name}: skipped (review-only entry; the distance "
+                  f"BFS cannot find these proofs)")
+            continue
         found, path, st = search(**kw)
         print(f"--- {name}: {'FOUND' if found else 'not found'}")
         print(f"    depth={len(path) if found else '-'} nodes={st['nodes']} "
