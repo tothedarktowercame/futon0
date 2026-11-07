@@ -388,6 +388,32 @@ PROP17_ENGINE_CITABLE = [
     "extend_point", "between_symm", "proposition_16", "proposition_13",
 ]
 
+# Book/Prop18.lean:7-9 verbatim: the greater side subtends the greater
+# angle.
+PROP18_STATEMENT = """\
+theorem proposition_18 : ∀ (a b c : Point) (AB BC AC : Line),
+  formTriangle a b c AB BC AC ∧ (|(a─c)| > |(a─b)|) →
+  (∠ a:b:c > ∠ b:c:a) :="""
+
+# The engine's own I.18 steps (euclid_engine.PROP18_STEPS_DATA, read live):
+# flat — proposition_3 a c a b AC AB as d (d on AC, between a d c,
+# |a-d| = |a-b|); line_from_points b d as BD; proposition_16 b c d a
+# BC AC BD; proposition_5' a b d AB BD AC — exactly Book/Prop18.lean:12-15's
+# lines — then sum_angles_onlyif b a c d AB BC, NOT Lean's cited
+# sum_angles_if (Transfer.lean:83): sum_angles_if consumes the angle-sum
+# row and produces same-side facts; the engine must DERIVE the sum row
+# ∠b:a:c = ∠b:a:d + ∠d:a:c (i.e. ∠a:b:c = ∠a:b:d + ∠d:b:c) that
+# euclid_finish's arithmetic needs, which is the converse axiom
+# sum_angles_onlyif (Transfer.lean:90). Its premises are the on_line/ne/
+# neq_line facts of the configuration plus the two same-side facts
+# (b.sameSide d BC, c.sameSide d AB), which euclid_apply's SMT must
+# discharge from between a d c; if it cannot, the certify test reports it
+# (no silent extra steps). No witness, no bridges, no euclid_assert.
+PROP18_ENGINE_CITABLE = [
+    "proposition_3", "line_from_points", "proposition_16", "proposition_5'",
+    "sum_angles_onlyif",
+]
+
 
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
@@ -483,6 +509,19 @@ PROPS = {
                         statement=PROP17_STATEMENT, book_steps=None,
                         witness=None, engine="I.17",
                         engine_citable=PROP17_ENGINE_CITABLE),
+    # The ENGINE's own I.18 steps (euclid_engine.PROP18_STEPS_DATA, read
+    # live): flat — proposition_3 as d, line_from_points as BD,
+    # proposition_16, proposition_5' in exactly Book/Prop18.lean:12-15's
+    # argument orders, then sum_angles_onlyif (NOT sum_angles_if — the
+    # engine derives the angle-sum row Lean's SMT discharges inside
+    # sum_angles_if's premise); euclid_finish closes ∠a:b:c > ∠b:c:a.
+    # Statement and imports verbatim from Book/Prop18.lean:1-9. No
+    # witness, no bridges. See the comment above PROP18_ENGINE_CITABLE.
+    "I.18-engine": dict(imports=["SystemE", "Book.Prop03", "Book.Prop05",
+                                 "Book.Prop16"],
+                        statement=PROP18_STATEMENT, book_steps=None,
+                        witness=None, engine="I.18",
+                        engine_citable=PROP18_ENGINE_CITABLE),
 }
 
 
@@ -653,6 +692,8 @@ def engine_steps(prop):
         return translate_engine_steps(eng.PROP16B_STEPS_DATA)
     if prop == "I.17" and hasattr(eng, "PROP17_STEPS_DATA"):
         return translate_engine_steps(eng.PROP17_STEPS_DATA)
+    if prop == "I.18" and hasattr(eng, "PROP18_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP18_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
 
 

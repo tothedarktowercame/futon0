@@ -892,3 +892,102 @@ def test_negative_engine_i17_dropped_proposition_13():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.18-engine (E-kimi-task-403) ------------------------------------------
+
+def test_emit_engine_i18_emission_pinned():
+    # Flat proof: proposition_3 as d, line_from_points as BD,
+    # proposition_16 and proposition_5' in exactly Lean's argument orders
+    # (Book/Prop18.lean:12-15), then sum_angles_onlyif (NOT the sum_angles_if
+    # that Book/Prop18.lean:16 cites — the engine must DERIVE the angle-sum
+    # row that sum_angles_if takes as a premise; see PROP18_ENGINE_CITABLE);
+    # euclid_finish's LA closes ∠a:b:c > ∠b:c:a.
+    steps = cert.engine_steps("I.18")
+    src = cert.emit_proof("I.18-engine", steps, None)
+    assert "theorem proposition_18 :" in src
+    assert "formTriangle a b c AB BC AC ∧ (|(a─c)| > |(a─b)|) →\n" in src
+    assert "(∠ a:b:c > ∠ b:c:a) :=\n" in src
+    assert "  euclid_apply (proposition_3 a c a b AC AB) as d\n" in src
+    assert "  euclid_apply (line_from_points b d) as BD\n" in src
+    assert "  euclid_apply (proposition_16 b c d a BC AC BD)\n" in src
+    assert "  euclid_apply (proposition_5' a b d AB BD AC)\n" in src
+    assert "  euclid_apply (sum_angles_onlyif b a c d AB BC)\n" in src
+    assert "sum_angles_if" not in src  # the engine derives the sum row
+    assert "import Book.Prop03\n" in src
+    assert "import Book.Prop05\n" in src
+    assert "import Book.Prop16\n" in src
+    assert "euclid_assert" not in src  # no derived facts needed asserting
+    assert src.count("euclid_finish") == 1
+    # sha of the emitted source == sha of the file actually written
+    # (/home/joe/code/LeanEuclid/tmp-certify/test_engine_I18.lean).
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "47a3159937066ea3"
+
+
+def test_engine_i18_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP18_STEPS_DATA and show emission follows
+    eng = cert._engine()
+    data = [("proposition_16", tuple("AB" if a == "BC" else a for a in args),
+             b) if r == "proposition_16" else (r, args, b)
+            for (r, args, b) in eng.PROP18_STEPS_DATA]
+    monkeypatch.setattr(eng, "PROP18_STEPS_DATA", data)
+    src = cert.emit_proof("I.18-engine", cert.engine_steps("I.18"), None)
+    assert "(proposition_16 b c d a AB AC BD)" in src
+    assert "(proposition_16 b c d a BC AC BD)" not in src
+    # untouched steps unchanged
+    assert "(proposition_5' a b d AB BD AC)" in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i18_certifies():
+    # the ENGINE's own PROP18_STEPS_DATA certified against LeanEuclid
+    r = cert.check_lean(
+        cert.emit_proof("I.18-engine", cert.engine_steps("I.18"), None),
+        "test_engine_I18")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i18_false_angle_assert():
+    # A false euclid_assert right after the proposition_5' step:
+    # ∠ a:b:d < ∠ a:d:b contradicts proposition_5''s conclusion
+    # (∠a:b:d = ∠a:d:b). Must NOT certify, and no lean process may survive.
+    src = cert.emit_proof("I.18-engine", cert.engine_steps("I.18"), None)
+    bad = src.replace(
+        "  euclid_apply (sum_angles_onlyif b a c d AB BC)\n",
+        "  euclid_assert ∠ a:b:d < ∠ a:d:b\n"
+        "  euclid_apply (sum_angles_onlyif b a c d AB BC)\n")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I18_assert", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f",
+                               "test_neg_I18_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i18_dropped_proposition_16():
+    # Drop the proposition_16 citation: without the exterior-angle row
+    # (∠b:d:a > ∠d:c:b) euclid_finish's LA cannot turn ∠a:b:d = ∠a:d:b
+    # plus the angle-split row into ∠a:b:c > ∠b:c:a. Must NOT certify, and
+    # no lean process may survive.
+    src = cert.emit_proof("I.18-engine", cert.engine_steps("I.18"), None)
+    bad = src.replace("  euclid_apply (proposition_16 b c d a BC AC BD)\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I18_drop16", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run([("pgrep"), "-f", "test_neg_I18_drop16.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
