@@ -432,3 +432,74 @@ def test_negative_prop5_swapped_sas_times_out_and_leaves_no_lean():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.13-engine (E-kimi-task-381) ------------------------------------------
+
+def test_emit_engine_i13_emission_pinned():
+    # The engine's nested by_cases tree emits as nested Lean by_cases blocks:
+    # outer split on the angle equality, inner on a.sameSide c BE; the mirror
+    # branch's case assumption is a CHECKED euclid_assert; the derived
+    # opposing_same_side_trans emits as an assert of the fact its consumer
+    # (triple_incidence_2) needs; every branch ends with euclid_finish.
+    src = cert.emit_proof13()
+    assert "  by_cases ∠ c:b:a = ∠ a:b:d\n" in src
+    assert "    by_cases a.sameSide c BE\n" in src
+    assert "  . euclid_apply (perpendicular_if c d b a CD)\n" in src
+    assert "euclid_apply (proposition_11' d c b a CD) as e\n" in src
+    assert "euclid_apply (pasch_3 d b c BE)\n" in src
+    assert "euclid_assert ¬(d.sameSide a BE)\n" in src
+    assert "    . euclid_assert a.sameSide d BE\n" in src
+    assert "euclid_apply (pasch_3 c b d BE)\n" in src
+    assert "euclid_assert ¬(c.sameSide a BE)\n" in src
+    assert src.count("euclid_finish") == 3  # one per leaf branch
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "52be0771bab15180"
+
+
+def test_engine_i13_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP13_STEPS_DATA and show the emission follows
+    eng = cert._engine()
+    data = eng.PROP13_STEPS_DATA
+    _, branches, conclusions = data[0]
+    facts, steps = branches[0]
+    mutated = (facts, [("perpendicular_if", ("c", "d", "b", "a", "AB"), b)
+                       if r_ == "perpendicular_if" else (r_, a, b)
+                       for (r_, a, b) in steps])
+    monkeypatch.setattr(eng, "PROP13_STEPS_DATA",
+                        [("by_cases", [mutated] + branches[1:], conclusions)])
+    src = cert.emit_proof13()
+    assert "(perpendicular_if c d b a AB)" in src
+    assert "(perpendicular_if c d b a CD)" not in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i13_certifies():
+    # the ENGINE's own PROP13_STEPS_DATA (nested by_cases) certified against
+    # LeanEuclid
+    r = cert.check_lean(cert.emit_proof13(), "test_engine_I13")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i13_false_case_fact():
+    # The packet's first bad-case suggestion (drop branch-1 perpendicular_if)
+    # still certifies: euclid_finish closes that branch alone, as in
+    # Book/Prop13.lean:12. So: assert a FALSE case fact — the mirror branch
+    # claims a.sameSide c BE, contradicting the by_cases negative-branch
+    # hypothesis. Must NOT certify (the SMT solver answers unknown ->
+    # timeout), and no lean process may survive.
+    src = cert.emit_proof13()
+    bad = src.replace("euclid_assert a.sameSide d BE",
+                      "euclid_assert a.sameSide c BE")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I13_casefact", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f", "test_neg_I13_casefact.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])

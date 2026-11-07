@@ -224,6 +224,48 @@ PROP5_BOOK_STEPS = [
 # two (Point) args (SystemE Theory/Constructions/Points.lean:28).
 SEGMENT_TAIL_RULES = {"point_between_points_shorter_than"}
 
+# Book/Prop13.lean verbatim: angles on a straight line sum to two rights.
+PROP13_STATEMENT = """\
+theorem proposition_13 : ∀ (a b c d : Point) (AB CD : Line),
+  AB ≠ CD ∧ distinctPointsOnLine a b AB ∧ distinctPointsOnLine c d CD ∧ between d b c →
+  ∠ c:b:a + ∠ a:b:d = ∟ + ∟ :="""
+
+# The engine's own I.13 steps (euclid_engine.PROP13_STEPS_DATA, read live):
+# a NESTED by_cases tree — Lean's outer split on ∠c:b:a = ∠a:b:d, then (in
+# the ≠ branch) proposition_11' + line_from_points and an engine-only inner
+# split on a's side of BE. Emitted as nested `by_cases <prop>` blocks (see
+# emit_proof13). Engine-only rules:
+#   pasch_3_opposing (d b c BE) -> euclid_apply (pasch_3 d b c BE): the
+#     SystemE axiom itself (Diagrammatic.lean:163), conclusion
+#     ¬(d.sameSide c BE). ENGINE_RULE_TO_LEAN.
+#   opposing_same_side_trans (d c a BE) is DERIVED (from same_side_trans,
+#     Diagrammatic.lean:127 area), not a SystemE name, so it emits as
+#     `euclid_assert ¬(d.sameSide a BE)` — the conclusion its consumer
+#     (triple_incidence_2's ¬(b.sameSide d M) premise) needs; SMT proves it
+#     from pasch_3's ¬(d.sameSide c BE) and the branch's a.sameSide c BE.
+#     BRIDGE_ASSERTS. Chosen over euclid_apply of same_side_trans because no
+#     single SystemE axiom has this conclusion shape.
+#   between_symm_parts -> euclid_apply of between_symm (as in I.11); the
+#     mirror branch's engine order (between_symm c b d first) still
+#     certifies: euclid_apply's premise discharge derives between c b d
+#     from the hypothesis between d b c itself.
+# The mirror branch's case assumption (same_side a d BE) is not free in
+# Lean: the inner by_cases negative branch gives only ¬(a.sameSide c BE),
+# so it is emitted as a CHECKED `euclid_assert a.sameSide d BE` (trichotomy
+# is SMT-proved from the context).
+# Every branch ends with euclid_finish (LA closes ∠cba + ∠abd = 2∟ from the
+# sum_angles_onlyif rows and the right angle); a branch whose last step is a
+# nested by_cases needs no finish of its own (the inner branches close it).
+# NOTE: branch 1's perpendicular_if is NOT load-bearing for Lean —
+# euclid_finish closes that branch alone (Book/Prop13.lean:12 does exactly
+# that) — so "drop perpendicular_if" is not a viable bad case; the negative
+# test asserts a false case fact instead.
+PROP13_ENGINE_CITABLE = [
+    "perpendicular_if", "proposition_11'", "line_from_points",
+    "between_symm", "pasch_3", "triple_incidence_2", "sum_angles_onlyif",
+    "perpendicular_onlyif",
+]
+
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
                 book_steps=PROP1_BOOK_STEPS, witness="c"),
@@ -265,6 +307,15 @@ PROPS = {
                         statement=PROP12_STATEMENT, book_steps=None,
                         witness="h", engine="I.12",
                         engine_citable=PROP12_ENGINE_CITABLE),
+    # The ENGINE's own I.13 steps (euclid_engine.PROP13_STEPS_DATA, read
+    # live): a nested by_cases tree, emitted by emit_proof13 (emitter=
+    # "by_cases"); no existential witness, statement/imports as
+    # Book/Prop13.lean. See the comment above PROP13_ENGINE_CITABLE.
+    "I.13-engine": dict(imports=["SystemE", "Book.Prop11"],
+                        statement=PROP13_STATEMENT, book_steps=None,
+                        witness=None, engine="I.13",
+                        engine_citable=PROP13_ENGINE_CITABLE,
+                        emitter="by_cases"),
 }
 
 
@@ -309,6 +360,11 @@ def _step_lines(rule, args, bindings, term):
 BRIDGE_ASSERTS = {
     "assert_point_eq_on_ray": lambda args: f"{args[0]} = {args[1]}",
     "assert_point_eq_angle": lambda args: f"{args[0]} = {args[1]}",
+    # I.13: opposing_same_side_trans is a DERIVED engine rule (from
+    # same_side_trans, Diagrammatic.lean:127 area), not a SystemE name.
+    # Emitted as a CHECKED euclid_assert of the conclusion its consumer
+    # (triple_incidence_2) needs; see the comment above PROP13_ENGINE_CITABLE.
+    "opposing_same_side_trans": lambda args: f"¬({args[0]}.sameSide {args[2]} {args[3]})",
 }
 
 # Engine binding names that differ from the Book's, renamed at emit time only
@@ -319,7 +375,11 @@ BINDING_RENAMES = {"AC'": "DC'"}
 # Engine rule names that are not SystemE names but cite part of one axiom:
 # emitted as an euclid_apply of that axiom (the extra conclusions land in
 # context harmlessly). See the I.11 comment block above PROP11_ENGINE_CITABLE.
-ENGINE_RULE_TO_LEAN = {"between_symm_parts": "between_symm"}
+ENGINE_RULE_TO_LEAN = {"between_symm_parts": "between_symm",
+                       # I.13: pasch_3_opposing IS pasch_3
+                       # (Diagrammatic.lean:163); the "opposing" in the
+                       # engine name refers to the ¬sameSide conclusion.
+                       "pasch_3_opposing": "pasch_3"}
 
 # h-sm (SMT-sourced) engine input facts, rendered as a CHECKED euclid_assert
 # proposition text. Generalised only as far as I.11 needs (one fact shape).
@@ -414,6 +474,98 @@ def engine_steps(prop):
     if prop == "I.12" and hasattr(eng, "PROP12_STEPS_DATA"):
         return translate_engine_steps(eng.PROP12_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
+
+
+# ---------------------------------------------------------------------------
+# I.13-engine: nested by_cases emission (E-kimi-task-381)
+# ---------------------------------------------------------------------------
+
+# Engine by_cases branch-assumption fact -> the Lean proposition text of the
+# split (branch 1's assumption; later branches get theirs as CHECKED
+# euclid_asserts). Grown as by_cases props grow.
+CASE_FACT_LEAN = {
+    "eq_ang": lambda a: f"∠ {a[0]}:{a[1]}:{a[2]} = ∠ {a[3]}:{a[4]}:{a[5]}",
+    "same_side": lambda a: f"{a[0]}.sameSide {a[1]} {a[2]}",
+}
+
+
+def _case_fact_text(fact, term):
+    return CASE_FACT_LEAN[fact[0]](tuple(term(x) for x in fact[1:]))
+
+
+def engine_steps13():
+    """The engine's PROP13_STEPS_DATA as a translated by_cases tree:
+    ("by_cases", [(assumption-facts, steps)], conclusions) with flat steps
+    translated and nested by_cases recursed. Read live from euclid_engine."""
+    eng = _engine()
+
+    def conv(steps):
+        out = []
+        for s in steps:
+            if s[0] == "by_cases":
+                _, branches, conclusions = s
+                out.append(("by_cases",
+                            [(list(facts), conv(bsteps))
+                             for facts, bsteps in branches],
+                            conclusions))
+            else:
+                out.extend(translate_engine_steps([s]))
+        return out
+
+    return conv(eng.PROP13_STEPS_DATA)
+
+
+def _emit_block(steps, depth):
+    """Emit (possibly nested) translated steps at the given indent depth.
+
+    A ("by_cases", branches, _) step emits `by_cases <prop>` where prop is
+    branch 1's assumption (in context in branch 1); each later branch's
+    assumptions emit as CHECKED euclid_asserts. Each branch ends with
+    euclid_finish unless its last step is itself a by_cases (whose inner
+    branches close the goal).
+    """
+    pad = "  " * depth
+    lines = []
+    for s in steps:
+        if s[0] != "by_cases":
+            lines.extend(f"{pad}{l.strip()}"
+                         for l in _step_lines(s[0], s[1], s[2], lean))
+            continue
+        _, branches, _ = s
+        if not branches or len(branches[0][0]) != 1:
+            raise ValueError("by_cases branch 1 must carry exactly one "
+                             "assumption fact (the split proposition)")
+        lines.append(f"{pad}by_cases {_case_fact_text(branches[0][0][0], lean)}")
+        for i, (facts, bsteps) in enumerate(branches):
+            blines = []
+            if i > 0:
+                # The negative branch of Lean's by_cases supplies only the
+                # negation of the split proposition; the engine's branch
+                # assumption is therefore asserted (SMT-CHECKED).
+                blines.extend(f"euclid_assert {_case_fact_text(f, lean)}"
+                              for f in facts)
+            blines.extend(_emit_block(bsteps, 0))
+            if not (bsteps and bsteps[-1][0] == "by_cases"):
+                blines.append("euclid_finish")
+            lines.append(f"{pad}. {blines[0]}")
+            lines.extend(f"{pad}  {l}" for l in blines[1:])
+    return lines
+
+
+def emit_proof13():
+    """The full Lean source for I.13-engine (nested by_cases emitter)."""
+    cfg = PROPS["I.13-engine"]
+    lines = [f"import {imp}" for imp in cfg["imports"]]
+    lines.append("")
+    lines.append("namespace Elements.Book1")
+    lines.append("")
+    lines.append(cfg["statement"])
+    lines.append("by")
+    lines.append("  euclid_intros")
+    lines.extend(_emit_block(engine_steps13(), 1))
+    lines.append("")
+    lines.append("end Elements.Book1")
+    return "\n".join(lines) + "\n"
 
 
 def emit_step(rule, args, bindings):
@@ -516,13 +668,15 @@ def check_lean(source, name, timeout=600):
 def certify_book():
     results = {}
     for prop, cfg in PROPS.items():
-        if cfg.get("engine"):
-            steps = engine_steps(cfg["engine"])
+        if cfg.get("emitter") == "by_cases":
+            src = emit_proof13()
+        elif cfg.get("engine"):
+            src = emit_proof(prop, engine_steps(cfg["engine"]), cfg["witness"],
+                             finish=cfg.get("finish", "euclid_finish"))
         else:
-            steps = cfg["book_steps"]
-        r = check_lean(emit_proof(prop, steps, cfg["witness"],
-                                  finish=cfg.get("finish", "euclid_finish")),
-                       f"book_{prop.replace('.', '').replace('-', '_')}")
+            src = emit_proof(prop, cfg["book_steps"], cfg["witness"],
+                             finish=cfg.get("finish", "euclid_finish"))
+        r = check_lean(src, f"book_{prop.replace('.', '').replace('-', '_')}")
         results[prop] = r
         _report(f"book {prop}", r)
     return results
