@@ -1,6 +1,6 @@
 # Excursion: E-euclid-tutor
 
-**Status:** OPEN — design note, nothing built beyond the LeanEuclid install.
+**Status:** OPEN — proof-game prototype built overnight 2026-11-07 (see Checkpoint 1).
 **Date:** 2026-11-07
 **Owner:** claude-9 with Joe
 **Relates to:** `holes/missions/M-futonzero-prelim-practice.md` (the prelim tutor; its lessons live in
@@ -147,3 +147,23 @@ this design does not require.
   `holes/labs/tutor/`.
 - Euclid → the 17-gon: the course's later part needs field-theory moves (Gauss periods, quadratic
   towers). Out of scope until Book I works.
+
+## Checkpoints
+
+### Checkpoint 1 — 2026-11-07 (overnight; claude-9 reviewing, zai-2/zai-9/zai-11 writing)
+**What was done:**
+- `scripts/euclid_step_motifs.py`: def-use step-motif mine of the 557 Book steps (c396606, review fixes 7734881).
+- `scripts/euclid_engine.py`: fast System E engine (diagram facts, exact linear arithmetic by Fourier–Motzkin,
+  forward closure, constructions); replays I.1–I.5 without SMT, I.5 in 1.1 s (0b63539, 26c1759; review fixes
+  c610627, 2745a36). Rules marked `[SMT-bridge]` stand in for what Lean gets from SMT; two were unsound
+  (x = y with missing premises) and were found only by counterexample. Inventory: `system-e-inventory.md`.
+- `scripts/euclid_search.py`: uninformed BFS. Finds I.1 (10 nodes) and I.3 (484 nodes, 14 s) with the Book's
+  constructions; I.2 not found in 600 s (282e6d2).
+- `scripts/euclid_certify.py`: emits LeanEuclid source from a step sequence and checks it with Lean; any error,
+  nonzero exit or `sorry` warning is a failure. Book I.1–I.3 and found I.1, I.3 certify in about 1 s each (c13b7c9).
+- Viewer: `E-euclid-tutor-data/viewer/` (JSXGraph), hover links drawn objects and Lean lines both ways (84a7e85).
+  An isolated code-server with Joyride for driving it runs on loopback :8099 (no public route yet).
+**Test state:** at 2745a36, engine/search tests 19 passed; certify 11 passed (zai-2's run); 0 failures.
+**In flight:** contradiction detection plus I.6/I.7 (zai-11); prior-guided search on I.2 (zai-9);
+engine review of student attempts (zai-2).
+**Next:** I.8–I.10; clones as weakened engines; held-out prior test once more propositions replay.
