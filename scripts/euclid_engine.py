@@ -96,8 +96,11 @@ class LinearArithmetic:
             return self.entails({k: -v for k, v in coeffs.items()}, -const,
                                 "<" if op == ">" else "<=")
         for neg in negs:
-            if _fm_sat(self.rows + [_row_of(*neg)]):
-                return False
+            try:
+                if _fm_sat(self.rows + [_row_of(*neg)]):
+                    return False
+            except FMTooLarge:
+                return False  # undecided: do not claim entailment
         return True
 
     def size(self):
@@ -115,6 +118,10 @@ def _check_const(c, op):
     if op == "<=":
         return c <= 0
     return c < 0
+
+
+class FMTooLarge(Exception):
+    """Fourier-Motzkin elimination grew past its row limit: undecided."""
 
 
 def _fm_sat(rows):
@@ -181,8 +188,12 @@ def _fm_sat(rows):
                 strict = op1 == "<" or op2 == "<"
                 new.append(_row_of(co, -(c1 / a1 + c2 / a2),
                                    "<" if strict else "<="))
-        if len(new) > 400:  # safety valve; I.1-I.3 never approaches this
-            return True
+        if len(new) > 400:
+            # Too large to decide. Raising (rather than answering "sat")
+            # keeps every caller honest: entailment treats it as "not
+            # entailed", and a consistency check must treat it as "cannot
+            # certify" (review, claude-9).
+            raise FMTooLarge(len(new))
         rows = new
 
 
@@ -440,11 +451,14 @@ def r_pos_neq(s):
 
 
 def r_dpl_parts(s):
-    # Relations.lean:6 (definition) — dpl p q L gives on_line p L, on_line q L.
+    # Relations.lean:6 (definition) — dpl p q L is on_line p L ∧ on_line q L
+    # ∧ p ≠ q; all three parts are yielded (the p ≠ q part was missing).
     for fact in s.facts:
         if fact[0] == "dpl":
             yield ("on_line", fact[1], fact[3]), [fact]
             yield ("on_line", fact[2], fact[3]), [fact]
+            yield ("neq", fact[1], fact[2]), [fact]
+            yield ("neq", fact[2], fact[1]), [fact]
 
 
 def r_between_symm(s):
@@ -897,8 +911,10 @@ CONSTRUCTIONS = {
     "assert_point_eq_on_ray": {
         "cite": "euclid_assert [SMT-bridge]",
         "args": ("x", "y", "z", "L"),
+        # z must be ON L: with z off L, two points of L symmetric about the
+        # foot of z are equidistant from z and distinct (review, claude-9).
         "premises": lambda s, x, y, z, L: [
-            ("on_line", x, L), ("on_line", y, L),
+            ("on_line", x, L), ("on_line", y, L), ("on_line", z, L),
             ("not_between", x, z, y)],
         "entail": lambda s, x, y, z, L: [("eq_len", (z, x, z, y))],
         "make": lambda s, x, y, z, L: [(None, [("peq", x, y)])],
@@ -908,7 +924,13 @@ CONSTRUCTIONS = {
     "assert_point_eq_angle": {
         "cite": "euclid_assert [SMT-bridge]",
         "args": ("x", "y", "w", "z", "L"),
-        "premises": lambda s, x, y, w, z, L: [("same_side", x, y, L)],
+        # The angle's arm z-w must lie on L and z != w, x, y: otherwise
+        # "same side of L" says nothing about the side of ray z-w, and the
+        # reflections of x across line zw are a counterexample (review,
+        # claude-9).
+        "premises": lambda s, x, y, w, z, L: [
+            ("same_side", x, y, L), ("on_line", z, L), ("on_line", w, L),
+            ("neq", z, w), ("neq", z, x), ("neq", z, y)],
         "entail": lambda s, x, y, w, z, L: [
             ("eq_ang", (w, z, x, w, z, y)),
             ("eq_len", (z, x, z, y))],

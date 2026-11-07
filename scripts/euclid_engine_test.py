@@ -410,3 +410,39 @@ def test_control_prop5_angle_sum_needs_side_fact():
         for i, (r, a, b) in enumerate(PROP5_STEPS_DATA, 1):
             eng.apply_step(s, i, r, a, b)
     assert ei.value.premise == ("not_on_line", "c", "GB")
+
+
+def _bridge_state(facts, rows):
+    s = eng.State()
+    for f in facts:
+        s.assume(f, "h")
+    for co, c, op in rows:
+        s.la.add(co, c, op)
+    eng.close(s)
+    return s
+
+
+def test_point_eq_on_ray_needs_z_on_the_line():
+    """Review (claude-9) of 26c1759: with z OFF line L, two points of L
+    symmetric about the foot of z are equidistant from z and distinct. The
+    rule must not conclude x = y."""
+    s = _bridge_state(
+        [("on_line", "x", "L"), ("on_line", "y", "L"), ("not_on_line", "z", "L"),
+         ("neq", "x", "y"), ("not_between", "x", "z", "y")],
+        [({eng.len_atom("z", "x"): 1, eng.len_atom("z", "y"): -1}, 0, "=")])
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "assert_point_eq_on_ray", ("x", "y", "z", "L"), {})
+    assert "('on_line', 'z', 'L')" in str(ei.value)
+
+
+def test_point_eq_angle_needs_the_arm_on_the_line():
+    """Review (claude-9) of 26c1759: equal angle w:z:x = w:z:y and equal
+    distance from z give x = y only when x, y are on the same side of the
+    line through z and w. Same side of an unrelated line L is not enough
+    (reflect x across line zw)."""
+    s = _bridge_state(
+        [("same_side", "x", "y", "L"), ("neq", "x", "y")],
+        [({eng.ang_atom("w", "z", "x"): 1, eng.ang_atom("w", "z", "y"): -1}, 0, "="),
+         ({eng.len_atom("z", "x"): 1, eng.len_atom("z", "y"): -1}, 0, "=")])
+    with pytest.raises(eng.MissingPremise):
+        eng.apply_step(s, 1, "assert_point_eq_angle", ("x", "y", "w", "z", "L"), {})

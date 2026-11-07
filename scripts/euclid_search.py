@@ -344,11 +344,14 @@ def _stats(nodes, branch, wall):
 
 def store_consistent(la):
     """True iff the constraint store is satisfiable (direct FM check on the
-    rows; note _fm_sat's >400-row safety valve answers 'sat', so on huge
-    stores this can under-report inconsistency). An unsat store entails
+    rows; an undecided store (FMTooLarge) counts as NOT consistent, so a
+    goal is never certified on a store the arithmetic could not check). An unsat store entails
     everything, so goal tests must refuse to certify such states (the engine
     itself does not check this; the search layer does)."""
-    return eng._fm_sat(list(la.rows))
+    try:
+        return eng._fm_sat(list(la.rows))
+    except eng.FMTooLarge:
+        return False  # undecided: refuse to certify (review, claude-9)
 
 
 def verify_path(hyps, path, goal, extra_la=None):
