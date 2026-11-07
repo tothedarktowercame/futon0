@@ -425,3 +425,14 @@ def test_case_with_extra_assumption_does_not_cover():
     assert r["moves"][i]["ok"] is False
     assert r["moves"][i]["error"] == "missing case"
     assert r["goal_reached"] is False
+
+
+def test_palette_7():
+    """With CONSTRUCTIONS[\"proposition_6\"] (E-kimi-task-420), the I.7
+    student palette includes the I.6 lemma; later propositions stay out."""
+    pal = ep.palette(7)
+    assert "proposition_6" in pal
+    assert "proposition_5" in pal
+    assert "proposition_7" not in pal
+    assert "proposition_10" not in pal
+    assert "line_from_points" in pal

@@ -3745,3 +3745,34 @@ def test_prop7_derived_side_facts_not_entailed_without_derivation():
     kind, payload = ei.value.witness
     assert kind == "stuck"
     assert payload == ("same_side", "c", "a", "DB")
+
+
+def test_proposition_6_rule_fires():
+    """proposition_6 as a cited lemma (Book/Prop06.lean:7-9): on I.6's
+    hypotheses it concludes |a-b| = |a-c| (the _eq_len metric tuple)."""
+    s = eng.State()
+    for f, w in eng.PROP6_HYPS_DATA:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    eng.apply_step(s, 1, "proposition_6", ("a", "b", "c", "AB", "BC", "AC"),
+                   {})
+    eng.close(s)
+    assert eng.la_entails_eq(s.la, "a", "b", "a", "c")
+
+
+def test_proposition_6_rule_needs_equal_base_angles():
+    """proposition_6 without the equal-base-angles hypothesis STUCKs:
+    the eq_ang entailment premise is not derivable (the bad case the
+    rule is named for — I.6 is exactly 'equal base angles ⇒ equal
+    sides')."""
+    hyps = [h for h in eng.PROP6_HYPS_DATA
+            if h[0] != ("eq_ang", "a", "b", "c", "a", "c", "b")]
+    s = eng.State()
+    for f, w in hyps:
+        eng._assume_metric_or_fact(s, f, w)
+    eng.close(s)
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.apply_step(s, 1, "proposition_6",
+                       ("a", "b", "c", "AB", "BC", "AC"), {})
+    assert ei.value.rule == "proposition_6"
+    assert "eq_ang" in str(ei.value.premise)

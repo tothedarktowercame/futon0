@@ -1623,6 +1623,31 @@ CONSTRUCTIONS = {
         "make": lambda s, a, b, c, AB, BC, AC: [
             (None, [("_eq_ang", a, b, c, a, c, b)])],
     },
+    # Book/Prop06.lean:7-9 — proposition_6 verbatim:
+    #   ∀ (a b c : Point) (AB BC AC : Line),
+    #   formTriangle a b c AB BC AC ∧ (∠ a:b:c = ∠ a:c:b) →
+    #   |(a─b)| = |(a─c)|
+    # Cited as a lemma (the engine's own I.6 replay, PROP6_STEPS_DATA,
+    # is the proof — by_contra on |ab| ≠ |ac|, proposition_3 cut +
+    # proposition_4 SAS in each trichotomy branch). formTriangle
+    # destructured as at proposition_25 (I.6's own hypothesis list,
+    # PROP6_HYPS_DATA, uses dpl a b AB for the first line); the equal
+    # base angles are an entailment premise (a metric query, as at
+    # proposition_24/25). The conclusion is the metric tuple _eq_len.
+    "proposition_6": {
+        "cite": "Book/Prop06.lean:7-9 (proposition_6)",
+        "args": ("a", "b", "c", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, AB, BC, AC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB)],
+        "entail": lambda s, a, b, c, AB, BC, AC: [
+            ("eq_ang", (a, b, c, a, c, b))],
+        "make": lambda s, a, b, c, AB, BC, AC: [
+            (None, [("_eq_len", a, b, a, c)])],
+    },
     # Book/Prop07.lean:5 — the triangle inequality on a point (SSS falsifies
     # a second triangle on the same base side). Conclusion False, so cited as
     # a rule it ends whatever branch applies it (contradictory() reports the
