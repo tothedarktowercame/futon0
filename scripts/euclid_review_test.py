@@ -56,8 +56,8 @@ def test_fixture_c_diagram_trusting_step_invalid():
     bad = _row(rep, 2)
     assert bad["rule"].startswith("intersection_circles")
     assert bad["valid"] is False
-    # the missing premise is named: intersects_cc BCD ACE (no second circle)
-    assert "('intersects_cc', 'BCD', 'ACE')" in bad["why"]
+    # review fix (claude-9): ACE does not exist yet, and the reason says so
+    assert bad["why"] == "uses ACE before it exists"
     assert bad["progress"] == "invalid"
     assert "without it" in bad["state_note"]
     # later steps are still reviewed against the state WITHOUT the bad step
@@ -75,7 +75,36 @@ def test_fixture_d_i3_prop2_omitted_first_invalid_identified():
     first = _row(rep, 1)
     assert first["rule"].startswith("circle_from_points")
     assert first["valid"] is False
-    # the point d was never constructed: neq a d is not derivable
-    assert "('neq', 'a', 'd')" in first["why"]
+    # the point d was never constructed
+    assert first["why"] == "uses d before it exists"
     assert rep["goal_held"] is False
     assert rep["remaining_distance"] == 3  # untouched root state
+
+
+def test_object_used_before_it_exists():
+    """Review fix (claude-9): a step naming a circle nobody constructed is
+    reported as using it before it exists, not as a missing premise."""
+    rep = rv.review("I.1", [
+        ("circle_from_points", ("a", "b"), {"C": "BCD"}),
+        ("intersection_circles", ("BCD", "ZZZ"), {"c": "c"}),
+    ])
+    bad = _row(rep, 2)
+    assert bad["valid"] is False
+    assert bad["why"] == "uses ZZZ before it exists"
+    assert _row(rep, 1)["valid"] is True
+
+
+def test_diagram_trusting_intersection_of_existing_circles():
+    """Review addition (claude-9): both circles exist and meet in a typical
+    picture of I.2 (centre b through c; centre a through b), but whether they
+    meet depends on the lengths, so the engine must refuse the intersection
+    and name intersects_cc."""
+    rep = rv.review("I.2", [
+        ("circle_from_points", ("b", "c"), {"C": "CGH"}),
+        ("circle_from_points", ("a", "b"), {"C": "ABX"}),
+        ("intersection_circles", ("CGH", "ABX"), {"c": "p"}),
+    ], max_depth=1, node_budget=200)
+    assert _row(rep, 1)["valid"] and _row(rep, 2)["valid"]
+    bad = _row(rep, 3)
+    assert bad["valid"] is False
+    assert "intersects_cc" in bad["why"], bad["why"]

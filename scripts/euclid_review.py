@@ -120,6 +120,21 @@ def review(prop, steps, max_depth=MAX_DEPTH, node_budget=NODE_BUDGET):
     for i, step in enumerate(steps, start=1):
         rule, args = step[0], step[1]
         bindings = step[2] if len(step) > 2 else {}
+        pts, lns, crs = srch.object_kinds(state)
+        unknown = [x for x in args if x not in pts | lns | crs]
+        if unknown:  # review fix (claude-9): say the object does not exist,
+            # rather than reporting a missing premise that mentions it
+            n_invalid += 1
+            rows.append({
+                "step": i, "rule": _fmt_step(rule, args),
+                "valid": False,
+                "why": f"uses {', '.join(unknown)} before it exists",
+                "progress": "invalid",
+                "d_before": None, "d_after": None,
+                "state_note": ("step not applied; later steps are reviewed "
+                               "against the state without it"),
+            })
+            continue
         trial = srch.clone_state(state)
         try:
             eng.apply_step(trial, i, rule, args, bindings)
