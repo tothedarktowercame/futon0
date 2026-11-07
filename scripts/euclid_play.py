@@ -196,6 +196,24 @@ def _block_to_engine(mv):
     return (mv["rule"], branches, concl)
 
 
+def _empty_block(mv):
+    """The first case move (at any depth, closed or open) with no
+    branches, else None. The engine leaves exhaustiveness of a case
+    split to the caller; with zero branches nothing is checked at all
+    and the block would assert its conclusion outright (review,
+    claude-9: an empty by_contra 'proved' I.21's between b d e)."""
+    if mv.get("rule") not in CASE_RULES:
+        return None
+    if not mv.get("branches"):
+        return mv
+    for b in mv["branches"]:
+        for m in b.get("moves") or []:
+            hit = _empty_block(m)
+            if hit is not None:
+                return hit
+    return None
+
+
 def _close_branch(n, s, rule, hyps, steps, concl, i):
     """Check one CLOSED branch on a copy of s, as eng._by_contra /
     eng._by_cases do: assume the hypotheses, run the steps, then require
@@ -287,7 +305,11 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1):
                  "error": None}
         m = _PROP_RE.match(rule)
         if rule in CASE_RULES:
-            if mv.get("open"):
+            empty = _empty_block(mv)
+            if empty is not None and not (empty is mv and mv.get("open")):
+                entry["error"] = ("a %s needs at least one case"
+                                  % empty["rule"])
+            elif mv.get("open"):
                 ok, err, breps, view = _open_block(n, s, mv, objects, xy,
                                                    pal, i)
                 entry.update(ok=ok, error=err, open=True, branches=breps)

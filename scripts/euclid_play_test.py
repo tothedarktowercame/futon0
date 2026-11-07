@@ -3,6 +3,7 @@
 Run from scripts/: ~/code/futon6/.venv/bin/python -m pytest -q euclid_play_test.py
 """
 
+import copy
 import json
 import os
 import signal
@@ -264,3 +265,25 @@ def test_http_round_trip():
         proc.kill()
         proc.wait()
         assert _server_pid(PORT) is None, "server on %d not killed" % PORT
+
+
+def test_case_block_with_no_cases_is_refused():
+    # Review (claude-9): the engine leaves exhaustiveness of a split to the
+    # caller, so a by_contra with ZERO branches checked nothing and asserted
+    # its conclusion outright: I.21 reached Solved with its by_contra
+    # emptied. play() refuses an empty block, also nested inside a branch.
+    moves = [_engine_step_to_move(st) for st in tr.hyps_and_steps(21)[1]]
+    i = next(k for k, m in enumerate(moves) if m["rule"] == "by_contra")
+    empty = copy.deepcopy(moves)
+    empty[i]["branches"] = []
+    r = ep.play(21, empty)
+    assert r["moves"][i]["ok"] is False
+    assert "needs at least one case" in r["moves"][i]["error"]
+    assert r["goal_reached"] is False
+    nested = copy.deepcopy(moves)
+    nested[i]["branches"][0]["moves"].append(
+        {"rule": "by_cases", "branches": [], "conclusion": [["false"]],
+         "open": False})
+    r = ep.play(21, nested)
+    assert r["moves"][i]["ok"] is False
+    assert r["goal_reached"] is False
