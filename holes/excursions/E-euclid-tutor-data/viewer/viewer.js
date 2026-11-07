@@ -19,6 +19,32 @@ let els = {};             // lean line number -> <tr>
 
 const HI = "#ff9500";
 
+// Fit the board to the figure: bounding box over ALL placed points in the
+// trace (every step, not just the visible ones), 15% margin on the larger
+// side, expanded to the board's pixel aspect so the scale is 1:1 and
+// circles stay round. Falls back to the old fixed box if nothing is placed.
+function fitBBox() {
+  const pts = Object.values(trace ? trace.placement : {})
+    .filter(p => Array.isArray(p));
+  if (!pts.length) return [-2.5, 3.5, 7, -3];
+  let xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs);
+  let y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const m = 0.15 * Math.max(x1 - x0, y1 - y0);
+  x0 -= m; x1 += m; y0 -= m; y1 += m;
+  const box = document.getElementById("jxgbox");
+  const aspect = box.clientWidth / Math.max(1, box.clientHeight);
+  const bw = x1 - x0, bh = y1 - y0;
+  if (bw < bh * aspect) {
+    const c = (x0 + x1) / 2, half = bh * aspect / 2;
+    x0 = c - half; x1 = c + half;
+  } else {
+    const c = (y0 + y1) / 2, half = bw / aspect / 2;
+    y0 = c - half; y1 = c + half;
+  }
+  return [x0, y1, x1, y0];
+}
+
 document.getElementById("prop-select").onchange = () => {
   location.search = "?prop=" + document.getElementById("prop-select").value;
 };
@@ -85,9 +111,10 @@ function draw() {
   // re-measure explicitly before anything is drawn
   const box = document.getElementById("jxgbox");
   board.resizeContainer(box.clientWidth, box.clientHeight);
-  board.setBoundingBox([-2.5, 3.5, 7, -3], true);
+  board.setBoundingBox(fitBBox(), true);
   built = {};
   extras = [];
+  window.__BOARD = board;  // for the headless self-check only
   const showAux = document.getElementById("toggle-aux").checked;
   for (const o of trace.objects) {
     if (o.def_step > cur) continue;

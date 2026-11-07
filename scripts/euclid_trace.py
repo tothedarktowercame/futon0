@@ -211,12 +211,14 @@ FREE = {
     4: {"a": (0.0, 0.0), "b": (2.0, 0.0), "c": (0.6, 1.2),
         "d": (3.4, 0.2)},
     # I.5: isosceles (|ab| = |ac|), d and e produced past b and c by the
-    # same factor 1.4 so |bd| = |ce|.
+    # same factor 2.0 so |bd| = |ce| — long enough that f (half of |ce|
+    # past b) separates from both b and d on the fitted board (review,
+    # claude-9: f sat almost on b and d was at the board edge).
     5: {"a": (0.0, 1.2), "b": (-0.7, 0.0), "c": (0.7, 0.0)},
 }
 
 PROP4_ROT = math.radians(25.0)
-PROP5_EXTEND = 1.4
+PROP5_EXTEND = 2.0
 
 
 def hyps_and_steps(prop):
@@ -421,7 +423,7 @@ dragging)" % (a, b)
         (L, b, c, u, v), name = args, bindings["a"]
         bound = _norm(_sub(xy[v], xy[u]))
         seg = _sub(xy[c], xy[b])
-        assert bound < 2 * _norm(seg), "sample needs |uv|/2 < |bc|"
+        assert bound / 2 < _norm(seg), "sample needs |uv|/2 < |bc|"
         xy[name] = _add(xy[b], _mul(_unit(seg), bound / 2))
         objects.append({"name": name, "kind": "point",
                         "jsx": {"type": "point"}, "def_step": None})
