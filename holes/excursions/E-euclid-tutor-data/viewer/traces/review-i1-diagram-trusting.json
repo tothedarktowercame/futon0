@@ -79,6 +79,24 @@
    "state_note": null,
    "badge": "valid-progress",
    "drawn": true,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.3149171270718232,
+     "no-circle_from_points": 0.03314917127071824,
+     "no-intersection_circles": 0.22099447513812154,
+     "depth-1": 0.22099447513812154,
+     "trusting": 0.20994475138121543
+    },
+    "probabilities": {
+     "full-engine": 0.475,
+     "no-circle_from_points": 0.05,
+     "no-intersection_circles": 0.3333333333333333,
+     "depth-1": 0.3333333333333333,
+     "trusting": 0.31666666666666665
+    },
+    "below_threshold": [],
+    "all_below_threshold": false
+   },
    "placement_decision": "circle with centre a through b (JSXGraph keeps it under dragging)"
   },
   {
@@ -92,6 +110,24 @@
    "state_note": "step not applied; later steps are reviewed against the state without it",
    "badge": "invalid",
    "drawn": false,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.23750000000000007,
+     "no-circle_from_points": 0.0375,
+     "no-intersection_circles": 0.125,
+     "depth-1": 0.125,
+     "trusting": 0.47499999999999987
+    },
+    "probabilities": {
+     "full-engine": 0.016666666666666666,
+     "no-circle_from_points": 0.025,
+     "no-intersection_circles": 0.0125,
+     "depth-1": 0.0125,
+     "trusting": 0.05
+    },
+    "below_threshold": [],
+    "all_below_threshold": false
+   },
    "placement_decision": "step not applied \u2014 nothing drawn for it"
   },
   {
@@ -105,6 +141,26 @@
    "state_note": null,
    "badge": "valid-progress",
    "drawn": true,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.5614307931570764,
+     "no-circle_from_points": 0.0023328149300155506,
+     "no-intersection_circles": 0.07776049766718503,
+     "depth-1": 0.07776049766718503,
+     "trusting": 0.280715396578538
+    },
+    "probabilities": {
+     "full-engine": 0.95,
+     "no-circle_from_points": 0.025,
+     "no-intersection_circles": 0.25,
+     "depth-1": 0.25,
+     "trusting": 0.2375
+    },
+    "below_threshold": [
+     "no-circle_from_points"
+    ],
+    "all_below_threshold": false
+   },
    "placement_decision": "circle with centre b through a (JSXGraph keeps it under dragging)"
   },
   {
@@ -118,6 +174,27 @@
    "state_note": null,
    "badge": "valid-progress",
    "drawn": true,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.8146967702342893,
+     "no-circle_from_points": 0.0033851666353225283,
+     "no-intersection_circles": 0.0011877777667798348,
+     "depth-1": 0.11283888784408429,
+     "trusting": 0.06789139751952401
+    },
+    "probabilities": {
+     "full-engine": 0.95,
+     "no-circle_from_points": 0.95,
+     "no-intersection_circles": 0.01,
+     "depth-1": 0.95,
+     "trusting": 0.15833333333333333
+    },
+    "below_threshold": [
+     "no-circle_from_points",
+     "no-intersection_circles"
+    ],
+    "all_below_threshold": false
+   },
    "placement_decision": "no distinguishing fact recorded (arbitrary pick; both candidates satisfy every fact of the step)"
   }
  ],

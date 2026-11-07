@@ -69,6 +69,71 @@ def test_bad_case_invalid_fixture_marks_invalid_and_draws_nothing():
     assert trace["summary"]["steps_drawn"] == 3
 
 
+# -- envelope posterior (viewer review mode, packet P-euclid-viewer-envelope) -
+
+def test_envelope_posteriors_sum_to_one():
+    """(a) per step the posteriors sum to 1 (1e-9), unless every clone's
+    likelihood was zero — in which case they are all zero (the row's
+    posterior says so, and all_below_threshold records the event)."""
+    for name in ex.rv.FIXTURES:
+        trace, _ = _export(name)
+        for row in trace["steps"]:
+            e = row["envelope"]
+            assert set(e["posterior"]) == set(e["probabilities"]), row
+            total = sum(e["posterior"].values())
+            all_zero = all(p == 0.0 for p in e["probabilities"].values())
+            if all_zero:
+                assert all(v == 0.0 for v in e["posterior"].values())
+            else:
+                assert abs(total - 1.0) < 1e-9, (name, row["n"], total)
+
+
+def test_invalid_step_raises_trusting_lowers_full_engine():
+    """(b) in i1-diagram-trusting the INVALID step 2 (uses ACE before it
+    exists) raises the trusting clone's posterior and lowers the full
+    engine's. Measured numbers, not adjusted: 0.2099 -> 0.475 (trusting),
+    0.3149 -> 0.2375 (full-engine)."""
+    trace, _ = _export("i1-diagram-trusting")
+    before, after = trace["steps"][0]["envelope"], \
+        trace["steps"][1]["envelope"]
+    assert after["posterior"]["trusting"] > before["posterior"]["trusting"]
+    assert after["posterior"]["full-engine"] < \
+        before["posterior"]["full-engine"]
+
+
+def test_book_i1_full_engine_ends_highest():
+    """(c) in book-i1 the full engine ends with the highest posterior."""
+    trace, _ = _export("book-i1")
+    last = trace["steps"][-1]["envelope"]["posterior"]
+    assert last["full-engine"] == max(last.values()), last
+
+
+def test_exported_envelope_equals_fresh_replay():
+    """(d) no copy drift: replaying a fresh envelope over the review's own
+    state sequence (observe before any advance; note_step only for the
+    steps review applied) reproduces the stored dicts exactly."""
+    name = "i1-diagram-trusting"  # has both an applied and an invalid step
+    trace, rep = _export(name)
+    prop = ex.rv.FIXTURE_PROP[name]
+    steps = ex.rv.FIXTURES[name]()
+    env = ex.make_envelope(prop)
+    tc = env.clones[-1]
+    state = ex.rv.initial_state(prop)
+    for step, row, out in zip(steps, rep["steps"], trace["steps"]):
+        ev = env.observe(prop, state, step)
+        assert out["envelope"]["posterior"] == ev["posterior"], row["step"]
+        assert out["envelope"]["probabilities"] == ev["probabilities"]
+        assert out["envelope"]["below_threshold"] == ev["below_threshold"]
+        assert out["envelope"]["all_below_threshold"] == \
+            ev["all_below_threshold"]
+        if row["valid"] is True:
+            tc.note_step(prop, state, step)
+            trial = ex.rv.srch.clone_state(state)
+            ex.rv.eng.apply_step(trial, row["step"], step[0], step[1],
+                                 step[2])
+            state = trial
+
+
 def test_badge_classes():
     assert ex.badge_of({"valid": True, "progress": "progress"}) == \
         "valid-progress"

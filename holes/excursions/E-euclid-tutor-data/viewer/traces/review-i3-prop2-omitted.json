@@ -75,6 +75,24 @@
    "state_note": "step not applied; later steps are reviewed against the state without it",
    "badge": "invalid",
    "drawn": false,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.03843689942344651,
+     "no-circle_from_points": 0.04228058936579116,
+     "no-intersection_circles": 0.03843689942344651,
+     "depth-1": 0.03523382447149263,
+     "trusting": 0.8456117873158232
+    },
+    "probabilities": {
+     "full-engine": 0.002272727272727273,
+     "no-circle_from_points": 0.0025,
+     "no-intersection_circles": 0.002272727272727273,
+     "depth-1": 0.0020833333333333333,
+     "trusting": 0.05
+    },
+    "below_threshold": [],
+    "all_below_threshold": false
+   },
    "placement_decision": "step not applied \u2014 nothing drawn for it"
   },
   {
@@ -88,6 +106,29 @@
    "state_note": "step not applied; later steps are reviewed against the state without it",
    "badge": "invalid",
    "drawn": false,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.002048969226189698,
+     "no-circle_from_points": 0.0024792527636895343,
+     "no-intersection_circles": 0.002048969226189698,
+     "depth-1": 0.0017217033081177312,
+     "trusting": 0.9917011054758134
+    },
+    "probabilities": {
+     "full-engine": 0.002272727272727273,
+     "no-circle_from_points": 0.0025,
+     "no-intersection_circles": 0.002272727272727273,
+     "depth-1": 0.0020833333333333333,
+     "trusting": 0.05
+    },
+    "below_threshold": [
+     "depth-1",
+     "full-engine",
+     "no-circle_from_points",
+     "no-intersection_circles"
+    ],
+    "all_below_threshold": false
+   },
    "placement_decision": "step not applied \u2014 nothing drawn for it"
   }
  ],

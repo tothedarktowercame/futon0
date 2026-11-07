@@ -33,6 +33,8 @@ def _load(name, filename):
 
 rv = _load("euclid_review_export_review", "euclid_review.py")
 et = _load("euclid_review_export_trace", "euclid_trace.py")
+ec = _load("euclid_review_export_clones", "euclid_clones.py")
+cdg = _load("euclid_review_export_clone_diagram", "euclid_clone_diagram.py")
 
 ROOT = os.path.dirname(_SCRIPTS)
 OUT_DIR = os.path.join(ROOT, "holes", "excursions", "E-euclid-tutor-data",
@@ -55,6 +57,16 @@ def badge_of(row):
     return "unknown"  # valid but distances unknown
 
 
+def make_envelope(prop):
+    """standard_envelope() plus the TrustingClone for this proposition.
+    euclid_clones.py / euclid_clone_diagram.py are called, never edited."""
+    env = ec.standard_envelope()
+    tc = cdg.TrustingClone("trusting", prop)
+    env.clones.append(tc)
+    env.active.append(tc)
+    return env
+
+
 def export_fixture(name):
     """Review one fixture and build its viewer trace dict."""
     prop = rv.FIXTURE_PROP[name]
@@ -64,6 +76,7 @@ def export_fixture(name):
     # state sequence exactly as review() walked it: only valid=True steps
     # advance the state, so only those get a placement
     state = rv.initial_state(prop)
+    env = make_envelope(prop)
     p = int(prop.split(".")[1])  # euclid_trace keys placements by prop number
     objects = et.objects_from_hyps(p)
     xy = dict(et.FREE[p])
@@ -73,7 +86,20 @@ def export_fixture(name):
     for i, (step, row) in enumerate(zip(steps, rep["steps"]), start=1):
         bindings = step[2] if len(step) > 2 else {}
         drawn = False
+        # envelope: observe BEFORE any state/picture advance, at the state
+        # the review used for this step (same shape as euclid_clones_test:
+        # observe, then note_step, then advance). Exactly what observe()
+        # returned — no re-computation, no rounding.
+        ev = env.observe(prop, state, step)
+        envelope = {
+            "posterior": ev["posterior"],
+            "probabilities": ev["probabilities"],
+            "below_threshold": ev["below_threshold"],
+            "all_below_threshold": ev["all_below_threshold"],
+        }
         if row["valid"] is True:
+            pre = state  # note_step applies the step itself; give it the
+            # state BEFORE the step, like the engine replay in euclid_clones
             trial = rv.srch.clone_state(state)
             step_rep = rv.eng.apply_step(trial, i, step[0], step[1],
                                          bindings)
@@ -86,6 +112,11 @@ def export_fixture(name):
             drawn = True
             n_drawn += 1
             placement_note = why
+            # the trusting clone's picture follows the applied steps only,
+            # like the review's state (an invalid step never happened)
+            tc = env.clones[-1]
+            if tc.name == "trusting":
+                tc.note_step(prop, pre, step)
         else:
             placement_note = "step not applied — nothing drawn for it"
         rows.append({
@@ -99,6 +130,7 @@ def export_fixture(name):
             "state_note": row.get("state_note"),
             "badge": badge_of(row),
             "drawn": drawn,
+            "envelope": envelope,
             "placement_decision": placement_note,
         })
 

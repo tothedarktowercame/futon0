@@ -360,6 +360,44 @@ function hoverObj(o, on) {
 
 function currentStep() { return trace.steps.find(s => s.n === cur) || null; }
 
+// ------------------------------------------------------------- envelope
+// Review mode only: what the tutor believes about the student after the
+// current step — one bar per clone (posterior), with the probability the
+// clone gave that step; clones below threshold greyed. Book mode: hidden.
+
+function renderEnvelope(step) {
+  const div = document.getElementById("envelope");
+  if (!trace || !trace.review) { div.style.display = "none"; return; }
+  div.style.display = "";
+  if (!step) {
+    div.innerHTML = "<b>clone envelope</b> — uniform prior, nothing " +
+      "observed yet (step ▶)";
+    return;
+  }
+  const e = step.envelope;
+  if (!e) { div.innerHTML = ""; return; }
+  const probs = e.probabilities || {};
+  const allZero = Object.values(probs).every(p => p === 0);
+  const max = Math.max(1e-9, ...Object.values(e.posterior));
+  let html = "<b>clone envelope</b> after step " + step.n +
+    (e.all_below_threshold
+      ? " — every clone below threshold; all kept" : "") +
+    (allZero ? " — all likelihoods zero (posteriors not updated)" : "") +
+    ":";
+  for (const [name, post] of Object.entries(e.posterior)) {
+    const below = (e.below_threshold || []).includes(name);
+    const p = probs[name];
+    html += "<div class='env-row" + (below ? " below" : "") + "'>" +
+      "<span class='env-name'>" + name + "</span>" +
+      "<span class='env-bar-track'><span class='env-bar' style='width:" +
+      (100 * post / max).toFixed(1) + "%'></span></span>" +
+      "<span class='env-val'>posterior " + post.toFixed(3) +
+      " · p(step) " + (p === undefined ? "?" : p.toFixed(3)) + "</span>" +
+      "</div>";
+  }
+  div.innerHTML = html;
+}
+
 function showInfo(step) {
   const info = document.getElementById("step-info");
   if (!step) {
@@ -417,6 +455,7 @@ function setStep(n) {
   window.__CUR = n;  // for the headless self-check
   document.getElementById("step-count").textContent =
     "step " + n + " / " + trace.steps.length;
+  renderEnvelope(currentStep());
   for (const s of trace.steps) {
     if (trace.review) {
       if (els[s.n]) {

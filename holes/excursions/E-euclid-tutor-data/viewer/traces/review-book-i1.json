@@ -79,6 +79,24 @@
    "state_note": null,
    "badge": "valid-progress",
    "drawn": true,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.3149171270718232,
+     "no-circle_from_points": 0.03314917127071824,
+     "no-intersection_circles": 0.22099447513812154,
+     "depth-1": 0.22099447513812154,
+     "trusting": 0.20994475138121543
+    },
+    "probabilities": {
+     "full-engine": 0.475,
+     "no-circle_from_points": 0.05,
+     "no-intersection_circles": 0.3333333333333333,
+     "depth-1": 0.3333333333333333,
+     "trusting": 0.31666666666666665
+    },
+    "below_threshold": [],
+    "all_below_threshold": false
+   },
    "placement_decision": "circle with centre a through b (JSXGraph keeps it under dragging)"
   },
   {
@@ -92,6 +110,26 @@
    "state_note": null,
    "badge": "valid-progress",
    "drawn": true,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.6498649864986499,
+     "no-circle_from_points": 0.0018001800180018005,
+     "no-intersection_circles": 0.12001200120012001,
+     "depth-1": 0.12001200120012001,
+     "trusting": 0.1083108310831083
+    },
+    "probabilities": {
+     "full-engine": 0.95,
+     "no-circle_from_points": 0.025,
+     "no-intersection_circles": 0.25,
+     "depth-1": 0.25,
+     "trusting": 0.2375
+    },
+    "below_threshold": [
+     "no-circle_from_points"
+    ],
+    "all_below_threshold": false
+   },
    "placement_decision": "circle with centre b through a (JSXGraph keeps it under dragging)"
   },
   {
@@ -105,6 +143,27 @@
    "state_note": null,
    "badge": "valid-progress",
    "drawn": true,
+   "envelope": {
+    "posterior": {
+     "full-engine": 0.8215819821858145,
+     "no-circle_from_points": 0.0022758503661656927,
+     "no-intersection_circles": 0.0015970879762566255,
+     "depth-1": 0.15172335774437942,
+     "trusting": 0.022821721727383743
+    },
+    "probabilities": {
+     "full-engine": 0.95,
+     "no-circle_from_points": 0.95,
+     "no-intersection_circles": 0.01,
+     "depth-1": 0.95,
+     "trusting": 0.15833333333333333
+    },
+    "below_threshold": [
+     "no-circle_from_points",
+     "no-intersection_circles"
+    ],
+    "all_below_threshold": false
+   },
    "placement_decision": "no distinguishing fact recorded (arbitrary pick; both candidates satisfy every fact of the step)"
   }
  ],
