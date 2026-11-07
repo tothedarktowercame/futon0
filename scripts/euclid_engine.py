@@ -1837,6 +1837,29 @@ CONSTRUCTIONS = {
             (None, [("_eq_ang", a, e, c, d, e, b),
                     ("_eq_ang", c, e, b, a, e, d)])],
     },
+    # Book/Prop16.lean:8 — proposition_16 verbatim (exterior angle):
+    #   ∀ (a b c d : Point) (AB BC AC : Line),
+    #   formTriangle a b c AB BC AC ∧ (between b c d) →
+    #   (∠ a:c:d > ∠ c:b:a) ∧ (∠ a:c:d > ∠ b:a:c)
+    # Cited as a lemma (the engine's own I.16a/I.16b replays are the
+    # proofs of the two conjuncts); formTriangle destructured exactly as
+    # at PROP6/PROP16B. Both strict inequalities are made as metric facts
+    # (gt_ang rows). No fresh objects, so a forward-style citation like
+    # proposition_15.
+    "proposition_16": {
+        "cite": "Book/Prop16.lean:8",
+        "args": ("a", "b", "c", "d", "AB", "BC", "AC"),
+        "premises": lambda s, a, b, c, d, AB, BC, AC: [
+            _dpl_either(s, a, b, AB),
+            ("on_line", b, BC), ("on_line", c, BC),
+            ("on_line", c, AC), ("on_line", a, AC),
+            ("neq", b, c), ("neq", a, c),
+            ("not_on_line", c, AB),
+            ("between", b, c, d)],
+        "make": lambda s, a, b, c, d, AB, BC, AC: [
+            (None, [("_gt_ang", a, c, d, c, b, a),
+                    ("_gt_ang", a, c, d, b, a, c)])],
+    },
     # SystemE/Theory/Inferences/Diagrammatic.lean:161 — pasch_3 verbatim:
     #   (between a b c) ∧ (b.onLine L) → ¬(a.sameSide c L)
     # Rendered as the POSITIVE fact opposing_sides a c L (same rendering as
@@ -2114,6 +2137,13 @@ def apply_step(s, i, rule, args, bindings):
                 s.add(("gt_len", *fact[1:]),
                       f"{rule} [{spec['cite']}]", prem_facts)
                 added.append(("gt_len", *fact[1:]))
+            elif fact[0] == "_gt_ang":
+                s.la.add(lin((ang_atom(fact[1], fact[2], fact[3]), 1),
+                             (ang_atom(fact[4], fact[5], fact[6]), -1)),
+                         0, ">")
+                s.add(("gt_ang", *fact[1:]),
+                      f"{rule} [{spec['cite']}]", prem_facts)
+                added.append(("gt_ang", *fact[1:]))
             elif fact[0] == "_sum_ang":
                 b, a0, c, d = fact[1:]
                 s.la.add(lin((ang_atom(b, a0, c), 1),
@@ -3207,6 +3237,104 @@ PROP16B_STEPS_DATA = [
 PROP16B_GOAL = [("_gt_ang", "a", "c", "d", "b", "a", "c")]
 
 
+# ---------------------------------------------------------------------------
+# Book I.16, FIRST conjunct, as data (Book/Prop16.lean:14-24 — the exterior
+# angle ∠a:c:d exceeds the interior opposite ∠c:b:a; the part Lean marks
+# "Omitted by Euclid")
+# ---------------------------------------------------------------------------
+# Same hypotheses as the second conjunct (formTriangle destructured +
+# between b c d): PROP16B_HYPS_DATA, reused.
+PROP16A_HYPS_DATA = PROP16B_HYPS_DATA
+# Lean's shape (Book/Prop16.lean:14-24, first bullet):
+#   proposition_10 b c BC as e        : between b e c, |b-e| = |e-c|
+#   line_from_points a e as AE
+#   extend_point_longer AE a e (a─e) as f' : f' on AE, between a e f',
+#       |e-f'| > |a-e|   (the segment (a─e) passed as its two endpoints,
+#       as at PROP16B)
+#   proposition_3 e f' a e AE AE as f : between e f f', |e-f| = |a-e|
+#       (argument order EXACTLY as Lean's, no remapping — as at PROP16B)
+#   line_from_points f c as FC
+#   proposition_15 b c a f e BC AE    : ∠b:e:a = ∠f:e:c (vertical angles;
+#       canonical atoms identify ∠f:e:c with ∠c:e:f)
+#   proposition_4 e b a e c f BC AB AE BC FC AE
+#       (SAS on triangles eba and ecf; argument order EXACTLY as Lean's.
+#       Entailment premises: |e-b| = |e-c| (proposition_10), |e-a| = |e-f|
+#       (proposition_3), ∠b:e:a = ∠c:e:f (proposition_15, via canonical
+#       atoms). Conclusion used: ∠e:b:a = ∠e:c:f.)
+#   extend_point AC a c as g          : g on AC, between a c g
+#   proposition_15 a g b d c AC BC    : ∠a:c:b = ∠d:c:g and
+#       ∠b:c:g = ∠a:c:d (vertical angles; the second is the one used)
+#   euclid_finish: ∠a:c:d = ∠b:c:g (vertical) = ∠b:c:f + ∠f:c:g
+#       (f inside ∠b:c:g, sum_angles_onlyif) > ∠b:c:f = ∠e:c:f (ray
+#       equality, between b e c reversed) = ∠e:b:a (proposition_4) =
+#       ∠c:b:a (ray equality, between b e c).
+# Engine-only steps: between_symm_parts citations supply the neqs the
+# closure does not derive from between (as at PROP13/14/15/16B):
+#   (b, e, c) → b ≠ e  (proposition_4's dpl e b BC)
+#   (c, e, b) → c ≠ e  (proposition_4's dpl e c BC; two_lines_meet_once
+#       putting e off AC — the pasch_2 seeds below need it)
+#   (a, e, f) → a ≠ f  (proposition_15's dpl a f AE; f off AC via
+#       two_lines_meet_once at a)
+#   (b, c, d) → b ≠ d  (the second proposition_15's dpl b d BC)
+#   (g, c, a) → g ≠ c  (sum_angles_onlyif's neq c g premise and angle_pos;
+#       between g c a is the closure reversal of extend_point's between
+#       a c g)
+# The remaining diagram facts are all CLOSURE, cited here with their rules:
+#   e on BC                       between_same_line_in (between b e c)
+#   a off BC, b off AC            two_lines_meet_once + line_neq chain
+#                                 (seed: c off AB hypothesis)
+#   between f' e a, between g c a, between c e b
+#                                 between_symm (reversals)
+#   between a f f', between a e f between_trans_in / between_order
+#                                 (|a-f| = |a-e|+|e-f| with |e-f| = |a-e|
+#                                 in the LA store; same shape as PROP16B)
+#   e off AC, g off BC, f off BC, f off AC
+#                                 two_lines_meet_once at c / at e / at a
+#   e~b AC, e~f AC                pasch_2 (between c e b with c on AC;
+#                                 between a e f with a on AC; e off AC)
+#   b~f AC                        same_side_trans — the seed sum_angles_
+#                                 onlyif needs on the AC side (b and f
+#                                 are on the SAME side of AC here; the
+#                                 I.16b configuration had them opposing)
+#   g~f BC                        CITED steps: pasch_3_opposing twice
+#                                 (between a c g / between a e f, middles
+#                                 c, e on BC → a opposing g BC, a opposing
+#                                 f BC), then opposing_opposing_same_side
+#                                 g a f BC — the I.14 pattern, as at
+#                                 PROP16B.
+#   ∠f:c:g > 0                    angle_pos (f off AC, c ≠ g, c ≠ f)
+#   ∠c:b:a = ∠e:b:a               angle_ray_eq (between b e c, vertex b)
+#   ∠e:c:f = ∠b:c:f               angle_ray_eq (between c e b, vertex c)
+# The final cited step sum_angles_onlyif c b g f BC AC (Transfer.lean:90)
+# gives ∠b:c:g = ∠b:c:f + ∠f:c:g; with ∠b:c:g = ∠a:c:d (the second
+# proposition_15), ∠b:c:f = ∠c:b:a (proposition_4 + the two ray
+# equalities) and ∠f:c:g > 0 the arithmetic entails ∠a:c:d > ∠c:b:a
+# strictly — euclid_finish's job.
+PROP16A_STEPS_DATA = [
+    ("proposition_10", ("b", "c", "BC"), {"d": "e"}),
+    ("between_symm_parts", ("b", "e", "c"), {}),
+    ("between_symm_parts", ("c", "e", "b"), {}),
+    ("line_from_points", ("a", "e"), {"L": "AE"}),
+    ("extend_point_longer", ("AE", "a", "e", "a", "e"), {"x": "f'"}),
+    ("proposition_3", ("e", "f'", "a", "e", "AE", "AE"), {"q": "f"}),
+    ("line_from_points", ("f", "c"), {"L": "FC"}),
+    ("between_symm_parts", ("a", "e", "f"), {}),
+    ("between_symm_parts", ("b", "c", "d"), {}),
+    ("pasch_3_opposing", ("a", "e", "f", "BC"), {}),
+    ("proposition_15", ("b", "c", "a", "f", "e", "BC", "AE"), {}),
+    ("proposition_4", ("e", "b", "a", "e", "c", "f", "BC", "AB", "AE",
+                       "BC", "FC", "AE"), {}),
+    ("extend_point", ("AC", "a", "c"), {"x": "g"}),
+    ("between_symm_parts", ("g", "c", "a"), {}),
+    ("pasch_3_opposing", ("a", "c", "g", "BC"), {}),
+    ("opposing_opposing_same_side", ("g", "a", "f", "BC"), {}),
+    ("proposition_15", ("a", "g", "b", "d", "c", "AC", "BC"), {}),
+    ("sum_angles_onlyif", ("c", "b", "g", "f", "BC", "AC"), {}),
+]
+# The first conjunct only, as a strict LA entailment query.
+PROP16A_GOAL = [("_gt_ang", "a", "c", "d", "c", "b", "a")]
+
+
 def _metric_state(hyps):
     s = State()
     for f, w in hyps:
@@ -3325,6 +3453,11 @@ def main():
             t0 = time.time()
             s, rep = replay(PROP16B_HYPS_DATA, PROP16B_STEPS_DATA,
                             PROP16B_GOAL)
+            rep[-1]["seconds"] = round(time.time() - t0, 4)
+        elif p == "16a":
+            t0 = time.time()
+            s, rep = replay(PROP16A_HYPS_DATA, PROP16A_STEPS_DATA,
+                            PROP16A_GOAL)
             rep[-1]["seconds"] = round(time.time() - t0, 4)
         elif p == "3":
             s = State()

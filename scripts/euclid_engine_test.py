@@ -713,7 +713,8 @@ def test_replay_fact_set_footprints():
                 "5": (394, 203), "6": (41, 11), "7": (113, 26),
                 "8": (210, 82), "9": (224, 87), "10": (161, 50),
                 "11": (298, 148), "12": (174, 66), "13": (43, 16),
-                "14": (70, 21), "15": (104, 47), "16b": (406, 191)}
+                "14": (70, 21), "15": (104, 47), "16b": (406, 191),
+                "16a": (546, 281)}
     got = {}
     old_argv = sys.argv
     try:
@@ -2057,3 +2058,88 @@ def test_fact_holds_gt_ang_prop16b():
     s2, _ = eng.replay(eng.PROP16B_HYPS_DATA, steps, [])
     assert not eng._fact_holds(s2, eng.PROP16B_GOAL[0])
     assert eng._fm_sat(s2.la.rows)
+
+
+# --- Book I.16a (exterior angle, first conjunct — "Omitted by Euclid") -----
+
+
+def _prop16a(steps=eng.PROP16A_STEPS_DATA, hyps=eng.PROP16A_HYPS_DATA,
+             goal=eng.PROP16A_GOAL):
+    return eng.replay(hyps, steps, goal)
+
+
+def test_prop16a_replay():
+    s, rep = _prop16a()
+    assert rep[-1]["final"]
+    assert eng._fm_sat(s.la.rows)
+    assert eng.la_entails_gt_ang(s.la, "a", "c", "d", "c", "b", "a")
+    # the hypotheses ALONE (no steps) do not entail the inequality
+    # (bad case (b))
+    s2, _ = eng.replay(eng.PROP16A_HYPS_DATA, [], [])
+    assert not eng.la_entails_gt_ang(s2.la, "a", "c", "d", "c", "b", "a")
+
+
+def test_prop16a_control_dropped_second_proposition_15():
+    """Bad case (a): drop the SECOND proposition_15 (a g b d c AC BC).
+    Nothing then equates ∠a:c:d with ∠b:c:g, so the goal is NOT ENTAILED
+    at the goal check (the steps all still apply — g is built by
+    extend_point independently) and the store stays satisfiable."""
+    steps = [x for x in eng.PROP16A_STEPS_DATA
+             if not (x[0] == "proposition_15" and x[1][1] == "g")]
+    s, _ = eng.replay(eng.PROP16A_HYPS_DATA, steps, [])
+    assert eng._fm_sat(s.la.rows)
+    assert not eng.la_entails_gt_ang(s.la, "a", "c", "d", "c", "b", "a")
+    with pytest.raises(AssertionError) as ei:
+        _prop16a(steps=steps)
+    assert "('_gt_ang', 'a', 'c', 'd', 'c', 'b', 'a')" in str(ei.value)
+
+
+def test_prop16a_control_dropped_first_proposition_15():
+    """Drop the FIRST proposition_15 (b c a f e BC AE): proposition_4's
+    entailment premise ∠b:e:a = ∠c:e:f (vertical angles, via canonical
+    atoms) is then underivable, so the replay is REFUSED at the
+    proposition_4 step before the goal is ever checked (same shape as
+    the I.16b control)."""
+    steps = [x for x in eng.PROP16A_STEPS_DATA
+             if not (x[0] == "proposition_15" and x[1][1] == "c")]
+    with pytest.raises(eng.MissingPremise) as ei:
+        _prop16a(steps=steps)
+    assert ei.value.rule == "proposition_4"
+
+
+def test_prop16a_control_wrong_direction_not_entailed():
+    """Bad case (c): the REVERSED inequality ∠c:b:a > ∠a:c:d is not
+    entailed by the full proof, and the store stays satisfiable — the
+    strict goal check is not vacuous."""
+    s, _ = _prop16a()
+    assert eng._fm_sat(s.la.rows)
+    assert not eng.la_entails_gt_ang(s.la, "c", "b", "a", "a", "c", "d")
+    with pytest.raises(AssertionError):
+        _prop16a(goal=[("_gt_ang", "c", "b", "a", "a", "c", "d")])
+
+
+def test_proposition_16_lemma_citation():
+    """CONSTRUCTIONS["proposition_16"] cited as a lemma on the I.16
+    hypotheses: both conjuncts are entailed afterwards, store sat."""
+    s, rep = eng.replay(
+        eng.PROP16B_HYPS_DATA,
+        [("proposition_16", ("a", "b", "c", "d", "AB", "BC", "AC"), {})],
+        [("_gt_ang", "a", "c", "d", "c", "b", "a"),
+         ("_gt_ang", "a", "c", "d", "b", "a", "c")])
+    assert rep[-1]["final"]
+    assert eng._fm_sat(s.la.rows)
+
+
+def test_proposition_16_control_between_reversed():
+    """Bad case for the cited lemma CONSTRUCTIONS["proposition_16"]: with
+    between b c d replaced by between c b d (the closure's reversal of
+    that is between d b c, not between b c d), the citation is refused."""
+    hyps = [((("between", "c", "b", "d"), "h"))
+            if f == ("between", "b", "c", "d") else (f, w)
+            for f, w in eng.PROP16B_HYPS_DATA]
+    with pytest.raises(eng.MissingPremise) as ei:
+        eng.replay(hyps,
+                   [("proposition_16",
+                     ("a", "b", "c", "d", "AB", "BC", "AC"), {})],
+                   [("_gt_ang", "a", "c", "d", "c", "b", "a")])
+    assert ei.value.rule == "proposition_16"
