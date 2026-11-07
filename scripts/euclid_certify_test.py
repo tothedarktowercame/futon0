@@ -797,3 +797,98 @@ def test_negative_engine_i16b_dropped_proposition_4():
             break
         time.sleep(0.1)
     assert left == "", (left, r["reason"])
+
+
+# --- I.17-engine (E-kimi-task-400) ------------------------------------------
+
+def test_emit_engine_i17_emission_pinned():
+    # Flat proof: extend_point as d, between_symm (whole axiom for the
+    # engine's between_symm_parts), then proposition_16 and proposition_13
+    # in exactly Lean's argument orders (Book/Prop17.lean:13-14); the
+    # proposition_16 line is IDENTICAL to Lean's (the conjunction needs no
+    # `as`); euclid_finish's LA closes ∠a:b:c + ∠b:c:a < 2∟.
+    steps = cert.engine_steps("I.17")
+    src = cert.emit_proof("I.17-engine", steps, None)
+    assert "theorem proposition_17 :" in src
+    assert "∠ a:b:c + ∠ b:c:a < ∟ + ∟ :=\n" in src
+    assert "  euclid_apply (extend_point BC b c) as d\n" in src
+    assert "  euclid_apply (between_symm b c d)\n" in src
+    assert "  euclid_apply (proposition_16 a b c d AB BC AC)\n" in src
+    assert "  euclid_apply (proposition_13 a c b d AC BC)\n" in src
+    assert "import Book.Prop13\n" in src
+    assert "import Book.Prop16\n" in src
+    assert "euclid_assert" not in src  # no derived facts needed asserting
+    assert src.count("euclid_finish") == 1
+    # sha of the emitted source == sha of the file actually written
+    # (/home/joe/code/LeanEuclid/tmp-certify/test_engine_I17.lean).
+    import hashlib
+    assert hashlib.sha256(src.encode()).hexdigest()[:16] == "5c61a14de642c970"
+
+
+def test_engine_i17_steps_come_from_engine_data(monkeypatch):
+    # mutate the engine's live PROP17_STEPS_DATA and show emission follows
+    eng = cert._engine()
+    data = [("proposition_13", tuple("AB" if a == "AC" else a for a in args),
+             b) if r == "proposition_13" else (r, args, b)
+            for (r, args, b) in eng.PROP17_STEPS_DATA]
+    monkeypatch.setattr(eng, "PROP17_STEPS_DATA", data)
+    src = cert.emit_proof("I.17-engine", cert.engine_steps("I.17"), None)
+    assert "(proposition_13 a c b d AB BC)" in src
+    assert "(proposition_13 a c b d AC BC)" not in src
+    # untouched steps unchanged
+    assert "(proposition_16 a b c d AB BC AC)" in src
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_engine_i17_certifies():
+    # the ENGINE's own PROP17_STEPS_DATA certified against LeanEuclid
+    r = cert.check_lean(
+        cert.emit_proof("I.17-engine", cert.engine_steps("I.17"), None),
+        "test_engine_I17")
+    assert r["certified"], r["output"]
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i17_false_angle_assert():
+    # A false euclid_assert right after the proposition_16 step:
+    # ∠ a:c:d < ∠ a:b:c contradicts proposition_16's first conjunct
+    # (∠a:c:d > ∠c:b:a, with ∠c:b:a = ∠a:b:c as canonical atoms). Must NOT
+    # certify, and no lean process may survive.
+    src = cert.emit_proof("I.17-engine", cert.engine_steps("I.17"), None)
+    bad = src.replace(
+        "  euclid_apply (proposition_13 a c b d AC BC)\n",
+        "  euclid_assert ∠ a:c:d < ∠ a:b:c\n"
+        "  euclid_apply (proposition_13 a c b d AC BC)\n")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I17_assert", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run(["pgrep", "-f",
+                               "test_neg_I17_assert.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])
+
+
+@pytest.mark.skipif(not LEAN_AVAILABLE, reason="LeanEuclid not available")
+def test_negative_engine_i17_dropped_proposition_13():
+    # Drop the proposition_13 citation: without the linear-pair row
+    # (∠b:c:a + ∠a:c:d = 2∟) euclid_finish's LA cannot turn
+    # ∠a:c:d > ∠a:b:c into ∠a:b:c + ∠b:c:a < 2∟. Must NOT certify, and no
+    # lean process may survive.
+    src = cert.emit_proof("I.17-engine", cert.engine_steps("I.17"), None)
+    bad = src.replace("  euclid_apply (proposition_13 a c b d AC BC)\n", "")
+    assert bad != src
+    r = cert.check_lean(bad, "test_neg_I17_drop13", timeout=120)
+    assert not r["certified"], r
+    import time
+    for _ in range(50):
+        left = subprocess.run([("pgrep"), "-f", "test_neg_I17_drop13.lean"],
+                              capture_output=True, text=True).stdout.strip()
+        if not left:
+            break
+        time.sleep(0.1)
+    assert left == "", (left, r["reason"])

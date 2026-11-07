@@ -366,6 +366,28 @@ PROP16B_ENGINE_CITABLE = [
     "proposition_4", "sum_angles_onlyif",
 ]
 
+# Book/Prop17.lean:7-9 verbatim: any two angles of a triangle are together
+# less than two right angles.
+PROP17_STATEMENT = """\
+theorem proposition_17 : ∀ (a b c : Point) (AB BC AC : Line),
+  formTriangle a b c AB BC AC →
+  ∠ a:b:c + ∠ b:c:a < ∟ + ∟ :="""
+
+# The engine's own I.17 steps (euclid_engine.PROP17_STEPS_DATA, read live):
+# flat — extend_point BC b c as d; between_symm_parts (emitted as the whole
+# between_symm axiom, as at I.11/I.13–16b); proposition_16 a b c d AB BC AC
+# then proposition_13 a c b d AC BC in exactly Lean's argument orders
+# (Book/Prop17.lean:13-14). proposition_16's Lean conclusion is a
+# CONJUNCTION, but euclid_apply of it needs no `as` and no conjunct
+# selection — the emitted line is IDENTICAL to Book/Prop17.lean:13
+# (euclid_apply puts both conjuncts in context; euclid_finish's LA uses
+# the first, ∠a:c:d > ∠c:b:a, with ∠c:b:a = ∠a:b:c as canonical atoms).
+# euclid_finish closes ∠a:b:c + ∠b:c:a < 2∟ from the proposition_13 row
+# (∠b:c:a + ∠a:c:d = 2∟) and the inequality. No witness, no bridges.
+PROP17_ENGINE_CITABLE = [
+    "extend_point", "between_symm", "proposition_16", "proposition_13",
+]
+
 
 PROPS = {
     "I.1": dict(imports=["SystemE"], statement=PROP1_STATEMENT,
@@ -450,6 +472,17 @@ PROPS = {
                          statement=PROP16B_STATEMENT, book_steps=None,
                          witness=None, engine="I.16b",
                          engine_citable=PROP16B_ENGINE_CITABLE),
+    # The ENGINE's own I.17 steps (euclid_engine.PROP17_STEPS_DATA, read
+    # live): flat — extend_point, between_symm (whole axiom for the
+    # engine's between_symm_parts), then proposition_16 and
+    # proposition_13 in exactly Book/Prop17.lean:13-14's argument orders;
+    # euclid_finish's LA closes the strict sum inequality. Statement and
+    # imports verbatim from Book/Prop17.lean:1-9. No witness, no bridges.
+    # See the comment above PROP17_ENGINE_CITABLE.
+    "I.17-engine": dict(imports=["SystemE", "Book.Prop13", "Book.Prop16"],
+                        statement=PROP17_STATEMENT, book_steps=None,
+                        witness=None, engine="I.17",
+                        engine_citable=PROP17_ENGINE_CITABLE),
 }
 
 
@@ -618,6 +651,8 @@ def engine_steps(prop):
         return translate_engine_steps(eng.PROP15_STEPS_DATA)
     if prop == "I.16b" and hasattr(eng, "PROP16B_STEPS_DATA"):
         return translate_engine_steps(eng.PROP16B_STEPS_DATA)
+    if prop == "I.17" and hasattr(eng, "PROP17_STEPS_DATA"):
+        return translate_engine_steps(eng.PROP17_STEPS_DATA)
     raise ValueError(f"no engine step data registered for {prop}")
 
 
