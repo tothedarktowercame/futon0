@@ -320,7 +320,8 @@ def test_rule_info():
 def test_catalogue_palette_carries_rule_info():
     cat = ep.catalogue()
     p1 = next(e for e in cat if e["n"] == 1)
-    assert all(set(e) == {"name", "args", "cite", "binds"}
+    assert all(set(e) == {"name", "args", "cite", "binds", "label",
+                          "group", "arg_hints"}
                for e in p1["palette"])
     names = [e["name"] for e in p1["palette"]]
     assert names == ep.palette(1)  # constructions first, then propositions
@@ -504,3 +505,105 @@ def test_play_9_reaches_goal():
         "I.9: engine replay did not reach the goal: %s" % res
     assert all(m["ok"] for m in res["moves"]), \
         "I.9: a move failed: %s" % res["moves"]
+
+
+# ------------------------------------------- student wording (E-kimi-task-423)
+
+def _assert_student_text(t):
+    """Plain refusal text must exist and carry no Python repr."""
+    assert t and isinstance(t, str)
+    assert "('" not in t and "[(" not in t
+    assert "None" not in t
+
+
+def test_rule_labels_cover_every_rule():
+    """Every CONSTRUCTIONS name (every palette entry) has a student label
+    in a known group — a new rule fails this test until labelled."""
+    groups = {"constructions", "diagrammatic", "metric", "propositions"}
+    for name in eng.CONSTRUCTIONS:
+        assert name in ep.RULE_LABELS, "unlabelled rule: %s" % name
+        label, group = ep.RULE_LABELS[name]
+        assert label and group in groups, name
+    # and rule_info carries the wording to the page
+    info = ep.rule_info("intersection_circles")
+    assert info["label"] == "where two circles meet"
+    assert info["group"] == "constructions"
+    assert info["arg_hints"] == {"alpha": "first circle",
+                                 "beta": "second circle"}
+
+
+def test_plain_unknown_rule():
+    res = ep.play(1, [_move("squircle", (), {})])
+    m = res["moves"][0]
+    assert "unknown rule" in m["error"]
+    _assert_student_text(m["error_plain"])
+    assert "squircle" in m["error_plain"]
+
+
+def test_plain_future_proposition():
+    res = ep.play(5, [_move("proposition_6", (), {})])
+    t = res["moves"][0]["error_plain"]
+    _assert_student_text(t)
+    assert "I.6" in t and "earlier propositions" in t
+
+
+def test_plain_bad_arity():
+    res = ep.play(1, [_move("circle_from_points", ("a",), {"C": "C1"})])
+    m = res["moves"][0]
+    assert m["error"].startswith("bad arity")
+    _assert_student_text(m["error_plain"])
+    assert "circle_from_points" in m["error_plain"]
+
+
+def test_plain_missing_premise():
+    steps = tr.hyps_and_steps(1)[1]
+    res = ep.play(1, [_move(*steps[0]), _move(*steps[2])])
+    m = res["moves"][-1]
+    assert isinstance(m["error"], list)
+    t = m["error_plain"]
+    _assert_student_text(t)
+    assert t.startswith("Not yet shown: ") and "ACE" in t
+
+
+def test_plain_fresh_name():
+    res = ep.play(1, [_move("circle_from_points", ("a", "b"), {"C": "a"})])
+    m = res["moves"][0]
+    assert m["error"] == ["fresh", "a"]
+    t = m["error_plain"]
+    _assert_student_text(t)
+    assert t == ("a already exists; choose a new name, or show that the "
+                 "new point is a")
+
+
+def test_plain_by_contra_without_contradiction():
+    mv = {"rule": "by_contra",
+          "branches": [{"hyps": [["neq", "a", "b"]], "moves": []}],
+          "conclusion": [["false"]], "open": False}
+    res = ep.play(1, [mv])
+    m = res["moves"][0]
+    assert "did not reach a contradiction" in m["error"]
+    t = m["error_plain"]
+    _assert_student_text(t)
+    assert t == ("This case does not lead to a contradiction yet: keep "
+                 "going inside it, or check its assumptions.")
+
+
+def test_plain_by_cases_without_conclusion():
+    mv = {"rule": "by_cases",
+          "branches": [{"hyps": [["peq", "a", "b"]], "moves": []},
+                       {"hyps": [["neq", "a", "b"]], "moves": []}],
+          "conclusion": [["between", "a", "b", "a"]], "open": False}
+    res = ep.play(1, [mv])
+    m = res["moves"][0]
+    assert m["error"] and m["error"] != "missing case"
+    t = m["error_plain"]
+    _assert_student_text(t)
+    assert "does not reach what you are proving" in t
+
+
+def test_plain_empty_case_block():
+    res = ep.play(1, [{"rule": "by_contra", "branches": [],
+                       "conclusion": [["false"]], "open": False}])
+    t = res["moves"][0]["error_plain"]
+    _assert_student_text(t)
+    assert "at least one case" in t

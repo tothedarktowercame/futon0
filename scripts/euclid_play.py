@@ -120,12 +120,274 @@ def _lean_statement(n):
     return "\n".join(lines)
 
 
+# ------------------------------------------------------- student wording
+
+# What each rule DOES, in one sentence a student understands, with a
+# group for the dropdown. Every CONSTRUCTIONS name must appear here (a
+# test refuses an unlabelled rule). Groups: constructions (make new
+# objects), diagrammatic (facts about points, lines and circles),
+# metric (facts about lengths and angles), propositions (earlier
+# propositions).
+RULE_LABELS = {
+    # constructions
+    "arbitrary_point": ("take any point", "constructions"),
+    "distinct_points": ("take two different points", "constructions"),
+    "line_from_points": ("draw the line through two points",
+                         "constructions"),
+    "circle_from_points": ("draw the circle with centre a through b",
+                           "constructions"),
+    "intersection_circles": ("where two circles meet", "constructions"),
+    "intersection_same_side": ("where two circles meet, on the same side "
+                               "of a line as a given point",
+                               "constructions"),
+    "intersection_opposite_side": ("where two circles meet, on the "
+                                   "opposite side of a line from a given "
+                                   "point", "constructions"),
+    "intersections_circle_line": ("where a line meets a circle",
+                                  "constructions"),
+    "intersection_circle_line_extending_points": (
+        "where a line meets a circle, outside a given segment",
+        "constructions"),
+    "intersection_circle_line_between_points": (
+        "where a line meets a circle, between two given points",
+        "constructions"),
+    "intersection_circle_line_1": (
+        "where a line meets a circle (a point on each)", "constructions"),
+    "intersection_circle_circle_1": (
+        "where two circles meet (a point on each)", "constructions"),
+    "intersection_lines": ("where two lines meet", "constructions"),
+    "intersection_lines_opposing": (
+        "where two lines meet, with two points on opposite sides",
+        "constructions"),
+    "exists_point_opposite": ("take a point on the other side of a line",
+                              "constructions"),
+    "extend_point": ("lengthen a line past a point", "constructions"),
+    "extend_point_not_on_line": (
+        "lengthen a line past a point, staying off another line",
+        "constructions"),
+    "extend_point_longer": ("lengthen a line beyond a given length",
+                            "constructions"),
+    "point_between_points_shorter_than": (
+        "take a point on a line, nearer than a given length",
+        "constructions"),
+    "use_witness": ("give a name to the point a fact provides",
+                    "constructions"),
+    # facts about points, lines and circles (the diagrammatic axioms)
+    "between_symm_parts": ("betweenness: swap the ends, or take a part",
+                           "diagrammatic"),
+    "between_trans_out": ("betweenness chains along a line",
+                          "diagrammatic"),
+    "pasch_3_opposing": ("a line through one side of a triangle meets "
+                         "another side (Pasch)", "diagrammatic"),
+    "pasch_4": ("a line crossing two sides of a triangle (Pasch)",
+                "diagrammatic"),
+    "opposing_sides_if": ("two points are on opposite sides of a line "
+                          "when the segment between them crosses it",
+                          "diagrammatic"),
+    "opposing_same_side_trans": ("across a line then back again lands "
+                                 "on the opposite side", "diagrammatic"),
+    "opposing_opposing_same_side": ("twice across a line lands on the "
+                                    "same side", "diagrammatic"),
+    "triple_incidence_1": ("three lines through two shared points meet "
+                           "in one point", "diagrammatic"),
+    "triple_incidence_2": ("three lines through two shared points: "
+                           "another common meeting", "diagrammatic"),
+    # facts about lengths and angles
+    "superposition": ("slide one triangle onto an equal one "
+                      "(superposition)", "metric"),
+    "assert_point_eq_on_ray": ("two points at the same distance along a "
+                               "ray are the same point", "metric"),
+    "assert_point_eq_angle": ("two points making the same angle along a "
+                              "ray are the same point", "metric"),
+    "angle_pair_on_line": ("the two angles one line makes with another",
+                           "metric"),
+    "perpendicular_if": ("when the two angles at a crossing are equal, "
+                         "they are right", "metric"),
+    "perpendicular_onlyif": ("right angles at a crossing are equal",
+                             "metric"),
+    "sum_angles_onlyif": ("angles adding to two right angles", "metric"),
+    "flat_angle_onlyif": ("a flat angle equals two right angles",
+                          "metric"),
+    "degenerated_angle_if": ("a zero angle means the two rays coincide",
+                             "metric"),
+    "angle_self_zero": ("the angle of a ray with itself is zero",
+                        "metric"),
+    "angle_ray_eq_zero": ("coincident rays make a zero angle", "metric"),
+    "off_line_strict_triangle": ("off a line, the strict triangle "
+                                 "inequality holds", "metric"),
+    # earlier propositions
+    "proposition_1": ("I.1: build an equilateral triangle on a segment",
+                      "propositions"),
+    "proposition_1'": ("I.1 (second form): an equilateral triangle from "
+                       "three points", "propositions"),
+    "proposition_2'": ("I.2: copy a length to start at a given point",
+                       "propositions"),
+    "proposition_3": ("I.3: cut off from the longer line a piece equal "
+                      "to the shorter", "propositions"),
+    "proposition_4": ("I.4: two triangles with two sides and the angle "
+                      "between them equal", "propositions"),
+    "proposition_5": ("I.5: the base angles of an isosceles triangle "
+                      "are equal", "propositions"),
+    "proposition_5'": ("I.5 (second form): isosceles base angles",
+                       "propositions"),
+    "proposition_6": ("I.6: a triangle with two equal angles has two "
+                      "equal sides", "propositions"),
+    "proposition_7": ("I.7: two different triangles cannot share both "
+                      "sides on one segment", "propositions"),
+    "proposition_8": ("I.8: two triangles with three equal sides",
+                      "propositions"),
+    "proposition_9'": ("I.9: bisect an angle", "propositions"),
+    "proposition_10": ("I.10: bisect a segment", "propositions"),
+    "proposition_11'": ("I.11: draw a line at right angles from a point "
+                        "on a line", "propositions"),
+    "proposition_13": ("I.13: angles on one side of a line make two "
+                       "right angles", "propositions"),
+    "proposition_15": ("I.15: opposite angles at a crossing are equal",
+                       "propositions"),
+    "proposition_16": ("I.16: an outside angle of a triangle beats "
+                       "either far inside angle", "propositions"),
+    "proposition_17": ("I.17: two angles of a triangle make less than "
+                       "two right angles", "propositions"),
+    "proposition_18": ("I.18: the greater side faces the greater angle",
+                       "propositions"),
+    "proposition_19": ("I.19: the greater angle faces the greater side",
+                       "propositions"),
+    "proposition_20": ("I.20: two sides of a triangle beat the third",
+                       "propositions"),
+    "proposition_21": ("I.21: a triangle inside a triangle has shorter "
+                       "sides but a wider angle", "propositions"),
+    "proposition_22'": ("I.22: build a triangle from three given "
+                        "lengths", "propositions"),
+    "proposition_22''": ("I.22 (second form): build a triangle from "
+                         "three lengths, with a witness", "propositions"),
+    "proposition_23": ("I.23: copy an angle onto a line", "propositions"),
+    "proposition_23'": ("I.23 (second form): copy an angle onto a line, "
+                        "with a witness", "propositions"),
+    "proposition_24": ("I.24: two sides equal, the wider angle has the "
+                       "longer base", "propositions"),
+    "proposition_25": ("I.25: two sides equal, the longer base has the "
+                       "wider angle", "propositions"),
+}
+
+# Cheap per-argument hints for the form labels, taken from the rule's
+# premises; args not listed keep their engine name.
+ARG_HINTS = {
+    "line_from_points": {"a": "first point", "b": "second point"},
+    "circle_from_points": {"a": "the centre", "b": "a point on the circle"},
+    "intersection_circles": {"alpha": "first circle",
+                             "beta": "second circle"},
+    "intersections_circle_line": {"alpha": "the circle", "L": "the line"},
+    "intersection_lines": {"L": "first line", "M": "second line"},
+    "extend_point": {"L": "the line", "b": "extend past", "c": "from"},
+}
+
+_FACT_WORDS = {
+    "neq": "{1} ≠ {2}",
+    "on_line": "{1} is on line {2}",
+    "not_on_line": "{1} is not on line {2}",
+    "on_circle": "{1} is on circle {2}",
+    "centre": "{1} is the centre of circle {2}",
+    "between": "{2} is between {1} and {3}",
+    "same_side": "{1} and {2} are on the same side of {3}",
+    "not_same_side": "{1} and {2} are not on the same side of {3}",
+    "opposing_sides": "{1} and {2} are on opposite sides of {3}",
+    "intersects_cc": "the circles {1} and {2} intersect",
+    "intersects_lc": "line {1} meets circle {2}",
+    "inside": "{1} is inside circle {2}",
+    "outside": "{1} is outside circle {2}",
+    "not_outside": "{1} is on or inside circle {2}",
+    "dpl": "{1} and {2} are distinct points on line {3}",
+    "peq": "{1} and {2} are the same point",
+    "neq_line": "lines {1} and {2} are different",
+    "peq_line": "lines {1} and {2} are the same line",
+    "eq_len": "|{1}{2}| = |{3}{4}|",
+    "_eq_len": "|{1}{2}| = |{3}{4}|",
+    "gt_len": "|{1}{2}| > |{3}{4}|",
+    "lt_len": "|{1}{2}| < |{3}{4}|",
+    "eq_ang": "∠{1}{2}{3} = ∠{4}{5}{6}",
+    "_eq_ang": "∠{1}{2}{3} = ∠{4}{5}{6}",
+    "gt_ang": "∠{1}{2}{3} > ∠{4}{5}{6}",
+    "_rt_ang": "∠{1}{2}{3} is right",
+}
+
+
+def fact_words(f):
+    """A fact tuple as a student-readable clause (mirrors the page's
+    factEnglish; used so refusal text never shows a Python repr)."""
+    f = list(f)
+    kind = f[0] if f else ""
+    if kind == "fresh":
+        return ("%s already exists; choose a new name, or show that the "
+                "new point is %s" % (f[1], f[1]))
+    tmpl = _FACT_WORDS.get(kind)
+    if tmpl is None:
+        return " ".join(str(x) for x in f)
+    return tmpl.format(*([""] + [str(x) for x in f[1:]]))
+
+
+def student_error(err, rule=None):
+    """The engine's refusal err (a fact list, or its raw string) as a
+    sentence for a student. The raw text stays available on the page
+    under a details toggle; this is what is shown instead. Never
+    returns a Python repr."""
+    if isinstance(err, (list, tuple)):
+        f = list(err)
+        if f and f[0] == "fresh":
+            return fact_words(f)
+        return "Not yet shown: " + fact_words(f)
+    s = str(err)
+    m = re.match(r"^unknown rule '(.+)' \(not in I\.(\d+)'s palette\)$", s)
+    if m:
+        return ("There is no move called '%s' in I.%s — choose one from "
+                "the list." % (m.group(1), m.group(2)))
+    m = re.match(r"^I\.(\d+) is not proved yet$", s)
+    if m:
+        return ("I.%s has not been proved yet — finish the earlier "
+                "propositions first." % m.group(1))
+    if s.startswith("bad arity"):
+        spec = eng.CONSTRUCTIONS.get(rule)
+        if spec is not None:
+            return ("That is not what this move needs: %s takes %d "
+                    "name(s) (%s)." % (rule, len(spec["args"]),
+                                       ", ".join(spec["args"])))
+        return "That is not the right number of names for this move."
+    if re.match(r"^a (by_contra|by_cases) needs at least one case$", s):
+        return ("This block needs at least one case — add a case before "
+                "closing it.")
+    if s == "missing case":
+        return "These cases leave a possibility out."
+    if s.startswith("an earlier case must close first"):
+        return ("An earlier case does not work yet — finish it before "
+                "this one.")
+    if s.startswith("bad case hypothesis"):
+        return ("This case's assumption cannot be made — check the "
+                "names in it.")
+    if s.startswith("bad case move"):
+        return "A move inside this case does not fit — check its names."
+    if "did not reach a contradiction" in s or \
+            "does not reach a contradiction" in s:
+        return ("This case does not lead to a contradiction yet: keep "
+                "going inside it, or check its assumptions.")
+    if "does not reach the conclusion" in s or \
+            s.startswith("by_cases branch"):
+        return ("This case does not reach what you are proving yet: "
+                "keep going inside it, or check its assumptions.")
+    if s.startswith("the case") and "is stuck" in s:
+        return "This case is stuck: a fact it needs is not shown yet."
+    if s.startswith("the case") and "is contradictory" in s:
+        return ("This case leads to a contradiction, so it would prove "
+                "anything — check its assumptions.")
+    return "The move was refused — open details to see the exact reason."
+
+
 def rule_info(name):
-    """{args, cite, binds} for a rule. binds are the base names the rule's
-    make introduces, read off the make lambda's returned pairs on a
-    throwaway state (euclid_engine.py is NOT modified). If the make
-    lambda cannot be run that way, binds is [] — the page then shows one
-    free "name" field instead of per-bind inputs."""
+    """{args, cite, binds, label, group, arg_hints} for a rule. binds are
+    the base names the make introduces, read off the make lambda's
+    returned pairs on a throwaway state (euclid_engine.py is NOT
+    modified). If the make lambda cannot be run that way, binds is [] —
+    the page then shows one free "name" field instead of per-bind
+    inputs. label/group are the student wording from RULE_LABELS;
+    arg_hints the cheap per-arg hints from ARG_HINTS."""
     spec = eng.CONSTRUCTIONS[name]
     binds = []
     try:
@@ -134,8 +396,11 @@ def rule_info(name):
         binds = [b for b, _facts in made if b is not None]
     except Exception:
         binds = []
+    label, group = RULE_LABELS.get(name, (name.replace("_", " "),
+                                          "constructions"))
     return {"args": list(spec["args"]), "cite": spec["cite"],
-            "binds": binds}
+            "binds": binds, "label": label, "group": group,
+            "arg_hints": dict(ARG_HINTS.get(name, {}))}
 
 
 def catalogue():
@@ -855,6 +1120,9 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
         entries.append(entry)
         if not entry["ok"]:
             break
+    for e in entries:
+        if e.get("error") is not None:
+            e["error_plain"] = student_error(e["error"], e["rule"])
     return entries, view
 
 
