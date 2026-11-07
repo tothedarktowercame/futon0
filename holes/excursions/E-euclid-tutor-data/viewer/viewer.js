@@ -451,10 +451,18 @@ function showInfo(step) {
       " (triangle abc carried onto triangle def; both highlighted)";
   }
   info.innerHTML =
-    "<b>step " + step.n + "</b> <code>" + step.rule + "("
-    + step.args.join(", ") + ")</code> → "
-    + "<code>" + step.lean.file + ":" + step.lean.line + "</code> — "
-    + facts + "<br>placement: " + step.placement_decision + extra;
+    "<b>step " + step.n + "</b> <code>"
+    + (step.rule === "by_contra"
+       // args are nested case branches; show the conclusion instead
+       ? "by_contra ⊢ " + (step.bindings || []).map(f => f.join(" ")).join(", ")
+       : step.rule + "(" + step.args.join(", ") + ")")
+    + "</code> → "
+    + (step.lean.line
+       ? "<code>" + step.lean.file + ":" + step.lean.line + "</code> — "
+       : "<i>no Lean line</i> — ")
+    + facts + "<br>placement: " + step.placement_decision + extra
+    // review (claude-9): engine-only steps (I.10) printed "PropNN.lean:null"
+    + (step.lean_note ? "<br>lean: " + step.lean_note : "");
 }
 
 function setStep(n) {
