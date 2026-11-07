@@ -1,0 +1,816 @@
+{
+ "prop": 21,
+ "title": "Elements I.21 (LeanEuclid Book/Prop21.lean)",
+ "objects": [
+  {
+   "name": "a",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "b",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "c",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "d",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 0
+  },
+  {
+   "name": "AB",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "b"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "AC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "a",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "BD",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "b",
+     "d"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "DC",
+   "kind": "line",
+   "jsx": {
+    "type": "line",
+    "p": [
+     "d",
+     "c"
+    ]
+   },
+   "def_step": 0,
+   "hyp": true
+  },
+  {
+   "name": "e",
+   "kind": "point",
+   "jsx": {
+    "type": "point"
+   },
+   "def_step": 3
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "rule": "triple_incidence_1",
+   "args": [
+    "AB",
+    "BD",
+    "BC",
+    "b",
+    "a",
+    "d",
+    "c"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "opposing_sides",
+     "a",
+     "c",
+     "BD"
+    ]
+   ],
+   "premises": [
+    [
+     "on_line",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ],
+    [
+     "on_line",
+     "c",
+     "BC"
+    ],
+    [
+     "same_side",
+     "d",
+     "c",
+     "AB"
+    ],
+    [
+     "same_side",
+     "a",
+     "d",
+     "BC"
+    ],
+    [
+     "not_on_line",
+     "a",
+     "BD"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "BD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only step (triple_incidence_1 AB BD BC b a d c, Diagrammatic.lean:187): AB, BD, BC all meet at b; with d.sameSide c AB (the hypothesis c.sameSide d AB, symmetrized) and a.sameSide d BC, this gives opposing_sides a c BD \u2014 a and c lie on opposite sides of BD. Lean's SMT closes this silently",
+   "lean_note": "engine-only step (triple_incidence_1): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 2,
+   "rule": "intersection_lines_opposing",
+   "args": [
+    "a",
+    "c",
+    "BD",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "intersects_ll",
+     "BD",
+     "AC"
+    ]
+   ],
+   "premises": [
+    [
+     "opposing_sides",
+     "a",
+     "c",
+     "BD"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only step (intersection_lines_opposing a c BD AC, Diagrammatic.lean:267): a and c oppose across BD, so BD intersects AC \u2014 the premise Lean's SMT closes inside euclid_apply (intersection_lines BD AC) on the next line",
+   "lean_note": "engine-only step (intersection_lines_opposing): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 3,
+   "rule": "intersection_lines",
+   "args": [
+    "BD",
+    "AC"
+   ],
+   "bindings": {
+    "a": "e"
+   },
+   "facts_added": [
+    [
+     "on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ]
+   ],
+   "premises": [
+    [
+     "intersects_ll",
+     "BD",
+     "AC"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": 13
+   },
+   "placement_decision": "intersection of the drawn lines BD and AC"
+  },
+  {
+   "n": 4,
+   "rule": "pasch_4",
+   "args": [
+    "a",
+    "e",
+    "c",
+    "BD",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "between",
+     "a",
+     "e",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "neq_line",
+     "BD",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "dpl",
+     "a",
+     "c",
+     "AC"
+    ],
+    [
+     "neq",
+     "a",
+     "e"
+    ],
+    [
+     "neq",
+     "c",
+     "e"
+    ],
+    [
+     "opposing_sides",
+     "a",
+     "c",
+     "BD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only step (pasch_4 a e c BD AC, Diagrammatic.lean:173): a and c oppose across BD and e lies on both lines, so between a e c \u2014 e is between a and c on side AC. Lean's SMT closes this silently",
+   "lean_note": "engine-only step (pasch_4): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 5,
+   "rule": "by_contra",
+   "args": [
+    [
+     [
+      [
+       "between",
+       "b",
+       "e",
+       "d"
+      ]
+     ],
+     [
+      [
+       "pasch_3_opposing",
+       [
+        "b",
+        "e",
+        "d",
+        "AC"
+       ],
+       {}
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "between",
+       "e",
+       "b",
+       "d"
+      ]
+     ],
+     [
+      [
+       "pasch_3_opposing",
+       [
+        "e",
+        "b",
+        "d",
+        "AB"
+       ],
+       {}
+      ]
+     ]
+    ]
+   ],
+   "bindings": [
+    [
+     "between",
+     "b",
+     "d",
+     "e"
+    ]
+   ],
+   "facts_added": [],
+   "premises": [],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": null
+   },
+   "placement_decision": "engine-only step fixing the order of b, d, e on BD (trichotomy, Diagrammatic.lean:87): the two other orders are refuted \u2014 between b e d would put b opposing d across AC (pasch_3, e on AC) against the hypothesis b.sameSide d AC; between e b d would put e opposing d across AB (pasch_3, b on AB) against same_side e d AB \u2014 so between b d e. Lean's SMT closes this silently; the diagram draws the TRUE configuration (d strictly inside the triangle, e on a-c between a and c, d between b and e)",
+   "lean_note": "engine-only step (case split): no euclid_apply line in the Lean proof cites it; Lean leaves this to euclid_finish / SMT"
+  },
+  {
+   "n": 6,
+   "rule": "proposition_20",
+   "args": [
+    "a",
+    "b",
+    "e",
+    "AB",
+    "BD",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_sum_len",
+     "b",
+     "a",
+     "a",
+     "e",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "a",
+     "b",
+     "AB"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "neq",
+     "b",
+     "e"
+    ],
+    [
+     "neq",
+     "a",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "AB"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": 14
+   },
+   "placement_decision": "cited step (proposition_20 a b e AB BD AC \u2014 I.20, two sides exceed the third, in triangle a-b-e): |b-a| + |a-e| > |b-e|"
+  },
+  {
+   "n": 7,
+   "rule": "proposition_20",
+   "args": [
+    "e",
+    "d",
+    "c",
+    "BD",
+    "DC",
+    "AC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_sum_len",
+     "d",
+     "e",
+     "e",
+     "c",
+     "d",
+     "c"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "e",
+     "d",
+     "BD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DC"
+    ],
+    [
+     "on_line",
+     "c",
+     "DC"
+    ],
+    [
+     "on_line",
+     "c",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "neq",
+     "d",
+     "c"
+    ],
+    [
+     "neq",
+     "e",
+     "c"
+    ],
+    [
+     "not_on_line",
+     "c",
+     "BD"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": 15
+   },
+   "placement_decision": "cited step (proposition_20 e d c BD DC AC \u2014 I.20 in triangle e-d-c): |d-e| + |e-c| > |d-c|"
+  },
+  {
+   "n": 8,
+   "rule": "proposition_16",
+   "args": [
+    "c",
+    "e",
+    "d",
+    "b",
+    "AC",
+    "BD",
+    "DC"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_ang",
+     "c",
+     "d",
+     "b",
+     "d",
+     "e",
+     "c"
+    ],
+    [
+     "gt_ang",
+     "c",
+     "d",
+     "b",
+     "e",
+     "c",
+     "d"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "c",
+     "e",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "on_line",
+     "d",
+     "BD"
+    ],
+    [
+     "on_line",
+     "d",
+     "DC"
+    ],
+    [
+     "on_line",
+     "c",
+     "DC"
+    ],
+    [
+     "neq",
+     "e",
+     "d"
+    ],
+    [
+     "neq",
+     "c",
+     "d"
+    ],
+    [
+     "not_on_line",
+     "d",
+     "AC"
+    ],
+    [
+     "between",
+     "e",
+     "d",
+     "b"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": 18
+   },
+   "placement_decision": "cited step (proposition_16 c e d b AC BD DC \u2014 the exterior-angle theorem in triangle c-d-e, with b on the extension of e-d past d): the exterior angle c:d:b (= b:d:c) exceeds the interior angle d:e:c"
+  },
+  {
+   "n": 9,
+   "rule": "proposition_16",
+   "args": [
+    "b",
+    "a",
+    "e",
+    "c",
+    "AB",
+    "AC",
+    "BD"
+   ],
+   "bindings": {},
+   "facts_added": [
+    [
+     "gt_ang",
+     "b",
+     "e",
+     "c",
+     "e",
+     "a",
+     "b"
+    ],
+    [
+     "gt_ang",
+     "b",
+     "e",
+     "c",
+     "a",
+     "b",
+     "e"
+    ]
+   ],
+   "premises": [
+    [
+     "dpl",
+     "b",
+     "a",
+     "AB"
+    ],
+    [
+     "on_line",
+     "a",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "AC"
+    ],
+    [
+     "on_line",
+     "e",
+     "BD"
+    ],
+    [
+     "on_line",
+     "b",
+     "BD"
+    ],
+    [
+     "neq",
+     "a",
+     "e"
+    ],
+    [
+     "neq",
+     "b",
+     "e"
+    ],
+    [
+     "not_on_line",
+     "e",
+     "AB"
+    ],
+    [
+     "between",
+     "a",
+     "e",
+     "c"
+    ]
+   ],
+   "lean": {
+    "file": "Book/Prop21.lean",
+    "line": 19
+   },
+   "placement_decision": "cited step (proposition_16 b a e c AB AC BD \u2014 the exterior-angle theorem in triangle a-b-e, with c on the extension of a-e past e): the exterior angle b:e:c exceeds the interior angle e:a:b (= b:a:c, e on a-c). The conclusion's why: for the lengths, |b-d| + |d-c| < |b-d| + |d-e| + |e-c| (the second I.20 step) = |b-e| + |e-c| (between b d e) < |b-a| + |a-e| + |e-c| (the first I.20 step) = |b-a| + |a-c| (between a e c); for the angles, angle b:d:c > angle d:e:c (the first I.16 step) = angle b:e:c (d on the ray e->b, between b d e) > angle e:a:b = angle b:a:c (e between a and c)"
+  }
+ ],
+ "placement": {
+  "b": [
+   0.0,
+   0.0
+  ],
+  "c": [
+   1.6,
+   0.0
+  ],
+  "a": [
+   0.5,
+   1.1
+  ],
+  "d": [
+   0.7,
+   0.35
+  ],
+  "e": [
+   1.0666666666666667,
+   0.5333333333333333
+  ]
+ },
+ "verification": [
+  {
+   "check": "I.21: d on a's side of BC (inside, hyp a.sameSide d BC)",
+   "ok": true
+  },
+  {
+   "check": "I.21: d on c's side of AB (inside, hyp c.sameSide d AB)",
+   "ok": true
+  },
+  {
+   "check": "I.21: d on b's side of AC (inside, hyp b.sameSide d AC)",
+   "ok": true
+  },
+  {
+   "check": "I.21: e on AC between a and c",
+   "ok": true
+  },
+  {
+   "check": "I.21: between b d e (the by_contra's conclusion)",
+   "ok": true
+  },
+  {
+   "check": "I.21: first I.20 step |b-a| + |a-e| > |b-e|",
+   "ok": true
+  },
+  {
+   "check": "I.21: second I.20 step |d-e| + |e-c| > |d-c|",
+   "ok": true
+  },
+  {
+   "check": "I.21: first I.16 step angle b:d:c > angle d:e:c (exterior angle of triangle c-d-e)",
+   "ok": true
+  },
+  {
+   "check": "I.21: second I.16 step angle b:e:c > angle b:a:c (exterior angle of triangle a-b-e)",
+   "ok": true
+  },
+  {
+   "check": "I.21: GOAL |b-d| + |d-c| < |b-a| + |a-c|, with a visible margin (at least 0.2)",
+   "ok": true
+  },
+  {
+   "check": "I.21: GOAL angle b:d:c > angle b:a:c, with a visible margin (at least 0.15 rad)",
+   "ok": true
+  }
+ ],
+ "lean_file": "Book/Prop21.lean",
+ "lean_text": [
+  "import SystemE",
+  "import Book.Prop16",
+  "import Book.Prop20",
+  "",
+  "namespace Elements.Book1",
+  "",
+  "theorem proposition_21 : \u2200 (a b c d : Point) (AB BC AC BD DC : Line),",
+  "  formTriangle a b c AB BC AC \u2227 (a.sameSide d BC) \u2227 (c.sameSide d AB) \u2227 (b.sameSide d AC) \u2227",
+  "  distinctPointsOnLine b d BD \u2227 distinctPointsOnLine d c DC \u2192",
+  "  (|(b\u2500d)| + |(d\u2500c)| < |(b\u2500a)| + |(a\u2500c)|) \u2227 (\u2220 b:d:c > \u2220 b:a:c) :=",
+  "by",
+  "  euclid_intros",
+  "  euclid_apply (intersection_lines BD AC) as e",
+  "  euclid_apply (proposition_20 a b e AB BD AC)",
+  "  euclid_apply (proposition_20 e d c BD DC AC)",
+  "  constructor",
+  "  . euclid_finish",
+  "  . euclid_apply (proposition_16 c e d b AC BD DC)",
+  "    euclid_apply (proposition_16 b a e c AB AC BD)",
+  "    euclid_finish",
+  "",
+  "end Elements.Book1"
+ ]
+}

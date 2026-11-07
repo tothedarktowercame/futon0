@@ -1184,3 +1184,85 @@ def test_bad_case_prop20_ad_neq_ac_fails():
     x["d"] = (ax + 0.7 * (dx - ax), ay + 0.7 * (dy - ay))
     fails = [d for d, ok in tr.verify20(x) if not ok]
     assert any("|a-d| = |a-c|" in d for d in fails), fails
+
+
+# -- I.21 (kimi-2, packet P-euclid-viewer-I21) -------------------------------
+# I.21 (lines from inside a triangle: for d inside triangle a-b-c,
+# |b-d| + |d-c| < |b-a| + |a-c| and angle b:d:c > angle b:a:c). d is a
+# HYPOTHESIS point (strictly inside); e is CONSTRUCTED by step 3
+# (intersection_lines BD AC). Steps 1-2, 4-5 are engine-only
+# (triple_incidence_1, intersection_lines_opposing, pasch_4, and a
+# by_contra fixing the order b d e — premises Lean's SMT closes
+# silently); steps 3, 6-9 are Prop21.lean's euclid_apply lines
+# 13-16, 18-19. The last step's bar carries the conclusion's why for
+# both conjuncts.
+
+TR21 = load(21)
+
+
+def test_prop21_rebuild_matches_disk():
+    rebuilt = tr.build_trace(21)
+    assert rebuilt["placement"] == TR21["placement"]
+    assert json.loads(json.dumps(rebuilt["steps"])) == TR21["steps"]
+
+
+def test_prop21_lean_lines_cover_the_apply_lines():
+    path = os.path.join(LEAN_DIR, TR21["lean_file"])
+    lines = open(path).read().splitlines()
+    linked = []
+    for s in TR21["steps"]:
+        ln = s["lean"]["line"]
+        if ln is None:
+            # engine-only: the four SMT-silent steps and the by_contra
+            assert s["rule"] in ("triple_incidence_1",
+                                 "intersection_lines_opposing",
+                                 "pasch_4", "by_contra"), s
+            assert "engine-only" in s["lean_note"], s
+            continue
+        assert s["rule"] in lines[ln - 1], s
+        linked.append(ln)
+    # exactly the five euclid_apply lines are linked, in order
+    applies = {i + 1 for i, l in enumerate(lines) if "euclid_apply" in l}
+    assert linked == sorted(linked) and set(linked) == applies, linked
+
+
+def test_prop21_step_facts_hold():
+    xy = {k: tuple(v) for k, v in TR21["placement"].items() if v}
+    bad = [(f, ok) for f, ok in tr.metric_facts_hold(TR21["steps"], xy)
+           if not ok]
+    assert not bad, bad
+    assert all(ok for _, ok in tr.verify21(xy))
+    # the last step's info bar states the conclusion's why (both
+    # conjuncts: the length chain and the exterior-angle chain)
+    last = TR21["steps"][-1]
+    assert last["rule"] == "proposition_16"
+    assert "|b-d| + |d-c| < |b-d| + |d-e| + |e-c|" \
+        in last["placement_decision"]
+    assert "= |b-a| + |a-c|" in last["placement_decision"]
+    assert "angle b:d:c > angle d:e:c" in last["placement_decision"]
+
+
+def _xy21():
+    return {k: tuple(v) for k, v in TR21["placement"].items() if v}
+
+
+def test_bad_case_prop21_d_outside_beyond_bc_fails():
+    x = _xy21()
+    assert all(ok for _, ok in tr.verify21(x))
+    # d reflected across BC (outside the triangle): the same-side
+    # hypothesis check fails
+    dx, dy = x["d"]
+    x["d"] = (dx, -dy)
+    fails = [d for d, ok in tr.verify21(x) if not ok]
+    assert any("side of BC" in d for d in fails), fails
+
+
+def test_bad_case_prop21_d_on_ac_fails():
+    x = _xy21()
+    # d on side AC (the midpoint): not strictly inside — the
+    # b.sameSide d AC check fails (cross product zero)
+    ax, ay = x["a"]
+    cx, cy = x["c"]
+    x["d"] = ((ax + cx) / 2, (ay + cy) / 2)
+    fails = [d for d, ok in tr.verify21(x) if not ok]
+    assert any("side of AC" in d for d in fails), fails

@@ -375,6 +375,17 @@ FREE = {
     # |b-d| = |b-a| + |a-c| = ~2.763 > |b-c| = 1.6 — a ~1.16 visible
     # margin on the goal.
     20: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1)},
+    # I.21 (lines from inside a triangle: for d inside triangle a-b-c,
+    # |b-d| + |d-c| < |b-a| + |a-c| and angle b:d:c > angle b:a:c): the
+    # same scalene triangle as I.16-I.20, with d STRICTLY INSIDE (well
+    # clear of all three sides). e is CONSTRUCTED by step 3
+    # (intersection_lines BD AC): numerically the meeting of line b-d
+    # with side a-c, landing between a and c with d between b and e —
+    # the true configuration. Goal margins are wide: (|b-a|+|a-c|) -
+    # (|b-d|+|d-c|) ~= 1.0 and angle b:d:c ~= 132 deg vs angle b:a:c
+    # ~= 69 deg.
+    21: {"b": (0.0, 0.0), "c": (1.6, 0.0), "a": (0.5, 1.1),
+         "d": (0.7, 0.35)},
 }
 
 PROP4_ROT = math.radians(25.0)
@@ -413,6 +424,8 @@ def hyps_and_steps(prop):
         return list(eng.PROP19_HYPS_DATA), list(eng.PROP19_STEPS_DATA)
     if prop == 20:
         return list(eng.PROP20_HYPS_DATA), list(eng.PROP20_STEPS_DATA)
+    if prop == 21:
+        return list(eng.PROP21_HYPS_DATA), list(eng.PROP21_STEPS_DATA)
     return list(eng.PROP3_HYPS_DATA), list(eng.PROP3_STEPS_DATA)
 
 
@@ -559,6 +572,17 @@ def objects_from_hyps(prop):
                   "p": list(pq)}, "def_step": 0, "hyp": True}
                 for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
                               ("AC", ("a", "c")))]
+    if prop == 21:
+        # the triangle a-b-c, the interior point d (a hypothesis here),
+        # and the five hypothesis lines (AB, BC, AC and the dpl lines BD,
+        # DC); e is CONSTRUCTED by step 3 (intersection_lines BD AC)
+        return [{"name": n, "kind": "point", "jsx": {"type": "point"},
+                 "def_step": 0} for n in ("a", "b", "c", "d")] + [
+                {"name": L, "kind": "line", "jsx": {"type": "line",
+                  "p": list(pq)}, "def_step": 0, "hyp": True}
+                for L, pq in (("AB", ("a", "b")), ("BC", ("b", "c")),
+                              ("AC", ("a", "c")), ("BD", ("b", "d")),
+                              ("DC", ("d", "c")))]
     return [{"name": n, "kind": "point", "jsx": {"type": "point"},
              "def_step": 0} for n in ("a", "b", "c0", "c1")] + [
             {"name": "AB", "kind": "line", "jsx": {"type": "line",
@@ -814,6 +838,17 @@ dragging)" % (a, b)
                     "not drawable; the diagram shows the TRUE "
                     "configuration — angle a:b:c > angle b:c:a, hence "
                     "|a-c| > |a-b|)")
+        if prop == 21:
+            return ("engine-only step fixing the order of b, d, e on BD "
+                    "(trichotomy, Diagrammatic.lean:87): the two other "
+                    "orders are refuted — between b e d would put b "
+                    "opposing d across AC (pasch_3, e on AC) against the "
+                    "hypothesis b.sameSide d AC; between e b d would put "
+                    "e opposing d across AB (pasch_3, b on AB) against "
+                    "same_side e d AB — so between b d e. Lean's SMT "
+                    "closes this silently; the diagram draws the TRUE "
+                    "configuration (d strictly inside the triangle, e on "
+                    "a-c between a and c, d between b and e)")
         return "; ".join(parts) + " (refuted branches are not drawn)"
     if rule == "by_cases":
         # no drawing for the split itself: the DRAWN case is branch 2 in
@@ -883,13 +918,59 @@ dragging)" % (a, b)
                 "sum_angles_onlyif",
                 "between_symm_parts", "pasch_3_opposing", "pasch_4",
                 "opposing_same_side_trans", "opposing_opposing_same_side",
-                "triple_incidence_2",
+                "triple_incidence_1", "triple_incidence_2",
                 "angle_pair_on_line",
                 "proposition_8", "proposition_7", "perpendicular_if",
-                "perpendicular_onlyif",
+                "perpendicular_onlyif", "proposition_20",
                 "intersection_lines_opposing",
                 "intersection_circle_line_1"):
         # forward-closure / cited steps: no new objects, no coordinates
+        if rule == "triple_incidence_1" and prop == 21:
+            return ("engine-only step (triple_incidence_1 AB BD BC b a d "
+                    "c, Diagrammatic.lean:187): AB, BD, BC all meet at b; "
+                    "with d.sameSide c AB (the hypothesis c.sameSide d AB, "
+                    "symmetrized) and a.sameSide d BC, this gives "
+                    "opposing_sides a c BD — a and c lie on opposite "
+                    "sides of BD. Lean's SMT closes this silently")
+        if rule == "intersection_lines_opposing" and prop == 21:
+            return ("engine-only step (intersection_lines_opposing a c "
+                    "BD AC, Diagrammatic.lean:267): a and c oppose across "
+                    "BD, so BD intersects AC — the premise Lean's SMT "
+                    "closes inside euclid_apply (intersection_lines BD "
+                    "AC) on the next line")
+        if rule == "pasch_4" and prop == 21:
+            return ("engine-only step (pasch_4 a e c BD AC, "
+                    "Diagrammatic.lean:173): a and c oppose across BD and "
+                    "e lies on both lines, so between a e c — e is "
+                    "between a and c on side AC. Lean's SMT closes this "
+                    "silently")
+        if rule == "proposition_20" and prop == 21:
+            if args[1] == "b":
+                return ("cited step (proposition_20 a b e AB BD AC — "
+                        "I.20, two sides exceed the third, in triangle "
+                        "a-b-e): |b-a| + |a-e| > |b-e|")
+            return ("cited step (proposition_20 e d c BD DC AC — I.20 "
+                    "in triangle e-d-c): |d-e| + |e-c| > |d-c|")
+        if rule == "proposition_16" and prop == 21:
+            if args[0] == "c":
+                return ("cited step (proposition_16 c e d b AC BD DC — "
+                        "the exterior-angle theorem in triangle c-d-e, "
+                        "with b on the extension of e-d past d): the "
+                        "exterior angle c:d:b (= b:d:c) exceeds the "
+                        "interior angle d:e:c")
+            return ("cited step (proposition_16 b a e c AB AC BD — the "
+                    "exterior-angle theorem in triangle a-b-e, with c on "
+                    "the extension of a-e past e): the exterior angle "
+                    "b:e:c exceeds the interior angle e:a:b (= b:a:c, e "
+                    "on a-c). The conclusion's why: for the lengths, "
+                    "|b-d| + |d-c| < |b-d| + |d-e| + |e-c| (the second "
+                    "I.20 step) = |b-e| + |e-c| (between b d e) < "
+                    "|b-a| + |a-e| + |e-c| (the first I.20 step) = "
+                    "|b-a| + |a-c| (between a e c); for the angles, "
+                    "angle b:d:c > angle d:e:c (the first I.16 step) = "
+                    "angle b:e:c (d on the ray e->b, between b d e) > "
+                    "angle e:a:b = angle b:a:c "
+                    "(e between a and c)")
         if rule == "proposition_16" and prop == 18:
             return ("cited step (proposition_16 b c d a BC AC BD, the "
                     "exterior-angle theorem in triangle b-c-d): the "
@@ -1429,6 +1510,55 @@ def verify20(xy):
     ]
 
 
+def verify21(xy):
+    """I.21 (lines from inside a triangle: for d strictly inside
+    triangle a-b-c, |b-d| + |d-c| < |b-a| + |a-c| and
+    angle b:d:c > angle b:a:c): the drawn facts are the hypotheses — the
+    scalene triangle a-b-c with d strictly inside (on a's side of BC,
+    c's side of AB, b's side of AC) — plus the construction (e where BD
+    meets AC, with between a e c and between b d e). The conclusions
+    numerically: the two I.20 steps |b-a| + |a-e| > |b-e| and
+    |d-e| + |e-c| > |d-c|; the two I.16 exterior-angle steps
+    angle b:d:c > angle d:e:c and angle b:e:c > angle b:a:c; and both
+    goals with visible margins."""
+    dist = lambda p, q: _norm(_sub(xy[p], xy[q]))
+
+    def cross(l1, l2, p):
+        return ((xy[l2][0] - xy[l1][0]) * (xy[p][1] - xy[l1][1])
+                - (xy[l2][1] - xy[l1][1]) * (xy[p][0] - xy[l1][0]))
+
+    bdc = _ang(xy, "b", "d", "c")
+    dec = _ang(xy, "d", "e", "c")
+    bec = _ang(xy, "b", "e", "c")
+    bac = _ang(xy, "b", "a", "c")
+    return [
+        ("I.21: d on a's side of BC (inside, hyp a.sameSide d BC)",
+         cross("b", "c", "d") * cross("b", "c", "a") > 0),
+        ("I.21: d on c's side of AB (inside, hyp c.sameSide d AB)",
+         cross("a", "b", "d") * cross("a", "b", "c") > 0),
+        ("I.21: d on b's side of AC (inside, hyp b.sameSide d AC)",
+         cross("a", "c", "d") * cross("a", "c", "b") > 0),
+        ("I.21: e on AC between a and c",
+         abs(dist("a", "e") + dist("e", "c") - dist("a", "c")) < EPS),
+        ("I.21: between b d e (the by_contra's conclusion)",
+         abs(dist("b", "d") + dist("d", "e") - dist("b", "e")) < EPS),
+        ("I.21: first I.20 step |b-a| + |a-e| > |b-e|",
+         dist("b", "a") + dist("a", "e") > dist("b", "e") + EPS),
+        ("I.21: second I.20 step |d-e| + |e-c| > |d-c|",
+         dist("d", "e") + dist("e", "c") > dist("d", "c") + EPS),
+        ("I.21: first I.16 step angle b:d:c > angle d:e:c (exterior "
+         "angle of triangle c-d-e)", bdc > dec + EPS),
+        ("I.21: second I.16 step angle b:e:c > angle b:a:c (exterior "
+         "angle of triangle a-b-e)", bec > bac + EPS),
+        ("I.21: GOAL |b-d| + |d-c| < |b-a| + |a-c|, with a visible "
+         "margin (at least 0.2)",
+         dist("b", "d") + dist("d", "c")
+         < dist("b", "a") + dist("a", "c") - 0.2),
+        ("I.21: GOAL angle b:d:c > angle b:a:c, with a visible margin "
+         "(at least 0.15 rad)", bdc > bac + 0.15),
+    ]
+
+
 def verify(prop, xy):
     """Check the placement against the proposition's metric facts to
     EPS. Returns a list of (description, ok)."""
@@ -1464,6 +1594,8 @@ def verify(prop, xy):
         return verify19(xy)
     if prop == 20:
         return verify20(xy)
+    if prop == 21:
+        return verify21(xy)
     a, e, b = xy["a"], xy["e"], xy["b"]
     checks = [("I.3: |a-e| = |c0-c1|",
                abs(d("a", "e") - d("c0", "c1")) < EPS)]
@@ -1760,7 +1892,7 @@ def build_trace(prop):
             s.la.add({eng.len_atom("a", "b"): 1,
                       eng.len_atom("c0", "c1"): -1}, 0, ">")
         eng.close(s)
-        if prop in (10, 11, 12, 15, 16, 17, 18, 20):
+        if prop in (10, 11, 12, 15, 16, 17, 18, 20, 21):
             # replay() also drives the by_contra steps and asserts the Book
             # conclusion (same queries the engine's own main() uses). I.12's
             # goal substitute is stated in PROP12_STEPS_DATA's comment: the
@@ -1771,7 +1903,8 @@ def build_trace(prop):
             # verbatim: the second conjunct angle a:c:d > angle b:a:c.
             # I.17's is PROP17_GOAL verbatim: angle a:b:c + angle b:c:a
             # < two right angles. I.18's is PROP18_GOAL verbatim:
-            # angle a:b:c > angle b:c:a.
+            # angle a:b:c > angle b:c:a. I.21's is PROP21_GOAL verbatim:
+            # |b-d| + |d-c| < |b-a| + |a-c| and angle b:d:c > angle b:a:c.
             queries = {10: [("between", "a", "d", "b"),
                             ("_eq_len", "a", "d", "d", "b")],
                        11: [("not_on_line", "f", "AB"),
@@ -1782,7 +1915,8 @@ def build_trace(prop):
                        16: list(eng.PROP16B_GOAL),
                        17: list(eng.PROP17_GOAL),
                        18: list(eng.PROP18_GOAL),
-                       20: list(eng.PROP20_GOAL)}[prop]
+                       20: list(eng.PROP20_GOAL),
+                       21: list(eng.PROP21_GOAL)}[prop]
             _s, reports_all = eng.replay(hyps, steps, queries)
             reports = reports_all[:-1]  # drop the {"final": ...} entry
         else:
@@ -1801,7 +1935,7 @@ def build_trace(prop):
                                         after=after16)
         else:
             lean = (lean_lines_for_named(prop, steps, name_map)
-                    if prop in (10, 11, 12, 15, 17, 18)
+                    if prop in (10, 11, 12, 15, 17, 18, 21)
                     else lean_lines_for(prop, [r for r, _, _ in steps]))
         if prop == 18:
             # the engine's last step is sum_angles_onlyif where Lean
