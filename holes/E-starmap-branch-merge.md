@@ -1,5 +1,7 @@
 # Excursion: E-starmap-branch-merge
 
+> **Closed 2026-11-08 (already done).** The star-map INSTANTIATE commits are on futon2 `main`, and no branch named `wm-outing/2026-06-07` exists any more in futon0, futon2, futon3c, futon5 or futon7, so `git branch --merged` cannot be run; `git merge-base --is-ancestor <sha> main` was used instead, and no futon2 commit from 2026-06-05 to 06-12 is off `main`. Evidence: futon2 35ce7f6d5 (star-map EFE goal binding), bdf62dfef (blend into live WM ranking), 2d3bf0589 (graph-EFE cleanup), 2768a69fb (render star map), d6db32b28, 459007861, all ancestors of `main`. Checked by misc in the closure pass (claude-6, FIX/WONTFIX sheet).
+
 **Type:** E-prefix excursion (bounded scope-out, single-agent-owned end-to-end).
 **Spawned:** 2026-06-10, on the **close of `M-capability-star-map`** (operator decision by Joe via
 WM pilot cycle #1; pilot claude-3) — one of the four close-caveats spun out so the mission could
@@ -27,5 +29,5 @@ and `git branch --merged` confirms it.
 
 _Drafted from this document's own stated goals during the War Machine status classification (zai-5, high confidence); not yet confirmed by the author._
 
-- [ ] Merge or cherry-pick wm-outing/2026-06-07 into main with the usual gates; record what landed
-- [ ] Confirm via git branch --merged, or record an explicit abandonment reason
+- [x] Merge or cherry-pick wm-outing/2026-06-07 into main with the usual gates; record what landed (futon2 35ce7f6d5, bdf62dfef, 2d3bf0589, 2768a69fb on main)
+- [x] Confirm via git branch --merged, or record an explicit abandonment reason (branch gone; confirmed with merge-base --is-ancestor, see closure note)
