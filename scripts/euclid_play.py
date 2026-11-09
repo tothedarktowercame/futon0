@@ -287,6 +287,49 @@ ARG_HINTS = {
     "intersections_circle_line": {"alpha": "the circle", "L": "the line"},
     "intersection_lines": {"L": "first line", "M": "second line"},
     "extend_point": {"L": "the line", "b": "extend past", "c": "from"},
+    # the moves with many inputs (Joe, 2026-11-09: "it asks me for all
+    # of this"); the page fills a circle's centre itself when it can
+    "intersection_same_side": {
+        "alpha": "first circle", "beta": "second circle",
+        "b": "a point on the side you want", "c": "centre of the first circle",
+        "d": "centre of the second circle",
+        "L": "the line through both centres"},
+    "intersection_opposite_side": {
+        "alpha": "first circle", "beta": "second circle",
+        "b": "a point on the side you do NOT want",
+        "c": "centre of the first circle",
+        "d": "centre of the second circle",
+        "L": "the line through both centres"},
+    "intersection_circle_line_extending_points": {
+        "alpha": "the circle", "L": "the line",
+        "b": "a point inside the circle, on the line",
+        "c": "another point on the line (the new point is beyond the "
+             "inside one, away from this one)"},
+    "intersection_circle_line_between_points": {
+        "alpha": "the circle", "L": "the line",
+        "b": "a point inside the circle, on the line",
+        "c": "a point outside the circle, on the line"},
+    "intersection_circle_circle_1": {
+        "a": "a point on the first circle, inside the second",
+        "b": "a point on or inside the first circle, outside the second",
+        "alpha": "first circle", "beta": "second circle"},
+    "intersection_circle_line_1": {
+        "a": "a point on or inside the circle",
+        "b": "a point on or inside the circle, across the line",
+        "alpha": "the circle", "L": "the line"},
+    "intersection_lines_opposing": {
+        "a": "a point on one side of the first line",
+        "b": "a point on the other side", "L": "the first line",
+        "M": "the line through those two points"},
+    "extend_point_not_on_line": {
+        "L": "the line", "M": "a different line to avoid",
+        "b": "extend past", "c": "from"},
+    "extend_point_longer": {
+        "L": "the line", "b": "extend past", "c": "from",
+        "s0": "start of a length to exceed", "s1": "end of that length"},
+    "point_between_points_shorter_than": {
+        "L": "the line", "b": "from", "c": "towards",
+        "u": "start of a length", "v": "end of that length"},
 }
 
 _FACT_WORDS = {

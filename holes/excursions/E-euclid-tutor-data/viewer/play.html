@@ -460,7 +460,9 @@ function renderRuleInputs() {
     const inp = document.createElement("input");
     inp.className = "arg-in";
     inp.dataset.arg = a;
-    inp.placeholder = "click a point";
+    inp.dataset.hint = hint || "";
+    inp.addEventListener("change", autoFill);
+    inp.placeholder = "click a " + k;
     inp.title = "click a point (or line, circle) on the drawing, or type its name";
     inp.addEventListener("focusin", () => { activeInput = inp; });
     td.appendChild(inp);
@@ -507,8 +509,39 @@ function fillArg(name) {
   }
   if (inp) {
     inp.value = name;
+    if (cls === ".arg-in") autoFill();
     activeInput = [...document.querySelectorAll(cls)]
       .find(i => !i.value) || inp;
+  }
+}
+
+// Fill boxes the page can work out itself: a circle's centre from the
+// circle, and the line through two centres when one is drawn (Lean's
+// same-side/opposite-side intersection asks for both). Only empty boxes.
+function autoFill() {
+  const ins = [...document.querySelectorAll("#args-table .arg-in")];
+  const objs = lastResult ? lastResult.objects : [];
+  const byName = Object.fromEntries(objs.map(o => [o.name, o]));
+  const val = re => {
+    const i = ins.find(i => re.test(i.dataset.hint));
+    return i ? i.value.trim() : "";
+  };
+  const centreOf = c => {
+    const o = byName[c];
+    return o && o.jsx && o.jsx.type === "circle" ? o.jsx.center : "";
+  };
+  const set = (re, v) => {
+    const i = ins.find(i => re.test(i.dataset.hint));
+    if (i && !i.value && v) i.value = v;
+  };
+  set(/^centre of the first circle/, centreOf(val(/^first circle/)));
+  set(/^centre of the second circle/, centreOf(val(/^second circle/)));
+  const c1 = val(/^centre of the first circle/),
+        c2 = val(/^centre of the second circle/);
+  if (c1 && c2) {
+    const ln = objs.find(o => o.kind === "line" && o.jsx && o.jsx.p &&
+      o.jsx.p.includes(c1) && o.jsx.p.includes(c2));
+    if (ln) set(/^the line through both centres/, ln.name);
   }
 }
 
