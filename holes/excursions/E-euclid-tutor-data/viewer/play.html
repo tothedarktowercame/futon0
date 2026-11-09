@@ -376,8 +376,11 @@ function usedNames() {
   return s;
 }
 
-function freshName(base) {
+function freshName(base, also) {
+  // also: names already prefilled in this form (two new points of one
+  // move must not both default to "d" — Joe at I.2, 2026-11-09)
   const used = usedNames();
+  for (const n of (also || [])) used.add(n);
   if (base.length === 1 && base >= "A" && base <= "Z") {
     for (const c of "CDEFGHLMNPQRSTUVWXYZAB")
       if (!used.has(c)) return c;
@@ -480,7 +483,8 @@ function renderRuleInputs() {
     const inp = document.createElement("input");
     inp.className = "bind-in";
     inp.dataset.base = b === null ? "" : b;
-    inp.value = b === null ? "" : freshName(b);
+    inp.value = b === null ? "" : freshName(b,
+      [...tbl.querySelectorAll(".bind-in")].map(i => i.value));
     inp.dataset.default = inp.value;
     td.appendChild(inp);
     tr.appendChild(td);

@@ -615,6 +615,22 @@ def r_icc2(s):
                         f1, f2, ("inside", a, beta), ("on_circle", b, beta)])
 
 
+def r_icl2(s):
+    # Diagrammatic.lean:305 (intersection_circle_line_2) — a insideCircle α,
+    # a onLine L  ⇒  L intersectsCircle α. Lean's SMT applies it silently;
+    # no Book replay here needed it, but a student does (Joe at I.2,
+    # 2026-11-09: the line BC through the centre b of D, refused "line BC
+    # meets circle D").
+    for f1 in s.facts:
+        if f1[0] != "inside":
+            continue
+        a, alpha = f1[1], f1[2]
+        for f2 in s.facts:
+            if f2[0] == "on_line" and f2[1] == a and \
+                    not s.has(("intersects_lc", f2[2], alpha)):
+                yield (("intersects_lc", f2[2], alpha), [f1, f2])
+
+
 def r_icc_symm(s):
     # Diagrammatic.lean:289 — circle intersection is symmetric.
     for fact in s.facts:
@@ -1126,6 +1142,7 @@ FORWARD_RULES = [
     ("center_inside_circle [Diagrammatic.lean:28]", r_center_inside),
     ("not_outside [Relations.lean:35]", r_not_outside),
     ("intersection_circle_circle_2 [Diagrammatic.lean:319]", r_icc2),
+    ("intersection_circle_line_2 [Diagrammatic.lean:305]", r_icl2),
     ("intersection_symm [Diagrammatic.lean:289]", r_icc_symm),
     ("distinct_points_on_line [Relations.lean:6]", r_dpl),
     ("dpl_parts [Relations.lean:6 defn]", r_dpl_parts),    ("neq_positive_length [Metric.lean:21,25,33]", r_neq_pos),

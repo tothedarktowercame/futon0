@@ -792,3 +792,22 @@ def test_goal_witnesses_take_any_name():
                      "bindings": {}}] if "point_on_circle" in \
         ep.palette(1) else mv[:1]
     assert not ep.play(1, one)["goal_reached"]
+
+
+def test_line_through_inside_point_meets_circle():
+    """Joe at I.2 (2026-11-09): BC passes through b, the centre of D, so
+    it meets D (intersection_circle_line_2, Diagrammatic.lean:305); the
+    engine lacked the rule and refused "line BC meets circle D"."""
+    mv = [{"rule": "circle_from_points", "args": ["b", "c"],
+           "bindings": {"C": "D"}},
+          {"rule": "intersections_circle_line", "args": ["D", "BC"],
+           "bindings": {"a": "d", "b": "e"}}]
+    assert ep.play(2, mv)["moves"][-1]["ok"]
+    # a line through a point ON the circle (not inside) may only touch
+    # it: still refused
+    mv2 = [{"rule": "circle_from_points", "args": ["a", "b"],
+            "bindings": {"C": "E"}},
+           {"rule": "intersections_circle_line", "args": ["E", "BC"],
+            "bindings": {"a": "d", "b": "e"}}]
+    ent = ep.play(2, mv2)["moves"][-1]
+    assert not ent["ok"] and ent["error"] == ["intersects_lc", "BC", "E"]
