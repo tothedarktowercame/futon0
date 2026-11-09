@@ -88,9 +88,14 @@
     <div id="statement"></div>
     <div id="move-panel">
       <div style="font-size:12px;color:#555;margin:6px 0 4px">
-        Choose a move, click the points it uses on the drawing (or type
-        their names), then press <b>do move</b>. A new object gets the
-        name shown in its box; you can change it.</div>
+        Click the points, lines or circles you want to use: the list then
+        shows only the moves that use them, already filled in. Pick one and
+        press <b>do move</b>. (You can still type names into the boxes.)</div>
+      <div id="selection-bar" style="font-size:12px;margin:2px 0 4px">
+        selected: <span id="selection-list" style="font-family:monospace">
+        (click objects in the drawing)</span>
+        <button id="btn-clear-sel" style="font-size:11px">clear</button>
+      </div>
       <select id="rule-select"></select>
       <div id="cite" style="font-size:11px;color:#777;margin:2px 0"></div>
       <table id="args-table"></table>
@@ -339,6 +344,10 @@ function draw() {
     const el = mk(o);
     if (!el) continue;
     built[o.name] = el;
+    el.__baseStroke = el.visProp && el.visProp.strokecolor;
+    el.__baseFill = el.visProp && el.visProp.fillcolor;
+    if (selection.some(s => s.name === o.name))
+      el.setAttribute({ strokeColor: HI, fillColor: HI });
     if (o.aux && !showAux) el.setAttribute({ visible: false });
     // clicking an object fills the argument being filled with its name
     // ("down" only: a click would fire again after it and fill twice)
@@ -364,8 +373,74 @@ function queueClick(o) {
     const pick = hit.find(o => o.kind === want)
       || hit.find(o => (o.kind === "point") === (want === "point"))
       || hit[0];
-    fillArg(pick.name);
+    if (activeInput && activeInput.classList.contains("fact-in")) {
+      fillArg(pick.name);       // the case builder fills its own boxes
+    } else {
+      toggleSelect(hit);
+    }
   }, 0);
+}
+
+// ---------------------------------------------------- diagram selection
+// The drawing drives the move list (Joe, 2026-11-09: the dropdown should
+// be "driven entirely or almost entirely by the diagram"). Clicked
+// objects are selected; the list shows the moves that can take them, and
+// the chosen move's boxes are filled from the selection in order.
+let selection = [];   // [{name, kind}]
+
+function toggleSelect(hit) {
+  // one mouse-down may hit several objects: prefer a point; a second
+  // click on a selected object removes it
+  const pick = hit.find(o => o.kind === "point") || hit[0];
+  const i = selection.findIndex(o => o.name === pick.name);
+  if (i >= 0) selection.splice(i, 1);
+  else selection.push({ name: pick.name, kind: pick.kind });
+  onSelectionChanged();
+}
+
+function clearSelection() {
+  selection = [];
+  onSelectionChanged();
+}
+
+function fits(e) {
+  // every selected object goes to a distinct argument of its kind
+  const kinds = e.args.map(argKind);
+  const used = new Array(kinds.length).fill(false);
+  for (const o of selection) {
+    const j = kinds.findIndex((k, idx) => !used[idx] && k === o.kind);
+    if (j < 0) return false;
+    used[j] = true;
+  }
+  return true;
+}
+
+function onSelectionChanged() {
+  const lst = document.getElementById("selection-list");
+  lst.textContent = selection.length
+    ? selection.map(o => o.name).join(", ")
+    : "(click objects in the drawing)";
+  for (const [nm, el] of Object.entries(built)) {
+    const on = selection.some(o => o.name === nm);
+    try {
+      el.setAttribute(on ? { strokeColor: HI, fillColor: HI }
+                         : { strokeColor: el.__baseStroke,
+                             fillColor: el.__baseFill });
+    } catch (err) { /* not every element takes colours */ }
+  }
+  renderMovePanel();
+}
+
+function fillFromSelection() {
+  const ins = [...document.querySelectorAll("#args-table .arg-in")];
+  const taken = new Set();
+  for (const inp of ins) {
+    const k = argKind(inp.dataset.arg);
+    const o = selection.find(o => !taken.has(o.name) && o.kind === k);
+    if (o) { inp.value = o.name; taken.add(o.name); }
+  }
+  autoFill();
+  activeInput = ins.find(i => !i.value) || ins[0] || null;
 }
 
 // ------------------------------------------------------------- move panel
@@ -414,16 +489,50 @@ function renderMovePanel() {
     opt.textContent = e.label || ruleLabel(e);
     parent.appendChild(opt);
   };
+  const prev = sel.dataset.chosen || "";
+  if (selection.length) {
+    // only moves that use the selection: exactly, then with one more
+    // object to click (Joe: the list should be driven by the diagram)
+    const ok = cur.palette.filter(fits);
+    const groups = [
+      ["uses exactly what you selected",
+       ok.filter(e => e.args.length === selection.length)],
+      ["needs one more object",
+       ok.filter(e => e.args.length === selection.length + 1)]];
+    let any = false;
+    for (const [title, es] of groups) {
+      if (!es.length) continue;
+      any = true;
+      const og = document.createElement("optgroup");
+      og.label = title;
+      for (const e of es) addOpt(og, e);
+      sel.appendChild(og);
+    }
+    if (!any) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = ok.length
+        ? "(select more objects: every move here needs several more)"
+        : "(no move takes this selection)";
+      sel.appendChild(opt);
+    }
+    if (prev && [...sel.options].some(o => o.value === prev))
+      sel.value = prev;
+    renderRuleInputs();
+    return;
+  }
+  const pal = cur.palette;
   for (const [key, title] of GROUP_TITLES) {
-    const entries = cur.palette.filter(e => e.group === key);
+    const entries = pal.filter(e => e.group === key);
     if (!entries.length) continue;
     const og = document.createElement("optgroup");
     og.label = title;
     for (const e of entries) addOpt(og, e);
     sel.appendChild(og);
   }
-  for (const e of cur.palette)   // anything ungrouped, just in case
+  for (const e of pal)   // anything ungrouped, just in case
     if (!GROUP_TITLES.some(([k]) => k === e.group)) addOpt(sel, e);
+  if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
   renderRuleInputs();
 }
 
@@ -491,6 +600,7 @@ function renderRuleInputs() {
     tbl.appendChild(tr);
   }
   activeInput = tbl.querySelector(".arg-in");
+  if (selection.length) fillFromSelection();
 }
 
 // the kind of object an engine argument stands for, from its name:
@@ -1030,7 +1140,8 @@ async function submitMove() {
   if (lastM && lastM.ok && rl.length === target.length) {
     saveProgress();
     afterResult(res, null);
-    renderRuleInputs();  // fresh prefills for the next move
+    selection = [];      // the move used the selection
+    onSelectionChanged();  // fresh list and prefills for the next move
   } else {
     // refused: keep the move list unchanged, show the error in plain words
     target.pop();
@@ -1096,6 +1207,7 @@ function renderPropList() {
 
 async function selectProp(i) {
   cur = catalogue[i];
+  selection = [];
   const p = loadProgress();
   moves = JSON.parse(JSON.stringify(p.moves[cur.n] || []));
   hideCaseBuilder();
@@ -1119,7 +1231,12 @@ document.getElementById("cb-begin").onclick = beginCase;
 document.getElementById("cb-cancel").onclick = hideCaseBuilder;
 wireFactBuilder("cb-hyps", cbHyps, "add hypothesis");
 wireFactBuilder("cb-concl", cbConcl, "add conclusion");
-document.getElementById("rule-select").onchange = renderRuleInputs;
+document.getElementById("rule-select").onchange = () => {
+  const sel = document.getElementById("rule-select");
+  sel.dataset.chosen = sel.value;
+  renderRuleInputs();
+};
+document.getElementById("btn-clear-sel").onclick = clearSelection;
 document.getElementById("toggle-aux").onchange = () => draw();
 document.getElementById("reset-progress").onclick = ev => {
   ev.preventDefault();
