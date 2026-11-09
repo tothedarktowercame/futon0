@@ -387,6 +387,13 @@ def student_error(err, rule=None):
     if m:
         return ("I.%s has not been proved yet — finish the earlier "
                 "propositions first." % m.group(1))
+    if s == "blank input":
+        return ("Fill in every box first: click the objects on the "
+                "drawing, or type their names.")
+    m = re.match(r"^no object called (.+)$", s)
+    if m:
+        return ("There is nothing called %s in the drawing yet — click "
+                "an object to use its name." % m.group(1))
     if s.startswith("bad arity"):
         spec = eng.CONSTRUCTIONS.get(rule)
         if spec is not None:
@@ -1238,6 +1245,13 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
         elif rule not in pal:
             entry["error"] = ("unknown rule %r (not in I.%d's palette)"
                               % (rule, n))
+        elif any(not str(a).strip() for a in (mv.get("args") or ())):
+            entry["error"] = "blank input"
+        elif [a for a in (mv.get("args") or ())
+              if a not in {o["name"] for o in objects}]:
+            entry["error"] = "no object called %s" % ", ".join(
+                a for a in mv["args"]
+                if a not in {o["name"] for o in objects})
         else:
             args = tuple(mv.get("args") or ())
             bindings = dict(mv.get("bindings") or {})

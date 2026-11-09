@@ -291,16 +291,19 @@ def test_future_proposition_refused():
 
 
 def test_missing_premise_returns_the_fact():
-    # I.1: intersection_circles BCD ACE before the second circle (ACE)
-    # exists must fail with the missing premise as the error.
+    # I.1: intersection_circles of BCD with itself is not shown to
+    # intersect, so it fails with the missing premise as the error. (A
+    # circle that does not exist yet is now refused earlier, by name.)
     steps = tr.hyps_and_steps(1)[1]
-    res = ep.play(1, [_move(*steps[0]), _move(*steps[2])])
+    res = ep.play(1, [_move(*steps[0]),
+                      _move("intersection_circles", ("BCD", "BCD"),
+                            {"c": "c"})])
     assert len(res["moves"]) == 2
     assert res["moves"][0]["ok"]
     last = res["moves"][-1]
     assert not last["ok"]
     assert isinstance(last["error"], list)
-    assert "ACE" in last["error"]  # the missing premise names ACE
+    assert last["error"] == ["intersects_cc", "BCD", "BCD"]
     assert not res["goal_reached"]
 
 
@@ -563,12 +566,14 @@ def test_plain_bad_arity():
 
 def test_plain_missing_premise():
     steps = tr.hyps_and_steps(1)[1]
-    res = ep.play(1, [_move(*steps[0]), _move(*steps[2])])
+    res = ep.play(1, [_move(*steps[0]),
+                      _move("intersection_circles", ("BCD", "BCD"),
+                            {"c": "c"})])
     m = res["moves"][-1]
     assert isinstance(m["error"], list)
     t = m["error_plain"]
     _assert_student_text(t)
-    assert t.startswith("Not yet shown: ") and "ACE" in t
+    assert t.startswith("Not yet shown: ") and "BCD" in t
 
 
 def test_plain_fresh_name():
@@ -753,3 +758,17 @@ def test_play_24_25_splits_covered_and_drops_refused():
         assert not res["goal_reached"]
         assert ent["error"] == "missing case", ent
         assert ent["missing_case"]["missing"] == expect25[j], ent
+
+
+def test_blank_and_unknown_inputs_refused_plainly():
+    """Joe's first move (2026-11-09) sent circle_from_points with both
+    inputs blank and got "Not yet shown:  ≠ "."""
+    ent = ep.play(1, [{"rule": "circle_from_points", "args": ["", ""],
+                       "bindings": {"C": "C"}}])["moves"][-1]
+    assert not ent["ok"] and "Fill in every box" in ent["error_plain"]
+    ent = ep.play(1, [{"rule": "circle_from_points", "args": ["a", "z"],
+                       "bindings": {"C": "C"}}])["moves"][-1]
+    assert not ent["ok"] and "nothing called z" in ent["error_plain"]
+    res = ep.play(1, [{"rule": "circle_from_points", "args": ["a", "b"],
+                       "bindings": {"C": "C"}}])
+    assert res["moves"][-1]["ok"]

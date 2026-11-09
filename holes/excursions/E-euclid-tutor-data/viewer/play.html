@@ -87,6 +87,10 @@
     <div id="prop-title" style="font-weight:bold;margin-bottom:4px"></div>
     <div id="statement"></div>
     <div id="move-panel">
+      <div style="font-size:12px;color:#555;margin:6px 0 4px">
+        Choose a move, click the points it uses on the drawing (or type
+        their names), then press <b>do move</b>. A new object gets the
+        name shown in its box; you can change it.</div>
       <select id="rule-select"></select>
       <div id="cite" style="font-size:11px;color:#777;margin:2px 0"></div>
       <table id="args-table"></table>
@@ -422,6 +426,8 @@ function renderRuleInputs() {
     const inp = document.createElement("input");
     inp.className = "arg-in";
     inp.dataset.arg = a;
+    inp.placeholder = "click a point";
+    inp.title = "click a point (or line, circle) on the drawing, or type its name";
     inp.addEventListener("focusin", () => { activeInput = inp; });
     td.appendChild(inp);
     tr.appendChild(td);
@@ -911,6 +917,17 @@ async function submitMove() {
   } else {
     for (const i of bindIns)
       if (i.value.trim()) bindings[i.dataset.base] = i.value.trim();
+  }
+  // blank inputs: say what to do instead of sending a move the engine
+  // can only refuse with an empty fact (Joe's first try at I.1)
+  const blank = [...document.querySelectorAll("#args-table .arg-in")]
+    .filter(i => !i.value.trim()).map(i => i.dataset.arg);
+  if (blank.length) {
+    showError("blank inputs: " + blank.join(", "),
+      "Fill in " + blank.join(" and ") + " first: click the objects on " +
+      "the drawing (each click fills the next empty box), or type " +
+      "their names.");
+    return;
   }
   const mv = { rule, args, bindings };
   const target = currentMoveList();
