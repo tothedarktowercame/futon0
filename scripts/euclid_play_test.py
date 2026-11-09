@@ -836,3 +836,24 @@ def test_i2_split_on_a_equals_c_with_named_witness():
     ent = ep.play(2, [one])["moves"][-1]
     assert ent["error"] == "missing case"
     assert ent["missing_case"]["missing"] == [["neq", "a", "c"]]
+
+
+def test_case_try_snapped_cases_find_existing_witness():
+    """Joe at I.2 (2026-11-09): dragging a onto c, or onto circle D
+    (centre b through c), each makes b a witness for l (|ab| = |bc|); a
+    on line BC does not settle it by itself."""
+    r = ep.case_try(2, [], [["peq", "a", "c"]])
+    assert r["holds"] and r["witness"] == {"l": "b"}
+    assert r["moves"] == [{"rule": "name_point", "args": ["b"],
+                           "bindings": {"x": "l"}}]
+    mv = [{"rule": "circle_from_points", "args": ["b", "c"],
+           "bindings": {"C": "D"}}]
+    r = ep.case_try(2, mv, [["on_circle", "a", "D"]])
+    assert r["holds"] and r["witness"] == {"l": "b"}
+    assert not ep.case_try(2, mv, [["on_line", "a", "BC"]])["holds"]
+    # the returned moves close the case in a real block
+    blk = {"rule": "by_cases", "branches": [
+        {"hyps": [["peq", "a", "c"]],
+         "moves": ep.case_try(2, [], [["peq", "a", "c"]])["moves"]}],
+        "conclusion": [["eq_len", "a", "l", "b", "c"]], "open": True}
+    assert ep.play(2, [blk])["moves"][-1]["ok"]

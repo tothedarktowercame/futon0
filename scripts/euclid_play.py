@@ -508,7 +508,7 @@ def rule_info(name):
             "arg_hints": dict(ARG_HINTS.get(name, {}))}
 
 
-def _goal_reached(n, s, objects, xy=None):
+def _goal_witness(n, s, objects, xy=None):
     """GOALS[n] with its existential witnesses free. A goal name that is
     not one of the proposition's given objects is a witness of Lean's
     ∃ (I.1's c, I.2's l, ...): any point in the drawing may play it, so
@@ -525,9 +525,9 @@ def _goal_reached(n, s, objects, xy=None):
             if isinstance(x, str) and x not in given and x not in wit:
                 wit.append(x)
     if all(eng._fact_holds(s, g) for g in goals):
-        return True   # the engine's own names (fast path)
+        return {}     # the engine's own names (fast path)
     if not wit:
-        return False
+        return None
     points = {o["name"] for o in objects if o.get("kind") == "point"}
     for f in s.facts:
         if f[0] in ("on_line", "on_circle", "not_on_line", "centre"):
@@ -594,6 +594,7 @@ def _goal_reached(n, s, objects, xy=None):
 
     def search(i, env):
         if i == len(goals):
+            found.append(dict(env))
             return True
         g = goals[i]
         free = [x for x in g[1:] if x in wit and x not in env]
@@ -627,7 +628,47 @@ def _goal_reached(n, s, objects, xy=None):
             ok = False
         return ok and search(i + 1, env)
 
-    return search(0, {})
+    found = []
+    return found[0] if search(0, {}) else None
+
+
+def _goal_reached(n, s, objects, xy=None):
+    return _goal_witness(n, s, objects, xy) is not None
+
+
+def case_try(n, moves, hyps):
+    """A case the student opened by snapping a point in the drawing
+    (Joe, 2026-11-09: drag a onto c, or onto circle D): after `moves`
+    (top level, all accepted), assume `hyps` and ask whether the goal
+    already holds with existing points as the theorem's witnesses. Returns
+    {"holds": bool, "witness": {goal name: existing point}, "moves":
+    name_point moves that close the case, "why": goal facts as words}.
+    The drawing is not used (it does not show the snapped position)."""
+    pal = set(palette(n))
+    s = _start_state(n)
+    objects = tr.objects_from_hyps(n)
+    xy = {k: v for k, v in tr.FREE[n].items()}
+    tr.derived_free_points(n, xy)
+    out, _view = _apply_moves(n, s, moves, objects, xy, pal)
+    if any(not m.get("ok") for m in out):
+        return {"holds": False, "error": "the moves so far are not all "
+                "accepted"}
+    t = s.copy()
+    for h in hyps:
+        eng._assume_metric_or_fact(t, tuple(h), "snapped case")
+    eng.close(t)
+    if eng.contradictory(t)[0]:
+        return {"holds": True, "witness": {}, "moves": [],
+                "why": "this case is impossible"}
+    env = _goal_witness(n, t, objects, None)
+    if env is None:
+        return {"holds": False}
+    mv = [{"rule": "name_point", "args": [p], "bindings": {"x": w}}
+          for w, p in env.items() if w != p]
+    why = "; ".join(fact_words(tuple(env.get(x, x) if isinstance(x, str)
+                                     else x for x in g))
+                    for g in GOALS[n])
+    return {"holds": True, "witness": env, "moves": mv, "why": why}
 
 
 def catalogue():
@@ -1581,6 +1622,19 @@ class _Handler(SimpleHTTPRequestHandler):
             super().do_GET()
 
     def do_POST(self):
+        if self.path == "/api/case_try":
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                data = json.loads(self.rfile.read(length) or b"{}")
+                res = case_try(int(data["n"]), data.get("moves") or [],
+                               data.get("hyps") or [])
+                _log_play({"n": data.get("n"), "moves": data.get("moves"),
+                           "case_try": data.get("hyps")},
+                          {"moves": [{"ok": res.get("holds")}]})
+                self._send_json(res)
+            except (KeyError, ValueError, TypeError) as e:
+                self._send_json({"error": str(e)}, code=400)
+            return
         if self.path == "/api/play":
             try:
                 length = int(self.headers.get("Content-Length", 0))

@@ -137,6 +137,9 @@
         <button id="cb-begin">begin case</button>
         <button id="cb-cancel">cancel</button>
       </div>
+      <div id="snap-offer" style="display:none;margin:6px 0;padding:6px;
+           border:1px solid #c9a227;background:#fff8e0;border-radius:4px;
+           font-size:13px"></div>
       <div id="move-error"></div>
       <div id="tutor-question"></div>
       <div id="solved-banner">Solved ✓</div>
@@ -352,6 +355,8 @@ function draw() {
     // clicking an object fills the argument being filled with its name
     // ("down" only: a click would fire again after it and fill twice)
     el.on("down", () => queueClick(o));
+    if (o.kind === "point" && o.def_step === 0)
+      el.on("up", () => checkSnap(o, el));
   }
 }
 
@@ -396,6 +401,140 @@ function toggleSelect(hit) {
   if (i >= 0) selection.splice(i, 1);
   else selection.push({ name: pick.name, kind: pick.kind });
   onSelectionChanged();
+}
+
+// ------------------------------------------------- snapping = supposing
+// Dragging a given point onto another point, a circle or a line snaps it
+// there and offers that position as a case (Joe, 2026-11-09: "if I drag
+// a onto c, they could snap together which is a 'case' of equality").
+// The server then checks whether the goal already holds in that case with
+// existing points as the theorem's witnesses (/api/case_try): if so the
+// case closes itself with name_point moves; if not it stays open.
+function checkSnap(o, el) {
+  // snapping radius in screen pixels: generous for points (aiming at a
+  // point should win over the line through it), tighter for curves
+  const px = board.unitX || 50;
+  const TOL = { point: 18 / px, circle: 10 / px, line: 10 / px };
+  const x = el.X(), y = el.Y();
+  const objs = lastResult ? lastResult.objects : [];
+  const uses = q => q.jsx && (q.jsx.center === o.name ||
+    q.jsx.through === o.name || (q.jsx.p || []).includes(o.name));
+  let best = null;
+  for (const q of objs) {
+    if (q.name === o.name || uses(q)) continue;
+    const e = built[q.name];
+    if (!e) continue;
+    let d = Infinity, at = null, fact = null, words = null;
+    if (q.kind === "point") {
+      d = Math.hypot(e.X() - x, e.Y() - y); at = [e.X(), e.Y()];
+      fact = ["peq", o.name, q.name];
+      words = `${o.name} and ${q.name} are the same point`;
+    } else if (q.kind === "circle" && e.center) {
+      const cx = e.center.X(), cy = e.center.Y(), r = e.Radius();
+      const t = Math.hypot(x - cx, y - cy);
+      if (t > 1e-9) {
+        d = Math.abs(t - r);
+        at = [cx + (x - cx) * r / t, cy + (y - cy) * r / t];
+      }
+      fact = ["on_circle", o.name, q.name];
+      words = `${o.name} is on circle ${q.name}`;
+    } else if (q.kind === "line" && e.point1 && e.point2) {
+      const ax = e.point1.X(), ay = e.point1.Y();
+      const dx = e.point2.X() - ax, dy = e.point2.Y() - ay;
+      const L2 = dx * dx + dy * dy;
+      if (L2 > 1e-12) {
+        const u = ((x - ax) * dx + (y - ay) * dy) / L2;
+        at = [ax + u * dx, ay + u * dy];
+        d = Math.hypot(x - at[0], y - at[1]);
+      }
+      fact = ["on_line", o.name, q.name];
+      words = `${o.name} is on line ${q.name}`;
+    }
+    // points first, then circles, then lines, at equal closeness
+    const rank = { point: 0, circle: 1, line: 2 }[q.kind] ?? 3;
+    if (d < (TOL[q.kind] || 0) && (!best || rank < best.rank ||
+                    (rank === best.rank && d < best.d)))
+      best = { d, at, fact, words, rank };
+  }
+  if (!best) return;
+  el.setPosition(JXG.COORDS_BY_USER, best.at);
+  board.update();
+  offerSnap(best);
+}
+
+function offerSnap(best) {
+  const div = document.getElementById("snap-offer");
+  div.innerHTML = "";
+  div.style.display = "block";
+  const p = document.createElement("div");
+  p.textContent = `Snapped: ${best.words}. Look at this case?`;
+  div.appendChild(p);
+  const yes = document.createElement("button");
+  yes.textContent = "suppose " + best.words;
+  yes.onclick = () => { div.style.display = "none"; supposeSnap(best); };
+  const no = document.createElement("button");
+  no.textContent = "no";
+  no.onclick = () => { div.style.display = "none"; draw(); };
+  div.appendChild(yes);
+  div.appendChild(no);
+}
+
+function plainGoal() {
+  return (cur.goals || []).map(g =>
+    /^_(eq|gt)_(len|ang)$/.test(g[0]) ? [g[0].slice(1)].concat(g.slice(1))
+                                       : g.slice());
+}
+
+async function supposeSnap(best) {
+  const hyps = [best.fact];
+  const top = moves.filter(m => !(m.branches && m.open));
+  const r = await fetch("/api/case_try", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ n: cur.n, moves: top, hyps }) });
+  const tryRes = await r.json();
+  let block = openBlock();
+  let rollback;
+  const branch = { hyps, moves: tryRes.holds ? (tryRes.moves || []) : [] };
+  if (block && block.rule === "by_cases") {
+    block.branches.push(branch);
+    rollback = () => block.branches.pop();
+  } else {
+    block = { rule: "by_cases", branches: [branch],
+              conclusion: plainGoal(), open: true };
+    const target = currentMoveList();
+    target.push(block);
+    rollback = () => target.pop();
+  }
+  const res = await postPlay(cur.n, moves);
+  const ent = responseEntryFor(res, block);
+  if (ent && ent.ok) {
+    saveProgress();
+    afterResult(res, null);
+    const div = document.getElementById("snap-offer");
+    div.style.display = "block";
+    div.innerHTML = "";
+    const msg = document.createElement("div");
+    if (tryRes.holds && tryRes.witness &&
+        Object.keys(tryRes.witness).length) {
+      const w = Object.entries(tryRes.witness)
+        .map(([k, v]) => `${v} serves as ${k}`).join(", ");
+      msg.textContent = `In the case where ${best.words}, ${w}: ` +
+        `${tryRes.why}. This case is done. Now the other cases: drag the ` +
+        `point somewhere else, or press "close" and the referee will ` +
+        `say what is left.`;
+    } else if (tryRes.holds) {
+      msg.textContent = `In the case where ${best.words}: ${tryRes.why}.` +
+        ` This case is done.`;
+    } else {
+      msg.textContent = `In the case where ${best.words}, the goal does ` +
+        `not follow straight away: make moves inside this case.`;
+    }
+    div.appendChild(msg);
+  } else {
+    rollback();
+    afterResult(res, ent && ent.error ? ent.error : "refused",
+                ent && ent.error ? ent.error_plain : null);
+  }
 }
 
 function clearSelection() {
