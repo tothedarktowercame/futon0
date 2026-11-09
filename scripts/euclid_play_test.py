@@ -857,3 +857,24 @@ def test_case_try_snapped_cases_find_existing_witness():
          "moves": ep.case_try(2, [], [["peq", "a", "c"]])["moves"]}],
         "conclusion": [["eq_len", "a", "l", "b", "c"]], "open": True}
     assert ep.play(2, [blk])["moves"][-1]["ok"]
+
+
+def test_open_block_second_snapped_case_keeps_first_closed():
+    """Joe at I.2 (2026-11-09): after snapping a = c (closed by l := b),
+    snapping a onto D was refused "an earlier case must close first": the
+    open-block path checked the plain eq_len conclusion by lookup."""
+    mv = [{"rule": "circle_from_points", "args": ["b", "c"],
+           "bindings": {"C": "D"}},
+          {"rule": "by_cases", "branches": [
+              {"hyps": [["peq", "a", "c"]],
+               "moves": [{"rule": "name_point", "args": ["b"],
+                          "bindings": {"x": "l"}}]},
+              {"hyps": [["on_circle", "a", "D"]],
+               "moves": [{"rule": "name_point", "args": ["b"],
+                          "bindings": {"x": "l"}}]}],
+           "conclusion": [["eq_len", "a", "l", "b", "c"]], "open": True}]
+    assert ep.play(2, mv)["moves"][-1]["ok"]
+    mv[-1]["open"] = False
+    ent = ep.play(2, mv)["moves"][-1]
+    assert ent["error"] == "missing case"
+    assert ent["missing_case"]["missing"] == [["neq", "a", "c"]]

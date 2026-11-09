@@ -1398,6 +1398,11 @@ def _open_block(n, s, mv, objects, xy, pal, i, refuted=()):
     rule = mv["rule"]
     branches = mv.get("branches") or []
     concl = [tuple(c) for c in mv.get("conclusion") or []]
+    if rule == "by_cases":
+        # as in _block_to_engine: plain metric conclusions are checked by
+        # arithmetic (Joe at I.2, 2026-11-09: the closed a = c case was
+        # "not reaching" |al| = |bc| once a second case was added)
+        concl = [_metric_query(c) for c in concl]
     breps = []
     if not branches:
         return (False, "an open case move needs at least one case",
