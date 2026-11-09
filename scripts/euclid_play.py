@@ -31,6 +31,7 @@ import functools
 import json
 import os
 import re
+import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 import euclid_engine as eng
@@ -1293,6 +1294,30 @@ def play(n, moves):
             "objects": out_objects, "contradictory": contradict}
 
 
+# Session log (--log DIR): one JSON line per /api/play request, so the
+# student's attempts (refused moves included) can be read back when
+# designing the tutor's interventions. The page replays the whole move
+# list on every request, so each line is the attempt so far.
+_LOG_PATH = None
+
+
+def _log_play(data, res):
+    if _LOG_PATH is None:
+        return
+    last = (res.get("moves") or [{}])[-1]
+    rec = {"t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+           "n": data.get("n"), "moves": data.get("moves") or [],
+           "ok": last.get("ok"), "error": last.get("error"),
+           "error_plain": last.get("error_plain"),
+           "missing_case": last.get("missing_case"),
+           "goal_reached": res.get("goal_reached")}
+    try:
+        with open(_LOG_PATH, "a") as fh:
+            fh.write(json.dumps(rec) + "\n")
+    except OSError:
+        pass
+
+
 class _Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=VIEWER_DIR, **kw)
@@ -1316,8 +1341,9 @@ class _Handler(SimpleHTTPRequestHandler):
             try:
                 length = int(self.headers.get("Content-Length", 0))
                 data = json.loads(self.rfile.read(length) or b"{}")
-                self._send_json(play(int(data["n"]),
-                                     data.get("moves") or []))
+                res = play(int(data["n"]), data.get("moves") or [])
+                _log_play(data, res)
+                self._send_json(res)
             except (KeyError, ValueError, TypeError) as e:
                 self._send_json({"error": str(e)}, code=400)
         else:
@@ -1330,7 +1356,15 @@ class _Handler(SimpleHTTPRequestHandler):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8123)
+    ap.add_argument("--log", default=None,
+                    help="directory for the session log (JSON lines)")
     args = ap.parse_args()
+    global _LOG_PATH
+    if args.log:
+        os.makedirs(args.log, exist_ok=True)
+        _LOG_PATH = os.path.join(
+            args.log, time.strftime("play-%Y%m%dT%H%M%SZ.jsonl",
+                                    time.gmtime()))
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), _Handler)
     print("serving %s on http://127.0.0.1:%d" % (VIEWER_DIR, args.port))
     srv.serve_forever()
