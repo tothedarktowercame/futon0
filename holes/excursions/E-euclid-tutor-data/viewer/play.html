@@ -1089,26 +1089,47 @@ function updateCaseBar() {
 }
 
 function updateBranchStatus() {
+  // a checklist of the open block's cases: which case each is, and
+  // whether it is done (Joe, 2026-11-09: "I don't really know which case
+  // is being affirmed")
   const bs = document.getElementById("branch-status");
   const b = openBlock();
-  bs.textContent = "";
+  bs.innerHTML = "";
   if (!b || !lastResult) return;
   const ent = lastResult.moves[lastResult.moves.length - 1];
   if (!ent || !ent.open || !ent.branches || !ent.branches.length) return;
-  const br = ent.branches[ent.branches.length - 1];
-  if (br.closed) return;
-  let txt, ok;
-  if (b.rule === "by_contra") {
-    ok = br.branch_contradictory;
-    txt = ok ? "this case is contradictory ✓"
-             : "this case is not yet contradictory";
-  } else {
-    ok = br.branch_goal_reached;
-    txt = ok ? "the conclusion holds in this case ✓"
-             : "the conclusion does not hold in this case yet";
-  }
-  bs.textContent = txt;
-  bs.style.color = ok ? "#1c5e0f" : "#7a5300";
+  const head = document.createElement("div");
+  const concl = (b.conclusion || []).map(f => factEnglish(f)).join(" and ");
+  head.textContent = b.rule === "by_contra"
+    ? `Proving ${concl} by contradiction: each case must be impossible.`
+    : `Proving ${concl} in every case:`;
+  head.style.color = "#333";
+  bs.appendChild(head);
+  ent.branches.forEach((br, k) => {
+    const row = document.createElement("div");
+    const what = (br.hyps || []).length
+      ? (br.hyps || []).map(f => factEnglish(f)).join(" and ")
+      : "everything else";
+    const last = k === ent.branches.length - 1;
+    let ok, state;
+    if (br.closed) {
+      ok = true;
+      state = b.rule === "by_contra" ? "impossible ✓" : "done ✓";
+    } else if (b.rule === "by_contra") {
+      ok = br.branch_contradictory;
+      state = ok ? "impossible ✓ (press close or next case)"
+                 : "not yet shown impossible";
+    } else {
+      ok = br.branch_goal_reached;
+      state = ok ? `${concl} holds ✓ (press close or next case)`
+                 : `${concl} not shown yet`;
+    }
+    row.textContent = `${ok ? "☑" : "☐"} case ${k + 1}: ${what} — ${state}` +
+      (last ? "   ← your moves go here" : "");
+    row.style.color = ok ? "#1c5e0f" : "#7a5300";
+    row.style.fontWeight = last ? "bold" : "normal";
+    bs.appendChild(row);
+  });
 }
 
 function responseEntryFor(res, block) {
