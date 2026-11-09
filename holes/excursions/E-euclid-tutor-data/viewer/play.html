@@ -360,9 +360,9 @@ function queueClick(o) {
     pendingClicks = [];
     const arg = activeInput && (activeInput.dataset.arg ||
                                 activeInput.dataset.base || "");
-    const wantPoint = !arg || (/^[a-z]$/.test(arg[0]) &&
-                               !/^(alpha|beta|gamma)$/.test(arg));
-    const pick = hit.find(o => (o.kind === "point") === wantPoint)
+    const want = arg ? argKind(arg) : "point";
+    const pick = hit.find(o => o.kind === want)
+      || hit.find(o => (o.kind === "point") === (want === "point"))
       || hit[0];
     fillArg(pick.name);
   }, 0);
@@ -440,10 +440,22 @@ function renderRuleInputs() {
   const tbl = document.getElementById("args-table");
   tbl.innerHTML = "";
   if (!e) return;
+  // Box labels say what kind of object goes in, never the engine's own
+  // argument letters: those clash with the drawing's names (a move's "b"
+  // is not the point b). Joe, 2026-11-09: "alpha, beta, b, c, d, and L
+  // ... it is very confusing".
+  const kinds = e.args.map(argKind);
+  const count = {}, seen = {};
+  for (const k of kinds) count[k] = (count[k] || 0) + 1;
+  const ORD = ["first", "second", "third", "fourth", "fifth", "sixth"];
   for (const a of e.args) {
     const hint = e.arg_hints && e.arg_hints[a];
+    const k = argKind(a);
+    seen[k] = (seen[k] || 0) + 1;
+    const label = hint ? hint
+      : count[k] > 1 ? `${ORD[seen[k] - 1] || seen[k]} ${k}` : `the ${k}`;
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${hint ? a + " — " + hint : a}</td>`;
+    tr.innerHTML = `<td title="engine argument: ${a}">${label}</td>`;
     const td = document.createElement("td");
     const inp = document.createElement("input");
     inp.className = "arg-in";
@@ -460,7 +472,8 @@ function renderRuleInputs() {
   const binds = e.binds && e.binds.length ? e.binds : [null];
   for (const b of binds) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${b === null ? "name" : "new " + b}</td>`;
+    tr.innerHTML = `<td title="${b === null ? "" : "engine name: " + b}">` +
+      `name for the new ${b === null ? "object" : argKind(b)}</td>`;
     const td = document.createElement("td");
     const inp = document.createElement("input");
     inp.className = "bind-in";
@@ -472,6 +485,15 @@ function renderRuleInputs() {
     tbl.appendChild(tr);
   }
   activeInput = tbl.querySelector(".arg-in");
+}
+
+// the kind of object an engine argument stands for, from its name:
+// alpha/beta/gamma and C-like names are circles, upper-case names lines,
+// lower-case names points
+function argKind(a) {
+  if (/^(alpha|beta|gamma)$/.test(a) || /^C\d*'*$/.test(a)) return "circle";
+  if (/^[A-Z]/.test(a)) return "line";
+  return "point";
 }
 
 function fillArg(name) {

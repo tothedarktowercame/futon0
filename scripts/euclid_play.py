@@ -380,6 +380,12 @@ def student_error(err, rule=None):
         f = list(err)
         if f and f[0] == "fresh":
             return fact_words(f)
+        if f and f[0] == "neq" and len(f) == 3:
+            # the move needs two different points, and nothing shown
+            # rules out their being the same (I.2: a may coincide with c)
+            return ("Not yet shown: %s and %s are different points. "
+                    "Nothing given or shown so far rules out %s = %s."
+                    % (f[1], f[2], f[1], f[2]))
         return "Not yet shown: " + fact_words(f)
     s = str(err)
     m = re.match(r"^unknown rule '(.+)' \(not in I\.(\d+)'s palette\)$", s)
