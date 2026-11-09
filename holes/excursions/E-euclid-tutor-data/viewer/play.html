@@ -502,6 +502,22 @@ function generalHyps(branches) {
   return out;
 }
 
+// A move made after the current case is done belongs to the general
+// case, not to the finished one. Open the general case first if the block
+// has none (Joe at I.2, 2026-11-09: his line a-c went into the finished
+// "a on circle C" case, where a = c is still possible, and was refused).
+function ensureGeneralCase() {
+  const b = openBlock();
+  if (!b || b.rule !== "by_cases" || !b.branches.length) return;
+  const lastB = b.branches[b.branches.length - 1];
+  if (lastB.general) return;
+  const ent = lastResult && lastResult.moves[lastResult.moves.length - 1];
+  const br = ent && ent.branches && ent.branches[ent.branches.length - 1];
+  if (!br || !br.branch_goal_reached) return;
+  const neg = generalHyps(b.branches);
+  if (neg.length) b.branches.push({ hyps: neg, moves: [], general: true });
+}
+
 function generalNote(block) {
   const last = block.branches[block.branches.length - 1];
   if (!last || !last.general) return "";
@@ -1433,6 +1449,7 @@ async function submitMove() {
     }
   }
   const mv = { rule, args, bindings };
+  ensureGeneralCase();
   const target = currentMoveList();
   target.push(mv);
   const res = await postPlay(cur.n, moves);
