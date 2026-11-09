@@ -772,3 +772,23 @@ def test_blank_and_unknown_inputs_refused_plainly():
     res = ep.play(1, [{"rule": "circle_from_points", "args": ["a", "b"],
                        "bindings": {"C": "C"}}])
     assert res["moves"][-1]["ok"]
+
+
+def test_goal_witnesses_take_any_name():
+    """Joe 2026-11-09: I.1 built with circles C, D never showed Solved
+    (the goal named the engine's circle BCD). Lean's ∃ witnesses may be
+    any point the student made, under any name."""
+    mv = [{"rule": "circle_from_points", "args": ["a", "b"],
+           "bindings": {"C": "C"}},
+          {"rule": "circle_from_points", "args": ["b", "a"],
+           "bindings": {"C": "D"}},
+          {"rule": "intersection_circles", "args": ["C", "D"],
+           "bindings": {"c": "p"}}]
+    assert ep.play(1, mv)["goal_reached"]
+    assert not ep.play(1, mv[:2])["goal_reached"]
+    # a witness must still satisfy the goal: one circle's point is not
+    # equidistant from both ends
+    one = mv[:1] + [{"rule": "point_on_circle", "args": ["C"],
+                     "bindings": {}}] if "point_on_circle" in \
+        ep.palette(1) else mv[:1]
+    assert not ep.play(1, one)["goal_reached"]

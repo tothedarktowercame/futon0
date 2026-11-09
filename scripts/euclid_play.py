@@ -45,7 +45,10 @@ INDEX_HTML = os.path.join(VIEWER_DIR, "index.html")
 # The goal queries, per prop. Referenced where the engine names them;
 # restated verbatim (with provenance) where it does not.
 GOALS = {
-    1: eng._prop1()[2],                     # engine's own verify list
+    # Lean's I.1: ∃ c, |c─a| = |a─b| ∧ |c─b| = |a─b| (c is a witness;
+    # the engine's verify list named its circle BCD, so a student's own
+    # circle names never reached "Solved")
+    1: [("_eq_len", "c", "a", "a", "b"), ("_eq_len", "c", "b", "a", "b")],
     2: [("_eq_len", "a", "l", "b", "c")],   # eng.main() p=="2" assert
     3: [("between", "a", "e", "b"),         # eng.main() p=="3" asserts
         ("_eq_len", "a", "e", "c0", "c1")],
@@ -451,6 +454,128 @@ def rule_info(name):
     return {"args": list(spec["args"]), "cite": spec["cite"],
             "binds": binds, "label": label, "group": group,
             "arg_hints": dict(ARG_HINTS.get(name, {}))}
+
+
+def _goal_reached(n, s, objects, xy=None):
+    """GOALS[n] with its existential witnesses free. A goal name that is
+    not one of the proposition's given objects is a witness of Lean's
+    ∃ (I.1's c, I.2's l, ...): any point in the drawing may play it, so
+    a student who names the point (or the circles on the way) differently
+    still solves the proposition. Backtracking search, binding each
+    witness at the first goal that mentions it. (Joe, 2026-11-09: I.1
+    built with circles C and D never showed "Solved", because the goal
+    named the engine's circle BCD.)"""
+    goals = [tuple(g) for g in GOALS[n]]
+    given = {o["name"] for o in tr.objects_from_hyps(n)}
+    wit = []
+    for g in goals:
+        for x in g[1:]:
+            if isinstance(x, str) and x not in given and x not in wit:
+                wit.append(x)
+    if all(eng._fact_holds(s, g) for g in goals):
+        return True   # the engine's own names (fast path)
+    if not wit:
+        return False
+    points = {o["name"] for o in objects if o.get("kind") == "point"}
+    for f in s.facts:
+        if f[0] in ("on_line", "on_circle", "not_on_line", "centre"):
+            points.add(f[1])
+        elif f[0] in ("neq", "peq"):
+            points.update(f[1:3])
+        elif f[0] == "between":
+            points.update(f[1:4])
+    points = sorted(p for p in points if isinstance(p, str))
+
+    # a metric goal over a length or angle no row mentions cannot be
+    # entailed: skip it before asking the (slow) linear-arithmetic check
+    atoms = {a for row in s.la.rows for a, _c in row[0]}
+
+    def _atoms_present(g):
+        k = g[0]
+        if k == "_eq_len" and \
+                eng.len_atom(g[1], g[2]) == eng.len_atom(g[3], g[4]):
+            return True   # |xy| = |xy| holds with no row
+        if k in ("_eq_len", "_gt_len", "_lt_len"):
+            return (eng.len_atom(g[1], g[2]) in atoms
+                    and eng.len_atom(g[3], g[4]) in atoms)
+        if k in ("_eq_ang", "_gt_ang"):
+            return (eng.ang_atom(*g[1:4]) in atoms
+                    and eng.ang_atom(*g[4:7]) in atoms)
+        return True
+
+    import math
+
+    def _pt(x):
+        v = (xy or {}).get(x)
+        return v if v is not None and len(v) == 2 else None
+
+    def _d(p, q):
+        return math.hypot(p[0] - q[0], p[1] - q[1])
+
+    def _a(p, v, q):
+        a1 = math.atan2(p[1] - v[1], p[0] - v[0])
+        a2 = math.atan2(q[1] - v[1], q[0] - v[0])
+        t = abs(a1 - a2) % (2 * math.pi)
+        return min(t, 2 * math.pi - t)
+
+    def _drawn_ok(g):
+        # a numeric prefilter only: a witness must satisfy a metric goal
+        # in the drawing (tolerance 1e-6). When a point has no drawn
+        # position (made inside a case), the exact check decides.
+        k = g[0]
+        if k in ("_eq_len", "_gt_len"):
+            ps = [_pt(x) for x in g[1:5]]
+            if None in ps:
+                return True
+            l1, l2 = _d(ps[0], ps[1]), _d(ps[2], ps[3])
+            return abs(l1 - l2) < 1e-6 if k == "_eq_len" else l1 > l2 - 1e-6
+        if k in ("_eq_ang", "_gt_ang"):
+            ps = [_pt(x) for x in g[1:7]]
+            if None in ps:
+                return True
+            a1, a2 = _a(*ps[0:3]), _a(*ps[3:6])
+            return abs(a1 - a2) < 1e-6 if k == "_eq_ang" else a1 > a2 - 1e-6
+        return True
+
+    def ground(g, env):
+        return tuple(env.get(x, x) if isinstance(x, str) else x for x in g)
+
+    def search(i, env):
+        if i == len(goals):
+            return True
+        g = goals[i]
+        free = [x for x in g[1:] if x in wit and x not in env]
+        free = list(dict.fromkeys(free))
+        if not free:
+            return eng._fact_holds(s, ground(g, env)) and search(i + 1, env)
+        x = free[0]
+        for p in points:
+            env2 = dict(env)
+            env2[x] = p
+            # bind the remaining free names of this goal before testing
+            if search_goal(g, env2, i):
+                return True
+        return False
+
+    def search_goal(g, env, i):
+        free = [x for x in g[1:] if x in wit and x not in env]
+        if free:
+            for p in points:
+                env2 = dict(env)
+                env2[free[0]] = p
+                if search_goal(g, env2, i):
+                    return True
+            return False
+        gg = ground(g, env)
+        if not _atoms_present(gg) or not _drawn_ok(gg):
+            return False
+        try:
+            ok = eng._fact_holds(s, gg)
+        except Exception:
+            ok = False
+        return ok and search(i + 1, env)
+
+    return search(0, {})
 
 
 def catalogue():
@@ -1061,6 +1186,13 @@ def _coverage_check_moves(n, s, moves, refuted, i):
     return None
 
 
+# Coverage verdicts by (state, block): the page replays every move on
+# each request, so without this a student past I.22's split waited ~15 s
+# per move while the same split was re-refereed. The key is the full
+# state (facts and arithmetic rows), so a hit is the same question.
+_COVERAGE_CACHE = {}
+
+
 def _coverage_check(n, s, mv, refuted, i):
     """Check one closed case block at state s. Returns None, or a
     structured {"rule", "family", "missing"} for a split that does not
@@ -1069,7 +1201,14 @@ def _coverage_check(n, s, mv, refuted, i):
     branches = mv.get("branches") or []
     concl = [tuple(c) for c in mv.get("conclusion") or []]
     cases = [[tuple(f) for f in b.get("hyps") or []] for b in branches]
-    cov = coverage(s, rule, cases, concl, refuted)
+    key = (n, frozenset(s.facts), tuple(s.la.rows), rule,
+           repr(cases), repr(concl), repr(refuted))
+    cov = _COVERAGE_CACHE.get(key)
+    if cov is None:
+        cov = coverage(s, rule, cases, concl, refuted)
+        if len(_COVERAGE_CACHE) > 2000:
+            _COVERAGE_CACHE.clear()
+        _COVERAGE_CACHE[key] = cov
     if not cov["covered"]:
         return {"rule": rule, "family": cov["family"],
                 "missing": cov["missing"]}
@@ -1294,7 +1433,7 @@ def play(n, moves):
     xy = {k: v for k, v in tr.FREE[n].items()}
     tr.derived_free_points(n, xy)
     out_moves, view = _apply_moves(n, s, moves, objects, xy, pal)
-    goal_reached = all(eng._fact_holds(s, g) for g in GOALS[n])
+    goal_reached = _goal_reached(n, s, objects, xy)
     contradict = eng.contradictory(s)[0]
     if view is not None:
         objects, xy = view
