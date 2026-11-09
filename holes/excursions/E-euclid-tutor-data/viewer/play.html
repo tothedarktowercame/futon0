@@ -482,6 +482,35 @@ function offerSnap(best) {
   div.appendChild(no);
 }
 
+// the negations of the snapped facts that have one (a = c -> a != c,
+// a on L -> a not on L); "a on circle" has no single negation here
+function generalHyps(branches) {
+  const out = [];
+  const seen = new Set();
+  for (const b of branches) {
+    if (b.general) continue;
+    for (const f of b.hyps) {
+      let n = null;
+      if (f[0] === "peq") n = ["neq", f[1], f[2]];
+      else if (f[0] === "on_line") n = ["not_on_line", f[1], f[2]];
+      if (n && !seen.has(JSON.stringify(n))) {
+        seen.add(JSON.stringify(n));
+        out.push(n);
+      }
+    }
+  }
+  return out;
+}
+
+function generalNote(block) {
+  const last = block.branches[block.branches.length - 1];
+  if (!last || !last.general) return "";
+  return " Now the general case is open, where " +
+    last.hyps.map(f => factEnglish(f)).join(" and ") +
+    ": your next moves go there. (Or drag the point onto something else " +
+    "to look at another special case first.)";
+}
+
 function plainGoal() {
   return (cur.goals || []).map(g =>
     /^_(eq|gt)_(len|ang)$/.test(g[0]) ? [g[0].slice(1)].concat(g.slice(1))
@@ -506,17 +535,39 @@ async function supposeSnap(best) {
     body: JSON.stringify({ n: cur.n, moves: top, hyps }) });
   const tryRes = await r.json();
   let block = openBlock();
-  let rollback;
   const branch = { hyps, moves: tryRes.holds ? (tryRes.moves || []) : [] };
-  if (block && block.rule === "by_cases") {
-    block.branches.push(branch);
-    rollback = () => block.branches.pop();
-  } else {
-    block = { rule: "by_cases", branches: [branch],
+  if (!(block && block.rule === "by_cases")) {
+    block = { rule: "by_cases", branches: [],
               conclusion: plainGoal(), open: true };
-    const target = currentMoveList();
-    target.push(block);
-    rollback = () => target.pop();
+    currentMoveList().push(block);
+  }
+  const saved = JSON.stringify(block.branches);
+  const rollback = () => {
+    block.branches = JSON.parse(saved);
+    if (!block.branches.length) {
+      const t = currentMoveList();
+      const k = t.indexOf(block);
+      if (k >= 0) t.splice(k, 1);
+    }
+  };
+  // Snapped cases go before the general case ("everything else": the
+  // negations of the snapped equalities and incidences), which stays last
+  // so later moves go there. Joe at I.2 (2026-11-09): "I'd have assumed
+  // that closing the case where a=c would allow me to assume they are
+  // not" -- his next moves had gone into the last snapped case instead.
+  const gen = block.branches.length &&
+    block.branches[block.branches.length - 1].general
+    ? block.branches.pop() : null;
+  if (gen && gen.moves.length) {
+    block.branches.push(gen);   // work already done there: keep it last
+    block.branches.splice(block.branches.length - 1, 0, branch);
+  } else {
+    block.branches.push(branch);
+    if (tryRes.holds) {
+      const neg = generalHyps(block.branches);
+      if (neg.length)
+        block.branches.push({ hyps: neg, moves: [], general: true });
+    }
   }
   const res = await postPlay(cur.n, moves);
   const ent = responseEntryFor(res, block);
@@ -532,12 +583,10 @@ async function supposeSnap(best) {
       const w = Object.entries(tryRes.witness)
         .map(([k, v]) => `${v} serves as ${k}`).join(", ");
       msg.textContent = `In the case where ${best.words}, ${w}: ` +
-        `${tryRes.why}. This case is done. Now the other cases: drag the ` +
-        `point somewhere else, or press "close" and the referee will ` +
-        `say what is left.`;
+        `${tryRes.why}. This case is done.` + generalNote(block);
     } else if (tryRes.holds) {
       msg.textContent = `In the case where ${best.words}: ${tryRes.why}.` +
-        ` This case is done.`;
+        ` This case is done.` + generalNote(block);
     } else {
       msg.textContent = `In the case where ${best.words}, the goal does ` +
         `not follow straight away: make moves inside this case.`;
