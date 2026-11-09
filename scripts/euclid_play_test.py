@@ -811,3 +811,28 @@ def test_line_through_inside_point_meets_circle():
             "bindings": {"a": "d", "b": "e"}}]
     ent = ep.play(2, mv2)["moves"][-1]
     assert not ent["ok"] and ent["error"] == ["intersects_lc", "BC", "E"]
+
+
+def test_i2_split_on_a_equals_c_with_named_witness():
+    """Joe at I.2 (2026-11-09): split on a = c; in that case the witness
+    l is just b (name_point, Lean's `use b`), so |al| = |ab| = |bc|; in
+    the other case the usual construction. The plain-form case conclusion
+    is checked by arithmetic, the split is covered, the goal is reached.
+    name_point alone does not prove I.2, and dropping a case is refused."""
+    eng_steps = [_engine_step_to_move(st) for st in tr.hyps_and_steps(2)[1]]
+    blk = {"rule": "by_cases", "branches": [
+        {"hyps": [["peq", "a", "c"]],
+         "moves": [{"rule": "name_point", "args": ["b"],
+                    "bindings": {"x": "l"}}]},
+        {"hyps": [["neq", "a", "c"]], "moves": eng_steps}],
+        "conclusion": [["eq_len", "a", "l", "b", "c"]], "open": False}
+    res = ep.play(2, [blk])
+    assert res["moves"][-1]["ok"] and res["goal_reached"]
+    alone = ep.play(2, [{"rule": "name_point", "args": ["b"],
+                         "bindings": {"x": "l"}}])
+    assert alone["moves"][0]["ok"] and not alone["goal_reached"]
+    one = copy.deepcopy(blk)
+    del one["branches"][1]
+    ent = ep.play(2, [one])["moves"][-1]
+    assert ent["error"] == "missing case"
+    assert ent["missing_case"]["missing"] == [["neq", "a", "c"]]

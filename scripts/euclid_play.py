@@ -180,6 +180,8 @@ RULE_LABELS = {
         "constructions"),
     "use_witness": ("give a name to the point a fact provides",
                     "constructions"),
+    "name_point": ("call an existing point by a new name (e.g. the point "
+                   "the theorem asks for)", "constructions"),
     # facts about points, lines and circles (the diagrammatic axioms)
     "between_symm_parts": ("betweenness: swap the ends, or take a part",
                            "diagrammatic"),
@@ -281,6 +283,7 @@ RULE_LABELS = {
 # premises; args not listed keep their engine name.
 ARG_HINTS = {
     "line_from_points": {"a": "first point", "b": "second point"},
+    "name_point": {"p": "the existing point"},
     "circle_from_points": {"a": "the centre", "b": "a point on the circle"},
     "intersection_circles": {"alpha": "first circle",
                              "beta": "second circle"},
@@ -678,6 +681,20 @@ def _move_to_step(m):
             dict(m.get("bindings") or {}))
 
 
+def _place_name_point(args, added, xy, objects):
+    """name_point draws nothing new: the new name sits where its point
+    is (an object with the same position, so the goal and the board can
+    use it)."""
+    p = args[0]
+    for f in added:
+        if f[0] == "peq" and f[2] == p:
+            x = f[1]
+            xy[x] = xy.get(p)
+            objects.append({"name": x, "kind": "point",
+                            "jsx": {"type": "point"}, "def_step": None,
+                            "xy": list(xy[p]) if xy.get(p) else None})
+
+
 def _block_to_engine(mv):
     """{rule, branches: [{hyps, moves}], conclusion} as the engine's
     (rule, [(assumption-facts, steps), ...], conclusions) tuple."""
@@ -687,7 +704,22 @@ def _block_to_engine(mv):
         steps = [_move_to_step(m) for m in b.get("moves") or []]
         branches.append((hyps, steps))
     concl = [tuple(c) for c in mv.get("conclusion") or []]
+    if mv["rule"] == "by_cases":
+        # the engine checks a by_cases conclusion with _fact_holds, which
+        # answers metric facts only in their query form (_eq_len ...);
+        # the page writes the plain form (Joe at I.2, 2026-11-09: the
+        # a = c case's |al| = |bc| was "not entailed")
+        concl = [_metric_query(c) for c in concl]
     return (mv["rule"], branches, concl)
+
+
+def _metric_query(c):
+    k = c[0]
+    if k == "lt_len":
+        return ("_gt_len", c[3], c[4], c[1], c[2])
+    if k in ("eq_len", "gt_len", "eq_ang", "gt_ang"):
+        return ("_" + k,) + tuple(c[1:])
+    return c
 
 
 def _empty_block(mv):
@@ -1447,7 +1479,11 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                 rep = eng.apply_step(s, i, rule, args, bindings)
                 eng.close(s)
                 added = rep["added"]
-                tr.place_step(n, rule, args, bindings, added, xy, objects)
+                if rule == "name_point":
+                    _place_name_point(args, added, xy, objects)
+                else:
+                    tr.place_step(n, rule, args, bindings, added, xy,
+                                  objects)
                 for o in objects:
                     if o["def_step"] is None:
                         o["def_step"] = i

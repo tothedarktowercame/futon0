@@ -2374,6 +2374,16 @@ CONSTRUCTIONS = {
     # b.onLine AB — so it is part of what `use` discharges there.
     # First use: Book I.23's degenerate zero branch (`use b`,
     # Prop23.lean:15).
+    # logic: Lean `use p` for an ∃ — call an existing point by the
+    # witness's name. Joe at I.2 (2026-11-09): in the case a = c, the
+    # witness l is just b ("labelling b = l"). The peq lets closure carry
+    # every fact of p over to the new name.
+    "name_point": {
+        "cite": "logic: Lean `use` (an existing point as the witness)",
+        "args": ("p",),
+        "premises": lambda s, p: [],
+        "make": lambda s, p: [("x", [("peq", "x", p)])],
+    },
     "use_witness": {
         "cite": "logic: Lean `use` (the witness renamed)",
         "args": ("f", "b", "a", "d", "c", "e", "L"),
