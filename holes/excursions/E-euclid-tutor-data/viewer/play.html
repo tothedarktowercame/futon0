@@ -90,7 +90,10 @@
       <div style="font-size:12px;color:#555;margin:6px 0 4px">
         Click the points, lines or circles you want to use: the list then
         shows only the moves that use them, already filled in. Pick one and
-        press <b>do move</b>. (You can still type names into the boxes.)</div>
+        press <b>do move</b>. Shortcuts: <b>Shift</b>+drag from a point to
+        a point draws a circle (centre first); <b>Ctrl</b>+drag draws a
+        line. Drag a given point onto another object to suppose that
+        case.</div>
       <div id="selection-bar" style="font-size:12px;margin:2px 0 4px">
         selected: <span id="selection-list" style="font-family:monospace">
         (click objects in the drawing)</span>
@@ -546,6 +549,85 @@ async function supposeSnap(best) {
                 ent && ent.error ? ent.error_plain : null);
   }
 }
+
+// ------------------------------------------- drawing gestures (Joe, 11-09)
+// Shift + drag from a point to another point draws the circle with the
+// first point as centre through the second; Ctrl + drag draws the line
+// through them. The end snaps to the nearest point (18 px). The move goes
+// through the ordinary move path (same rules, names and refusals).
+let gesture = null;   // {kind, from, follower, preview}
+
+function pointNear(evt, maxPx) {
+  const c = board.getUsrCoordsOfMouse(evt);
+  const px = board.unitX || 50;
+  let best = null;
+  for (const o of (lastResult ? lastResult.objects : [])) {
+    if (o.kind !== "point") continue;
+    const e = built[o.name];
+    if (!e || e.visProp.visible === false) continue;
+    const d = Math.hypot(e.X() - c[0], e.Y() - c[1]) * px;
+    if (d < maxPx && (!best || d < best.d)) best = { name: o.name, el: e, d };
+  }
+  return { best, at: c };
+}
+
+function gestureStart(evt) {
+  if (!board || !(evt.shiftKey || evt.ctrlKey)) return;
+  const { best, at } = pointNear(evt, 18);
+  if (!best) return;
+  evt.stopPropagation();
+  evt.preventDefault();
+  const kind = evt.shiftKey ? "circle" : "line";
+  const follower = board.create("point", at,
+    { visible: false, withLabel: false, fixed: false });
+  const opts = { strokeColor: HI, dash: 2, fixed: true, withLabel: false,
+                 highlight: false };
+  const preview = kind === "circle"
+    ? board.create("circle", [best.el, follower], opts)
+    : board.create("line", [best.el, follower], opts);
+  gesture = { kind, from: best.name, follower, preview };
+  window.addEventListener("pointermove", gestureMove, true);
+  window.addEventListener("pointerup", gestureEnd, true);
+}
+
+function gestureMove(evt) {
+  if (!gesture) return;
+  evt.stopPropagation();
+  const { best, at } = pointNear(evt, 18);
+  const p = best && best.name !== gesture.from ? [best.el.X(), best.el.Y()]
+                                               : at;
+  gesture.follower.setPosition(JXG.COORDS_BY_USER, p);
+  board.update();
+}
+
+async function gestureEnd(evt) {
+  window.removeEventListener("pointermove", gestureMove, true);
+  window.removeEventListener("pointerup", gestureEnd, true);
+  if (!gesture) return;
+  evt.stopPropagation();
+  const g = gesture;
+  gesture = null;
+  const { best } = pointNear(evt, 18);
+  board.removeObject(g.preview);
+  board.removeObject(g.follower);
+  board.update();
+  if (!best || best.name === g.from) return;   // no target: nothing drawn
+  const rule = g.kind === "circle" ? "circle_from_points"
+                                   : "line_from_points";
+  selection = [];
+  renderMovePanel();
+  const sel = document.getElementById("rule-select");
+  sel.value = rule;
+  sel.dataset.chosen = rule;
+  renderRuleInputs();
+  const ins = [...document.querySelectorAll("#args-table .arg-in")];
+  ins[0].value = g.from;
+  ins[1].value = best.name;
+  await submitMove();
+}
+
+document.getElementById("board-wrap")
+  .addEventListener("pointerdown", gestureStart, true);
 
 function clearSelection() {
   selection = [];
