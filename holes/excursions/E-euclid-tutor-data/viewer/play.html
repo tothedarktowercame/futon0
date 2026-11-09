@@ -536,6 +536,24 @@ function plainGoal() {
 async function supposeSnap(best) {
   const hyps = [best.fact];
   const ob = openBlock();
+  // A snap while a case is half done would put the new case outside the
+  // case its points were made in (Joe at I.2, 2026-11-09: c snapped onto
+  // g, made inside the general case, became a case before it).
+  if (ob && ob.branches.length) {
+    const lastB = ob.branches[ob.branches.length - 1];
+    const ent = lastResult && lastResult.moves[lastResult.moves.length - 1];
+    const br = ent && ent.branches && ent.branches[ent.branches.length - 1];
+    const done = br && (br.branch_goal_reached || br.branch_contradictory);
+    if (lastB.moves.length && !done) {
+      const div = document.getElementById("snap-offer");
+      div.style.display = "block";
+      div.textContent = "You are part-way through a case, so this position " +
+        "cannot become a new case now. Finish the current case (or undo " +
+        "its moves) first; to split this case itself, use suppose….";
+      draw();
+      return;
+    }
+  }
   if (ob && ob.branches.some(b => JSON.stringify(b.hyps) ===
                                   JSON.stringify(hyps))) {
     const div = document.getElementById("snap-offer");
