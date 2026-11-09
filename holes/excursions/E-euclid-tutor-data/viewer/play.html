@@ -342,8 +342,30 @@ function draw() {
     if (o.aux && !showAux) el.setAttribute({ visible: false });
     // clicking an object fills the argument being filled with its name
     // ("down" only: a click would fire again after it and fill twice)
-    el.on("down", () => fillArg(o.name));
+    el.on("down", () => queueClick(o));
   }
+}
+
+// One mouse-down can land on several objects (point b and the line BC
+// through it both fire). Collect them for this event, then fill the box
+// with the one whose kind the box expects: a point for a lower-case
+// argument (a, b, p), a line or circle otherwise (L, C, alpha, beta).
+// (Joe, 2026-11-09: clicking b at I.2 filled "BC".)
+let pendingClicks = [];
+function queueClick(o) {
+  pendingClicks.push(o);
+  if (pendingClicks.length > 1) return;
+  setTimeout(() => {
+    const hit = pendingClicks;
+    pendingClicks = [];
+    const arg = activeInput && (activeInput.dataset.arg ||
+                                activeInput.dataset.base || "");
+    const wantPoint = !arg || (/^[a-z]$/.test(arg[0]) &&
+                               !/^(alpha|beta|gamma)$/.test(arg));
+    const pick = hit.find(o => (o.kind === "point") === wantPoint)
+      || hit[0];
+    fillArg(pick.name);
+  }, 0);
 }
 
 // ------------------------------------------------------------- move panel
@@ -444,6 +466,7 @@ function renderRuleInputs() {
     inp.className = "bind-in";
     inp.dataset.base = b === null ? "" : b;
     inp.value = b === null ? "" : freshName(b);
+    inp.dataset.default = inp.value;
     td.appendChild(inp);
     tr.appendChild(td);
     tbl.appendChild(tr);
@@ -928,6 +951,15 @@ async function submitMove() {
       "the drawing (each click fills the next empty box), or type " +
       "their names.");
     return;
+  }
+  // a new line keeps the name of its two points (AB), unless the student
+  // typed a name of their own
+  if (rule === "line_from_points" && args.length === 2) {
+    const bi = bindIns.find(i => i.dataset.base === "L");
+    if (bi && bi.value.trim() === bi.dataset.default) {
+      const nm = (args[0] + args[1]).toUpperCase();
+      if (!usedNames().has(nm)) bindings["L"] = nm;
+    }
   }
   const mv = { rule, args, bindings };
   const target = currentMoveList();

@@ -1475,6 +1475,12 @@ class _Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=VIEWER_DIR, **kw)
 
+    def end_headers(self):
+        # the page changes while a student is playing: never serve a
+        # cached copy (Joe, 2026-11-09)
+        self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
     def _send_json(self, obj, code=200):
         body = json.dumps(obj).encode()
         self.send_response(code)
