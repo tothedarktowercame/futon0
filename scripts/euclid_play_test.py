@@ -1632,3 +1632,20 @@ def test_neq_refusal_names_the_betweenness_it_follows_from():
                         "bindings": {"C": "C"}}])
     assert "Nothing given or shown so far rules out a = c" in \
         res2["moves"][-1]["error_plain"]
+
+
+def test_marks_skip_renamings_of_one_drawn_segment_or_angle():
+    """codex-1, live loop slice 11, I.14: proving d = f made the solve
+    sprout |ad| = |af|, |bd| = |bf|, ∠adb = ∠afb ... -- one segment or
+    angle under two names. Marks are keyed by drawn position, so none
+    of these is a class; a real equality elsewhere still is (I.9)."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i14-slice11-solved.json")))
+    res = ep.play(14, case["moves"])
+    assert res["goal_reached"]
+    assert res["marks"]["classes"] == []
+    assert res["marks"]["angle_classes"] == []
+    mv9 = [_move(r, a, b) for r, a, b in ep.reference_steps(9)]
+    mk9 = ep.play(9, mv9)["marks"]
+    assert mk9["classes"] and mk9["angle_classes"]

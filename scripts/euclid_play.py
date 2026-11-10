@@ -974,8 +974,27 @@ def _length_marks(n, s, objects, xy, goal_reached, drawn, joined=()):
                 or atom[1] == atom[2]:
             continue
         groups.setdefault(find(atom), []).append([atom[1], atom[2]])
-    classes = sorted((sorted(v) for v in groups.values() if len(v) >= 2),
-                     key=lambda v: (-len(v), v))
+    # One mark per segment in the FIGURE, not per name: once d = f is
+    # proved, |ad| = |af| is one segment under two names and says nothing
+    # (codex-1, live loop slice 11, I.14: the solve sprouted a purple
+    # diagonal and tick classes that were all d/f renamings). Segments
+    # are keyed by their drawn end points; a class needs two different
+    # segments, and a segment of length zero is not marked.
+    def pos(p):
+        return (round(xy[p][0], 6) + 0.0, round(xy[p][1], 6) + 0.0)
+    kept = []
+    for members in groups.values():
+        seen, keep = set(), []
+        for p, q in sorted(sorted(m) for m in members):
+            if pos(p) == pos(q):
+                continue
+            key = frozenset((pos(p), pos(q)))
+            if key not in seen:
+                seen.add(key)
+                keep.append([p, q])
+        if len(keep) >= 2:
+            kept.append(keep)
+    classes = sorted(kept, key=lambda v: (-len(v), v))
     return {"classes": classes, "goal": goal}
 
 
@@ -1106,14 +1125,24 @@ def _angle_marks(n, s, objects, xy, goal_clauses):
 
     def ray(v, p):
         dx, dy = xy[p][0] - xy[v][0], xy[p][1] - xy[v][1]
-        r = math.hypot(dx, dy) or 1.0
+        r = math.hypot(dx, dy)
+        if r < 1e-9:
+            return None
         return (round(dx / r, 4) + 0.0, round(dy / r, 4) + 0.0)
+
+    def pos(p):
+        return (round(xy[p][0], 6) + 0.0, round(xy[p][1], 6) + 0.0)
 
     out = []
     for members in groups.values():
         seen, keep = set(), []
         for x, v, y in sorted(members):
-            key = (v, frozenset((ray(v, x), ray(v, y))))
+            rx, ry = ray(v, x), ray(v, y)
+            if rx is None or ry is None:
+                continue    # an arm of length zero (x drawn at v): no angle
+            # the vertex by its drawn position: d = f puts ∠adb and ∠afb
+            # on one drawn angle (slice 11, I.14)
+            key = (pos(v), frozenset((rx, ry)))
             if key not in seen:
                 seen.add(key)
                 keep.append([x, v, y])

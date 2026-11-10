@@ -1,0 +1,111 @@
+{
+ "n": 14,
+ "moves": [
+  {
+   "rule": "extend_point",
+   "args": [
+    "BC",
+    "c",
+    "b"
+   ],
+   "bindings": {
+    "x": "e"
+   }
+  },
+  {
+   "rule": "between_symm_parts",
+   "args": [
+    "e",
+    "b",
+    "c"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "proposition_13",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "e",
+    "AB",
+    "BC"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "circle_from_points",
+   "args": [
+    "b",
+    "d"
+   ],
+   "bindings": {
+    "C": "C"
+   }
+  },
+  {
+   "rule": "intersection_circle_line_extending_points",
+   "args": [
+    "C",
+    "BC",
+    "b",
+    "c"
+   ],
+   "bindings": {
+    "g": "f"
+   }
+  },
+  {
+   "rule": "between_symm_parts",
+   "args": [
+    "f",
+    "b",
+    "c"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "proposition_13",
+   "args": [
+    "a",
+    "b",
+    "c",
+    "f",
+    "AB",
+    "BC"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "pasch_3_opposing",
+   "args": [
+    "c",
+    "b",
+    "f",
+    "AB"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "opposing_opposing_same_side",
+   "args": [
+    "d",
+    "c",
+    "f",
+    "AB"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "assert_point_eq_angle",
+   "args": [
+    "d",
+    "f",
+    "a",
+    "b",
+    "AB"
+   ],
+   "bindings": {}
+  }
+ ]
+}
