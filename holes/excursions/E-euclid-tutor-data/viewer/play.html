@@ -237,6 +237,7 @@ function factEnglish(f) {
     case "_eq_len": return `|${f[1]}${f[2]}| = |${f[3]}${f[4]}|`;
     case "_eq_ang": return `∠${f[1]}${f[2]}${f[3]} = ∠${f[4]}${f[5]}${f[6]}`;
     case "_rt_ang": return `∠${f[1]}${f[2]}${f[3]} is right`;
+    case "_sum_rt_ang": return `∠${f[1]}${f[2]}${f[3]} and ∠${f[3]}${f[2]}${f[4]} together make two right angles`;
     case "fresh": return `${f[1]} already names an object, and this step's facts do not already hold for it`;
     default: return f.join(" ");
   }
@@ -314,9 +315,18 @@ function drawCaseFigure() {
     note.style.background = "#e8f0fb";
     note.style.border = "1px solid " + CASE_COL;
     note.style.color = "#0d3c75";
-    note.textContent = `Case figure: drawn so that ${words}` +
-      ((cf.moved || []).length ? ` (moved: ${cf.moved.join(", ")})` : "") +
-      `. The blue marks show the assumption.`;
+    const moved = (cf.moved || []).length
+      ? ` (moved: ${cf.moved.join(", ")})` : "";
+    if ((cf.relaxed || []).length) {
+      // an impossible case (E-kimi-task-432): the server drew it with
+      // one given left out; that given is what fails, drawn in red
+      const given = cf.relaxed.map(f => factEnglish(f)).join(" and ");
+      note.textContent = `Case figure: drawn so that ${words}${moved}` +
+        ` — then ${given} fails here (red). The proof must show why.`;
+    } else {
+      note.textContent = `Case figure: drawn so that ${words}${moved}` +
+        `. The blue marks show the assumption.`;
+    }
   }
   const P = n => built[n];
   const seg = (p, q, opts) => (P(p) && P(q))
@@ -364,6 +374,61 @@ function drawCaseFigure() {
           strokeColor: CASE_COL, fixed: true, highlight: false,
           withLabel: false });
     }
+  }
+  // the given the case breaks, in red, with its numbers read off the
+  // figure (angles in degrees, lengths in figure units)
+  const BROKEN_COL = "#c62828";
+  const redLabel = (x, y, txt) => board.create("text", [x, y, txt], {
+    fixed: true, highlight: false, fontSize: 16, strokeColor: BROKEN_COL,
+    cssStyle: "font-weight:bold" });
+  const len = (p, q) => Math.hypot(P(p).X() - P(q).X(), P(p).Y() - P(q).Y());
+  const redSeg = (p, q) => {
+    if (!P(p) || !P(q)) return;
+    board.create("segment", [P(p), P(q)], { strokeColor: BROKEN_COL,
+      strokeWidth: 4, strokeOpacity: 0.8, dash: 1, fixed: true,
+      highlight: false, withLabel: false });
+    const m = mid(p, q);
+    redLabel(m[0], m[1] - 0.3, `|${p}${q}| = ${len(p, q).toFixed(2)}`);
+  };
+  const redAng = (x, v, y) => {
+    if (!P(x) || !P(v) || !P(y)) return;
+    board.create("nonreflexangle", [P(x), P(v), P(y)], { radius: 0.5,
+      fillColor: BROKEN_COL, fillOpacity: 0.3, strokeColor: BROKEN_COL,
+      fixed: true, highlight: false, withLabel: false });
+    const a1 = Math.atan2(P(x).Y() - P(v).Y(), P(x).X() - P(v).X());
+    const a2 = Math.atan2(P(y).Y() - P(v).Y(), P(y).X() - P(v).X());
+    let d = Math.abs(a1 - a2); if (d > Math.PI) d = 2 * Math.PI - d;
+    const bis = Math.atan2(Math.sin(a1) + Math.sin(a2),
+                           Math.cos(a1) + Math.cos(a2));
+    // beside the vertex on the side away from the wedge (pixel offsets,
+    // so two wedges in a small figure never share a label spot); text
+    // runs rightward, so a label left of its vertex is pulled back
+    const u = board.unitX || 50, ox = -Math.cos(bis), oy = -Math.sin(bis);
+    redLabel(P(v).X() + (28 * ox - (ox < 0 ? 95 : 0)) / u,
+             P(v).Y() + (28 * oy - 6) / u,
+             `∠${x}${v}${y} = ${(d * 180 / Math.PI).toFixed(0)}°`);
+  };
+  const redRing = n => {
+    if (!P(n)) return;
+    board.create("point", [P(n).X(), P(n).Y()], { size: 13, face: "o",
+      fillOpacity: 0, strokeColor: BROKEN_COL, strokeWidth: 3, name: "",
+      fixed: true, highlight: false, withLabel: false });
+  };
+  for (const f of cf.relaxed || []) {
+    const k = f[0];
+    if (/^(eq|gt|lt)_len$/.test(k)) { redSeg(f[1], f[2]); redSeg(f[3], f[4]); }
+    else if (/^(eq|gt|lt)_ang$/.test(k) || k === "_sum_rt_ang") {
+      if (f.length >= 7) { redAng(f[1], f[2], f[3]); redAng(f[4], f[5], f[6]); }
+      // _sum_rt_ang u v x w: ∠uvx and ∠xvw, which should make 180°
+      else if (f.length === 5) { redAng(f[1], f[2], f[3]); redAng(f[3], f[2], f[4]); }
+    } else if (k === "gt_sum_len") {
+      redSeg(f[1], f[2]); redSeg(f[3], f[4]); redSeg(f[5], f[6]);
+    } else if (k === "lt_sum_sum_len") {
+      redSeg(f[1], f[2]); redSeg(f[3], f[4]);
+      redSeg(f[5], f[6]); redSeg(f[7], f[8]);
+    } else if (k === "between") { redSeg(f[1], f[2]); redSeg(f[2], f[3]);
+                                  redSeg(f[1], f[3]); }
+    else f.slice(1).filter(x => typeof x === "string" && P(x)).forEach(redRing);
   }
 }
 
