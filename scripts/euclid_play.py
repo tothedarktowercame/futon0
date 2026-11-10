@@ -215,16 +215,18 @@ RULE_LABELS = {
                          "they are right", "metric"),
     "perpendicular_onlyif": ("right angles at a crossing are equal",
                              "metric"),
-    "sum_angles_onlyif": ("angles adding to two right angles", "metric"),
+    "sum_angles_onlyif": ("a ray inside an angle splits it into two parts "
+                          "that add up", "metric"),
     "flat_angle_onlyif": ("a flat angle equals two right angles",
                           "metric"),
-    "degenerated_angle_if": ("a zero angle means the two rays coincide",
-                             "metric"),
+    "degenerated_angle_if": ("two points on one ray from a vertex make a "
+                             "zero angle", "metric"),
     "angle_self_zero": ("the angle of a ray with itself is zero",
                         "metric"),
-    "angle_ray_eq_zero": ("coincident rays make a zero angle", "metric"),
-    "off_line_strict_triangle": ("off a line, the strict triangle "
-                                 "inequality holds", "metric"),
+    "angle_ray_eq_zero": ("a zero angle means the rays coincide, so angles "
+                          "to either ray are equal", "metric"),
+    "off_line_strict_triangle": ("strict triangle inequalities put a point "
+                                 "off the line", "metric"),
     "equilateral_apex_off_line": ("an equilateral triangle's apex is off "
                                   "a line through a base vertex",
                                   "metric"),
@@ -377,6 +379,8 @@ _FACT_WORDS = {
     "right_ang": "∠{1}{2}{3} is right",
     "flat_ang": "∠{1}{2}{3} is a straight angle",
     "zero_ang": "∠{1}{2}{3} is zero",
+    "_zero_ang": "∠{1}{2}{3} is zero",
+    "not_between": "{2} is not between {1} and {3}",
     "pos_len": "|{1}{2}| > 0",
     "_lt_len": "|{1}{2}| < |{3}{4}|",
     "_gt_len": "|{1}{2}| > |{3}{4}|",
@@ -789,6 +793,33 @@ def _fill_case_witnesses(n, s, mv):
             b["moves"] = list(b.get("moves") or []) + [
                 {"rule": "name_point", "args": [p], "bindings": {"x": w}}
                 for w, p in env.items() if w != p and w in wit]
+    return out
+
+
+def _drop_impossible(n, s, mv):
+    """by_cases: a case whose state is contradictory is finished (the
+    possibility cannot happen); the engine's _by_cases refuses it as
+    vacuous, so drop it here. Called only after the referee has checked
+    the cases cover every possibility, so what remains plus the dropped
+    impossible cases is still exhaustive."""
+    if mv.get("rule") != "by_cases":
+        return mv
+    keep = []
+    for b in mv.get("branches") or []:
+        sub = s.copy()
+        try:
+            for f in b.get("hyps") or []:
+                eng._assume_metric_or_fact(sub, tuple(f), "case")
+            eng.close(sub)
+            eng.run_steps(sub, [_move_to_step(m) for m in b.get("moves")
+                                or []])
+        except Exception:
+            keep.append(b)   # the ordinary path reports the problem
+            continue
+        if not eng.contradictory(sub)[0]:
+            keep.append(b)
+    out = dict(mv)
+    out["branches"] = keep
     return out
 
 
@@ -1250,6 +1281,30 @@ def _ordered_circle_line(n, s, i, args, bindings, xy, objects):
                     objects.append(o)
             return added
     return None
+
+
+def _why_impossible(sub, hyps, bentries):
+    """A readable account of a contradictory case: the case's assumption
+    and the facts its last moves showed, which cannot all hold (codex-1:
+    'impossible-branch completion gives no readable contradiction')."""
+    _c, w = eng.contradictory(sub)
+    if isinstance(w, tuple) and len(w) == 2 and all(
+            isinstance(x, tuple) for x in w):
+        return "these clash: %s, and %s" % (fact_words(w[0]),
+                                            fact_words(w[1]))
+    last = []
+    for e in reversed(bentries or []):
+        if e.get("ok") and e.get("added"):
+            last = [fact_words(tuple(f)) for f in e["added"]
+                    if f and f[0] in ("eq_len", "_eq_len", "eq_ang",
+                                      "_eq_ang", "gt_len", "gt_ang",
+                                      "sum_ang", "_sum_ang", "flat_ang")]
+            if last:
+                break
+    assumed = "; ".join(fact_words(tuple(f)) for f in hyps) or "this case"
+    return ("the lengths and angles cannot all hold together: the "
+            "assumption %s, with %s" % (assumed, "; ".join(last[:3])
+                                       or "what the moves showed"))
 
 
 def _add_undrawn(s, bindings, objects):
@@ -1926,8 +1981,10 @@ def _close_branch(n, s, rule, hyps, steps, concl, i):
                     % [list(f) for f in hyps])
     else:
         if contra:
-            return ("the case %s is contradictory — it would entail "
-                    "anything" % [list(f) for f in hyps])
+            # an impossible case is finished: the referee has checked the
+            # cases cover every possibility (codex-1's playtest, 2026-11-10:
+            # the tick said "holds", then the next case was refused)
+            return None
         for c in concl:
             if not eng._fact_holds(sub, c):
                 return ("the case %s does not reach the conclusion %s"
@@ -2005,7 +2062,9 @@ def _open_block(n, s, mv, objects, xy, pal, i, refuted=()):
     breps.append({"hyps": [list(f) for f in hyps], "closed": False,
                   "moves": bentries,
                   "branch_contradictory": contra,
-                  "branch_goal_reached": goal})
+                  "branch_goal_reached": goal,
+                  "why_impossible": _why_impossible(sub, hyps, bentries)
+                  if contra else None})
     miss = None
     for e in bentries:
         if e.get("missing_case"):
@@ -2047,7 +2106,8 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                     break
                 try:
                     rep = eng.run_steps(s, [_block_to_engine(
-                        _fill_case_witnesses(n, s, mv))])[0]
+                        _drop_impossible(n, s, _fill_case_witnesses(
+                            n, s, mv)))])[0]
                     entry["ok"] = True
                     entry["added"] = [list(c)
                                       for c in rep.get("conclusions", [])]

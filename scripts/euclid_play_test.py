@@ -1136,3 +1136,31 @@ def test_goal_checklist_all_props_have_words():
         for g in goals:
             assert g["state"] in ("shown", "pending")
             assert g["words"] and "(" not in g["words"], g
+
+
+def test_impossible_case_finishes_a_by_cases_split():
+    """codex-1's playtest slice 3 (2026-11-10): at I.6 the case
+    |ab| > |ac| became contradictory; the tick said it held, but adding
+    the next case was refused ('an earlier case does not work yet'),
+    because the engine's by_cases rejects a contradictory case as
+    vacuous. In the game an impossible case is finished (the referee
+    checks coverage), and the page says why it is impossible."""
+    case1 = [{"rule": "proposition_3", "args": ["b", "a", "a", "c", "AB",
+                                                "AC"], "bindings": {"q": "d"}},
+             {"rule": "line_from_points", "args": ["d", "c"],
+              "bindings": {"L": "DC"}},
+             {"rule": "proposition_4",
+              "args": ["b", "d", "c", "c", "a", "b", "AB", "DC", "BC", "AC",
+                       "AB", "BC"], "bindings": {}},
+             {"rule": "sum_angles_onlyif",
+              "args": ["c", "a", "b", "d", "AC", "BC"], "bindings": {}}]
+    blk = {"rule": "by_cases", "branches": [
+        {"hyps": [["gt_len", "a", "b", "a", "c"]], "moves": case1}],
+        "conclusion": [["eq_len", "a", "b", "a", "c"]], "open": True}
+    br = ep.play(6, [blk])["moves"][-1]["branches"][-1]
+    assert br["branch_contradictory"] and br["why_impossible"]
+    two = copy.deepcopy(blk)
+    two["branches"].append({"hyps": [["eq_len", "a", "b", "a", "c"]],
+                            "moves": []})
+    ent = ep.play(6, [two])["moves"][-1]
+    assert ent["ok"] and ent["branches"][0]["closed"]

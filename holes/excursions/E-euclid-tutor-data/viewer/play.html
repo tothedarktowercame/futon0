@@ -1391,6 +1391,11 @@ function updateBranchStatus() {
       ok = br.branch_contradictory;
       state = ok ? "impossible ✓ (press close or next case)"
                  : "not yet shown impossible";
+    } else if (br.branch_contradictory) {
+      // an impossible case is finished too (codex-1's playtest)
+      ok = true;
+      state = "impossible ✓ (press close or next case)" +
+        (br.why_impossible ? " — " + br.why_impossible : "");
     } else {
       ok = br.branch_goal_reached;
       state = ok ? `${concl} holds ✓ (press close or next case)`
