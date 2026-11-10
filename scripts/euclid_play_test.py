@@ -1532,3 +1532,20 @@ def test_circle_meeting_on_a_side_is_drawn():
     res = ep.play(9, moves)
     o = {x["name"]: x for x in res["objects"]}
     assert side(o["f"]["xy"]) * side(v) > 0
+
+
+def test_lines_meet_premise_accepts_either_order():
+    # codex-1, live loop slice 9, I.10: intersection_lines AB CD refused
+    # "lines AB and CD meet" with intersects_ll CD AB shown
+    # (intersection_symm, Diagrammatic.lean:289).
+    here = os.path.dirname(os.path.abspath(__file__))
+    moves = json.load(open(os.path.join(
+        here, "testdata", "codex-i10-slice9-meet-order.json")))
+    res = ep.play(10, moves)
+    assert all(m["ok"] for m in res["moves"]), res["moves"][-1]
+    o = {x["name"]: x for x in res["objects"]}
+    assert o["e"]["xy"] == [0.0, 0.0]   # where CD crosses AB
+    # with no meeting shown at all, still refused, naming the asked order
+    res = ep.play(10, moves[:7] + moves[8:])
+    assert res["moves"][-1]["error_plain"] == \
+        "Not yet shown: lines AB and CD meet"

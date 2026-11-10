@@ -1338,6 +1338,16 @@ def _opposing_either(s, p, q, L):
     return r if (not s.has(f) and s.has(r)) else f
 
 
+def _intersects_either(s, L, M):
+    # Diagrammatic.lean:289 (intersection_symm): L.intersectsLine M →
+    # M.intersectsLine L. Cited per premise like _opposing_either, not a
+    # closure rule (footprints are pinned). codex-1, live loop slice 9:
+    # intersection_lines AB CD refused with intersects_ll CD AB shown.
+    f = ("intersects_ll", L, M)
+    r = ("intersects_ll", M, L)
+    return r if (not s.has(f) and s.has(r)) else f
+
+
 def _need(s, i, rule, fact):
     if not s.has(fact):
         raise MissingPremise(i, rule, fact, "(no forward rule derives it)")
@@ -1781,7 +1791,7 @@ CONSTRUCTIONS = {
     "intersection_lines": {
         "cite": "Intersections.lean:3",
         "args": ("L", "M"),
-        "premises": lambda s, L, M: [("intersects_ll", L, M)],
+        "premises": lambda s, L, M: [_intersects_either(s, L, M)],
         "make": lambda s, L, M: [
             ("a", [("on_line", "a", L), ("on_line", "a", M)])],
     },
