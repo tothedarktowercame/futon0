@@ -1668,3 +1668,27 @@ def test_i16_goal_has_both_lean_conjuncts_and_reference_solves_both():
     assert all(m["ok"] for m in res["moves"])
     assert res["goal_reached"]
     assert all(g["state"] == "shown" for g in res["marks"]["goals"])
+
+
+def test_page_words_cover_server_fact_words():
+    """Every fact kind the server has words for, the page has words for
+    too (a case in factEnglish or a FACT_TEMPLATES entry). codex-1, live
+    loop slice 12: I.17's move list read 'sum_rt_ang b c a d'."""
+    page = open(os.path.join(os.path.dirname(__file__), "..", "holes",
+                             "excursions", "E-euclid-tutor-data", "viewer",
+                             "play.html")).read()
+    cases = set(re.findall(r'case "([a-z_]+)":', page))
+    tm = re.search(r"const FACT_TEMPLATES = (\{.*?\});", page, re.S)
+    templates = json.loads(tm.group(1))
+    missing = [k for k in ep._FACT_WORDS
+               if k not in cases and k not in templates]
+    assert missing == []
+    for k, v in templates.items():
+        assert ep._FACT_WORDS.get(k) == v, k
+
+
+def test_sum_rt_ang_fact_words_use_its_four_points():
+    """The engine's sum_rt_ang fact is (u, v, x, w); the six-place template
+    showed '∠d' plus garbage on the page at I.17 (live loop slice 12)."""
+    assert ep.fact_words(("sum_rt_ang", "b", "c", "a", "d")) == \
+        "∠bca and ∠acd together make two right angles"

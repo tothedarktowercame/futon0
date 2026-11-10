@@ -240,9 +240,36 @@ function factEnglish(f) {
     case "_rt_ang": return `∠${f[1]}${f[2]}${f[3]} is right`;
     case "_sum_rt_ang": return `∠${f[1]}${f[2]}${f[3]} and ∠${f[3]}${f[2]}${f[4]} together make two right angles`;
     case "fresh": return `${f[1]} already names an object, and this step's facts do not already hold for it`;
-    default: return f.join(" ");
+    default:
+      if (FACT_TEMPLATES[f[0]])
+        return FACT_TEMPLATES[f[0]].replace(/\{(\d+)\}/g, (_m, i) => f[+i]);
+      return f.join(" ");
   }
 }
+// the server's _FACT_WORDS for the kinds not cased above ({1} = f[1]);
+// test_page_words_cover_server_fact_words keeps the two in step (codex-1,
+// live loop slice 12: I.17's move list read 'sum_rt_ang b c a d')
+const FACT_TEMPLATES = {
+ "intersects_ll": "lines {1} and {2} meet",
+ "rt_ang": "∠{1}{2}{3} is right",
+ "right_ang": "∠{1}{2}{3} is right",
+ "flat_ang": "∠{1}{2}{3} is a straight angle",
+ "zero_ang": "∠{1}{2}{3} is zero",
+ "_zero_ang": "∠{1}{2}{3} is zero",
+ "pos_len": "|{1}{2}| > 0",
+ "_lt_len": "|{1}{2}| < |{3}{4}|",
+ "_gt_len": "|{1}{2}| > |{3}{4}|",
+ "_gt_ang": "∠{1}{2}{3} > ∠{4}{5}{6}",
+ "gt_sum_len": "|{1}{2}| + |{3}{4}| > |{5}{6}|",
+ "sum_ang": "∠{1}{2}{3} = ∠{1}{2}{4} + ∠{4}{2}{3}",
+ "_sum_ang": "∠{1}{2}{3} = ∠{1}{2}{4} + ∠{4}{2}{3}",
+ "lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
+ "sum_rt_ang": "∠{1}{2}{3} and ∠{3}{2}{4} together make two right angles",
+ "lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
+ "_lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
+ "_gt_sum_len": "|{1}{2}| + |{3}{4}| > |{5}{6}|",
+ "_lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|"
+};
 
 // -------------------------------------------------------------- drawing
 // Adapted from viewer.js: fitBBox + mk over the play() objects (which
@@ -537,8 +564,21 @@ function drawMarks() {
     if (g.kind === "_gt_ang") {
       drawArc(f[1], f[2], f[3], { colour: col, dash: done ? 0 : 2, width: 4 });
       drawArc(f[4], f[5], f[6], { colour: col, dash: done ? 0 : 2, width: 4 });
-    } else if (g.kind === "_gt_len" || g.kind === "_lt_len") {
-      for (const [p, q] of [[f[1], f[2]], [f[3], f[4]]]) {
+    } else if (g.kind === "_lt_sum_rt_ang") {
+      // the two summands (I.17): which angles the goal is about; no
+      // picture of their sum (codex-1, live loop slice 12)
+      drawArc(f[1], f[2], f[3], { colour: col, dash: done ? 0 : 2, width: 4 });
+      drawArc(f[4], f[5], f[6], { colour: col, dash: done ? 0 : 2, width: 4 });
+    } else if (g.kind === "_sum_rt_ang") {
+      // I.13: ∠uvx and ∠xvw, the two angles that make two right angles
+      drawArc(f[1], f[2], f[3], { colour: col, dash: done ? 0 : 2, width: 4 });
+      drawArc(f[3], f[2], f[4], { colour: col, dash: done ? 0 : 2, width: 4 });
+    } else if (["_gt_len", "_lt_len", "_gt_sum_len",
+                "_lt_sum_sum_len"].includes(g.kind)) {
+      // every segment the comparison names (two, three or four)
+      const segs = [];
+      for (let k = 1; k + 1 < f.length; k += 2) segs.push([f[k], f[k + 1]]);
+      for (const [p, q] of segs) {
         if (!built[p] || !built[q]) continue;
         board.create("segment", [built[p], built[q]],
           segOpts(col, { dash: done ? 0 : 2, strokeOpacity: 0.9,

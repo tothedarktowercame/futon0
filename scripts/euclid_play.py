@@ -452,7 +452,10 @@ _FACT_WORDS = {
     "sum_ang": "∠{1}{2}{3} = ∠{1}{2}{4} + ∠{4}{2}{3}",
     "_sum_ang": "∠{1}{2}{3} = ∠{1}{2}{4} + ∠{4}{2}{3}",
     "lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
-    "sum_rt_ang": "∠{1}{2}{3} and ∠{4}{5}{6} together make two right angles",
+    # four points u v x w, like _sum_rt_ang (the engine adds it from the
+    # query form's fact[1:5]); the six-place template printed "undefined"
+    "sum_rt_ang": ("∠{1}{2}{3} and ∠{3}{2}{4} together make two right "
+                   "angles"),
     "lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
     # the engine's query forms of the three sums above, as the goals of
     # I.17, I.20 and I.21 name them (their checklist read "lt sum rt ang
