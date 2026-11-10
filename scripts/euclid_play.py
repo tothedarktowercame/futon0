@@ -731,6 +731,12 @@ def _goal_witness(n, s, objects, xy=None, goals=None, given=None,
             points.update(f[1:3])
         elif f[0] == "between":
             points.update(f[1:4])
+    for row in s.la.rows:
+        # a case block's conclusion can name a witness that only the
+        # metric store mentions (I.22's f1 after a name clash)
+        for a, _c in row[0]:
+            if a[0] in ("len", "ang"):
+                points.update(a[1:])
     points = sorted(p for p in points if isinstance(p, str)
                     and p not in (wit_not_in or ()))
 
@@ -842,6 +848,34 @@ def _theorem_witnesses(n, concl):
             if isinstance(x, str) and x not in given}
 
 
+def _fresh_theorem_witnesses(n, s, mv):
+    """A case block concluding the theorem whose ∃ names were taken by
+    drawn points (I.22: f and g) concludes under fresh names (f1, g1)
+    instead: the conclusion is added to the outer state, and |fk| = |aa'|
+    there would be a claim about the drawn f (codex-1, slice 13: the
+    next case was refused because the earlier one was made to rename a
+    point onto the existing f)."""
+    concl = [_metric_query(tuple(c)) for c in mv.get("conclusion") or []]
+    wit = _theorem_witnesses(n, concl)
+    known = {x for f in s.facts for x in f[1:] if isinstance(x, str)}
+    clash = sorted(w for w in wit if w in known)
+    if not clash:
+        return mv
+    used = set(known) | {x for c in concl for x in c[1:]
+                         if isinstance(x, str)}
+    ren = {}
+    for w in clash:
+        j = 1
+        while "%s%d" % (w, j) in used:
+            j += 1
+        ren[w] = "%s%d" % (w, j)
+        used.add(ren[w])
+    out = dict(mv)
+    out["conclusion"] = [[ren.get(x, x) if isinstance(x, str) else x
+                          for x in c] for c in mv["conclusion"]]
+    return out
+
+
 def _fill_case_witnesses(n, s, mv):
     """A by_cases conclusion names the theorem's witness (I.2's l), but a
     student's case makes that point under its own name. For each case
@@ -851,6 +885,7 @@ def _fill_case_witnesses(n, s, mv):
     of mv (unchanged when nothing is needed). Joe at I.2, 2026-11-10."""
     if mv.get("rule") != "by_cases":
         return mv
+    mv = _fresh_theorem_witnesses(n, s, mv)
     concl = [_metric_query(tuple(c)) for c in mv.get("conclusion") or []]
     if not concl:
         return mv

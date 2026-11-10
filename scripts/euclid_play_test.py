@@ -1733,3 +1733,28 @@ def test_case_reaches_goal_when_drawn_points_took_the_witness_names():
     mv = copy.deepcopy(case["moves"])
     mv[-1]["branches"][0]["moves"] = mv[-1]["branches"][0]["moves"][:1]
     assert not ep.play(22, mv)["moves"][-1]["branches"][0]["branch_goal_reached"]
+
+
+def test_next_case_opens_after_a_case_closed_on_taken_witness_names():
+    """codex-1, slice 13, I.22: with case 1 closed on (k, f, g) :=
+    (a', a, h), opening case 2 was refused ("an earlier case does not
+    work yet"): case 1 was made to rename a point onto the drawn f. The
+    block now concludes under fresh names (f1, g1), and the top-level
+    goal finds witnesses that only the metric store mentions."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i22-slice13-next-case.json")))
+    res = ep.play(22, case["moves"])
+    blk = res["moves"][-1]
+    assert blk["ok"], blk["error"]
+    assert blk["branches"][0]["closed"]
+    s = ep._start_state(22)
+    eng.run_steps(s, [ep._move_to_step(m) for m in case["moves"][:5]])
+    filled = ep._fill_case_witnesses(22, s, case["moves"][-1])
+    assert [c[1:3] for c in filled["conclusion"]] == [
+        ["f1", "k"], ["f1", "g1"], ["k", "g1"]]
+    for c in filled["conclusion"]:
+        eng._assume_metric_or_fact(s, tuple(c), "case conclusion")
+    eng.close(s)
+    assert ep._goal_witness(22, s, [], None) == {
+        "f": "f1", "k": "k", "g": "g1"}
