@@ -340,12 +340,103 @@ function renderGoalList(mk) {
 // (case_figure); here each kind of assumption gets its own symbol in the
 // case colour, and a banner says whether the case's figure exists.
 const CASE_COL = "#1565c0";
+
+// A case relation the main figure cannot show (no placement found, or
+// the relation is about constructed points) gets a small schematic of
+// its own, with the same names: codex-1's advice after I.1-I.25 (A,
+// first choice), so the board never wears a blue "on BE" on a point that
+// is visibly off BE with nothing that shows the relation. It shows that
+// relation only; for a negated relation it is one example of several.
+const SKETCH_KINDS = new Set(["on_line", "not_on_line", "between",
+  "not_between", "same_side", "opposing_sides", "not_same_side"]);
+function caseSketchSvg(f) {
+  const W = 150, H = 82, NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  svg.style.display = "block";
+  const el = (tag, attrs, text) => {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    if (text !== undefined) e.textContent = text;
+    svg.appendChild(e);
+    return e;
+  };
+  const shade = (y0, y1, fill) => el("rect", { x: 0, y: y0, width: W,
+    height: y1 - y0, fill, opacity: 0.35 });
+  const line = (y, name) => {
+    el("line", { x1: 6, y1: y, x2: W - 22, y2: y, stroke: "#333",
+                 "stroke-width": 2 });
+    el("text", { x: W - 18, y: y + 4, "font-size": 12, fill: "#333" }, name);
+  };
+  const pt = (x, y, name, dy) => {
+    el("circle", { cx: x, cy: y, r: 3.5, fill: CASE_COL });
+    el("text", { x: x - 4, y: y + (dy || -7), "font-size": 13,
+                 fill: CASE_COL }, name);
+  };
+  const k = f[0];
+  let example = false;
+  if (k === "on_line") { line(48, f[2]); pt(64, 48, f[1]); }
+  else if (k === "not_on_line") { line(58, f[2]); pt(64, 24, f[1]); }
+  else if (k === "between" || k === "not_between") {
+    // between u v w: v between u and w. Not between: one example, v
+    // beyond w (it could also be beyond u, or off the line)
+    const [u, v, w] = [f[1], f[2], f[3]];
+    el("line", { x1: 12, y1: 46, x2: 134, y2: 46, stroke: CASE_COL,
+                 "stroke-width": 2, opacity: 0.6 });
+    if (k === "between") { pt(18, 46, u); pt(72, 46, v); pt(128, 46, w); }
+    else { pt(18, 46, u); pt(72, 46, w); pt(128, 46, v); example = true; }
+  } else if (k === "same_side") {
+    shade(0, 56, "#bbdefb"); line(56, f[3]);
+    pt(40, 26, f[1]); pt(98, 34, f[2]);
+  } else if (k === "opposing_sides" || k === "not_same_side") {
+    shade(0, 42, "#bbdefb"); shade(42, H, "#ffe0b2"); line(42, f[3]);
+    pt(46, 22, f[1]); pt(96, 70, f[2]);
+    example = k === "not_same_side";
+  }
+  return { svg, example };
+}
+function drawCaseSketch(cf) {
+  const skipKey = f => JSON.stringify(f);
+  const skipped = new Set((cf.skipped || []).map(skipKey));
+  const facts = (cf.hyps || []).filter(f => SKETCH_KINDS.has(f[0]) &&
+    (!cf.drawn || skipped.has(skipKey(f))));
+  if (!facts.length) return;
+  const box = document.createElement("div");
+  box.id = "case-sketch";
+  box.style.cssText = "position:absolute;top:8px;right:8px;z-index:20;" +
+    "background:rgba(255,255,255,0.95);border:1px dashed " + CASE_COL +
+    ";color:" + CASE_COL + ";font:12px sans-serif;padding:4px 6px;" +
+    "border-radius:4px;pointer-events:none;max-width:170px";
+  const head = document.createElement("div");
+  head.style.fontWeight = "bold";
+  head.textContent = "Case sketch";
+  box.appendChild(head);
+  for (const f of facts) {
+    const { svg, example } = caseSketchSvg(f);
+    const cap = document.createElement("div");
+    cap.textContent = factEnglish(f) + (example ? " (one example)" : "");
+    box.appendChild(cap);
+    box.appendChild(svg);
+  }
+  const foot = document.createElement("div");
+  foot.style.cssText = "color:#555;font-size:11px";
+  foot.textContent = "Shows only this relation; the other givens and " +
+    "constructions are not represented here.";
+  box.appendChild(foot);
+  const c = board.containerObj;
+  if (getComputedStyle(c).position === "static") c.style.position = "relative";
+  c.appendChild(box);
+}
+
 function drawCaseFigure() {
   const note = document.getElementById("case-figure-note");
   const cf = lastResult && lastResult.case_figure;
   const oldInset = document.getElementById("broken-inset");
   if (oldInset) oldInset.remove();
+  const oldSketch = document.getElementById("case-sketch");
+  if (oldSketch) oldSketch.remove();
   if (!cf) { note.style.display = "none"; return; }
+  drawCaseSketch(cf);
   // facts the placement could not evaluate (about constructed points,
   // e.g. I.7's extensions g, h) are not drawn: say so rather than claim
   // the whole case is shown (codex-1 slice 5)
@@ -356,7 +447,8 @@ function drawCaseFigure() {
     ? shown.map(f => factEnglish(f)).join(" and ") : "the givens hold";
   const notShown = (cf.skipped || []).length
     ? ` Not shown in this figure: ${cf.skipped.map(f => factEnglish(f))
-        .join("; ")}.` : "";
+        .join("; ")}` + (cf.skipped.some(f => SKETCH_KINDS.has(f[0]))
+          ? " (see the case sketch)." : ".") : "";
   note.style.display = "block";
   if (!cf.drawn) {
     // a drawing status, not a proof (codex-1's slice 4: the old banner
@@ -366,8 +458,10 @@ function drawCaseFigure() {
     note.style.color = "#6b4b00";
     note.textContent = `No figure found for this case (${words}). The ` +
       `usual figure is shown, with the assumption marked in blue as ` +
-      `assumed, not as drawn. Whether the case is possible is for the ` +
-      `proof to decide.`;
+      `assumed, not as drawn` +
+      ((cf.hyps || []).some(f => SKETCH_KINDS.has(f[0]))
+        ? "; the case sketch shows the relation itself" : "") +
+      `. Whether the case is possible is for the proof to decide.`;
   } else {
     note.style.background = "#e8f0fb";
     note.style.border = "1px solid " + CASE_COL;
