@@ -828,6 +828,20 @@ def _goal_witness(n, s, objects, xy=None, goals=None, given=None,
     return found[0] if search(0, {}) else None
 
 
+def _theorem_witnesses(n, concl):
+    """The proposition's own existential names, when the case concludes
+    the proposition's goal: they stay free even after a drawn point took
+    the same name (codex-1, live loop slice 13, I.22: the circle-line
+    intersections were auto-named f and g, so the case's |fk| = |aa'|
+    read f as that point, and the triangle a, a', h never counted)."""
+    goal = {tuple(_metric_query(tuple(g))) for g in GOALS.get(n) or []}
+    if not concl or not {tuple(c) for c in concl} <= goal:
+        return set()
+    given = {o["name"] for o in tr.objects_from_hyps(n)}
+    return {x for c in concl for x in c[1:]
+            if isinstance(x, str) and x not in given}
+
+
 def _fill_case_witnesses(n, s, mv):
     """A by_cases conclusion names the theorem's witness (I.2's l), but a
     student's case makes that point under its own name. For each case
@@ -863,7 +877,8 @@ def _fill_case_witnesses(n, s, mv):
         names = {x for c in concl for x in c[1:] if isinstance(x, str)}
         given = known | {x for f in sub.facts for x in f[1:]
                          if isinstance(x, str)}
-        wit = {x for x in names if x not in given}
+        wit = {x for x in names if x not in given} | \
+            _theorem_witnesses(n, concl)
         if not wit:
             continue
         env = _goal_witness(n, sub, [], None, goals=concl,
@@ -912,11 +927,12 @@ def _concl_witness(n, outer, sub, concl):
     allnames = known | {x for f in sub.facts for x in f[1:]
                         if isinstance(x, str)}
     names = {x for c in concl for x in c[1:] if isinstance(x, str)}
-    wit = {x for x in names if x not in allnames}
+    wit = {x for x in names if x not in allnames} | \
+        _theorem_witnesses(n, concl)
     if not wit:
         return False
     return _goal_witness(n, sub, [], None, goals=concl,
-                         given=allnames) is not None
+                         given=allnames - wit) is not None
 
 
 def _length_marks(n, s, objects, xy, goal_reached, drawn, joined=()):

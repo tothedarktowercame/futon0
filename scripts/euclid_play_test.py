@@ -1712,3 +1712,24 @@ def test_case_figure_cannot_satisfy_lengths_by_shrinking():
     cf = res["case_figure"]
     assert cf["drawn"]
     assert ["gt_ang", "a", "b", "c", "b", "c", "a"] in cf["relaxed"]
+
+
+def test_case_reaches_goal_when_drawn_points_took_the_witness_names():
+    """codex-1, live loop slice 13, I.22: the circle-line intersections
+    were auto-named f and g, the goal's own ∃ names. The case had built
+    the triangle a, a', h, but read |fk| = |aa'| with f as that drawn
+    point, so the case never closed. The theorem's witnesses stay free;
+    a conclusion that is not the theorem's goal gets no extra witnesses."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i22-slice13-witness-names-taken.json")))
+    res = ep.play(22, case["moves"])
+    br = res["moves"][-1]["branches"][0]
+    assert br["branch_goal_reached"]
+    assert ep._theorem_witnesses(22, [tuple(ep._metric_query(tuple(g)))
+                                      for g in ep.GOALS[22]]) == {"k", "f", "g"}
+    assert ep._theorem_witnesses(22, [("_eq_len", "f", "g", "a", "a'")]) == set()
+    # without the case's h, the same conclusion is not reached
+    mv = copy.deepcopy(case["moves"])
+    mv[-1]["branches"][0]["moves"] = mv[-1]["branches"][0]["moves"][:1]
+    assert not ep.play(22, mv)["moves"][-1]["branches"][0]["branch_goal_reached"]
