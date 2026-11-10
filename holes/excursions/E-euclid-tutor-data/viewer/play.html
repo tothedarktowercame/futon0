@@ -109,6 +109,9 @@
         <span id="case-desc" style="font-size:12px;color:#555"></span><br>
         <button id="btn-next-case">next case</button>
         <button id="btn-close-block">close</button>
+        <button id="btn-leave-block" title="remove this case split; the
+moves of the current case move out to the main proof">leave the case
+split, keep my moves</button>
       </div>
       <div id="branch-status"></div>
       <div id="case-builder">
@@ -1563,6 +1566,47 @@ document.getElementById("btn-suppose").onclick = () => showCaseBuilder("new");
 document.getElementById("btn-next-case").onclick = () =>
   showCaseBuilder("next");
 document.getElementById("btn-close-block").onclick = closeBlock;
+document.getElementById("btn-leave-block").onclick = leaveBlock;
+
+// Remove the innermost open case split, keeping the current case's moves
+// in the enclosing list (Joe at I.2, 2026-11-10: "the old proof by cases
+// got in the way" -- his construction kept landing inside a case). If a
+// kept move needed the case's assumption, the server refuses it and
+// nothing changes.
+async function leaveBlock() {
+  const block = openBlock();
+  if (!block) return;
+  const saved = JSON.stringify(moves);
+  const findParent = list => {
+    if (list.includes(block)) return list;
+    for (const m of list)
+      if (m.branches)
+        for (const br of m.branches) {
+          const r = findParent(br.moves);
+          if (r) return r;
+        }
+    return null;
+  };
+  const parent = findParent(moves);
+  if (!parent) return;
+  const kept = block.branches.length
+    ? block.branches[block.branches.length - 1].moves : [];
+  parent.splice(parent.indexOf(block), 1, ...kept);
+  const res = await postPlay(cur.n, moves);
+  const bad = res.moves.find(m => !m.ok);
+  if (bad) {
+    moves = JSON.parse(saved);
+    const r2 = await postPlay(cur.n, moves);
+    afterResult(r2, bad.error || "refused",
+      "Leaving the case split would break a move: " +
+      (bad.error_plain || "refused") +
+      " (that move needs the case's assumption). Nothing was changed.");
+    return;
+  }
+  saveProgress();
+  document.getElementById("snap-offer").style.display = "none";
+  afterResult(res, null);
+}
 document.getElementById("cb-begin").onclick = beginCase;
 document.getElementById("cb-cancel").onclick = hideCaseBuilder;
 wireFactBuilder("cb-hyps", cbHyps, "add hypothesis");
