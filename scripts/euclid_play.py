@@ -338,7 +338,7 @@ ARG_HINTS = {
 _FACT_WORDS = {
     "neq": "{1} ≠ {2}",
     "on_line": "{1} is on line {2}",
-    "not_on_line": "{1} is not on line {2}",
+    "not_on_line": "{1} lies off line {2}",
     "on_circle": "{1} is on circle {2}",
     "centre": "{1} is the centre of circle {2}",
     "between": "{2} is between {1} and {3}",
@@ -371,6 +371,8 @@ _FACT_WORDS = {
     "_gt_len": "|{1}{2}| > |{3}{4}|",
     "_gt_ang": "∠{1}{2}{3} > ∠{4}{5}{6}",
     "gt_sum_len": "|{1}{2}| + |{3}{4}| > |{5}{6}|",
+    "sum_ang": "∠{1}{2}{3} = ∠{1}{2}{4} + ∠{4}{2}{3}",
+    "_sum_ang": "∠{1}{2}{3} = ∠{1}{2}{4} + ∠{4}{2}{3}",
     "lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
     "sum_rt_ang": "∠{1}{2}{3} and ∠{4}{5}{6} together make two right angles",
     "lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
@@ -503,9 +505,53 @@ def rule_info(name):
         binds = []
     label, group = RULE_LABELS.get(name, (name.replace("_", " "),
                                           "constructions"))
+    needs, gives = _rule_words(spec)
     return {"args": list(spec["args"]), "cite": spec["cite"],
             "binds": binds, "label": label, "group": group,
-            "arg_hints": dict(ARG_HINTS.get(name, {}))}
+            "arg_hints": dict(ARG_HINTS.get(name, {})),
+            "needs": needs, "gives": gives}
+
+
+def _rule_words(spec):
+    """The rule in words, with its own box letters: what it needs (its
+    premises, and the lengths/angles it must be able to show) and what it
+    gives. kimi-1's playtest (2026-11-10) found the roles of the angle-sum
+    and superposition moves' boxes only by trial and refusal."""
+    # bracketed letters, so a box's [b] is not mistaken for the point b
+    args = ["[%s]" % a for a in spec["args"]]
+    st = eng.State()
+
+    def words(fs):
+        out = []
+        for f in fs:
+            try:
+                f = tuple(f)
+                if f and f[0] == "entail" or (len(f) == 2 and
+                                              isinstance(f[1], tuple)):
+                    f = (f[0],) + tuple(f[1])
+                if f and f[0] in ("eq_len", "eq_ang", "gt_len", "gt_ang",
+                                  "lt_len", "rt_ang", "pos_len"):
+                    f = ("_" + f[0],) + f[1:] if f[0] != "lt_len" else f
+                out.append(fact_words(f))
+            except Exception:
+                pass
+        return out
+    needs, gives = [], []
+    try:
+        needs = words(spec["premises"](st, *args))
+    except Exception:
+        pass
+    try:
+        if "entail" in spec:
+            needs += words(spec["entail"](st, *args))
+    except Exception:
+        pass
+    try:
+        for b, fs in spec["make"](st, *args):
+            gives += words(fs)
+    except Exception:
+        pass
+    return needs, gives
 
 
 def _goal_witness(n, s, objects, xy=None, goals=None, given=None):

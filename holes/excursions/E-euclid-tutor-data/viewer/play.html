@@ -209,7 +209,7 @@ function factEnglish(f) {
   switch (k) {
     case "neq": return `${f[1]} ≠ ${f[2]}`;
     case "on_line": return `${f[1]} is on line ${f[2]}`;
-    case "not_on_line": return `${f[1]} is not on line ${f[2]}`;
+    case "not_on_line": return `${f[1]} lies off line ${f[2]}`;
     case "on_circle": return `${f[1]} is on circle ${f[2]}`;
     case "centre": return `${f[1]} is the centre of circle ${f[2]}`;
     case "between": return `${f[2]} is between ${f[1]} and ${f[3]}`;
@@ -978,6 +978,17 @@ function renderRuleInputs() {
     small.textContent = e.name + " — ";
     citeEl.appendChild(small);
     citeEl.appendChild(document.createTextNode(e.cite));
+    // the rule in words, with its own box letters (kimi-1's playtest:
+    // box roles were found only by trial and refusal)
+    if ((e.needs && e.needs.length) || (e.gives && e.gives.length)) {
+      const d = document.createElement("div");
+      d.style.cssText = "color:#555;margin-top:2px";
+      d.textContent = (e.needs && e.needs.length
+          ? "needs: " + e.needs.join("; ") + ". " : "") +
+        (e.gives && e.gives.length ? "gives: " + e.gives.join("; ") + "."
+                                   : "");
+      citeEl.appendChild(d);
+    }
   }
   const tbl = document.getElementById("args-table");
   tbl.innerHTML = "";
@@ -997,7 +1008,7 @@ function renderRuleInputs() {
     const label = hint ? hint
       : count[k] > 1 ? `${ORD[seen[k] - 1] || seen[k]} ${k}` : `the ${k}`;
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td title="engine argument: ${a}">${label}</td>`;
+    tr.innerHTML = `<td title="engine argument: ${a}"><b>[${a}]</b> ${label}</td>`;
     const td = document.createElement("td");
     const inp = document.createElement("input");
     inp.className = "arg-in";

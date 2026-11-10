@@ -330,8 +330,11 @@ def test_catalogue_palette_carries_rule_info():
     cat = ep.catalogue()
     p1 = next(e for e in cat if e["n"] == 1)
     assert all(set(e) == {"name", "args", "cite", "binds", "label",
-                          "group", "arg_hints"}
+                          "group", "arg_hints", "needs", "gives"}
                for e in p1["palette"])
+    circ = next(e for e in p1["palette"]
+                if e["name"] == "circle_from_points")
+    assert circ["needs"] == ["[a] ≠ [b]"]   # the rule in words
     names = [e["name"] for e in p1["palette"]]
     assert names == ep.palette(1)  # constructions first, then propositions
     lfp = next(e for e in p1["palette"] if e["name"] == "line_from_points")
