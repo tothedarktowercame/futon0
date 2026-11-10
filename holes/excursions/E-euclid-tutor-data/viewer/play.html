@@ -148,6 +148,8 @@ split, keep my moves</button>
            font-size:13px"></div>
       <div id="move-error"></div>
       <div id="tutor-question"></div>
+      <div id="goal-note" style="display:none;font-size:13px;margin:4px 0"></div>
+      <div id="tools-line" style="font-size:12px;margin:4px 0;color:#444"></div>
       <div id="solved-banner">Solved ✓</div>
       <div id="drawn-note" style="display:none;margin:6px 0;padding:6px;
            border:1px solid #6b8e23;background:#f3f8e8;border-radius:4px;
@@ -236,6 +238,58 @@ function factEnglish(f) {
 // -------------------------------------------------------------- drawing
 // Adapted from viewer.js: fitBBox + mk over the play() objects (which
 // carry the same jsx recipes; points carry their own xy).
+
+// What the proof knows about lengths, drawn on the figure (Joe,
+// 2026-11-10: "if the equal lengths turned purple"; a figure should read
+// as solved). Each class of segments known equal gets a colour and that
+// many tick marks; the goal's segments are dashed orange until the proof
+// joins them, then they take their class colour.
+const CLASS_COLOURS = ["#8e44ad", "#16a085", "#d35400", "#2471a3",
+                       "#c0392b", "#7d6608"];
+function drawMarks() {
+  const mk = lastResult && lastResult.marks;
+  const note = document.getElementById("goal-note");
+  if (!mk) { note.style.display = "none"; return; }
+  const segOpts = (col, extra) => Object.assign({
+    strokeColor: col, strokeWidth: 5, strokeOpacity: 0.45, fixed: true,
+    highlight: false, withLabel: false, layer: 2 }, extra || {});
+  const segKey = pq => pq.slice().sort().join("-");
+  const classOf = {};
+  (mk.classes || []).forEach((cls, i) => {
+    const col = CLASS_COLOURS[i % CLASS_COLOURS.length];
+    for (const [p, q] of cls) {
+      if (!built[p] || !built[q]) continue;
+      classOf[segKey([p, q])] = col;
+      const sg = board.create("segment", [built[p], built[q]], segOpts(col));
+      try {
+        board.create("hatch", [sg, i + 1], { strokeColor: col,
+          strokeWidth: 2, fixed: true, highlight: false });
+      } catch (e) { /* hatch needs a recent JSXGraph */ }
+    }
+  });
+  const g = mk.goal;
+  if (!g) { note.style.display = "none"; return; }
+  for (const [p, q] of g.segments) {
+    if (!built[p] || !built[q]) continue;
+    if (!g.joined)
+      board.create("segment", [built[p], built[q]],
+        segOpts("#ff9500", { dash: 2, strokeOpacity: 0.9, strokeWidth: 3 }));
+  }
+  const words = g.segments.map(([p, q]) => `|${p}${q}|`).join(" = ");
+  note.style.display = "block";
+  if (g.joined) {
+    note.textContent = `goal ${words}: same colour — shown ✓`;
+    note.style.color = "#1c5e0f";
+  } else if (g.partial) {
+    note.textContent = `goal: carry ${words} (dashed orange) to the new ` +
+      `point the theorem asks for`;
+    note.style.color = "#a05a00";
+  } else {
+    note.textContent = `goal ${words} (dashed orange): not yet the same ` +
+      `colour — not shown yet`;
+    note.style.color = "#a05a00";
+  }
+}
 
 function placement() {
   const P = {};
@@ -367,6 +421,7 @@ function draw() {
     if (o.kind === "point" && o.def_step === 0)
       el.on("up", () => checkSnap(o, el));
   }
+  drawMarks();
 }
 
 // One mouse-down can land on several objects (point b and the line BC
@@ -823,7 +878,36 @@ const GROUP_TITLES = [
   ["propositions", "earlier propositions"],
 ];
 
+// The propositions already proved, shown as tools (Joe, 2026-11-10: "we
+// are going to have to use Proposition 1.1 ... it is the only technology
+// we have"). Clicking one puts that move in the list.
+function renderTools() {
+  const div = document.getElementById("tools-line");
+  div.innerHTML = "";
+  const tools = cur.palette.filter(e => e.group === "propositions");
+  if (!tools.length) return;
+  div.appendChild(document.createTextNode("Your tools so far: "));
+  tools.forEach((e, k) => {
+    const a = document.createElement("a");
+    a.href = "#";
+    a.textContent = e.label || e.name;
+    a.title = "use this proposition as a move";
+    a.onclick = ev => {
+      ev.preventDefault();
+      selection = [];
+      onSelectionChanged();
+      const sel = document.getElementById("rule-select");
+      sel.value = e.name;
+      sel.dataset.chosen = e.name;
+      renderRuleInputs();
+    };
+    if (k) div.appendChild(document.createTextNode(" · "));
+    div.appendChild(a);
+  });
+}
+
 function renderMovePanel() {
+  renderTools();
   const sel = document.getElementById("rule-select");
   sel.innerHTML = "";
   const addOpt = (parent, e) => {
@@ -1373,6 +1457,12 @@ function renderMoveList(div, local, entries, depth) {
     const row = document.createElement("div");
     row.className = "mv";
     row.style.marginLeft = (depth * 18) + "px";
+    const del = document.createElement("button");
+    del.textContent = "✕";
+    del.title = "delete this move (refused if a later move needs it)";
+    del.style.cssText = "font-size:10px;padding:0 4px;margin-right:4px";
+    del.onclick = () => deleteMove(local, k);
+    row.appendChild(del);
     const head = document.createElement("span");
     head.className = "rule";
     if (lm.rule === "by_contra" || lm.rule === "by_cases") {
@@ -1432,6 +1522,43 @@ function renderMoveList(div, local, entries, depth) {
     }
     div.appendChild(row);
   }
+}
+
+// Delete any earlier move, not just the last (Joe, 2026-11-10: "I can
+// undo a 'last move' but not that earlier unneeded move"). The whole list
+// is replayed; if a later move needed the deleted one, nothing changes and
+// the refusal says which move broke.
+async function deleteMove(list, k) {
+  const saved = JSON.stringify(moves);
+  const gone = list.splice(k, 1)[0];
+  const res = await postPlay(cur.n, moves);
+  const bad = firstRefused(res.moves, moves);
+  if (bad) {
+    moves = JSON.parse(saved);
+    const r2 = await postPlay(cur.n, moves);
+    afterResult(r2, bad.error || "refused",
+      `Can't delete ${gone.rule} ${(gone.args || []).join(" ")}: the ` +
+      `later move ${bad.rule} needs it — ` + (bad.error_plain || "refused"));
+    return;
+  }
+  saveProgress();
+  afterResult(res, null);
+}
+
+function firstRefused(entries, local) {
+  for (let k = 0; k < entries.length; k++) {
+    const e = entries[k];
+    if (!e.ok) return e;
+    if (e.branches && local[k] && local[k].branches)
+      for (let b = 0; b < e.branches.length; b++) {
+        const br = e.branches[b];
+        if (br.moves) {
+          const r = firstRefused(br.moves, local[k].branches[b].moves);
+          if (r) return r;
+        }
+      }
+  }
+  return null;
 }
 
 function renderMoves() {

@@ -935,3 +935,27 @@ def test_both_points_line_circle_records_drawn_order():
     near = base + [{"rule": "circle_from_points", "args": ["d", "f"],
                     "bindings": {"C": "G"}}]
     assert not ep.play(2, near)["moves"][-1]["ok"]   # d = f not ruled out
+
+
+def test_length_marks_show_known_equalities_and_goal():
+    """Joe (2026-11-10): the figure should read as solved. After I.1 at
+    I.2, ab = ad = bd is one class; the goal's bc is shown as the length
+    to carry until l exists; at I.1's end the goal segments are joined."""
+    mv = [{"rule": "line_from_points", "args": ["a", "b"],
+           "bindings": {"L": "AB"}},
+          {"rule": "proposition_1", "args": ["a", "b", "AB"],
+           "bindings": {"d": "d"}}]
+    mk = ep.play(2, mv)["marks"]
+    assert [["a", "b"], ["a", "d"], ["b", "d"]] in mk["classes"]
+    assert mk["goal"] == {"segments": [["b", "c"]], "joined": False,
+                          "partial": True}
+    i1 = [{"rule": "circle_from_points", "args": ["a", "b"],
+           "bindings": {"C": "C"}},
+          {"rule": "circle_from_points", "args": ["b", "a"],
+           "bindings": {"C": "D"}},
+          {"rule": "intersection_circles", "args": ["C", "D"],
+           "bindings": {"c": "p"}}]
+    g = ep.play(1, i1)["marks"]["goal"]
+    assert g["joined"] and g["segments"] == [["p", "a"], ["a", "b"]]
+    part = ep.play(1, i1[:2])["marks"]["goal"]
+    assert part["partial"] and not part["joined"]

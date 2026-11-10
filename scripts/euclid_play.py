@@ -697,6 +697,74 @@ def _concl_witness(n, outer, sub, concl):
                          given=allnames) is not None
 
 
+def _length_marks(n, s, objects, xy, goal_reached, drawn):
+    """What the proof knows about lengths, for the drawing to show (Joe,
+    2026-11-10: a figure should read as solved; "if the equal lengths
+    turned purple"). classes: lists of segments [p, q] between drawn
+    points that the proof knows are equal (two-term equalities in the
+    arithmetic store, and radii of one circle), joined transitively; goal:
+    the goal's two segments (with its witness), and whether they are
+    already known equal. Top-level knowledge only."""
+    pts = {o["name"] for o in objects if o.get("kind") == "point"
+           and not o.get("aux") and xy.get(o["name"])}
+    parent = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a, b):
+        parent[find(a)] = find(b)
+    for items, c, op in s.la.rows:
+        if op != "=" or c != 0 or len(items) != 2:
+            continue
+        (a1, k1), (a2, k2) = items
+        if a1[0] == "len" and a2[0] == "len" and k1 == -k2:
+            union(a1, a2)
+    centres = {}
+    for f in s.facts:
+        if f[0] == "centre":
+            centres.setdefault(f[2], set()).add(f[1])
+    for f in s.facts:
+        if f[0] == "on_circle":
+            for o in centres.get(f[2], ()):
+                for g in s.facts:
+                    if g[0] == "on_circle" and g[2] == f[2] and g[1] != f[1]:
+                        union(eng.len_atom(o, f[1]), eng.len_atom(o, g[1]))
+    goal = None
+    goals = [tuple(g) for g in GOALS[n]]
+    if len(goals) >= 1 and goals[0][0] == "_eq_len":
+        env = {}
+        if goal_reached:
+            env = _goal_witness(n, s, objects, xy) or {}
+        elif drawn:
+            env = drawn["witness"]
+        g = tuple(env.get(x, x) if isinstance(x, str) else x
+                  for x in goals[0])
+        segs = [[g[1], g[2]], [g[3], g[4]]]
+        have = [seg for seg in segs if all(p in pts for p in seg)]
+        if have and len(have) < 2:
+            goal = {"segments": have, "joined": False, "partial": True}
+        if len(have) == 2:
+            joined = bool(goal_reached) or \
+                eng._fact_holds(s, ("_eq_len",) + g[1:5])
+            if joined:
+                union(eng.len_atom(*segs[0]), eng.len_atom(*segs[1]))
+            goal = {"segments": segs, "joined": joined}
+    groups = {}
+    for atom in list(parent):
+        if atom[0] != "len" or atom[1] not in pts or atom[2] not in pts \
+                or atom[1] == atom[2]:
+            continue
+        groups.setdefault(find(atom), []).append([atom[1], atom[2]])
+    classes = sorted((sorted(v) for v in groups.values() if len(v) >= 2),
+                     key=lambda v: (-len(v), v))
+    return {"classes": classes, "goal": goal}
+
+
 def _drawn_witness(n, objects, xy):
     """When the goal is not proved: does some drawn point satisfy it in
     the drawing (metric goals, to 1e-6)? Then the construction is right
@@ -1787,8 +1855,9 @@ def play(n, moves):
             d["xy"] = list(xy[o["name"]]) if xy[o["name"]] else None
         out_objects.append(d)
     drawn = None if goal_reached else _drawn_witness(n, objects, xy)
+    marks = _length_marks(n, s, objects, xy, goal_reached, drawn)
     return {"n": n, "moves": out_moves, "goal_reached": goal_reached,
-            "drawn_witness": drawn,
+            "drawn_witness": drawn, "marks": marks,
             "objects": out_objects, "contradictory": contradict}
 
 
