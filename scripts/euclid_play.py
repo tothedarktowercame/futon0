@@ -508,7 +508,7 @@ def rule_info(name):
             "arg_hints": dict(ARG_HINTS.get(name, {}))}
 
 
-def _goal_witness(n, s, objects, xy=None):
+def _goal_witness(n, s, objects, xy=None, goals=None, given=None):
     """GOALS[n] with its existential witnesses free. A goal name that is
     not one of the proposition's given objects is a witness of Lean's
     ∃ (I.1's c, I.2's l, ...): any point in the drawing may play it, so
@@ -517,8 +517,9 @@ def _goal_witness(n, s, objects, xy=None):
     witness at the first goal that mentions it. (Joe, 2026-11-09: I.1
     built with circles C and D never showed "Solved", because the goal
     named the engine's circle BCD.)"""
-    goals = [tuple(g) for g in GOALS[n]]
-    given = {o["name"] for o in tr.objects_from_hyps(n)}
+    goals = [tuple(g) for g in (GOALS[n] if goals is None else goals)]
+    if given is None:
+        given = {o["name"] for o in tr.objects_from_hyps(n)}
     wit = []
     for g in goals:
         for x in g[1:]:
@@ -630,6 +631,70 @@ def _goal_witness(n, s, objects, xy=None):
 
     found = []
     return found[0] if search(0, {}) else None
+
+
+def _fill_case_witnesses(n, s, mv):
+    """A by_cases conclusion names the theorem's witness (I.2's l), but a
+    student's case makes that point under its own name. For each case
+    whose conclusion does not hold by name, search the case's points for
+    a witness (as the top-level goal does) and append name_point moves,
+    so "|al| = |bc|" is met by "|af| = |bc|" with l := f. Returns a copy
+    of mv (unchanged when nothing is needed). Joe at I.2, 2026-11-10."""
+    if mv.get("rule") != "by_cases":
+        return mv
+    concl = [_metric_query(tuple(c)) for c in mv.get("conclusion") or []]
+    if not concl:
+        return mv
+    known = set()
+    for f in s.facts:
+        for x in f[1:]:
+            if isinstance(x, str):
+                known.add(x)
+    out = json.loads(json.dumps(mv))
+    for k, b in enumerate(out.get("branches") or []):
+        if mv.get("open") and k == len(out["branches"]) - 1:
+            continue   # the current case: its tick uses _concl_witness
+        sub = s.copy()
+        try:
+            for f in b.get("hyps") or []:
+                eng._assume_metric_or_fact(sub, tuple(f), "case")
+            eng.close(sub)
+            eng.run_steps(sub, [_move_to_step(m) for m in b.get("moves")
+                                or []])
+        except Exception:
+            continue   # the ordinary path reports the problem
+        if all(eng._fact_holds(sub, c) for c in concl):
+            continue
+        names = {x for c in concl for x in c[1:] if isinstance(x, str)}
+        given = known | {x for f in sub.facts for x in f[1:]
+                         if isinstance(x, str)}
+        wit = {x for x in names if x not in given}
+        if not wit:
+            continue
+        env = _goal_witness(n, sub, [], None, goals=concl,
+                            given=given - wit)
+        if env:
+            b["moves"] = list(b.get("moves") or []) + [
+                {"rule": "name_point", "args": [p], "bindings": {"x": w}}
+                for w, p in env.items() if w != p and w in wit]
+    return out
+
+
+def _concl_witness(n, outer, sub, concl):
+    """Does the case conclusion hold in sub, by name or with the case's
+    points as the witnesses (names not known in the outer state)?"""
+    concl = [_metric_query(tuple(c)) for c in concl]
+    if all(eng._fact_holds(sub, c) for c in concl):
+        return True
+    known = {x for f in outer.facts for x in f[1:] if isinstance(x, str)}
+    allnames = known | {x for f in sub.facts for x in f[1:]
+                        if isinstance(x, str)}
+    names = {x for c in concl for x in c[1:] if isinstance(x, str)}
+    wit = {x for x in names if x not in allnames}
+    if not wit:
+        return False
+    return _goal_witness(n, sub, [], None, goals=concl,
+                         given=allnames) is not None
 
 
 def _goal_reached(n, s, objects, xy=None):
@@ -1449,7 +1514,9 @@ def _open_block(n, s, mv, objects, xy, pal, i, refuted=()):
                                     bobjects, bxy, pal, i + 1,
                                     last_refuted)
     contra, _w = eng.contradictory(sub)
-    goal = bool(concl) and all(eng._fact_holds(sub, c) for c in concl)
+    goal = bool(concl) and (all(eng._fact_holds(sub, c) for c in concl)
+                            or (rule == "by_cases"
+                                and _concl_witness(n, s, sub, concl)))
     breps.append({"hyps": [list(f) for f in hyps], "closed": False,
                   "moves": bentries,
                   "branch_contradictory": contra,
@@ -1481,7 +1548,8 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                                   % empty["rule"])
             elif mv.get("open"):
                 ok, err, breps, view, miss = _open_block(
-                    n, s, mv, objects, xy, pal, i, refuted)
+                    n, s, _fill_case_witnesses(n, s, mv), objects, xy,
+                    pal, i, refuted)
                 entry.update(ok=ok, error=err, open=True, branches=breps)
                 if miss:
                     entry["missing_case"] = miss
@@ -1493,7 +1561,8 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                     entries.append(entry)
                     break
                 try:
-                    rep = eng.run_steps(s, [_block_to_engine(mv)])[0]
+                    rep = eng.run_steps(s, [_block_to_engine(
+                        _fill_case_witnesses(n, s, mv))])[0]
                     entry["ok"] = True
                     entry["added"] = [list(c)
                                       for c in rep.get("conclusions", [])]

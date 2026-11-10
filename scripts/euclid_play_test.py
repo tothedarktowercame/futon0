@@ -878,3 +878,26 @@ def test_open_block_second_snapped_case_keeps_first_closed():
     ent = ep.play(2, mv)["moves"][-1]
     assert ent["error"] == "missing case"
     assert ent["missing_case"]["missing"] == [["neq", "a", "c"]]
+
+
+def test_case_conclusion_witness_takes_any_name():
+    """Joe at I.2 (2026-11-10): inside a case the constructed point has
+    the student's name, not the theorem's l. The case's points may serve
+    as the witness (name_point added for an earlier case; the current
+    case's tick uses the same search). An unfinished case still fails."""
+    steps = [_engine_step_to_move(st) for st in tr.hyps_and_steps(2)[1]]
+    steps[-1]["bindings"] = {"g": "z"}
+    blk = {"rule": "by_cases", "branches": [
+        {"hyps": [["peq", "a", "c"]],
+         "moves": [{"rule": "name_point", "args": ["b"],
+                    "bindings": {"x": "l"}}]},
+        {"hyps": [["neq", "a", "c"]], "moves": steps}],
+        "conclusion": [["eq_len", "a", "l", "b", "c"]], "open": True}
+    ent = ep.play(2, [blk])["moves"][-1]
+    assert ent["ok"] and ent["branches"][-1]["branch_goal_reached"]
+    blk["open"] = False
+    res = ep.play(2, [blk])
+    assert res["moves"][-1]["ok"] and res["goal_reached"]
+    short = copy.deepcopy(blk)
+    short["branches"][1]["moves"] = steps[:-1]
+    assert not ep.play(2, [short])["moves"][-1]["ok"]

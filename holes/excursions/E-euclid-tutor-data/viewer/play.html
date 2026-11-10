@@ -417,11 +417,20 @@ function toggleSelect(hit) {
 // existing points as the theorem's witnesses (/api/case_try): if so the
 // case closes itself with name_point moves; if not it stays open.
 function checkSnap(o, el) {
+  const best = snapTarget(o, el.X(), el.Y());
+  if (!best) return;
+  el.setPosition(JXG.COORDS_BY_USER, best.at);
+  board.update();
+  offerSnap(best);
+}
+
+// the object nearest (x, y) that o could be supposed to coincide with or
+// lie on: a point (18 px), else a circle or a line (10 px)
+function snapTarget(o, x, y) {
   // snapping radius in screen pixels: generous for points (aiming at a
   // point should win over the line through it), tighter for curves
   const px = board.unitX || 50;
   const TOL = { point: 18 / px, circle: 10 / px, line: 10 / px };
-  const x = el.X(), y = el.Y();
   const objs = lastResult ? lastResult.objects : [];
   const uses = q => q.jsx && (q.jsx.center === o.name ||
     q.jsx.through === o.name || (q.jsx.p || []).includes(o.name));
@@ -462,10 +471,7 @@ function checkSnap(o, el) {
                     (rank === best.rank && d < best.d)))
       best = { d, at, fact, words, rank };
   }
-  if (!best) return;
-  el.setPosition(JXG.COORDS_BY_USER, best.at);
-  board.update();
-  offerSnap(best);
+  return best;
 }
 
 function offerSnap(best) {
@@ -658,19 +664,30 @@ function pointNear(evt, maxPx) {
 }
 
 function gestureStart(evt) {
-  if (!board || !(evt.shiftKey || evt.ctrlKey)) return;
+  if (!board) return;
   const { best, at } = pointNear(evt, 18);
   if (!best) return;
+  let kind;
+  if (evt.shiftKey) kind = "circle";
+  else if (evt.ctrlKey) kind = "line";
+  else {
+    // a constructed point cannot move (it is fixed by what made it), but
+    // dragging it onto something asks "suppose it were there" (Joe at
+    // I.2, 2026-11-10: "It won't let me drag d onto f")
+    const o = (lastResult.objects || []).find(q => q.name === best.name);
+    if (!o || o.def_step === 0) return;   // given points drag as before
+    kind = "suppose";
+  }
   evt.stopPropagation();
   evt.preventDefault();
-  const kind = evt.shiftKey ? "circle" : "line";
   const follower = board.create("point", at,
     { visible: false, withLabel: false, fixed: false });
   const opts = { strokeColor: HI, dash: 2, fixed: true, withLabel: false,
                  highlight: false };
   const preview = kind === "circle"
     ? board.create("circle", [best.el, follower], opts)
-    : board.create("line", [best.el, follower], opts);
+    : kind === "line" ? board.create("line", [best.el, follower], opts)
+    : board.create("segment", [best.el, follower], opts);
   gesture = { kind, from: best.name, follower, preview };
   window.addEventListener("pointermove", gestureMove, true);
   window.addEventListener("pointerup", gestureEnd, true);
@@ -693,10 +710,16 @@ async function gestureEnd(evt) {
   evt.stopPropagation();
   const g = gesture;
   gesture = null;
-  const { best } = pointNear(evt, 18);
+  const { best, at } = pointNear(evt, 18);
   board.removeObject(g.preview);
   board.removeObject(g.follower);
   board.update();
+  if (g.kind === "suppose") {
+    const o = (lastResult.objects || []).find(q => q.name === g.from);
+    const t = snapTarget(o, at[0], at[1]);
+    if (t) offerSnap(t);
+    return;
+  }
   if (!best || best.name === g.from) return;   // no target: nothing drawn
   const rule = g.kind === "circle" ? "circle_from_points"
                                    : "line_from_points";
