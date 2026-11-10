@@ -1629,12 +1629,12 @@ def test_neq_refusal_names_the_betweenness_it_follows_from():
     res = ep.play(11, [{"rule": "circle_from_points", "args": ["w", "u"],
                         "bindings": {"C": "C"}}])
     plain = res["moves"][-1]["error_plain"]
-    assert "Nothing given or shown" not in plain
+    assert "No step so far has shown" not in plain
     assert "w is between u and v" in plain
     # with no betweenness to point at, the old sentence stays
     res2 = ep.play(2, [{"rule": "circle_from_points", "args": ["a", "c"],
                         "bindings": {"C": "C"}}])
-    assert "Nothing given or shown so far rules out a = c" in \
+    assert "No step so far has shown a ≠ c" in \
         res2["moves"][-1]["error_plain"]
 
 

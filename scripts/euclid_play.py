@@ -521,10 +521,12 @@ def student_error(err, rule=None):
         if f and f[0] == "fresh":
             return fact_words(f)
         if f and f[0] == "neq" and len(f) == 3:
-            # the move needs two different points, and nothing shown
-            # rules out their being the same (I.2: a may coincide with c)
+            # the move needs two different points, and no step so far
+            # has shown it (I.2: a may coincide with c). Not "nothing rules
+            # it out": a short argument may well rule it out (codex-1,
+            # slice 14, I.24: supposing f = h was at once contradictory)
             return ("Not yet shown: %s and %s are different points. "
-                    "Nothing given or shown so far rules out %s = %s."
+                    "No step so far has shown %s ≠ %s."
                     % (f[1], f[2], f[1], f[2]))
         return "Not yet shown: " + fact_words(f)
     s = str(err)
@@ -2593,9 +2595,9 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
             e["error_plain"] = student_error(e["error"], e["rule"])
             if e.get("error_gap"):
                 plain = e["error_plain"]
-                # a gap replaces "Nothing ... rules out x = y", which it
-                # contradicts (something shown does rule it out)
-                plain = plain.split(" Nothing given or shown")[0]
+                # a gap replaces "No step so far has shown x ≠ y", which
+                # it contradicts (something shown does rule it out)
+                plain = plain.split(" No step so far has shown")[0]
                 e["error_plain"] = (plain.rstrip(".") + ". "
                                     + e.pop("error_gap"))
     return entries, view
