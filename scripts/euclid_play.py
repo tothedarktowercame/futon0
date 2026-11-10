@@ -27,6 +27,7 @@ they are restated here verbatim — flagged to claude-9 in the reply bell.
 """
 
 import argparse
+import sys
 import functools
 import json
 import math
@@ -2785,6 +2786,13 @@ def _log_play(data, res):
     if _LOG_PATH is None:
         return
     last = (res.get("moves") or [{}])[-1]
+    # the move just made may sit inside an open case: log the innermost
+    # last entry (a refusal inside a case was logged as the block's ok)
+    while last.get("branches"):
+        inner = [b for b in last["branches"] if b.get("moves")]
+        if not inner:
+            break
+        last = inner[-1]["moves"][-1]
     rec = {"t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
            "n": data.get("n"), "moves": data.get("moves") or [],
            "ok": last.get("ok"), "error": last.get("error"),
@@ -2819,6 +2827,10 @@ class _Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/catalogue":
             self._send_json(catalogue())
+        elif self.path == "/api/version":
+            # which code is this? (the live loop: a playtester confirms a
+            # fix is loaded before trying it again)
+            self._send_json(_version())
         else:
             super().do_GET()
 
@@ -2855,18 +2867,89 @@ class _Handler(SimpleHTTPRequestHandler):
         pass
 
 
+_STARTED = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+# the server's code: --reload restarts when any of these change (the page
+# itself is read from disk per request, so it needs no restart)
+_CODE_FILES = [os.path.join(os.path.dirname(os.path.abspath(__file__)), f)
+               for f in ("euclid_play.py", "euclid_engine.py",
+                         "euclid_trace.py")]
+
+
+def _version():
+    import subprocess
+    here = os.path.dirname(os.path.abspath(__file__))
+    try:
+        sha = subprocess.run(["git", "-C", here, "rev-parse", "--short",
+                              "HEAD"], capture_output=True, text=True,
+                             timeout=5).stdout.strip()
+        dirty = subprocess.run(["git", "-C", here, "status", "--porcelain",
+                                "--", "."], capture_output=True, text=True,
+                               timeout=5).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        sha, dirty = "?", ""
+    page = os.path.join(VIEWER_DIR, "play.html")
+    stamp = lambda f: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(
+        os.path.getmtime(f))) if os.path.exists(f) else None
+    return {"commit": sha + ("+uncommitted" if dirty else ""),
+            "server_started": _STARTED,
+            "server_code_modified": max(
+                (stamp(f) or "" for f in _CODE_FILES), default=None),
+            "page_modified": stamp(page)}
+
+
+def _watch_and_reexec(interval=1.0):
+    """--reload: when the server's code changes, re-exec this process
+    (same argv, same port, same session log). Replay is stateless, so a
+    restart loses nothing; a request in flight fails once and the page
+    retries on the next move."""
+    import threading
+
+    def snap():
+        return [os.path.getmtime(f) if os.path.exists(f) else 0
+                for f in _CODE_FILES]
+
+    def loop():
+        before = snap()
+        while True:
+            time.sleep(interval)
+            now = snap()
+            if now != before:
+                time.sleep(0.5)          # let a multi-file save finish
+                try:
+                    # don't restart into code that won't import
+                    import py_compile
+                    for f in _CODE_FILES:
+                        py_compile.compile(f, doraise=True)
+                except py_compile.PyCompileError as e:
+                    print("reload skipped, compile error: %s" % e,
+                          flush=True)
+                    before = snap()
+                    continue
+                print("code changed; restarting", flush=True)
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+    threading.Thread(target=loop, daemon=True).start()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--log", default=None,
                     help="directory for the session log (JSON lines)")
+    ap.add_argument("--reload", action="store_true",
+                    help="restart in place when the server code changes")
     args = ap.parse_args()
     global _LOG_PATH
     if args.log:
         os.makedirs(args.log, exist_ok=True)
-        _LOG_PATH = os.path.join(
+        # a --reload restart keeps writing the same session log
+        _LOG_PATH = os.environ.get("EUCLID_PLAY_LOG_PATH") or os.path.join(
             args.log, time.strftime("play-%Y%m%dT%H%M%SZ.jsonl",
                                     time.gmtime()))
+        if args.reload:
+            os.environ["EUCLID_PLAY_LOG_PATH"] = _LOG_PATH
+    if args.reload:
+        _watch_and_reexec()
+    ThreadingHTTPServer.allow_reuse_address = True
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), _Handler)
     print("serving %s on http://127.0.0.1:%d" % (VIEWER_DIR, args.port))
     srv.serve_forever()
