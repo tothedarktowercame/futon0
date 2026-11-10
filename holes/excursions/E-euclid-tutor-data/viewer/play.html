@@ -1760,6 +1760,21 @@ async function closeBlock() {
 
 // ------------------------------------------------------------- play flow
 
+// requests in flight (a test driver waits for 0 before reading or
+// closing the page: codex-1 live loop, a 2 s replay outlived the kit's
+// fixed wait and the case it had just added was never saved)
+window.__pending = 0;
+const _rawFetch = window.fetch.bind(window);
+window.fetch = (...a) => {
+  window.__pending++;
+  return _rawFetch(...a).then(r => {
+    // count the body read too: callers parse JSON, then save
+    const j = r.json.bind(r);
+    r.json = () => j().finally(() => setTimeout(() => window.__pending--, 0));
+    return r;
+  }, e => { window.__pending--; throw e; });
+};
+
 async function postPlay(n, mv) {
   const r = await fetch("/api/play", {
     method: "POST",
