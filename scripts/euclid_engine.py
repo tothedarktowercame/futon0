@@ -3063,6 +3063,14 @@ def _conclude(s, c, why, witnesses):
     elif c[0] == "_eq_ang":
         eq_ang(s.la, *c[1:])
         s.add(("eq_ang", *c[1:]), why, witnesses)
+    elif c[0] == "_gt_ang":
+        # ∠(x:y:z) > ∠(u:v:w) carried out of a by_cases (codex-1, live
+        # loop slice 15, I.25: the trichotomy split closed, but the
+        # conclusion went in as a bare tuple with no row, so the goal
+        # stayed unproved)
+        s.la.add(lin((ang_atom(*c[1:4]), 1), (ang_atom(*c[4:7]), -1)),
+                 0, ">")
+        s.add(("gt_ang", *c[1:7]), why, witnesses)
     elif c[0] == "_rt_ang":
         s.la.add(lin((ang_atom(*c[1:4]), 1), (RT, -1)), 0, "=")
         s.add(("right_ang", *c[1:4]), why, witnesses)

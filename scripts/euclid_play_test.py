@@ -1867,3 +1867,18 @@ def test_either_elim_unit():
     s.add(("not_on_line", "g", "DE"), "test", [])
     eng.close(s)
     assert s.has(("same_side", "g", "f", "DE"))
+
+
+def test_closed_split_concluding_a_greater_angle_proves_it():
+    """codex-1, live loop slice 15, I.25: the trichotomy split closed with
+    no refusal, but the goal stayed orange: eng._conclude added the
+    _gt_ang conclusion as a bare tuple with no arithmetic row."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i25-slice15-trichotomy.json")))
+    res = ep.play(25, case["moves"])
+    assert res["goal_reached"]
+    # the last case alone, with nothing shown in it, is not a proof
+    mv = copy.deepcopy(case["moves"])
+    mv[-1]["branches"][2]["hyps"] = [["gt_ang", "a", "b", "c", "e", "d", "f"]]
+    assert not ep.play(25, mv)["goal_reached"]
