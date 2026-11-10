@@ -1,0 +1,88 @@
+[
+ {
+  "rule": "circle_from_points",
+  "args": [
+   "v",
+   "b"
+  ],
+  "bindings": {
+   "C": "C"
+  }
+ },
+ {
+  "rule": "extend_point",
+  "args": [
+   "AC",
+   "c",
+   "v"
+  ],
+  "bindings": {
+   "x": "d"
+  }
+ },
+ {
+  "rule": "between_symm_parts",
+  "args": [
+   "d",
+   "v",
+   "c"
+  ],
+  "bindings": {}
+ },
+ {
+  "rule": "intersection_circle_line_extending_points",
+  "args": [
+   "C",
+   "AC",
+   "v",
+   "d"
+  ],
+  "bindings": {
+   "g": "e"
+  }
+ },
+ {
+  "rule": "line_from_points",
+  "args": [
+   "b",
+   "e"
+  ],
+  "bindings": {
+   "L": "BE"
+  }
+ },
+ {
+  "rule": "circle_from_points",
+  "args": [
+   "b",
+   "e"
+  ],
+  "bindings": {
+   "C": "D"
+  }
+ },
+ {
+  "rule": "circle_from_points",
+  "args": [
+   "e",
+   "b"
+  ],
+  "bindings": {
+   "C": "E"
+  }
+ },
+ {
+  "rule": "intersection_opposite_side",
+  "args": [
+   "D",
+   "E",
+   "v",
+   "b",
+   "e",
+   "BE"
+  ],
+  "bindings": {
+   "a": "f"
+  }
+ }
+]

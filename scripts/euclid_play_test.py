@@ -1510,3 +1510,25 @@ def test_goal_neq_clause_not_ticked_for_a_stray_witness():
         assert res["goal_reached"], n
         assert all(g["state"] == "shown" for g in res["marks"]["goals"]), \
             (n, res["marks"]["goals"])
+
+
+def test_circle_meeting_on_a_side_is_drawn():
+    # codex-1, live loop slice 9, I.9: intersection_opposite_side D E v b e
+    # BE made f, but f was "made but not drawn" (no placement for the
+    # side variants). f is drawn, on the other side of be from v.
+    here = os.path.dirname(os.path.abspath(__file__))
+    moves = json.load(open(os.path.join(
+        here, "testdata", "codex-i9-slice9-apex.json")))
+    res = ep.play(9, moves)
+    assert all(m["ok"] for m in res["moves"])
+    o = {x["name"]: x for x in res["objects"]}
+    assert o["f"].get("xy") and not o["f"].get("undrawn"), o["f"]
+    v, b, e, f = (o[k]["xy"] for k in "vbef")
+    side = lambda x: ((x[0] - b[0]) * (e[1] - b[1])
+                      - (x[1] - b[1]) * (e[0] - b[0]))
+    assert side(f) * side(v) < 0
+    # the same-side variant picks the other meeting point
+    moves[-1] = dict(moves[-1], rule="intersection_same_side")
+    res = ep.play(9, moves)
+    o = {x["name"]: x for x in res["objects"]}
+    assert side(o["f"]["xy"]) * side(v) > 0

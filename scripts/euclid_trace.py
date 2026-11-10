@@ -974,6 +974,34 @@ dragging)" % (a, b)
                                 "idx": idx},
                         "def_step": None})
         return why
+    if rule in ("intersection_same_side", "intersection_opposite_side"):
+        # the meeting point of two circles on the same / the other side of
+        # line L (through the centres c, d) from point b. The engine's
+        # reference traces never use these, so there was no placement and
+        # a student's point stayed undrawn (codex-1, live loop slice 9,
+        # I.9: the apex f of an equilateral on be).
+        (A, B, b, c, d, L) = args
+        name = bindings["a"]
+        def circ(C):
+            o = next(o for o in objects if o["name"] == C)
+            return xy[o["jsx"]["center"]], _norm(_sub(
+                xy[o["jsx"]["through"]], xy[o["jsx"]["center"]]))
+        (ca, ra), (cb, rb) = circ(A), circ(B)
+        cands = circle_circle(ca, ra, cb, rb)
+        p1, p2 = xy[c], xy[d]
+        side = lambda x: ((x[0] - p1[0]) * (p2[1] - p1[1])
+                          - (x[1] - p1[1]) * (p2[0] - p1[0]))
+        want = (lambda v: v > 0) if rule == "intersection_same_side" \
+            else (lambda v: v < 0)
+        idx = next((i for i, q in enumerate(cands)
+                    if want(side(q) * side(xy[b]))), 0)
+        xy[name] = cands[idx]
+        objects.append({"name": name, "kind": "point",
+                        "jsx": {"type": "intersection", "parents": [A, B],
+                                "idx": idx},
+                        "def_step": None})
+        return "%s side of %s from %s" % (
+            "same" if rule == "intersection_same_side" else "other", L, b)
     if rule in ("intersection_circle_line_extending_points",
                 "intersection_circle_line_between_points"):
         (C, L, p, q) = args
