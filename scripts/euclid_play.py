@@ -903,8 +903,17 @@ def _fill_case_witnesses(n, s, mv):
             for f in b.get("hyps") or []:
                 eng._assume_metric_or_fact(sub, tuple(f), "case")
             eng.close(sub)
-            eng.run_steps(sub, [_move_to_step(m) for m in b.get("moves")
-                                or []])
+            # a closed case block nested in this case gets its own
+            # witnesses, in the state where it stands (codex-1, slice 13,
+            # I.23: the inner split closed, the outer close then refused
+            # because the inner cases lost their witness b)
+            moves = []
+            for m in b.get("moves") or []:
+                if m.get("rule") == "by_cases" and not m.get("open"):
+                    m = _fill_case_witnesses(n, sub, m)
+                moves.append(m)
+                eng.run_steps(sub, [_move_to_step(m)])
+            b["moves"] = moves
         except Exception:
             continue   # the ordinary path reports the problem
         if all(eng._fact_holds(sub, c) for c in concl):

@@ -1787,3 +1787,31 @@ def test_solved_case_construction_shows_the_drawn_case_witnesses():
     open_mv[-1]["open"] = True
     assert "h" not in [o["name"] for o in ep.play(22, open_mv)["objects"]
                        if o.get("case")]
+
+
+def test_nested_case_block_closes_with_a_self_angle_witness():
+    """codex-1, slice 13, I.23: inside the d-on-CE case, the inner split
+    (between d c e / not) had both cases green, but closing it refused.
+    Two causes: naming b as f rewrote ∠b:a:b only to ∠f:a:f, never to
+    ∠f:a:b (engine r_peq_subst, one-position rewrites); and once the
+    inner block closed, the outer close lost the inner witness (nested
+    closed blocks now get their own witness fill)."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i23-slice13-nested-close.json")))
+    mv = copy.deepcopy(case["moves"])
+    mv[0]["branches"][1]["moves"][0]["open"] = False
+    inner = ep.play(23, mv)["moves"][0]["branches"][-1]
+    assert inner["moves"][0]["ok"], inner["moves"][0]["error"]
+    assert inner["branch_goal_reached"]
+    mv[0]["open"] = False
+    res = ep.play(23, mv)
+    assert res["goal_reached"], res["moves"][0]["error"]
+
+
+def test_point_equality_rewrites_one_place_of_a_doubled_angle():
+    s = ep._start_state(23)
+    eng.run_steps(s, [("angle_self_zero", ("b", "a"), {}),
+                      ("name_point", ("b",), {"x": "f"})])
+    assert s.la.entails(eng.lin((eng.ang_atom("f", "a", "b"), 1)), 0, "=")
+    assert eng._fact_holds(s, ("_eq_ang", "f", "a", "b", "b", "a", "b"))

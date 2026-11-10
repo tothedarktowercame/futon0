@@ -1023,6 +1023,21 @@ def r_peq_subst(s):
                     if not s.has(marker):
                         s.la.add(lin((a, 1), (a2, -1)), 0, "=")
                         yield marker, [fact]
+                    # an angle naming src twice (∠b:a:b) is also equal to
+                    # the one-position rewrites (∠f:a:b for f = b):
+                    # codex-1, live loop slice 13, I.23 needed ∠f:a:b = 0
+                    # from ∠b:a:b = 0 after naming b as f
+                    pts = (legs[0], vert, legs[1])
+                    pos = [j for j, t in enumerate(pts) if t == src]
+                    if len(pos) > 1:
+                        for j in pos:
+                            one = tuple(dst if k == j else t
+                                        for k, t in enumerate(pts))
+                            a1 = ang_atom(*one)
+                            marker = ("subang1", a, src, dst, j)
+                            if a1 != a and not s.has(marker):
+                                s.la.add(lin((a, 1), (a1, -1)), 0, "=")
+                                yield marker, [fact]
 
 
 def r_same_side_not_on_line(s):
@@ -1308,7 +1323,7 @@ def _all_points(s):
             pts.update(fact[1:4]); pts.update(fact[4:7])
         elif k in ("sum_ang",):
             pts.update(fact[1:4]); pts.update(fact[4:7])
-        elif k in ("subang",):
+        elif k in ("subang", "subang1"):
             pts.update(fact[1][1:])
         # intersects_cc, neq_line: circle/line names only
     s._apc = (len(s.facts), pts)
