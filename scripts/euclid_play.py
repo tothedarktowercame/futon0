@@ -203,10 +203,13 @@ RULE_LABELS = {
                                  "on the opposite side", "diagrammatic"),
     "opposing_opposing_same_side": ("twice across a line lands on the "
                                     "same side", "diagrammatic"),
-    "triple_incidence_1": ("three lines through two shared points meet "
-                           "in one point", "diagrammatic"),
-    "triple_incidence_2": ("three lines through two shared points: "
-                           "another common meeting", "diagrammatic"),
+    "triple_incidence_1": ("three lines through one point: when the "
+                           "middle ray lies inside the angle of the outer "
+                           "two, the middle line separates the outer points",
+                           "diagrammatic"),
+    "triple_incidence_2": ("three lines through one point: when the middle "
+                           "line separates the outer points, the middle ray "
+                           "lies inside their angle", "diagrammatic"),
     # facts about lengths and angles
     "superposition": ("slide one triangle onto an equal one "
                       "(superposition)", "metric"),
@@ -292,10 +295,22 @@ RULE_LABELS = {
 
 # Cheap per-argument hints for the form labels, taken from the rule's
 # premises; args not listed keep their engine name.
+# triple_incidence_1/2 (Diagrammatic.lean:187, 201): lines L, M, N all
+# through a, with b on L, c on M (the middle line), d on N (codex-1, live
+# loop slice 8: the old label described a different configuration).
+_THREE_RAYS = {"L": "first line (through the common point and b)",
+               "M": "middle line (through the common point and c)",
+               "N": "third line (through the common point and d)",
+               "a": "the common point", "b": "a point on the first line",
+               "c": "a point on the middle line",
+               "d": "a point on the third line"}
+
 ARG_HINTS = {
     "line_from_points": {"a": "first point", "b": "second point"},
     "pasch_3_opposing": {"a": "one end", "b": "where it crosses",
                          "c": "other end", "L": "the line"},
+    "triple_incidence_1": dict(_THREE_RAYS),
+    "triple_incidence_2": dict(_THREE_RAYS),
     "between_symm_parts": {"a": "this end", "b": "the middle",
                            "c": "the other end"},
     "name_point": {"p": "the existing point"},
