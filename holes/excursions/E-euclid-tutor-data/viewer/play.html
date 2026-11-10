@@ -513,6 +513,26 @@ function drawMarks() {
     drawArc(x, v, y, { colour: "#1c5e0f", square: true });
   // every goal clause on the figure: pending dashed orange; shown ones
   // are already in their class colour above (the server unions them in)
+  // a comparison goal (> or <: I.16-I.25) is on the figure too: dashed
+  // orange while pending, solid green once shown (codex-1, live loop
+  // slice 11, I.16: the figure alone did not show the comparison; only
+  // equalities had marks)
+  for (const g of (mk.goals || [])) {
+    const f = g.fact || [];
+    const done = g.state === "shown";
+    const col = done ? "#1c5e0f" : "#ff9500";
+    if (g.kind === "_gt_ang") {
+      drawArc(f[1], f[2], f[3], { colour: col, dash: done ? 0 : 2 });
+      drawArc(f[4], f[5], f[6], { colour: col, dash: done ? 0 : 2 });
+    } else if (g.kind === "_gt_len" || g.kind === "_lt_len") {
+      for (const [p, q] of [[f[1], f[2]], [f[3], f[4]]]) {
+        if (!built[p] || !built[q]) continue;
+        board.create("segment", [built[p], built[q]],
+          segOpts(col, { dash: done ? 0 : 2, strokeOpacity: 0.9,
+                         strokeWidth: 3 }));
+      }
+    }
+  }
   for (const g of (mk.goals || [])) {
     if (g.state === "shown") continue;
     const f = g.fact || [];
