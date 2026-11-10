@@ -168,8 +168,8 @@ RULE_LABELS = {
         "where two circles meet (a point on each)", "constructions"),
     "intersection_lines": ("where two lines meet", "constructions"),
     "intersection_lines_opposing": (
-        "where two lines meet, with two points on opposite sides",
-        "constructions"),
+        "two lines do meet, when two points of one are on opposite sides "
+        "of the other (this makes no point)", "diagrammatic"),
     "exists_point_opposite": ("take a point on the other side of a line",
                               "constructions"),
     "extend_point": ("lengthen a line past a point", "constructions"),
@@ -368,6 +368,7 @@ _FACT_WORDS = {
     "same_side": "{1} and {2} are on the same side of {3}",
     "not_same_side": "{1} and {2} are not on the same side of {3}",
     "opposing_sides": "{1} and {2} are on opposite sides of {3}",
+    "intersects_ll": "lines {1} and {2} meet",
     "intersects_cc": "the circles {1} and {2} intersect",
     "intersects_lc": "line {1} meets circle {2}",
     "inside": "{1} is inside circle {2}",
@@ -529,17 +530,23 @@ def rule_info(name):
     arg_hints the cheap per-arg hints from ARG_HINTS."""
     spec = eng.CONSTRUCTIONS[name]
     binds = []
+    makes_nothing = False
     try:
         made = spec["make"](eng.State(),
                             *["#arg%d" % k for k in range(len(spec["args"]))])
         binds = [b for b, _facts in made if b is not None]
+        # a fact rule: the page offers no name box (codex-1, live loop
+        # slice 7: intersection_lines_opposing took a name f, and f was
+        # listed as a made point that no fact was about)
+        makes_nothing = not binds
     except Exception:
         binds = []
     label, group = RULE_LABELS.get(name, (name.replace("_", " "),
                                           "constructions"))
     needs, gives = _rule_words(spec)
     return {"args": list(spec["args"]), "cite": spec["cite"],
-            "binds": binds, "label": label, "group": group,
+            "binds": binds, "makes_nothing": makes_nothing,
+            "label": label, "group": group,
             "arg_hints": dict(ARG_HINTS.get(name, {})),
             "needs": needs, "gives": gives,
             "arg_kinds": _arg_kinds(spec)}
@@ -1354,6 +1361,8 @@ def _add_undrawn(s, bindings, objects):
             elif f[0] in ("on_line", "on_circle", "between", "neq") and \
                     name in f[1:2]:
                 kind = kind or "point"
+        if kind is None:
+            continue   # no fact is about it: the move made no such object
         objects.append({"name": name, "kind": kind or "point",
                         "jsx": {"type": "undrawn"}, "def_step": None,
                         "undrawn": True})

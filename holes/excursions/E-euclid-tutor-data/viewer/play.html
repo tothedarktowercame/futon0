@@ -1297,7 +1297,9 @@ function renderRuleInputs() {
   }
   // one input per new object to name (prefilled fresh); when the backend
   // found no binds, one free "name" field
-  const binds = e.binds && e.binds.length ? e.binds : [null];
+  // a fact rule (makes_nothing) gets no name box: it makes no object
+  const binds = e.makes_nothing ? [] :
+    e.binds && e.binds.length ? e.binds : [null];
   for (const b of binds) {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td title="${b === null ? "" : "engine name: " + b}">` +

@@ -329,7 +329,7 @@ def test_rule_info():
 def test_catalogue_palette_carries_rule_info():
     cat = ep.catalogue()
     p1 = next(e for e in cat if e["n"] == 1)
-    assert all(set(e) == {"name", "args", "cite", "binds", "label",
+    assert all(set(e) == {"name", "args", "cite", "binds", "makes_nothing", "label",
                           "group", "arg_hints", "needs", "gives",
                           "arg_kinds"}
                for e in p1["palette"])
@@ -1470,3 +1470,24 @@ def test_off_line_refusal_names_the_missing_distinctness():
     res = ep.play(7, case(base + [sym, pasch]))
     inner = res["moves"][0]["branches"][0]["moves"]
     assert all(m["ok"] for m in inner), inner[-1]
+
+
+def test_fact_rule_offers_no_name_and_makes_no_phantom_point():
+    # codex-1, live loop slice 7: intersection_lines_opposing a b CD AB
+    # was given the name f; the move only states that CD and AB meet,
+    # but f was listed as a made (undrawn) point no fact was about.
+    assert ep.rule_info("intersection_lines_opposing")["makes_nothing"]
+    assert not ep.rule_info("intersection_lines")["makes_nothing"]
+    assert not ep.rule_info("extend_point")["makes_nothing"]
+    moves = [{"rule": "line_from_points", "args": ["c", "d"],
+              "bindings": {"L": "CD"}},
+             {"rule": "by_cases", "branches": [
+                 {"hyps": [["opposing_sides", "a", "b", "CD"]], "moves": [
+                     {"rule": "intersection_lines_opposing",
+                      "args": ["a", "b", "CD", "AB"],
+                      "bindings": {"x": "f"}}]}],
+              "conclusion": [["false"]], "open": True}]
+    res = ep.play(7, moves)
+    inner = res["moves"][-1]["branches"][0]["moves"]
+    assert inner[-1]["ok"], inner[-1]
+    assert "f" not in {o["name"] for o in res["objects"]}
