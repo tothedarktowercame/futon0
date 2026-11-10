@@ -387,6 +387,10 @@ _FACT_WORDS = {
     "lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
     "sum_rt_ang": "∠{1}{2}{3} and ∠{4}{5}{6} together make two right angles",
     "lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
+    # the engine's _sum_rt_ang query (u, v, x, w): ∠uvx + ∠xvw = 2 right
+    "_sum_rt_ang": ("∠{1}{2}{3} and ∠{3}{2}{4} together make two right "
+                    "angles"),
+    "false": "the assumptions lead to a contradiction",
 }
 
 
@@ -523,7 +527,51 @@ def rule_info(name):
     return {"args": list(spec["args"]), "cite": spec["cite"],
             "binds": binds, "label": label, "group": group,
             "arg_hints": dict(ARG_HINTS.get(name, {})),
-            "needs": needs, "gives": gives}
+            "needs": needs, "gives": gives,
+            "arg_kinds": _arg_kinds(spec)}
+
+
+def _arg_kinds(spec):
+    """point / line / circle for each argument, read off where it sits in
+    the rule's own premises and conclusions (codex-1's playtest,
+    2026-11-10: I.3's line argument, named C, was labelled 'the circle')."""
+    args = list(spec["args"])
+    kinds = {}
+    facts = []
+    st = eng.State()
+    for key in ("premises", "entail"):
+        try:
+            facts += [tuple(f) for f in spec[key](st, *args)]
+        except Exception:
+            pass
+    try:
+        for _b, fs in spec["make"](st, *args):
+            facts += [tuple(f) for f in fs]
+    except Exception:
+        pass
+    for f in facts:
+        k = f[0]
+        if k in ("on_line", "not_on_line") and len(f) > 2:
+            kinds.setdefault(f[2], "line")
+        elif k == "dpl" and len(f) > 3:
+            kinds.setdefault(f[3], "line")
+        elif k in ("neq_line", "peq_line"):
+            for x in f[1:3]:
+                kinds.setdefault(x, "line")
+        elif k in ("same_side", "opposing_sides", "not_same_side") \
+                and len(f) > 3:
+            kinds.setdefault(f[3], "line")
+        elif k in ("on_circle", "centre", "inside", "outside",
+                   "not_outside") and len(f) > 2:
+            kinds.setdefault(f[2], "circle")
+        elif k == "intersects_cc":
+            for x in f[1:3]:
+                kinds.setdefault(x, "circle")
+        elif k == "intersects_lc" and len(f) > 2:
+            kinds.setdefault(f[1], "line")
+            kinds.setdefault(f[2], "circle")
+    return {a: kinds.get(a, "point") for a in args
+            if isinstance(a, str)}
 
 
 def _rule_words(spec):
@@ -757,14 +805,16 @@ def _concl_witness(n, outer, sub, concl):
                          given=allnames) is not None
 
 
-def _length_marks(n, s, objects, xy, goal_reached, drawn):
+def _length_marks(n, s, objects, xy, goal_reached, drawn, joined=()):
     """What the proof knows about lengths, for the drawing to show (Joe,
     2026-11-10: a figure should read as solved; "if the equal lengths
     turned purple"). classes: lists of segments [p, q] between drawn
     points that the proof knows are equal (two-term equalities in the
     arithmetic store, and radii of one circle), joined transitively; goal:
     the goal's two segments (with its witness), and whether they are
-    already known equal. Top-level knowledge only."""
+    already known equal. `joined`: further _eq_len facts already shown
+    (the goal checklist's later clauses), unioned into the classes.
+    Top-level knowledge only."""
     pts = {o["name"] for o in objects if o.get("kind") == "point"
            and not o.get("aux") and xy.get(o["name"])}
     parent = {}
@@ -809,11 +859,14 @@ def _length_marks(n, s, objects, xy, goal_reached, drawn):
         if have and len(have) < 2:
             goal = {"segments": have, "joined": False, "partial": True}
         if len(have) == 2:
-            joined = bool(goal_reached) or \
+            joined_flag = bool(goal_reached) or \
                 eng._fact_holds(s, ("_eq_len",) + g[1:5])
-            if joined:
+            if joined_flag:
                 union(eng.len_atom(*segs[0]), eng.len_atom(*segs[1]))
-            goal = {"segments": segs, "joined": joined}
+            goal = {"segments": segs, "joined": joined_flag}
+    for f in joined:
+        if f[0] == "_eq_len" and all(p in pts for p in f[1:5]):
+            union(eng.len_atom(f[1], f[2]), eng.len_atom(f[3], f[4]))
     groups = {}
     for atom in list(parent):
         if atom[0] != "len" or atom[1] not in pts or atom[2] not in pts \
@@ -823,6 +876,98 @@ def _length_marks(n, s, objects, xy, goal_reached, drawn):
     classes = sorted((sorted(v) for v in groups.values() if len(v) >= 2),
                      key=lambda v: (-len(v), v))
     return {"classes": classes, "goal": goal}
+
+
+def _goal_marks(n, s, objects, xy, goal_reached, drawn):
+    """Every clause of GOALS[n] with its proof state, for the checklist
+    and the figure (E-kimi-task-430, P-euclid-play-goal-checklist: the
+    figure must read as solved or unsolved; at I.5 the first of two
+    angle equalities used to change nothing visible). Each entry:
+    {"kind", "fact" (witness names bound), "objects", "state":
+    "shown"|"pending", "words"}. "shown" is eng._fact_holds on the query
+    form, with the same witness search the goal check uses, tried clause
+    by clause: the whole-goal binding first, then this clause on its own
+    (so clause 1 of I.5 reads shown while clause 2 is still pending)."""
+    given = {o["name"] for o in tr.objects_from_hyps(n)}
+    env = {}
+    if goal_reached:
+        env = _goal_witness(n, s, objects, xy) or {}
+    elif drawn:
+        env = dict(drawn["witness"])
+
+    def bound(g, e):
+        return tuple(e.get(x, x) if isinstance(x, str) else x for x in g)
+
+    out = []
+    for g0 in GOALS[n]:
+        g = tuple(g0)
+        k = g[0]
+        gc = bound(g, env)
+        if k == "false":
+            # I.7: the goal is a contradiction of the assumptions
+            shown = bool(eng.contradictory(s)[0])
+        else:
+            try:
+                shown = eng._fact_holds(s, gc)
+            except Exception:
+                shown = False
+            if not shown:
+                # maybe the clause holds under another naming of the
+                # theorem's witnesses (the whole-goal binding failed on
+                # a different clause, or there is no binding yet)
+                try:
+                    env1 = _goal_witness(n, s, objects, xy, goals=[g],
+                                         given=given)
+                except Exception:
+                    env1 = None
+                if env1 is not None:
+                    gc = bound(g, env1)
+                    shown = True
+        out.append({"kind": k, "fact": list(gc), "objects": list(gc[1:]),
+                    "state": "shown" if shown else "pending",
+                    "words": fact_words(gc)})
+    return out
+
+
+def _angle_marks(n, s, objects, xy, goal_clauses):
+    """Equal-angle classes, like _length_marks' length classes: angle
+    atoms (\"ang\", x, v, y) joined by two-term equalities in the
+    arithmetic store, plus the goal's own angle equalities once shown,
+    restricted to angles whose three points are drawn (no aux).
+    E-kimi-task-430."""
+    pts = {o["name"] for o in objects if o.get("kind") == "point"
+           and not o.get("aux") and xy.get(o["name"])}
+    parent = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a, b):
+        parent[find(a)] = find(b)
+    for items, c, op in s.la.rows:
+        if op != "=" or c != 0 or len(items) != 2:
+            continue
+        (a1, k1), (a2, k2) = items
+        if a1[0] == "ang" and a2[0] == "ang" and k1 == -k2:
+            union(a1, a2)
+    for gc in goal_clauses:
+        if gc["kind"] == "_eq_ang" and gc["state"] == "shown":
+            f = gc["fact"]
+            union(eng.ang_atom(*f[1:4]), eng.ang_atom(*f[4:7]))
+    groups = {}
+    for atom in list(parent):
+        if atom[0] != "ang":
+            continue
+        _t, x, v, y = atom
+        if x not in pts or v not in pts or y not in pts or x == y:
+            continue
+        groups.setdefault(find(atom), []).append([x, v, y])
+    return sorted((sorted(v) for v in groups.values() if len(v) >= 2),
+                  key=lambda v: (-len(v), v))
 
 
 def _drawn_witness(n, objects, xy):
@@ -1101,6 +1246,26 @@ def _ordered_circle_line(n, s, i, args, bindings, xy, objects):
                     objects.append(o)
             return added
     return None
+
+
+def _add_undrawn(s, bindings, objects):
+    have = {o["name"] for o in objects}
+    for name in (bindings or {}).values():
+        if not isinstance(name, str) or name in have:
+            continue
+        kind = None
+        for f in s.facts:
+            if f[0] in ("on_line", "not_on_line") and f[2] == name:
+                kind = "line"
+            elif f[0] in ("on_circle", "centre", "inside") and \
+                    len(f) > 2 and f[2] == name:
+                kind = "circle"
+            elif f[0] in ("on_line", "on_circle", "between", "neq") and \
+                    name in f[1:2]:
+                kind = kind or "point"
+        objects.append({"name": name, "kind": kind or "point",
+                        "jsx": {"type": "undrawn"}, "def_step": None,
+                        "undrawn": True})
 
 
 def _place_name_point(args, added, xy, objects):
@@ -1899,10 +2064,12 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
         elif any(not str(a).strip() for a in (mv.get("args") or ())):
             entry["error"] = "blank input"
         elif [a for a in (mv.get("args") or ())
-              if a not in {o["name"] for o in objects}]:
+              if a not in {o["name"] for o in objects}
+              and not s.declared & {a}]:
             entry["error"] = "no object called %s" % ", ".join(
                 a for a in mv["args"]
-                if a not in {o["name"] for o in objects})
+                if a not in {o["name"] for o in objects}
+                and not s.declared & {a})
         else:
             args = tuple(mv.get("args") or ())
             bindings = dict(mv.get("bindings") or {})
@@ -1925,12 +2092,16 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                         tr.place_step(n, rule, args, bindings, added, xy,
                                       objects)
                     except AssertionError:
-                        # a move with nothing new to draw (a fact rule
-                        # such as flat_angle_onlyif) must not take the
-                        # request down (kimi-1's playtest, 2026-11-10:
-                        # "Failed to fetch", the move lost)
-                        if rule_info(rule)["binds"]:
-                            raise
+                        # Nothing could be drawn: a fact rule (kimi-1's
+                        # playtest: flat_angle_onlyif crashed the request),
+                        # or a construction the figure cannot show, e.g.
+                        # I.3 inside the case |ab| > |ac| of a figure drawn
+                        # with |ab| = |ac| (codex-1's playtest, 2026-11-10:
+                        # d was then unusable). Keep each new object by
+                        # name, undrawn, so later moves can use it.
+                        _add_undrawn(s, bindings, objects)
+                if ordered is None and rule != "name_point":
+                    _add_undrawn(s, bindings, objects)  # placed nothing
                 for o in objects:
                     if o["def_step"] is None:
                         o["def_step"] = i
@@ -1978,7 +2149,13 @@ def play(n, moves):
             d["xy"] = list(xy[o["name"]]) if xy[o["name"]] else None
         out_objects.append(d)
     drawn = None if goal_reached else _drawn_witness(n, objects, xy)
-    marks = _length_marks(n, s, objects, xy, goal_reached, drawn)
+    goal_clauses = _goal_marks(n, s, objects, xy, goal_reached, drawn)
+    joined = [tuple(g["fact"]) for g in goal_clauses
+              if g["state"] == "shown"]
+    marks = _length_marks(n, s, objects, xy, goal_reached, drawn,
+                          joined=joined)
+    marks["goals"] = goal_clauses
+    marks["angle_classes"] = _angle_marks(n, s, objects, xy, goal_clauses)
     return {"n": n, "moves": out_moves, "goal_reached": goal_reached,
             "drawn_witness": drawn, "marks": marks,
             "objects": out_objects, "contradictory": contradict}

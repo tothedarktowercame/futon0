@@ -329,7 +329,8 @@ def test_catalogue_palette_carries_rule_info():
     cat = ep.catalogue()
     p1 = next(e for e in cat if e["n"] == 1)
     assert all(set(e) == {"name", "args", "cite", "binds", "label",
-                          "group", "arg_hints", "needs", "gives"}
+                          "group", "arg_hints", "needs", "gives",
+                          "arg_kinds"}
                for e in p1["palette"])
     circ = next(e for e in p1["palette"]
                 if e["name"] == "circle_from_points")
@@ -1059,3 +1060,24 @@ def test_equilateral_apex_off_line_refused_without_equilateral():
                    ("x", "p", "q", "v", "L", "PQ"), {})
     eng.close(s)
     assert s.has(("not_on_line", "x", "L"))
+
+
+def test_objects_made_in_a_case_stay_usable_when_undrawn():
+    """codex-1's playtest (2026-11-10): inside the case |ab| > |ac| of
+    I.6 (drawn with |ab| = |ac|), I.3's d could not be drawn, was left
+    out of the objects, and every later use of d was refused. It is now
+    listed (undrawn) and usable; I.3's line argument is a line."""
+    mv = [{"rule": "by_cases", "branches": [
+        {"hyps": [["gt_len", "a", "b", "a", "c"]],
+         "moves": [{"rule": "proposition_3",
+                    "args": ["b", "a", "a", "c", "AB", "AC"],
+                    "bindings": {"q": "d"}},
+                   {"rule": "line_from_points", "args": ["d", "c"],
+                    "bindings": {"L": "DC"}}]}],
+        "conclusion": [["eq_len", "a", "b", "a", "c"]], "open": True}]
+    res = ep.play(6, mv)
+    br = res["moves"][-1]["branches"][-1]
+    assert all(m["ok"] for m in br["moves"])
+    und = {o["name"] for o in res["objects"] if o.get("undrawn")}
+    assert {"d", "DC"} <= und
+    assert ep.rule_info("proposition_3")["arg_kinds"]["C"] == "line"
