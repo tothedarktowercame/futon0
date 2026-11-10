@@ -6,6 +6,7 @@ Run from scripts/: ~/code/futon6/.venv/bin/python -m pytest -q euclid_play_test.
 import copy
 import math
 import pytest
+import re
 import json
 import os
 import signal
@@ -1258,7 +1259,8 @@ def test_goal_checklist_all_props_have_words():
     for entry in ep.catalogue():
         res = ep.play(entry["n"], [])
         goals = res["marks"]["goals"]
-        assert len(goals) == len(ep.GOALS[entry["n"]]), entry["n"]
+        folded = len(ep._GOAL_FOLD.get(entry["n"], (0, ()))[1])
+        assert len(goals) == len(ep.GOALS[entry["n"]]) - folded, entry["n"]
         for g in goals:
             assert g["state"] in ("shown", "pending")
             assert g["words"] and "(" not in g["words"], g
@@ -1582,3 +1584,21 @@ def test_right_angle_square_only_when_proved():
     after = ep.play(11, moves)
     assert after["goal_reached"]
     assert ["f", "w", "u"] in after["marks"]["right_angles"]
+
+
+def test_i12_goal_names_only_the_theorem_points_and_needs_e_on_ab():
+    """codex-1, live loop slice 10, I.12: the checklist read '∠ehc is
+    right' with no e in the statement, and e was any point at all. The
+    goal now needs e ON AB and not h (equivalent to Lean's ∠ahc ∨ ∠bhc
+    right), and the checklist line says it in the theorem's names."""
+    assert ("on_line", "e", "AB") in ep.GOALS[12]
+    assert ("neq", "e", "h") in ep.GOALS[12]
+    words = [g["words"] for g in ep.play(12, [])["marks"]["goals"]]
+    assert len(words) == 2
+    for w in words:      # no point e: not alone, not inside an angle
+        assert not re.search(r"\be\b|∠e|∠\we\w|∠\w\we", w), w
+    assert "∠ahc or ∠bhc is right" in words[1]
+    mv = [_move(r, a, b) for r, a, b in ep.reference_steps(12)]
+    res = ep.play(12, mv)
+    assert res["goal_reached"]
+    assert all(g["state"] == "shown" for g in res["marks"]["goals"])

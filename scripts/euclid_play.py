@@ -69,8 +69,16 @@ GOALS = {
          ("_eq_len", "a", "d", "d", "b")],
     11: [("not_on_line", "f", "AB"),        # tr.build_trace queries dict
          ("_rt_ang", "u", "w", "f")],
-    12: [("_rt_ang", "e", "h", "c"),        # tr.build_trace queries dict
-         ("on_line", "h", "AB")],           # (I.12's goal substitute)
+    # I.12: Lean's ∠a:h:c = ∟ ∨ ∠b:h:c = ∟ (h on AB), stated as "∠ehc is
+    # right for some point e of AB other than h": the same perpendicular
+    # (a and b are on AB, and one of them is not h), and the form the
+    # proof reaches before Lean's euclid_finish. e must be ON AB and not
+    # h: the old substitute left e free (codex-1, live loop slice 10).
+    # The checklist folds clauses 2-4 into one line (_GOAL_FOLD).
+    12: [("on_line", "h", "AB"),
+         ("_rt_ang", "e", "h", "c"),
+         ("on_line", "e", "AB"),
+         ("neq", "e", "h")],
     13: [eng.PROP13_GOAL],
     14: eng.PROP14_GOAL,
     15: eng.PROP15_GOAL,
@@ -1030,7 +1038,25 @@ def _goal_marks(n, s, objects, xy, goal_reached, drawn):
                     "objects": list(gc[1:]),
                     "state": "shown" if holds(g, best) else "pending",
                     "words": fact_words(gc)})
+    fold = _GOAL_FOLD.get(n)
+    if fold:
+        lead, rest, words = fold
+        if any(out[i]["state"] != "shown" for i in rest):
+            out[lead]["state"] = "pending"
+        out[lead]["words"] = words
+        out = [c for i, c in enumerate(out) if i not in rest]
     return out
+
+
+# Checklist lines that stand for several goal clauses: {n: (lead clause,
+# clauses folded into it, words)}. The lead is shown only when all are.
+# I.12's goal names a witness e that the statement does not have
+# (codex-1, live loop slice 10: "there is no e in the objects or
+# theorem"); the line says what the clauses mean, in the theorem's names.
+_GOAL_FOLD = {
+    12: (1, (2, 3), "∠ahc or ∠bhc is right: the line from c meets AB "
+                    "at h at a right angle"),
+}
 
 
 def _angle_marks(n, s, objects, xy, goal_clauses):
