@@ -924,6 +924,45 @@ def r_angle_ray_eq(s):
                 yield marker, [fact]
 
 
+def r_angle_same_ray(s):
+    # [SMT-bridge] between a v x and between a v y (x, y both beyond v,
+    # away from a) ⇒ ∠(z,v,x) = ∠(z,v,y): the rays v→x and v→y coincide
+    # whether or not x = y. Lean's SMT closes it silently; kimi-1's
+    # playtest (2026-11-10) stalled at I.5 needing ∠bcg = ∠bce with g, e
+    # both beyond c and g ≠ e not known. Only for angles the store already
+    # mentions (an atom of either side present), so the store does not
+    # grow by every point pair. Marker-guarded.
+    atoms = {a for row in s.la.rows for a, _k in row[0]}
+    beyond = {}
+    for fact in s.facts:
+        if fact[0] == "between":
+            a, v, x = fact[1], fact[2], fact[3]
+            beyond.setdefault((a, v), set()).add(x)
+    pts = _all_points(s)
+    lines_of = {}
+    for fact in s.facts:
+        if fact[0] == "on_line":
+            lines_of.setdefault(fact[1], set()).add(fact[2])
+    for (a, v), xs in beyond.items():
+        xs = sorted(xs)
+        common = lines_of.get(a, set()) & lines_of.get(v, set())
+        for i, x in enumerate(xs):
+            for y in xs[i + 1:]:
+                for z in pts:
+                    if z in (a, v, x, y):
+                        continue
+                    if lines_of.get(z, set()) & common:
+                        continue   # z on the ray's own line: degenerate
+                    ax, ay = ang_atom(z, v, x), ang_atom(z, v, y)
+                    if ax not in atoms and ay not in atoms:
+                        continue
+                    marker = ("sameray", v, x, y, z)
+                    if not s.has(marker):
+                        s.la.add(lin((ax, 1), (ay, -1)), 0, "=")
+                        yield marker, [("between", a, v, x),
+                                       ("between", a, v, y)]
+
+
 def r_between_order(s):
     # [SMT-bridge] between a x z ∧ between a y z ∧ |a-x| < |a-y| ⇒
     # between a x y: interior points of a segment are ordered by distance.
@@ -1162,6 +1201,7 @@ FORWARD_RULES = [
      r_two_lines_meet_once),
     ("degenerated_angle_if [Transfer.lean:63]", r_degenerated_angle),
     ("angle_ray_eq [SMT-bridge]", r_angle_ray_eq),
+    ("angle_same_ray [SMT-bridge]", r_angle_same_ray),
     ("between_order [SMT-bridge]", r_between_order),
     # NOTE: "straight_angle" (between u v w, x off the line ⇒
     # ∠u:v:x + ∠x:v:w = 2∟) was REMOVED from the default closure

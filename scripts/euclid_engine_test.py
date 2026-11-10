@@ -1848,13 +1848,16 @@ def test_replay_fact_set_footprints():
     # intersection_circle_line_2 (Diagrammatic.lean:305) added to the
     # closure (claude-9, 2026-11-09): fact counts rose where an inside
     # point lies on a line (intersects_lc facts); constraints unchanged.
+    # angle_same_ray (claude-9, 2026-11-10, kimi-1's I.5 playtest): equal
+    # angles along one ray from v when two points lie beyond v from the
+    # same a; I.5, 11, 16, 20, 22, 22' gain rows (I.22 +224, still ~18 s).
     expected = {"1": (39, 8), "2": (119, 38), "3": (61, 22), "4": (198, 79),
-                "5": (394, 203), "6": (41, 11), "7": (113, 26), "8": (210, 82),
-                "9": (223, 86), "10": (161, 50), "11": (298, 148), "12": (177,
+                "5": (406, 215), "6": (41, 11), "7": (113, 26), "8": (210, 82),
+                "9": (223, 86), "10": (161, 50), "11": (306, 152), "12": (177,
                 66), "13": (43, 16), "14": (70, 21), "15": (104, 47), "16b":
-                (406, 191), "16a": (546, 281), "17": (70, 24), "18": (97, 32),
-                "19": (41, 11), "20": (173, 71), "21": (181, 64), "22": (1174,
-                906), "22'": (626, 434), "23": (33, 9)}
+                (412, 194), "16a": (562, 289), "17": (70, 24), "18": (97, 32),
+                "19": (41, 11), "20": (175, 71), "21": (181, 64), "22": (1426,
+                1130), "22'": (703, 483), "23": (33, 9)}
     got = {}
     old_argv = sys.argv
     try:

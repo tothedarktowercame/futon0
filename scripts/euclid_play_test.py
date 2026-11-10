@@ -978,3 +978,17 @@ def test_both_points_order_records_between_for_i3():
     res = ep.play(3, mv)
     assert res["goal_reached"]
     assert ["between", "a", "e", "b"] in res["moves"][-1]["added"]
+
+
+def test_same_ray_angles_without_knowing_the_points_differ():
+    """kimi-1's playtest (2026-11-10): at I.5, g and e both lie beyond c
+    from a; angle bcg = angle bce whether or not g = e (angle_same_ray).
+    Kimi's own moves now reach I.5's goal."""
+    import euclid_engine as eng
+    s = ep._start_state(5)
+    t = s.copy()
+    eng._assume_metric_or_fact(t, ("between", "a", "c", "g"), "test")
+    eng.close(t)
+    t.la.add({eng.ang_atom("b", "c", "g"): 1}, 0, ">")   # mention it
+    eng.close(t)
+    assert eng._fact_holds(t, ("_eq_ang", "b", "c", "g", "b", "c", "e"))
