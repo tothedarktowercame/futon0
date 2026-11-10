@@ -149,6 +149,9 @@ split, keep my moves</button>
       <div id="move-error"></div>
       <div id="tutor-question"></div>
       <div id="solved-banner">Solved ✓</div>
+      <div id="drawn-note" style="display:none;margin:6px 0;padding:6px;
+           border:1px solid #6b8e23;background:#f3f8e8;border-radius:4px;
+           font-size:13px"></div>
       <div id="contra-note">the assumptions are contradictory — anything
         follows; undo a step.</div>
     </div>
@@ -1438,6 +1441,30 @@ function renderMoves() {
   renderMoveList(div, moves, lastResult.moves, 0);
 }
 
+// The drawing already satisfies the goal but the proof does not know it
+// yet: say so, and name the usual reason (Joe at I.2, 2026-11-10).
+function showDrawnNote(res) {
+  const div = document.getElementById("drawn-note");
+  const dw = res && res.drawn_witness;
+  if (!dw || res.goal_reached) { div.style.display = "none"; return; }
+  const w = Object.entries(dw.witness).map(([k, v]) => `${v} works as ${k}`)
+    .join(", ");
+  let why = "Something the drawing shows has not been shown in the proof " +
+    "yet.";
+  const used = JSON.stringify(moves);
+  if (used.includes('"intersections_circle_line"'))
+    why = "A likely reason: “where a line meets a circle (both points)” " +
+      "gives two points without saying which is which side. The move " +
+      "“where a line meets a circle, beyond a point inside it” records " +
+      "that the new point lies beyond — use it instead.";
+  else if (used.includes('"intersection_circles"'))
+    why = "A likely reason: “where two circles meet” does not say which " +
+      "side of the line through the centres the point is on.";
+  div.style.display = "block";
+  div.textContent = `In the drawing your construction works: ${w} ` +
+    `(${dw.words}). The proof does not know it yet. ${why}`;
+}
+
 function afterResult(res, err, plain) {
   lastResult = res;
   window.__LAST = res;  // for the headless check only
@@ -1448,6 +1475,7 @@ function afterResult(res, err, plain) {
   if (!err) hideTutorQuestion();
   document.getElementById("contra-note").style.display =
     res.contradictory ? "block" : "none";
+  showDrawnNote(res);
   const banner = document.getElementById("solved-banner");
   if (res.goal_reached) {
     banner.style.display = "block";

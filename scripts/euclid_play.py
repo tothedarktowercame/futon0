@@ -151,10 +151,10 @@ RULE_LABELS = {
     "intersection_opposite_side": ("where two circles meet, on the "
                                    "opposite side of a line from a given "
                                    "point", "constructions"),
-    "intersections_circle_line": ("where a line meets a circle",
+    "intersections_circle_line": ("where a line meets a circle (both points)",
                                   "constructions"),
     "intersection_circle_line_extending_points": (
-        "where a line meets a circle, outside a given segment",
+        "where a line meets a circle, beyond a point inside it",
         "constructions"),
     "intersection_circle_line_between_points": (
         "where a line meets a circle, between two given points",
@@ -695,6 +695,64 @@ def _concl_witness(n, outer, sub, concl):
         return False
     return _goal_witness(n, sub, [], None, goals=concl,
                          given=allnames) is not None
+
+
+def _drawn_witness(n, objects, xy):
+    """When the goal is not proved: does some drawn point satisfy it in
+    the drawing (metric goals, to 1e-6)? Then the construction is right
+    and only the proof is missing -- say so (Joe at I.2, 2026-11-10: "the
+    construction is complete, I just don't have a way to assert that").
+    Returns {"witness": {name: point}, "words": goal as text} or None."""
+    import math
+    goals = [tuple(g) for g in GOALS[n]]
+    if not all(g[0] in ("_eq_len", "_gt_len", "_eq_ang", "_gt_ang")
+               for g in goals):
+        return None
+    given = {o["name"] for o in tr.objects_from_hyps(n)}
+    wit = []
+    for g in goals:
+        for x in g[1:]:
+            if x not in given and x not in wit:
+                wit.append(x)
+    if not wit or len(wit) > 2:
+        return None
+    pts = {o["name"]: xy.get(o["name"]) for o in objects
+           if o.get("kind") == "point" and not o.get("aux")}
+    pts = {k: v for k, v in pts.items() if v}
+
+    def d(p, q):
+        return math.hypot(p[0] - q[0], p[1] - q[1])
+
+    def ang(p, v, q):
+        a1 = math.atan2(p[1] - v[1], p[0] - v[0])
+        a2 = math.atan2(q[1] - v[1], q[0] - v[0])
+        t = abs(a1 - a2) % (2 * math.pi)
+        return min(t, 2 * math.pi - t)
+
+    def holds(env):
+        for g in goals:
+            P = [pts.get(env.get(x, x)) for x in g[1:]]
+            if None in P:
+                return False
+            if g[0] == "_eq_len" and abs(d(P[0], P[1]) - d(P[2], P[3])) > 1e-6:
+                return False
+            if g[0] == "_gt_len" and not d(P[0], P[1]) > d(P[2], P[3]) + 1e-9:
+                return False
+            if g[0] == "_eq_ang" and abs(ang(*P[0:3]) - ang(*P[3:6])) > 1e-6:
+                return False
+            if g[0] == "_gt_ang" and not ang(*P[0:3]) > ang(*P[3:6]) + 1e-9:
+                return False
+        return True
+    import itertools
+    for combo in itertools.product(sorted(pts), repeat=len(wit)):
+        env = dict(zip(wit, combo))
+        if any(env[w] in given for w in wit):
+            continue   # a given point: that is a special case, not a build
+        if holds(env):
+            return {"witness": env,
+                    "words": "; ".join(fact_words(tuple(
+                        env.get(x, x) for x in g)) for g in goals)}
+    return None
 
 
 def _goal_reached(n, s, objects, xy=None):
@@ -1643,7 +1701,9 @@ def play(n, moves):
         if o["kind"] == "point" and o["name"] in xy:
             d["xy"] = list(xy[o["name"]]) if xy[o["name"]] else None
         out_objects.append(d)
+    drawn = None if goal_reached else _drawn_witness(n, objects, xy)
     return {"n": n, "moves": out_moves, "goal_reached": goal_reached,
+            "drawn_witness": drawn,
             "objects": out_objects, "contradictory": contradict}
 
 
