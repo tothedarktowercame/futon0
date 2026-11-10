@@ -298,6 +298,8 @@ const CASE_COL = "#1565c0";
 function drawCaseFigure() {
   const note = document.getElementById("case-figure-note");
   const cf = lastResult && lastResult.case_figure;
+  const oldInset = document.getElementById("broken-inset");
+  if (oldInset) oldInset.remove();
   if (!cf) { note.style.display = "none"; return; }
   // facts the placement could not evaluate (about constructed points,
   // e.g. I.7's extensions g, h) are not drawn: say so rather than claim
@@ -346,8 +348,7 @@ function drawCaseFigure() {
         fixed: true, highlight: false, withLabel: false }, opts || {}))
     : null;
   const label = (x, y, txt) => board.create("text", [x, y, txt], {
-    fixed: true, highlight: false, fontSize: 18, strokeColor: CASE_COL,
-    cssStyle: "font-weight:bold" });
+    fixed: true, highlight: false, fontSize: 13, strokeColor: CASE_COL });
   const ring = (n, txt) => {
     const e = P(n);
     if (!e) return;
@@ -355,7 +356,7 @@ function drawCaseFigure() {
       fillOpacity: 0, strokeColor: CASE_COL, strokeWidth: 3, name: "",
       fixed: true, highlight: false, withLabel: false });
     const px = board.unitX || 50;    // offset in pixels, not units
-    if (txt) label(e.X() + 12 / px, e.Y() + 16 / px, txt);
+    if (txt) label(e.X() + 14 / px, e.Y() - 14 / px, txt);
   };
   const mid = (p, q) => [(P(p).X() + P(q).X()) / 2,
                          (P(p).Y() + P(q).Y()) / 2];
@@ -389,17 +390,25 @@ function drawCaseFigure() {
   // the given the case breaks, in red, with its numbers read off the
   // figure (angles in degrees, lengths in figure units)
   const BROKEN_COL = "#c62828";
-  const redLabel = (x, y, txt) => board.create("text", [x, y, txt], {
-    fixed: true, highlight: false, fontSize: 16, strokeColor: BROKEN_COL,
-    cssStyle: "font-weight:bold" });
+  // codex-1 live loop: numbers on the figure overlapped each other and
+  // the angles they explain. The figure keeps the red segments/wedges
+  // with a small name tag; the numbers go in a compact inset.
+  const inset = [];
+  const redTag = (x, y, txt) => board.create("text", [x, y, txt], {
+    fixed: true, highlight: false, fontSize: 12, strokeColor: BROKEN_COL });
   const len = (p, q) => Math.hypot(P(p).X() - P(q).X(), P(p).Y() - P(q).Y());
   const redSeg = (p, q) => {
     if (!P(p) || !P(q)) return;
     board.create("segment", [P(p), P(q)], { strokeColor: BROKEN_COL,
       strokeWidth: 4, strokeOpacity: 0.8, dash: 1, fixed: true,
       highlight: false, withLabel: false });
-    const m = mid(p, q);
-    redLabel(m[0], m[1] - 0.3, `|${p}${q}| = ${len(p, q).toFixed(2)}`);
+    // tag a third of the way along, nudged off the segment (pixels)
+    const u = board.unitX || 50;
+    const dx = P(q).X() - P(p).X(), dy = P(q).Y() - P(p).Y();
+    const L = Math.hypot(dx, dy) || 1;
+    redTag(P(p).X() + dx / 3 - 12 * dy / L / u,
+           P(p).Y() + dy / 3 + 12 * dx / L / u, `${p}${q}`);
+    inset.push(`|${p}${q}| = ${len(p, q).toFixed(2)}`);
   };
   const redAng = (x, v, y) => {
     if (!P(x) || !P(v) || !P(y)) return;
@@ -409,15 +418,7 @@ function drawCaseFigure() {
     const a1 = Math.atan2(P(x).Y() - P(v).Y(), P(x).X() - P(v).X());
     const a2 = Math.atan2(P(y).Y() - P(v).Y(), P(y).X() - P(v).X());
     let d = Math.abs(a1 - a2); if (d > Math.PI) d = 2 * Math.PI - d;
-    const bis = Math.atan2(Math.sin(a1) + Math.sin(a2),
-                           Math.cos(a1) + Math.cos(a2));
-    // beside the vertex on the side away from the wedge (pixel offsets,
-    // so two wedges in a small figure never share a label spot); text
-    // runs rightward, so a label left of its vertex is pulled back
-    const u = board.unitX || 50, ox = -Math.cos(bis), oy = -Math.sin(bis);
-    redLabel(P(v).X() + (28 * ox - (ox < 0 ? 95 : 0)) / u,
-             P(v).Y() + (28 * oy - 6) / u,
-             `∠${x}${v}${y} = ${(d * 180 / Math.PI).toFixed(0)}°`);
+    inset.push(`∠${x}${v}${y} = ${(d * 180 / Math.PI).toFixed(0)}°`);
   };
   const redRing = n => {
     if (!P(n)) return;
@@ -440,6 +441,27 @@ function drawCaseFigure() {
     } else if (k === "between") { redSeg(f[1], f[2]); redSeg(f[2], f[3]);
                                   redSeg(f[1], f[3]); }
     else f.slice(1).filter(x => typeof x === "string" && P(x)).forEach(redRing);
+  }
+  if ((cf.relaxed || []).length && board.containerObj) {
+    const box = document.createElement("div");
+    box.id = "broken-inset";
+    box.style.cssText = "position:absolute;top:8px;left:8px;z-index:20;" +
+      "background:rgba(255,255,255,0.92);border:1px solid " + BROKEN_COL +
+      ";color:" + BROKEN_COL + ";font:13px sans-serif;padding:4px 8px;" +
+      "border-radius:4px;pointer-events:none;line-height:1.4";
+    const should = cf.relaxed.map(f => factEnglish(f)).join("; ");
+    box.innerHTML = "";
+    const head = document.createElement("div");
+    head.style.fontWeight = "bold";
+    head.textContent = "should be: " + should;
+    box.appendChild(head);
+    const body = document.createElement("div");
+    body.textContent = inset.length ? "here: " + inset.join(",  ")
+                                    : "here: it fails (red)";
+    box.appendChild(body);
+    const c = board.containerObj;
+    if (getComputedStyle(c).position === "static") c.style.position = "relative";
+    c.appendChild(box);
   }
 }
 
