@@ -1985,8 +1985,12 @@ function afterResult(res, err, plain) {
   renderMoves();
   showError(err, plain);
   if (!err) hideTutorQuestion();
+  // a proposition whose goal IS a contradiction (I.7: the givens cannot
+  // all hold) is solved by reaching one; the undo warning is for an
+  // accidental one (codex-1, live loop slice 8: Solved banner and "undo a
+  // step" shown together)
   document.getElementById("contra-note").style.display =
-    res.contradictory ? "block" : "none";
+    res.contradictory && !res.goal_reached ? "block" : "none";
   showDrawnNote(res);
   const banner = document.getElementById("solved-banner");
   if (res.goal_reached) {
