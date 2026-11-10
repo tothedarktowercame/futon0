@@ -2420,18 +2420,22 @@ def _nelder_mead(f, x0, step, iters):
     return simplex[i], vals[i]
 
 
-def _case_placement(n, case_facts):
+def _case_placement(n, case_facts, hyps=None, budget=0.5):
     """A placement of I.n's free points (tr.FREE[n]; the derived free
     points follow tr.derived_free_points) satisfying the proposition's
-    hypotheses (provenance "h", the facts _start_state uses) plus
-    case_facts. Returns (xy, skipped): xy is None when no placement
+    hypotheses (provenance "h", the facts _start_state uses; `hyps`
+    overrides them, used by the impossible-case relaxation in play())
+    plus case_facts. Returns (xy, skipped): xy is None when no placement
     satisfied them; skipped lists the facts the evaluator cannot
     evaluate. Search: Nelder-Mead from FREE[n] and a few deterministic
     random restarts; per start, first minimise the total violation, then
     slide toward FREE[n] under a heavy violation weight, so the figure
-    changes only as much as the case needs."""
+    changes only as much as the case needs. `budget` caps the seconds
+    the full-figure search may take."""
     objects = tr.objects_from_hyps(n)
-    prop_hyps = [tuple(f) for f, w in tr.hyps_and_steps(n)[0] if w == "h"]
+    prop_hyps = (hyps if hyps is not None else
+                 [tuple(f) for f, w in tr.hyps_and_steps(n)[0]
+                  if w == "h"])
     facts = prop_hyps + [tuple(f) for f in case_facts]
     names = list(tr.FREE[n])
     x_base = [float(c) for nm in names for c in tr.FREE[n][nm]]
@@ -2505,7 +2509,7 @@ def _case_placement(n, case_facts):
     starts = [x_base] + [[x + rng.gauss(0.0, 0.3 * scale) for x in x_base]
                          for _ in range(3)]
     cands = []
-    deadline = time.perf_counter() + 0.5
+    deadline = time.perf_counter() + budget
     for x0 in starts:
         # phase A: satisfy the facts; phase B: of placements that satisfy
         # them, stay as close to FREE[n] as the case allows (a heavy
@@ -2545,6 +2549,112 @@ def _open_case_chain(moves):
     return hyps + (inner or [])
 
 
+# Impossible cases (E-kimi-task-432): in a proof by contradiction every
+# case is impossible, so no placement satisfies givens + case. But the
+# CASE alone is a figure; what fails is one given (in I.6, |ab| > |ac|
+# breaks the equal base angles). So when the plain search fails, try
+# again with a single proposition hypothesis left out, and say which
+# given the drawn figure breaks. Only metric/order givens are relaxed
+# (an incidence given like "c on AC" DEFINES the figure; dropping it
+# draws a different proposition), in this priority order:
+_RELAX_ORDER = ("eq_len", "eq_ang", "_sum_rt_ang", "gt_len", "lt_len",
+                "gt_ang", "lt_ang", "gt_sum_len", "lt_sum_sum_len",
+                "between", "same_side", "opposing_sides",
+                "not_same_side", "not_on_line")
+# At most this many relaxations are searched (one placement search
+# each); givens sharing points with the case go first, so the given the
+# case actually strains is tried before an unrelated one of a luckier
+# kind (I.24: 'e on DF' breaks not_on_line f DE, the last kind in
+# _RELAX_ORDER but the only given naming d, e and f).
+_RELAX_CAP = 6
+
+
+def _relax_candidates(prop_hyps, case_facts):
+    """Indices of the relaxable hypotheses: the ones naming the case's
+    points first, then metric/order givens in _RELAX_ORDER order."""
+    case_pts = {x for f in case_facts for x in f[1:] if isinstance(x, str)}
+    idx = [i for i, f in enumerate(prop_hyps) if f[0] in _RELAX_ORDER]
+
+    def key(i):
+        f = prop_hyps[i]
+        overlap = sum(1 for x in f[1:]
+                      if isinstance(x, str) and x in case_pts)
+        return (-overlap, _RELAX_ORDER.index(f[0]), i)
+    idx.sort(key=key)
+    return idx
+
+
+def _broken_value(f, xy, lines):
+    """How the relaxed given f stands in the case figure xy, as words
+    with numbers -- 'the figure breaks THIS given by THIS much'."""
+    def seg(x, y):
+        return _vdist(xy[x], xy[y])
+
+    def ang(x, v, y):
+        return _angle_at(xy[x], xy[v], xy[y])
+
+    def sdist(p, ln):
+        a, b = (xy[x] for x in lines[ln])
+        return _vcross(a, b, xy[p]) / max(_vdist(a, b), 1e-12)
+
+    k = f[0]
+    try:
+        if k in ("eq_len", "gt_len", "lt_len"):
+            return "|%s%s| = %.2f, |%s%s| = %.2f" % (
+                f[1], f[2], seg(f[1], f[2]),
+                f[3], f[4], seg(f[3], f[4]))
+        if k in ("eq_ang", "gt_ang", "lt_ang"):
+            return "∠%s%s%s = %.2f, ∠%s%s%s = %.2f" % (
+                f[1], f[2], f[3], ang(f[1], f[2], f[3]),
+                f[4], f[5], f[6], ang(f[4], f[5], f[6]))
+        if k == "gt_sum_len":
+            return "|%s%s| + |%s%s| = %.2f, |%s%s| = %.2f" % (
+                f[1], f[2], f[3], f[4],
+                seg(f[1], f[2]) + seg(f[3], f[4]),
+                f[5], f[6], seg(f[5], f[6]))
+        if k == "lt_sum_sum_len":
+            return ("|%s%s| + |%s%s| = %.2f, |%s%s| + |%s%s| = %.2f"
+                    % (f[1], f[2], f[3], f[4],
+                       seg(f[1], f[2]) + seg(f[3], f[4]),
+                       f[5], f[6], f[7], f[8],
+                       seg(f[5], f[6]) + seg(f[7], f[8])))
+        if k == "between":
+            return "|%s%s| + |%s%s| = %.2f, |%s%s| = %.2f" % (
+                f[1], f[2], f[2], f[3],
+                seg(f[1], f[2]) + seg(f[2], f[3]),
+                f[1], f[3], seg(f[1], f[3]))
+        if k in ("same_side", "opposing_sides", "not_same_side"):
+            return "d(%s, %s) = %+.2f, d(%s, %s) = %+.2f" % (
+                f[1], f[3], sdist(f[1], f[3]),
+                f[2], f[3], sdist(f[2], f[3]))
+        if k == "not_on_line":
+            a, b = (xy[x] for x in lines[f[2]])
+            return "d(%s, %s) = %.2f" % (
+                f[1], f[2], _dist_line(xy[f[1]], a, b))
+    except (KeyError, IndexError):
+        pass
+    return None
+
+
+def _case_placement_relaxed(n, case_facts):
+    """As _case_placement, but when the givens + case have no placement
+    (an impossible case), retry with one relaxable given left out
+    (see _RELAX_ORDER; first success wins, equalities first). Returns
+    (xy, skipped, relaxed): relaxed is the given left out, or None."""
+    xy, skipped = _case_placement(n, case_facts)
+    if xy is not None:
+        return xy, skipped, None
+    prop_hyps = [tuple(f) for f, w in tr.hyps_and_steps(n)[0]
+                 if w == "h"]
+    for i in _relax_candidates(prop_hyps, case_facts)[:_RELAX_CAP]:
+        xy2, sk2 = _case_placement(
+            n, case_facts, hyps=prop_hyps[:i] + prop_hyps[i + 1:],
+            budget=0.35)
+        if xy2 is not None:
+            return xy2, sk2, prop_hyps[i]
+    return None, skipped, None
+
+
 def play(n, moves):
     """Stateless replay (see _play). When the move list ends in an open
     case, the drawing is recomputed from a placement satisfying the
@@ -2555,7 +2665,7 @@ def play(n, moves):
     chain = _open_case_chain(moves)
     if chain is None:
         return res
-    xy, skipped = _case_placement(n, chain)
+    xy, skipped, relaxed = _case_placement_relaxed(n, chain)
     hyps_j = [list(f) for f in chain]
     if xy is None:
         cf = {"hyps": hyps_j, "drawn": False,
@@ -2569,6 +2679,17 @@ def play(n, moves):
     moved = [p for p, p0 in tr.FREE[n].items()
              if _vdist(xy[p], p0) > 1e-6 * scale]
     cf = {"hyps": hyps_j, "drawn": True, "moved": moved}
+    if relaxed is not None:
+        objects = tr.objects_from_hyps(n)
+        prop_hyps = [tuple(f) for f, w in tr.hyps_and_steps(n)[0]
+                     if w == "h"]
+        lines = _case_lines(prop_hyps + [tuple(f) for f in chain],
+                            objects, xy)
+        cf["relaxed"] = [list(relaxed)]
+        val = _broken_value(relaxed, xy, lines)
+        cf["broken"] = ["%s: %s" % (" ".join(str(x) for x in relaxed),
+                                    val) if val else
+                        " ".join(str(x) for x in relaxed)]
     if skipped:
         cf["skipped"] = [list(f) for f in skipped]
     res2["case_figure"] = cf

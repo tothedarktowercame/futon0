@@ -1189,21 +1189,52 @@ def test_case_figure_peq_drawn_and_coincident():
     assert math.dist(o["a"], o["b"]) > 0.05   # neq a b
 
 
-def test_case_figure_impossible_case_not_drawn():
-    """I.6, open case |a-b| > |a-c|: the hypotheses force |ab| = |ac|
-    (the base angles are equal), so no placement satisfies the givens
-    and this case -- exactly what the student then proves."""
+def test_case_figure_impossible_case_drawn_with_broken_given():
+    """I.6, open case |a-b| > |a-c| (E-kimi-task-432): no placement
+    satisfies the givens AND the case (the base angles are equal), but
+    the case alone is a figure -- so it is drawn with the equal-base-
+    angles given relaxed, and 'broken' says how the angles now stand.
+    Euclid's reasoning is visual: were ab longer than ac, the base
+    angles could not be equal."""
     t0 = time.perf_counter()
     res = ep.play(6, [_open_case_move([("gt_len", "a", "b", "a", "c")])])
     assert time.perf_counter() - t0 < 2.0
     cf = res["case_figure"]
-    assert cf["drawn"] is False
-    assert cf["why"] == "no placement satisfies the givens and this case"
-    # the drawing stays the FREE[6] figure
+    assert cf["drawn"] is True
+    assert cf["relaxed"] == [["eq_ang", "a", "b", "c", "a", "c", "b"]]
+    assert len(cf["broken"]) == 1 and "∠abc" in cf["broken"][0]
     o = {x["name"]: x["xy"] for x in res["objects"]
             if x["kind"] == "point"}
-    for p, p0 in tr.FREE[6].items():
-        assert math.dist(o[p], p0) < 1e-9, (p, o[p], p0)
+    scale = max(math.dist(o[p], o[q])
+                for p in o for q in o) or 1.0
+    ab, ac = math.dist(o["a"], o["b"]), math.dist(o["a"], o["c"])
+    assert ab > ac + 0.04 * scale, (ab, ac, scale)
+    abc = ep._angle_at(o["a"], o["b"], o["c"])
+    acb = ep._angle_at(o["a"], o["c"], o["b"])
+    assert abs(abc - acb) > 0.05, (abc, acb)
+    # the other givens still hold: c off AB, the incidences intact
+    assert ep._dist_line(o["c"], o["a"], o["b"]) > 0.04 * scale
+
+
+def test_case_figure_possible_case_not_relaxed():
+    """I.2, open case peq a c is POSSIBLE: drawn as before, with no
+    'relaxed'/'broken' keys (relaxation only fires when the givens and
+    the case cannot all hold)."""
+    res = ep.play(2, [_open_case_move([("peq", "a", "c")])])
+    cf = res["case_figure"]
+    assert cf["drawn"] is True
+    assert "relaxed" not in cf and "broken" not in cf
+
+
+def test_case_figure_unsatisfiable_even_relaxed_not_drawn():
+    """Two contradicting case facts (a on BC and a off BC): leaving out
+    any one GIVEN cannot help -- the case facts are never relaxed -- so
+    the case stays undrawn."""
+    hyps = [("on_line", "a", "BC"), ("not_on_line", "a", "BC")]
+    res = ep.play(2, [_open_case_move(hyps)])
+    cf = res["case_figure"]
+    assert cf["drawn"] is False
+    assert "no placement satisfies" in cf["why"]
 
 
 def test_case_figure_on_line_drawn():
