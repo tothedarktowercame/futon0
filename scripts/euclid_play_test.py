@@ -1602,3 +1602,16 @@ def test_i12_goal_names_only_the_theorem_points_and_needs_e_on_ab():
     res = ep.play(12, mv)
     assert res["goal_reached"]
     assert all(g["state"] == "shown" for g in res["marks"]["goals"])
+
+
+def test_line_inequality_is_read_in_either_order():
+    """codex-1, live loop slice 10, I.12: pasch_4 c e d AB CD was refused
+    'lines AB and CD are different' with CD ≠ AB known (c on CD, c off
+    AB). The engine's neq_line_symm closes the other order."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i12-slice10-pasch-lines.json")))
+    res = ep.play(12, case["moves"])
+    last = res["moves"][-1]
+    assert last["rule"] == "pasch_4" and last["ok"], last.get("error")
+    assert ["between", "c", "e", "d"] in last["added"]

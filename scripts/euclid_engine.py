@@ -1059,6 +1059,18 @@ def r_line_neq(s):
                     yield (("neq_line", L, f2[2]), [f1, f2])
 
 
+def r_neq_line_symm(s):
+    # [logic] L ≠ M ⇒ M ≠ L (Lean's Ne is symmetric, ne_comm). neq_line
+    # was stored in whichever order line_neq or a cited rule produced it,
+    # so a premise asking the other order was refused although the same
+    # inequality was known (codex-1, live loop slice 10, I.12: pasch_4 c
+    # e d AB CD refused 'lines AB and CD are different' with CD ≠ AB
+    # in the store).
+    for f in list(s.facts):
+        if f[0] == "neq_line" and not s.has(("neq_line", f[2], f[1])):
+            yield (("neq_line", f[2], f[1]), [f])
+
+
 def r_angle_pos(s):
     # [SMT-bridge] x off L, u and v on L, u ≠ v, x ≠ v ⇒ ∠(x,v,u) > 0
     # (the angle is strictly between 0 and 2∟). LeanEuclid's SMT supplies
@@ -1214,6 +1226,7 @@ FORWARD_RULES = [
     ("same_side_not_on_line [Diagrammatic.lean:120]", r_same_side_not_on_line),
     ("opposing_parts [Relations.lean:13-14]", r_opposing_parts),
     ("line_neq [logic]", r_line_neq),
+    ("neq_line_symm [logic]", r_neq_line_symm),
     ("angle_pos [SMT-bridge]", r_angle_pos),
     # NOTE: "side_gt_angle_gt" (|p-r| > |p-q| ⇒ ∠p:q:r > ∠q:r:p) was
     # REMOVED from the default closure (E-kimi-task-389): it IS Book

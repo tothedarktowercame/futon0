@@ -1,0 +1,66 @@
+{
+ "n": 12,
+ "moves": [
+  {
+   "rule": "exists_point_opposite",
+   "args": [
+    "AB",
+    "c"
+   ],
+   "bindings": {
+    "a": "d"
+   }
+  },
+  {
+   "rule": "circle_from_points",
+   "args": [
+    "c",
+    "d"
+   ],
+   "bindings": {
+    "C": "C"
+   }
+  },
+  {
+   "rule": "line_from_points",
+   "args": [
+    "c",
+    "d"
+   ],
+   "bindings": {
+    "L": "CD"
+   }
+  },
+  {
+   "rule": "intersection_lines_opposing",
+   "args": [
+    "c",
+    "d",
+    "AB",
+    "CD"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "intersection_lines",
+   "args": [
+    "AB",
+    "CD"
+   ],
+   "bindings": {
+    "a": "e"
+   }
+  },
+  {
+   "rule": "pasch_4",
+   "args": [
+    "c",
+    "e",
+    "d",
+    "AB",
+    "CD"
+   ],
+   "bindings": {}
+  }
+ ]
+}

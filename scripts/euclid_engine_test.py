@@ -2056,14 +2056,26 @@ def test_bridge_pasch_4_counterexamples():
     with pytest.raises(eng.MissingPremise) as ei:
         eng.apply_step(s_same, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
     assert ei.value.premise == ("opposing_sides", "a", "b", "L")
-    # no neq_line: must refuse
+    # no neq_line given: it is DERIVED (a on M, a off L since a and b are
+    # on opposite sides of L: line_neq gives M ≠ L, neq_line_symm L ≠ M),
+    # so the step fires; the refusal survives only when the premise
+    # cannot be derived, i.e. with neq_line_symm out of the closure
+    # (codex-1, live loop slice 10, I.12).
     s_nl = eng.State()
     for f in base + [("opposing_sides", "a", "b", "L")]:
         if f != ("neq_line", "L", "M"):
             s_nl.assume(f)
     eng.close(s_nl)
+    assert s_nl.has(("neq_line", "M", "L")) and s_nl.has(("neq_line", "L", "M"))
+    rep = eng.apply_step(s_nl, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
+    assert rep["added"] == [("between", "a", "d", "b")]
+    s_raw = eng.State()
+    for f in base:
+        if f != ("neq_line", "L", "M"):
+            s_raw.assume(f)
+    s_raw.assume(("opposing_sides", "a", "b", "L"))
     with pytest.raises(eng.MissingPremise) as ei:
-        eng.apply_step(s_nl, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
+        eng.apply_step(s_raw, 1, "pasch_4", ("a", "d", "b", "L", "M"), {})
     assert ei.value.premise == ("neq_line", "L", "M")
 
 
