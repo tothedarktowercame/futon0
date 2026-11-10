@@ -616,7 +616,8 @@ def _rule_words(spec):
     return needs, gives
 
 
-def _goal_witness(n, s, objects, xy=None, goals=None, given=None):
+def _goal_witness(n, s, objects, xy=None, goals=None, given=None,
+                  wit_not_in=None):
     """GOALS[n] with its existential witnesses free. A goal name that is
     not one of the proposition's given objects is a witness of Lean's
     ∃ (I.1's c, I.2's l, ...): any point in the drawing may play it, so
@@ -624,7 +625,9 @@ def _goal_witness(n, s, objects, xy=None, goals=None, given=None):
     still solves the proposition. Backtracking search, binding each
     witness at the first goal that mentions it. (Joe, 2026-11-09: I.1
     built with circles C and D never showed "Solved", because the goal
-    named the engine's circle BCD.)"""
+    named the engine's circle BCD.) wit_not_in: points a witness may
+    NOT be bound to (the goal checklist passes the given points: c := b
+    satisfies I.1's |ca| = |ab| trivially and must not count)."""
     goals = [tuple(g) for g in (GOALS[n] if goals is None else goals)]
     if given is None:
         given = {o["name"] for o in tr.objects_from_hyps(n)}
@@ -645,7 +648,8 @@ def _goal_witness(n, s, objects, xy=None, goals=None, given=None):
             points.update(f[1:3])
         elif f[0] == "between":
             points.update(f[1:4])
-    points = sorted(p for p in points if isinstance(p, str))
+    points = sorted(p for p in points if isinstance(p, str)
+                    and p not in (wit_not_in or ()))
 
     # a metric goal over a length or angle no row mentions cannot be
     # entailed: skip it before asking the (slow) linear-arithmetic check
@@ -917,7 +921,7 @@ def _goal_marks(n, s, objects, xy, goal_reached, drawn):
                 # a different clause, or there is no binding yet)
                 try:
                     env1 = _goal_witness(n, s, objects, xy, goals=[g],
-                                         given=given)
+                                         given=given, wit_not_in=given)
                 except Exception:
                     env1 = None
                 if env1 is not None:

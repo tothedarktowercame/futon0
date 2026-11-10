@@ -1081,3 +1081,58 @@ def test_objects_made_in_a_case_stay_usable_when_undrawn():
     und = {o["name"] for o in res["objects"] if o.get("undrawn")}
     assert {"d", "DC"} <= und
     assert ep.rule_info("proposition_3")["arg_kinds"]["C"] == "line"
+
+
+def test_goal_checklist_i5_progress():
+    """E-kimi-task-430 (P-euclid-play-goal-checklist): every goal clause
+    carries its state. I.5's two angle equalities both start pending;
+    playing the reference moves, the first proposition_4 that turns a
+    clause over leaves exactly one shown and the other pending (before
+    this, proving one of the two changed nothing visible — codex-1,
+    codex-shots/i5-progress-invisible.png); at the end both are shown."""
+    moves = _engine_moves(5)
+    res = ep.play(5, [])
+    assert [g["state"] for g in res["marks"]["goals"]] == \
+        ["pending", "pending"]
+    seen = None
+    for i, st in enumerate(ep.reference_steps(5)):
+        if st[0] != "proposition_4":
+            continue
+        r = ep.play(5, moves[:i + 1])
+        states = [g["state"] for g in r["marks"]["goals"]]
+        if "shown" in states:
+            seen = states
+            break
+    assert seen == ["pending", "shown"], seen   # ∠cbd = ∠bce lands first
+    res = ep.play(5, moves)
+    assert res["goal_reached"]
+    assert [g["state"] for g in res["marks"]["goals"]] == ["shown", "shown"]
+
+
+def test_goal_checklist_covers_every_clause():
+    """I.1's two clauses both appear, pending at the start (c := b would
+    satisfy |ca| = |ab| trivially and must not count as shown) and shown
+    at the end; a shown _eq_ang joins its two angles into one class."""
+    res = ep.play(1, [])
+    goals = res["marks"]["goals"]
+    assert len(goals) == 2
+    assert all(g["kind"] == "_eq_len" for g in goals)
+    assert [g["state"] for g in goals] == ["pending", "pending"]
+    res = ep.play(1, _engine_moves(1))
+    assert [g["state"] for g in res["marks"]["goals"]] == ["shown", "shown"]
+    res = ep.play(5, _engine_moves(5))
+    assert any(sorted([["a", "b", "c"], ["a", "c", "b"]]) == sorted(cls)
+               for cls in res["marks"]["angle_classes"]), \
+        res["marks"]["angle_classes"]
+
+
+def test_goal_checklist_all_props_have_words():
+    """Every catalogue prop reports every goal clause with a state and
+    student-readable words (never a Python repr)."""
+    for entry in ep.catalogue():
+        res = ep.play(entry["n"], [])
+        goals = res["marks"]["goals"]
+        assert len(goals) == len(ep.GOALS[entry["n"]]), entry["n"]
+        for g in goals:
+            assert g["state"] in ("shown", "pending")
+            assert g["words"] and "(" not in g["words"], g
