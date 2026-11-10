@@ -2355,7 +2355,8 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                 entry["error"] = (list(e.premise)
                                   if isinstance(e.premise, tuple)
                                   else str(e.premise))
-                gap = _off_line_gap(s, e.premise)
+                gap = _off_line_gap(s, e.premise) or \
+                    _neq_gap(s, e.premise)
                 if gap:
                     entry["error_gap"] = gap
             except TypeError as e:
@@ -2369,7 +2370,11 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
         if e.get("error") is not None:
             e["error_plain"] = student_error(e["error"], e["rule"])
             if e.get("error_gap"):
-                e["error_plain"] = (e["error_plain"].rstrip(".") + ". "
+                plain = e["error_plain"]
+                # a gap replaces "Nothing ... rules out x = y", which it
+                # contradicts (something shown does rule it out)
+                plain = plain.split(" Nothing given or shown")[0]
+                e["error_plain"] = (plain.rstrip(".") + ". "
                                     + e.pop("error_gap"))
     return entries, view
 
@@ -2400,6 +2405,24 @@ def _off_line_gap(s, premise):
                         "and %s is on %s; what is not yet shown is that "
                         "%s and %s are different points."
                         % (p, M, L, x, M, x, p))
+    return None
+
+
+def _neq_gap(s, premise):
+    """A missing "x ≠ y" where x and y are two of the three points of a
+    betweenness already shown: the refusal must not say that nothing
+    rules out x = y (codex-1, live loop slice 10, I.11: 'Nothing given
+    or shown so far rules out w = u' when u-w-v was given). Names the
+    fact it follows from, not the move that states it."""
+    if not (isinstance(premise, tuple) and len(premise) == 3
+            and premise[0] == "neq"):
+        return None
+    x, y = premise[1], premise[2]
+    for f in sorted(s.facts):
+        if f[0] == "between" and x in f[1:4] and y in f[1:4]:
+            return ("It follows from \u201c%s\u201d, which is already "
+                    "shown, but has not been stated as a step yet."
+                    % fact_words(f))
     return None
 
 

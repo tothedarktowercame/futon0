@@ -1615,3 +1615,20 @@ def test_line_inequality_is_read_in_either_order():
     last = res["moves"][-1]
     assert last["rule"] == "pasch_4" and last["ok"], last.get("error")
     assert ["between", "c", "e", "d"] in last["added"]
+
+
+def test_neq_refusal_names_the_betweenness_it_follows_from():
+    """codex-1, live loop slice 10, I.11: a circle centred at w through u
+    was refused with 'Nothing given or shown so far rules out w = u',
+    though u-w-v was given. The refusal now names that betweenness and
+    drops the 'nothing rules out' sentence."""
+    res = ep.play(11, [{"rule": "circle_from_points", "args": ["w", "u"],
+                        "bindings": {"C": "C"}}])
+    plain = res["moves"][-1]["error_plain"]
+    assert "Nothing given or shown" not in plain
+    assert "w is between u and v" in plain
+    # with no betweenness to point at, the old sentence stays
+    res2 = ep.play(2, [{"rule": "circle_from_points", "args": ["a", "c"],
+                        "bindings": {"C": "C"}}])
+    assert "Nothing given or shown so far rules out a = c" in \
+        res2["moves"][-1]["error_plain"]
