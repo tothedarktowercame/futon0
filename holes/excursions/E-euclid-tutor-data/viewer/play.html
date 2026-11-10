@@ -1481,6 +1481,7 @@ function renderRuleInputs() {
     const inp = document.createElement("input");
     inp.className = "arg-in";
     inp.dataset.arg = a;
+    inp.dataset.label = label;
     inp.dataset.hint = hint || "";
     inp.addEventListener("change", autoFill);
     inp.addEventListener("input", () => updateRuleWords(e));
@@ -2252,11 +2253,16 @@ async function submitMove() {
   }
   // blank inputs: say what to do instead of sending a move the engine
   // can only refuse with an empty fact (Joe's first try at I.1)
-  const blank = [...document.querySelectorAll("#args-table .arg-in")]
-    .filter(i => !i.value.trim()).map(i => i.dataset.arg);
+  // name the box by its bracket AND its role: a bare "Fill in d" reads
+  // as the point d when one exists (Luna, slice 1, I.2)
+  const blankIns = [...document.querySelectorAll("#args-table .arg-in")]
+    .filter(i => !i.value.trim());
+  const blank = blankIns.map(i => i.dataset.arg);
   if (blank.length) {
+    const boxes = blankIns.map(i => `box [${i.dataset.arg}]` +
+      (i.dataset.label ? ` (${i.dataset.label})` : ""));
     showError("blank inputs: " + blank.join(", "),
-      "Fill in " + blank.join(" and ") + " first: click the objects on " +
+      "Fill in " + boxes.join(" and ") + " first: click the objects on " +
       "the drawing (each click fills the next empty box), or type " +
       "their names.");
     return;
