@@ -275,7 +275,8 @@ function drawArc(x, v, y, opts) {
       board.create("nonreflexangle", ps, {
         radius: Math.max(0.08, armR + dr), type: "sector",
         orthoType: opts.square ? "square" : "sector",
-        fillOpacity: 0, strokeColor: opts.colour, strokeWidth: 2,
+        fillOpacity: 0, strokeColor: opts.colour,
+        strokeWidth: opts.width || 2, strokeOpacity: opts.opacity || 1,
         dash: opts.dash || 0, withLabel: false, name: "", fixed: true,
         highlight: false, layer: 2 });
     } catch (e) { /* degenerate angle (coincident arms): skip */ }
@@ -477,8 +478,16 @@ function drawCaseFigure() {
 function drawMarks() {
   const mk = lastResult && lastResult.marks;
   if (!mk) { renderGoalList(null); return; }
+  // When the goal is a comparison (> or <), the equalities are means, not
+  // the end: draw them faint (thin, one ring per angle) and the goal's own
+  // angles or segments bold, so the solved figure reads as the comparison
+  // (codex-1, live loop slice 12, I.16: "a rosette of every equality").
+  const CMP = ["_gt_ang", "_gt_len", "_lt_len", "_lt_sum_rt_ang",
+               "_gt_sum_len", "_lt_sum_sum_len"];
+  const muted = (mk.goals || []).some(g => CMP.includes(g.kind));
   const segOpts = (col, extra) => Object.assign({
-    strokeColor: col, strokeWidth: 5, strokeOpacity: 0.45, fixed: true,
+    strokeColor: col, strokeWidth: muted ? 3 : 5,
+    strokeOpacity: muted ? 0.2 : 0.45, fixed: true,
     highlight: false, withLabel: false, layer: 2 }, extra || {});
   const segKey = pq => pq.slice().sort().join("-");
   const classOf = {};
@@ -490,7 +499,8 @@ function drawMarks() {
       const sg = board.create("segment", [built[p], built[q]], segOpts(col));
       try {
         board.create("hatch", [sg, i + 1], { strokeColor: col,
-          strokeWidth: 2, fixed: true, highlight: false });
+          strokeWidth: muted ? 1 : 2, strokeOpacity: muted ? 0.35 : 1,
+          fixed: true, highlight: false });
       } catch (e) { /* hatch needs a recent JSXGraph */ }
     }
   });
@@ -500,11 +510,14 @@ function drawMarks() {
   let arcsDrawn = 0;
   (mk.angle_classes || []).forEach((cls, i) => {
     const col = CLASS_COLOURS[i % CLASS_COLOURS.length];
-    const radii = [...Array(Math.min(i + 1, 3)).keys()].map(k => k * 0.12);
+    const radii = muted ? [0]
+      : [...Array(Math.min(i + 1, 3)).keys()].map(k => k * 0.12);
     for (const [x, v, y] of cls) {
       if (arcsDrawn >= 12) return;
       if (!built[x] || !built[v] || !built[y]) continue;
-      drawArc(x, v, y, { colour: col, radii: radii });
+      drawArc(x, v, y, muted ? { colour: col, radii: radii, width: 1,
+                                 opacity: 0.35 }
+                               : { colour: col, radii: radii });
       arcsDrawn++;
     }
   });
@@ -522,14 +535,14 @@ function drawMarks() {
     const done = g.state === "shown";
     const col = done ? "#1c5e0f" : "#ff9500";
     if (g.kind === "_gt_ang") {
-      drawArc(f[1], f[2], f[3], { colour: col, dash: done ? 0 : 2 });
-      drawArc(f[4], f[5], f[6], { colour: col, dash: done ? 0 : 2 });
+      drawArc(f[1], f[2], f[3], { colour: col, dash: done ? 0 : 2, width: 4 });
+      drawArc(f[4], f[5], f[6], { colour: col, dash: done ? 0 : 2, width: 4 });
     } else if (g.kind === "_gt_len" || g.kind === "_lt_len") {
       for (const [p, q] of [[f[1], f[2]], [f[3], f[4]]]) {
         if (!built[p] || !built[q]) continue;
         board.create("segment", [built[p], built[q]],
           segOpts(col, { dash: done ? 0 : 2, strokeOpacity: 0.9,
-                         strokeWidth: 3 }));
+                         strokeWidth: 4 }));
       }
     }
   }
