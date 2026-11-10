@@ -264,17 +264,17 @@ function drawArc(x, v, y, opts) {
   const arm = (a, b) => Math.hypot(a.X() - b.X(), a.Y() - b.Y());
   let armR = 0.35 * Math.min(arm(ps[0], ps[1]), arm(ps[2], ps[1]));
   let radii = opts.radii || [0];
-  // a right angle is drawn as ONE small square: the class's 2-3 rings
-  // became nested large squares (codex-1, live loop slice 9, I.10: the
-  // finished figure crowded at e). Every right angle is equal anyway.
-  const ux = ps[0].X() - ps[1].X(), uy = ps[0].Y() - ps[1].Y();
-  const wx = ps[2].X() - ps[1].X(), wy = ps[2].Y() - ps[1].Y();
-  const cos = (ux * wx + uy * wy) / (Math.hypot(ux, uy) * Math.hypot(wx, wy));
-  if (Math.abs(cos) < 0.01) { armR = 0.4 * armR; radii = [0]; }
+  // The right-angle square means PROVED right (opts.square, from the
+  // server's marks.right_angles), drawn as one small square. Every other
+  // arc stays an arc even when it measures 90° in the drawing: JSXGraph
+  // squares those by itself (orthoType), and a pending "angle uwf is
+  // right" then read as proved (codex-1, live loop slice 10, I.11).
+  if (opts.square) { armR = 0.4 * armR; radii = [0]; }
   for (const dr of radii) {
     try {
       board.create("nonreflexangle", ps, {
         radius: Math.max(0.08, armR + dr), type: "sector",
+        orthoType: opts.square ? "square" : "sector",
         fillOpacity: 0, strokeColor: opts.colour, strokeWidth: 2,
         dash: opts.dash || 0, withLabel: false, name: "", fixed: true,
         highlight: false, layer: 2 });
@@ -508,6 +508,9 @@ function drawMarks() {
       arcsDrawn++;
     }
   });
+  // proved right angles: one small square each, in the proved green
+  for (const [x, v, y] of (mk.right_angles || []))
+    drawArc(x, v, y, { colour: "#1c5e0f", square: true });
   // every goal clause on the figure: pending dashed orange; shown ones
   // are already in their class colour above (the server unions them in)
   for (const g of (mk.goals || [])) {
@@ -522,6 +525,8 @@ function drawMarks() {
     } else if (g.kind === "_eq_ang") {
       drawArc(f[1], f[2], f[3], { colour: "#ff9500", dash: 2 });
       drawArc(f[4], f[5], f[6], { colour: "#ff9500", dash: 2 });
+    } else if (g.kind === "_rt_ang") {
+      drawArc(f[1], f[2], f[3], { colour: "#ff9500", dash: 2 });
     }
     // the other kinds (between, on_line, neq, the right-angle sums) are
     // carried by the checklist words only

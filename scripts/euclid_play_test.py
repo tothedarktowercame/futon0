@@ -1563,3 +1563,22 @@ def test_goal_checklist_uses_one_witness_for_all_clauses():
     assert [g["state"] for g in goals] == ["shown", "pending"], goals
     assert [g["words"] for g in goals] == ["e is between a and b",
                                            "|ae| = |eb|"]
+
+
+def test_right_angle_square_only_when_proved():
+    """codex-1, live loop slice 10, I.11: before the last move, ∠uwf and
+    ∠dwf were equal and measured 90°, and the page drew the right-angle
+    square while '☐ angle uwf is right' was pending. marks.right_angles
+    lists only angles the store proves right; the page squares only
+    those."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i11-slice10-solved.json")))
+    moves = case["moves"]
+    before = ep.play(11, moves[:-1])
+    assert not before["goal_reached"]
+    assert before["marks"]["right_angles"] == []
+    assert before["marks"]["angle_classes"]   # the equal pair is still marked
+    after = ep.play(11, moves)
+    assert after["goal_reached"]
+    assert ["f", "w", "u"] in after["marks"]["right_angles"]

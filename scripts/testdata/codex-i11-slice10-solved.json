@@ -1,0 +1,125 @@
+{
+ "n": 11,
+ "moves": [
+  {
+   "rule": "between_symm_parts",
+   "args": [
+    "u",
+    "w",
+    "v"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "circle_from_points",
+   "args": [
+    "w",
+    "u"
+   ],
+   "bindings": {
+    "C": "C"
+   }
+  },
+  {
+   "rule": "intersection_circle_line_extending_points",
+   "args": [
+    "C",
+    "AB",
+    "w",
+    "u"
+   ],
+   "bindings": {
+    "g": "d"
+   }
+  },
+  {
+   "rule": "between_symm_parts",
+   "args": [
+    "d",
+    "w",
+    "u"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "proposition_1",
+   "args": [
+    "u",
+    "d",
+    "AB"
+   ],
+   "bindings": {
+    "d": "f"
+   }
+  },
+  {
+   "rule": "off_line_strict_triangle",
+   "args": [
+    "f",
+    "u",
+    "d",
+    "AB"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "line_from_points",
+   "args": [
+    "w",
+    "f"
+   ],
+   "bindings": {
+    "L": "WF"
+   }
+  },
+  {
+   "rule": "line_from_points",
+   "args": [
+    "u",
+    "f"
+   ],
+   "bindings": {
+    "L": "UF"
+   }
+  },
+  {
+   "rule": "line_from_points",
+   "args": [
+    "d",
+    "f"
+   ],
+   "bindings": {
+    "L": "DF"
+   }
+  },
+  {
+   "rule": "proposition_8",
+   "args": [
+    "w",
+    "u",
+    "f",
+    "w",
+    "d",
+    "f",
+    "AB",
+    "UF",
+    "WF",
+    "AB",
+    "DF",
+    "WF"
+   ],
+   "bindings": {}
+  },
+  {
+   "rule": "perpendicular_if",
+   "args": [
+    "u",
+    "d",
+    "w",
+    "f",
+    "AB"
+   ],
+   "bindings": {}
+  }
+ ]
+}

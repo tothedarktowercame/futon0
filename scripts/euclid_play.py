@@ -1096,6 +1096,44 @@ def _angle_marks(n, s, objects, xy, goal_clauses):
     return sorted(out, key=lambda v: (-len(v), v))
 
 
+def _right_angle_marks(s, objects, xy):
+    """Angles PROVED right (the store entails ∠xvy = ∟), one per angle
+    in the figure, drawn points only. The page draws only these with the
+    right-angle square; an equal-angle arc that merely measures 90° in
+    the drawing stays an arc (codex-1, live loop slice 10, I.11: the
+    square at w read as proved while '☐ angle uwf is right' was pending).
+    Only angles that measure ~90° are asked, so the store sees few
+    queries."""
+    import math
+    pts = sorted(o["name"] for o in objects if o.get("kind") == "point"
+                 and not o.get("aux") and xy.get(o["name"]))
+
+    def unit(v, p):
+        dx, dy = xy[p][0] - xy[v][0], xy[p][1] - xy[v][1]
+        r = math.hypot(dx, dy)
+        return None if r < 1e-9 else (dx / r, dy / r)
+    out, seen = [], set()
+    for v in pts:
+        for i, x in enumerate(pts):
+            for y in pts[i + 1:]:
+                if v in (x, y):
+                    continue
+                ux, uy = unit(v, x), unit(v, y)
+                if ux is None or uy is None:
+                    continue
+                if abs(ux[0] * uy[0] + ux[1] * uy[1]) > 0.01:
+                    continue
+                key = (v, frozenset((tuple(round(c, 4) + 0.0 for c in ux),
+                                     tuple(round(c, 4) + 0.0 for c in uy))))
+                if key in seen:
+                    continue
+                if s.la.entails(eng.lin((eng.ang_atom(x, v, y), 1),
+                                        (eng.RT, -1)), 0, "="):
+                    seen.add(key)
+                    out.append([x, v, y])
+    return out
+
+
 def _drawn_witness(n, objects, xy):
     """When the goal is not proved: does some drawn point satisfy it in
     the drawing (metric goals, to 1e-6)? Then the construction is right
@@ -2882,6 +2920,7 @@ def _play(n, moves, xy0=None):
                           joined=joined)
     marks["goals"] = goal_clauses
     marks["angle_classes"] = _angle_marks(n, s, objects, xy, goal_clauses)
+    marks["right_angles"] = _right_angle_marks(s, objects, xy)
     return {"n": n, "moves": out_moves, "goal_reached": goal_reached,
             "drawn_witness": drawn, "marks": marks,
             "objects": out_objects, "contradictory": contradict}
