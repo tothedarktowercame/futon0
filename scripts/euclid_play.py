@@ -296,7 +296,7 @@ ARG_HINTS = {
                              "beta": "second circle"},
     "intersections_circle_line": {"alpha": "the circle", "L": "the line"},
     "intersection_lines": {"L": "first line", "M": "second line"},
-    "extend_point": {"L": "the line", "b": "extend past", "c": "from"},
+    "extend_point": {"L": "the line", "b": "from", "c": "extend past"},
     "equilateral_apex_off_line": {
         "f": "the equilateral triangle's apex",
         "p": "a base vertex on the line",
@@ -341,9 +341,9 @@ ARG_HINTS = {
         "M": "the line through those two points"},
     "extend_point_not_on_line": {
         "L": "the line", "M": "a different line to avoid",
-        "b": "extend past", "c": "from"},
+        "b": "from", "c": "extend past"},
     "extend_point_longer": {
-        "L": "the line", "b": "extend past", "c": "from",
+        "L": "the line", "b": "from", "c": "extend past",
         "s0": "start of a length to exceed", "s1": "end of that length"},
     "point_between_points_shorter_than": {
         "L": "the line", "b": "from", "c": "towards",

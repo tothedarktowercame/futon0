@@ -210,6 +210,7 @@ function factEnglish(f) {
   if (!Array.isArray(f)) return String(f);
   const k = f[0];
   switch (k) {
+    case "false": return "a contradiction";
     case "neq": return `${f[1]} ≠ ${f[2]}`;
     case "on_line": return `${f[1]} is on line ${f[2]}`;
     case "not_on_line": return `${f[1]} lies off line ${f[2]}`;
@@ -300,20 +301,23 @@ function drawCaseFigure() {
   const words = (cf.hyps || []).map(f => factEnglish(f)).join(" and ");
   note.style.display = "block";
   if (!cf.drawn) {
-    note.style.background = "#fdecea";
-    note.style.border = "1px solid #c62828";
-    note.style.color = "#8e1b1b";
-    note.textContent = `This case cannot be drawn: no figure fits the ` +
-      `givens and ${words}. That is what to show — the case is ` +
-      `impossible. (The figure below is the usual one.)`;
-    return;
+    // a drawing status, not a proof (codex-1's slice 4: the old banner
+    // announced the impossibility the student had still to prove)
+    note.style.background = "#fff8e0";
+    note.style.border = "1px dashed #b07d00";
+    note.style.color = "#6b4b00";
+    note.textContent = `No figure found for this case (${words}). The ` +
+      `usual figure is shown, with the assumption marked in blue as ` +
+      `assumed, not as drawn. Whether the case is possible is for the ` +
+      `proof to decide.`;
+  } else {
+    note.style.background = "#e8f0fb";
+    note.style.border = "1px solid " + CASE_COL;
+    note.style.color = "#0d3c75";
+    note.textContent = `Case figure: drawn so that ${words}` +
+      ((cf.moved || []).length ? ` (moved: ${cf.moved.join(", ")})` : "") +
+      `. The blue marks show the assumption.`;
   }
-  note.style.background = "#e8f0fb";
-  note.style.border = "1px solid " + CASE_COL;
-  note.style.color = "#0d3c75";
-  note.textContent = `Case figure: drawn so that ${words}` +
-    ((cf.moved || []).length ? ` (moved: ${cf.moved.join(", ")})` : "") +
-    `. The blue marks show the assumption.`;
   const P = n => built[n];
   const seg = (p, q, opts) => (P(p) && P(q))
     ? board.create("segment", [P(p), P(q)], Object.assign({
@@ -1447,8 +1451,26 @@ function updateBranchStatus() {
   const b = openBlock();
   bs.innerHTML = "";
   if (!b || !lastResult) return;
-  const ent = lastResult.moves[lastResult.moves.length - 1];
+  // the innermost open block's own entry, not the outermost's (codex-1's
+  // slice 4: with nested cases the list highlighted an outer case while
+  // moves went deeper)
+  const ent = responseEntryFor(lastResult, b);
   if (!ent || !ent.open || !ent.branches || !ent.branches.length) return;
+  // breadcrumb: the assumptions inherited from the enclosing cases
+  const crumbs = [];
+  let list = moves, ob;
+  while ((ob = openBlockAt(list)) && ob !== b) {
+    const br = ob.branches[ob.branches.length - 1];
+    crumbs.push((br.hyps || []).map(f => factEnglish(f)).join(" and ") ||
+                "everything else");
+    list = br.moves;
+  }
+  if (crumbs.length) {
+    const c = document.createElement("div");
+    c.style.cssText = "color:#555;font-size:12px";
+    c.textContent = "inside: " + crumbs.join("  ›  ");
+    bs.appendChild(c);
+  }
   const head = document.createElement("div");
   const concl = (b.conclusion || []).map(f => factEnglish(f)).join(" and ");
   head.textContent = b.rule === "by_contra"

@@ -1278,3 +1278,15 @@ def test_case_figure_moves_only_the_point_the_case_is_about():
     r = ep.play(2, blk(["on_line", "a", "BC"]))
     P = {o["name"]: o["xy"] for o in r["objects"] if o.get("xy")}
     assert abs(P["a"][0] + 0.5) < 1e-3 and abs(P["a"][1]) < 1e-6
+
+
+def test_extension_labels_match_what_the_move_gives():
+    """codex-1's slice 4 (2026-11-10): 'extend past' / 'from' were the
+    wrong way round, so following the labels extended the wrong end.
+    The move gives '[c] is between [b] and x': from [b], past [c]."""
+    for r in ("extend_point", "extend_point_not_on_line",
+              "extend_point_longer"):
+        info = ep.rule_info(r)
+        assert "[c] is between [b] and x" in info["gives"], r
+        assert info["arg_hints"]["b"] == "from", r
+        assert info["arg_hints"]["c"] == "extend past", r
