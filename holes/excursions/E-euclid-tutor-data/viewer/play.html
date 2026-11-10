@@ -782,6 +782,52 @@ async function gestureEnd(evt) {
     return;
   }
   if (!best || best.name === g.from) return;   // no target: nothing drawn
+  // Points drawn on top of each other: ask which was meant rather than
+  // guess (codex-1 and kimi-1 playtests, 2026-11-10: a drag from f
+  // started at e, which happened to coincide with it on the drawing)
+  const starts = overlapping(g.from), ends = overlapping(best.name);
+  if (starts.length > 1 || ends.length > 1) {
+    const div = document.getElementById("snap-offer");
+    div.innerHTML = "";
+    div.style.display = "block";
+    const p = document.createElement("div");
+    p.textContent = "Several points are drawn here. Which did you mean?";
+    div.appendChild(p);
+    for (const a of starts)
+      for (const b of ends) {
+        if (a === b) continue;
+        const btn = document.createElement("button");
+        btn.textContent = `${g.kind} ${a}–${b}`;
+        btn.onclick = () => {
+          div.style.display = "none";
+          gestureMove_commit(g.kind, a, b);
+        };
+        div.appendChild(btn);
+      }
+    return;
+  }
+  await gestureMove_commit(g.kind, g.from, best.name);
+}
+
+// the points drawn within 6 px of point nm (itself included)
+function overlapping(nm) {
+  const e0 = built[nm];
+  if (!e0) return [nm];
+  const px = board.unitX || 50;
+  const out = [];
+  for (const o of (lastResult ? lastResult.objects : [])) {
+    if (o.kind !== "point") continue;
+    const e = built[o.name];
+    if (!e || e.visProp.visible === false) continue;
+    if (Math.hypot(e.X() - e0.X(), e.Y() - e0.Y()) * px < 6)
+      out.push(o.name);
+  }
+  return out.length ? out : [nm];
+}
+
+async function gestureMove_commit(kind, from, to) {
+  const g = { kind, from };
+  const best = { name: to };
   const rule = g.kind === "circle" ? "circle_from_points"
                                    : "line_from_points";
   selection = [];
@@ -1117,6 +1163,7 @@ const FACT_KINDS = {
   gt_ang: ["a", "b", "c", "d", "e", "f"],
   peq: ["a", "b"],
   neq: ["a", "b"],
+  not_on_line: ["a", "L"],
 };
 
 let cbMode = null;    // null | "new" (starting a block) | "next" (new case)
@@ -1213,12 +1260,20 @@ function wireFactBuilder(rootId, list, addLabel) {
     ins.forEach(i => { i.value = ""; });
     renderList();
   };
+  root.__renderList = renderList;
   renderList();
 }
 
 function showCaseBuilder(mode) {
   cbMode = mode;
   cbHyps.length = 0;
+  // the block proves the goal unless the student says otherwise (codex-1's
+  // playtest, 2026-11-10: the form opened on an unrelated "between")
+  if (mode === "new" && !cbConcl.length && cur) {
+    for (const g of plainGoal()) cbConcl.push(g);
+    const r = document.getElementById("cb-concl");
+    if (r.__renderList) r.__renderList();
+  }
   document.getElementById("cb-rule-row").style.display =
     mode === "new" ? "block" : "none";
   document.getElementById("cb-concl-wrap").style.display =
