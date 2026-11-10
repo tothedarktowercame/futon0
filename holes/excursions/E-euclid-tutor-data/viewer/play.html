@@ -1694,12 +1694,33 @@ async function addMissingCase(f, btn) {
   }
 }
 
+// the response entry for a given block object, open or not: walk the
+// local move tree and the response tree side by side
+function entryForBlock(res, block) {
+  const walk = (local, lres) => {
+    for (let i = 0; i < local.length && i < (lres || []).length; i++) {
+      if (local[i] === block) return lres[i];
+      const bs = local[i].branches, rbs = lres[i] && lres[i].branches;
+      if (!bs || !rbs) continue;
+      for (let j = 0; j < bs.length && j < rbs.length; j++) {
+        const r = walk(bs[j].moves || [], rbs[j].moves || []);
+        if (r) return r;
+      }
+    }
+    return null;
+  };
+  return walk(moves, res.moves);
+}
+
 async function closeBlock() {
   const b = openBlock();
   if (!b) return;
   b.open = false;
   const res = await postPlay(cur.n, moves);
-  const ent = res.moves[res.moves.length - 1];
+  // the block just closed may be nested: judge IT, not the outermost
+  // block, which stays open (codex-1 live loop: closing a nested block
+  // looked refused, was reopened, and showed nothing)
+  const ent = entryForBlock(res, b);
   if (ent && ent.ok && !ent.open) {
     saveProgress();
     afterResult(res, null);
