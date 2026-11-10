@@ -952,9 +952,10 @@ def _goal_marks(n, s, objects, xy, goal_reached, drawn):
     angle equalities used to change nothing visible). Each entry:
     {"kind", "fact" (witness names bound), "objects", "state":
     "shown"|"pending", "words"}. "shown" is eng._fact_holds on the query
-    form, with the same witness search the goal check uses, tried clause
-    by clause: the whole-goal binding first, then this clause on its own
-    (so clause 1 of I.5 reads shown while clause 2 is still pending)."""
+    form, under ONE naming of the witnesses for all clauses (the
+    whole-goal binding, or the clause-wise candidate that shows most), so
+    clause 1 of I.5 reads shown while clause 2 is still pending, but two
+    clauses are never ticked for two different points."""
     given = {o["name"] for o in tr.objects_from_hyps(n)}
     env = {}
     if goal_reached:
@@ -965,37 +966,43 @@ def _goal_marks(n, s, objects, xy, goal_reached, drawn):
     def bound(g, e):
         return tuple(e.get(x, x) if isinstance(x, str) else x for x in g)
 
-    out = []
-    for g0 in GOALS[n]:
-        g = tuple(g0)
-        k = g[0]
-        gc = bound(g, env)
-        if k == "false":
+    goals = [tuple(g0) for g0 in GOALS[n]]
+
+    def holds(g, e):
+        if g[0] == "false":
             # I.7: the goal is a contradiction of the assumptions
-            shown = bool(eng.contradictory(s)[0])
-        else:
+            return bool(eng.contradictory(s)[0])
+        try:
+            return bool(eng._fact_holds(s, bound(g, e)))
+        except Exception:
+            return False
+
+    # ONE naming of the theorem's witnesses for the whole checklist, so
+    # it cannot go all-green from separate candidates (codex-1, live loop
+    # slice 9, I.10: "☑ e is between a and b | ☑ |ac| = |cb|" while
+    # unsolved). Candidates: the whole-goal/drawn binding, then each
+    # clause's own witness search; the one showing most clauses wins
+    # (earlier on ties). A "≠" clause proposes no candidate: almost any
+    # point differs from v (slice 8, I.9: "☑ v ≠ d" mid-construction).
+    cands = [env]
+    if not goal_reached:
+        for g in goals:
+            if g[0] in ("neq", "false"):
+                continue
             try:
-                shown = eng._fact_holds(s, gc)
+                env1 = _goal_witness(n, s, objects, xy, goals=[g],
+                                     given=given, wit_not_in=given)
             except Exception:
-                shown = False
-            if not shown and k != "neq":
-                # maybe the clause holds under another naming of the
-                # theorem's witnesses (the whole-goal binding failed on
-                # a different clause, or there is no binding yet).
-                # Not for a "≠" clause: almost any point differs from v,
-                # so its own witness search ticks it for a point no other
-                # clause is about (codex-1, live loop slice 8: I.9 showed
-                # "☐ ∠bvf = ∠cvf | ☑ v ≠ d" mid-construction).
-                try:
-                    env1 = _goal_witness(n, s, objects, xy, goals=[g],
-                                         given=given, wit_not_in=given)
-                except Exception:
-                    env1 = None
-                if env1 is not None:
-                    gc = bound(g, env1)
-                    shown = True
-        out.append({"kind": k, "fact": list(gc), "objects": list(gc[1:]),
-                    "state": "shown" if shown else "pending",
+                env1 = None
+            if env1:
+                cands.append({**env, **env1})
+    best = max(cands, key=lambda e: sum(holds(g, e) for g in goals))
+    out = []
+    for g in goals:
+        gc = bound(g, best)
+        out.append({"kind": g[0], "fact": list(gc),
+                    "objects": list(gc[1:]),
+                    "state": "shown" if holds(g, best) else "pending",
                     "words": fact_words(gc)})
     return out
 

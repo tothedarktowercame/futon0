@@ -1,0 +1,110 @@
+[
+ {
+  "rule": "proposition_1",
+  "args": [
+   "a",
+   "b",
+   "AB"
+  ],
+  "bindings": {
+   "d": "c"
+  }
+ },
+ {
+  "rule": "line_from_points",
+  "args": [
+   "a",
+   "c"
+  ],
+  "bindings": {
+   "L": "AC"
+  }
+ },
+ {
+  "rule": "line_from_points",
+  "args": [
+   "b",
+   "c"
+  ],
+  "bindings": {
+   "L": "BC"
+  }
+ },
+ {
+  "rule": "off_line_strict_triangle",
+  "args": [
+   "a",
+   "b",
+   "c",
+   "BC"
+  ],
+  "bindings": {}
+ },
+ {
+  "rule": "proposition_9'",
+  "args": [
+   "c",
+   "a",
+   "b",
+   "AC",
+   "BC"
+  ],
+  "bindings": {
+   "f": "d"
+  }
+ },
+ {
+  "rule": "line_from_points",
+  "args": [
+   "c",
+   "d"
+  ],
+  "bindings": {
+   "L": "CD"
+  }
+ },
+ {
+  "rule": "triple_incidence_1",
+  "args": [
+   "AC",
+   "CD",
+   "BC",
+   "c",
+   "a",
+   "d",
+   "b"
+  ],
+  "bindings": {}
+ },
+ {
+  "rule": "intersection_lines_opposing",
+  "args": [
+   "a",
+   "b",
+   "CD",
+   "AB"
+  ],
+  "bindings": {}
+ },
+ {
+  "rule": "intersection_lines",
+  "args": [
+   "AB",
+   "CD"
+  ],
+  "bindings": {
+   "a": "e"
+  }
+ },
+ {
+  "rule": "pasch_4",
+  "args": [
+   "a",
+   "e",
+   "b",
+   "CD",
+   "AB"
+  ],
+  "bindings": {}
+ }
+]

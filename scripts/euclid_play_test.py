@@ -1549,3 +1549,17 @@ def test_lines_meet_premise_accepts_either_order():
     res = ep.play(10, moves[:7] + moves[8:])
     assert res["moves"][-1]["error_plain"] == \
         "Not yet shown: lines AB and CD meet"
+
+
+def test_goal_checklist_uses_one_witness_for_all_clauses():
+    # codex-1, live loop slice 9, I.10: "☑ e is between a and b |
+    # ☑ |ac| = |cb|" while unsolved; each clause had found its own point.
+    here = os.path.dirname(os.path.abspath(__file__))
+    moves = json.load(open(os.path.join(
+        here, "testdata", "codex-i10-slice9-two-witnesses.json")))
+    res = ep.play(10, moves)
+    assert not res["goal_reached"]
+    goals = res["marks"]["goals"]
+    assert [g["state"] for g in goals] == ["shown", "pending"], goals
+    assert [g["words"] for g in goals] == ["e is between a and b",
+                                           "|ae| = |eb|"]
