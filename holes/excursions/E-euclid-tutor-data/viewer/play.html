@@ -28,7 +28,8 @@
   #board-wrap { flex: 1; position: relative; }
   #jxgbox { position: absolute; inset: 6px; border: 1px solid #999;
             border-radius: 4px; }
-  #moves { max-height: 30%; overflow: auto; border-top: 1px solid #ccc;
+  #moves { max-height: 30%; min-height: 140px; overflow: auto;
+           border-top: 1px solid #ccc;
            padding: 4px 12px; font-size: 13px; }
   #moves .mv { margin: 2px 0; }
   #moves .mv .rule { font-family: monospace; }
@@ -98,6 +99,8 @@
         selected: <span id="selection-list" style="font-family:monospace">
         (click objects in the drawing)</span>
         <button id="btn-clear-sel" style="font-size:11px">clear</button>
+        <button id="btn-del-sel" style="font-size:11px"
+          title="delete the moves that made the selected objects">delete</button>
       </div>
       <select id="rule-select"></select>
       <div id="cite" style="font-size:11px;color:#777;margin:2px 0"></div>
@@ -1795,6 +1798,57 @@ document.getElementById("rule-select").onchange = () => {
   renderRuleInputs();
 };
 document.getElementById("btn-clear-sel").onclick = clearSelection;
+document.getElementById("btn-del-sel").onclick = deleteSelected;
+
+// Delete from the drawing: select objects, press delete; the top-level
+// moves that made them are removed (refused, with the reason, if a later
+// move needs one). Joe, 2026-11-10: "I still don't see a way to delete
+// circle C".
+async function deleteSelected() {
+  if (!selection.length) {
+    showError("select", "Select the objects to delete in the drawing " +
+      "first (click them), then press delete.");
+    return;
+  }
+  const objs = lastResult ? lastResult.objects : [];
+  const steps = new Set();
+  const given = [];
+  for (const o of selection) {
+    const q = objs.find(x => x.name === o.name);
+    if (!q || !q.def_step) { given.push(o.name); continue; }
+    steps.add(q.def_step - 1);   // def_step is the 1-based move number
+  }
+  if (given.length && !steps.size) {
+    showError("given", `${given.join(", ")} ${given.length > 1 ? "are" :
+      "is"} given by the proposition and cannot be deleted.`);
+    return;
+  }
+  const saved = JSON.stringify(moves);
+  const idx = [...steps].filter(k => k >= 0 && k < moves.length &&
+                                     !moves[k].branches)
+    .sort((x, y) => y - x);
+  if (!idx.length) {
+    showError("in a case", "That object was made inside a case: delete " +
+      "it from the move list instead.");
+    return;
+  }
+  const gone = idx.map(k => moves[k]);
+  for (const k of idx) moves.splice(k, 1);
+  const res = await postPlay(cur.n, moves);
+  const bad = firstRefused(res.moves, moves);
+  if (bad) {
+    moves = JSON.parse(saved);
+    const r2 = await postPlay(cur.n, moves);
+    afterResult(r2, bad.error || "refused",
+      `Can't delete that: the later move ${bad.rule} needs it — ` +
+      (bad.error_plain || "refused"));
+    return;
+  }
+  selection = [];
+  saveProgress();
+  afterResult(res, null);
+  onSelectionChanged();
+}
 document.getElementById("toggle-aux").onchange = () => draw();
 document.getElementById("reset-progress").onclick = ev => {
   ev.preventDefault();
