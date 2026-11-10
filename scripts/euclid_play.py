@@ -444,6 +444,9 @@ def student_error(err, rule=None):
     if m:
         return ("I.%s has not been proved yet — finish the earlier "
                 "propositions first." % m.group(1))
+    if s.startswith("cannot draw"):
+        return ("The engine accepts this move but the page cannot draw it "
+                "yet, so it was not kept — please report it.")
     if s == "blank input":
         return ("Fill in every box first: click the objects on the "
                 "drawing, or type their names.")
@@ -930,6 +933,12 @@ def _start_state(n):
     """The start state exactly as euclid_trace.build_trace builds it:
     metric hyps for 4/5, the prop-3 row, then close."""
     hyps, _steps = tr.hyps_and_steps(n)
+    # The game starts from the theorem's hypotheses only. The engine's
+    # replays also carry "h-sm" inputs (facts Lean's SMT supplies about
+    # objects the proof builds later, e.g. I.5's 'c off GB'); in the game
+    # they reserved those names, so a student's own line GB or point d
+    # inherited unproved facts (found from kimi-1's I.5, 2026-11-10).
+    hyps = [(f, w) for f, w in hyps if w != "h-sm"]
     if n in (4, 5):
         s = eng._metric_state(hyps)
     else:
@@ -943,6 +952,26 @@ def _start_state(n):
                   eng.len_atom("c0", "c1"): -1}, 0, ">")
     eng.close(s)
     return s
+
+
+# Moves a student must make that the engine's replay takes from Lean's
+# SMT ("h-sm" inputs, not in the game's start state): {n: [(after k
+# steps, step)]}. AWAITING_SM: propositions whose trusted inputs have no
+# game derivation yet (equilateral apex off its base; points on two lines
+# through v differ) -- the reference moves stop short there.
+PLAY_EXTRA_STEPS = {
+    5: [(1, ("between_symm_parts", ("b", "f", "d"), {}))],   # f != b
+}
+AWAITING_SM = (9, 10, 11)
+
+
+def reference_steps(n):
+    """The engine's steps for I.n as the game needs them (with the
+    explicit moves of PLAY_EXTRA_STEPS)."""
+    steps = list(tr.hyps_and_steps(n)[1])
+    for k, st in sorted(PLAY_EXTRA_STEPS.get(n, []), reverse=True):
+        steps.insert(k, st)
+    return steps
 
 
 CASE_RULES = ("by_contra", "by_cases")
@@ -1868,8 +1897,16 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                 elif rule == "name_point":
                     _place_name_point(args, added, xy, objects)
                 else:
-                    tr.place_step(n, rule, args, bindings, added, xy,
-                                  objects)
+                    try:
+                        tr.place_step(n, rule, args, bindings, added, xy,
+                                      objects)
+                    except AssertionError:
+                        # a move with nothing new to draw (a fact rule
+                        # such as flat_angle_onlyif) must not take the
+                        # request down (kimi-1's playtest, 2026-11-10:
+                        # "Failed to fetch", the move lost)
+                        if rule_info(rule)["binds"]:
+                            raise
                 for o in objects:
                     if o["def_step"] is None:
                         o["def_step"] = i
@@ -1881,6 +1918,8 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                                   else str(e.premise))
             except TypeError as e:
                 entry["error"] = ("bad arity for %s: %s" % (rule, e))
+            except AssertionError as e:
+                entry["error"] = "cannot draw: %s" % e
         entries.append(entry)
         if not entry["ok"]:
             break
@@ -1992,6 +2031,9 @@ class _Handler(SimpleHTTPRequestHandler):
                 self._send_json(res)
             except (KeyError, ValueError, TypeError) as e:
                 self._send_json({"error": str(e)}, code=400)
+            except Exception as e:   # never "Failed to fetch"
+                self._send_json({"error": "server error: %s: %s"
+                                 % (type(e).__name__, e)}, code=500)
         else:
             self.send_error(404)
 

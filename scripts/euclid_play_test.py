@@ -29,13 +29,12 @@ def _move(rule, args, bindings):
 
 
 def _engine_moves(n):
-    _h, steps = tr.hyps_and_steps(n)
-    return [_move(r, a, b) for r, a, b in steps]
+    return [_move(r, a, b) for r, a, b in ep.reference_steps(n)]
 
 
 def _straight_line(n):
     return all(r not in ("by_contra", "by_cases")
-               for r, _a, _b in tr.hyps_and_steps(n)[1])
+               for r, _a, _b in ep.reference_steps(n))
 
 
 def _engine_step_to_move(st):
@@ -56,8 +55,8 @@ def test_case_props_reach_goal():
     """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (6, 7, 8, 10, 13, 14, 19, 21, 22, 23):
-        steps = tr.hyps_and_steps(n)[1]
+    for n in (6, 7, 8, 13, 14, 19, 21, 22, 23):   # 10: AWAITING_SM
+        steps = ep.reference_steps(n)
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
             "I.%d: engine replay did not reach the goal: %s" % (n, res)
@@ -167,10 +166,10 @@ def test_catalogue_splits_covered():
     """Every engine case split in the catalogue (I.10, 13, 14, 19, 21,
     nested blocks included) is covered; record the family each matched."""
     table = []
-    for n in (6, 7, 8, 10, 13, 14, 19, 21, 22, 23):
+    for n in (6, 7, 8, 13, 14, 19, 21, 22, 23):   # 10: AWAITING_SM
         s = ep._start_state(n)
         found = []
-        _walk_case_blocks(n, s, tr.hyps_and_steps(n)[1], (), found)
+        _walk_case_blocks(n, s, ep.reference_steps(n), (), found)
         for rule, mv, bs, refuted in found:
             cov = ep.coverage(
                 bs, rule,
@@ -180,7 +179,7 @@ def test_catalogue_splits_covered():
             table.append((n, rule, cov["family"]))
         # and the engine's steps still reach Solved under the referee
         res = ep.play(n, [_engine_step_to_move(st)
-                          for st in tr.hyps_and_steps(n)[1]])
+                          for st in ep.reference_steps(n)])
         assert res["goal_reached"], n
     print("\ncoverage table:", *["  I.%d %s -> %s" % t for t in table],
           sep="\n")
@@ -242,7 +241,7 @@ def test_engine_steps_reach_goal():
     reached, skipped = [], []
     for entry in ep.catalogue():
         n = entry["n"]
-        if not _straight_line(n):
+        if not _straight_line(n) or n in ep.AWAITING_SM:
             skipped.append(n)
             continue
         res = ep.play(n, _engine_moves(n))
@@ -256,7 +255,7 @@ def test_engine_steps_reach_goal():
 def test_all_but_last_step_does_not_reach_goal():
     for entry in ep.catalogue():
         n = entry["n"]
-        if not _straight_line(n):
+        if not _straight_line(n) or n in ep.AWAITING_SM:
             continue
         moves = _engine_moves(n)[:-1]
         res = ep.play(n, moves)
@@ -503,7 +502,7 @@ def test_palette_9():
     assert "proposition_10" not in pal
 
 
-def test_play_9_reaches_goal():
+def _old_test_play_9_reaches_goal():   # I.9 is AWAITING_SM now
     """E-kimi-task-421: play(9) with the engine's own steps reaches the
     goal (also covered by test_engine_steps_reach_goal, I.9 being
     straight-line). play(8) awaits a referee fix — see the
@@ -992,3 +991,39 @@ def test_same_ray_angles_without_knowing_the_points_differ():
     t.la.add({eng.ang_atom("b", "c", "g"): 1}, 0, ">")   # mention it
     eng.close(t)
     assert eng._fact_holds(t, ("_eq_ang", "b", "c", "g", "b", "c", "e"))
+
+
+def test_fact_rule_without_drawing_does_not_crash():
+    """kimi-1's playtest (2026-11-10): flat_angle_onlyif at I.5 crashed
+    the request ('no numeric placement'), the page showed 'Failed to
+    fetch' and the move was lost. A move that adds no objects needs no
+    drawing."""
+    res = ep.play(5, [{"rule": "flat_angle_onlyif", "args": ["a", "b", "d"],
+                       "bindings": {}}])
+    ent = res["moves"][-1]
+    assert "error" in ent   # accepted or refused, but answered
+    assert not (ent.get("error") or "").startswith("cannot draw")
+
+
+def test_trusted_inputs_are_not_in_the_game():
+    """Found from kimi-1's I.5 (2026-11-10): the engine's "h-sm" inputs
+    (facts Lean's SMT supplies about objects built later) were in the
+    game's start state, so a student's own line GB, or point d, inherited
+    unproved facts. They are dropped; I.5 needs one explicit move (f != b
+    by between_symm_parts). I.9-I.11 await game derivations of their
+    trusted facts: this pins where each stops, and goes red when fixed."""
+    s = ep._start_state(5)
+    assert not s.has(("not_on_line", "c", "GB"))
+    assert ep.play(5, _engine_moves(5))["goal_reached"]
+    plain5 = [_move(r, a, b) for r, a, b in tr.hyps_and_steps(5)[1]]
+    assert not ep.play(5, plain5)["goal_reached"]
+    stops = {}
+    for n in ep.AWAITING_SM:
+        res = ep.play(n, [_engine_step_to_move(st)
+                          for st in ep.reference_steps(n)])
+        assert not res["goal_reached"], n
+        bad = next(m for m in res["moves"] if not m["ok"])
+        stops[n] = bad["error"]
+    assert stops == {9: ["dpl", "v", "d", "AB"],
+                     10: ["neq_line", "AC", "BC"],
+                     11: ["neq", "f", "w"]}, stops
