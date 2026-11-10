@@ -1839,3 +1839,31 @@ def test_closed_block_drops_impossible_cases_of_a_nested_block():
     mv[-1]["open"] = True
     mv[-1]["branches"].append({"hyps": [], "moves": []})
     assert ep.play(24, mv)["moves"][-1]["branches"][0]["closed"]
+
+
+def test_earned_disjunction_is_resolved_by_its_refuted_side():
+    """codex-1, slice 14, I.24: proposition_23' gave 'either g is on line
+    DE, or g and f are on the same side of DE'; g off DE was proved, yet
+    the same-side premise was refused and by_contra on it did not close.
+    Engine rule either_elim (disjunctive syllogism)."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i24-slice14-either.json")))
+    res = ep.play(24, case["moves"])
+    assert res["moves"][-1]["ok"], res["moves"][-1]["error"]
+    mv = case["moves"][:-1] + [{"rule": "opposing_same_side_trans",
+                                "args": ["i", "g", "f", "DE"],
+                                "bindings": {}}]
+    assert ep.play(24, mv)["moves"][-1]["ok"]
+    # (the disjunction alone gives nothing: test_either_elim_unit)
+
+
+def test_either_elim_unit():
+    s = ep._start_state(24)
+    s.add(("either", ("on_line", "g", "DE"), ("same_side", "g", "f", "DE")),
+          "test", [])
+    eng.close(s)
+    assert not s.has(("same_side", "g", "f", "DE"))
+    s.add(("not_on_line", "g", "DE"), "test", [])
+    eng.close(s)
+    assert s.has(("same_side", "g", "f", "DE"))

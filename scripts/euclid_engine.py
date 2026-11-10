@@ -1074,6 +1074,34 @@ def r_line_neq(s):
                     yield (("neq_line", L, f2[2]), [f1, f2])
 
 
+_NEGATION = {"on_line": "not_on_line", "not_on_line": "on_line",
+             "same_side": "not_same_side", "not_same_side": "same_side",
+             "between": "not_between", "not_between": "between",
+             "peq": "neq", "neq": "peq"}
+
+
+def r_either_elim(s):
+    # [logic] disjunctive syllogism: (A ∨ B) ∧ ¬A ⇒ B (Lean: Or.resolve_left
+    # / resolve_right). A disjunct may be one fact or a list of facts (a
+    # conjunction); only a single-fact disjunct is refuted, by its stored
+    # negation. codex-1, live loop slice 14, I.24: proposition_23' gave
+    # "g on DE ∨ g, f same side of DE", g off DE was proved, and the
+    # same-side premise was still refused.
+    for f in list(s.facts):
+        if f[0] != "either" or len(f) != 3:
+            continue
+        for d, other in ((f[1], f[2]), (f[2], f[1])):
+            if not d or isinstance(d[0], tuple) or d[0] not in _NEGATION:
+                continue
+            neg = (_NEGATION[d[0]],) + tuple(d[1:])
+            if not s.has(neg):
+                continue
+            for g in (other if other and isinstance(other[0], tuple)
+                      else (other,)):
+                if not s.has(g):
+                    yield (tuple(g), [f, neg])
+
+
 def r_neq_line_symm(s):
     # [logic] L ≠ M ⇒ M ≠ L (Lean's Ne is symmetric, ne_comm). neq_line
     # was stored in whichever order line_neq or a cited rule produced it,
@@ -1242,6 +1270,7 @@ FORWARD_RULES = [
     ("opposing_parts [Relations.lean:13-14]", r_opposing_parts),
     ("line_neq [logic]", r_line_neq),
     ("neq_line_symm [logic]", r_neq_line_symm),
+    ("either_elim [logic]", r_either_elim),
     ("angle_pos [SMT-bridge]", r_angle_pos),
     # NOTE: "side_gt_angle_gt" (|p-r| > |p-q| ⇒ ∠p:q:r > ∠q:r:p) was
     # REMOVED from the default closure (E-kimi-task-389): it IS Book
