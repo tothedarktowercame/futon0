@@ -217,6 +217,7 @@ function factEnglish(f) {
     case "on_circle": return `${f[1]} is on circle ${f[2]}`;
     case "centre": return `${f[1]} is the centre of circle ${f[2]}`;
     case "between": return `${f[2]} is between ${f[1]} and ${f[3]}`;
+    case "not_between": return `${f[2]} is not between ${f[1]} and ${f[3]}`;
     case "same_side": return `${f[1]} and ${f[2]} are on the same side of ${f[3]}`;
     case "opposing_sides": return `${f[1]} and ${f[2]} are on opposite sides of ${f[3]}`;
     case "intersects_cc": return `the circles ${f[1]} and ${f[2]} intersect`;
@@ -1398,6 +1399,10 @@ const FACT_KINDS = {
   peq: ["a", "b"],
   neq: ["a", "b"],
   not_on_line: ["a", "L"],
+  // negations a block may need to conclude (codex-1, live loop slice 9,
+  // I.10: degenerated_angle_if asks for "c is not between d and e")
+  not_between: ["a", "b", "c"],
+  not_same_side: ["a", "b", "L"],
 };
 
 let cbMode = null;    // null | "new" (starting a block) | "next" (new case)
