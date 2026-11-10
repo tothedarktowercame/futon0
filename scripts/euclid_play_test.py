@@ -1818,3 +1818,24 @@ def test_point_equality_rewrites_one_place_of_a_doubled_angle():
                       ("name_point", ("b",), {"x": "f"})])
     assert s.la.entails(eng.lin((eng.ang_atom("f", "a", "b"), 1)), 0, "=")
     assert eng._fact_holds(s, ("_eq_ang", "f", "a", "b", "b", "a", "b"))
+
+
+def test_closed_block_drops_impossible_cases_of_a_nested_block():
+    """codex-1, slice 14, I.24: inside by_contra (g on DE), an inner split
+    between g d e / not between had both cases impossible; it closed on
+    its own, but closing the outer by_contra refused ("a contradictory
+    branch would entail everything vacuously"): the nested block went to
+    the engine raw. Nested closed blocks are now prepared (witnesses,
+    impossible cases dropped) in the state where they stand, for the
+    closed path and for an earlier case of an open block."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i24-slice14-nested-impossible.json")))
+    res = ep.play(24, case["moves"])
+    last = res["moves"][-1]
+    assert last["ok"], last["error"]
+    assert last["added"] == [["not_on_line", "g", "DE"]]
+    mv = copy.deepcopy(case["moves"])
+    mv[-1]["open"] = True
+    mv[-1]["branches"].append({"hyps": [], "moves": []})
+    assert ep.play(24, mv)["moves"][-1]["branches"][0]["closed"]

@@ -907,13 +907,13 @@ def _fill_case_witnesses(n, s, mv):
             # witnesses, in the state where it stands (codex-1, slice 13,
             # I.23: the inner split closed, the outer close then refused
             # because the inner cases lost their witness b)
-            moves = []
+            # (run prepared, but b["moves"] keeps the student's blocks:
+            # the coverage check reads them, and the engine paths
+            # prepare them again)
             for m in b.get("moves") or []:
-                if m.get("rule") == "by_cases" and not m.get("open"):
-                    m = _fill_case_witnesses(n, sub, m)
-                moves.append(m)
+                if m.get("rule") in CASE_RULES and not m.get("open"):
+                    m = _prepare_block(n, sub, m)
                 eng.run_steps(sub, [_move_to_step(m)])
-            b["moves"] = moves
         except Exception:
             continue   # the ordinary path reports the problem
         if all(eng._fact_holds(sub, c) for c in concl):
@@ -931,6 +931,46 @@ def _fill_case_witnesses(n, s, mv):
             b["moves"] = list(b.get("moves") or []) + [
                 {"rule": "name_point", "args": [p], "bindings": {"x": w}}
                 for w, p in env.items() if w != p and w in wit]
+    return out
+
+
+def _prepare_block(n, s, mv):
+    """A closed case block as the engine should run it, in state s: every
+    closed case block nested in its branches is prepared first (in the
+    state where it stands), then this block's witnesses are filled and
+    its impossible cases dropped. codex-1, slice 14, I.24: an inner split
+    whose two cases were both impossible closed on its own, but inside
+    the closed outer by_contra the engine saw the inner block raw and
+    refused its contradictory cases."""
+    if mv.get("rule") not in CASE_RULES or mv.get("open"):
+        return mv
+    out = json.loads(json.dumps(mv))
+    for b in out.get("branches") or []:
+        b["moves"] = _prepared_moves(n, s, b.get("hyps") or [],
+                                     b.get("moves") or [])
+    return _drop_impossible(n, s, _fill_case_witnesses(n, s, out))
+
+
+def _prepared_moves(n, s, hyps, moves):
+    """A case's moves with each closed case block nested in them prepared
+    (_prepare_block) in the state where it stands. Unchanged when there
+    is no nested block, or when the case fails (the ordinary path then
+    reports the problem)."""
+    if not any(m.get("rule") in CASE_RULES for m in moves):
+        return moves
+    sub = s.copy()
+    out = []
+    try:
+        for f in hyps:
+            eng._assume_metric_or_fact(sub, tuple(f), "case")
+        eng.close(sub)
+        for m in moves:
+            if m.get("rule") in CASE_RULES and not m.get("open"):
+                m = _prepare_block(n, sub, m)
+            out.append(m)
+            eng.run_steps(sub, [_move_to_step(m)])
+    except Exception:
+        return out + list(moves[len(out):])
     return out
 
 
@@ -2313,7 +2353,8 @@ def _open_block(n, s, mv, objects, xy, pal, i, refuted=()):
                                      cov_ref, i + 1)
         if cerr is not None:
             return False, "missing case", breps, None, cerr
-        steps = [_move_to_step(m) for m in b.get("moves") or []]
+        steps = [_move_to_step(m) for m in _prepared_moves(
+            n, s, hyps, b.get("moves") or [])]
         err = _close_branch(n, s, rule, hyps, steps, concl, i)
         if err:
             return False, "an earlier case must close first: " + err, \
@@ -2448,9 +2489,8 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                     break
                 try:
                     s_pre = s.copy()
-                    filled = _fill_case_witnesses(n, s, mv)
-                    rep = eng.run_steps(s, [_block_to_engine(
-                        _drop_impossible(n, s, filled))])[0]
+                    filled = _prepare_block(n, s, mv)
+                    rep = eng.run_steps(s, [_block_to_engine(filled)])[0]
                     entry["ok"] = True
                     if mv["rule"] == "by_cases":
                         cv = _closed_case_view(n, s_pre, filled, objects,
