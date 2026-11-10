@@ -186,7 +186,8 @@ RULE_LABELS = {
     "name_point": ("call an existing point by a new name (e.g. the point "
                    "the theorem asks for)", "constructions"),
     # facts about points, lines and circles (the diagrammatic axioms)
-    "between_symm_parts": ("betweenness: swap the ends, or take a part",
+    "between_symm_parts": ("betweenness: an end point differs from the "
+                           "other two, and is not between them",
                            "diagrammatic"),
     "between_trans_out": ("betweenness chains along a line",
                           "diagrammatic"),
@@ -295,6 +296,8 @@ ARG_HINTS = {
     "line_from_points": {"a": "first point", "b": "second point"},
     "pasch_3_opposing": {"a": "one end", "b": "where it crosses",
                          "c": "other end", "L": "the line"},
+    "between_symm_parts": {"a": "this end", "b": "the middle",
+                           "c": "the other end"},
     "name_point": {"p": "the existing point"},
     "circle_from_points": {"a": "the centre", "b": "a point on the circle"},
     "intersection_circles": {"alpha": "first circle",
@@ -2227,6 +2230,9 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                 entry["error"] = (list(e.premise)
                                   if isinstance(e.premise, tuple)
                                   else str(e.premise))
+                gap = _off_line_gap(s, e.premise)
+                if gap:
+                    entry["error_gap"] = gap
             except TypeError as e:
                 entry["error"] = ("bad arity for %s: %s" % (rule, e))
             except AssertionError as e:
@@ -2237,7 +2243,39 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
     for e in entries:
         if e.get("error") is not None:
             e["error_plain"] = student_error(e["error"], e["rule"])
+            if e.get("error_gap"):
+                e["error_plain"] = (e["error_plain"].rstrip(".") + ". "
+                                    + e.pop("error_gap"))
     return entries, view
+
+
+def _off_line_gap(s, premise):
+    """A missing "x is off L" that the engine would see by itself (two
+    different lines share at most one point) but for one missing fact:
+    x and the shared point p are not yet known to be different. Says so,
+    so the refusal points at the step that is really missing (codex-1,
+    live loop slice 7: e beyond b on AB, 'Not yet shown: e lies off
+    line CB', when what was missing was e != b)."""
+    if not (isinstance(premise, tuple) and len(premise) == 3
+            and premise[0] == "not_on_line"):
+        return None
+    x, L = premise[1], premise[2]
+    for fm in s.facts:
+        if fm[0] != "on_line" or fm[1] != x or fm[2] == L:
+            continue
+        M = fm[2]
+        if not (s.has(("neq_line", L, M)) or s.has(("neq_line", M, L))):
+            continue
+        for fp in s.facts:
+            if fp[0] == "on_line" and fp[2] == L and fp[1] != x and \
+                    s.has(("on_line", fp[1], M)):
+                p = fp[1]
+                return ("It would follow by itself: %s is on both %s and "
+                        "%s, two different lines, which meet only once, "
+                        "and %s is on %s; what is not yet shown is that "
+                        "%s and %s are different points."
+                        % (p, M, L, x, M, x, p))
+    return None
 
 
 # ---------------------------------------------------------- case figures

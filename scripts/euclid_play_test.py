@@ -1446,3 +1446,27 @@ def test_extension_labels_match_what_the_move_gives():
         assert "[c] is between [b] and x" in info["gives"], r
         assert info["arg_hints"]["b"] == "from", r
         assert info["arg_hints"]["c"] == "extend past", r
+
+
+def test_off_line_refusal_names_the_missing_distinctness():
+    # codex-1, live loop slice 7: e beyond b on AB; pasch_3 a b e CB is
+    # refused for "e off CB", which the engine sees by itself once e != b
+    # (two lines meet once). The refusal must say that, and the step that
+    # supplies e != b (between_symm_parts e b a) must let the move through.
+    base = [{"rule": "extend_point", "args": ["AB", "a", "b"],
+             "bindings": {"x": "e"}}]
+    pasch = {"rule": "pasch_3_opposing", "args": ["a", "b", "e", "CB"],
+             "bindings": {}}
+    case = lambda ms: [{"rule": "by_cases", "branches": [
+        {"hyps": [["opposing_sides", "a", "d", "CB"]], "moves": ms}],
+        "conclusion": [["false"]], "open": True}]
+    res = ep.play(7, case(base + [pasch]))
+    inner = res["moves"][0]["branches"][0]["moves"]
+    err = inner[-1]["error_plain"]
+    assert "e lies off line CB" in err
+    assert "e and b are different points" in err
+    sym = {"rule": "between_symm_parts", "args": ["e", "b", "a"],
+           "bindings": {}}
+    res = ep.play(7, case(base + [sym, pasch]))
+    inner = res["moves"][0]["branches"][0]["moves"]
+    assert all(m["ok"] for m in inner), inner[-1]
