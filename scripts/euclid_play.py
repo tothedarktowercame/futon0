@@ -845,6 +845,83 @@ def _move_to_step(m):
             dict(m.get("bindings") or {}))
 
 
+def _ordered_circle_line(n, s, i, args, bindings, xy, objects):
+    """"Where a line meets a circle (both points)" names two points that
+    are interchangeable when made, so naming them as drawn is a choice,
+    not a guess. When the line passes through a point p known to be
+    inside the circle and another point q, record the order the drawing
+    shows: the named point beyond p (away from q) comes from System E's
+    intersection_circle_line_extending_points (Intersections.lean, beyond
+    p from q), the other from the same move beyond p from the first. The
+    student's names and drawing are kept. Joe at I.2, 2026-11-10: "I don't
+    want to have to 'nurse' a clearly valid construction into health".
+    Returns the facts added, or None (then the plain move is used)."""
+    import copy as _copy
+    alpha, L = args
+    na, nb = bindings.get("a", "a"), bindings.get("b", "b")
+    # where the plain move would draw the two points
+    s2 = s.copy()
+    try:
+        rep2 = eng.apply_step(s2, i, "intersections_circle_line", args,
+                              bindings)
+        eng.close(s2)
+    except Exception:
+        return None
+    xy2 = dict(xy)
+    objs2 = _copy.deepcopy(objects)
+    try:
+        tr.place_step(n, "intersections_circle_line", args, bindings,
+                      rep2["added"], xy2, objs2)
+    except Exception:
+        return None
+    if not (xy2.get(na) and xy2.get(nb)):
+        return None
+    on_L = [f[1] for f in s.facts if f[0] == "on_line" and f[2] == L]
+    # any point of L may be the inside point: the move's own premise
+    # check decides (a point inside only by lengths, like I.2's a in the
+    # circle about d, is not a stored fact); non-centres first, since an
+    # order relative to them says more (beyond a, not just beyond d)
+    centres = {f[1] for f in s.facts if f[0] == "centre" and f[2] == alpha}
+    inside = sorted({p for p in on_L if xy.get(p)},
+                    key=lambda p: (p in centres, p))
+    for p in inside:
+        for q in on_L:
+            if q == p or not xy.get(q) or not s.has(("neq", p, q)):
+                continue
+            ux, uy = xy[p][0] - xy[q][0], xy[p][1] - xy[q][1]
+
+            def ahead(x):
+                return ((xy2[x][0] - xy[p][0]) * ux
+                        + (xy2[x][1] - xy[p][1]) * uy) > 0
+            if ahead(na) == ahead(nb):
+                continue   # the drawing does not separate them: no order
+            far, near = (na, nb) if ahead(na) else (nb, na)
+            steps = [("intersection_circle_line_extending_points",
+                      (alpha, L, p, q), {"g": far}),
+                     ("intersection_circle_line_extending_points",
+                      (alpha, L, p, far), {"g": near})]
+            trial = s.copy()
+            try:
+                for r, a, b in steps:
+                    eng.apply_step(trial, i, r, a, b)
+                    eng.close(trial)
+            except Exception:
+                continue
+            added = []
+            for r, a, b in steps:
+                rep = eng.apply_step(s, i, r, a, b)
+                eng.close(s)
+                added += rep["added"]
+            for x in (na, nb):
+                xy[x] = xy2[x]
+            names = {o["name"] for o in objects}
+            for o in objs2:
+                if o["name"] not in names:
+                    objects.append(o)
+            return added
+    return None
+
+
 def _place_name_point(args, added, xy, objects):
     """name_point draws nothing new: the new name sits where its point
     is (an object with the same position, so the goal and the board can
@@ -1649,10 +1726,18 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
             args = tuple(mv.get("args") or ())
             bindings = dict(mv.get("bindings") or {})
             try:
-                rep = eng.apply_step(s, i, rule, args, bindings)
-                eng.close(s)
-                added = rep["added"]
-                if rule == "name_point":
+                ordered = (_ordered_circle_line(n, s, i, args, bindings,
+                                                xy, objects)
+                           if rule == "intersections_circle_line" else None)
+                if ordered is not None:
+                    added = ordered
+                else:
+                    rep = eng.apply_step(s, i, rule, args, bindings)
+                    eng.close(s)
+                    added = rep["added"]
+                if ordered is not None:
+                    pass   # placed by _ordered_circle_line
+                elif rule == "name_point":
                     _place_name_point(args, added, xy, objects)
                 else:
                     tr.place_step(n, rule, args, bindings, added, xy,

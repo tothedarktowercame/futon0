@@ -901,3 +901,37 @@ def test_case_conclusion_witness_takes_any_name():
     short = copy.deepcopy(blk)
     short["branches"][1]["moves"] = steps[:-1]
     assert not ep.play(2, [short])["moves"][-1]["ok"]
+
+
+def test_both_points_line_circle_records_drawn_order():
+    """Joe at I.2 (2026-11-10): "I don't want to have to 'nurse' a clearly
+    valid construction into health". The two meeting points of a line and
+    a circle are interchangeable when made, so the order the drawing shows
+    is recorded (via the 'beyond' move) and Euclid's construction proves
+    I.2 with the plain both-points move. Building on the near point instead
+    stays unproved without a case split (f may lie between d and b or
+    beyond d)."""
+    base = [{"rule": "circle_from_points", "args": ["b", "c"],
+             "bindings": {"C": "D"}},
+            {"rule": "circle_from_points", "args": ["a", "b"],
+             "bindings": {"C": "E"}},
+            {"rule": "circle_from_points", "args": ["b", "a"],
+             "bindings": {"C": "F"}},
+            {"rule": "intersection_circles", "args": ["F", "E"],
+             "bindings": {"c": "d"}},
+            {"rule": "line_from_points", "args": ["d", "b"],
+             "bindings": {"L": "DB"}},
+            {"rule": "intersections_circle_line", "args": ["D", "DB"],
+             "bindings": {"a": "e", "b": "f"}}]
+    far = base + [{"rule": "circle_from_points", "args": ["d", "e"],
+                   "bindings": {"C": "G"}},
+                  {"rule": "line_from_points", "args": ["d", "a"],
+                   "bindings": {"L": "DA"}},
+                  {"rule": "intersections_circle_line", "args": ["G", "DA"],
+                   "bindings": {"a": "g", "b": "h"}}]
+    res = ep.play(2, far)
+    assert all(m["ok"] for m in res["moves"]) and res["goal_reached"]
+    assert ["between", "e", "b", "d"] in res["moves"][5]["added"]
+    near = base + [{"rule": "circle_from_points", "args": ["d", "f"],
+                    "bindings": {"C": "G"}}]
+    assert not ep.play(2, near)["moves"][-1]["ok"]   # d = f not ruled out
