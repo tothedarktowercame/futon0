@@ -978,10 +978,14 @@ def _goal_marks(n, s, objects, xy, goal_reached, drawn):
                 shown = eng._fact_holds(s, gc)
             except Exception:
                 shown = False
-            if not shown:
+            if not shown and k != "neq":
                 # maybe the clause holds under another naming of the
                 # theorem's witnesses (the whole-goal binding failed on
-                # a different clause, or there is no binding yet)
+                # a different clause, or there is no binding yet).
+                # Not for a "≠" clause: almost any point differs from v,
+                # so its own witness search ticks it for a point no other
+                # clause is about (codex-1, live loop slice 8: I.9 showed
+                # "☐ ∠bvf = ∠cvf | ☑ v ≠ d" mid-construction).
                 try:
                     env1 = _goal_witness(n, s, objects, xy, goals=[g],
                                          given=given, wit_not_in=given)

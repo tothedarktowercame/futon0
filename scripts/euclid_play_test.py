@@ -1491,3 +1491,22 @@ def test_fact_rule_offers_no_name_and_makes_no_phantom_point():
     inner = res["moves"][-1]["branches"][0]["moves"]
     assert inner[-1]["ok"], inner[-1]
     assert "f" not in {o["name"] for o in res["objects"]}
+
+
+def test_goal_neq_clause_not_ticked_for_a_stray_witness():
+    # codex-1, live loop slice 8: mid-way through I.9 the checklist read
+    # "☐ ∠bvf = ∠cvf | ☑ v ≠ d": the ≠ clause found its own witness d,
+    # which the angle clause is not about. Both clauses share one f.
+    here = os.path.dirname(os.path.abspath(__file__))
+    moves = json.load(open(os.path.join(
+        here, "testdata", "codex-i9-slice8-partial.json")))
+    goals = ep.play(9, moves)["marks"]["goals"]
+    assert [g["state"] for g in goals] == ["pending", "pending"], goals
+    assert goals[1]["words"] == "v ≠ f"
+    # solved, both clauses still tick (and I.23, the other ≠ goal)
+    for n in (9, 23):
+        res = ep.play(n, [_engine_step_to_move(st)
+                          for st in ep.reference_steps(n)])
+        assert res["goal_reached"], n
+        assert all(g["state"] == "shown" for g in res["marks"]["goals"]), \
+            (n, res["marks"]["goals"])
