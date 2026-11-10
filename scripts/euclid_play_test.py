@@ -1683,6 +1683,9 @@ def test_page_words_cover_server_fact_words():
     missing = [k for k in ep._FACT_WORDS
                if k not in cases and k not in templates]
     assert missing == []
+    # kinds fact_words words in code rather than by template (slice 14,
+    # I.24: "either on_line,g,DE same_side,g,f,DE" on the page)
+    assert {"either", "fresh"} <= cases
     for k, v in templates.items():
         assert ep._FACT_WORDS.get(k) == v, k
 

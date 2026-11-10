@@ -240,6 +240,14 @@ function factEnglish(f) {
     case "_rt_ang": return `∠${f[1]}${f[2]}${f[3]} is right`;
     case "_sum_rt_ang": return `∠${f[1]}${f[2]}${f[3]} and ∠${f[3]}${f[2]}${f[4]} together make two right angles`;
     case "fresh": return `${f[1]} already names an object, and this step's facts do not already hold for it`;
+    case "either": {
+      // a disjunction of two facts (or of two lists of facts), as the
+      // server's fact_words words it (codex-1, slice 14, I.24: the
+      // proposition_23' side condition printed "either on_line,g,DE ...")
+      const side = d => (Array.isArray(d) && Array.isArray(d[0]))
+        ? d.map(factEnglish).join(" and ") : factEnglish(d);
+      return `either ${side(f[1])}, or ${side(f[2])}`;
+    }
     default:
       if (FACT_TEMPLATES[f[0]])
         return FACT_TEMPLATES[f[0]].replace(/\{(\d+)\}/g, (_m, i) => f[+i]);
