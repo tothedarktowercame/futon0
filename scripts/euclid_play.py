@@ -1062,7 +1062,7 @@ def _length_marks(n, s, objects, xy, goal_reached, drawn, joined=()):
     return {"classes": classes, "goal": goal}
 
 
-def _goal_marks(n, s, objects, xy, goal_reached, drawn):
+def _goal_marks(n, s, objects, xy, goal_reached, drawn, case_wit=None):
     """Every clause of GOALS[n] with its proof state, for the checklist
     and the figure (E-kimi-task-430, P-euclid-play-goal-checklist: the
     figure must read as solved or unsolved; at I.5 the first of two
@@ -1116,7 +1116,7 @@ def _goal_marks(n, s, objects, xy, goal_reached, drawn):
     best = max(cands, key=lambda e: sum(holds(g, e) for g in goals))
     out = []
     for g in goals:
-        gc = bound(g, best)
+        gc = bound(bound(g, best), case_wit or {})
         out.append({"kind": g[0], "fact": list(gc),
                     "objects": list(gc[1:]),
                     "state": "shown" if holds(g, best) else "pending",
@@ -2347,6 +2347,64 @@ def _open_block(n, s, mv, objects, xy, pal, i, refuted=()):
     return True, None, breps, deeper or (bobjects, bxy), miss
 
 
+def _closed_case_view(n, s_pre, mv, objects, xy, pal, i):
+    """A closed by_cases block that names witnesses (I.22's k, f1, g1):
+    the case whose hypotheses hold in the drawing, replayed on copies, so
+    its points can be shown and the witnesses named by drawn points
+    (codex-1, slice 13: "the solved board contains no triangle").
+    Returns {"hyps", "points": [object with xy], "witness": {fresh:
+    point}} or None. The outer state is not touched: the points are the
+    drawn case's, not facts of the proof."""
+    concl = [tuple(c) for c in mv.get("conclusion") or []]
+    if not concl:
+        return None
+    scale = _figure_scale(xy)
+    for b in mv.get("branches") or []:
+        hyps = [tuple(f) for f in b.get("hyps") or []]
+        lines = _case_lines(hyps, objects, xy)
+        try:
+            ok = all((_violation(f, xy, lines, scale, 0.0, 0.0) or 0.0)
+                     < 1e-6 * scale and
+                     _violation(f, xy, lines, scale, 0.0, 0.0) is not None
+                     for f in hyps)
+        except _UnknownPoint:
+            ok = False
+        if not ok:
+            continue
+        sub = s_pre.copy()
+        bobjects, bxy = list(objects), dict(xy)
+        try:
+            for f in hyps:
+                eng._assume_metric_or_fact(sub, f, "case")
+            eng.close(sub)
+            ents, _v = _apply_moves(n, sub, b.get("moves") or [],
+                                    bobjects, bxy, pal, i + 1)
+        except Exception:
+            return None
+        if not ents or not all(e.get("ok") for e in ents):
+            return None
+        wit = {}
+        for m in b.get("moves") or []:
+            if m.get("rule") == "name_point":
+                w = (m.get("bindings") or {}).get("x")
+                if w:
+                    wit[w] = m["args"][0]
+        old = {o["name"] for o in objects}
+        pts = []
+        for o in bobjects:
+            if o["name"] in old or o.get("kind") != "point":
+                continue
+            if bxy.get(o["name"]) is None or o["name"] in wit:
+                continue   # a witness name is an alias of a case point
+            d = dict(o)
+            d["xy"] = list(bxy[o["name"]])
+            d["case"] = [list(f) for f in hyps]
+            pts.append(d)
+        return {"hyps": [list(f) for f in hyps], "points": pts,
+                "witness": wit}
+    return None
+
+
 def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
     """Apply moves to s (in place), placing new objects, stopping at the
     first failure. Returns (entries, view); view is the (objects, xy) of
@@ -2380,10 +2438,16 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                     entries.append(entry)
                     break
                 try:
+                    s_pre = s.copy()
+                    filled = _fill_case_witnesses(n, s, mv)
                     rep = eng.run_steps(s, [_block_to_engine(
-                        _drop_impossible(n, s, _fill_case_witnesses(
-                            n, s, mv)))])[0]
+                        _drop_impossible(n, s, filled))])[0]
                     entry["ok"] = True
+                    if mv["rule"] == "by_cases":
+                        cv = _closed_case_view(n, s_pre, filled, objects,
+                                               xy, pal, i)
+                        if cv:
+                            entry["drawn_case"] = cv
                     entry["added"] = [list(c)
                                       for c in rep.get("conclusions", [])]
                     entry["conclusions"] = entry["added"]
@@ -3083,8 +3147,24 @@ def _play(n, moves, xy0=None):
     out_moves, view = _apply_moves(n, s, moves, objects, xy, pal)
     goal_reached = _goal_reached(n, s, objects, xy)
     contradict = eng.contradictory(s)[0]
+    case_wit = {}
     if view is not None:
         objects, xy = view
+    elif goal_reached:
+        # a solved construction made inside cases: show the drawn case's
+        # points, and name the witnesses by them
+        for e in out_moves:
+            cv = e.get("drawn_case")
+            if not cv:
+                continue
+            objects = list(objects)
+            xy = dict(xy)
+            for o in cv["points"]:
+                if o["name"] not in xy:
+                    objects.append({k: v for k, v in o.items()
+                                    if k != "xy"})
+                    xy[o["name"]] = tuple(o["xy"])
+            case_wit.update(cv["witness"])
     out_objects = []
     for o in objects:
         d = dict(o)
@@ -3092,11 +3172,15 @@ def _play(n, moves, xy0=None):
             d["xy"] = list(xy[o["name"]]) if xy[o["name"]] else None
         out_objects.append(d)
     drawn = None if goal_reached else _drawn_witness(n, objects, xy)
-    goal_clauses = _goal_marks(n, s, objects, xy, goal_reached, drawn)
+    goal_clauses = _goal_marks(n, s, objects, xy, goal_reached, drawn,
+                               case_wit)
     joined = [tuple(g["fact"]) for g in goal_clauses
               if g["state"] == "shown"]
     marks = _length_marks(n, s, objects, xy, goal_reached, drawn,
                           joined=joined)
+    if case_wit and marks.get("goal"):
+        marks["goal"]["segments"] = [[case_wit.get(x, x) for x in sg]
+                                     for sg in marks["goal"]["segments"]]
     marks["goals"] = goal_clauses
     marks["angle_classes"] = _angle_marks(n, s, objects, xy, goal_clauses)
     marks["right_angles"] = _right_angle_marks(s, objects, xy)

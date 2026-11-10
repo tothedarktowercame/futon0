@@ -1758,3 +1758,32 @@ def test_next_case_opens_after_a_case_closed_on_taken_witness_names():
     eng.close(s)
     assert ep._goal_witness(22, s, [], None) == {
         "f": "f1", "k": "k", "g": "g1"}
+
+
+def test_solved_case_construction_shows_the_drawn_case_witnesses():
+    """codex-1, slice 13, I.22: solved after three cases, but "the solved
+    board contains no triangle": closing the block removed h, and the
+    checklist named k, f1, g1, which are not drawn. The case whose
+    hypotheses hold in the drawing is replayed for the view: its point h
+    is shown, and the witnesses read as drawn points. The proof state is
+    unchanged (h is not an object of the outer proof)."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i22-slice13-solved.json")))
+    res = ep.play(22, case["moves"])
+    assert res["goal_reached"]
+    names = [o["name"] for o in res["objects"] if o["kind"] == "point"]
+    assert "h" in names
+    assert not {"f1", "g1", "k"} & set(names)
+    h = [o for o in res["objects"] if o["name"] == "h"][0]
+    assert h["case"] == [["between", "a", "a'", "f"]] and h["xy"]
+    facts = [g["fact"] for g in res["marks"]["goals"]]
+    assert facts == [["_eq_len", "a", "a'", "a", "a'"],
+                     ["_eq_len", "a", "h", "b", "b'"],
+                     ["_eq_len", "a'", "h", "c", "c'"]]
+    assert all(g["state"] == "shown" for g in res["marks"]["goals"])
+    # an unsolved open block gets no such view
+    open_mv = copy.deepcopy(case["moves"])
+    open_mv[-1]["open"] = True
+    assert "h" not in [o["name"] for o in ep.play(22, open_mv)["objects"]
+                       if o.get("case")]
