@@ -419,8 +419,9 @@ ARG_HINTS = {
         "b": "second length: one end", "b'": "second length: other end",
         "c": "third length: one end", "c'": "third length: other end",
         "f": "first corner of the new triangle (on the destination line)",
-        "e": "a point on the destination line: the second corner goes "
-             "from the first corner towards it",
+        "e": "a point on the destination line: the new corner on that "
+             "line (the second new name) goes from the first corner "
+             "towards it",
         "A": "the line of the first length",
         "B": "the line of the second length",
         "C": "the line of the third length",
