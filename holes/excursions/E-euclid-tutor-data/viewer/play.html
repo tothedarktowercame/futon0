@@ -262,8 +262,16 @@ function drawArc(x, v, y, opts) {
   if (!built[x] || !built[v] || !built[y]) return;
   const ps = [built[x], built[v], built[y]];
   const arm = (a, b) => Math.hypot(a.X() - b.X(), a.Y() - b.Y());
-  const armR = 0.35 * Math.min(arm(ps[0], ps[1]), arm(ps[2], ps[1]));
-  for (const dr of (opts.radii || [0])) {
+  let armR = 0.35 * Math.min(arm(ps[0], ps[1]), arm(ps[2], ps[1]));
+  let radii = opts.radii || [0];
+  // a right angle is drawn as ONE small square: the class's 2-3 rings
+  // became nested large squares (codex-1, live loop slice 9, I.10: the
+  // finished figure crowded at e). Every right angle is equal anyway.
+  const ux = ps[0].X() - ps[1].X(), uy = ps[0].Y() - ps[1].Y();
+  const wx = ps[2].X() - ps[1].X(), wy = ps[2].Y() - ps[1].Y();
+  const cos = (ux * wx + uy * wy) / (Math.hypot(ux, uy) * Math.hypot(wx, wy));
+  if (Math.abs(cos) < 0.01) { armR = 0.4 * armR; radii = [0]; }
+  for (const dr of radii) {
     try {
       board.create("nonreflexangle", ps, {
         radius: Math.max(0.08, armR + dr), type: "sector",
