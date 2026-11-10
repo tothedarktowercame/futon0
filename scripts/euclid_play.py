@@ -1003,8 +1003,30 @@ def _angle_marks(n, s, objects, xy, goal_clauses):
         if x not in pts or v not in pts or y not in pts or x == y:
             continue
         groups.setdefault(find(atom), []).append([x, v, y])
-    return sorted((sorted(v) for v in groups.values() if len(v) >= 2),
-                  key=lambda v: (-len(v), v))
+    # One arc per angle in the FIGURE, not per name: when a, d, f lie on
+    # one ray from g, ∠agb, ∠dgb and ∠fgb are the same angle and the
+    # store's "equalities" between them say nothing (Joe at I.2,
+    # 2026-11-10: arcs at g "don't seem to help with anything"). Keep
+    # the first name of each drawn angle; a class needs two different
+    # angles to be marked.
+    import math
+
+    def ray(v, p):
+        dx, dy = xy[p][0] - xy[v][0], xy[p][1] - xy[v][1]
+        r = math.hypot(dx, dy) or 1.0
+        return (round(dx / r, 4) + 0.0, round(dy / r, 4) + 0.0)
+
+    out = []
+    for members in groups.values():
+        seen, keep = set(), []
+        for x, v, y in sorted(members):
+            key = (v, frozenset((ray(v, x), ray(v, y))))
+            if key not in seen:
+                seen.add(key)
+                keep.append([x, v, y])
+        if len(keep) >= 2:
+            out.append(keep)
+    return sorted(out, key=lambda v: (-len(v), v))
 
 
 def _drawn_witness(n, objects, xy):

@@ -1127,6 +1127,34 @@ def test_goal_checklist_covers_every_clause():
         res["marks"]["angle_classes"]
 
 
+def test_angle_marks_skip_names_of_the_same_angle():
+    """Joe's I.2 (2026-11-10): a, d, f lie on one ray from g, so ∠agb,
+    ∠bgd and ∠bgf are one angle under three names; the store's
+    equalities between them got arcs at g that "don't seem to help with
+    anything". No class may hold two names of one drawn angle, and this
+    figure has no equal angles worth marking."""
+    moves = [
+        {"rule": "circle_from_points", "args": ["b", "c"], "bindings": {"C": "C"}},
+        {"rule": "circle_from_points", "args": ["b", "a"], "bindings": {"C": "D"}},
+        {"rule": "circle_from_points", "args": ["a", "b"], "bindings": {"C": "E"}},
+        {"rule": "line_from_points", "args": ["a", "b"], "bindings": {"L": "AB"}},
+        {"rule": "intersection_circles", "args": ["D", "E"], "bindings": {"c": "d"}},
+        {"rule": "line_from_points", "args": ["a", "d"], "bindings": {"L": "AD"}},
+        {"rule": "line_from_points", "args": ["d", "b"], "bindings": {"L": "DB"}},
+        {"rule": "intersection_circle_line_extending_points",
+         "args": ["C", "DB", "b", "d"], "bindings": {"g": "e"}},
+        {"rule": "circle_from_points", "args": ["d", "e"], "bindings": {"C": "F"}},
+        {"rule": "intersections_circle_line", "args": ["F", "AD"],
+         "bindings": {"a": "f", "b": "g"}}]
+    res = ep.play(2, moves)
+    assert res["goal_reached"]
+    assert res["marks"]["angle_classes"] == [], res["marks"]["angle_classes"]
+    # still marked: I.5's base angles, two different angles
+    res = ep.play(5, _engine_moves(5))
+    assert any(sorted([["a", "b", "c"], ["a", "c", "b"]]) == sorted(cls)
+               for cls in res["marks"]["angle_classes"])
+
+
 def test_goal_checklist_all_props_have_words():
     """Every catalogue prop reports every goal clause with a state and
     student-readable words (never a Python repr)."""
