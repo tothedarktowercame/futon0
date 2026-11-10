@@ -29,7 +29,9 @@ they are restated here verbatim — flagged to claude-9 in the reply bell.
 import argparse
 import functools
 import json
+import math
 import os
+import random
 import re
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -2188,19 +2190,376 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
     return entries, view
 
 
+# ---------------------------------------------------------- case figures
+# A case is a DIFFERENT FIGURE (Joe, 2026-11-10; codex-1's playtest:
+# assuming |a─b| > |a─c| in I.6 left the same symmetric figure). When the
+# move list ends in an open case block, the drawing is recomputed from a
+# placement of the proposition's free points that satisfies the
+# proposition's hypotheses AND the open cases' assumptions; if no
+# placement can, the case cannot be drawn -- which is what the student
+# then proves. The logic (state, moves, referee) is untouched: only the
+# xy the drawing starts from changes.
+
+
+def _vdist(p, q):
+    return math.hypot(p[0] - q[0], p[1] - q[1])
+
+
+def _vcross(o, a, b):
+    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+
+def _dist_line(p, a, b):
+    d = _vdist(a, b)
+    if d == 0:
+        return float("inf")
+    return abs(_vcross(a, b, p)) / d
+
+
+def _angle_at(p, v, q):
+    """The nonreflex angle ∠(p:v:q) in [0, π]."""
+    ux, uy = p[0] - v[0], p[1] - v[1]
+    wx, wy = q[0] - v[0], q[1] - v[1]
+    return math.atan2(abs(ux * wy - uy * wx), ux * wx + uy * wy)
+
+
+def _figure_scale(xy):
+    pts = [p for p in xy.values() if p]
+    best = 0.0
+    for i in range(len(pts)):
+        for j in range(i):
+            best = max(best, _vdist(pts[i], pts[j]))
+    return best or 1.0
+
+
+class _UnknownPoint(Exception):
+    pass
+
+
+def _case_line_points(name, objects, facts, xy):
+    """The two points naming line `name`: the hypothesis objects' jsx
+    pair, else a dpl fact, else two on_line points, else the two
+    lower-case letters (BC is the line through b and c)."""
+    for o in objects:
+        if o.get("kind") == "line" and o["name"] == name:
+            p = (o.get("jsx") or {}).get("p")
+            if p and len(p) == 2:
+                return (p[0], p[1])
+    for f in facts:
+        if f[0] == "dpl" and f[3] == name:
+            return (f[1], f[2])
+    pts = [f[1] for f in facts
+           if f[0] == "on_line" and f[2] == name]
+    if len(pts) >= 2:
+        return (pts[0], pts[1])
+    if isinstance(name, str) and len(name) == 2:
+        low = (name[0].lower(), name[1].lower())
+        if all(p in xy for p in low):
+            return low
+    return None
+
+
+_LINE_FACT_ARGLAST = ("on_line", "not_on_line", "same_side",
+                      "opposing_sides", "not_same_side")
+
+
+def _case_lines(facts, objects, xy):
+    names = set()
+    for f in facts:
+        if f[0] in _LINE_FACT_ARGLAST:
+            names.add(f[-1])
+        elif f[0] == "dpl":
+            names.add(f[3])
+        elif f[0] == "neq_line":
+            names.add(f[1])
+            names.add(f[2])
+    lines = {}
+    for ln in names:
+        lp = _case_line_points(ln, objects, facts, xy)
+        if lp is not None:
+            lines[ln] = lp
+    return lines
+
+
+def _violation(f, xy, lines, scale, mlen, mang):
+    """A non-negative number, zero exactly when fact f holds of the
+    placement xy (strict facts -- gt, neq, off-line, opposing -- need the
+    margin mlen/mang, so a zero violation is VISIBLY strict). None when
+    the fact cannot be evaluated (unknown kind or unknown point)."""
+    def pt(x):
+        p = xy.get(x)
+        if p is None:
+            raise _UnknownPoint
+        return p
+
+    def line(ln):
+        lp = lines.get(ln)
+        if lp is None:
+            raise _UnknownPoint
+        return pt(lp[0]), pt(lp[1])
+
+    def seg(x, y):
+        return _vdist(pt(x), pt(y))
+
+    def ang(x, v, y):
+        return _angle_at(pt(x), pt(v), pt(y))
+
+    def hinge(d):   # strict inequality with margin (length units)
+        return max(0.0, mlen - d) ** 2
+
+    k = f[0]
+    try:
+        if k == "peq":
+            return seg(f[1], f[2]) ** 2
+        if k == "neq":
+            return hinge(seg(f[1], f[2]))
+        if k == "on_line":
+            a, b = line(f[2])
+            return _dist_line(pt(f[1]), a, b) ** 2
+        if k == "not_on_line":
+            a, b = line(f[2])
+            return hinge(_dist_line(pt(f[1]), a, b))
+        if k == "dpl":
+            a, b = line(f[3])
+            return (_dist_line(pt(f[1]), a, b) ** 2
+                    + _dist_line(pt(f[2]), a, b) ** 2
+                    + hinge(seg(f[1], f[2])))
+        if k == "between":
+            a, b, c = pt(f[1]), pt(f[2]), pt(f[3])
+            return (_vdist(a, b) + _vdist(b, c) - _vdist(a, c)) ** 2
+        if k in ("same_side", "opposing_sides", "not_same_side"):
+            a, b = line(f[3])
+            lab = max(_vdist(a, b), 1e-12)
+            sp = _vcross(a, b, pt(f[1])) / lab   # signed distance
+            sq = _vcross(a, b, pt(f[2])) / lab
+            if k == "not_same_side":
+                if sp * sq <= 0:
+                    return 0.0
+                return min(abs(sp), abs(sq)) ** 2
+            if k == "opposing_sides":
+                sp = -sp
+            plus = hinge(sp) + hinge(sq)
+            minus = hinge(-sp) + hinge(-sq)
+            return min(plus, minus)
+        if k == "eq_len":
+            return (seg(f[1], f[2]) - seg(f[3], f[4])) ** 2
+        if k == "gt_len":
+            return hinge(seg(f[1], f[2]) - seg(f[3], f[4]))
+        if k == "lt_len":
+            return hinge(seg(f[3], f[4]) - seg(f[1], f[2]))
+        if k == "eq_ang":
+            return (ang(f[1], f[2], f[3]) - ang(f[4], f[5], f[6])) ** 2
+        if k == "gt_ang":
+            d = ang(f[1], f[2], f[3]) - ang(f[4], f[5], f[6])
+            return max(0.0, mang - d) ** 2
+        if k == "lt_ang":
+            d = ang(f[4], f[5], f[6]) - ang(f[1], f[2], f[3])
+            return max(0.0, mang - d) ** 2
+        if k == "_sum_rt_ang":
+            return (ang(f[1], f[2], f[3]) + ang(f[3], f[2], f[4])
+                    - math.pi) ** 2
+        if k == "_zero_ang":
+            return ang(f[1], f[2], f[3]) ** 2
+        if k == "gt_sum_len":
+            d = seg(f[1], f[2]) + seg(f[3], f[4]) - seg(f[5], f[6])
+            return hinge(d)
+        if k == "lt_sum_sum_len":
+            d = (seg(f[5], f[6]) + seg(f[7], f[8])
+                 - seg(f[1], f[2]) - seg(f[3], f[4]))
+            return hinge(d)
+        if k == "neq_line":
+            a, b = line(f[1])
+            c, d = line(f[2])
+            dd = max(_dist_line(c, a, b), _dist_line(d, a, b))
+            return hinge(dd)
+        return None
+    except _UnknownPoint:
+        return None
+
+
+def _nelder_mead(f, x0, step, iters):
+    """Plain Nelder-Mead (no scipy). Returns (best_x, best_val)."""
+    n = len(x0)
+    simplex = [list(x0)] + [[x0[j] + (step if i == j else 0.0)
+                             for j in range(n)] for i in range(n)]
+    vals = [f(x) for x in simplex]
+    for _ in range(iters):
+        order = sorted(range(n + 1), key=lambda i: vals[i])
+        simplex = [simplex[i] for i in order]
+        vals = [vals[i] for i in order]
+        if vals[0] < 1e-13:
+            break
+        cent = [sum(simplex[i][j] for i in range(n)) / n
+                for j in range(n)]
+        worst = simplex[n]
+        xr = [cent[j] + (cent[j] - worst[j]) for j in range(n)]
+        vr = f(xr)
+        if vr < vals[0]:                    # reflection took the lead
+            xe = [cent[j] + 2.0 * (xr[j] - cent[j]) for j in range(n)]
+            ve = f(xe)
+            simplex[n], vals[n] = (xe, ve) if ve < vr else (xr, vr)
+        elif vr < vals[n - 1]:
+            simplex[n], vals[n] = xr, vr
+        else:
+            if vr < vals[n]:                # outside contraction
+                xc = [cent[j] + 0.5 * (xr[j] - cent[j]) for j in range(n)]
+                vc, keep = f(xc), vr
+            else:                           # inside contraction
+                xc = [cent[j] - 0.5 * (cent[j] - worst[j])
+                      for j in range(n)]
+                vc, keep = f(xc), vals[n]
+            if vc < keep:
+                simplex[n], vals[n] = xc, vc
+            else:                           # shrink toward the best
+                for i in range(1, n + 1):
+                    simplex[i] = [simplex[0][j]
+                                  + 0.5 * (simplex[i][j] - simplex[0][j])
+                                  for j in range(n)]
+                    vals[i] = f(simplex[i])
+    i = min(range(n + 1), key=lambda j: vals[j])
+    return simplex[i], vals[i]
+
+
+def _case_placement(n, case_facts):
+    """A placement of I.n's free points (tr.FREE[n]; the derived free
+    points follow tr.derived_free_points) satisfying the proposition's
+    hypotheses (provenance "h", the facts _start_state uses) plus
+    case_facts. Returns (xy, skipped): xy is None when no placement
+    satisfied them; skipped lists the facts the evaluator cannot
+    evaluate. Search: Nelder-Mead from FREE[n] and a few deterministic
+    random restarts; per start, first minimise the total violation, then
+    slide toward FREE[n] under a heavy violation weight, so the figure
+    changes only as much as the case needs."""
+    objects = tr.objects_from_hyps(n)
+    prop_hyps = [tuple(f) for f, w in tr.hyps_and_steps(n)[0] if w == "h"]
+    facts = prop_hyps + [tuple(f) for f in case_facts]
+    names = list(tr.FREE[n])
+    x_base = [float(c) for nm in names for c in tr.FREE[n][nm]]
+    xy_base = {nm: (x_base[2 * i], x_base[2 * i + 1])
+               for i, nm in enumerate(names)}
+    tr.derived_free_points(n, xy_base)
+    scale = _figure_scale(xy_base)
+    mang = 0.05
+    lines = _case_lines(facts, objects, xy_base)
+    skipped = []
+
+    def make_xy(vec):
+        xy = {nm: (vec[2 * i], vec[2 * i + 1])
+              for i, nm in enumerate(names)}
+        tr.derived_free_points(n, xy)
+        return xy
+
+    def total_violation(xy):
+        # Strict margins are relative to the placement's OWN size:
+        # against a fixed margin a huge near-isosceles figure would
+        # "satisfy" |a─b| > |a─c| with equal base angles (runaway scale).
+        ml = 0.05 * _figure_scale(xy)
+        tot = 0.0
+        for f in facts:
+            v = _violation(f, xy, lines, scale, ml, mang)
+            if v is None:
+                if f not in skipped:
+                    skipped.append(f)
+                continue
+            tot += v
+        return tot
+
+    def pen_of(vec):
+        return sum((vec[i] - x_base[i]) ** 2
+                   for i in range(len(vec))) / (scale * scale)
+
+    rng = random.Random(20261110)
+    starts = [x_base] + [[x + rng.gauss(0.0, 0.3 * scale) for x in x_base]
+                         for _ in range(3)]
+    cands = []
+    deadline = time.perf_counter() + 0.5
+    for x0 in starts:
+        # phase A: satisfy the facts; phase B: of placements that satisfy
+        # them, stay as close to FREE[n] as the case allows (a heavy
+        # violation weight pins the search to the constraint surface)
+        x1, _v = _nelder_mead(lambda v: total_violation(make_xy(v)),
+                              x0, step=0.2 * scale, iters=800)
+        x2, _v = _nelder_mead(
+            lambda v: 1e8 * total_violation(make_xy(v)) + pen_of(v),
+            x1, step=0.05 * scale, iters=400)
+        t = total_violation(make_xy(x2))
+        if t < 1e-12:
+            cands.append((pen_of(x2), x2))
+            break
+        if time.perf_counter() > deadline:
+            break
+    if not cands:
+        return None, skipped
+    return make_xy(min(cands)[1]), skipped
+
+
+def _open_case_chain(moves):
+    """The case hypotheses of the innermost open case the move list ends
+    in, outermost first (nested open blocks recurse through the last
+    branch, as _open_block does); None when the last move is not an open
+    case block."""
+    if not moves:
+        return None
+    mv = moves[-1]
+    if mv.get("rule") not in CASE_RULES or not mv.get("open"):
+        return None
+    branches = mv.get("branches") or []
+    if not branches:
+        return None
+    last = branches[-1]
+    hyps = [tuple(f) for f in last.get("hyps") or []]
+    inner = _open_case_chain(last.get("moves") or [])
+    return hyps + (inner or [])
+
+
 def play(n, moves):
+    """Stateless replay (see _play). When the move list ends in an open
+    case, the drawing is recomputed from a placement satisfying the
+    givens AND the case (a case is a different figure); the response
+    then carries "case_figure" saying what was assumed, whether it could
+    be drawn, and which free points moved."""
+    res = _play(n, moves)
+    chain = _open_case_chain(moves)
+    if chain is None:
+        return res
+    xy, skipped = _case_placement(n, chain)
+    hyps_j = [list(f) for f in chain]
+    if xy is None:
+        cf = {"hyps": hyps_j, "drawn": False,
+              "why": "no placement satisfies the givens and this case"}
+        if skipped:
+            cf["skipped"] = [list(f) for f in skipped]
+        res["case_figure"] = cf
+        return res
+    res2 = _play(n, moves, xy0=xy)
+    scale = _figure_scale(xy)
+    moved = [p for p, p0 in tr.FREE[n].items()
+             if _vdist(xy[p], p0) > 1e-6 * scale]
+    cf = {"hyps": hyps_j, "drawn": True, "moved": moved}
+    if skipped:
+        cf["skipped"] = [list(f) for f in skipped]
+    res2["case_figure"] = cf
+    return res2
+
+
+def _play(n, moves, xy0=None):
     """Stateless: rebuild N's start state, apply each move
     {rule, args, bindings} with eng.apply_step + close, stop at the first
     failure. Case moves are {rule: "by_contra"|"by_cases", branches:
     [{hyps, moves}], conclusion, open}; closed blocks go through
     eng.run_steps (the same tuples the engine uses, refusals as the
     engine words them), open blocks are reported on without touching the
-    outer state (see _open_block)."""
+    outer state (see _open_block). xy0, when given, replaces the FREE[n]
+    placement the drawing starts from (case figures; the logic is
+    identical)."""
     pal = set(palette(n))
     s = _start_state(n)
     objects = tr.objects_from_hyps(n)
-    xy = {k: v for k, v in tr.FREE[n].items()}
-    tr.derived_free_points(n, xy)
+    if xy0 is None:
+        xy = {k: v for k, v in tr.FREE[n].items()}
+        tr.derived_free_points(n, xy)
+    else:
+        xy = {k: (float(v[0]), float(v[1])) for k, v in xy0.items()}
     out_moves, view = _apply_moves(n, s, moves, objects, xy, pal)
     goal_reached = _goal_reached(n, s, objects, xy)
     contradict = eng.contradictory(s)[0]

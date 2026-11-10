@@ -4,6 +4,7 @@ Run from scripts/: ~/code/futon6/.venv/bin/python -m pytest -q euclid_play_test.
 """
 
 import copy
+import math
 import pytest
 import json
 import os
@@ -1164,3 +1165,98 @@ def test_impossible_case_finishes_a_by_cases_split():
                             "moves": []})
     ent = ep.play(6, [two])["moves"][-1]
     assert ent["ok"] and ent["branches"][0]["closed"]
+
+
+def _open_case_move(hyps, inner=None, rule="by_cases"):
+    return {"rule": rule,
+            "branches": [{"hyps": [list(f) for f in hyps],
+                          "moves": inner or []}],
+            "conclusion": [], "open": True}
+
+
+def test_case_figure_peq_drawn_and_coincident():
+    """I.2, open case peq a c (E-kimi-task-431): the case figure is
+    drawn, a lands ON c numerically, and the givens (b, c distinct and
+    on BC, a distinct from b) still hold."""
+    res = ep.play(2, [_open_case_move([("peq", "a", "c")])])
+    cf = res["case_figure"]
+    assert cf["drawn"] is True
+    assert cf["hyps"] == [["peq", "a", "c"]]
+    o = {x["name"]: x["xy"] for x in res["objects"]
+            if x["kind"] == "point"}
+    assert math.dist(o["a"], o["c"]) < 1e-6, o
+    assert math.dist(o["b"], o["c"]) > 0.05   # neq b c, visibly
+    assert math.dist(o["a"], o["b"]) > 0.05   # neq a b
+
+
+def test_case_figure_impossible_case_not_drawn():
+    """I.6, open case |a-b| > |a-c|: the hypotheses force |ab| = |ac|
+    (the base angles are equal), so no placement satisfies the givens
+    and this case -- exactly what the student then proves."""
+    t0 = time.perf_counter()
+    res = ep.play(6, [_open_case_move([("gt_len", "a", "b", "a", "c")])])
+    assert time.perf_counter() - t0 < 2.0
+    cf = res["case_figure"]
+    assert cf["drawn"] is False
+    assert cf["why"] == "no placement satisfies the givens and this case"
+    # the drawing stays the FREE[6] figure
+    o = {x["name"]: x["xy"] for x in res["objects"]
+            if x["kind"] == "point"}
+    for p, p0 in tr.FREE[6].items():
+        assert math.dist(o[p], p0) < 1e-9, (p, o[p], p0)
+
+
+def test_case_figure_on_line_drawn():
+    """I.2, open case on_line a BC: drawn, with a numerically on the
+    line through b and c."""
+    res = ep.play(2, [_open_case_move([("on_line", "a", "BC")])])
+    cf = res["case_figure"]
+    assert cf["drawn"] is True, cf
+    o = {x["name"]: x["xy"] for x in res["objects"]
+            if x["kind"] == "point"}
+    a, b, c = o["a"], o["b"], o["c"]
+    d = (abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]))
+         / math.dist(b, c))
+    assert d < 1e-6, (a, b, c)
+    assert math.dist(o["b"], o["c"]) > 0.05
+
+
+def test_no_open_case_no_case_figure():
+    """Without an open case block there is no 'case_figure' key and the
+    drawing is identical to the FREE[n] placement."""
+    t0 = time.perf_counter()
+    res = ep.play(2, [])
+    assert time.perf_counter() - t0 < 2.0
+    assert "case_figure" not in res
+    o = {x["name"]: x["xy"] for x in res["objects"]
+            if x["kind"] == "point"}
+    for p, p0 in tr.FREE[2].items():
+        assert math.dist(o[p], p0) < 1e-12, (p, o[p], p0)
+
+
+def test_case_figure_timing():
+    """play() on the case-figure cases stays under 2 s each."""
+    for n, hyps in ((2, [("peq", "a", "c")]),
+                    (2, [("on_line", "a", "BC")]),
+                    (6, [("gt_len", "a", "b", "a", "c")])):
+        t0 = time.perf_counter()
+        ep.play(n, [_open_case_move(hyps)])
+        assert time.perf_counter() - t0 < 2.0, (n, hyps)
+
+
+def test_case_figure_nested_innermost():
+    """Nested open blocks: the innermost open case's hypotheses are
+    added to the enclosing open case's."""
+    inner = _open_case_move([("on_line", "a", "BC")])
+    outer = _open_case_move([("neq", "a", "c")], inner=[inner])
+    res = ep.play(2, [outer])
+    cf = res["case_figure"]
+    assert cf["hyps"] == [["neq", "a", "c"], ["on_line", "a", "BC"]]
+    assert cf["drawn"] is True
+    o = {x["name"]: x["xy"] for x in res["objects"]
+            if x["kind"] == "point"}
+    a, b, c = o["a"], o["b"], o["c"]
+    d = (abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]))
+         / math.dist(b, c))
+    assert d < 1e-6
+    assert math.dist(a, c) > 0.05
