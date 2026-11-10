@@ -396,9 +396,55 @@ ARG_HINTS = {
         "b": "a point on or inside the circle, across the line",
         "alpha": "the circle", "L": "the line"},
     "intersection_lines_opposing": {
-        "a": "a point on one side of the first line",
-        "b": "a point on the other side", "L": "the first line",
-        "M": "the line through those two points"},
+        "a": "a point on one side of the crossed line",
+        "b": "a point on the other side of the crossed line",
+        "L": "the crossed line (it separates the two points)",
+        "M": "the line through both points"},
+    # codex-1's advice after I.1-I.25 (codex-advice-cases-hints.md, B):
+    # the general tools it had to decode from numbered boxes
+    "proposition_23'": {
+        "a": "vertex of the new angle (on the destination line)",
+        "b": "a point on the destination line: the new angle's first arm "
+             "runs from the vertex towards it",
+        "c": "vertex of the angle to copy",
+        "d": "a point on one arm of the angle to copy",
+        "e": "a point on its other arm",
+        "x": "a point off the destination line, on the side the new arm "
+             "should go",
+        "AB": "the destination line (through the vertex and that point)",
+        "CD": "the line of the first arm of the angle to copy",
+        "CE": "the line of its other arm"},
+    "proposition_22'": {
+        "a": "first length: one end", "a'": "first length: other end",
+        "b": "second length: one end", "b'": "second length: other end",
+        "c": "third length: one end", "c'": "third length: other end",
+        "f": "first corner of the new triangle (on the destination line)",
+        "e": "a point on the destination line: the second corner goes "
+             "from the first corner towards it",
+        "A": "the line of the first length",
+        "B": "the line of the second length",
+        "C": "the line of the third length",
+        "FE": "the destination line"},
+    "sum_angles_onlyif": {
+        "a": "the vertex of the angle to split",
+        "b": "a point on one arm", "c": "a point on the other arm",
+        "d": "the inside point (the splitting ray runs to it)",
+        "L": "the arm line through the vertex and the first arm point",
+        "M": "the arm line through the vertex and the second arm point"},
+    "angle_ray_eq_zero": {
+        "x": "a point on the first of two rays that coincide",
+        "v": "the vertex",
+        "y": "a point on the second ray (the angle between the two is "
+             "zero)",
+        "z": "a point on the ray both are compared with"},
+    "opposing_same_side_trans": {
+        "x": "start (opposite the bridge point)", "y": "bridge point",
+        "z": "finish (same side as the bridge point)",
+        "L": "the dividing line"},
+    "opposing_opposing_same_side": {
+        "x": "start (opposite the bridge point)", "y": "bridge point",
+        "z": "finish (also opposite the bridge point)",
+        "L": "the dividing line"},
     "extend_point_not_on_line": {
         "L": "the line", "M": "a different line to avoid",
         "b": "from", "c": "extend past"},
@@ -694,8 +740,21 @@ def _rule_words(spec):
     except Exception:
         pass
     try:
-        for b, fs in spec["make"](st, *args):
-            gives += words(fs)
+        made = list(spec["make"](st, *args))
+        binds = {b for b, _fs in made if b is not None}
+
+        def mark(x):
+            # a made object's name in braces, {f}: the page puts the name
+            # from the "name for the new point" box there (codex-1's
+            # advice: "f and f are on the same side" when the student's
+            # own f filled a box)
+            if isinstance(x, str) and x in binds:
+                return "{%s}" % x
+            if isinstance(x, tuple):
+                return tuple(mark(y) for y in x)
+            return x
+        for b, fs in made:
+            gives += words([mark(tuple(f)) for f in fs])
     except Exception:
         pass
     return needs, gives

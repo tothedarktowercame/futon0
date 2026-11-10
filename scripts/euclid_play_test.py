@@ -1449,7 +1449,7 @@ def test_extension_labels_match_what_the_move_gives():
     for r in ("extend_point", "extend_point_not_on_line",
               "extend_point_longer"):
         info = ep.rule_info(r)
-        assert "[c] is between [b] and x" in info["gives"], r
+        assert "[c] is between [b] and {x}" in info["gives"], r
         assert info["arg_hints"]["b"] == "from", r
         assert info["arg_hints"]["c"] == "extend past", r
 
@@ -1882,3 +1882,22 @@ def test_closed_split_concluding_a_greater_angle_proves_it():
     mv = copy.deepcopy(case["moves"])
     mv[-1]["branches"][2]["hyps"] = [["gt_ang", "a", "b", "c", "e", "d", "f"]]
     assert not ep.play(25, mv)["goal_reached"]
+
+
+def test_rule_words_mark_made_objects_and_hints_name_real_args():
+    """codex-1's advice after I.1-I.25 (B): the page fills a rule's
+    needs/gives with the names in its boxes. A made object is marked {f}
+    so the student's own f in a box is not confused with it ("f and f are
+    on the same side of DE"). Every role hint names a real argument."""
+    g = ep.rule_info("proposition_23'")["gives"]
+    assert "either {f} is on line [AB], or {f} and [x] are on the same " \
+        "side of [AB]" in g
+    assert ep.rule_info("intersection_lines_opposing")["gives"] == \
+        ["lines [L] and [M] meet"]
+    for r, h in ep.ARG_HINTS.items():
+        if r in eng.CONSTRUCTIONS:
+            assert set(h) <= set(eng.CONSTRUCTIONS[r]["args"]), r
+    for r in ("proposition_23'", "proposition_22'", "sum_angles_onlyif",
+              "angle_ray_eq_zero", "opposing_same_side_trans",
+              "opposing_opposing_same_side"):
+        assert set(ep.ARG_HINTS[r]) == set(eng.CONSTRUCTIONS[r]["args"]), r

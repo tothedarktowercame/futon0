@@ -1350,12 +1350,10 @@ function renderRuleInputs() {
     // box roles were found only by trial and refusal)
     if ((e.needs && e.needs.length) || (e.gives && e.gives.length)) {
       const d = document.createElement("div");
+      d.id = "rule-words";
       d.style.cssText = "color:#555;margin-top:2px";
-      d.textContent = (e.needs && e.needs.length
-          ? "needs: " + e.needs.join("; ") + ". " : "") +
-        (e.gives && e.gives.length ? "gives: " + e.gives.join("; ") + "."
-                                   : "");
       citeEl.appendChild(d);
+      updateRuleWords(e);
     }
   }
   const tbl = document.getElementById("args-table");
@@ -1383,6 +1381,7 @@ function renderRuleInputs() {
     inp.dataset.arg = a;
     inp.dataset.hint = hint || "";
     inp.addEventListener("change", autoFill);
+    inp.addEventListener("input", () => updateRuleWords(e));
     inp.placeholder = "click a " + k;
     inp.title = "click a point (or line, circle) on the drawing, or type its name";
     inp.addEventListener("focusin", () => { activeInput = inp; });
@@ -1406,11 +1405,13 @@ function renderRuleInputs() {
     inp.value = b === null ? "" : freshName(b,
       [...tbl.querySelectorAll(".bind-in")].map(i => i.value));
     inp.dataset.default = inp.value;
+    inp.addEventListener("input", () => updateRuleWords(e));
     td.appendChild(inp);
     tr.appendChild(td);
     tbl.appendChild(tr);
   }
   activeInput = tbl.querySelector(".arg-in");
+  updateRuleWords(e);
   if (selection.length) fillFromSelection();
 }
 
@@ -1448,7 +1449,34 @@ function fillArg(name) {
 // Fill boxes the page can work out itself: a circle's centre from the
 // circle, and the line through two centres when one is drawn (Lean's
 // same-side/opposite-side intersection asks for both). Only empty boxes.
+// The rule's needs/gives with the boxes filled in so far: [a] becomes the
+// name typed or clicked into box [a], live (codex-1's advice after
+// I.1-I.25: "render one filled-in application sentence as boxes change";
+// a wrong slot then reads wrong before the move is submitted). Unfilled
+// boxes keep their [letter].
+function updateRuleWords(e) {
+  const d = document.getElementById("rule-words");
+  if (!d) return;
+  e = e || (cur && cur.palette.find(p => p.name ===
+    document.getElementById("rule-select").value));
+  if (!e) return;
+  const vals = {};
+  for (const i of document.querySelectorAll("#args-table .arg-in"))
+    if (i.value.trim()) vals[i.dataset.arg] = i.value.trim();
+  // a made object, {f} in the server's words: the name in its box
+  const made = {};
+  for (const i of document.querySelectorAll("#args-table .bind-in"))
+    if (i.dataset.base) made[i.dataset.base] = i.value.trim();
+  const fill = s => s.replace(/\[([^\]]+)\]/g,
+    (m, a) => vals[a] !== undefined ? vals[a] : m)
+    .replace(/\{([^}]+)\}/g, (m, b) => made[b] || ("new " + b));
+  const needs = (e.needs || []).map(fill), gives = (e.gives || []).map(fill);
+  d.textContent = (needs.length ? "needs: " + needs.join("; ") + ". " : "") +
+    (gives.length ? "gives: " + gives.join("; ") + "." : "");
+}
+
 function autoFill() {
+  setTimeout(() => updateRuleWords(), 0);
   const ins = [...document.querySelectorAll("#args-table .arg-in")];
   const objs = lastResult ? lastResult.objects : [];
   const byName = Object.fromEntries(objs.map(o => [o.name, o]));
