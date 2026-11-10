@@ -82,7 +82,10 @@ GOALS = {
     13: [eng.PROP13_GOAL],
     14: eng.PROP14_GOAL,
     15: eng.PROP15_GOAL,
-    16: eng.PROP16B_GOAL,
+    # both of Lean's conjuncts (Prop16.lean): ∠acd > ∠cba (16a, "omitted
+    # by Euclid") and ∠acd > ∠bac (16b). Only 16b was here, so the
+    # checklist hid one comparison (codex-1, live loop slice 11).
+    16: eng.PROP16A_GOAL + eng.PROP16B_GOAL,
     17: eng.PROP17_GOAL,
     18: eng.PROP18_GOAL,
     19: eng.PROP19_GOAL,
@@ -451,6 +454,13 @@ _FACT_WORDS = {
     "lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
     "sum_rt_ang": "∠{1}{2}{3} and ∠{4}{5}{6} together make two right angles",
     "lt_sum_rt_ang": "∠{1}{2}{3} + ∠{4}{5}{6} is less than two right angles",
+    # the engine's query forms of the three sums above, as the goals of
+    # I.17, I.20 and I.21 name them (their checklist read "lt sum rt ang
+    # a b c b c a"; found auditing goals in live loop slice 11)
+    "_lt_sum_rt_ang": ("∠{1}{2}{3} + ∠{4}{5}{6} is less than two right "
+                       "angles"),
+    "_gt_sum_len": "|{1}{2}| + |{3}{4}| > |{5}{6}|",
+    "_lt_sum_sum_len": "|{1}{2}| + |{3}{4}| < |{5}{6}| + |{7}{8}|",
     # the engine's _sum_rt_ang query (u, v, x, w): ∠uvx + ∠xvw = 2 right
     "_sum_rt_ang": ("∠{1}{2}{3} and ∠{3}{2}{4} together make two right "
                     "angles"),
@@ -1334,6 +1344,13 @@ def _start_state(n):
 # steps, step)]}. AWAITING_SM: propositions whose trusted inputs have no
 # game derivation yet (equilateral apex off its base; points on two lines
 # through v differ) -- the reference moves stop short there.
+def _renamed_steps(steps, ren):
+    """Engine step data with names renamed (args and bindings' values)."""
+    return [(r, tuple(ren.get(a, a) for a in args),
+             {k: ren.get(v, v) for k, v in b.items()})
+            for r, args, b in steps]
+
+
 PLAY_EXTRA_STEPS = {
     5: [(1, ("between_symm_parts", ("b", "f", "d"), {}))],   # f != b
     # v != d (d between v and b); d != e then follows in closure (d on
@@ -1350,6 +1367,14 @@ PLAY_EXTRA_STEPS = {
     # f off AB likewise; neq f w (w on AB) then follows in closure.
     11: [(6, ("off_line_strict_triangle", ("f", "g", "e", "AB"), {}))],
 }
+# Steps appended after the trace's own (in order).
+# I.16: the trace replays 16b; 16a's steps follow, renamed apart
+# (e, AE, f', f, FC, g -> k, AK, m', m, MC, q).
+PLAY_APPEND_STEPS = {
+    16: _renamed_steps(eng.PROP16A_STEPS_DATA,
+                       {"e": "k", "AE": "AK", "f'": "m'", "f": "m",
+                        "FC": "MC", "g": "q"}),
+}
 AWAITING_SM = ()
 
 
@@ -1359,6 +1384,7 @@ def reference_steps(n):
     steps = list(tr.hyps_and_steps(n)[1])
     for k, st in sorted(PLAY_EXTRA_STEPS.get(n, []), reverse=True):
         steps.insert(k, st)
+    steps.extend(PLAY_APPEND_STEPS.get(n, []))
     return steps
 
 

@@ -1264,6 +1264,10 @@ def test_goal_checklist_all_props_have_words():
         for g in goals:
             assert g["state"] in ("shown", "pending")
             assert g["words"] and "(" not in g["words"], g
+            # not the fallback that spells the kind out ("lt sum rt ang a
+            # b c ..." at I.17/I.20/I.21 until live loop slice 11)
+            raw = g["kind"].strip("_").replace("_", " ")
+            assert not g["words"].startswith(raw), g
 
 
 def test_impossible_case_finishes_a_by_cases_split():
@@ -1649,3 +1653,18 @@ def test_marks_skip_renamings_of_one_drawn_segment_or_angle():
     mv9 = [_move(r, a, b) for r, a, b in ep.reference_steps(9)]
     mk9 = ep.play(9, mv9)["marks"]
     assert mk9["classes"] and mk9["angle_classes"]
+
+
+def test_i16_goal_has_both_lean_conjuncts_and_reference_solves_both():
+    """codex-1, live loop slice 11: fresh I.16 listed only ∠acd > ∠bac,
+    though Lean's statement also asks ∠acd > ∠cba (16a, 'omitted by
+    Euclid'). Both are goals now; the reference appends 16a's steps."""
+    assert tuple(eng.PROP16A_GOAL[0]) in [tuple(g) for g in ep.GOALS[16]]
+    assert tuple(eng.PROP16B_GOAL[0]) in [tuple(g) for g in ep.GOALS[16]]
+    words = [g["words"] for g in ep.play(16, [])["marks"]["goals"]]
+    assert words == ["∠acd > ∠cba", "∠acd > ∠bac"]
+    mv = [_move(r, a, b) for r, a, b in ep.reference_steps(16)]
+    res = ep.play(16, mv)
+    assert all(m["ok"] for m in res["moves"])
+    assert res["goal_reached"]
+    assert all(g["state"] == "shown" for g in res["marks"]["goals"])
