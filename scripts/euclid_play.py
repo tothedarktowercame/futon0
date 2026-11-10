@@ -305,10 +305,36 @@ _THREE_RAYS = {"L": "first line (through the common point and b)",
                "c": "a point on the middle line",
                "d": "a point on the third line"}
 
+# I.4/I.8/I.24/I.25 compare triangles abc and def, a↔d, b↔e, c↔f; the
+# one-triangle propositions name corners of abc. codex-1 (live loop
+# slices 8-9): mapping "first point ... sixth point" onto a figure was
+# the main friction left in applying I.4 and I.8.
+_TRI1 = {"a": "triangle 1, corner a", "b": "triangle 1, corner b",
+         "c": "triangle 1, corner c", "AB": "triangle 1, side ab",
+         "BC": "triangle 1, side bc", "AC": "triangle 1, side ac"}
+_TRI2 = dict(_TRI1, d="triangle 2, corner matching a",
+             e="triangle 2, corner matching b",
+             f="triangle 2, corner matching c",
+             DE="triangle 2, side matching ab",
+             EF="triangle 2, side matching bc",
+             DF="triangle 2, side matching ac")
+_TRI1 = {k: v.replace("triangle 1, ", "") for k, v in _TRI1.items()}
+_ANG1 = "triangle 1, corner a (the angle between the two sides compared)"
+_ANG2 = "triangle 2, corner matching a (its angle between those sides)"
+
 ARG_HINTS = {
     "line_from_points": {"a": "first point", "b": "second point"},
     "pasch_3_opposing": {"a": "one end", "b": "where it crosses",
                          "c": "other end", "L": "the line"},
+    "proposition_4": dict(_TRI2, a=_ANG1, d=_ANG2),
+    "proposition_8": dict(_TRI2),
+    "proposition_24": dict(_TRI2, a=_ANG1, d=_ANG2),
+    "proposition_25": dict(_TRI2, a=_ANG1, d=_ANG2),
+    "proposition_5'": dict(_TRI1, a="apex (between the equal sides)"),
+    "proposition_6": dict(_TRI1, a="apex (where the equal sides meet)"),
+    "proposition_16": dict(_TRI1, d="beyond c on side bc"),
+    "proposition_17": dict(_TRI1), "proposition_18": dict(_TRI1),
+    "proposition_19": dict(_TRI1), "proposition_20": dict(_TRI1),
     "triple_incidence_1": dict(_THREE_RAYS),
     "triple_incidence_2": dict(_THREE_RAYS),
     "between_symm_parts": {"a": "this end", "b": "the middle",
