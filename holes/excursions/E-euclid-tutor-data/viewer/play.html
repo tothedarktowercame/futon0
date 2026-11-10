@@ -1256,6 +1256,10 @@ function wireFactBuilder(rootId, list, addLabel) {
     const ins = [...argsEl.querySelectorAll(".fact-in")];
     const vals = ins.map(i => i.value.trim());
     if (vals.some(v => !v)) return;
+    if (list.__suggested) {        // a typed conclusion replaces the
+      list.length = 0;             // suggested goal, not adds to it
+      list.__suggested = false;
+    }
     list.push([kind.value].concat(vals));
     ins.forEach(i => { i.value = ""; });
     renderList();
@@ -1271,6 +1275,7 @@ function showCaseBuilder(mode) {
   // playtest, 2026-11-10: the form opened on an unrelated "between")
   if (mode === "new" && !cbConcl.length && cur) {
     for (const g of plainGoal()) cbConcl.push(g);
+    cbConcl.__suggested = true;
     const r = document.getElementById("cb-concl");
     if (r.__renderList) r.__renderList();
   }
