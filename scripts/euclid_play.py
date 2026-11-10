@@ -964,16 +964,30 @@ def _ordered_circle_line(n, s, i, args, bindings, xy, objects):
             if ahead(na) == ahead(nb):
                 continue   # the drawing does not separate them: no order
             far, near = (na, nb) if ahead(na) else (nb, na)
-            steps = [("intersection_circle_line_extending_points",
-                      (alpha, L, p, q), {"g": far}),
-                     ("intersection_circle_line_extending_points",
-                      (alpha, L, p, far), {"g": near})]
-            trial = s.copy()
-            try:
-                for r, a, b in steps:
-                    eng.apply_step(trial, i, r, a, b)
-                    eng.close(trial)
-            except Exception:
+            # Prefer recording "near lies between p and q" when q is
+            # outside the circle (Intersections.lean:9) -- what I.3 needs
+            # (kimi-1's playtest, 2026-11-10); else only "beyond p".
+            options = [
+                [("intersection_circle_line_between_points",
+                  (alpha, L, p, q), {"e": near}),
+                 ("intersection_circle_line_extending_points",
+                  (alpha, L, p, near), {"g": far})],
+                [("intersection_circle_line_extending_points",
+                  (alpha, L, p, q), {"g": far}),
+                 ("intersection_circle_line_extending_points",
+                  (alpha, L, p, far), {"g": near})]]
+            steps = None
+            for opt in options:
+                trial = s.copy()
+                try:
+                    for r, a, b in opt:
+                        eng.apply_step(trial, i, r, a, b)
+                        eng.close(trial)
+                except Exception:
+                    continue
+                steps = opt
+                break
+            if steps is None:
                 continue
             added = []
             for r, a, b in steps:

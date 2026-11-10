@@ -959,3 +959,19 @@ def test_length_marks_show_known_equalities_and_goal():
     assert g["joined"] and g["segments"] == [["p", "a"], ["a", "b"]]
     part = ep.play(1, i1[:2])["marks"]["goal"]
     assert part["partial"] and not part["joined"]
+
+
+def test_both_points_order_records_between_for_i3():
+    """kimi-1's playtest (2026-11-10): at I.3 the circle about a meets AB
+    in two points; the drawn order must record that the near one lies
+    between a and b (Intersections.lean:9, b outside the circle), not just
+    which side of a it is on."""
+    mv = [{"rule": "proposition_2'", "args": ["a", "c0", "c1", "C"],
+           "bindings": {"d": "d"}},
+          {"rule": "circle_from_points", "args": ["a", "d"],
+           "bindings": {"C": "D"}},
+          {"rule": "intersections_circle_line", "args": ["D", "AB"],
+           "bindings": {"a": "e", "b": "f"}}]
+    res = ep.play(3, mv)
+    assert res["goal_reached"]
+    assert ["between", "a", "e", "b"] in res["moves"][-1]["added"]
