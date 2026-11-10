@@ -55,7 +55,7 @@ def test_case_props_reach_goal():
     """I.6, 7, 10, 13, 14, 19, 21 played with the engine's own steps (case
     moves as closed blocks) reach the goal."""
     reached = []
-    for n in (6, 7, 8, 13, 14, 19, 21, 22, 23):   # 10: AWAITING_SM
+    for n in (6, 7, 8, 10, 13, 14, 19, 21, 22, 23):
         steps = ep.reference_steps(n)
         res = ep.play(n, [_engine_step_to_move(st) for st in steps])
         assert res["goal_reached"], \
@@ -166,7 +166,7 @@ def test_catalogue_splits_covered():
     """Every engine case split in the catalogue (I.10, 13, 14, 19, 21,
     nested blocks included) is covered; record the family each matched."""
     table = []
-    for n in (6, 7, 8, 13, 14, 19, 21, 22, 23):   # 10: AWAITING_SM
+    for n in (6, 7, 8, 10, 13, 14, 19, 21, 22, 23):
         s = ep._start_state(n)
         found = []
         _walk_case_blocks(n, s, ep.reference_steps(n), (), found)
@@ -502,15 +502,12 @@ def test_palette_9():
     assert "proposition_10" not in pal
 
 
-def _old_test_play_9_reaches_goal():   # I.9 is AWAITING_SM now
-    """E-kimi-task-421: play(9) with the engine's own steps reaches the
-    goal (also covered by test_engine_steps_reach_goal, I.9 being
-    straight-line). play(8) awaits a referee fix — see the
-    E-kimi-task-421 bell: the play referee's _holds does not
-    symmetrize peq, so I.8's by_contra conclusion peq d c' (Lean's
-    `by_cases d = g` order) is not matched to the normalized family
-    member peq c' d."""
-    steps = tr.hyps_and_steps(9)[1]
+def test_play_9_reaches_goal():
+    """E-kimi-task-421/428: play(9) with the reference steps (the engine's
+    own plus the explicit trusted-input moves of PLAY_EXTRA_STEPS)
+    reaches the goal (also covered by test_engine_steps_reach_goal, I.9
+    being straight-line)."""
+    steps = ep.reference_steps(9)
     res = ep.play(9, [_engine_step_to_move(st) for st in steps])
     assert res["goal_reached"], \
         "I.9: engine replay did not reach the goal: %s" % res
@@ -1009,21 +1006,56 @@ def test_trusted_inputs_are_not_in_the_game():
     """Found from kimi-1's I.5 (2026-11-10): the engine's "h-sm" inputs
     (facts Lean's SMT supplies about objects built later) were in the
     game's start state, so a student's own line GB, or point d, inherited
-    unproved facts. They are dropped; I.5 needs one explicit move (f != b
-    by between_symm_parts). I.9-I.11 await game derivations of their
-    trusted facts: this pins where each stops, and goes red when fixed."""
+    unproved facts. They are dropped; each proposition that needed them
+    now carries explicit moves in PLAY_EXTRA_STEPS: I.5 f != b
+    (between_symm_parts); I.9 v != d (between_symm_parts; d != e then
+    follows in closure) and f off AB / f off AC (the cited
+    equilateral_apex_off_line SMT-bridge); I.10 c off AB and I.11 f off
+    AB (the cited off_line_strict_triangle). The reference steps reach
+    each goal; the engine's bare steps (the trusted inputs simply
+    dropped) do not."""
     s = ep._start_state(5)
     assert not s.has(("not_on_line", "c", "GB"))
     assert ep.play(5, _engine_moves(5))["goal_reached"]
     plain5 = [_move(r, a, b) for r, a, b in tr.hyps_and_steps(5)[1]]
     assert not ep.play(5, plain5)["goal_reached"]
-    stops = {}
-    for n in ep.AWAITING_SM:
+    assert ep.AWAITING_SM == ()
+    for n in (9, 10, 11):
         res = ep.play(n, [_engine_step_to_move(st)
                           for st in ep.reference_steps(n)])
-        assert not res["goal_reached"], n
-        bad = next(m for m in res["moves"] if not m["ok"])
-        stops[n] = bad["error"]
-    assert stops == {9: ["dpl", "v", "d", "AB"],
-                     10: ["neq_line", "AC", "BC"],
-                     11: ["neq", "f", "w"]}, stops
+        assert res["goal_reached"], n
+        assert all(m["ok"] for m in res["moves"]), n
+        plain = [_engine_step_to_move(st)
+                 for st in tr.hyps_and_steps(n)[1]]
+        assert not ep.play(n, plain)["goal_reached"], n
+
+
+def test_equilateral_apex_off_line_refused_without_equilateral():
+    """The I.9 bridge move is REFUSED when its apex is only isosceles
+    (|x─p| = |x─q| but not = |p─q|): the soundness argument needs the
+    equality |f─v| = |f─q| + |q─v| to force q between f and v. Same
+    diagram premises as I.9's use, one length row short."""
+    s = eng.State()
+    for f in [("on_line", "p", "L"), ("on_line", "v", "L"),
+              ("neq", "p", "v"), ("not_on_line", "q", "L"),
+              ("on_line", "p", "PQ"), ("on_line", "q", "PQ"),
+              ("neq", "p", "q"), ("opposing_sides", "x", "v", "PQ")]:
+        eng._assume_metric_or_fact(s, f, "test")
+    # isosceles only: |x─p| = |x─q| and |p─v| = |q─v|, no |x─p| = |p─q|
+    eng._assume_metric_or_fact(s, ("eq_len", "x", "p", "x", "q"), "test")
+    eng._assume_metric_or_fact(s, ("eq_len", "p", "v", "q", "v"), "test")
+    eng.close(s)
+    try:
+        eng.apply_step(s, 0, "equilateral_apex_off_line",
+                       ("x", "p", "q", "v", "L", "PQ"), {})
+        assert False, "accepted an isosceles-but-not-equilateral apex"
+    except eng.MissingPremise as e:
+        assert "entail" in str(e), e
+    # and with the equilateral rows it is accepted
+    eng._assume_metric_or_fact(s, ("eq_len", "x", "p", "p", "q"), "test")
+    eng._assume_metric_or_fact(s, ("eq_len", "x", "q", "p", "q"), "test")
+    eng.close(s)
+    eng.apply_step(s, 0, "equilateral_apex_off_line",
+                   ("x", "p", "q", "v", "L", "PQ"), {})
+    eng.close(s)
+    assert s.has(("not_on_line", "x", "L"))

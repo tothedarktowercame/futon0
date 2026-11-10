@@ -225,6 +225,9 @@ RULE_LABELS = {
     "angle_ray_eq_zero": ("coincident rays make a zero angle", "metric"),
     "off_line_strict_triangle": ("off a line, the strict triangle "
                                  "inequality holds", "metric"),
+    "equilateral_apex_off_line": ("an equilateral triangle's apex is off "
+                                  "a line through a base vertex",
+                                  "metric"),
     # earlier propositions
     "proposition_1": ("I.1: build an equilateral triangle on a segment",
                       "propositions"),
@@ -290,6 +293,14 @@ ARG_HINTS = {
     "intersections_circle_line": {"alpha": "the circle", "L": "the line"},
     "intersection_lines": {"L": "first line", "M": "second line"},
     "extend_point": {"L": "the line", "b": "extend past", "c": "from"},
+    "equilateral_apex_off_line": {
+        "f": "the equilateral triangle's apex",
+        "p": "a base vertex on the line",
+        "q": "the other base vertex (off the line)",
+        "v": "a second point on the line, equidistant from both base "
+             "vertices",
+        "L": "the line",
+        "PQ": "the base line"},
     # the moves with many inputs (Joe, 2026-11-09: "it asks me for all
     # of this"); the page fills a circle's centre itself when it can
     "intersection_same_side": {
@@ -961,8 +972,21 @@ def _start_state(n):
 # through v differ) -- the reference moves stop short there.
 PLAY_EXTRA_STEPS = {
     5: [(1, ("between_symm_parts", ("b", "f", "d"), {}))],   # f != b
+    # v != d (d between v and b); d != e then follows in closure (d on
+    # AB, e on AC, AB != AC meet once at v). f off AB / f off AC: f is
+    # the equilateral apex on d e (proposition_1'), |v─d| = |v─e|.
+    9: [(1, ("between_symm_parts", ("v", "d", "b"), {})),
+        (5, ("equilateral_apex_off_line", ("f", "d", "e", "v", "AB", "DE"),
+             {})),
+        (6, ("equilateral_apex_off_line", ("f", "e", "d", "v", "AC", "DE"),
+             {}))],
+    # c off AB: the equilateral apex is off its base (the three strict
+    # triangle inequalities from |c─a| = |c─b| = |a─b| > 0).
+    10: [(1, ("off_line_strict_triangle", ("c", "a", "b", "AB"), {}))],
+    # f off AB likewise; neq f w (w on AB) then follows in closure.
+    11: [(6, ("off_line_strict_triangle", ("f", "g", "e", "AB"), {}))],
 }
-AWAITING_SM = (9, 10, 11)
+AWAITING_SM = ()
 
 
 def reference_steps(n):

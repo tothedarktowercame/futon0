@@ -2401,6 +2401,32 @@ CONSTRUCTIONS = {
             ("gt_sum_len", (x, v, u, v, u, x))],
         "make": lambda s, x, u, v, L: [(None, [("not_on_line", x, L)])],
     },
+    # [SMT-bridge: coordinate model] The apex f of an equilateral
+    # triangle on p q (|f─p| = |f─q| = |p─q|), built by proposition_1'
+    # on the side of PQ opposite v, is off every line L through p and a
+    # second point v with |p─v| = |q─v| and q off L. Soundness: suppose
+    # f were on L. L meets PQ only at p (p is on both, q is off L, and
+    # two distinct lines meet once), so f opposing v across PQ with both
+    # segment ends on L forces p between f and v; then
+    #   |f─v| = |f─p| + |p─v| = |p─q| + |q─v| = |f─q| + |q─v|,
+    # equality in the triangle inequality for f q v, so q lies between f
+    # and v — hence on L, contradicting q off L. Lean's SMT closes this
+    # (the between-sum row and the equality case) silently. First use:
+    # Book I.9 (f off AB and f off AC).
+    "equilateral_apex_off_line": {
+        "cite": "SMT-bridge (an equilateral apex is off a sideline "
+                "through a base vertex)",
+        "args": ("f", "p", "q", "v", "L", "PQ"),
+        "premises": lambda s, f, p, q, v, L, PQ: [
+            ("on_line", p, L), ("on_line", v, L), ("neq", p, v),
+            ("not_on_line", q, L),
+            ("dpl", p, q, PQ), ("opposing_sides", f, v, PQ)],
+        "entail": lambda s, f, p, q, v, L, PQ: [
+            ("eq_len", (f, p, p, q)), ("eq_len", (f, q, p, q)),
+            ("eq_len", (p, v, q, v))],
+        "make": lambda s, f, p, q, v, L, PQ: [
+            (None, [("not_on_line", f, L)])],
+    },
     # [logic: Lean's `use`] The existential witness f IS the existing
     # point b — a rename. The premises are exactly the goal's conjuncts
     # about b (so the step asserts nothing the store does not already
