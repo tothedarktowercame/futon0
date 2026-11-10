@@ -1260,3 +1260,21 @@ def test_case_figure_nested_innermost():
          / math.dist(b, c))
     assert d < 1e-6
     assert math.dist(a, c) > 0.05
+
+
+def test_case_figure_moves_only_the_point_the_case_is_about():
+    """claude-9's review of fa06b11 (2026-11-10): supposing a = c should
+    move a onto c, as a drag would, not nudge a, b and c; 'a on BC' moves
+    a to the nearest point of BC."""
+    def blk(h):
+        return [{"rule": "by_cases", "branches": [{"hyps": [h],
+                                                    "moves": []}],
+                 "conclusion": [["eq_len", "a", "l", "b", "c"]],
+                 "open": True}]
+    r = ep.play(2, blk(["peq", "a", "c"]))
+    assert r["case_figure"]["moved"] == ["a"]
+    P = {o["name"]: o["xy"] for o in r["objects"] if o.get("xy")}
+    assert P["b"] == [0.0, 0.0] and P["c"] == [1.0, 0.0]
+    r = ep.play(2, blk(["on_line", "a", "BC"]))
+    P = {o["name"]: o["xy"] for o in r["objects"] if o.get("xy")}
+    assert abs(P["a"][0] + 0.5) < 1e-3 and abs(P["a"][1]) < 1e-6

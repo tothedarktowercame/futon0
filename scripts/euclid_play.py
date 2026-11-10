@@ -2464,9 +2464,42 @@ def _case_placement(n, case_facts):
             tot += v
         return tot
 
+    # Points the case names move freely; the others are nearly pinned, so
+    # supposing "a = c" moves a onto c rather than nudging a, b and c
+    # (the case as a drag of the point it is about, as in The Witness).
+    named = {x for f in case_facts for x in f[1:] if isinstance(x, str)}
+    mover = next((x for f in case_facts[-1:] for x in f[1:]
+                  if isinstance(x, str) and x in names), None)
+    weight = [1.0 if names[i // 2] == mover
+              else 30.0 if names[i // 2] in named else 1000.0
+              for i in range(len(x_base))]
+
     def pen_of(vec):
-        return sum((vec[i] - x_base[i]) ** 2
+        return sum(weight[i] * (vec[i] - x_base[i]) ** 2
                    for i in range(len(vec))) / (scale * scale)
+
+    # First, the case as a drag: move only the point it is about, the
+    # others fixed where they are. Only if that cannot satisfy the case,
+    # search over every free point.
+    if mover is not None:
+        k = names.index(mover)
+
+        def only_mover(v2):
+            v = list(x_base)
+            v[2 * k], v[2 * k + 1] = v2[0], v2[1]
+            return v
+        for s0 in ([x_base[2 * k], x_base[2 * k + 1]],
+                   [x_base[2 * k] + 0.3 * scale, x_base[2 * k + 1]],
+                   [x_base[2 * k], x_base[2 * k + 1] - 0.3 * scale]):
+            m1, _v = _nelder_mead(
+                lambda v2: 1e4 * total_violation(make_xy(only_mover(v2)))
+                + pen_of(only_mover(v2)), s0, step=0.2 * scale, iters=600)
+            m2, _v = _nelder_mead(
+                lambda v2: 1e8 * total_violation(make_xy(only_mover(v2)))
+                + pen_of(only_mover(v2)), m1, step=0.05 * scale, iters=300)
+            for m in (m2, m1):
+                if total_violation(make_xy(only_mover(m))) < 1e-12:
+                    return make_xy(only_mover(m)), skipped
 
     rng = random.Random(20261110)
     starts = [x_base] + [[x + rng.gauss(0.0, 0.3 * scale) for x in x_base]

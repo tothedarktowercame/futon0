@@ -118,6 +118,8 @@
 moves of the current case move out to the main proof">leave the case
 split, keep my moves</button>
       </div>
+      <div id="case-figure-note" style="display:none;margin:6px 0;padding:6px;
+           border-radius:4px;font-size:13px"></div>
       <div id="branch-status"></div>
       <div id="case-builder">
         <div id="cb-rule-row">kind:
@@ -285,6 +287,82 @@ function renderGoalList(mk) {
     div.appendChild(line);
   }
 }
+// A case is a different figure (Joe, 2026-11-10: cases should feel like
+// geometry, as a star differs from a tetris block in The Witness). The
+// server redraws the figure so the open case's assumption holds
+// (case_figure); here each kind of assumption gets its own symbol in the
+// case colour, and a banner says whether the case's figure exists.
+const CASE_COL = "#1565c0";
+function drawCaseFigure() {
+  const note = document.getElementById("case-figure-note");
+  const cf = lastResult && lastResult.case_figure;
+  if (!cf) { note.style.display = "none"; return; }
+  const words = (cf.hyps || []).map(f => factEnglish(f)).join(" and ");
+  note.style.display = "block";
+  if (!cf.drawn) {
+    note.style.background = "#fdecea";
+    note.style.border = "1px solid #c62828";
+    note.style.color = "#8e1b1b";
+    note.textContent = `This case cannot be drawn: no figure fits the ` +
+      `givens and ${words}. That is what to show — the case is ` +
+      `impossible. (The figure below is the usual one.)`;
+    return;
+  }
+  note.style.background = "#e8f0fb";
+  note.style.border = "1px solid " + CASE_COL;
+  note.style.color = "#0d3c75";
+  note.textContent = `Case figure: drawn so that ${words}` +
+    ((cf.moved || []).length ? ` (moved: ${cf.moved.join(", ")})` : "") +
+    `. The blue marks show the assumption.`;
+  const P = n => built[n];
+  const seg = (p, q, opts) => (P(p) && P(q))
+    ? board.create("segment", [P(p), P(q)], Object.assign({
+        strokeColor: CASE_COL, strokeWidth: 6, strokeOpacity: 0.55,
+        fixed: true, highlight: false, withLabel: false }, opts || {}))
+    : null;
+  const label = (x, y, txt) => board.create("text", [x, y, txt], {
+    fixed: true, highlight: false, fontSize: 18, strokeColor: CASE_COL,
+    cssStyle: "font-weight:bold" });
+  const ring = (n, txt) => {
+    const e = P(n);
+    if (!e) return;
+    board.create("point", [e.X(), e.Y()], { size: 11, face: "o",
+      fillOpacity: 0, strokeColor: CASE_COL, strokeWidth: 3, name: "",
+      fixed: true, highlight: false, withLabel: false });
+    const px = board.unitX || 50;    // offset in pixels, not units
+    if (txt) label(e.X() + 12 / px, e.Y() + 16 / px, txt);
+  };
+  const mid = (p, q) => [(P(p).X() + P(q).X()) / 2,
+                         (P(p).Y() + P(q).Y()) / 2];
+  for (const f of cf.hyps || []) {
+    const k = f[0];
+    if (k === "peq") { ring(f[1], "="); ring(f[2]); }
+    else if (k === "neq") { ring(f[1], "≠"); ring(f[2]); }
+    else if (k === "on_line" || k === "on_circle") ring(f[1], "on " + f[2]);
+    else if (k === "not_on_line") ring(f[1], "off " + f[2]);
+    else if (k === "between") { seg(f[1], f[3], { strokeWidth: 3 });
+                                ring(f[2], "between"); }
+    else if ((k === "gt_len" || k === "lt_len") && f.length >= 5) {
+      const [L1, L2] = k === "gt_len" ? [[f[1], f[2]], [f[3], f[4]]]
+                                      : [[f[3], f[4]], [f[1], f[2]]];
+      if (seg(L1[0], L1[1], { strokeWidth: 8 })) {
+        const m = mid(L1[0], L1[1]); label(m[0], m[1], "longer");
+      }
+      if (seg(L2[0], L2[1], { strokeWidth: 3, dash: 2 })) {
+        const m = mid(L2[0], L2[1]); label(m[0], m[1], "shorter");
+      }
+    } else if (k === "eq_len" && f.length >= 5) {
+      seg(f[1], f[2]); seg(f[3], f[4]);
+    } else if ((k === "gt_ang" || k === "eq_ang") && f.length >= 7) {
+      if (P(f[1]) && P(f[2]) && P(f[3]))
+        board.create("nonreflexangle", [P(f[1]), P(f[2]), P(f[3])], {
+          radius: 0.35, fillColor: CASE_COL, fillOpacity: 0.25,
+          strokeColor: CASE_COL, fixed: true, highlight: false,
+          withLabel: false });
+    }
+  }
+}
+
 function drawMarks() {
   const mk = lastResult && lastResult.marks;
   if (!mk) { renderGoalList(null); return; }
@@ -471,6 +549,7 @@ function draw() {
       el.on("up", () => checkSnap(o, el));
   }
   drawMarks();
+  drawCaseFigure();
 }
 
 // One mouse-down can land on several objects (point b and the line BC
