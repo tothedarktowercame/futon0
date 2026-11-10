@@ -1155,6 +1155,62 @@ def test_angle_marks_skip_names_of_the_same_angle():
                for cls in res["marks"]["angle_classes"])
 
 
+def _i7_codex_slice5(last_move):
+    """codex-1's slice-5 I.7 move list (2026-11-10), with the innermost
+    opposing_sides b g CD branch holding just last_move."""
+    import json
+    moves = json.load(open(os.path.join(
+        os.path.dirname(__file__), "testdata",
+        "codex-i7-slice5-moves.json")))["moves"]
+
+    def inner(ms):
+        for m in ms:
+            if m.get("rule") == "by_cases":
+                for b in m["branches"]:
+                    if b["hyps"] == [["opposing_sides", "b", "g", "CD"]]:
+                        return b["moves"]
+                    r = inner(b["moves"])
+                    if r is not None:
+                        return r
+    inner(moves)[:] = [last_move] if last_move else []
+    return moves
+
+
+def _find_entry(entries, rule):
+    for e in entries:
+        if e.get("rule") == rule:
+            return e
+        for b in e.get("branches") or []:
+            r = _find_entry(b.get("moves") or [], rule)
+            if r:
+                return r
+
+
+def test_opposing_premise_accepts_either_order():
+    """codex-1 slice 5: the case said b and g are on opposite sides of
+    CD; opposing_same_side_trans g b h CD was refused "Not yet shown: g
+    and b are on opposite sides of CD". opposingSides is symmetric."""
+    res = ep.play(7, _i7_codex_slice5(
+        {"rule": "opposing_same_side_trans", "args": ["g", "b", "h", "CD"],
+         "bindings": {}}))
+    e = _find_entry(res["moves"], "opposing_same_side_trans")
+    assert e["ok"], e
+    assert ["opposing_sides", "g", "h", "CD"] in e["added"]
+
+
+def test_student_extension_off_line_is_drawn():
+    """codex-1 slice 5: g, h from extend_point_not_on_line were usable but
+    'Made but not drawn'. They are drawn past their point, on the line."""
+    res = ep.play(7, _i7_codex_slice5(None))
+    o = {x["name"]: x for x in res["objects"]}
+    for p in ("g", "h"):
+        assert not o[p].get("undrawn") and o[p]["xy"], o[p]
+    a, d, g = (o[p]["xy"] for p in ("a", "d", "g"))
+    assert abs((d[0] - a[0]) * (g[1] - a[1])
+               - (d[1] - a[1]) * (g[0] - a[0])) < 1e-9   # g on AD
+    assert math.dist(a, g) > math.dist(a, d)             # past d
+
+
 def test_goal_checklist_all_props_have_words():
     """Every catalogue prop reports every goal clause with a state and
     student-readable words (never a Python repr)."""

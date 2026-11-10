@@ -1332,10 +1332,10 @@ def _opposing_either(s, p, q, L):
     # opposingSides (Relations.lean:13-14) is symmetric in its points
     # (¬p.onLine L ∧ ¬q.onLine L ∧ ¬p.sameSide q L); premise tuples name a
     # direction, so accept whichever the state holds.
+    # When neither holds, the refusal names the order asked for.
     f = ("opposing_sides", p, q, L)
-    if s.has(f):
-        return f
-    return ("opposing_sides", q, p, L)
+    r = ("opposing_sides", q, p, L)
+    return r if (not s.has(f) and s.has(r)) else f
 
 
 def _need(s, i, rule, fact):
@@ -1478,7 +1478,7 @@ CONSTRUCTIONS = {
         "args": ("a", "b", "alpha", "L"),
         "premises": lambda s, a, b, alpha, L: [
             ("not_outside", a, alpha), ("not_outside", b, alpha),
-            ("opposing_sides", a, b, L)],
+            _opposing_either(s, a, b, L)],
         "make": lambda s, a, b, alpha, L: [
             (None, [("intersects_lc", L, alpha)])],
     },
@@ -1794,7 +1794,7 @@ CONSTRUCTIONS = {
         "cite": "Diagrammatic.lean:267",
         "args": ("a", "b", "L", "M"),
         "premises": lambda s, a, b, L, M: [
-            ("opposing_sides", a, b, L),
+            _opposing_either(s, a, b, L),
             ("on_line", a, M), ("on_line", b, M)],
         "make": lambda s, a, b, L, M: [
             (None, [("intersects_ll", L, M)])],
@@ -1838,7 +1838,7 @@ CONSTRUCTIONS = {
             ("neq_line", L, M),
             ("on_line", b, L), ("on_line", b, M),
             ("dpl", a, c, M), ("neq", a, b), ("neq", c, b),
-            ("opposing_sides", a, c, L)],
+            _opposing_either(s, a, c, L)],
         "make": lambda s, a, b, c, L, M: [
             (None, [("between", a, b, c)])],
     },
@@ -2109,7 +2109,7 @@ CONSTRUCTIONS = {
         "cite": "derived, Diagrammatic.lean:127 contrapositive",
         "args": ("x", "y", "z", "L"),
         "premises": lambda s, x, y, z, L: [
-            ("opposing_sides", x, y, L), ("same_side", z, y, L)],
+            _opposing_either(s, x, y, L), ("same_side", z, y, L)],
         "make": lambda s, x, y, z, L: [
             (None, [("opposing_sides", x, z, L)])],
     },
@@ -2420,7 +2420,7 @@ CONSTRUCTIONS = {
         "premises": lambda s, f, p, q, v, L, PQ: [
             ("on_line", p, L), ("on_line", v, L), ("neq", p, v),
             ("not_on_line", q, L),
-            ("dpl", p, q, PQ), ("opposing_sides", f, v, PQ)],
+            ("dpl", p, q, PQ), _opposing_either(s, f, v, PQ)],
         "entail": lambda s, f, p, q, v, L, PQ: [
             ("eq_len", (f, p, p, q)), ("eq_len", (f, q, p, q)),
             ("eq_len", (p, v, q, v))],
@@ -2500,7 +2500,7 @@ CONSTRUCTIONS = {
         "premises": lambda s, L, M, N, a, b, c, d: [
             ("on_line", a, L), ("on_line", a, M), ("on_line", a, N),
             ("on_line", b, L), ("on_line", c, M), ("on_line", d, N),
-            ("same_side", c, d, L), ("opposing_sides", b, d, M),
+            ("same_side", c, d, L), _opposing_either(s, b, d, M),
             ("not_on_line", d, M), ("neq", b, a)],
         "make": lambda s, L, M, N, a, b, c, d: [
             (None, [("same_side", b, c, N)])],

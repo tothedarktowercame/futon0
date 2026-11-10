@@ -2175,6 +2175,20 @@ def _apply_moves(n, s, moves, objects, xy, pal, i0=1, refuted=()):
                     pass   # placed by _ordered_circle_line
                 elif rule == "name_point":
                     _place_name_point(args, added, xy, objects)
+                elif rule == "extend_point_not_on_line" and \
+                        args[2] in xy and args[3] in xy:
+                    # the reference trace leaves I.7's extensions undrawn
+                    # (its refuted branches); a student's extension is
+                    # drawn like extend_point: past c along bc by 0.6|bc|
+                    # (codex-1 slice 5: g, h usable but invisible, so the
+                    # case about them could not be seen)
+                    b, c = xy[args[2]], xy[args[3]]
+                    name = bindings["x"]
+                    xy[name] = (c[0] + 0.6 * (c[0] - b[0]),
+                                c[1] + 0.6 * (c[1] - b[1]))
+                    objects.append({"name": name, "kind": "point",
+                                    "jsx": {"type": "point"},
+                                    "def_step": None})
                 else:
                     try:
                         tr.place_step(n, rule, args, bindings, added, xy,
