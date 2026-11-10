@@ -190,13 +190,14 @@ RULE_LABELS = {
                            "diagrammatic"),
     "between_trans_out": ("betweenness chains along a line",
                           "diagrammatic"),
-    "pasch_3_opposing": ("a line through one side of a triangle meets "
-                         "another side (Pasch)", "diagrammatic"),
-    "pasch_4": ("a line crossing two sides of a triangle (Pasch)",
-                "diagrammatic"),
+    "pasch_3_opposing": ("two points are on opposite sides of a line "
+                         "when the segment between them crosses it",
+                         "diagrammatic"),
+    "pasch_4": ("two points on opposite sides of a line: the line "
+                "crosses the segment between them", "diagrammatic"),
     "opposing_sides_if": ("two points are on opposite sides of a line "
-                          "when the segment between them crosses it",
-                          "diagrammatic"),
+                          "when both are off it and not on the same "
+                          "side (the definition)", "diagrammatic"),
     "opposing_same_side_trans": ("across a line then back again lands "
                                  "on the opposite side", "diagrammatic"),
     "opposing_opposing_same_side": ("twice across a line lands on the "
@@ -291,6 +292,8 @@ RULE_LABELS = {
 # premises; args not listed keep their engine name.
 ARG_HINTS = {
     "line_from_points": {"a": "first point", "b": "second point"},
+    "pasch_3_opposing": {"a": "one end", "b": "where it crosses",
+                         "c": "other end", "L": "the line"},
     "name_point": {"p": "the existing point"},
     "circle_from_points": {"a": "the centre", "b": "a point on the circle"},
     "intersection_circles": {"alpha": "first circle",
