@@ -219,8 +219,9 @@ RULE_LABELS = {
                          "they are right", "metric"),
     "perpendicular_onlyif": ("right angles at a crossing are equal",
                              "metric"),
-    "sum_angles_onlyif": ("a ray inside an angle splits it into two parts "
-                          "that add up", "metric"),
+    "sum_angles_onlyif": ("a point inside an angle (on the same side of "
+                          "each arm as the other arm) splits it into two "
+                          "parts that add up", "metric"),
     "flat_angle_onlyif": ("a flat angle equals two right angles",
                           "metric"),
     "degenerated_angle_if": ("two points on one ray from a vertex make a "
