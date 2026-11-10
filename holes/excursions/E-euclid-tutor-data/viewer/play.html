@@ -1980,7 +1980,12 @@ async function closeBlock() {
   } else {
     b.open = true;  // refused: keep the block open, show why
     if (ent && ent.missing_case) {
-      afterResult(res, null);
+      // redraw from the block as it stands (open): the refused closed
+      // replay stops at the block, and the move list read "(none)"
+      // (kimi-1, weak-model run slice 1, I.6: "I thought all moves were
+      // lost" and opened a second block by mistake)
+      const res2 = await postPlay(cur.n, moves);
+      afterResult(res2, null);
       showTutorQuestion(ent.missing_case);
     } else {
       afterResult(res, ent ? ent.error : "refused",
