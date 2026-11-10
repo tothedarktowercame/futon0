@@ -1211,6 +1211,47 @@ def test_student_extension_off_line_is_drawn():
     assert math.dist(a, g) > math.dist(a, d)             # past d
 
 
+def test_nested_closed_contradiction_block_lets_next_case_open():
+    """codex-1 live loop (I.7): a closed split whose cases are all
+    impossible (conclusion: a contradiction), nested inside the case
+    'c and g on the same side of DB'. That case showed impossible; then
+    adding the next case was refused "An earlier case does not work
+    yet", because the engine's by_cases refuses contradictory branches.
+    Such a block is the engine's by_contra with conclusion False."""
+    import json
+    rec = json.load(open(os.path.join(os.path.dirname(__file__),
+                                      "testdata",
+                                      "codex-i7-live-nested-close.json")))
+    res = ep.play(7, rec["moves"])
+    errs = []
+
+    def walk(es):
+        for e in es:
+            if e.get("error"):
+                errs.append(e["error"])
+            for b in e.get("branches") or []:
+                walk(b.get("moves") or [])
+    walk(res["moves"])
+    assert errs == [], errs
+    # and an inner case that is NOT finished still blocks: keep only the
+    # first move of the 'b, g opposite sides of CD' case
+    import copy
+    mv = copy.deepcopy(rec["moves"])
+
+    def strip(ms):
+        for m in ms:
+            for b in m.get("branches") or []:
+                if b["hyps"] == [["opposing_sides", "b", "g", "CD"]]:
+                    b["moves"] = b["moves"][:1]
+                    return True
+                if strip(b["moves"]):
+                    return True
+    assert strip(mv)
+    errs.clear()
+    walk(ep.play(7, mv)["moves"])
+    assert any("did not reach a contradiction" in str(e) for e in errs), errs
+
+
 def test_goal_checklist_all_props_have_words():
     """Every catalogue prop reports every goal clause with a state and
     student-readable words (never a Python repr)."""

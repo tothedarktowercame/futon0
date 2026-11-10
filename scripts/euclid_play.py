@@ -1378,6 +1378,15 @@ def _block_to_engine(mv):
         steps = [_move_to_step(m) for m in b.get("moves") or []]
         branches.append((hyps, steps))
     concl = [tuple(c) for c in mv.get("conclusion") or []]
+    if mv["rule"] == "by_cases" and ("false",) in concl:
+        # every case leads to a contradiction: the engine's form for that
+        # is a by_contra with conclusion False (its own I.13/I.14 replays;
+        # its by_cases refuses a contradictory branch). The page checks a
+        # top-level block itself, but a closed block NESTED in a case is
+        # replayed by the engine (codex-1 live loop, I.7: the inner split
+        # showed impossible, then the next outer case was refused).
+        return ("by_contra", branches, [c for c in concl
+                                        if c == ("false",)])
     if mv["rule"] == "by_cases":
         # the engine checks a by_cases conclusion with _fact_holds, which
         # answers metric facts only in their query form (_eq_len ...);
