@@ -1,0 +1,57 @@
+{
+ "n": 19,
+ "moves": [
+  {
+   "rule": "by_cases",
+   "branches": [
+    {
+     "hyps": [
+      [
+       "eq_len",
+       "a",
+       "b",
+       "a",
+       "c"
+      ]
+     ],
+     "moves": [
+      {
+       "rule": "proposition_5'",
+       "args": [
+        "a",
+        "b",
+        "c",
+        "AB",
+        "BC",
+        "AC"
+       ],
+       "bindings": {}
+      }
+     ]
+    },
+    {
+     "hyps": [
+      [
+       "gt_len",
+       "a",
+       "b",
+       "a",
+       "c"
+      ]
+     ],
+     "moves": []
+    }
+   ],
+   "conclusion": [
+    [
+     "gt_len",
+     "a",
+     "c",
+     "a",
+     "b"
+    ]
+   ],
+   "open": true
+  }
+ ]
+}

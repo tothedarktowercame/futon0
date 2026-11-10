@@ -1692,3 +1692,23 @@ def test_sum_rt_ang_fact_words_use_its_four_points():
     showed '∠d' plus garbage on the page at I.17 (live loop slice 12)."""
     assert ep.fact_words(("sum_rt_ang", "b", "c", "a", "d")) == \
         "∠bca and ∠acd together make two right angles"
+
+
+def test_case_figure_cannot_satisfy_lengths_by_shrinking():
+    """codex-1, live loop slice 12, I.19 case |ab| > |ac|: the placement
+    collapsed the triangle to ~1e-5, where every squared length violation
+    is under the 1e-12 threshold, and claimed the case drawn with
+    |ab| < |ac| and no broken given. A shrunken placement is now measured
+    at half the base figure's size: the case holds at a normal size, and the given
+    the case contradicts (∠abc > ∠bca) is reported broken."""
+    case = json.load(open(os.path.join(os.path.dirname(__file__),
+                                       "testdata",
+                                       "codex-i19-slice12-greater-side-case.json")))
+    res = ep.play(19, case["moves"])
+    xy = {o["name"]: o["xy"] for o in res["objects"] if o["kind"] == "point"}
+    ab, ac, bc = (math.dist(xy[p], xy[q]) for p, q in
+                  (("a", "b"), ("a", "c"), ("b", "c")))
+    assert bc > 0.5 and ab > ac + 0.02
+    cf = res["case_figure"]
+    assert cf["drawn"]
+    assert ["gt_ang", "a", "b", "c", "b", "c", "a"] in cf["relaxed"]

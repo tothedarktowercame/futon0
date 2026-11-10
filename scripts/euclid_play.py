@@ -2747,10 +2747,31 @@ def _case_placement(n, case_facts, hyps=None, budget=0.5):
         tr.derived_free_points(n, xy)
         return xy
 
+    def at_base_scale(xy):
+        # The placement measured at no less than half the base figure's
+        # size. Length
+        # violations are squared lengths, so without this a figure
+        # shrunk to 1e-5 "satisfied" every length fact under the 1e-12
+        # threshold (codex-1, live loop slice 12, I.19: the case
+        # |ab| > |ac| was claimed drawn with |ab| < |ac| in a collapsed
+        # triangle, and the broken given went unreported); with a fixed
+        # margin instead, a huge near-isosceles figure would satisfy
+        # |a─b| > |a─c| with equal base angles (runaway scale). Similar
+        # figures satisfy the same facts, so scaling up loses nothing.
+        s = _figure_scale(xy)
+        if s < 1e-9 * scale:
+            return None
+        # only a SHRUNKEN figure is scaled up (to half the base size): a
+        # normal-size placement is measured as drawn, so a = c at I.2
+        # converges as before
+        k = max(1.0, 0.5 * scale / s)
+        return {nm: (p[0] * k, p[1] * k) if p else p
+                for nm, p in xy.items()}
+
     def total_violation(xy):
-        # Strict margins are relative to the placement's OWN size:
-        # against a fixed margin a huge near-isosceles figure would
-        # "satisfy" |a─b| > |a─c| with equal base angles (runaway scale).
+        xy = at_base_scale(xy)
+        if xy is None:
+            return 1e6
         ml = 0.05 * _figure_scale(xy)
         tot = 0.0
         for f in facts:
