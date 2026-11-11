@@ -212,6 +212,7 @@ class ProgressiveWideningBot(pyspiel.Bot):
 
     def mcts_search(self, state):
         search_started = time.perf_counter()
+        self._certified.clear()
         self._timing = {
             "root_enumeration_seconds": 0.0,
             "legality_seconds": 0.0,
