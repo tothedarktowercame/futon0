@@ -380,23 +380,29 @@ def _entailments_hold(spec, state, args, cache):
 
 
 def enumerate_actions_reference(n, state, initial_kinds, ply):
-    """Probe-1 oracle: validate each entailment candidate by applying it."""
+    """Probe-1 oracle: validate every candidate by applying it."""
     accepted = []
     for action in _candidate_actions(n, state, initial_kinds, ply):
         rule, args, bindings = action
-        if "entail" in eng.CONSTRUCTIONS[rule]:
-            trial = state.copy()
-            try:
-                eng.apply_step(trial, ply + 1, rule, args, dict(bindings))
-            except (eng.MissingPremise, TypeError, ValueError):
-                continue
+        trial = state.copy()
+        try:
+            eng.apply_step(trial, ply + 1, rule, args, dict(bindings))
+        except (eng.MissingPremise, TypeError, ValueError):
+            continue
         accepted.append(action)
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
 
 def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
                       allowed_rules=None, allowed_by_kind=None, free_variables=None):
-    """All accepted non-case moves, with repeated entailments and parent moves reused."""
+    """All playable non-case moves.
+
+    Premise enumeration is only a candidate generator.  In particular, a
+    construction's conclusions can make the closed arithmetic store
+    inconsistent even when every stated premise holds.  The ordinary engine
+    guard is authoritative, so certify each candidate by applying it to a
+    disposable state before advertising it as legal.
+    """
     accepted = []
     query_cache = {}
     parent_legal_keys = set(parent_legal_keys)
@@ -405,6 +411,16 @@ def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
         rule, args, _bindings = action
         if ((rule, args) not in parent_legal_keys
                 and not _entailments_hold(eng.CONSTRUCTIONS[rule], state, args, query_cache)):
+            continue
+        trial = state.copy()
+        try:
+            # Candidate generation and _entailments_hold certified the
+            # premises on this exact parent.  Keep the ordinary transactional
+            # contradiction guard, but do not pay for those premise queries a
+            # second time merely to validate the legal list.
+            eng.apply_certified_step(
+                trial, ply + 1, rule, args, dict(_bindings))
+        except (eng.MissingPremise, TypeError, ValueError):
             continue
         accepted.append(action)
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))

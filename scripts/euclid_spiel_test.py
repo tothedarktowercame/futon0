@@ -1,5 +1,6 @@
 from collections import deque
 import json
+from pathlib import Path
 import random
 
 import pyspiel
@@ -175,6 +176,67 @@ def test_dense_action_ids_round_trip_and_fit_policy_head():
                 assert game.action_codec.decode(state, action_id) == grounded
                 assert game.action_codec.encode(state, grounded) == action_id
             state.apply_action(rng.choice(legal))
+
+
+def test_legal_actions_exclude_contradictory_superposition():
+    """The rc13 stage-2 point alias made a degenerate source triangle.
+
+    Its superposition premises are syntactically present, but the copied
+    metric bundle makes the arithmetic store inconsistent.  The engine guard
+    is authoritative, so that grounded move must not be advertised.
+    """
+    prefix = (Path(__file__).resolve().parents[1]
+              / "holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-2/prefix.json")
+    game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=4,dense_actions=true,"
+        f"alpha_zero_facade=true,start_file={prefix})"
+    )
+    state = game.new_initial_state()
+    state.apply_action_tuple(("off_line_strict_triangle",
+                              ("d_2", "b", "a", "L_1"), ()))
+    state.apply_action_tuple(("name_point", ("d_2",), (("x", "x_2"),)))
+    refused = (
+        "superposition",
+        ("a", "d_2", "x_2", "a", "b", "d_2",
+         "L_3", "L_3", "L_3", "L_1"),
+        (("AC'", "AC'_1"), ("BC'", "BC'_1"),
+         ("b'", "b'_1"), ("c'", "c'_1")),
+    )
+    trial = state.engine_state.copy()
+    try:
+        euclid_spiel.eng.apply_step(
+            trial, 1, refused[0], refused[1], dict(refused[2]))
+    except euclid_spiel.eng.ContradictoryStep as error:
+        assert error.witness == ("store-unsat", 204)
+    else:
+        raise AssertionError("reproduction no longer reaches the guard")
+    state.legal_actions()
+    assert refused not in state._actions
+
+
+def test_every_enumerated_move_applies_on_30_random_i2_positions():
+    rng = random.Random(20261111)
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=5,dense_actions=true,"
+        "alpha_zero_facade=true)"
+    )
+    for _case in range(30):
+        state = game.new_initial_state()
+        for _ply in range(rng.randrange(3)):
+            for _attempt in range(100):
+                action = state.sample_action_tuple(rng)
+                trial = state.clone()
+                try:
+                    trial.apply_action_tuple(action)
+                except euclid_spiel.eng.ContradictoryStep:
+                    continue
+                state = trial
+                break
+            else:
+                raise AssertionError("could not sample a playable prefix")
+        for action_id in state.legal_actions():
+            child = state.clone()
+            child.apply_action(action_id)
 
 
 def _proposition_4_dense_state():
