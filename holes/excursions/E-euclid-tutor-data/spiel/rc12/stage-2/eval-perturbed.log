@@ -1,0 +1,26 @@
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+Exception ignored in: <function _xla_gc_callback at 0x75814abdb880>
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/jax/_src/lib/__init__.py", line 125, in _xla_gc_callback
+    def _xla_gc_callback(*args):
+    
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 283, in evaluation_timeout
+    raise TimeoutError("greedy evaluation game exceeded its time limit")
+TimeoutError: greedy evaluation game exceeded its time limit
+Traceback (most recent call last):
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 399, in <module>
+    main()
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 297, in main
+    state.apply_action(bot.step(state))
+                       ^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 311, in step
+    return self.step_with_policy(state)[1]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 287, in step_with_policy
+    best = root.best_child()
+           ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty

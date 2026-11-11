@@ -1,0 +1,79 @@
+[
+  {
+    "stage": 1,
+    "moves_remaining": 1,
+    "games": 1469,
+    "train_seconds": 920.46464409912,
+    "train_returncode": 0,
+    "checkpoint": 5,
+    "clean": {
+      "step": 5,
+      "games": 10,
+      "wins": 10,
+      "timeouts": 0,
+      "verified_wins": 10,
+      "seconds": 18.796989685855806
+    },
+    "perturbed": {
+      "step": 5,
+      "games": 10,
+      "wins": 10,
+      "timeouts": 0,
+      "verified_wins": 10,
+      "seconds": 70.24643672187813
+    },
+    "advanced": true,
+    "clean_legal_counts": [
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545
+    ],
+    "perturbed_legal_counts": [
+      545,
+      550,
+      961,
+      545,
+      550,
+      545,
+      971,
+      545,
+      545,
+      1250
+    ]
+  },
+  {
+    "stage": 2,
+    "moves_remaining": 2,
+    "games": 2,
+    "train_seconds": 930.0,
+    "train_returncode": -9,
+    "checkpoint": 0,
+    "clean": {
+      "step": 0,
+      "games": 10,
+      "wins": 0,
+      "timeouts": 10,
+      "verified_wins": 0,
+      "seconds": 302.9
+    },
+    "perturbed": {
+      "step": 0,
+      "games": 10,
+      "wins": 0,
+      "timeouts": 10,
+      "verified_wins": 0,
+      "seconds": 337.8,
+      "isolated_processes": true
+    },
+    "advanced": false,
+    "clean_legal_counts": [532, 532, 532, 532, 532, 532, 532, 532, 532, 532],
+    "perturbed_legal_counts": [537, 947, 532, 537, 532, 957, 532, 532, 1235, 672]
+  }
+]

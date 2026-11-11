@@ -1,0 +1,322 @@
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+Starting game euclid_book1(proposition=2,move_cap=4,dense_actions=true,alpha_zero_facade=true,start_file=/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc12/stage-2/prefix.json,start_perturb=2,start_perturb_rate=0.5,start_seed=2026111102)
+Writing logs and checkpoints to: /home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc12/stage-2
+Model type: mlp(width=32, depth=2)
+learner started
+[2026-11-11 17:37:31.714] Initializing model
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+[2026-11-11 17:37:33.964] Model type: mlp(32, 2)
+[2026-11-11 17:37:33.964] Model size: 12389218 variables
+[2026-11-11 17:37:34.651] Initial checkpoint: 0
+[2026-11-11 17:37:34.659] Collecting trajectories
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-11:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-10 started
+Exception caught in actor-10: max() iterable argument is empty
+actor-10 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-10:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-9 started
+Exception caught in actor-9: max() iterable argument is empty
+actor-9 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-9:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-8 started
+Exception caught in actor-8: max() iterable argument is empty
+actor-8 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-8:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-7 started
+Exception caught in actor-7: max() iterable argument is empty
+actor-7 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-0 started
+Exception caught in actor-0: max() iterable argument is empty
+actor-0 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-3:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-2 started
+Exception caught in actor-2: max() iterable argument is empty
+actor-2 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-4:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-3 started
+Exception caught in actor-3: max() iterable argument is empty
+actor-3 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-6:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-5 started
+Exception caught in actor-5: max() iterable argument is empty
+actor-5 exiting
+[2026-11-11 17:52:30.881] learner exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-2:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-1 started
+Exception caught in actor-1: max() iterable argument is empty
+actor-1 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-7:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-6 started
+Exception caught in actor-6: max() iterable argument is empty
+actor-6 exiting
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py:238: RuntimeWarning: invalid value encountered in divide
+  policy /= policy.sum()
+Process Process-12:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 186, in win_in_one_plain_weight_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+actor-11 started
+Exception caught in actor-11: max() iterable argument is empty
+actor-11 exiting

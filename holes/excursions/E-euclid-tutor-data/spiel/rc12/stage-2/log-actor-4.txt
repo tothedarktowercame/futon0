@@ -1,0 +1,8 @@
+[2026-11-11 17:37:32.689] actor-4 started
+[2026-11-11 17:37:32.689] Initializing model
+[2026-11-11 17:37:35.784] Initializing bots
+[2026-11-11 17:37:35.785] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 17:37:35.785] Loading actor weights 0
+[2026-11-11 17:51:27.716] Game 1: Returns: 1.0 -1.0; Actions: extend_point_longer(x_1,g_6,c,c) -> x=x_1_2 circle_from_points(d_2,g_6) -> C=C_2 intersection_circle_line_extending_points(C_2,a,d_2) -> g=g_3
+[2026-11-11 17:57:48.958] Game 2: Returns: 0.0 -0.0; Actions: extend_point_longer(b,g_6,a,d_2) -> x=x_1 extend_point_longer(x_1,g_6,b,g_6) -> x=x_2 point_between_points_shorter_than(b,g_6,b,a) -> a=a_3 extend_point_longer(g_6,d_2,x_2,a) -> x=x_4
+[2026-11-11 17:57:49.007] actor-4 exiting

@@ -1,0 +1,16 @@
+{
+  "arm": "DEMO",
+  "python_hash_seed": "0",
+  "actors": 12,
+  "simulations": 32,
+  "stages_file": "stages.json",
+  "from_start": {
+    "step": 0,
+    "games": 10,
+    "wins": 0,
+    "timeouts": 10,
+    "verified_wins": 0,
+    "seconds": 336.8,
+    "isolated_processes": true
+  }
+}

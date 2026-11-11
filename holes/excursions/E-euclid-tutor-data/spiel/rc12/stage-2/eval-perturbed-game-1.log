@@ -1,0 +1,3 @@
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+{"step": 0, "games": 1, "wins": 0, "timeouts": 1, "search_failures": 0, "verified_wins": 0}
