@@ -6,9 +6,11 @@ from __future__ import annotations
 import argparse
 from collections import OrderedDict
 import json
+import os
 from pathlib import Path
 import signal
 import sys
+import types
 
 from open_spiel.python.algorithms import mcts
 from open_spiel.python.algorithms.alpha_zero import alpha_zero
@@ -21,6 +23,69 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import euclid_spiel  # noqa: E402,F401  (registers the Python game)
 
 DENSE_I1_ACTIONS = euclid_spiel.DenseActionCodec(1).size
+
+
+def actor_weights_path(checkpoint_path):
+    """The plain-array inference snapshot paired with an Orbax checkpoint."""
+    return Path(f"{checkpoint_path}.actor-weights")
+
+
+def save_actor_weights(model, checkpoint_path):
+    """Write model parameters once for reliable concurrent actor loading."""
+    import jax
+
+    destination = actor_weights_path(checkpoint_path)
+    destination.mkdir(parents=True, exist_ok=True)
+    leaves, _ = jax.tree_util.tree_flatten(model._state.params)
+    manifest = []
+    for index, leaf in enumerate(leaves):
+        array = np.asarray(leaf)
+        filename = f"{index:04d}.npy"
+        np.save(destination / filename, array, allow_pickle=False)
+        manifest.append({"file": filename, "shape": list(array.shape),
+                         "dtype": str(array.dtype)})
+    (destination / "manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n")
+    return destination
+
+
+def load_actor_weights(model, checkpoint_path):
+    """Install a learner-exported inference snapshot without reading Orbax."""
+    import jax
+
+    source = actor_weights_path(checkpoint_path)
+    manifest = json.loads((source / "manifest.json").read_text())
+    target_leaves, treedef = jax.tree_util.tree_flatten(model._state.params)
+    if len(manifest) != len(target_leaves):
+        raise ValueError("actor parameter leaf count does not match model")
+    loaded = []
+    for expected, entry in zip(target_leaves, manifest):
+        array = np.load(source / entry["file"], mmap_mode="r",
+                        allow_pickle=False)
+        if array.shape != expected.shape or array.dtype != expected.dtype:
+            raise ValueError("actor parameter shape or dtype does not match model")
+        loaded.append(jax.device_put(np.asarray(array)))
+    params = jax.tree_util.tree_unflatten(treedef, loaded)
+    model._state = model._state.replace(params=params)
+
+
+def actor_update_checkpoint(logger, queue, model, az_evaluator):
+    """Consume learner snapshots without concurrent Orbax/TensorStore reads."""
+    path = None
+    while True:
+        try:
+            path = queue.get_nowait()
+        except alpha_zero.spawn.Empty:
+            break
+    if path:
+        logger.print("Inference cache:", az_evaluator.cache_info())
+        logger.print("Loading actor weights", path)
+        checkpoint = Path(model._path) / f"checkpoint-{path}"
+        load_actor_weights(model, checkpoint)
+        az_evaluator.clear_cache()
+    elif path is not None:
+        return False
+    return True
 
 
 class WinInOneEvaluator(mcts.Evaluator):
@@ -83,6 +148,16 @@ def maybe_win_in_one(evaluator, enabled=True):
 _PACKAGED_ACTOR = alpha_zero.actor
 
 
+def plain_weight_actor(**kwargs):
+    """Spawn target that consumes learner-exported parameter arrays."""
+    original_update = alpha_zero.update_checkpoint
+    alpha_zero.update_checkpoint = actor_update_checkpoint
+    try:
+        return _PACKAGED_ACTOR(**kwargs)
+    finally:
+        alpha_zero.update_checkpoint = original_update
+
+
 def win_in_one_actor(**kwargs):
     """Spawn target that installs the wrapper inside the actor process."""
     original_evaluator = evaluator_lib.AlphaZeroEvaluator
@@ -94,6 +169,23 @@ def win_in_one_actor(**kwargs):
     try:
         return _PACKAGED_ACTOR(**kwargs)
     finally:
+        evaluator_lib.AlphaZeroEvaluator = original_evaluator
+
+
+def win_in_one_plain_weight_actor(**kwargs):
+    """Spawn target combining mate detection and plain weight transport."""
+    original_evaluator = evaluator_lib.AlphaZeroEvaluator
+    original_update = alpha_zero.update_checkpoint
+
+    def wrapped_evaluator(game, model):
+        return WinInOneEvaluator(original_evaluator(game, model))
+
+    evaluator_lib.AlphaZeroEvaluator = wrapped_evaluator
+    alpha_zero.update_checkpoint = actor_update_checkpoint
+    try:
+        return _PACKAGED_ACTOR(**kwargs)
+    finally:
+        alpha_zero.update_checkpoint = original_update
         evaluator_lib.AlphaZeroEvaluator = original_evaluator
 
 
@@ -125,8 +217,12 @@ def main():
     parser.add_argument("--win-in-one", action=argparse.BooleanOptionalAction,
                         default=True)
     args = parser.parse_args()
-    if args.win_in_one:
+    if args.win_in_one and args.resume_from is not None:
+        alpha_zero.actor = win_in_one_plain_weight_actor
+    elif args.win_in_one:
         alpha_zero.actor = win_in_one_actor
+    elif args.resume_from is not None:
+        alpha_zero.actor = plain_weight_actor
     start_param = (f",start_file={args.start_file.resolve()}"
                    if args.start_file is not None else "")
     start_param += (f",start_perturb={args.start_perturb},"
@@ -262,13 +358,29 @@ def main():
         if args.resume_step is None:
             parser.error("--resume-from requires --resume-step")
         original_init = alpha_zero._init_model_from_config
+        learner_pid = os.getpid()
 
         def resume_init(target_config):
             target = original_init(target_config)
+            # alpha_zero starts actors before it initializes the learner.  Only
+            # the learner process restores the carried Orbax state; actors
+            # begin with an ordinary model and receive exported parameters.
+            if os.getpid() != learner_pid:
+                return target
             source = original_init(target_config.replace(
                 path=str(args.resume_from.resolve())))
             source.load_checkpoint(args.resume_step)
             target._state = source._state
+            packaged_save = target.save_checkpoint
+
+            def save_with_actor_weights(_model, step):
+                result = packaged_save(step)
+                checkpoint = Path(_model._path) / f"checkpoint-{step}"
+                save_actor_weights(_model, checkpoint)
+                return result
+
+            target.save_checkpoint = types.MethodType(
+                save_with_actor_weights, target)
             return target
 
         alpha_zero._init_model_from_config = resume_init

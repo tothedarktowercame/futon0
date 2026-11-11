@@ -6,13 +6,43 @@ import pyspiel
 
 import euclid_spiel  # registers euclid_book1
 import euclid_play
-from euclid_open_spiel_alpha_zero import WinInOneEvaluator, maybe_win_in_one
+from euclid_open_spiel_alpha_zero import (
+    WinInOneEvaluator,
+    load_actor_weights,
+    maybe_win_in_one,
+    save_actor_weights,
+)
 from open_spiel.python.algorithms import mcts
+from open_spiel.python.algorithms.alpha_zero import model_nnx
 import numpy as np
 
 
 def _game(cap=6):
     return pyspiel.load_game(f"euclid_book1(proposition=1,move_cap={cap})")
+
+
+def test_actor_weight_snapshot_matches_parent_array_for_array(tmp_path):
+    import jax
+
+    def model(path):
+        return model_nnx.Model.build_model(
+            "mlp", (10,), 12, 8, 1, 1e-4, 1e-3, str(path),
+            decouple_weight_decay=False)
+
+    parent = model(tmp_path / "parent")
+    parent._state = parent._state.replace(params=jax.tree.map(
+        lambda value: value + np.asarray(1, dtype=value.dtype),
+        parent._state.params))
+    actor = model(tmp_path / "actor")
+    checkpoint = tmp_path / "checkpoint-0"
+    save_actor_weights(parent, checkpoint)
+    load_actor_weights(actor, checkpoint)
+
+    parent_arrays = jax.tree_util.tree_leaves(parent._state.params)
+    actor_arrays = jax.tree_util.tree_leaves(actor._state.params)
+    assert len(parent_arrays) == len(actor_arrays)
+    assert all(np.array_equal(expected, actual)
+               for expected, actual in zip(parent_arrays, actor_arrays))
 
 
 def test_game_loads_and_every_initial_action_applies():

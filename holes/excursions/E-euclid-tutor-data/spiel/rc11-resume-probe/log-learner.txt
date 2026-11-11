@@ -1,0 +1,42 @@
+[2026-11-11 17:06:16.026] learner started
+[2026-11-11 17:06:16.110] Initializing model
+[2026-11-11 17:06:18.392] Model type: mlp(32, 2)
+[2026-11-11 17:06:18.393] Model size: 12389218 variables
+[2026-11-11 17:06:19.238] Initial checkpoint: 0
+[2026-11-11 17:06:19.259] Collecting trajectories
+[2026-11-11 17:06:36.040] Step: 1
+[2026-11-11 17:06:36.040] Collected    64 states from  16 games, 0.8 states/s. 0.1 states/(s*actor), game length: 4.0
+[2026-11-11 17:06:36.040] Buffer size: 64. States seen: 64
+[2026-11-11 17:06:37.534] Losses(total: 20.681, policy: 1.847, value: 0.500, l2: 18.334)
+[2026-11-11 17:06:37.561] Checkpoint saved: 1
+[2026-11-11 17:06:37.568]
+[2026-11-11 17:06:37.568] Collecting trajectories
+[2026-11-11 17:06:47.708] Step: 2
+[2026-11-11 17:06:47.708] Collected    64 states from  16 games, 5.5 states/s. 0.5 states/(s*actor), game length: 4.0
+[2026-11-11 17:06:47.708] Buffer size: 128. States seen: 128
+[2026-11-11 17:06:48.803] Losses(total: 20.231, policy: 1.659, value: 0.500, l2: 18.072)
+[2026-11-11 17:06:48.804] Checkpoint saved: 2
+[2026-11-11 17:06:48.809]
+[2026-11-11 17:06:48.809] Collecting trajectories
+[2026-11-11 17:06:58.971] Step: 3
+[2026-11-11 17:06:58.971] Collected    64 states from  16 games, 5.7 states/s. 0.5 states/(s*actor), game length: 4.0
+[2026-11-11 17:06:58.971] Buffer size: 192. States seen: 192
+[2026-11-11 17:06:59.859] Losses(total: 19.412, policy: 1.267, value: 0.500, l2: 17.645)
+[2026-11-11 17:06:59.859] Checkpoint saved: 3
+[2026-11-11 17:06:59.864]
+[2026-11-11 17:06:59.864] Collecting trajectories
+[2026-11-11 17:07:09.870] Step: 4
+[2026-11-11 17:07:09.870] Collected    64 states from  16 games, 5.9 states/s. 0.5 states/(s*actor), game length: 4.0
+[2026-11-11 17:07:09.870] Buffer size: 256. States seen: 256
+[2026-11-11 17:07:11.032] Losses(total: 18.234, policy: 0.670, value: 0.500, l2: 17.063)
+[2026-11-11 17:07:11.032] Checkpoint saved: 4
+[2026-11-11 17:07:11.043]
+[2026-11-11 17:07:11.043] Collecting trajectories
+[2026-11-11 17:07:20.910] Step: 5
+[2026-11-11 17:07:20.911] Collected    64 states from  16 games, 5.8 states/s. 0.5 states/(s*actor), game length: 4.0
+[2026-11-11 17:07:20.911] Buffer size: 256. States seen: 320
+[2026-11-11 17:07:22.071] Losses(total: 17.215, policy: 0.294, value: 0.500, l2: 16.422)
+[2026-11-11 17:07:22.071] Checkpoint saved: 5
+[2026-11-11 17:07:22.076]
+[2026-11-11 17:07:22.077] Collecting trajectories
+[2026-11-11 17:07:24.367] learner exiting
