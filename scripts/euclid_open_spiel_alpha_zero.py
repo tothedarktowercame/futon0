@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 import json
 from pathlib import Path
 import signal
@@ -13,12 +14,64 @@ from open_spiel.python.algorithms import mcts
 from open_spiel.python.algorithms.alpha_zero import alpha_zero
 from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
 from open_spiel.python.algorithms.alpha_zero import model_nnx
+import numpy as np
 import pyspiel
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import euclid_spiel  # noqa: E402,F401  (registers the Python game)
 
 DENSE_I1_ACTIONS = euclid_spiel.DenseActionCodec(1).size
+
+
+class WinInOneEvaluator(mcts.Evaluator):
+    """Give terminal winning children all prior mass before neural inference."""
+
+    def __init__(self, wrapped, cache_size=4096):
+        self.wrapped = wrapped
+        self.cache_size = cache_size
+        self.cache = OrderedDict()
+
+    def _winning_actions(self, state):
+        actions = tuple(state.legal_actions())
+        key = (np.asarray(state.observation_tensor()).tobytes(), actions)
+        if key in self.cache:
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        wins = []
+        for action in actions:
+            child = state.clone()
+            child.apply_action(action)
+            if child.is_terminal() and child.returns()[0] > 0:
+                wins.append(action)
+        result = tuple(wins)
+        self.cache[key] = result
+        self.cache.move_to_end(key)
+        if len(self.cache) > self.cache_size:
+            self.cache.popitem(last=False)
+        return result
+
+    def evaluate(self, state):
+        if self._winning_actions(state):
+            return np.array([1.0, -1.0])
+        return self.wrapped.evaluate(state)
+
+    def prior(self, state):
+        wins = self._winning_actions(state)
+        if wins:
+            probability = 1.0 / len(wins)
+            return [(action, probability) for action in wins]
+        return self.wrapped.prior(state)
+
+    def cache_info(self):
+        return self.wrapped.cache_info()
+
+    def clear_cache(self):
+        self.cache.clear()
+        return self.wrapped.clear_cache()
+
+
+def maybe_win_in_one(evaluator, enabled=True):
+    return WinInOneEvaluator(evaluator) if enabled else evaluator
 
 
 def _orderly_shutdown(_signum, _frame):
@@ -46,7 +99,16 @@ def main():
     parser.add_argument("--move-cap", type=int, default=6)
     parser.add_argument("--eval-game-seconds", type=int, default=60)
     parser.add_argument("--eval-record", type=Path)
+    parser.add_argument("--win-in-one", action=argparse.BooleanOptionalAction,
+                        default=True)
     args = parser.parse_args()
+    if args.win_in_one:
+        original_evaluator = evaluator_lib.AlphaZeroEvaluator
+
+        def win_in_one_evaluator(game, model):
+            return maybe_win_in_one(original_evaluator(game, model), True)
+
+        evaluator_lib.AlphaZeroEvaluator = win_in_one_evaluator
     start_param = (f",start_file={args.start_file.resolve()}"
                    if args.start_file is not None else "")
     start_param += (f",start_perturb={args.start_perturb},"

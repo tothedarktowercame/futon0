@@ -6,6 +6,9 @@ import pyspiel
 
 import euclid_spiel  # registers euclid_book1
 import euclid_play
+from euclid_open_spiel_alpha_zero import WinInOneEvaluator, maybe_win_in_one
+from open_spiel.python.algorithms import mcts
+import numpy as np
 
 
 def _game(cap=6):
@@ -298,3 +301,67 @@ def test_i2_start_state_prefix_leaves_a_reachable_remaining_solution(tmp_path):
             replay.apply_action_tuple(move)
         assert replay.engine_state.facts == perturbed.engine_state.facts
         assert replay.engine_state.la.rows == perturbed.engine_state.la.rows
+
+
+class _FlatEvaluator(mcts.Evaluator):
+    def evaluate(self, state):
+        return np.array([0.25, -0.25])
+
+    def prior(self, state):
+        actions = state.legal_actions()
+        return [(action, 1.0 / len(actions)) for action in actions]
+
+    def cache_info(self):
+        return None
+
+    def clear_cache(self):
+        return None
+
+
+def test_win_in_one_forces_stage_one_win_and_is_neutral_at_i2_start(tmp_path):
+    witness = [
+        ("line_from_points", ("a", "b")),
+        ("proposition_1", ("a", "b", "L_1")),
+        ("line_from_points", ("d_2", "a")),
+        ("line_from_points", ("d_2", "b")),
+        ("circle_from_points", ("b", "c")),
+        ("intersection_circle_line_extending_points", ("C_5", "L_4", "b", "d_2")),
+        ("circle_from_points", ("d_2", "g_6")),
+    ]
+    source = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true)"
+    ).new_initial_state()
+    prefix = []
+    for rule, args in witness:
+        source.legal_actions()
+        move = next(move for move in source._action_by_id.values()
+                    if move[0] == rule and move[1] == args)
+        prefix.append(move)
+        source.apply_action_tuple(move)
+    start_file = tmp_path / "stage-one.json"
+    start_file.write_text(json.dumps(prefix))
+    game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=3,dense_actions=true,"
+        f"alpha_zero_facade=true,start_file={start_file})"
+    )
+    base = _FlatEvaluator()
+    assert maybe_win_in_one(base, False) is base
+    evaluator = WinInOneEvaluator(base)
+    for _ in range(10):
+        state = game.new_initial_state()
+        bot = mcts.MCTSBot(
+            game, 1.41, 2, evaluator, solve=False, dirichlet_noise=None,
+            child_selection_fn=mcts.SearchNode.puct_value,
+            dont_return_chance_node=True,
+        )
+        state.apply_action(bot.step(state))
+        assert state.goal_reached()
+
+    initial = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true,"
+        "alpha_zero_facade=true)"
+    ).new_initial_state()
+    wrapped = _FlatEvaluator()
+    checked = WinInOneEvaluator(wrapped)
+    assert np.array_equal(checked.evaluate(initial), wrapped.evaluate(initial))
+    assert checked.prior(initial) == wrapped.prior(initial)
