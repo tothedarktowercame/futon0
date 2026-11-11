@@ -1,0 +1,23 @@
+[2026-11-11 17:37:32.690] actor-8 started
+[2026-11-11 17:37:32.690] Initializing model
+[2026-11-11 17:37:35.735] Initializing bots
+[2026-11-11 17:37:35.735] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 17:37:35.735] Loading actor weights 0
+[2026-11-11 17:47:13.651] 
+===================== Exception caught =====================
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 240, in _play_game
+    action = root.best_child().action
+             ^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/mcts.py", line 164, in best_child
+    return max(self.children, key=SearchNode.sort_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+
+============================================================
+[2026-11-11 17:47:13.651] actor-8 exiting
