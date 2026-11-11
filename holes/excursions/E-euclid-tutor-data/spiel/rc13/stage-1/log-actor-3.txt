@@ -1,0 +1,5 @@
+[2026-11-11 18:56:47.031] actor-3 started
+[2026-11-11 18:56:47.031] Initializing model
+[2026-11-11 18:56:49.936] Initializing bots
+[2026-11-11 18:56:49.937] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 18:56:49.937] Loading checkpoint 0

@@ -1,0 +1,695 @@
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+Starting game euclid_book1(proposition=2,move_cap=3,dense_actions=true,alpha_zero_facade=true,start_file=/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/prefix.json,start_perturb=2,start_perturb_rate=0.5,start_seed=2026111101)
+Writing logs and checkpoints to: /home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1
+Model type: mlp(width=32, depth=2)
+learner started
+[2026-11-11 18:56:46.136] Initializing model
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+[2026-11-11 18:56:47.718] Model type: mlp(32, 2)
+[2026-11-11 18:56:47.718] Model size: 12389218 variables
+[2026-11-11 18:56:47.961] Initial checkpoint: 0
+[2026-11-11 18:56:47.986] Collecting trajectories
+terminate called after throwing an instance of 'std::system_error'
+  what():  Resource temporarily unavailable
+Process Process-7:
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 320, in _read_array_index_and_device_put
+    shard = await _read_shard(
+            ^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 268, in _read_shard
+    out = await asyncio.to_thread(_cast, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 863, in run_in_executor
+    executor.submit(func, *args), loop=self)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 179, in submit
+    self._adjust_thread_count()
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 202, in _adjust_thread_count
+    t.start()
+  File "/usr/lib/python3.12/threading.py", line 992, in start
+    _start_new_thread(self._bootstrap, ())
+RuntimeError: can't start new thread
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 250, in root_win_in_one_actor
+    return _root_win_actor(False, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 243, in _root_win_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 313, in actor
+    if not update_checkpoint(logger, queue, model, az_evaluator):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 288, in update_checkpoint
+    model.load_checkpoint(path)
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py", line 599, in load_checkpoint
+    self._state = self._checkpointer.restore(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 375, in restore
+    restored = self._restore(directory, args=ckpt_args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 389, in _restore
+    return self._handler.restore(directory, args=args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/standard_checkpoint_handler.py", line 265, in restore
+    return self._impl.restore(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/pytree_checkpoint_handler.py", line 886, in restore
+    return self._handler_impl.restore(directory, args=args)  # pyrefly: ignore[bad-argument-type]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 1109, in restore
+    restored_item = asyncio_utils.run_sync(
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 150, in run_sync
+    return _run_sync_via_new_loop(_coro_with_registration())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 108, in _run_sync_via_new_loop
+    return loop.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 136, in _coro_with_registration
+    return await coro
+           ^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 834, in _maybe_deserialize
+    deserialized_batches = await self._async_io_engine.execute_restore(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/async_io_engine.py", line 239, in execute_restore
+    deserialized_batches = await asyncio.gather(*deserialized_batches_ops)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1752, in deserialize
+    ret = await _deserialize_arrays(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1231, in _deserialize_arrays
+    (ret, logical_bytes), array_metadatas = await asyncio.gather(
+                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1221, in _async_deserialize
+    results = await asyncio.gather(*deserialize_ops)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 440, in async_deserialize
+    return await _read_and_create_array(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 380, in _read_and_create_array
+    shards_and_bytes_read = await asyncio.gather(*read_array_coros)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 328, in _read_array_index_and_device_put
+    raise Exception(  # pylint: disable=broad-exception-raised
+Exception: Encountered error while reading array index: (slice(0, 32, 1), slice(0, 32, 1)). See full TensorStore details: <bound method pybind11_detail_function_record_v1_system_libstdcpp_gxx_abi_1xxx_use_cxx11_abi_1.spec of TensorStore({
+  'base': {
+    'driver': 'zarr',
+    'dtype': 'float32',
+    'fill_missing_data_reads': False,
+    'kvstore': {
+      'base': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'cache_pool': 'cache_pool#ocdbt',
+      'config': {
+        'compression': {'id': 'zstd'},
+        'max_decoded_node_bytes': 100000000,
+        'max_inline_value_bytes': 1024,
+        'uuid': '13f6638866b0b2a4aa4ca15d8df30def',
+        'version_tree_arity_log2': 4,
+      },
+      'driver': 'ocdbt',
+      'manifest': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'path': 'opt_state.0.nu.policy_head.torso.dense_layer.kernel.value/',
+    },
+    'metadata': {
+      'chunks': [32, 32],
+      'compressor': {'id': 'zstd', 'level': 1},
+      'dimension_separator': '.',
+      'dtype': '<f4',
+      'fill_value': None,
+      'filters': None,
+      'order': 'C',
+      'shape': [32, 32],
+      'zarr_format': 2,
+    },
+    'recheck_cached_data': False,
+    'recheck_cached_metadata': False,
+  },
+  'context': {
+    'cache_pool': {},
+    'cache_pool#ocdbt': {'total_bytes_limit': 100000000},
+    'data_copy_concurrency': {},
+    'file_io_concurrency': {'limit': 128},
+    'ocdbt_coordinator': {},
+  },
+  'driver': 'cast',
+  'dtype': 'float32',
+  'transform': {
+    'input_exclusive_max': [[32], [32]],
+    'input_inclusive_min': [0, 0],
+  },
+})>.
+actor-6 started
+Exception caught in actor-6: Encountered error while reading array index: (slice(0, 32, 1), slice(0, 32, 1)). See full TensorStore details: <bound method pybind11_detail_function_record_v1_system_libstdcpp_gxx_abi_1xxx_use_cxx11_abi_1.spec of TensorStore({
+  'base': {
+    'driver': 'zarr',
+    'dtype': 'float32',
+    'fill_missing_data_reads': False,
+    'kvstore': {
+      'base': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'cache_pool': 'cache_pool#ocdbt',
+      'config': {
+        'compression': {'id': 'zstd'},
+        'max_decoded_node_bytes': 100000000,
+        'max_inline_value_bytes': 1024,
+        'uuid': '13f6638866b0b2a4aa4ca15d8df30def',
+        'version_tree_arity_log2': 4,
+      },
+      'driver': 'ocdbt',
+      'manifest': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'path': 'opt_state.0.nu.policy_head.torso.dense_layer.kernel.value/',
+    },
+    'metadata': {
+      'chunks': [32, 32],
+      'compressor': {'id': 'zstd', 'level': 1},
+      'dimension_separator': '.',
+      'dtype': '<f4',
+      'fill_value': None,
+      'filters': None,
+      'order': 'C',
+      'shape': [32, 32],
+      'zarr_format': 2,
+    },
+    'recheck_cached_data': False,
+    'recheck_cached_metadata': False,
+  },
+  'context': {
+    'cache_pool': {},
+    'cache_pool#ocdbt': {'total_bytes_limit': 100000000},
+    'data_copy_concurrency': {},
+    'file_io_concurrency': {'limit': 128},
+    'ocdbt_coordinator': {},
+  },
+  'driver': 'cast',
+  'dtype': 'float32',
+  'transform': {
+    'input_exclusive_max': [[32], [32]],
+    'input_inclusive_min': [0, 0],
+  },
+})>.
+actor-6 exiting
+Process Process-3:
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 320, in _read_array_index_and_device_put
+    shard = await _read_shard(
+            ^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 268, in _read_shard
+    out = await asyncio.to_thread(_cast, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 863, in run_in_executor
+    executor.submit(func, *args), loop=self)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 179, in submit
+    self._adjust_thread_count()
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 202, in _adjust_thread_count
+    t.start()
+  File "/usr/lib/python3.12/threading.py", line 992, in start
+    _start_new_thread(self._bootstrap, ())
+RuntimeError: can't start new thread
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 250, in root_win_in_one_actor
+    return _root_win_actor(False, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 243, in _root_win_actor
+    return _PACKAGED_ACTOR(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 313, in actor
+    if not update_checkpoint(logger, queue, model, az_evaluator):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 288, in update_checkpoint
+    model.load_checkpoint(path)
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py", line 599, in load_checkpoint
+    self._state = self._checkpointer.restore(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 375, in restore
+    restored = self._restore(directory, args=ckpt_args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 389, in _restore
+    return self._handler.restore(directory, args=args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/standard_checkpoint_handler.py", line 265, in restore
+    return self._impl.restore(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/pytree_checkpoint_handler.py", line 886, in restore
+    return self._handler_impl.restore(directory, args=args)  # pyrefly: ignore[bad-argument-type]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 1109, in restore
+    restored_item = asyncio_utils.run_sync(
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 150, in run_sync
+    return _run_sync_via_new_loop(_coro_with_registration())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 108, in _run_sync_via_new_loop
+    return loop.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 136, in _coro_with_registration
+    return await coro
+           ^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 834, in _maybe_deserialize
+    deserialized_batches = await self._async_io_engine.execute_restore(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/async_io_engine.py", line 239, in execute_restore
+    deserialized_batches = await asyncio.gather(*deserialized_batches_ops)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1752, in deserialize
+    ret = await _deserialize_arrays(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1231, in _deserialize_arrays
+    (ret, logical_bytes), array_metadatas = await asyncio.gather(
+                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1221, in _async_deserialize
+    results = await asyncio.gather(*deserialize_ops)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 440, in async_deserialize
+    return await _read_and_create_array(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 380, in _read_and_create_array
+    shards_and_bytes_read = await asyncio.gather(*read_array_coros)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 328, in _read_array_index_and_device_put
+    raise Exception(  # pylint: disable=broad-exception-raised
+Exception: Encountered error while reading array index: (slice(0, 32, 1), slice(0, 32, 1)). See full TensorStore details: <bound method pybind11_detail_function_record_v1_system_libstdcpp_gxx_abi_1xxx_use_cxx11_abi_1.spec of TensorStore({
+  'base': {
+    'driver': 'zarr',
+    'dtype': 'float32',
+    'fill_missing_data_reads': False,
+    'kvstore': {
+      'base': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'cache_pool': 'cache_pool#ocdbt',
+      'config': {
+        'compression': {'id': 'zstd'},
+        'max_decoded_node_bytes': 100000000,
+        'max_inline_value_bytes': 1024,
+        'uuid': '13f6638866b0b2a4aa4ca15d8df30def',
+        'version_tree_arity_log2': 4,
+      },
+      'driver': 'ocdbt',
+      'manifest': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'path': 'opt_state.0.mu.value_head.torso.dense_layer.kernel.value/',
+    },
+    'metadata': {
+      'chunks': [32, 32],
+      'compressor': {'id': 'zstd', 'level': 1},
+      'dimension_separator': '.',
+      'dtype': '<f4',
+      'fill_value': None,
+      'filters': None,
+      'order': 'C',
+      'shape': [32, 32],
+      'zarr_format': 2,
+    },
+    'recheck_cached_data': False,
+    'recheck_cached_metadata': False,
+  },
+  'context': {
+    'cache_pool': {},
+    'cache_pool#ocdbt': {'total_bytes_limit': 100000000},
+    'data_copy_concurrency': {},
+    'file_io_concurrency': {'limit': 128},
+    'ocdbt_coordinator': {},
+  },
+  'driver': 'cast',
+  'dtype': 'float32',
+  'transform': {
+    'input_exclusive_max': [[32], [32]],
+    'input_inclusive_min': [0, 0],
+  },
+})>.
+actor-2 started
+Exception caught in actor-2: Encountered error while reading array index: (slice(0, 32, 1), slice(0, 32, 1)). See full TensorStore details: <bound method pybind11_detail_function_record_v1_system_libstdcpp_gxx_abi_1xxx_use_cxx11_abi_1.spec of TensorStore({
+  'base': {
+    'driver': 'zarr',
+    'dtype': 'float32',
+    'fill_missing_data_reads': False,
+    'kvstore': {
+      'base': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'cache_pool': 'cache_pool#ocdbt',
+      'config': {
+        'compression': {'id': 'zstd'},
+        'max_decoded_node_bytes': 100000000,
+        'max_inline_value_bytes': 1024,
+        'uuid': '13f6638866b0b2a4aa4ca15d8df30def',
+        'version_tree_arity_log2': 4,
+      },
+      'driver': 'ocdbt',
+      'manifest': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-1/checkpoint-0/',
+      },
+      'path': 'opt_state.0.mu.value_head.torso.dense_layer.kernel.value/',
+    },
+    'metadata': {
+      'chunks': [32, 32],
+      'compressor': {'id': 'zstd', 'level': 1},
+      'dimension_separator': '.',
+      'dtype': '<f4',
+      'fill_value': None,
+      'filters': None,
+      'order': 'C',
+      'shape': [32, 32],
+      'zarr_format': 2,
+    },
+    'recheck_cached_data': False,
+    'recheck_cached_metadata': False,
+  },
+  'context': {
+    'cache_pool': {},
+    'cache_pool#ocdbt': {'total_bytes_limit': 100000000},
+    'data_copy_concurrency': {},
+    'file_io_concurrency': {'limit': 128},
+    'ocdbt_coordinator': {},
+  },
+  'driver': 'cast',
+  'dtype': 'float32',
+  'transform': {
+    'input_exclusive_max': [[32], [32]],
+    'input_inclusive_min': [0, 0],
+  },
+})>.
+actor-2 exiting
+[2026-11-11 18:57:20.775] Step: 1
+[2026-11-11 18:57:20.775] Collected    64 states from  64 games, 0.7 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 18:57:20.775] Buffer size: 64. States seen: 64
+[2026-11-11 18:57:21.891] Losses(total: 44.031, policy: 6.412, value: 0.477, l2: 37.142)
+[2026-11-11 18:57:21.911] Checkpoint saved: 1
+[2026-11-11 18:57:21.917]
+[2026-11-11 18:57:21.917] Collecting trajectories
+[2026-11-11 18:57:32.337] Step: 2
+[2026-11-11 18:57:32.337] Collected    64 states from  64 games, 5.5 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 18:57:32.338] Buffer size: 128. States seen: 128
+[2026-11-11 18:57:33.231] Losses(total: 43.421, policy: 6.371, value: 0.423, l2: 36.627)
+[2026-11-11 18:57:33.231] Checkpoint saved: 2
+[2026-11-11 18:57:33.238]
+[2026-11-11 18:57:33.238] Collecting trajectories
+[2026-11-11 18:59:04.303] Step: 3
+[2026-11-11 18:59:04.303] Collected    64 states from  64 games, 0.7 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 18:59:04.303] Buffer size: 192. States seen: 192
+[2026-11-11 18:59:05.042] Losses(total: 42.528, policy: 6.413, value: 0.334, l2: 35.781)
+[2026-11-11 18:59:05.042] Checkpoint saved: 3
+[2026-11-11 18:59:05.055]
+[2026-11-11 18:59:05.055] Collecting trajectories
+[2026-11-11 18:59:14.794] Step: 4
+[2026-11-11 18:59:14.794] Collected    64 states from  64 games, 6.1 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 18:59:14.794] Buffer size: 256. States seen: 256
+[2026-11-11 18:59:15.673] Losses(total: 41.124, policy: 6.265, value: 0.236, l2: 34.624)
+[2026-11-11 18:59:15.673] Checkpoint saved: 4
+[2026-11-11 18:59:15.681]
+[2026-11-11 18:59:15.682] Collecting trajectories
+[2026-11-11 18:59:43.786] Step: 5
+[2026-11-11 18:59:43.786] Collected    64 states from  64 games, 2.2 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 18:59:43.790] Buffer size: 256. States seen: 320
+[2026-11-11 18:59:44.646] Losses(total: 39.651, policy: 6.180, value: 0.132, l2: 33.339)
+[2026-11-11 18:59:44.647] Checkpoint saved: 5
+[2026-11-11 18:59:44.652]
+[2026-11-11 18:59:44.652] Collecting trajectories
+[2026-11-11 18:59:53.783] Step: 6
+[2026-11-11 18:59:53.783] Collected    64 states from  64 games, 6.4 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 18:59:53.783] Buffer size: 256. States seen: 384
+[2026-11-11 18:59:54.656] Losses(total: 38.107, policy: 5.944, value: 0.066, l2: 32.097)
+[2026-11-11 18:59:54.657] Checkpoint saved: 6
+[2026-11-11 18:59:54.662]
+[2026-11-11 18:59:54.662] Collecting trajectories
+[2026-11-11 19:00:03.164] Step: 7
+[2026-11-11 19:00:03.165] Collected    64 states from  64 games, 6.8 states/s. 0.6 states/(s*actor), game length: 1.0
+[2026-11-11 19:00:03.165] Buffer size: 256. States seen: 448
+[2026-11-11 19:00:04.078] Losses(total: 36.571, policy: 5.644, value: 0.029, l2: 30.897)
+[2026-11-11 19:00:04.078] Checkpoint saved: 7
+[2026-11-11 19:00:04.085]
+[2026-11-11 19:00:04.085] Collecting trajectories
+[2026-11-11 19:00:29.765] Step: 8
+[2026-11-11 19:00:29.765] Collected    64 states from  64 games, 2.4 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 19:00:29.765] Buffer size: 256. States seen: 512
+[2026-11-11 19:00:30.602] Losses(total: 35.111, policy: 5.362, value: 0.010, l2: 29.739)
+[2026-11-11 19:00:30.602] Checkpoint saved: 8
+[2026-11-11 19:00:30.607]
+[2026-11-11 19:00:30.607] Collecting trajectories
+[2026-11-11 19:00:50.679] Step: 9
+[2026-11-11 19:00:50.679] Collected    64 states from  64 games, 3.1 states/s. 0.3 states/(s*actor), game length: 1.0
+[2026-11-11 19:00:50.683] Buffer size: 256. States seen: 576
+[2026-11-11 19:00:51.589] Losses(total: 33.538, policy: 4.913, value: 0.003, l2: 28.623)
+[2026-11-11 19:00:51.589] Checkpoint saved: 9
+[2026-11-11 19:00:51.596]
+[2026-11-11 19:00:51.596] Collecting trajectories
+[2026-11-11 19:01:02.491] Step: 10
+[2026-11-11 19:01:02.492] Collected    64 states from  64 games, 5.4 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:01:02.492] Buffer size: 256. States seen: 640
+[2026-11-11 19:01:03.552] Losses(total: 31.912, policy: 4.364, value: 0.001, l2: 27.548)
+[2026-11-11 19:01:03.552] Checkpoint saved: 10
+[2026-11-11 19:01:03.558]
+[2026-11-11 19:01:03.558] Collecting trajectories
+[2026-11-11 19:01:13.256] Step: 11
+[2026-11-11 19:01:13.256] Collected    64 states from  64 games, 5.9 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:01:13.256] Buffer size: 256. States seen: 704
+[2026-11-11 19:01:14.215] Losses(total: 30.206, policy: 3.693, value: 0.000, l2: 26.512)
+[2026-11-11 19:01:14.215] Checkpoint saved: 11
+[2026-11-11 19:01:14.221]
+[2026-11-11 19:01:14.221] Collecting trajectories
+[2026-11-11 19:01:44.476] Step: 12
+[2026-11-11 19:01:44.476] Collected    64 states from  64 games, 2.0 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 19:01:44.480] Buffer size: 256. States seen: 768
+[2026-11-11 19:01:45.389] Losses(total: 28.396, policy: 2.880, value: 0.000, l2: 25.516)
+[2026-11-11 19:01:45.389] Checkpoint saved: 12
+[2026-11-11 19:01:45.394]
+[2026-11-11 19:01:45.395] Collecting trajectories
+[2026-11-11 19:02:04.318] Step: 13
+[2026-11-11 19:02:04.318] Collected    64 states from  64 games, 3.2 states/s. 0.3 states/(s*actor), game length: 1.0
+[2026-11-11 19:02:04.318] Buffer size: 256. States seen: 832
+[2026-11-11 19:02:05.248] Losses(total: 26.555, policy: 1.998, value: 0.000, l2: 24.556)
+[2026-11-11 19:02:05.248] Checkpoint saved: 13
+[2026-11-11 19:02:05.256]
+[2026-11-11 19:02:05.256] Collecting trajectories
+[2026-11-11 19:02:42.624] Step: 14
+[2026-11-11 19:02:42.624] Collected    64 states from  64 games, 1.7 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 19:02:42.624] Buffer size: 256. States seen: 896
+[2026-11-11 19:02:43.605] Losses(total: 24.738, policy: 1.105, value: 0.000, l2: 23.633)
+[2026-11-11 19:02:43.605] Checkpoint saved: 14
+[2026-11-11 19:02:43.610]
+[2026-11-11 19:02:43.611] Collecting trajectories
+[2026-11-11 19:03:04.684] Step: 15
+[2026-11-11 19:03:04.684] Collected    64 states from  64 games, 2.9 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 19:03:04.684] Buffer size: 256. States seen: 960
+[2026-11-11 19:03:05.512] Losses(total: 23.253, policy: 0.508, value: 0.000, l2: 22.745)
+[2026-11-11 19:03:05.512] Checkpoint saved: 15
+[2026-11-11 19:03:05.517]
+[2026-11-11 19:03:05.517] Collecting trajectories
+[2026-11-11 19:04:07.197] Step: 16
+[2026-11-11 19:04:07.197] Collected    64 states from  64 games, 1.0 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 19:04:07.197] Buffer size: 256. States seen: 1024
+[2026-11-11 19:04:08.048] Losses(total: 22.086, policy: 0.196, value: 0.000, l2: 21.890)
+[2026-11-11 19:04:08.048] Checkpoint saved: 16
+[2026-11-11 19:04:08.054]
+[2026-11-11 19:04:08.054] Collecting trajectories
+[2026-11-11 19:04:33.663] Step: 17
+[2026-11-11 19:04:33.664] Collected    64 states from  64 games, 2.4 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 19:04:33.664] Buffer size: 256. States seen: 1088
+[2026-11-11 19:04:34.482] Losses(total: 21.210, policy: 0.143, value: 0.000, l2: 21.068)
+[2026-11-11 19:04:34.482] Checkpoint saved: 17
+[2026-11-11 19:04:34.489]
+[2026-11-11 19:04:34.489] Collecting trajectories
+[2026-11-11 19:04:44.708] Step: 18
+[2026-11-11 19:04:44.708] Collected    64 states from  64 games, 5.8 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:04:44.709] Buffer size: 256. States seen: 1152
+[2026-11-11 19:04:45.633] Losses(total: 20.410, policy: 0.135, value: 0.000, l2: 20.276)
+[2026-11-11 19:04:45.633] Checkpoint saved: 18
+[2026-11-11 19:04:45.641]
+[2026-11-11 19:04:45.641] Collecting trajectories
+[2026-11-11 19:05:12.728] Step: 19
+[2026-11-11 19:05:12.728] Collected    64 states from  64 games, 2.3 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 19:05:12.728] Buffer size: 256. States seen: 1216
+[2026-11-11 19:05:13.569] Losses(total: 19.641, policy: 0.128, value: 0.000, l2: 19.514)
+[2026-11-11 19:05:13.570] Checkpoint saved: 19
+[2026-11-11 19:05:13.575]
+[2026-11-11 19:05:13.575] Collecting trajectories
+[2026-11-11 19:05:22.333] Step: 20
+[2026-11-11 19:05:22.333] Collected    64 states from  64 games, 6.7 states/s. 0.6 states/(s*actor), game length: 1.0
+[2026-11-11 19:05:22.333] Buffer size: 256. States seen: 1280
+[2026-11-11 19:05:23.346] Losses(total: 19.020, policy: 0.240, value: 0.000, l2: 18.780)
+[2026-11-11 19:05:23.347] Checkpoint saved: 20
+[2026-11-11 19:05:23.353]
+[2026-11-11 19:05:23.353] Collecting trajectories
+[2026-11-11 19:05:57.285] Step: 21
+[2026-11-11 19:05:57.285] Collected    64 states from  64 games, 1.8 states/s. 0.2 states/(s*actor), game length: 1.0
+[2026-11-11 19:05:57.285] Buffer size: 256. States seen: 1344
+[2026-11-11 19:05:58.571] Losses(total: 18.176, policy: 0.103, value: 0.000, l2: 18.073)
+[2026-11-11 19:05:58.572] Checkpoint saved: 21
+[2026-11-11 19:05:58.585]
+[2026-11-11 19:05:58.585] Collecting trajectories
+[2026-11-11 19:06:10.008] Step: 22
+[2026-11-11 19:06:10.008] Collected    64 states from  64 games, 5.0 states/s. 0.4 states/(s*actor), game length: 1.0
+[2026-11-11 19:06:10.008] Buffer size: 256. States seen: 1408
+[2026-11-11 19:06:10.958] Losses(total: 17.463, policy: 0.070, value: 0.000, l2: 17.393)
+[2026-11-11 19:06:10.958] Checkpoint saved: 22
+[2026-11-11 19:06:10.964]
+[2026-11-11 19:06:10.964] Collecting trajectories
+[2026-11-11 19:06:20.630] Step: 23
+[2026-11-11 19:06:20.630] Collected    64 states from  64 games, 6.0 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:06:20.631] Buffer size: 256. States seen: 1472
+[2026-11-11 19:06:21.656] Losses(total: 16.792, policy: 0.054, value: 0.000, l2: 16.738)
+[2026-11-11 19:06:21.657] Checkpoint saved: 23
+[2026-11-11 19:06:21.664]
+[2026-11-11 19:06:21.664] Collecting trajectories
+[2026-11-11 19:06:32.109] Step: 24
+[2026-11-11 19:06:32.109] Collected    64 states from  64 games, 5.6 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:06:32.109] Buffer size: 256. States seen: 1536
+[2026-11-11 19:06:33.071] Losses(total: 16.121, policy: 0.013, value: 0.000, l2: 16.108)
+[2026-11-11 19:06:33.071] Checkpoint saved: 24
+[2026-11-11 19:06:33.078]
+[2026-11-11 19:06:33.078] Collecting trajectories
+[2026-11-11 19:06:43.218] Step: 25
+[2026-11-11 19:06:43.218] Collected    64 states from  64 games, 5.8 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:06:43.218] Buffer size: 256. States seen: 1600
+[2026-11-11 19:06:44.350] Losses(total: 15.554, policy: 0.054, value: 0.000, l2: 15.501)
+[2026-11-11 19:06:44.351] Checkpoint saved: 25
+[2026-11-11 19:06:44.358]
+[2026-11-11 19:06:44.358] Collecting trajectories
+[2026-11-11 19:06:53.800] Step: 26
+[2026-11-11 19:06:53.801] Collected    64 states from  64 games, 6.0 states/s. 0.5 states/(s*actor), game length: 1.0
+[2026-11-11 19:06:53.802] Buffer size: 256. States seen: 1664
+[2026-11-11 19:06:54.775] Losses(total: 15.035, policy: 0.119, value: 0.000, l2: 14.916)
+[2026-11-11 19:06:54.775] Checkpoint saved: 26
+[2026-11-11 19:06:54.783]
+[2026-11-11 19:06:54.783] Collecting trajectories
+[2026-11-11 19:07:32.206] Step: 27
+[2026-11-11 19:07:32.206] Collected    64 states from  64 games, 1.7 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 19:07:32.206] Buffer size: 256. States seen: 1728
+[2026-11-11 19:07:33.175] Losses(total: 14.436, policy: 0.084, value: 0.000, l2: 14.353)
+[2026-11-11 19:07:33.176] Checkpoint saved: 27
+[2026-11-11 19:07:33.183]
+[2026-11-11 19:07:33.183] Collecting trajectories
+[2026-11-11 19:09:00.187] Step: 28
+[2026-11-11 19:09:00.188] Collected    64 states from  64 games, 0.7 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 19:09:00.188] Buffer size: 256. States seen: 1792
+[2026-11-11 19:09:01.259] Losses(total: 13.862, policy: 0.051, value: 0.000, l2: 13.810)
+[2026-11-11 19:09:01.259] Checkpoint saved: 28
+[2026-11-11 19:09:01.268]
+[2026-11-11 19:09:01.268] Collecting trajectories
+[2026-11-11 19:09:19.683] Step: 29
+[2026-11-11 19:09:19.683] Collected    64 states from  64 games, 3.3 states/s. 0.3 states/(s*actor), game length: 1.0
+[2026-11-11 19:09:19.683] Buffer size: 256. States seen: 1856
+[2026-11-11 19:09:20.594] Losses(total: 13.320, policy: 0.032, value: 0.000, l2: 13.288)
+[2026-11-11 19:09:20.595] Checkpoint saved: 29
+[2026-11-11 19:09:20.600]
+[2026-11-11 19:09:20.600] Collecting trajectories
+[2026-11-11 19:09:31.970] Step: 30
+[2026-11-11 19:09:31.970] Collected    64 states from  64 games, 5.2 states/s. 0.4 states/(s*actor), game length: 1.0
+[2026-11-11 19:09:31.970] Buffer size: 256. States seen: 1920
+[2026-11-11 19:09:32.877] Losses(total: 12.789, policy: 0.004, value: 0.000, l2: 12.785)
+[2026-11-11 19:09:32.877] Checkpoint saved: 30
+[2026-11-11 19:09:32.885]
+[2026-11-11 19:09:32.885] Collecting trajectories
+[2026-11-11 19:11:05.259] Step: 31
+[2026-11-11 19:11:05.260] Collected    64 states from  64 games, 0.7 states/s. 0.1 states/(s*actor), game length: 1.0
+[2026-11-11 19:11:05.260] Buffer size: 256. States seen: 1984
+[2026-11-11 19:11:06.137] Losses(total: 12.382, policy: 0.082, value: 0.000, l2: 12.301)
+[2026-11-11 19:11:06.137] Checkpoint saved: 31
+[2026-11-11 19:11:06.142]
+[2026-11-11 19:11:06.142] Collecting trajectories
+[2026-11-11 19:11:45.351] learner exiting
