@@ -1,4 +1,5 @@
 from collections import deque
+import json
 import random
 
 import pyspiel
@@ -73,6 +74,20 @@ def test_neutral_sampler_only_returns_legal_actions():
         assert action in legal
         child = state.clone()
         child.apply_action_tuple(action)
+
+
+def test_compact_neutral_sampler_only_returns_encodable_actions():
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true)"
+    )
+    state = game.new_initial_state()
+    rng = random.Random(711)
+    for _ in range(20):
+        action = state.sample_action_tuple(rng)
+        assert game.action_codec.encode(state, action) is not None
+        state.apply_action_tuple(action)
+        if state.is_terminal():
+            break
 
 
 def test_grounded_action_ids_are_stable_between_states():
@@ -162,3 +177,43 @@ def test_compact_i2_is_reachable_with_ten_move_horizon():
         assert len(matches) == 1, (rule, args)
         state.apply_action(matches[0])
     assert state.returns() == [1.0]
+
+
+def test_i2_start_state_prefix_leaves_a_reachable_remaining_solution(tmp_path):
+    """Every reverse-curriculum start replays its prefix exactly."""
+    witness = [
+        ("line_from_points", ("a", "b")),
+        ("proposition_1", ("a", "b", "L_1")),
+        ("line_from_points", ("d_2", "a")),
+        ("line_from_points", ("d_2", "b")),
+        ("circle_from_points", ("b", "c")),
+        ("intersection_circle_line_extending_points", ("C_5", "L_4", "b", "d_2")),
+        ("circle_from_points", ("d_2", "g_6")),
+        ("intersection_circle_line_extending_points", ("C_7", "L_3", "a", "d_2")),
+    ]
+    source = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true)"
+    ).new_initial_state()
+    grounded = []
+    for rule, args in witness:
+        source.legal_actions()
+        matches = [move for move in source._action_by_id.values()
+                   if move[0] == rule and move[1] == args]
+        assert len(matches) == 1
+        move = matches[0]
+        grounded.append(move)
+        source.apply_action_tuple(move)
+
+    for prefix_length in range(len(grounded)):
+        start_file = tmp_path / f"start-{prefix_length}.json"
+        start_file.write_text(json.dumps(grounded[:prefix_length]))
+        remaining = grounded[prefix_length:]
+        game = pyspiel.load_game(
+            f"euclid_book1(proposition=2,move_cap={len(remaining) + 2},"
+            f"dense_actions=true,start_file={start_file})"
+        )
+        state = game.new_initial_state()
+        assert state.history_moves == []
+        for move in remaining:
+            state.apply_action_tuple(move)
+        assert state.returns() == [1.0]

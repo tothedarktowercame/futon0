@@ -37,11 +37,16 @@ def main():
     parser.add_argument("--eval-games", type=int, default=20)
     parser.add_argument("--warm-from", type=Path)
     parser.add_argument("--warm-step", type=int, default=30)
+    parser.add_argument("--resume-from", type=Path)
+    parser.add_argument("--resume-step", type=int)
+    parser.add_argument("--start-file", type=Path)
     parser.add_argument("--move-cap", type=int, default=6)
     parser.add_argument("--eval-game-seconds", type=int, default=60)
     args = parser.parse_args()
+    start_param = (f",start_file={args.start_file.resolve()}"
+                   if args.start_file is not None else "")
     game = (f"euclid_book1(proposition={args.proposition},move_cap={args.move_cap},"
-            "dense_actions=true,alpha_zero_facade=true)")
+            f"dense_actions=true,alpha_zero_facade=true{start_param})")
     config = alpha_zero.Config(
         game=game,
         path=str(args.out.resolve()),
@@ -138,6 +143,20 @@ def main():
             return target
 
         alpha_zero._init_model_from_config = warm_init
+    if args.resume_from is not None:
+        if args.resume_step is None:
+            parser.error("--resume-from requires --resume-step")
+        original_init = alpha_zero._init_model_from_config
+
+        def resume_init(target_config):
+            target = original_init(target_config)
+            source = original_init(target_config.replace(
+                path=str(args.resume_from.resolve())))
+            source.load_checkpoint(args.resume_step)
+            target._state = source._state
+            return target
+
+        alpha_zero._init_model_from_config = resume_init
     # bg.py stops a run with SIGTERM.  Turn that into the interruption the
     # packaged loop already handles: it broadcasts an exit message and joins
     # every actor in its finally block.  Without this bridge, SIGTERM kills the

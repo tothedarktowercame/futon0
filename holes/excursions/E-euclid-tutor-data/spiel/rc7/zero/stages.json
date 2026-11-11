@@ -1,0 +1,20 @@
+[
+  {
+    "k": 1,
+    "prefix_length": 4,
+    "train_seconds": 124.68525985698216,
+    "step": 2,
+    "games": 10,
+    "wins": 10,
+    "timeouts": 0
+  },
+  {
+    "k": 2,
+    "prefix_length": 3,
+    "train_seconds": 52.11879814299755,
+    "step": 2,
+    "games": 10,
+    "wins": 0,
+    "timeouts": 0
+  }
+]

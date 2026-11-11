@@ -40,7 +40,7 @@ _GAME_TYPE = pyspiel.GameType(
     provides_observation_tensor=True,
     parameter_specification={
         "proposition": 1, "move_cap": 12, "dense_actions": False,
-        "alpha_zero_facade": False,
+        "alpha_zero_facade": False, "start_file": "",
     },
 )
 
@@ -334,7 +334,8 @@ def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
 
-def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000):
+def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000,
+                  allowed_rules=None, allowed_by_kind=None):
     """Sample without materialising the legal set.
 
     Each attempt chooses a rule uniformly, then a matching premise environment
@@ -350,7 +351,8 @@ def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000):
     for fact in sorted(state.facts, key=repr):
         if fact:
             facts_by_head.setdefault(fact[0], []).append(fact)
-    rules = sorted(play.palette(n))
+    rules = sorted(rule for rule in play.palette(n)
+                   if allowed_rules is None or rule in allowed_rules)
     env_cache = {}
     query_cache = {}
     for _ in range(max_attempts):
@@ -374,7 +376,10 @@ def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000):
         for variable in variables:
             if variable in full:
                 continue
-            domain = by_kind.get(info["arg_kinds"].get(variable, "point"), ())
+            kind = info["arg_kinds"].get(variable, "point")
+            domain = by_kind.get(kind, ())
+            if allowed_by_kind is not None:
+                domain = tuple(name for name in domain if name in allowed_by_kind[kind])
             if not domain:
                 refused = True
                 break
@@ -402,7 +407,19 @@ class EuclidGame(pyspiel.Game):
         self.move_cap = int(params.get("move_cap", 12))
         self.dense_actions = bool(params.get("dense_actions", False))
         self.alpha_zero_facade = bool(params.get("alpha_zero_facade", False))
+        self.start_file = str(params.get("start_file", ""))
         self.action_codec = DenseActionCodec(self.proposition) if self.dense_actions else None
+        self.start_moves = []
+        self.start_state = None
+        if self.start_file:
+            with open(self.start_file) as stream:
+                encoded = json.load(stream)
+            self.start_state = play._start_state(self.proposition)
+            for ply, (rule, args, bindings) in enumerate(encoded, 1):
+                grounded = (rule, tuple(args), tuple(sorted(dict(bindings).items())))
+                eng.apply_step(self.start_state, ply, grounded[0], grounded[1],
+                               dict(grounded[2]))
+                self.start_moves.append(grounded)
 
     def _ensure_configured(self):
         # pyspiel pickles the C++ base and can omit Python instance attributes
@@ -412,7 +429,8 @@ class EuclidGame(pyspiel.Game):
 
     def new_initial_state(self):
         self._ensure_configured()
-        return EuclidState(self)
+        engine_state = self.start_state.copy() if self.start_state is not None else None
+        return EuclidState(self, engine_state=engine_state)
 
     def make_py_observer(self, iig_obs_type=None, params=None):
         return IIGObserverForPublicInfoGame(
@@ -449,7 +467,7 @@ class EuclidState(pyspiel.State):
         for obj in play.tr.objects_from_hyps(self._proposition):
             if obj["name"] not in ordered:
                 ordered.append(obj["name"])
-        for _rule, _args, bindings in self.history_moves:
+        for _rule, _args, bindings in self._euclid_game.start_moves + self.history_moves:
             for _base, name in bindings:
                 if name not in ordered:
                     ordered.append(name)
@@ -534,8 +552,17 @@ class EuclidState(pyspiel.State):
         self._parent_legal_keys = frozenset()
 
     def sample_action_tuple(self, rng=None):
+        allowed_rules = None
+        allowed_by_kind = None
+        if self._euclid_game.action_codec:
+            allowed_rules = set(self._euclid_game.action_codec.rules)
+            allowed_by_kind = {
+                kind: set(names[:DENSE_KIND_CAPS[kind]])
+                for kind, names in self._euclid_game.action_codec._by_kind(self).items()
+            }
         return sample_action(
-            self._proposition, self.engine_state, self.initial_kinds, len(self.history_moves), rng
+            self._proposition, self.engine_state, self.initial_kinds, len(self.history_moves), rng,
+            allowed_rules=allowed_rules, allowed_by_kind=allowed_by_kind
         )
 
     def _apply_action(self, action):
