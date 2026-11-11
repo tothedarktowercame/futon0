@@ -74,6 +74,23 @@ def maybe_win_in_one(evaluator, enabled=True):
     return WinInOneEvaluator(evaluator) if enabled else evaluator
 
 
+_PACKAGED_ACTOR = alpha_zero.actor
+
+
+def win_in_one_actor(**kwargs):
+    """Spawn target that installs the wrapper inside the actor process."""
+    original_evaluator = evaluator_lib.AlphaZeroEvaluator
+
+    def wrapped_evaluator(game, model):
+        return WinInOneEvaluator(original_evaluator(game, model))
+
+    evaluator_lib.AlphaZeroEvaluator = wrapped_evaluator
+    try:
+        return _PACKAGED_ACTOR(**kwargs)
+    finally:
+        evaluator_lib.AlphaZeroEvaluator = original_evaluator
+
+
 def _orderly_shutdown(_signum, _frame):
     """Let OpenSpiel's training loop close and join every worker process."""
     raise KeyboardInterrupt
@@ -103,12 +120,7 @@ def main():
                         default=True)
     args = parser.parse_args()
     if args.win_in_one:
-        original_evaluator = evaluator_lib.AlphaZeroEvaluator
-
-        def win_in_one_evaluator(game, model):
-            return maybe_win_in_one(original_evaluator(game, model), True)
-
-        evaluator_lib.AlphaZeroEvaluator = win_in_one_evaluator
+        alpha_zero.actor = win_in_one_actor
     start_param = (f",start_file={args.start_file.resolve()}"
                    if args.start_file is not None else "")
     start_param += (f",start_perturb={args.start_perturb},"
@@ -160,7 +172,8 @@ def main():
             decouple_weight_decay=config.decouple_weight_decay,
         )
         model.load_checkpoint(args.eval_step)
-        evaluator = evaluator_lib.AlphaZeroEvaluator(loaded_game, model)
+        evaluator = maybe_win_in_one(
+            evaluator_lib.AlphaZeroEvaluator(loaded_game, model), args.win_in_one)
         wins = timeouts = 0
         win_records = []
 
