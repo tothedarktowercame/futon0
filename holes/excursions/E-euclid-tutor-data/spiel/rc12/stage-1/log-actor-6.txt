@@ -41,7 +41,7 @@
 [2026-11-11 17:24:47.499] Game 28: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
 [2026-11-11 17:24:47.519] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
 [2026-11-11 17:24:47.519] Loading checkpoint 5
-[2026-11-11 17:24:47.652] 
+[2026-11-11 17:24:47.652]
 ===================== Exception caught =====================
 Traceback (most recent call last):
   File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher

@@ -4,7 +4,7 @@ Exception ignored in: <function _xla_gc_callback at 0x734ee66332e0>
 Traceback (most recent call last):
   File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/jax/_src/lib/__init__.py", line 125, in _xla_gc_callback
     def _xla_gc_callback(*args):
-    
+
   File "/home/joe/code/futon0/scripts/euclid_open_spiel_alpha_zero.py", line 283, in evaluation_timeout
     raise TimeoutError("greedy evaluation game exceeded its time limit")
 TimeoutError: greedy evaluation game exceeded its time limit
