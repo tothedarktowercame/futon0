@@ -24,19 +24,19 @@ move is still checked by the LEGAL-1 certified application guard.
 ## Before and after
 
 The fixed starts use the rc13 stage-2 clean prefix, two perturbations at rate
-1.0, seed 2026111102.  Random positions use seeds from `Random(20261111)` and
+0.5, seed 2026111102.  Random positions use seeds from `Random(20261111)` and
 up to four guarded random moves.  Enumeration time is one pass per position,
 so the cold clean-prefix number is descriptive rather than a microbenchmark.
 
 | population | aliases before | legal before | alias moves before | legal after | alias moves after | median enumerate before / after |
 |---|---:|---:|---:|---:|---:|---:|
-| rc13 stage-2 prefix | 0 | 532 | 0 | 527 | 0 | 4116.9 / 2073.3 ms |
-| 10 fixed perturbed starts | 0 | 7,691 | 0 | 7,632 | 0 | 6208.3 / 3890.9 ms |
-| 30 random I.2 positions | 7 | 4,554 | 937 | 3,571 | 0 | 316.9 / 117.3 ms |
+| rc13 stage-2 prefix | 0 | 532 | 0 | 527 | 0 | 2123.8 / 2190.8 ms |
+| 10 fixed perturbed starts | 0 | 6,007 | 0 | 5,955 | 0 | 1087.7 / 1487.8 ms |
+| 30 random I.2 positions | 7 | 4,554 | 937 | 3,571 | 0 | 188.5 / 117.1 ms |
 
 The ten fixed legal counts changed from
-`[804 884 734 696 696 532 947 532 536 1330]` to
-`[798 877 728 690 690 527 941 527 531 1323]`.  The small reductions even
+`[804 532 532 532 532 532 947 532 532 532]` to
+`[798 527 527 527 527 527 941 527 527 527]`.  The small reductions even
 without an existing alias are the now-absent moves whose sole result would
 have been a fresh alias.  The engine still contains aliases in the seven
 random cases; the after-view reports zero exposed alias objects by design.
