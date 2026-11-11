@@ -27,6 +27,7 @@ they are restated here verbatim — flagged to claude-9 in the reply bell.
 """
 
 import argparse
+import html
 import sys
 import functools
 import json
@@ -36,6 +37,7 @@ import random
 import re
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, unquote, urlsplit
 
 import euclid_engine as eng
 import euclid_trace as tr
@@ -3336,6 +3338,145 @@ def _log_play(data, res):
         pass
 
 
+# Read-only spectator pages for notation-game logs.  The game log remains the
+# authority: every response replays accepted action strings through the same
+# dense OpenSpiel game that produced them.
+_NOTATION_LOG_DIR = os.path.expanduser("~/notes/euclid-cs/notation-games")
+
+
+def notation_action_to_play_move(state, action):
+    """Convert one legal dense action into the play page's move payload."""
+    if state._actions is None:
+        state.legal_actions()
+    rule, args, bindings = state._action_by_id[action]
+    return {"rule": rule, "args": list(args), "bindings": dict(bindings)}
+
+
+def _notation_path(game_id):
+    if not game_id or game_id in (".", "..") or os.path.basename(game_id) != game_id:
+        raise ValueError("invalid game id")
+    return os.path.join(_NOTATION_LOG_DIR, game_id + ".jsonl")
+
+
+def _notation_records(game_id):
+    path = _notation_path(game_id)
+    with open(path, encoding="utf-8") as stream:
+        records = [json.loads(line) for line in stream if line.strip()]
+    if not records or records[0].get("command") != "new":
+        raise ValueError("notation log does not start with new")
+    return path, records
+
+
+def _notation_replay(game_id, step=None):
+    # Lazy import avoids making OpenSpiel a dependency of the ordinary play
+    # page until a watcher is actually requested.
+    try:
+        import pyspiel
+    except ModuleNotFoundError:
+        # The long-running play server uses the system interpreter, while the
+        # game wrapper is installed in its dedicated, same-Python-version
+        # environment.  addsitedir also processes that environment's .pth
+        # files; EUCLID_OPENSPIEL_SITE makes the deployment location explicit
+        # when it differs from the current workstation convention.
+        import site
+        site_dir = os.environ.get(
+            "EUCLID_OPENSPIEL_SITE",
+            os.path.expanduser("~/.venvs/openspiel/lib/python%d.%d/site-packages" %
+                               (sys.version_info.major, sys.version_info.minor)))
+        site.addsitedir(site_dir)
+        import pyspiel
+    import euclid_spiel  # noqa: F401  (registers euclid_book1)
+
+    path, records = _notation_records(game_id)
+    first = records[0]
+    prop, cap = int(first["proposition"]), int(first["move_cap"])
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=%d,move_cap=%d,dense_actions=true)" % (prop, cap))
+    state = game.new_initial_state()
+    accepted = [r["move"] for r in records
+                if r.get("command") == "move" and r.get("accepted")]
+    limit = len(accepted) if step is None else max(0, min(int(step), len(accepted)))
+    play_moves, shown = [], []
+    replay_error = None
+    for text in accepted[:limit]:
+        if state.is_terminal():
+            replay_error = "accepted move follows terminal state"
+            break
+        legal = state.legal_actions()
+        matches = [a for a in legal if state.action_to_string(0, a) == text]
+        if len(matches) != 1:
+            replay_error = "recorded move has %d legal matches: %s" % (len(matches), text)
+            break
+        action = matches[0]
+        play_moves.append(notation_action_to_play_move(state, action))
+        shown.append(text)
+        state.apply_action(action)
+    drawing = play(prop, play_moves)
+    rendered = drawing.get("moves") or []
+    move_rows = []
+    for index, text in enumerate(shown):
+        entry = rendered[index] if index < len(rendered) else None
+        bindings = play_moves[index].get("bindings") or {}
+        made = set(bindings.values())
+        drawn_names = {o["name"] for o in drawing.get("objects", [])
+                       if (o.get("jsx") or {}).get("type") != "undrawn"}
+        not_drawn = bool(made and not made.intersection(drawn_names))
+        if entry is None or not entry.get("ok"):
+            not_drawn = True
+        move_rows.append({"number": index + 1, "text": text,
+                          "not_drawn": not_drawn,
+                          "error": None if entry is None else entry.get("error_plain")})
+    return {"id": game_id, "player": first.get("player") or game_id.split("-", 1)[0],
+            "proposition": prop, "cap": cap, "moves": move_rows,
+            "move_count": len(accepted), "shown_step": len(shown),
+            "solved": bool(state.goal_reached()), "over": bool(state.is_terminal()),
+            "live": not state.is_terminal(), "last_update":
+                (records[-1].get("timestamp") or
+                 time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(os.path.getmtime(path)))),
+            "replay_error": replay_error, "drawing": drawing}
+
+
+def _notation_games():
+    games = []
+    if not os.path.isdir(_NOTATION_LOG_DIR):
+        return games
+    for filename in os.listdir(_NOTATION_LOG_DIR):
+        if not filename.endswith(".jsonl"):
+            continue
+        game_id = filename[:-6]
+        try:
+            game = _notation_replay(game_id)
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
+            games.append({"id": game_id, "error": str(error), "last_update": ""})
+            continue
+        game.pop("drawing", None)
+        game.pop("moves", None)
+        games.append(game)
+    return sorted(games, key=lambda game: game.get("last_update", ""), reverse=True)
+
+
+def _watch_index_html():
+    rows = []
+    for game in _notation_games():
+        game_id = html.escape(game["id"])
+        if game.get("error"):
+            rows.append("<tr><td>%s</td><td colspan=6>%s</td></tr>" %
+                        (game_id, html.escape(game["error"])))
+            continue
+        status = "solved" if game["solved"] else ("over" if game["over"] else "live")
+        rows.append("<tr><td><a href='./%s'>%s</a></td><td>%s</td>"
+                    "<td>I.%s</td><td>%s / %s</td><td>%s</td><td>%s</td></tr>" %
+                    (game_id, game_id, html.escape(game["player"]), game["proposition"],
+                     game["move_count"], game["cap"], status,
+                     html.escape(game["last_update"])))
+    return ("<!doctype html><meta charset=utf-8><title>Euclid games</title>"
+            "<style>body{font:16px sans-serif;margin:2rem}table{border-collapse:collapse}"
+            "th,td{padding:.45rem .7rem;border-bottom:1px solid #ccc;text-align:left}</style>"
+            "<h1>Euclid notation games</h1><table><thead><tr><th>Game</th><th>Player</th>"
+            "<th>Proposition</th><th>Moves</th><th>Status</th><th>Updated</th></tr></thead>"
+            "<tbody>%s</tbody></table>" % "".join(rows))
+
+
 class _Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=VIEWER_DIR, **kw)
@@ -3354,13 +3495,46 @@ class _Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_html(self, body, code=200):
+        body = body.encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def do_GET(self):
-        if self.path == "/api/catalogue":
+        parsed = urlsplit(self.path)
+        if parsed.path == "/api/catalogue":
             self._send_json(catalogue())
-        elif self.path == "/api/version":
+        elif parsed.path == "/api/version":
             # which code is this? (the live loop: a playtester confirms a
             # fix is loaded before trying it again)
             self._send_json(_version())
+        elif parsed.path == "/api/watch":
+            self._send_json(_notation_games())
+        elif parsed.path.startswith("/api/watch/"):
+            try:
+                game_id = unquote(parsed.path[len("/api/watch/"):])
+                query = parse_qs(parsed.query)
+                step = int(query["step"][0]) if "step" in query else None
+                self._send_json(_notation_replay(game_id, step))
+            except FileNotFoundError:
+                self._send_json({"error": "unknown game"}, code=404)
+            except (ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
+                self._send_json({"error": str(error)}, code=400)
+        elif parsed.path == "/watch/":
+            self._send_html(_watch_index_html())
+        elif parsed.path.startswith("/watch/"):
+            game_id = unquote(parsed.path[len("/watch/"):])
+            try:
+                _notation_path(game_id)
+                with open(os.path.join(VIEWER_DIR, "watch.html"), encoding="utf-8") as stream:
+                    page = stream.read().replace("__GAME_ID__", html.escape(game_id, quote=True))
+                    page = page.replace("__GAME_ID_JSON__", json.dumps(game_id))
+                self._send_html(page)
+            except (OSError, ValueError):
+                self.send_error(404)
         else:
             super().do_GET()
 

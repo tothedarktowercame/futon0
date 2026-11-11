@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Euclid game __GAME_ID__</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraph.css">
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraphcore.js"></script>
+<style>
+body{font:16px system-ui,sans-serif;margin:0;color:#222}header{padding:.7rem 1rem;border-bottom:1px solid #bbb}
+main{display:grid;grid-template-columns:minmax(420px,2fr) minmax(300px,1fr);height:calc(100vh - 70px)}
+#board{min-height:480px}.side{padding:1rem;overflow:auto;border-left:1px solid #bbb}ol{padding-left:1.7rem}
+li{margin:.45rem 0;font-family:ui-monospace,monospace}.not-drawn{color:#8b4513}.solved{color:#176b24;font-weight:bold}
+button{margin:.2rem;padding:.35rem .6rem}@media(max-width:800px){main{grid-template-columns:1fr;height:auto}#board{height:55vh}.side{border:0}}
+</style></head><body>
+<header><a href="./">All games</a> · <strong id="title">__GAME_ID__</strong> · <span id="status">loading…</span></header>
+<main><div id="board" class="jxgbox"></div><section class="side">
+<div id="controls"><button id="back">◀</button><button id="forward">▶</button><button id="live">Live</button> <span id="step"></span></div>
+<ol id="moves"></ol><p id="error"></p></section></main>
+<script>
+const gameId=__GAME_ID_JSON__;
+const watchAt=location.pathname.indexOf('/watch/');
+const urlPrefix=watchAt<0?'':location.pathname.slice(0,watchAt);
+let selectedStep=null,board=null,built={};
+function placement(data){const p={};for(const o of data.drawing.objects||[])if(o.kind==='point'&&Array.isArray(o.xy))p[o.name]=o.xy;return p}
+function renderBoard(data){if(board)JXG.JSXGraph.freeBoard(board);board=JXG.JSXGraph.initBoard('board',{boundingbox:[-3,4,8,-4],axis:false,showCopyright:false,showNavigation:true});built={};const P=placement(data);
+ for(const o of data.drawing.objects||[]){const j=o.jsx||{},base={name:o.name,withLabel:true,fixed:true,strokeColor:'#3366aa',fillColor:'#3366aa'};let el=null;
+  try{if(j.type==='point'&&P[o.name])el=board.create('point',P[o.name],base);else if(j.type==='line'&&built[j.p[0]]&&built[j.p[1]])el=board.create('line',[built[j.p[0]],built[j.p[1]]],base);else if(j.type==='circle'&&built[j.center]){if(j.radius_from&&built[j.radius_from[0]]&&built[j.radius_from[1]])el=board.create('circle',[built[j.center],()=>built[j.radius_from[0]].Dist(built[j.radius_from[1]])],base);else if(built[j.through])el=board.create('circle',[built[j.center],built[j.through]],base)}else if(j.type==='compass'&&j.from.every(x=>built[x])&&built[j.center])el=board.create('compass',[built[j.from[0]],built[j.from[1]],built[j.center]],base);else if(j.type==='glider'&&P[o.name]&&built[j.on])el=board.create('glider',[P[o.name][0],P[o.name][1],built[j.on]],base);else if(j.type==='intersection'&&j.parents.every(x=>built[x]))el=board.create('intersection',j.parents.map(x=>built[x]).concat([j.idx||0]),base)}catch(_e){el=null}if(el)built[o.name]=el}}
+function render(data){document.getElementById('title').textContent=`${data.id} · I.${data.proposition}`;const status=document.getElementById('status');status.textContent=data.solved?'Solved':(data.over?'Over':'Live');status.className=data.solved?'solved':'';document.getElementById('step').textContent=`${data.shown_step} / ${data.move_count}`;
+ const list=document.getElementById('moves');list.textContent='';for(const m of data.moves){const li=document.createElement('li');li.textContent=m.text+(m.not_drawn?' — not drawn':'');if(m.not_drawn)li.className='not-drawn';list.appendChild(li)}document.getElementById('error').textContent=data.replay_error||'';renderBoard(data)}
+async function refresh(){const q=selectedStep===null?'':`?step=${selectedStep}`;const r=await fetch(`${urlPrefix}/api/watch/${encodeURIComponent(gameId)}${q}`,{cache:'no-store'});if(r.ok)render(await r.json())}
+document.getElementById('back').onclick=()=>{selectedStep=Math.max(0,(selectedStep===null?document.querySelectorAll('#moves li').length:selectedStep)-1);refresh()};
+document.getElementById('forward').onclick=()=>{selectedStep=(selectedStep===null?0:selectedStep)+1;refresh()};document.getElementById('live').onclick=()=>{selectedStep=null;refresh()};
+refresh();setInterval(()=>{if(selectedStep===null)refresh()},1000);
+</script></body></html>
