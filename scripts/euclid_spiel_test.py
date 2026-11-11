@@ -365,3 +365,13 @@ def test_win_in_one_forces_stage_one_win_and_is_neutral_at_i2_start(tmp_path):
     checked = WinInOneEvaluator(wrapped)
     assert np.array_equal(checked.evaluate(initial), wrapped.evaluate(initial))
     assert checked.prior(initial) == wrapped.prior(initial)
+
+    class RefusedCandidate:
+        def legal_actions(self): return [1]
+        def observation_tensor(self): return np.zeros(2)
+        def clone(self): return self
+        def apply_action(self, _action): raise ValueError("refused")
+
+    refused = RefusedCandidate()
+    assert np.array_equal(WinInOneEvaluator(wrapped).evaluate(refused),
+                          wrapped.evaluate(refused))

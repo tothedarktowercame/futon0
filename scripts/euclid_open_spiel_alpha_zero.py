@@ -40,7 +40,13 @@ class WinInOneEvaluator(mcts.Evaluator):
         wins = []
         for action in actions:
             child = state.clone()
-            child.apply_action(action)
+            try:
+                child.apply_action(action)
+            except (euclid_spiel.eng.MissingPremise, TypeError, ValueError):
+                # The neutral enumerator checks stated premises and arithmetic
+                # entailments; the transactional consistency guard can still
+                # refuse a grounded candidate.  Such a candidate is not a win.
+                continue
             if child.is_terminal() and child.returns()[0] > 0:
                 wins.append(action)
         result = tuple(wins)
