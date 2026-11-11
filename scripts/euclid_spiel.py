@@ -41,6 +41,7 @@ _GAME_TYPE = pyspiel.GameType(
     parameter_specification={
         "proposition": 1, "move_cap": 12, "dense_actions": False,
         "alpha_zero_facade": False, "start_file": "",
+        "start_perturb": 0, "start_perturb_rate": 1.0, "start_seed": 0,
     },
 )
 
@@ -476,7 +477,8 @@ class EuclidGame(pyspiel.Game):
         self._configure(params)
         game_type = _ALPHA_ZERO_GAME_TYPE if self.alpha_zero_facade else _GAME_TYPE
         num_actions = self.action_codec.size if self.action_codec else 2_000_000_000
-        super().__init__(game_type, _game_info(self.move_cap, num_actions, self.alpha_zero_facade), params)
+        super().__init__(game_type, _game_info(self.move_cap + self.start_perturb,
+                                               num_actions, self.alpha_zero_facade), params)
 
     def _configure(self, params):
         self.proposition = int(params.get("proposition", 1))
@@ -484,6 +486,10 @@ class EuclidGame(pyspiel.Game):
         self.dense_actions = bool(params.get("dense_actions", False))
         self.alpha_zero_facade = bool(params.get("alpha_zero_facade", False))
         self.start_file = str(params.get("start_file", ""))
+        self.start_perturb = int(params.get("start_perturb", 0))
+        self.start_perturb_rate = float(params.get("start_perturb_rate", 1.0))
+        self.start_seed = int(params.get("start_seed", 0))
+        self._start_episode = itertools.count()
         self.action_codec = DenseActionCodec(self.proposition) if self.dense_actions else None
         self.start_moves = []
         self.start_state = None
@@ -506,7 +512,25 @@ class EuclidGame(pyspiel.Game):
     def new_initial_state(self):
         self._ensure_configured()
         engine_state = self.start_state.copy() if self.start_state is not None else None
-        return EuclidState(self, engine_state=engine_state)
+        state = EuclidState(self, engine_state=engine_state,
+                            initial_moves=self.start_moves)
+        episode = next(self._start_episode)
+        rng = random.Random(self.start_seed + episode)
+        enabled = self.start_perturb and rng.random() < self.start_perturb_rate
+        count = rng.randint(0, self.start_perturb) if enabled else 0
+        perturb_moves = []
+        for _ in range(count):
+            if state.is_terminal():
+                break
+            action = state.sample_action_tuple(rng)
+            state.apply_action_tuple(action)
+            perturb_moves.append(action)
+        state.initial_moves = list(self.start_moves) + perturb_moves
+        state.history_moves = []
+        state._move_cap = self.move_cap + len(perturb_moves)
+        state._actions = state._action_by_id = None
+        state._parent_legal_keys = frozenset()
+        return state
 
     def make_py_observer(self, iig_obs_type=None, params=None):
         return IIGObserverForPublicInfoGame(
@@ -518,13 +542,15 @@ class EuclidGame(pyspiel.Game):
 
 
 class EuclidState(pyspiel.State):
-    def __init__(self, game, engine_state=None, history=None, parent_legal_keys=()):
+    def __init__(self, game, engine_state=None, history=None, parent_legal_keys=(),
+                 initial_moves=()):
         super().__init__(game)
         self._euclid_game = game
         self._proposition = game.proposition
         self._move_cap = game.move_cap
         self.engine_state = engine_state or play._start_state(self._proposition)
         self.history_moves = list(history or [])
+        self.initial_moves = list(initial_moves)
         self.initial_kinds = {o["name"]: o["kind"] for o in play.tr.objects_from_hyps(self._proposition)}
         self._actions = None
         self._action_by_id = None
@@ -532,7 +558,8 @@ class EuclidState(pyspiel.State):
 
     def clone(self):
         copy = EuclidState(
-            self._euclid_game, self.engine_state.copy(), self.history_moves, self._parent_legal_keys
+            self._euclid_game, self.engine_state.copy(), self.history_moves,
+            self._parent_legal_keys, self.initial_moves
         )
         copy._actions = self._actions
         copy._action_by_id = self._action_by_id
@@ -543,7 +570,7 @@ class EuclidState(pyspiel.State):
         for obj in play.tr.objects_from_hyps(self._proposition):
             if obj["name"] not in ordered:
                 ordered.append(obj["name"])
-        for _rule, _args, bindings in self._euclid_game.start_moves + self.history_moves:
+        for _rule, _args, bindings in self.initial_moves + self.history_moves:
             for _base, name in bindings:
                 if name not in ordered:
                     ordered.append(name)

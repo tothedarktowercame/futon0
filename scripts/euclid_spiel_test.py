@@ -268,3 +268,33 @@ def test_i2_start_state_prefix_leaves_a_reachable_remaining_solution(tmp_path):
         for move in remaining:
             state.apply_action_tuple(move)
         assert state.returns() == [1.0]
+
+    prefix = grounded[:4]
+    start_file = tmp_path / "perturb-prefix.json"
+    start_file.write_text(json.dumps(prefix))
+    clean_game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=6,dense_actions=true,"
+        f"start_file={start_file},start_perturb=0,start_seed=100)"
+    )
+    clean = clean_game.new_initial_state()
+    assert clean.initial_moves == prefix
+    assert clean.history_moves == []
+
+    perturbed_game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=6,dense_actions=true,"
+        f"start_file={start_file},start_perturb=2,start_seed=100)"
+    )
+    for _ in range(10):
+        perturbed = perturbed_game.new_initial_state()
+        extras = perturbed.initial_moves[len(prefix):]
+        assert perturbed.initial_moves[:len(prefix)] == prefix
+        assert 0 <= len(extras) <= 2
+        assert perturbed.history_moves == []
+        assert perturbed._move_cap == 6 + len(extras)
+        replay = clean_game.new_initial_state()
+        for move in extras:
+            replay.legal_actions()
+            assert move in replay._actions
+            replay.apply_action_tuple(move)
+        assert replay.engine_state.facts == perturbed.engine_state.facts
+        assert replay.engine_state.la.rows == perturbed.engine_state.la.rows

@@ -40,11 +40,17 @@ def main():
     parser.add_argument("--resume-from", type=Path)
     parser.add_argument("--resume-step", type=int)
     parser.add_argument("--start-file", type=Path)
+    parser.add_argument("--start-perturb", type=int, default=0)
+    parser.add_argument("--start-perturb-rate", type=float, default=1.0)
+    parser.add_argument("--start-seed", type=int, default=0)
     parser.add_argument("--move-cap", type=int, default=6)
     parser.add_argument("--eval-game-seconds", type=int, default=60)
     args = parser.parse_args()
     start_param = (f",start_file={args.start_file.resolve()}"
                    if args.start_file is not None else "")
+    start_param += (f",start_perturb={args.start_perturb},"
+                    f"start_perturb_rate={args.start_perturb_rate},"
+                    f"start_seed={args.start_seed}")
     game = (f"euclid_book1(proposition={args.proposition},move_cap={args.move_cap},"
             f"dense_actions=true,alpha_zero_facade=true{start_param})")
     config = alpha_zero.Config(
