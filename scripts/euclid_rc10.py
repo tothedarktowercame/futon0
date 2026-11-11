@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Funded DEMO backward curriculum for Probe 10."""
+"""Funded DEMO backward curriculum runner for Euclid I.2 probes."""
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 from pathlib import Path
@@ -16,7 +17,6 @@ import euclid_spiel  # noqa: F401
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "holes/excursions/E-euclid-tutor-data/spiel/rc10"
 PYTHON = Path("/home/joe/.venvs/openspiel/bin/python")
 CPU_PREFIX = ["taskset", "-c", "20-31"]
 RUNNER = ROOT / "scripts/euclid_open_spiel_alpha_zero.py"
@@ -62,7 +62,8 @@ def evaluation(stage_dir, checkpoint, prefix, move_cap, perturb, seed, label,
                "--eval-step", str(checkpoint), "--eval-games", "10",
                "--eval-game-seconds", "30", "--start-file", str(prefix),
                "--move-cap", str(move_cap), "--start-perturb", str(perturb),
-               "--start-seed", str(seed), "--eval-record", str(record)]
+               "--start-seed", str(seed), "--eval-record", str(record),
+               "--win-in-one"]
     code, elapsed = run_command(command, stage_dir / f"eval-{label}.log",
                                 timeout, env)
     if code:
@@ -88,13 +89,21 @@ def completed_actor_games(stage_dir):
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out", type=Path, default=(
+        ROOT / "holes/excursions/E-euclid-tutor-data/spiel/rc10"))
+    parser.add_argument("--stage-seconds", type=int, default=240)
+    parser.add_argument("--total-seconds", type=int, default=900)
+    parser.add_argument("--final-seconds", type=int, default=0)
+    args = parser.parse_args()
+    out = args.out.resolve()
+    out.mkdir(parents=True, exist_ok=True)
     demonstration = json.loads(SOURCE_DEMO.read_text())
-    (OUT / "demonstration.json").write_text(json.dumps(demonstration, indent=2) + "\n")
+    (out / "demonstration.json").write_text(json.dumps(demonstration, indent=2) + "\n")
     env = dict(os.environ, PYTHONHASHSEED=HASH_SEED, OMP_NUM_THREADS="1",
                OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1",
                XLA_FLAGS="--xla_cpu_multi_thread_eigen=false")
-    deadline = time.monotonic() + 15 * 60
+    deadline = time.monotonic() + args.total_seconds
     results = []
     resume_dir = None
     resume_step = None
@@ -102,7 +111,7 @@ def main():
     for k in range(1, 9):
         if time.monotonic() >= deadline:
             break
-        stage_dir = OUT / f"stage-{k}"
+        stage_dir = out / f"stage-{k}"
         stage_dir.mkdir(exist_ok=True)
         prefix = stage_dir / "prefix.json"
         prefix.write_text(json.dumps(demonstration[:8-k], indent=2) + "\n")
@@ -112,11 +121,11 @@ def main():
                    "--actors", "12", "--simulations", "32",
                    "--start-file", str(prefix), "--move-cap", str(k + 2),
                    "--start-perturb", "2", "--start-perturb-rate", "0.5",
-                   "--start-seed", str(2026111100 + k)]
+                   "--start-seed", str(2026111100 + k), "--win-in-one"]
         if resume_dir is not None:
             command += ["--resume-from", str(resume_dir),
                         "--resume-step", str(resume_step)]
-        cap = min(240, max(1, int(deadline - time.monotonic())))
+        cap = min(args.stage_seconds, max(1, int(deadline - time.monotonic())))
         code, train_seconds = run_command(command, stage_dir / "train.log",
                                           cap, train_env)
         checkpoint = latest_checkpoint(stage_dir)
@@ -137,25 +146,25 @@ def main():
                   "clean_legal_counts": clean_counts,
                   "perturbed_legal_counts": perturbed_counts}
         results.append(result)
-        (OUT / "stages.json").write_text(json.dumps(results, indent=2) + "\n")
+        (out / "stages.json").write_text(json.dumps(results, indent=2) + "\n")
         last_stage = (stage_dir, checkpoint)
         if not advanced:
             break
         resume_dir, resume_step = stage_dir, checkpoint
 
-    if last_stage is not None and time.monotonic() < deadline:
+    if last_stage is not None and args.final_seconds:
         stage_dir, checkpoint = last_stage
-        empty = OUT / "initial-prefix.json"
+        empty = out / "initial-prefix.json"
         empty.write_text("[]\n")
         final = evaluation(stage_dir, checkpoint, empty, 10, 0,
                            2026111300, "from-start", env,
-                           max(1, min(360, int(deadline - time.monotonic()))))
+                           args.final_seconds)
     else:
         final = None
     summary = {"arm": "DEMO", "python_hash_seed": HASH_SEED,
                "actors": 12, "simulations": 32, "stages": results,
                "from_start": final}
-    (OUT / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary))
 
 
