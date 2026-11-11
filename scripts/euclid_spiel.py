@@ -146,7 +146,10 @@ class DenseActionCodec:
     def _by_kind(state):
         kinds = _objects(state.engine_state, state.initial_kinds)
         result = {kind: [] for kind in DENSE_KIND_CAPS}
+        canonical = state._canonical_names()
         for name in state._object_order():
+            if canonical.get(name, name) != name:
+                continue
             kind = kinds.get(name)
             if kind in result:
                 result[kind].append(name)
@@ -325,7 +328,8 @@ def _fresh_bindings(spec, args, state, ply):
 
 
 def _candidate_actions(n, state, initial_kinds, ply, allowed_rules=None,
-                       allowed_by_kind=None, free_variables=None):
+                       allowed_by_kind=None, free_variables=None,
+                       canonical_names=None):
     """Yield grounded candidates before arithmetic entailment checks."""
     kinds = _objects(state, initial_kinds)
     by_kind = {kind: sorted(name for name, k in kinds.items() if k == kind)
@@ -352,7 +356,8 @@ def _candidate_actions(n, state, initial_kinds, ply, allowed_rules=None,
                 domains.append(domain)
             for values in itertools.product(*domains):
                 full = dict(env, **dict(zip(missing, values)))
-                args = tuple(full[v] for v in variables)
+                args = tuple((canonical_names or {}).get(full[v], full[v])
+                             for v in variables)
                 if allowed_by_kind is not None and any(
                     (free_variables is None or variable in free_variables[rule]) and
                     arg not in allowed_by_kind[info["arg_kinds"].get(variable, "point")]
@@ -379,22 +384,37 @@ def _entailments_hold(spec, state, args, cache):
     return True
 
 
-def enumerate_actions_reference(n, state, initial_kinds, ply):
+def _only_adds_bound_alias(report, bindings):
+    """Whether a construction merely gives an existing object a new name."""
+    bound_names = {name for _base, name in bindings}
+    return (bool(report["added"])
+            and all(fact[0] == "peq" for fact in report["added"])
+            and all(any(name in fact[1:] for name in bound_names)
+                    for fact in report["added"]))
+
+
+def enumerate_actions_reference(n, state, initial_kinds, ply,
+                                canonical_names=None):
     """Probe-1 oracle: validate every candidate by applying it."""
     accepted = []
-    for action in _candidate_actions(n, state, initial_kinds, ply):
+    for action in _candidate_actions(n, state, initial_kinds, ply,
+                                     canonical_names=canonical_names):
         rule, args, bindings = action
         trial = state.copy()
         try:
-            eng.apply_step(trial, ply + 1, rule, args, dict(bindings))
+            report = eng.apply_step(
+                trial, ply + 1, rule, args, dict(bindings))
         except (eng.MissingPremise, TypeError, ValueError):
+            continue
+        if _only_adds_bound_alias(report, bindings):
             continue
         accepted.append(action)
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
 
 def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
-                      allowed_rules=None, allowed_by_kind=None, free_variables=None):
+                      allowed_rules=None, allowed_by_kind=None, free_variables=None,
+                      canonical_names=None):
     """All playable non-case moves.
 
     Premise enumeration is only a candidate generator.  In particular, a
@@ -405,10 +425,15 @@ def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
     """
     accepted = []
     query_cache = {}
+    seen = set()
     parent_legal_keys = set(parent_legal_keys)
     for action in _candidate_actions(n, state, initial_kinds, ply,
-                                     allowed_rules, allowed_by_kind, free_variables):
+                                     allowed_rules, allowed_by_kind, free_variables,
+                                     canonical_names):
         rule, args, _bindings = action
+        if action in seen:
+            continue
+        seen.add(action)
         if ((rule, args) not in parent_legal_keys
                 and not _entailments_hold(eng.CONSTRUCTIONS[rule], state, args, query_cache)):
             continue
@@ -418,16 +443,19 @@ def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
             # premises on this exact parent.  Keep the ordinary transactional
             # contradiction guard, but do not pay for those premise queries a
             # second time merely to validate the legal list.
-            eng.apply_certified_step(
+            report = eng.apply_certified_step(
                 trial, ply + 1, rule, args, dict(_bindings))
         except (eng.MissingPremise, TypeError, ValueError):
+            continue
+        if _only_adds_bound_alias(report, _bindings):
             continue
         accepted.append(action)
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
 
 def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000,
-                  allowed_rules=None, allowed_by_kind=None, free_variables=None):
+                  allowed_rules=None, allowed_by_kind=None, free_variables=None,
+                  canonical_names=None):
     """Sample without materialising the legal set.
 
     Each attempt chooses a rule uniformly, then a matching premise environment
@@ -437,7 +465,9 @@ def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000,
     """
     rng = rng or random.Random()
     kinds = _objects(state, initial_kinds)
-    by_kind = {kind: sorted(name for name, k in kinds.items() if k == kind)
+    by_kind = {kind: sorted(name for name, k in kinds.items()
+                            if k == kind
+                            and (canonical_names or {}).get(name, name) == name)
                for kind in ("point", "line", "circle")}
     facts_by_head = {}
     for fact in sorted(state.facts, key=repr):
@@ -483,7 +513,16 @@ def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000,
         if not _entailments_hold(spec, state, args, query_cache):
             continue
         bindings = _fresh_bindings(spec, args, state, ply)
-        return rule, args, tuple(sorted(bindings.items()))
+        action = rule, args, tuple(sorted(bindings.items()))
+        trial = state.copy()
+        try:
+            report = eng.apply_certified_step(
+                trial, ply + 1, rule, args, bindings)
+        except (eng.MissingPremise, TypeError, ValueError):
+            continue
+        if _only_adds_bound_alias(report, tuple(bindings.items())):
+            continue
+        return action
     raise RuntimeError(f"no legal action sampled in {max_attempts} neutral attempts")
 
 
@@ -584,7 +623,7 @@ class EuclidState(pyspiel.State):
         copy._action_by_id = self._action_by_id
         return copy
 
-    def _object_order(self):
+    def _raw_object_order(self):
         ordered = []
         for obj in play.tr.objects_from_hyps(self._proposition):
             if obj["name"] not in ordered:
@@ -600,12 +639,52 @@ class EuclidState(pyspiel.State):
             raise ValueError(f"observation object cap {MAX_OBJECTS} exceeded")
         return ordered
 
+    def _canonical_names(self):
+        """Known point names -> earliest-created representative.
+
+        ``peq`` is the engine's sole implemented object-equality fact.  Keep
+        it in the engine store, but quotient it out of the game's object
+        vocabulary.  A union always points at the earliest name in creation
+        order, making the representative deterministic across facts order.
+        """
+        order = self._raw_object_order()
+        rank = {name: i for i, name in enumerate(order)}
+        parent = {name: name for name in order}
+
+        def find(name):
+            parent.setdefault(name, name)
+            while parent[name] != name:
+                parent[name] = parent[parent[name]]
+                name = parent[name]
+            return name
+
+        for fact in self.engine_state.facts:
+            if fact and fact[0] == "peq":
+                left, right = find(fact[1]), find(fact[2])
+                if left != right:
+                    if rank.get(left, len(rank)) <= rank.get(right, len(rank)):
+                        parent[right] = left
+                    else:
+                        parent[left] = right
+        return {name: find(name) for name in parent}
+
+    def _object_order(self):
+        canonical = self._canonical_names()
+        return list(dict.fromkeys(canonical.get(name, name)
+                                  for name in self._raw_object_order()))
+
+    def _canonical_action(self, action):
+        rule, args, bindings = action
+        canonical = self._canonical_names()
+        return rule, tuple(canonical.get(arg, arg) for arg in args), bindings
+
     def observation_tensor(self, player=None):
         """Neutral fixed-size encoding of object kinds, facts, and the goal."""
         del player
         tensor = np.zeros(OBSERVATION_SIZE, dtype=np.float32)
         order = self._object_order()
         index = {name: i for i, name in enumerate(order)}
+        canonical_names = self._canonical_names()
         kinds = _objects(self.engine_state, self.initial_kinds)
         kind_index = {"point": 0, "line": 1, "circle": 2}
         for i, name in enumerate(order):
@@ -615,10 +694,22 @@ class EuclidState(pyspiel.State):
         def canonical(value):
             if isinstance(value, (tuple, list)):
                 return tuple(canonical(x) for x in value)
+            value = canonical_names.get(value, value)
             return ("object", index[value]) if value in index else value
 
         fact_offset, fact_size = MAX_OBJECTS * 3, 2048
+        canonical_facts = set()
         for fact in self.engine_state.facts:
+            fact = canonical(fact)
+            if fact and fact[0] == "peq" and fact[1] == fact[2]:
+                continue
+            if (fact and fact[0] in ("sublen", "subang")
+                    and fact[-2] == fact[-1]):
+                continue
+            if (fact and fact[0] == "subang1" and fact[-3] == fact[-2]):
+                continue
+            canonical_facts.add(fact)
+        for fact in canonical_facts:
             slot = fact_offset + _stable_bucket(canonical(fact), fact_size)
             tensor[slot] = min(1.0, tensor[slot] + 0.25)
         goal_offset, goal_size = fact_offset + fact_size, 1024
@@ -628,7 +719,9 @@ class EuclidState(pyspiel.State):
         return tensor
 
     def _object_list(self):
-        return [{"name": name, "kind": kind} for name, kind in _objects(self.engine_state, self.initial_kinds).items()]
+        kinds = _objects(self.engine_state, self.initial_kinds)
+        return [{"name": name, "kind": kinds[name]}
+                for name in self._object_order() if name in kinds]
 
     def goal_reached(self):
         if eng.contradictory_outer_state(self.engine_state)[0]:
@@ -684,7 +777,7 @@ class EuclidState(pyspiel.State):
         for action in _candidate_actions(
                 self._proposition, self.engine_state, self.initial_kinds,
                 len(self.history_moves), allowed_rules, allowed_by_kind,
-                free_variables):
+                free_variables, self._canonical_names()):
             rule, args, _bindings = action
             if (not _entailments_hold(eng.CONSTRUCTIONS[rule], self.engine_state,
                                       args, query_cache)):
@@ -712,7 +805,8 @@ class EuclidState(pyspiel.State):
                                               allowed_rules, allowed_by_kind,
                                               ({rule: set(self._euclid_game.action_codec.layouts[rule][1])
                                                 for rule in allowed_rules}
-                                               if allowed_rules is not None else None))
+                                               if allowed_rules is not None else None),
+                                              self._canonical_names())
             self._action_by_id = {}
             for grounded in self._actions:
                 action_id = (self._euclid_game.action_codec.encode(self, grounded)
@@ -726,7 +820,7 @@ class EuclidState(pyspiel.State):
 
     def apply_action_tuple(self, action):
         """Apply a grounded action returned by the neutral sampler."""
-        rule, args, bindings_tuple = action
+        rule, args, bindings_tuple = self._canonical_action(action)
         eng.apply_step(self.engine_state, len(self.history_moves) + 1, rule, args, dict(bindings_tuple))
         self.history_moves.append((rule, args, bindings_tuple))
         self._actions = None
@@ -763,7 +857,8 @@ class EuclidState(pyspiel.State):
             action = sample_action(
                 self._proposition, self.engine_state, self.initial_kinds,
                 len(self.history_moves), rng, allowed_rules=allowed_rules,
-                allowed_by_kind=allowed_by_kind, free_variables=free_variables)
+                allowed_by_kind=allowed_by_kind, free_variables=free_variables,
+                canonical_names=self._canonical_names())
             if (self._euclid_game.action_codec is None
                     or self._euclid_game.action_codec.encode(self, action) is not None):
                 return action

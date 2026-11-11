@@ -239,6 +239,50 @@ def test_every_enumerated_move_applies_on_30_random_i2_positions():
             child.apply_action(action_id)
 
 
+def test_point_alias_is_quotiented_from_game_view():
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=5,dense_actions=true,"
+        "alpha_zero_facade=true)"
+    )
+    state = game.new_initial_state()
+    before = state.observation_tensor().copy()
+    # Keep the engine's equality fact, but do not advance game history: the
+    # observation should differ only if the alias leaked into the game view.
+    euclid_spiel.eng.apply_step(
+        state.engine_state, 1, "name_point", ("a",), {"x": "alias_a"})
+    assert ("peq", "alias_a", "a") in state.engine_state.facts
+    assert state._canonical_names()["alias_a"] == "a"
+    assert "alias_a" not in state._object_order()
+    assert np.array_equal(before, state.observation_tensor())
+    state.legal_actions()
+    assert all("alias_a" not in move[1] for move in state._actions)
+    assert all(move[0] != "name_point" for move in state._actions)
+
+
+def test_recorded_i2_wins_survive_canonical_name_mapping():
+    root = (Path(__file__).resolve().parents[1]
+            / "holes/excursions/E-euclid-tutor-data/spiel")
+    receipts = []
+    for run in ("rc11", "rc12", "rc13"):
+        for name in ("eval-clean-wins.jsonl", "eval-perturbed-wins.jsonl"):
+            path = root / run / "stage-1" / name
+            receipts.extend(json.loads(line) for line in path.read_text().splitlines()
+                            if line.strip())
+    assert len(receipts) == 60  # the same 20 acceptance cases in three runs
+    for receipt in receipts:
+        state = pyspiel.load_game(
+            "euclid_book1(proposition=2,move_cap=20,dense_actions=true,"
+            "alpha_zero_facade=true)"
+        ).new_initial_state()
+        for encoded in receipt["initial_moves"] + receipt["moves"]:
+            rule, args, bindings = encoded
+            # apply_action_tuple maps any old alias argument to the earliest
+            # representative before replaying the unchanged engine step.
+            state.apply_action_tuple(
+                (rule, tuple(args), tuple((a, b) for a, b in bindings)))
+        assert state.goal_reached()
+
+
 def _proposition_4_dense_state():
     game = pyspiel.load_game(
         "euclid_book1(proposition=5,move_cap=4,dense_actions=true)"
