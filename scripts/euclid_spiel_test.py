@@ -5,6 +5,7 @@ import random
 import pyspiel
 
 import euclid_spiel  # registers euclid_book1
+import euclid_play
 
 
 def _game(cap=6):
@@ -140,6 +141,56 @@ def test_dense_action_ids_round_trip_and_fit_policy_head():
                 assert game.action_codec.decode(state, action_id) == grounded
                 assert game.action_codec.encode(state, grounded) == action_id
             state.apply_action(rng.choice(legal))
+
+
+def _proposition_4_dense_state():
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=5,move_cap=4,dense_actions=true)"
+    )
+    state = game.new_initial_state()
+    # I.4's hypotheses provide two complete triangles and the SAS equalities.
+    state.engine_state = euclid_play._start_state(4)
+    return game, state
+
+
+def test_dense_proposition_4_is_named_by_its_six_points():
+    game, state = _proposition_4_dense_state()
+    codec = game.action_codec
+    variables, free, determined = codec.layouts["proposition_4"]
+    assert free == ("a", "b", "c", "d", "e", "f")
+    assert set(determined) == {"AB", "BC", "AC", "DE", "EF", "DF"}
+
+    full = ("a", "b", "c", "d", "e", "f",
+            "AB", "BC", "AC", "DE", "EF", "DF")
+    action = ("proposition_4", full, ())
+    action_id = codec.encode(state, action)
+    assert action_id is not None
+    assert codec.decode(state, action_id) == action
+    state.legal_actions()
+    assert state._action_by_id[action_id] == action
+    assert state.action_to_string(0, action_id) == "proposition_4(a,b,c,d,e,f)"
+
+
+def test_dense_proposition_4_is_illegal_when_a_side_is_missing():
+    game, state = _proposition_4_dense_state()
+    full = ("a", "b", "c", "d", "e", "f",
+            "AB", "BC", "AC", "DE", "EF", "DF")
+    action_id = game.action_codec.encode(state, ("proposition_4", full, ()))
+    assert action_id is not None
+
+    state.engine_state.facts = {
+        fact: why for fact, why in state.engine_state.facts.items()
+        if "DF" not in fact
+    }
+    state._actions = state._action_by_id = None
+    assert game.action_codec.decode(state, action_id) is None
+    assert action_id not in state.legal_actions()
+
+
+def test_dense_i4_codec_contains_superposition_with_six_free_points():
+    codec = euclid_spiel.DenseActionCodec(4)
+    assert "superposition" in codec.rules
+    assert codec.layouts["superposition"][1] == ("a", "b", "c", "d", "g", "h")
 
 
 def test_alpha_zero_facade_has_nonacting_second_player():

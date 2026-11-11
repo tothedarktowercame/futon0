@@ -77,30 +77,66 @@ def _game_info(move_cap, num_actions=2_000_000_000, alpha_zero_facade=False):
 MAX_OBJECTS = 32
 OBSERVATION_SIZE = 4096
 DENSE_KIND_CAPS = {"point": 8, "line": 4, "circle": 4}
-DENSE_MAX_ARITY = 4
+DENSE_MAX_ARITY = 6
+
+
+def _determined_line_args(spec, arg_kinds):
+    """Map line arguments to the two point arguments that determine them.
+
+    This is read from the construction's own ``dpl``/``on_line`` premises;
+    names such as AB carry no meaning here.
+    """
+    variables = tuple(spec["args"])
+    try:
+        premises = spec["premises"](eng.State(), *variables)
+    except Exception:
+        return {}
+    points_on = {v: [] for v in variables if arg_kinds.get(v) == "line"}
+    for premise in premises:
+        if not isinstance(premise, (tuple, list)) or not premise:
+            continue
+        if premise[0] == "dpl" and len(premise) == 4 and premise[3] in points_on:
+            points_on[premise[3]].extend((premise[1], premise[2]))
+        elif premise[0] == "on_line" and len(premise) == 3 and premise[2] in points_on:
+            points_on[premise[2]].append(premise[1])
+    result = {}
+    point_variables = {v for v in variables if arg_kinds.get(v, "point") == "point"}
+    for line, points in points_on.items():
+        distinct = []
+        for point in points:
+            if point in point_variables and point not in distinct:
+                distinct.append(point)
+        if len(distinct) >= 2:
+            result[line] = tuple(distinct[:2])
+    return result
 
 
 class DenseActionCodec:
     """Mixed-radix ids over neutral typed creation-order object slots.
 
-    Rules above ``DENSE_MAX_ARITY`` are uniformly outside this opt-in compact
-    game.  This is an action-representation limit, not a geometric preference.
-    The ordinary game continues to expose the complete legal set.
+    A line fixed by two point arguments in the rule's own premises is recovered
+    from the state rather than occupying an action slot.  The arity cap applies
+    to the remaining free arguments.  The ordinary game is unchanged.
     """
 
     def __init__(self, proposition):
         self.rules = []
         self.offsets = {}
+        self.layouts = {}
         offset = 0
         for rule in sorted(play.palette(proposition)):
             spec = eng.CONSTRUCTIONS[rule]
-            if len(spec["args"]) > DENSE_MAX_ARITY:
-                continue
             info = play.rule_info(rule)
-            kinds = tuple(info["arg_kinds"].get(arg, "point") for arg in spec["args"])
+            arg_kinds = info["arg_kinds"]
+            determined = _determined_line_args(spec, arg_kinds)
+            free = tuple(arg for arg in spec["args"] if arg not in determined)
+            if len(free) > DENSE_MAX_ARITY:
+                continue
+            kinds = tuple(arg_kinds.get(arg, "point") for arg in free)
             radices = tuple(DENSE_KIND_CAPS[kind] for kind in kinds)
             size = int(np.prod(radices, dtype=np.int64)) if radices else 1
             self.offsets[rule] = (offset, kinds, radices, size)
+            self.layouts[rule] = (tuple(spec["args"]), free, determined)
             self.rules.append(rule)
             offset += size
         self.size = offset
@@ -115,14 +151,44 @@ class DenseActionCodec:
                 result[kind].append(name)
         return result
 
+    @staticmethod
+    def _line_through(state, p, q):
+        if p == q:
+            return None
+        facts = state.engine_state.facts
+        kinds = _objects(state.engine_state, state.initial_kinds)
+        for name in state._object_order():
+            if (kinds.get(name) == "line"
+                    and ("on_line", p, name) in facts
+                    and ("on_line", q, name) in facts):
+                return name
+        return None
+
+    def _full_args(self, state, rule, free_args):
+        variables, free, determined = self.layouts[rule]
+        env = dict(zip(free, free_args))
+        for line, (p, q) in determined.items():
+            found = self._line_through(state, env[p], env[q])
+            if found is None:
+                return None
+            env[line] = found
+        return tuple(env[v] for v in variables)
+
     def encode(self, state, action):
         rule, args, _bindings = action
         if rule not in self.offsets:
             return None
         offset, kinds, radices, _size = self.offsets[rule]
+        variables, free, _determined = self.layouts[rule]
+        env = dict(zip(variables, args))
+        free_args = tuple(env[v] for v in free)
+        # Equal-line aliases do not get duplicate compact actions: the points
+        # name the canonical existing line in creation order.
+        if self._full_args(state, rule, free_args) != tuple(args):
+            return None
         by_kind = self._by_kind(state)
         rank = 0
-        for arg, kind, radix in zip(args, kinds, radices):
+        for arg, kind, radix in zip(free_args, kinds, radices):
             try:
                 slot = by_kind[kind].index(arg)
             except ValueError:
@@ -145,8 +211,11 @@ class DenseActionCodec:
             slots.reverse()
             by_kind = self._by_kind(state)
             try:
-                args = tuple(by_kind[kind][slot] for kind, slot in zip(kinds, slots))
+                free_args = tuple(by_kind[kind][slot] for kind, slot in zip(kinds, slots))
             except IndexError:
+                return None
+            args = self._full_args(state, rule, free_args)
+            if args is None:
                 return None
             spec = eng.CONSTRUCTIONS[rule]
             bindings = _fresh_bindings(spec, args, state.engine_state, len(state.history_moves))
@@ -254,14 +323,12 @@ def _fresh_bindings(spec, args, state, ply):
     return bindings
 
 
-def _candidate_actions(n, state, initial_kinds, ply, allowed_rules=None, allowed_by_kind=None):
+def _candidate_actions(n, state, initial_kinds, ply, allowed_rules=None,
+                       allowed_by_kind=None, free_variables=None):
     """Yield grounded candidates before arithmetic entailment checks."""
     kinds = _objects(state, initial_kinds)
     by_kind = {kind: sorted(name for name, k in kinds.items() if k == kind)
                for kind in ("point", "line", "circle")}
-    if allowed_by_kind is not None:
-        by_kind = {kind: [name for name in names if name in allowed_by_kind[kind]]
-                   for kind, names in by_kind.items()}
     facts_by_head = {}
     for fact in sorted(state.facts, key=repr):
         if fact:
@@ -274,11 +341,19 @@ def _candidate_actions(n, state, initial_kinds, ply, allowed_rules=None, allowed
         variables = tuple(spec["args"])
         for env in _premise_environments(spec, state, facts_by_head):
             missing = [v for v in variables if v not in env]
-            domains = [by_kind.get(info["arg_kinds"].get(v, "point"), []) for v in missing]
+            domains = []
+            for v in missing:
+                kind = info["arg_kinds"].get(v, "point")
+                domain = by_kind.get(kind, [])
+                if (allowed_by_kind is not None
+                        and (free_variables is None or v in free_variables[rule])):
+                    domain = [name for name in domain if name in allowed_by_kind[kind]]
+                domains.append(domain)
             for values in itertools.product(*domains):
                 full = dict(env, **dict(zip(missing, values)))
                 args = tuple(full[v] for v in variables)
                 if allowed_by_kind is not None and any(
+                    (free_variables is None or variable in free_variables[rule]) and
                     arg not in allowed_by_kind[info["arg_kinds"].get(variable, "point")]
                     for variable, arg in zip(variables, args)
                 ):
@@ -319,13 +394,13 @@ def enumerate_actions_reference(n, state, initial_kinds, ply):
 
 
 def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
-                      allowed_rules=None, allowed_by_kind=None):
+                      allowed_rules=None, allowed_by_kind=None, free_variables=None):
     """All accepted non-case moves, with repeated entailments and parent moves reused."""
     accepted = []
     query_cache = {}
     parent_legal_keys = set(parent_legal_keys)
     for action in _candidate_actions(n, state, initial_kinds, ply,
-                                     allowed_rules, allowed_by_kind):
+                                     allowed_rules, allowed_by_kind, free_variables):
         rule, args, _bindings = action
         if ((rule, args) not in parent_legal_keys
                 and not _entailments_hold(eng.CONSTRUCTIONS[rule], state, args, query_cache)):
@@ -335,7 +410,7 @@ def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
 
 
 def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000,
-                  allowed_rules=None, allowed_by_kind=None):
+                  allowed_rules=None, allowed_by_kind=None, free_variables=None):
     """Sample without materialising the legal set.
 
     Each attempt chooses a rule uniformly, then a matching premise environment
@@ -378,7 +453,8 @@ def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000,
                 continue
             kind = info["arg_kinds"].get(variable, "point")
             domain = by_kind.get(kind, ())
-            if allowed_by_kind is not None:
+            if (allowed_by_kind is not None
+                    and (free_variables is None or variable in free_variables[rule])):
                 domain = tuple(name for name in domain if name in allowed_by_kind[kind])
             if not domain:
                 refused = True
@@ -536,7 +612,10 @@ class EuclidState(pyspiel.State):
             self._actions = enumerate_actions(self._proposition, self.engine_state,
                                               self.initial_kinds, len(self.history_moves),
                                               self._parent_legal_keys,
-                                              allowed_rules, allowed_by_kind)
+                                              allowed_rules, allowed_by_kind,
+                                              ({rule: set(self._euclid_game.action_codec.layouts[rule][1])
+                                                for rule in allowed_rules}
+                                               if allowed_rules is not None else None))
             self._action_by_id = {}
             for grounded in self._actions:
                 action_id = (self._euclid_game.action_codec.encode(self, grounded)
@@ -566,10 +645,18 @@ class EuclidState(pyspiel.State):
                 kind: set(names[:DENSE_KIND_CAPS[kind]])
                 for kind, names in self._euclid_game.action_codec._by_kind(self).items()
             }
-        return sample_action(
-            self._proposition, self.engine_state, self.initial_kinds, len(self.history_moves), rng,
-            allowed_rules=allowed_rules, allowed_by_kind=allowed_by_kind
-        )
+        free_variables = ({rule: set(self._euclid_game.action_codec.layouts[rule][1])
+                           for rule in allowed_rules}
+                          if allowed_rules is not None else None)
+        for _ in range(100):
+            action = sample_action(
+                self._proposition, self.engine_state, self.initial_kinds,
+                len(self.history_moves), rng, allowed_rules=allowed_rules,
+                allowed_by_kind=allowed_by_kind, free_variables=free_variables)
+            if (self._euclid_game.action_codec is None
+                    or self._euclid_game.action_codec.encode(self, action) is not None):
+                return action
+        raise RuntimeError("no encodable action sampled in 100 neutral samples")
 
     def _apply_action(self, action):
         if self._actions is None:
@@ -586,8 +673,14 @@ class EuclidState(pyspiel.State):
         if self._actions is None:
             self._legal_actions(0)
         rule, args, bindings = self._action_by_id[action]
+        shown_args = args
+        codec = self._euclid_game.action_codec
+        if codec is not None:
+            variables, free, _determined = codec.layouts[rule]
+            env = dict(zip(variables, args))
+            shown_args = tuple(env[v] for v in free)
         made = ",".join(f"{k}={v}" for k, v in bindings)
-        return f"{rule}({','.join(args)})" + (f" -> {made}" if made else "")
+        return f"{rule}({','.join(shown_args)})" + (f" -> {made}" if made else "")
 
     def returns(self):
         won = 1.0 if self.is_terminal() and self.goal_reached() else 0.0
