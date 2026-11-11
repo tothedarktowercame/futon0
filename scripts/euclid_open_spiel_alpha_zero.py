@@ -186,8 +186,41 @@ def root_win_in_one_bot(bot, evaluator):
 _PACKAGED_ACTOR = alpha_zero.actor
 
 
+def _thread_cpu_pool():
+    """CPU ids used to bound JAX's per-process CPU-client thread pools."""
+    encoded = os.environ.get("EUCLID_THREAD_CPUS", "")
+    cpus = []
+    for part in encoded.split(","):
+        if not part:
+            continue
+        if "-" in part:
+            start, end = map(int, part.split("-", 1))
+            cpus.extend(range(start, end + 1))
+        else:
+            cpus.append(int(part))
+    return tuple(cpus)
+
+
+def _pin_actor_cpu():
+    """Pin this spawned actor before it constructs a JAX CPU client."""
+    cpus = _thread_cpu_pool()
+    if not cpus:
+        return
+    import multiprocessing
+
+    identity = multiprocessing.current_process()._identity
+    ordinal = identity[0] - 1 if identity else 0
+    os.sched_setaffinity(0, {cpus[ordinal % len(cpus)]})
+
+
+def pinned_actor(**kwargs):
+    _pin_actor_cpu()
+    return _PACKAGED_ACTOR(**kwargs)
+
+
 def plain_weight_actor(**kwargs):
     """Spawn target that consumes learner-exported parameter arrays."""
+    _pin_actor_cpu()
     original_update = alpha_zero.update_checkpoint
     alpha_zero.update_checkpoint = actor_update_checkpoint
     try:
@@ -198,6 +231,7 @@ def plain_weight_actor(**kwargs):
 
 def win_in_one_actor(**kwargs):
     """Spawn target that installs the wrapper inside the actor process."""
+    _pin_actor_cpu()
     original_evaluator = evaluator_lib.AlphaZeroEvaluator
 
     def wrapped_evaluator(game, model):
@@ -212,6 +246,7 @@ def win_in_one_actor(**kwargs):
 
 def win_in_one_plain_weight_actor(**kwargs):
     """Spawn target combining mate detection and plain weight transport."""
+    _pin_actor_cpu()
     original_evaluator = evaluator_lib.AlphaZeroEvaluator
     original_update = alpha_zero.update_checkpoint
 
@@ -229,6 +264,7 @@ def win_in_one_plain_weight_actor(**kwargs):
 
 def _root_win_actor(plain_weights, **kwargs):
     """Spawn target installing root-only mate detection in packaged bots."""
+    _pin_actor_cpu()
     original_init_bot = alpha_zero._init_bot
     original_update = alpha_zero.update_checkpoint
 
@@ -283,7 +319,15 @@ def main():
                         choices=("off", "all", "root"))
     parser.add_argument("--no-win-in-one", dest="win_in_one",
                         action="store_const", const="off")
+    parser.add_argument("--thread-cpus",
+                        help="CPU pool; learner gets the first CPU and actors are striped")
     args = parser.parse_args()
+    if args.thread_cpus:
+        os.environ["EUCLID_THREAD_CPUS"] = args.thread_cpus
+        cpus = _thread_cpu_pool()
+        if not cpus:
+            parser.error("--thread-cpus must name at least one CPU")
+        os.sched_setaffinity(0, {cpus[0]})
     if args.win_in_one == "all" and args.resume_from is not None:
         alpha_zero.actor = win_in_one_plain_weight_actor
     elif args.win_in_one == "all":
@@ -294,6 +338,8 @@ def main():
         alpha_zero.actor = root_win_in_one_actor
     elif args.resume_from is not None:
         alpha_zero.actor = plain_weight_actor
+    elif args.thread_cpus:
+        alpha_zero.actor = pinned_actor
     start_param = (f",start_file={args.start_file.resolve()}"
                    if args.start_file is not None else "")
     start_param += (f",start_perturb={args.start_perturb},"
