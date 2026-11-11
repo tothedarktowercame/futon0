@@ -100,3 +100,34 @@ def test_observation_tensor_has_fixed_declared_shape_at_several_depths():
         assert observation.shape == (euclid_spiel.OBSERVATION_SIZE,)
         assert observation.dtype.name == "float32"
         state.apply_action_tuple(state.sample_action_tuple(rng))
+
+
+def test_dense_action_ids_round_trip_and_fit_policy_head():
+    for proposition in (1, 2):
+        game = pyspiel.load_game(
+            f"euclid_book1(proposition={proposition},move_cap=6,dense_actions=true)"
+        )
+        state = game.new_initial_state()
+        rng = random.Random(3000 + proposition)
+        for _ply in range(3):
+            legal = state.legal_actions()
+            assert legal
+            assert max(legal) < game.num_distinct_actions()
+            for action_id in legal:
+                grounded = state._action_by_id[action_id]
+                assert game.action_codec.decode(state, action_id) == grounded
+                assert game.action_codec.encode(state, grounded) == action_id
+            state.apply_action(rng.choice(legal))
+
+
+def test_alpha_zero_facade_has_nonacting_second_player():
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=1,move_cap=2,dense_actions=true,alpha_zero_facade=true)"
+    )
+    state = game.new_initial_state()
+    assert game.num_players() == 2
+    assert state.current_player() == 0
+    state.apply_action(state.legal_actions()[0])
+    assert state.current_player() in (0, pyspiel.PlayerId.TERMINAL)
+    assert len(state.returns()) == 2
+    assert sum(state.returns()) == 0

@@ -38,16 +38,36 @@ _GAME_TYPE = pyspiel.GameType(
     provides_information_state_tensor=False,
     provides_observation_string=True,
     provides_observation_tensor=True,
-    parameter_specification={"proposition": 1, "move_cap": 12},
+    parameter_specification={
+        "proposition": 1, "move_cap": 12, "dense_actions": False,
+        "alpha_zero_facade": False,
+    },
+)
+
+_ALPHA_ZERO_GAME_TYPE = pyspiel.GameType(
+    short_name="euclid_book1",
+    long_name="Euclid Book I (System E rules; AlphaZero facade)",
+    dynamics=pyspiel.GameType.Dynamics.SEQUENTIAL,
+    chance_mode=pyspiel.GameType.ChanceMode.DETERMINISTIC,
+    information=pyspiel.GameType.Information.PERFECT_INFORMATION,
+    utility=pyspiel.GameType.Utility.ZERO_SUM,
+    reward_model=pyspiel.GameType.RewardModel.TERMINAL,
+    max_num_players=2,
+    min_num_players=2,
+    provides_information_state_string=True,
+    provides_information_state_tensor=False,
+    provides_observation_string=True,
+    provides_observation_tensor=True,
+    parameter_specification=_GAME_TYPE.parameter_specification,
 )
 
 
-def _game_info(move_cap):
+def _game_info(move_cap, num_actions=2_000_000_000, alpha_zero_facade=False):
     return pyspiel.GameInfo(
-        num_distinct_actions=2_000_000_000,
+        num_distinct_actions=num_actions,
         max_chance_outcomes=0,
-        num_players=1,
-        min_utility=0.0,
+        num_players=2 if alpha_zero_facade else 1,
+        min_utility=-1.0 if alpha_zero_facade else 0.0,
         max_utility=1.0,
         utility_sum=None,
         max_game_length=move_cap,
@@ -56,6 +76,82 @@ def _game_info(move_cap):
 
 MAX_OBJECTS = 32
 OBSERVATION_SIZE = 4096
+DENSE_KIND_CAPS = {"point": 8, "line": 4, "circle": 4}
+DENSE_MAX_ARITY = 4
+
+
+class DenseActionCodec:
+    """Mixed-radix ids over neutral typed creation-order object slots.
+
+    Rules above ``DENSE_MAX_ARITY`` are uniformly outside this opt-in compact
+    game.  This is an action-representation limit, not a geometric preference.
+    The ordinary game continues to expose the complete legal set.
+    """
+
+    def __init__(self, proposition):
+        self.rules = []
+        self.offsets = {}
+        offset = 0
+        for rule in sorted(play.palette(proposition)):
+            spec = eng.CONSTRUCTIONS[rule]
+            if len(spec["args"]) > DENSE_MAX_ARITY:
+                continue
+            info = play.rule_info(rule)
+            kinds = tuple(info["arg_kinds"].get(arg, "point") for arg in spec["args"])
+            radices = tuple(DENSE_KIND_CAPS[kind] for kind in kinds)
+            size = int(np.prod(radices, dtype=np.int64)) if radices else 1
+            self.offsets[rule] = (offset, kinds, radices, size)
+            self.rules.append(rule)
+            offset += size
+        self.size = offset
+
+    @staticmethod
+    def _by_kind(state):
+        kinds = _objects(state.engine_state, state.initial_kinds)
+        result = {kind: [] for kind in DENSE_KIND_CAPS}
+        for name in state._object_order():
+            kind = kinds.get(name)
+            if kind in result:
+                result[kind].append(name)
+        return result
+
+    def encode(self, state, action):
+        rule, args, _bindings = action
+        if rule not in self.offsets:
+            return None
+        offset, kinds, radices, _size = self.offsets[rule]
+        by_kind = self._by_kind(state)
+        rank = 0
+        for arg, kind, radix in zip(args, kinds, radices):
+            try:
+                slot = by_kind[kind].index(arg)
+            except ValueError:
+                return None
+            if slot >= radix:
+                return None
+            rank = rank * radix + slot
+        return offset + rank
+
+    def decode(self, state, action_id):
+        for rule in self.rules:
+            offset, kinds, radices, size = self.offsets[rule]
+            if not offset <= action_id < offset + size:
+                continue
+            rank = action_id - offset
+            slots = []
+            for radix in reversed(radices):
+                slots.append(rank % radix)
+                rank //= radix
+            slots.reverse()
+            by_kind = self._by_kind(state)
+            try:
+                args = tuple(by_kind[kind][slot] for kind, slot in zip(kinds, slots))
+            except IndexError:
+                return None
+            spec = eng.CONSTRUCTIONS[rule]
+            bindings = _fresh_bindings(spec, args, state.engine_state, len(state.history_moves))
+            return rule, args, tuple(sorted(bindings.items()))
+        return None
 
 
 def stable_action_id(action):
@@ -284,17 +380,35 @@ def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000):
 class EuclidGame(pyspiel.Game):
     def __init__(self, params=None):
         params = params or {}
+        self._configure(params)
+        game_type = _ALPHA_ZERO_GAME_TYPE if self.alpha_zero_facade else _GAME_TYPE
+        num_actions = self.action_codec.size if self.action_codec else 2_000_000_000
+        super().__init__(game_type, _game_info(self.move_cap, num_actions, self.alpha_zero_facade), params)
+
+    def _configure(self, params):
         self.proposition = int(params.get("proposition", 1))
         self.move_cap = int(params.get("move_cap", 12))
-        super().__init__(_GAME_TYPE, _game_info(self.move_cap), params)
+        self.dense_actions = bool(params.get("dense_actions", False))
+        self.alpha_zero_facade = bool(params.get("alpha_zero_facade", False))
+        self.action_codec = DenseActionCodec(self.proposition) if self.dense_actions else None
+
+    def _ensure_configured(self):
+        # pyspiel pickles the C++ base and can omit Python instance attributes
+        # when an AlphaZero actor is spawned.
+        if not hasattr(self, "proposition"):
+            self._configure(self.get_parameters())
 
     def new_initial_state(self):
+        self._ensure_configured()
         return EuclidState(self)
 
     def make_py_observer(self, iig_obs_type=None, params=None):
         return IIGObserverForPublicInfoGame(
             iig_obs_type or pyspiel.IIGObservationType(perfect_recall=False), params
         )
+
+    def observation_tensor_shape(self):
+        return [OBSERVATION_SIZE]
 
 
 class EuclidState(pyspiel.State):
@@ -381,7 +495,10 @@ class EuclidState(pyspiel.State):
                                               self._parent_legal_keys)
             self._action_by_id = {}
             for grounded in self._actions:
-                action_id = stable_action_id(grounded)
+                action_id = (self._euclid_game.action_codec.encode(self, grounded)
+                             if self._euclid_game.action_codec else stable_action_id(grounded))
+                if action_id is None:
+                    continue
                 previous = self._action_by_id.setdefault(action_id, grounded)
                 if previous != grounded:
                     raise RuntimeError(f"stable action-id collision: {previous!r} and {grounded!r}")
@@ -420,7 +537,8 @@ class EuclidState(pyspiel.State):
         return f"{rule}({','.join(args)})" + (f" -> {made}" if made else "")
 
     def returns(self):
-        return [1.0 if self.is_terminal() and self.goal_reached() else 0.0]
+        won = 1.0 if self.is_terminal() and self.goal_reached() else 0.0
+        return [won, -won] if self._euclid_game.alpha_zero_facade else [won]
 
     def information_state_string(self, player=None):
         return str(self)
