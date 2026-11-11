@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import time
 
@@ -81,6 +82,11 @@ def legal_counts(prefix, move_cap, perturb, seed):
     return [len(game.new_initial_state().legal_actions()) for _ in range(10)]
 
 
+def completed_actor_games(stage_dir):
+    return sum(len(re.findall(r"^\[.*\] Game \d+:", path.read_text(), re.M))
+               for path in stage_dir.glob("log-actor-*.txt"))
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     demonstration = json.loads(SOURCE_DEMO.read_text())
@@ -100,8 +106,7 @@ def main():
         stage_dir.mkdir(exist_ok=True)
         prefix = stage_dir / "prefix.json"
         prefix.write_text(json.dumps(demonstration[:8-k], indent=2) + "\n")
-        episode_log = stage_dir / "episodes.jsonl"
-        train_env = dict(env, EUCLID_EPISODE_LOG=str(episode_log))
+        train_env = env
         command = CPU_PREFIX + [str(PYTHON), str(RUNNER), "--proposition", "2",
                    "--out", str(stage_dir), "--steps", "100",
                    "--actors", "12", "--simulations", "32",
@@ -115,7 +120,7 @@ def main():
         code, train_seconds = run_command(command, stage_dir / "train.log",
                                           cap, train_env)
         checkpoint = latest_checkpoint(stage_dir)
-        games = sum(1 for _ in episode_log.open()) if episode_log.exists() else 0
+        games = completed_actor_games(stage_dir)
         clean_counts = legal_counts(prefix, k + 2, 0, 2026111100 + k)
         perturbed_counts = legal_counts(prefix, k + 2, 2, 2026111200 + k)
         clean = evaluation(stage_dir, checkpoint, prefix, k + 2, 0,

@@ -1,0 +1,22 @@
+[2026-11-11 15:23:22.769] actor-4 started
+[2026-11-11 15:23:22.769] Initializing model
+[2026-11-11 15:23:26.507] Initializing bots
+[2026-11-11 15:23:26.508] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 15:23:26.508] Loading checkpoint 0
+[2026-11-11 15:24:18.027] Game 1: Returns: 0.0 -0.0; Actions: extend_point_longer(a,b,d_2,b) -> x=x_1 point_between_points_shorter_than(g_6,b,a,b) -> a=a_2 point_between_points_shorter_than(a,b,d_2,a_2) -> a=a_3
+[2026-11-11 15:26:12.869] 
+===================== Exception caught =====================
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 316, in actor
+    _play_game(
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 242, in _play_game
+    action = np.random.choice(len(policy), p=policy)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "numpy/random/mtrand.pyx", line 995, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities contain NaN
+
+============================================================
+[2026-11-11 15:26:12.870] actor-4 exiting

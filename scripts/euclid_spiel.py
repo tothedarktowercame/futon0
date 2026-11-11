@@ -555,7 +555,6 @@ class EuclidState(pyspiel.State):
         self._actions = None
         self._action_by_id = None
         self._parent_legal_keys = frozenset(parent_legal_keys)
-        self._episode_logged = False
 
     def clone(self):
         copy = EuclidState(
@@ -564,7 +563,6 @@ class EuclidState(pyspiel.State):
         )
         copy._actions = self._actions
         copy._action_by_id = self._action_by_id
-        copy._episode_logged = self._episode_logged
         return copy
 
     def _object_order(self):
@@ -713,17 +711,6 @@ class EuclidState(pyspiel.State):
 
     def returns(self):
         won = 1.0 if self.is_terminal() and self.goal_reached() else 0.0
-        episode_log = os.environ.get("EUCLID_EPISODE_LOG")
-        if episode_log and self.is_terminal() and not self._episode_logged:
-            record = json.dumps({"pid": os.getpid(), "won": bool(won),
-                                 "initial_moves": self.initial_moves,
-                                 "moves": self.history_moves}, separators=(",", ":"))
-            fd = os.open(episode_log, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
-            try:
-                os.write(fd, (record + "\n").encode())
-            finally:
-                os.close(fd)
-            self._episode_logged = True
         return [won, -won] if self._euclid_game.alpha_zero_facade else [won]
 
     def information_state_string(self, player=None):

@@ -1,0 +1,7 @@
+[2026-11-11 15:23:21.594] learner started
+[2026-11-11 15:23:21.720] Initializing model
+[2026-11-11 15:23:23.775] Model type: mlp(32, 2)
+[2026-11-11 15:23:23.775] Model size: 12389218 variables
+[2026-11-11 15:23:24.090] Initial checkpoint: 0
+[2026-11-11 15:23:24.142] Collecting trajectories
+[2026-11-11 15:27:20.695] learner exiting

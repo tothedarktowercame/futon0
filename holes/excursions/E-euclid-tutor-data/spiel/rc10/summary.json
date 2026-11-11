@@ -1,0 +1,15 @@
+{
+  "arm": "DEMO",
+  "python_hash_seed": "0",
+  "cpu_affinity": "20-31",
+  "actors": 12,
+  "simulations": 32,
+  "stage_reached": 1,
+  "stage_1_completed_actor_games": 12,
+  "stage_1_checkpoint": 0,
+  "stage_1_clean": {"wins": 0, "games": 10, "timeouts": 4},
+  "stage_1_perturbed": {"wins": 0, "games": 10, "timeouts": 7},
+  "stage_1_advanced": false,
+  "from_start": null,
+  "from_start_note": "The fixed 15-minute wall budget expired before ten from-start games completed."
+}

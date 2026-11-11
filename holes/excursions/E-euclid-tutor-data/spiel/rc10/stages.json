@@ -1,0 +1,51 @@
+[
+  {
+    "stage": 1,
+    "moves_remaining": 1,
+    "games": 12,
+    "train_seconds": 240.7162916820962,
+    "train_returncode": 0,
+    "checkpoint": 0,
+    "clean": {
+      "step": 0,
+      "games": 10,
+      "wins": 0,
+      "timeouts": 4,
+      "verified_wins": 0,
+      "seconds": 282.17465347005054
+    },
+    "perturbed": {
+      "step": 0,
+      "games": 10,
+      "wins": 0,
+      "timeouts": 7,
+      "verified_wins": 0,
+      "seconds": 297.29861870291643
+    },
+    "advanced": false,
+    "clean_legal_counts": [
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545,
+      545
+    ],
+    "perturbed_legal_counts": [
+      545,
+      550,
+      961,
+      545,
+      550,
+      545,
+      971,
+      545,
+      545,
+      1250
+    ]
+  }
+]
