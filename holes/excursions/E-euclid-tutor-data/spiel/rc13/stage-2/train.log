@@ -242,3 +242,5 @@ LLVM ERROR: pthread_create failed: Resource temporarily unavailable
 [2026-11-11 19:25:46.740]
 [2026-11-11 19:25:46.740] Collecting trajectories
 [2026-11-11 19:28:42.449] learner exiting
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 72 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
