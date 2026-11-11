@@ -55,7 +55,7 @@ def latest_checkpoint(stage_dir):
 
 
 def evaluation(stage_dir, checkpoint, prefix, move_cap, perturb, seed, label,
-               env, timeout, win_in_one_mode, thread_cpus):
+               env, timeout, win_in_one_mode, thread_cpus, search):
     record = stage_dir / f"eval-{label}-wins.jsonl"
     command = CPU_PREFIX + [str(PYTHON), str(RUNNER), "--proposition", "2",
                "--out", str(stage_dir), "--simulations", "32",
@@ -64,6 +64,7 @@ def evaluation(stage_dir, checkpoint, prefix, move_cap, perturb, seed, label,
                "--move-cap", str(move_cap), "--start-perturb", str(perturb),
                "--start-seed", str(seed), "--eval-record", str(record),
                "--win-in-one", win_in_one_mode, "--thread-cpus", thread_cpus]
+    command += ["--search", search]
     code, elapsed = run_command(command, stage_dir / f"eval-{label}.log",
                                 timeout, env)
     if code:
@@ -98,6 +99,8 @@ def main():
     parser.add_argument("--win-in-one-mode", choices=("all", "root", "off"),
                         default="all")
     parser.add_argument("--thread-cpus", default="20-31")
+    parser.add_argument("--search", choices=("packaged", "widening"),
+                        default="packaged")
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -126,7 +129,8 @@ def main():
                    "--start-perturb", "2", "--start-perturb-rate", "0.5",
                    "--start-seed", str(2026111100 + k),
                    "--win-in-one", args.win_in_one_mode,
-                   "--thread-cpus", args.thread_cpus]
+                   "--thread-cpus", args.thread_cpus,
+                   "--search", args.search]
         if resume_dir is not None:
             command += ["--resume-from", str(resume_dir),
                         "--resume-step", str(resume_step)]
@@ -140,11 +144,11 @@ def main():
         clean = evaluation(stage_dir, checkpoint, prefix, k + 2, 0,
                            2026111100 + k, "clean", env,
                            max(1, min(360, int(deadline - time.monotonic()))),
-                           args.win_in_one_mode, args.thread_cpus)
+                           args.win_in_one_mode, args.thread_cpus, args.search)
         perturbed = evaluation(stage_dir, checkpoint, prefix, k + 2, 2,
                                2026111200 + k, "perturbed", env,
                                max(1, min(360, int(deadline - time.monotonic()))),
-                               args.win_in_one_mode, args.thread_cpus)
+                               args.win_in_one_mode, args.thread_cpus, args.search)
         advanced = clean["wins"] >= 8 and perturbed["wins"] >= 6
         result = {"stage": k, "moves_remaining": k, "games": games,
                   "train_seconds": train_seconds, "train_returncode": code,
@@ -166,12 +170,13 @@ def main():
         final = evaluation(stage_dir, checkpoint, empty, 10, 0,
                            2026111300, "from-start", env,
                            args.final_seconds, args.win_in_one_mode,
-                           args.thread_cpus)
+                           args.thread_cpus, args.search)
     else:
         final = None
     summary = {"arm": "DEMO", "python_hash_seed": HASH_SEED,
                "actors": 12, "simulations": 32, "stages": results,
-               "win_in_one": args.win_in_one_mode, "from_start": final}
+               "win_in_one": args.win_in_one_mode, "search": args.search,
+               "from_start": final}
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary))
 

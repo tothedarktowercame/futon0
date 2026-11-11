@@ -21,6 +21,7 @@ import pyspiel
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import euclid_spiel  # noqa: E402,F401  (registers the Python game)
+import euclid_widening  # noqa: E402
 
 DENSE_I1_ACTIONS = euclid_spiel.DenseActionCodec(1).size
 
@@ -293,10 +294,27 @@ def _root_win_actor(plain_weights, **kwargs):
     _pin_actor_cpu()
     original_model_init = _widen_after_model_init()
     original_init_bot = alpha_zero._init_bot
+    original_evaluator = evaluator_lib.AlphaZeroEvaluator
     original_update = alpha_zero.update_checkpoint
 
+    search = os.environ.get("EUCLID_SEARCH", "packaged")
+
+    if search == "widening":
+        def widening_evaluator(game, model):
+            return euclid_widening.WideningEvaluator(
+                original_evaluator(game, model), game.num_distinct_actions())
+
+        evaluator_lib.AlphaZeroEvaluator = widening_evaluator
+
     def wrapped_init_bot(config, game, evaluator_, evaluation):
-        bot = original_init_bot(config, game, evaluator_, evaluation)
+        if search == "widening":
+            noise = None if evaluation else (config.policy_epsilon,
+                                              config.policy_alpha)
+            bot = euclid_widening.ProgressiveWideningBot(
+                game, config.uct_c, config.max_simulations, evaluator_,
+                dirichlet_noise=noise)
+        else:
+            bot = original_init_bot(config, game, evaluator_, evaluation)
         return root_win_in_one_bot(bot, evaluator_)
 
     alpha_zero._init_bot = wrapped_init_bot
@@ -306,6 +324,7 @@ def _root_win_actor(plain_weights, **kwargs):
         return _PACKAGED_ACTOR(**kwargs)
     finally:
         alpha_zero._init_bot = original_init_bot
+        evaluator_lib.AlphaZeroEvaluator = original_evaluator
         alpha_zero.update_checkpoint = original_update
         alpha_zero._init_model_from_config = original_model_init
 
@@ -316,6 +335,53 @@ def root_win_in_one_actor(**kwargs):
 
 def root_win_in_one_plain_weight_actor(**kwargs):
     return _root_win_actor(True, **kwargs)
+
+
+def _widening_actor(plain_weights, mate_mode, **kwargs):
+    """Spawn target installing lazy widening for every actor search."""
+    _pin_actor_cpu()
+    original_model_init = _widen_after_model_init()
+    original_init_bot = alpha_zero._init_bot
+    original_evaluator = evaluator_lib.AlphaZeroEvaluator
+    original_update = alpha_zero.update_checkpoint
+
+    def widening_evaluator(game, model):
+        evaluator = original_evaluator(game, model)
+        if mate_mode == "all":
+            evaluator = WinInOneEvaluator(evaluator)
+        return euclid_widening.WideningEvaluator(
+            evaluator, game.num_distinct_actions())
+
+    def widening_bot(config, game, evaluator_, evaluation):
+        noise = None if evaluation else (config.policy_epsilon,
+                                          config.policy_alpha)
+        bot = euclid_widening.ProgressiveWideningBot(
+            game, config.uct_c, config.max_simulations, evaluator_,
+            dirichlet_noise=noise)
+        return (root_win_in_one_bot(bot, evaluator_)
+                if mate_mode == "root" else bot)
+
+    evaluator_lib.AlphaZeroEvaluator = widening_evaluator
+    alpha_zero._init_bot = widening_bot
+    if plain_weights:
+        alpha_zero.update_checkpoint = actor_update_checkpoint
+    try:
+        return _PACKAGED_ACTOR(**kwargs)
+    finally:
+        alpha_zero._init_bot = original_init_bot
+        evaluator_lib.AlphaZeroEvaluator = original_evaluator
+        alpha_zero.update_checkpoint = original_update
+        alpha_zero._init_model_from_config = original_model_init
+
+
+def widening_actor(**kwargs):
+    return _widening_actor(False, os.environ.get("EUCLID_MATE_MODE", "root"),
+                           **kwargs)
+
+
+def widening_plain_weight_actor(**kwargs):
+    return _widening_actor(True, os.environ.get("EUCLID_MATE_MODE", "root"),
+                           **kwargs)
 
 
 def _orderly_shutdown(_signum, _frame):
@@ -349,6 +415,8 @@ def main():
                         action="store_const", const="off")
     parser.add_argument("--thread-cpus",
                         help="CPU pool; learner gets the first CPU and actors are striped")
+    parser.add_argument("--search", choices=("packaged", "widening"),
+                        default="packaged")
     args = parser.parse_args()
     if args.thread_cpus:
         os.environ["EUCLID_THREAD_CPUS"] = args.thread_cpus
@@ -356,7 +424,13 @@ def main():
         if not cpus:
             parser.error("--thread-cpus must name at least one CPU")
         os.sched_setaffinity(0, {cpus[0]})
-    if args.win_in_one == "all" and args.resume_from is not None:
+    os.environ["EUCLID_SEARCH"] = args.search
+    os.environ["EUCLID_MATE_MODE"] = args.win_in_one
+    if args.search == "widening" and args.resume_from is not None:
+        alpha_zero.actor = widening_plain_weight_actor
+    elif args.search == "widening":
+        alpha_zero.actor = widening_actor
+    elif args.win_in_one == "all" and args.resume_from is not None:
         alpha_zero.actor = win_in_one_plain_weight_actor
     elif args.win_in_one == "all":
         alpha_zero.actor = win_in_one_actor
@@ -420,6 +494,9 @@ def main():
         )
         model.load_checkpoint(args.eval_step)
         evaluator = evaluator_lib.AlphaZeroEvaluator(loaded_game, model)
+        if args.search == "widening":
+            evaluator = euclid_widening.WideningEvaluator(
+                evaluator, loaded_game.num_distinct_actions())
         if args.win_in_one == "all":
             evaluator = WinInOneEvaluator(evaluator)
         wins = timeouts = search_failures = 0
@@ -433,12 +510,17 @@ def main():
             signal.alarm(args.eval_game_seconds)
             try:
                 state = loaded_game.new_initial_state()
-                bot = mcts.MCTSBot(
-                    loaded_game, config.uct_c, config.max_simulations, evaluator,
-                    solve=False, dirichlet_noise=None,
-                    child_selection_fn=mcts.SearchNode.puct_value,
-                    dont_return_chance_node=True,
-                )
+                if args.search == "widening":
+                    bot = euclid_widening.ProgressiveWideningBot(
+                        loaded_game, config.uct_c, config.max_simulations,
+                        evaluator, dirichlet_noise=None)
+                else:
+                    bot = mcts.MCTSBot(
+                        loaded_game, config.uct_c, config.max_simulations, evaluator,
+                        solve=False, dirichlet_noise=None,
+                        child_selection_fn=mcts.SearchNode.puct_value,
+                        dont_return_chance_node=True,
+                    )
                 if args.win_in_one == "root":
                     bot = root_win_in_one_bot(bot, evaluator)
                 while not state.is_terminal():

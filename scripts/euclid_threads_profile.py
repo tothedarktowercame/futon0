@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import argparse
 from pathlib import Path
 import time
 
@@ -15,6 +16,7 @@ from open_spiel.python.algorithms.alpha_zero import evaluator as evaluator_lib
 from open_spiel.python.algorithms.alpha_zero import model_nnx
 
 import euclid_spiel  # noqa: F401
+import euclid_widening
 from euclid_open_spiel_alpha_zero import WinInOneEvaluator, load_actor_weights
 
 
@@ -23,6 +25,10 @@ RC13 = ROOT / "holes/excursions/E-euclid-tutor-data/spiel/rc13"
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--search", choices=("packaged", "widening"),
+                        default="packaged")
+    args = parser.parse_args()
     # Create the fixed-size JAX pool under one-CPU affinity, as actors do.
     pool = set(range(20, 32))
     os.sched_setaffinity(0, {20})
@@ -48,11 +54,18 @@ def main():
     if wins:
         raise AssertionError("clean stage-2 position unexpectedly has mate in one")
 
-    bot = mcts.MCTSBot(
-        game, 1.41, 32, evaluator, solve=False,
-        random_state=np.random.RandomState(13), dirichlet_noise=None,
-        child_selection_fn=mcts.SearchNode.puct_value,
-        dont_return_chance_node=True)
+    if args.search == "widening":
+        evaluator = euclid_widening.WideningEvaluator(
+            evaluator, game.num_distinct_actions())
+        bot = euclid_widening.ProgressiveWideningBot(
+            game, 1.41, 32, evaluator,
+            random_state=np.random.RandomState(13), dirichlet_noise=None)
+    else:
+        bot = mcts.MCTSBot(
+            game, 1.41, 32, evaluator, solve=False,
+            random_state=np.random.RandomState(13), dirichlet_noise=None,
+            child_selection_fn=mcts.SearchNode.puct_value,
+            dont_return_chance_node=True)
     timings = {"legal": 0.0, "inference": 0.0, "clone": 0.0,
                "apply": 0.0, "legal_in_apply": 0.0}
     counts = {"legal": 0, "inference": 0, "clone": 0, "apply": 0}
@@ -61,7 +74,9 @@ def main():
     original_legal = euclid_spiel.EuclidState._legal_actions
     original_clone = euclid_spiel.EuclidState.clone
     original_apply = euclid_spiel.EuclidState._apply_action
-    original_inference = evaluator._inference
+    inference_owner = (evaluator.wrapped if args.search == "widening"
+                       else evaluator)
+    original_inference = inference_owner._inference
 
     def timed_legal(self, player):
         fresh = self._actions is None
@@ -103,7 +118,7 @@ def main():
     euclid_spiel.EuclidState._legal_actions = timed_legal
     euclid_spiel.EuclidState.clone = timed_clone
     euclid_spiel.EuclidState._apply_action = timed_apply
-    evaluator._inference = timed_inference
+    inference_owner._inference = timed_inference
     started = time.perf_counter()
     root = bot.mcts_search(state)
     search_seconds = time.perf_counter() - started
@@ -114,7 +129,8 @@ def main():
                      - timings["legal_in_apply"])
     other_seconds = max(0.0, search_seconds - timings["legal"]
                         - timings["inference"] - state_seconds)
-    print(json.dumps({
+    result = {
+        "search": args.search,
         "total_seconds": scan_seconds + search_seconds,
         "root_scan_seconds": scan_seconds,
         "root_legal_actions": len(state.legal_actions()),
@@ -134,7 +150,10 @@ def main():
         },
         "other_seconds": other_seconds,
         "root_children": len(root.children),
-    }, indent=2))
+    }
+    if args.search == "widening":
+        result["widening"] = bot.last_stats
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":
