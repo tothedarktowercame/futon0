@@ -254,16 +254,21 @@ def _fresh_bindings(spec, args, state, ply):
     return bindings
 
 
-def _candidate_actions(n, state, initial_kinds, ply):
+def _candidate_actions(n, state, initial_kinds, ply, allowed_rules=None, allowed_by_kind=None):
     """Yield grounded candidates before arithmetic entailment checks."""
     kinds = _objects(state, initial_kinds)
     by_kind = {kind: sorted(name for name, k in kinds.items() if k == kind)
                for kind in ("point", "line", "circle")}
+    if allowed_by_kind is not None:
+        by_kind = {kind: [name for name in names if name in allowed_by_kind[kind]]
+                   for kind, names in by_kind.items()}
     facts_by_head = {}
     for fact in sorted(state.facts, key=repr):
         if fact:
             facts_by_head.setdefault(fact[0], []).append(fact)
     for rule in sorted(play.palette(n)):
+        if allowed_rules is not None and rule not in allowed_rules:
+            continue
         spec = eng.CONSTRUCTIONS[rule]
         info = play.rule_info(rule)
         variables = tuple(spec["args"])
@@ -273,6 +278,11 @@ def _candidate_actions(n, state, initial_kinds, ply):
             for values in itertools.product(*domains):
                 full = dict(env, **dict(zip(missing, values)))
                 args = tuple(full[v] for v in variables)
+                if allowed_by_kind is not None and any(
+                    arg not in allowed_by_kind[info["arg_kinds"].get(variable, "point")]
+                    for variable, arg in zip(variables, args)
+                ):
+                    continue
                 bindings = _fresh_bindings(spec, args, state, ply)
                 yield rule, args, tuple(sorted(bindings.items()))
 
@@ -308,12 +318,14 @@ def enumerate_actions_reference(n, state, initial_kinds, ply):
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
 
-def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=()):
+def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
+                      allowed_rules=None, allowed_by_kind=None):
     """All accepted non-case moves, with repeated entailments and parent moves reused."""
     accepted = []
     query_cache = {}
     parent_legal_keys = set(parent_legal_keys)
-    for action in _candidate_actions(n, state, initial_kinds, ply):
+    for action in _candidate_actions(n, state, initial_kinds, ply,
+                                     allowed_rules, allowed_by_kind):
         rule, args, _bindings = action
         if ((rule, args) not in parent_legal_keys
                 and not _entailments_hold(eng.CONSTRUCTIONS[rule], state, args, query_cache)):
@@ -490,9 +502,17 @@ class EuclidState(pyspiel.State):
     def _legal_actions(self, player):
         assert player == 0
         if self._actions is None:
+            allowed_rules = allowed_by_kind = None
+            if self._euclid_game.action_codec:
+                allowed_rules = set(self._euclid_game.action_codec.rules)
+                allowed_by_kind = {
+                    kind: set(names[:DENSE_KIND_CAPS[kind]])
+                    for kind, names in self._euclid_game.action_codec._by_kind(self).items()
+                }
             self._actions = enumerate_actions(self._proposition, self.engine_state,
                                               self.initial_kinds, len(self.history_moves),
-                                              self._parent_legal_keys)
+                                              self._parent_legal_keys,
+                                              allowed_rules, allowed_by_kind)
             self._action_by_id = {}
             for grounded in self._actions:
                 action_id = (self._euclid_game.action_codec.encode(self, grounded)

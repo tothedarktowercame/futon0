@@ -113,6 +113,13 @@ def test_dense_action_ids_round_trip_and_fit_policy_head():
             legal = state.legal_actions()
             assert legal
             assert max(legal) < game.num_distinct_actions()
+            reference = euclid_spiel.enumerate_actions_reference(
+                proposition, state.engine_state, state.initial_kinds,
+                len(state.history_moves),
+            )
+            expected = [action for action in reference
+                        if game.action_codec.encode(state, action) is not None]
+            assert state._actions == expected
             for action_id in legal:
                 grounded = state._action_by_id[action_id]
                 assert game.action_codec.decode(state, action_id) == grounded
@@ -131,3 +138,27 @@ def test_alpha_zero_facade_has_nonacting_second_player():
     assert state.current_player() in (0, pyspiel.PlayerId.TERMINAL)
     assert len(state.returns()) == 2
     assert sum(state.returns()) == 0
+
+
+def test_compact_i2_is_reachable_with_ten_move_horizon():
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true)"
+    )
+    state = game.new_initial_state()
+    witness = [
+        ("line_from_points", ("a", "b")),
+        ("proposition_1", ("a", "b", "L_1")),
+        ("line_from_points", ("d_2", "a")),
+        ("line_from_points", ("d_2", "b")),
+        ("circle_from_points", ("b", "c")),
+        ("intersection_circle_line_extending_points", ("C_5", "L_4", "b", "d_2")),
+        ("circle_from_points", ("d_2", "g_6")),
+        ("intersection_circle_line_extending_points", ("C_7", "L_3", "a", "d_2")),
+    ]
+    for rule, args in witness:
+        state.legal_actions()
+        matches = [action_id for action_id, grounded in state._action_by_id.items()
+                   if grounded[0] == rule and grounded[1] == args]
+        assert len(matches) == 1, (rule, args)
+        state.apply_action(matches[0])
+    assert state.returns() == [1.0]

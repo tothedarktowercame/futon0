@@ -58,6 +58,10 @@ gitignored.
 | I.2 cold | 10.1 min | 22 recorded | 0 | timed out, 0 games in 5 min |
 | I.2 I.1-trunk warm | 10.1 min | 66 recorded | 0 | 0/10 |
 
+The two I.2 rows above used `move_cap=6`.  The compact I.2 construction needs
+eight moves, so those arms were run at an unwinnable horizon and are retained
+only as a record of the mistaken setup.  They are superseded below.
+
 The acceptance gate passed immediately: the first 11 I.1 games contained one
 win (9.1%), above the 0.39% random baseline.  More importantly, the no-noise
 policy changed from 0/10 at step 10 to 10/10 at step 20 and 20/20 at step 30.
@@ -77,14 +81,48 @@ this is reported as a timeout, not as 0/10.
 ## Conclusion
 
 OpenSpiel's packaged AlphaZero learned a reliable I.1 policy from rules and
-terminal reward alone.  Under the much shorter but equal I.2 comparison it did
-not discover a single I.2 solution, and I.1 trunk transfer improved throughput
-but did not produce a win.  Therefore this probe is positive for I.1 and
-negative/inconclusive for I.2: it shows no evidence that I.2 was learned, but
-the 10-minute arms are too small to establish that it cannot be learned.
+terminal reward alone.  The initial I.2 comparison was invalid because its
+six-move horizon was too short; the corrected cap-10 comparison follows below.
 
 The result is specifically for the compact action game.  Fifteen palette rules
 of arity five through ten are omitted uniformly; none is selected for its
 geometric meaning.  That restriction and the expensive exact enumeration on
 some policy branches are the principal limits on extrapolating the result to
 the complete System E move game.
+
+## Cap-10 I.2 correction
+
+A regression test now replays an eight-move reachability witness in compact
+I.2 at `move_cap=10` and obtains terminal reward 1.  The witness is used only
+by that reachability test; it is not available to self-play, the observation,
+the policy or the reward.  `--move-cap` now controls the training game.  Warm
+transfer across caps is shape-safe because the observation tensor has always
+had a fixed 4,096 entries, including a fixed allocation for ply one-hots; it
+does not resize with `max_game_length`.
+
+An initial cap-10 pilot exposed wasted work: compact mode generated the full
+over-cap candidate set and discarded unencodable actions afterwards.  Moving
+the same neutral arity and typed-slot filters into candidate generation made
+the run feasible.  A test compares the accelerated legal set with the old
+reference enumerator filtered through the codec at several I.1 and I.2 states;
+they are equal.  The discarded pilot is not counted below.
+
+Cold and warm then ran concurrently for equal budgets: two pinned CPU cores
+for 22.5 wall minutes, or 45 CPU-minutes per arm.  Settings otherwise match
+the cap-6 probe: 32 simulations, two actors per arm, root epsilon 0.25 and
+alpha 1.0, no reward shaping.  Evaluation used the same 32 simulations, no
+root noise, and a 20-second per-game limit; timeouts count as non-wins.
+
+| cap-10 arm / checkpoint | elapsed checkpoint time | self-play games | cumulative wins | greedy evaluation |
+|---|---:|---:|---:|---:|
+| cold step 5 | 10.0 min | 35 | 0 | 0/5 (4 timeouts) |
+| cold step 10 / final | 17.3 min | 70 | 0 | 0/5 (0 timeouts) |
+| warm step 5 | 7.7 min | 35 | 0 | 0/5 (0 timeouts) |
+| warm step 16 / final | 21.0 min | 112 | 0 | 0/5 (0 timeouts) |
+
+The corrected experiment therefore still found no I.2 solution: zero wins in
+70 cold and 112 warm self-play games, and zero greedy wins at both fixed
+points.  Warm transfer increased throughput but not success.  This is a valid
+negative result for the stated 45-CPU-minute arms, unlike the cap-6 run, but it
+does not establish that I.2 is unlearnable with a larger search or training
+budget.

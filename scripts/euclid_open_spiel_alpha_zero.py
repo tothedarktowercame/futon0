@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import signal
 import sys
 
 from open_spiel.python.algorithms import mcts
@@ -31,8 +32,10 @@ def main():
     parser.add_argument("--eval-games", type=int, default=20)
     parser.add_argument("--warm-from", type=Path)
     parser.add_argument("--warm-step", type=int, default=30)
+    parser.add_argument("--move-cap", type=int, default=6)
+    parser.add_argument("--eval-game-seconds", type=int, default=60)
     args = parser.parse_args()
-    game = (f"euclid_book1(proposition={args.proposition},move_cap=6,"
+    game = (f"euclid_book1(proposition={args.proposition},move_cap={args.move_cap},"
             "dense_actions=true,alpha_zero_facade=true)")
     config = alpha_zero.Config(
         game=game,
@@ -79,19 +82,32 @@ def main():
         )
         model.load_checkpoint(args.eval_step)
         evaluator = evaluator_lib.AlphaZeroEvaluator(loaded_game, model)
-        wins = 0
+        wins = timeouts = 0
+
+        def evaluation_timeout(_signum, _frame):
+            raise TimeoutError("greedy evaluation game exceeded its time limit")
+
+        previous_handler = signal.signal(signal.SIGALRM, evaluation_timeout)
         for _ in range(args.eval_games):
-            state = loaded_game.new_initial_state()
-            bot = mcts.MCTSBot(
-                loaded_game, config.uct_c, config.max_simulations, evaluator,
-                solve=False, dirichlet_noise=None,
-                child_selection_fn=mcts.SearchNode.puct_value,
-                dont_return_chance_node=True,
-            )
-            while not state.is_terminal():
-                state.apply_action(bot.step(state))
-            wins += int(state.returns()[0] > 0)
-        print(json.dumps({"step": args.eval_step, "games": args.eval_games, "wins": wins}))
+            signal.alarm(args.eval_game_seconds)
+            try:
+                state = loaded_game.new_initial_state()
+                bot = mcts.MCTSBot(
+                    loaded_game, config.uct_c, config.max_simulations, evaluator,
+                    solve=False, dirichlet_noise=None,
+                    child_selection_fn=mcts.SearchNode.puct_value,
+                    dont_return_chance_node=True,
+                )
+                while not state.is_terminal():
+                    state.apply_action(bot.step(state))
+                wins += int(state.returns()[0] > 0)
+            except TimeoutError:
+                timeouts += 1
+            finally:
+                signal.alarm(0)
+        signal.signal(signal.SIGALRM, previous_handler)
+        print(json.dumps({"step": args.eval_step, "games": args.eval_games,
+                          "wins": wins, "timeouts": timeouts}))
         return
     if args.warm_from is not None:
         # OpenSpiel has no resume/transfer flag. Keep its training loop intact,
