@@ -21,6 +21,11 @@ import euclid_spiel  # noqa: E402,F401  (registers the Python game)
 DENSE_I1_ACTIONS = euclid_spiel.DenseActionCodec(1).size
 
 
+def _orderly_shutdown(_signum, _frame):
+    """Let OpenSpiel's training loop close and join every worker process."""
+    raise KeyboardInterrupt
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--proposition", type=int, required=True)
@@ -133,7 +138,15 @@ def main():
             return target
 
         alpha_zero._init_model_from_config = warm_init
-    alpha_zero.alpha_zero(config)
+    # bg.py stops a run with SIGTERM.  Turn that into the interruption the
+    # packaged loop already handles: it broadcasts an exit message and joins
+    # every actor in its finally block.  Without this bridge, SIGTERM kills the
+    # learner immediately and leaves its multiprocessing children orphaned.
+    previous_term = signal.signal(signal.SIGTERM, _orderly_shutdown)
+    try:
+        alpha_zero.alpha_zero(config)
+    finally:
+        signal.signal(signal.SIGTERM, previous_term)
 
 
 if __name__ == "__main__":
