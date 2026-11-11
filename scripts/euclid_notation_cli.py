@@ -119,7 +119,21 @@ def command_show(args):
     given = play.tr.objects_from_hyps(prop)
     print(f"Proposition: I.{prop}")
     print("Given objects: " + ", ".join(f"{o['name']} ({o['kind']})" for o in given))
-    print("Goal:")
+    # Lean's statement is existential in any goal name that is not given
+    # (I.1's c, I.2's l): say so, as the theorem does, so a player does not
+    # think the point must carry that name. Any constructed point may serve.
+    names = {o["name"] for o in given}
+    witnesses = []
+    for goal in play.GOALS[prop]:
+        for x in goal[1:]:
+            if isinstance(x, str) and x not in names and x not in witnesses:
+                witnesses.append(x)
+    if witnesses:
+        print("Goal: there exist points " if len(witnesses) > 1 else "Goal: there exists a point ",
+              end="")
+        print(", ".join(witnesses) + " (any point you construct may serve) such that:")
+    else:
+        print("Goal:")
     for goal in play.GOALS[prop]:
         print(f"  - {play.fact_words(goal)}")
     print("Moves so far:")
