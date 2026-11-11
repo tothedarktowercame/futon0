@@ -1,0 +1,158 @@
+[2026-11-11 20:51:44.047] actor-9 started
+[2026-11-11 20:51:44.047] Initializing model
+[2026-11-11 20:51:46.568] Initializing bots
+[2026-11-11 20:51:46.569] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:51:46.569] Loading checkpoint 0
+[2026-11-11 20:51:53.934] Game 1: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:12.706] Game 2: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:14.742] Game 3: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:17.080] Game 4: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:19.434] Game 5: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:21.759] Game 6: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:23.820] Game 7: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:23.820] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:52:23.820] Loading checkpoint 1
+[2026-11-11 20:52:43.983] Game 8: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1_2
+[2026-11-11 20:52:45.982] Game 9: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:48.095] Game 10: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:50.428] Game 11: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:52.381] Game 12: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:52.381] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:52:52.381] Loading checkpoint 2
+[2026-11-11 20:52:55.236] Game 13: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:52:57.609] Game 14: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:53:00.263] Game 15: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:53:02.596] Game 16: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:26.718] Game 17: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,x_2) -> g=g_1
+[2026-11-11 20:56:26.725] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:56:26.725] Loading checkpoint 3
+[2026-11-11 20:56:29.081] Game 18: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:31.886] Game 19: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:31.887] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:56:31.887] Loading checkpoint 4
+[2026-11-11 20:56:38.683] Game 20: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:40.814] Game 21: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:43.080] Game 22: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:45.287] Game 23: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:47.872] Game 24: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:47.882] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:56:47.882] Loading checkpoint 5
+[2026-11-11 20:56:50.627] Game 25: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:53.154] Game 26: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:55.307] Game 27: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:56:57.389] Game 28: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:07.832] Game 29: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:09.783] Game 30: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:11.725] Game 31: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:31.454] Game 32: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:31.463] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:57:31.463] Loading checkpoint 6
+[2026-11-11 20:57:34.206] Game 33: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:36.195] Game 34: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:57:44.833] Game 35: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:09.208] Game 36: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:09.214] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:58:09.214] Loading checkpoint 7
+[2026-11-11 20:58:11.329] Game 37: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:13.602] Game 38: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:18.942] Game 39: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:18.951] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:58:18.952] Loading checkpoint 8
+[2026-11-11 20:58:21.365] Game 40: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:23.283] Game 41: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:25.149] Game 42: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:27.286] Game 43: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:29.299] Game 44: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:31.046] Game 45: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:38.520] Game 46: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:38.527] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:58:38.527] Loading checkpoint 9
+[2026-11-11 20:58:40.735] Game 47: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:42.746] Game 48: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:58:45.200] Game 49: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:01.685] Game 50: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:04.334] Game 51: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:33.938] Game 52: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:33.939] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 20:59:33.949] Loading checkpoint 10
+[2026-11-11 20:59:36.559] Game 53: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:38.950] Game 54: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:41.048] Game 55: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 20:59:58.766] Game 56: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:02.314] Game 57: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:02.320] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:00:02.320] Loading checkpoint 11
+[2026-11-11 21:00:04.703] Game 58: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:06.959] Game 59: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:09.612] Game 60: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:43.716] Game 61: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,x_1,d_2) -> g=g_1
+[2026-11-11 21:00:45.968] Game 62: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:45.978] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:00:45.978] Loading checkpoint 12
+[2026-11-11 21:00:48.712] Game 63: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:51.207] Game 64: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:00:53.446] Game 65: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:03.229] Game 66: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:05.709] Game 67: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:08.351] Game 68: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:08.352] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:01:08.352] Loading checkpoint 13
+[2026-11-11 21:01:16.410] Game 69: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:18.475] Game 70: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:21.075] Game 71: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:22.975] Game 72: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:24.906] Game 73: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:24.912] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:01:24.912] Loading checkpoint 14
+[2026-11-11 21:01:27.534] Game 74: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:29.725] Game 75: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:42.498] Game 76: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:44.965] Game 77: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:47.374] Game 78: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:47.374] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:01:47.384] Loading checkpoint 15
+[2026-11-11 21:01:50.139] Game 79: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:52.597] Game 80: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:01:55.343] Game 81: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:02:03.481] Game 82: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:02:30.488] Game 83: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:02:52.102] Game 84: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1_2
+[2026-11-11 21:02:52.113] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:02:52.113] Loading checkpoint 16
+[2026-11-11 21:02:54.912] Game 85: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:02:57.508] Game 86: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:02:59.932] Game 87: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:01.699] Game 88: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:03.395] Game 89: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:33.310] Game 90: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,x_1,d_2) -> g=g_1
+[2026-11-11 21:03:33.319] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:03:33.319] Loading checkpoint 17
+[2026-11-11 21:03:36.492] Game 91: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:38.734] Game 92: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:41.002] Game 93: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:43.155] Game 94: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:03:45.230] Game 95: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:20.706] Game 96: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:20.715] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:04:20.715] Loading checkpoint 18
+[2026-11-11 21:04:23.546] Game 97: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:25.658] Game 98: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:45.370] Game 99: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:53.000] Game 100: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:53.004] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:04:53.004] Loading checkpoint 19
+[2026-11-11 21:04:55.298] Game 101: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:04:57.910] Game 102: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:05:20.969] Game 103: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1_2
+[2026-11-11 21:05:22.866] Game 104: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:05:30.911] Game 105: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:05:30.912] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:05:30.912] Loading checkpoint 20
+[2026-11-11 21:05:35.884] Game 106: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:05:38.518] Game 107: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:05:41.237] Game 108: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:05:43.583] Game 109: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:06:16.648] Game 110: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1_2
+[2026-11-11 21:06:18.356] Game 111: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:06:40.309] Game 112: Returns: 1.0 -1.0; Actions: intersection_circle_line_extending_points(C_7,a,d_2) -> g=g_1
+[2026-11-11 21:06:40.328] actor-9 exiting

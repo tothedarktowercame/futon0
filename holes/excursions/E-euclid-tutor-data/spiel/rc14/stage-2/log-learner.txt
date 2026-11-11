@@ -1,0 +1,14 @@
+[2026-11-11 21:09:54.140] learner started
+[2026-11-11 21:09:54.968] Initializing model
+[2026-11-11 21:10:07.857] Model type: mlp(32, 2)
+[2026-11-11 21:10:07.857] Model size: 12389218 variables
+[2026-11-11 21:10:08.587] Initial checkpoint: 0
+[2026-11-11 21:10:08.597] Collecting trajectories
+[2026-11-11 21:22:41.907] Step: 1
+[2026-11-11 21:22:41.907] Collected    65 states from  14 games, 0.1 states/s. 0.0 states/(s*actor), game length: 4.6
+[2026-11-11 21:22:41.907] Buffer size: 65. States seen: 65
+[2026-11-11 21:22:45.349] Losses(total: 24.037, policy: 5.894, value: 0.500, l2: 17.644)
+[2026-11-11 21:22:45.378] Checkpoint saved: 1
+[2026-11-11 21:22:45.383]
+[2026-11-11 21:22:45.383] Collecting trajectories
+[2026-11-11 21:24:53.268] learner exiting

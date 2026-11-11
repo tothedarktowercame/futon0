@@ -1,0 +1,11 @@
+[2026-11-11 21:10:04.527] actor-6 started
+[2026-11-11 21:10:04.527] Initializing model
+[2026-11-11 21:10:07.162] Initializing bots
+[2026-11-11 21:19:43.232] Game 1: Returns: 0.0 -0.0; Actions: extend_point_longer(a,b,c,c) -> x=x_1_2 point_between_points_shorter_than(b,c,x_1_2,b) -> a=a_2 point_between_points_shorter_than(x_1_2,b,a,x_1_2) -> a=a_3 extend_point_longer(x_1_2,a,x_1,x_1) -> x=x_4 extend_point(b,g_6) -> x=x_5
+[2026-11-11 21:19:43.242] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:19:43.248] Loading actor weights 0
+[2026-11-11 21:23:01.370] Game 2: Returns: 0.0 -0.0; Actions: extend_point_longer(b,d_2,b,a) -> x=x_1 extend_point_longer(d_2,x_1,b,c) -> x=x_2 point_between_points_shorter_than(x_1,b,d_2,x_2) -> a=a_3 extend_point_longer(x_1,x_2,x_1,c) -> x=x_4
+[2026-11-11 21:23:01.384] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:23:01.385] Loading actor weights 1
+[2026-11-11 21:26:25.572] Game 3: Returns: 0.0 -0.0; Actions: extend_point_longer(b,d_2,b,a) -> x=x_1 extend_point_longer(b,d_2,b,a) -> x=x_2 extend_point_longer(b,d_2,b,a) -> x=x_3 extend_point_longer(a,b,x_3,c) -> x=x_4
+[2026-11-11 21:26:25.613] actor-6 exiting

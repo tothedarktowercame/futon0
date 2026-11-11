@@ -1,0 +1,43 @@
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+Starting game euclid_book1(proposition=2,move_cap=4,dense_actions=true,alpha_zero_facade=true,start_file=/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc14/stage-2/prefix.json,start_perturb=2,start_perturb_rate=0.5,start_seed=2026111102)
+Writing logs and checkpoints to: /home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc14/stage-2
+Model type: mlp(width=32, depth=2)
+learner started
+[2026-11-11 21:09:54.968] Initializing model
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+  warnings.warn("Pay attention that you've been using the `nnx` api")
+[2026-11-11 21:10:07.857] Model type: mlp(32, 2)
+[2026-11-11 21:10:07.857] Model size: 12389218 variables
+[2026-11-11 21:10:08.587] Initial checkpoint: 0
+[2026-11-11 21:10:08.597] Collecting trajectories
+[2026-11-11 21:22:41.907] Step: 1
+[2026-11-11 21:22:41.907] Collected    65 states from  14 games, 0.1 states/s. 0.0 states/(s*actor), game length: 4.6
+[2026-11-11 21:22:41.907] Buffer size: 65. States seen: 65
+[2026-11-11 21:22:45.349] Losses(total: 24.037, policy: 5.894, value: 0.500, l2: 17.644)
+[2026-11-11 21:22:45.378] Checkpoint saved: 1
+[2026-11-11 21:22:45.383]
+[2026-11-11 21:22:45.383] Collecting trajectories
+[2026-11-11 21:24:53.268] learner exiting

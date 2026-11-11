@@ -1,0 +1,9 @@
+[2026-11-11 21:10:04.650] actor-9 started
+[2026-11-11 21:10:04.651] Initializing model
+[2026-11-11 21:10:07.615] Initializing bots
+[2026-11-11 21:19:17.499] Game 1: Returns: 0.0 -0.0; Actions: extend_point_longer(d_2,a,a,d_2) -> x=x_1_2 extend_point_longer(g_6,b,g_6,x_1) -> x=x_2 extend_point_longer(b,a,a,x_2) -> x=x_3 extend_point_longer(g_6,d_2,x_1_2,c) -> x=x_4 arbitrary_point() -> p=p_5
+[2026-11-11 21:19:17.510] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 21:19:17.510] Loading actor weights 0
+[2026-11-11 21:22:41.005] Game 2: Returns: 0.0 -0.0; Actions: extend_point_longer(b,d_2,b,a) -> x=x_1 extend_point_longer(b,d_2,b,a) -> x=x_2 extend_point_longer(x_2,d_2,b,a) -> x=x_3 extend_point_longer(b,g_6,x_1,x_3) -> x=x_4
+[2026-11-11 21:25:12.198] Game 3: Returns: 0.0 -0.0; Actions: extend_point_longer(b,d_2,b,a) -> x=x_1 extend_point_longer(b,d_2,b,a) -> x=x_2 point_between_points_shorter_than(x_1,b,d_2,x_2) -> a=a_3 extend_point_longer(b,g_6,x_1,a_3) -> x=x_4
+[2026-11-11 21:25:12.255] actor-9 exiting

@@ -1,0 +1,121 @@
+{
+  "arm": "DEMO",
+  "python_hash_seed": "0",
+  "actors": 12,
+  "simulations": 32,
+  "stages": [
+    {
+      "stage": 1,
+      "moves_remaining": 1,
+      "games": 1358,
+      "train_seconds": 930.095750921173,
+      "train_returncode": -9,
+      "checkpoint": 21,
+      "clean": {
+        "step": 21,
+        "games": 10,
+        "wins": 10,
+        "timeouts": 0,
+        "search_failures": 0,
+        "verified_wins": 10,
+        "seconds": 31.66304192505777
+      },
+      "perturbed": {
+        "step": 21,
+        "games": 10,
+        "wins": 10,
+        "timeouts": 0,
+        "search_failures": 0,
+        "verified_wins": 10,
+        "seconds": 81.7555585121736
+      },
+      "advanced": true,
+      "clean_legal_counts": [
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545
+      ],
+      "perturbed_legal_counts": [
+        545,
+        550,
+        961,
+        545,
+        550,
+        545,
+        971,
+        545,
+        545,
+        1250
+      ]
+    },
+    {
+      "stage": 2,
+      "moves_remaining": 2,
+      "games": 24,
+      "train_seconds": 930.0662552770227,
+      "train_returncode": -9,
+      "checkpoint": 1,
+      "clean": {
+        "step": 1,
+        "games": 10,
+        "wins": 0,
+        "timeouts": 10,
+        "search_failures": 0,
+        "verified_wins": 0,
+        "seconds": 303.20735140005127
+      },
+      "perturbed": {
+        "step": 1,
+        "games": 10,
+        "wins": 0,
+        "timeouts": 10,
+        "search_failures": 0,
+        "verified_wins": 0,
+        "seconds": 303.2756375388708
+      },
+      "advanced": false,
+      "clean_legal_counts": [
+        532,
+        532,
+        532,
+        532,
+        532,
+        532,
+        532,
+        532,
+        532,
+        532
+      ],
+      "perturbed_legal_counts": [
+        537,
+        947,
+        532,
+        537,
+        532,
+        957,
+        532,
+        532,
+        1235,
+        672
+      ]
+    }
+  ],
+  "win_in_one": "root",
+  "search": "widening",
+  "from_start": {
+    "step": 1,
+    "games": 10,
+    "wins": 0,
+    "timeouts": 10,
+    "search_failures": 0,
+    "verified_wins": 0,
+    "seconds": 302.6711337871384
+  }
+}
