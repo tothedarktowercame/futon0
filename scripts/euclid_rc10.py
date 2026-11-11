@@ -17,6 +17,7 @@ import euclid_spiel  # noqa: F401
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "holes/excursions/E-euclid-tutor-data/spiel/rc10"
 PYTHON = Path("/home/joe/.venvs/openspiel/bin/python")
+CPU_PREFIX = ["taskset", "-c", "20-31"]
 RUNNER = ROOT / "scripts/euclid_open_spiel_alpha_zero.py"
 SOURCE_DEMO = (ROOT / "holes/excursions/E-euclid-tutor-data/spiel/rc7/"
                "demo2/demonstration.json")
@@ -55,7 +56,7 @@ def latest_checkpoint(stage_dir):
 def evaluation(stage_dir, checkpoint, prefix, move_cap, perturb, seed, label,
                env, timeout):
     record = stage_dir / f"eval-{label}-wins.jsonl"
-    command = [str(PYTHON), str(RUNNER), "--proposition", "2",
+    command = CPU_PREFIX + [str(PYTHON), str(RUNNER), "--proposition", "2",
                "--out", str(stage_dir), "--simulations", "32",
                "--eval-step", str(checkpoint), "--eval-games", "10",
                "--eval-game-seconds", "30", "--start-file", str(prefix),
@@ -75,7 +76,7 @@ def evaluation(stage_dir, checkpoint, prefix, move_cap, perturb, seed, label,
 def legal_counts(prefix, move_cap, perturb, seed):
     game = pyspiel.load_game(
         f"euclid_book1(proposition=2,move_cap={move_cap},dense_actions=true,"
-        f"start_file={prefix},start_perturb={perturb},start_seed={seed}"
+        f"start_file={prefix},start_perturb={perturb},start_seed={seed})"
     )
     return [len(game.new_initial_state().legal_actions()) for _ in range(10)]
 
@@ -101,7 +102,7 @@ def main():
         prefix.write_text(json.dumps(demonstration[:8-k], indent=2) + "\n")
         episode_log = stage_dir / "episodes.jsonl"
         train_env = dict(env, EUCLID_EPISODE_LOG=str(episode_log))
-        command = [str(PYTHON), str(RUNNER), "--proposition", "2",
+        command = CPU_PREFIX + [str(PYTHON), str(RUNNER), "--proposition", "2",
                    "--out", str(stage_dir), "--steps", "100",
                    "--actors", "12", "--simulations", "32",
                    "--start-file", str(prefix), "--move-cap", str(k + 2),
