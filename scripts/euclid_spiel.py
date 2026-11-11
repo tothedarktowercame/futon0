@@ -620,6 +620,21 @@ class EuclidState(pyspiel.State):
         return play._goal_witness(self._proposition, self.engine_state, self._object_list(),
                                   None, given=given, wit_not_in=given) is not None
 
+    def logical_state_key(self):
+        """Exact search key for the logical store and name discipline."""
+        state = self.engine_state
+        return (
+            self._proposition,
+            tuple(sorted(state.facts)),
+            tuple(sorted(state.la.rows)),
+            state.fresh,
+            tuple(sorted(state.declared)),
+            tuple(sorted(state.reserved)),
+            tuple(sorted(state.exclude_rules)),
+            state.proof_branch,
+            len(self.history_moves),
+        )
+
     def is_terminal(self):
         return self.goal_reached() or len(self.history_moves) >= self._move_cap
 
@@ -662,6 +677,20 @@ class EuclidState(pyspiel.State):
         self._actions = None
         self._action_by_id = None
         self._parent_legal_keys = frozenset()
+
+    def apply_certified_action(self, action):
+        """Apply an action returned by this state's latest enumeration."""
+        if self._actions is None:
+            self._legal_actions(0)
+        rule, args, bindings_tuple = self._action_by_id[action]
+        parent_keys = frozenset((r, a) for r, a, _b in self._actions)
+        eng.apply_certified_step(
+            self.engine_state, len(self.history_moves) + 1,
+            rule, args, dict(bindings_tuple))
+        self.history_moves.append((rule, args, bindings_tuple))
+        self._actions = None
+        self._action_by_id = None
+        self._parent_legal_keys = parent_keys
 
     def sample_action_tuple(self, rng=None):
         allowed_rules = None

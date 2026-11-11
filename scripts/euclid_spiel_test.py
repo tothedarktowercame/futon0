@@ -398,10 +398,69 @@ def test_win_in_one_forces_stage_one_win_and_is_neutral_at_i2_start(tmp_path):
 
     class RefusedCandidate:
         def legal_actions(self): return [1]
-        def observation_tensor(self): return np.zeros(2)
+        def logical_state_key(self): return ("refused",)
         def clone(self): return self
-        def apply_action(self, _action): raise ValueError("refused")
+        def apply_certified_action(self, _action): raise ValueError("refused")
 
     refused = RefusedCandidate()
     assert np.array_equal(WinInOneEvaluator(wrapped).evaluate(refused),
                           wrapped.evaluate(refused))
+
+
+def test_certified_win_scan_matches_public_successors(tmp_path):
+    witness = [
+        ("line_from_points", ("a", "b")),
+        ("proposition_1", ("a", "b", "L_1")),
+        ("line_from_points", ("d_2", "a")),
+        ("line_from_points", ("d_2", "b")),
+        ("circle_from_points", ("b", "c")),
+        ("intersection_circle_line_extending_points", ("C_5", "L_4", "b", "d_2")),
+        ("circle_from_points", ("d_2", "g_6")),
+    ]
+    source = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true)"
+    ).new_initial_state()
+    prefix = []
+    for rule, args in witness:
+        source.legal_actions()
+        move = next(move for move in source._action_by_id.values()
+                    if move[0] == rule and move[1] == args)
+        prefix.append(move)
+        source.apply_action_tuple(move)
+    start_file = tmp_path / "certified-stage-one.json"
+    start_file.write_text(json.dumps(prefix))
+    game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=3,dense_actions=true,"
+        f"alpha_zero_facade=true,start_file={start_file},"
+        f"start_perturb=2,start_seed=20261112)"
+    )
+    states = [game.new_initial_state() for _ in range(3)]
+    assert sum(bool(state.initial_moves[len(prefix):]) for state in states) >= 2
+    for state in states:
+        for action in state.legal_actions():
+            public = state.clone()
+            certified = state.clone()
+            public.apply_action(action)
+            certified.apply_certified_action(action)
+            assert certified.engine_state.facts == public.engine_state.facts
+            assert certified.engine_state.la.rows == public.engine_state.la.rows
+
+
+def test_win_in_one_exact_cache_matches_fresh_on_random_positions():
+    rng = random.Random(20261112)
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=1,move_cap=4,dense_actions=true,"
+        "alpha_zero_facade=true)"
+    )
+    cached = WinInOneEvaluator(_FlatEvaluator())
+    for _ in range(20):
+        state = game.new_initial_state()
+        for _ in range(rng.randrange(4)):
+            if state.is_terminal():
+                break
+            state.apply_action(rng.choice(state.legal_actions()))
+        expected = WinInOneEvaluator(_FlatEvaluator())._winning_actions(state)
+        first = cached._winning_actions(state)
+        second = cached._winning_actions(state)
+        assert first == expected
+        assert second == expected

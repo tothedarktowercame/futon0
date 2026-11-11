@@ -2752,7 +2752,8 @@ def _fact_holds(s, fact):
     return fact in s.facts
 
 
-def _apply_step_unchecked(s, i, rule, args, bindings):
+def _apply_step_unchecked(s, i, rule, args, bindings,
+                          premises_certified=False):
     """Apply one euclid_apply-style step. Returns a report dict.
     Raises MissingPremise if a premise is not in the closed state or an
     entailment premise fails the arithmetic."""
@@ -2761,9 +2762,17 @@ def _apply_step_unchecked(s, i, rule, args, bindings):
                              "(not in the engine's rule table)")
     spec = CONSTRUCTIONS[rule]
     prem_specs = spec["premises"](s, *args)
-    prem_facts = [_need(s, i, rule, pf) for pf in prem_specs]
-    for q in spec.get("entail", lambda s, *a: [])(s, *args):
-        prem_facts.append(_entail_check(s, i, rule, q))
+    entailments = spec.get("entail", lambda s, *a: [])(s, *args)
+    if premises_certified:
+        # Dense-action enumeration has just checked these exact relational
+        # and arithmetic premises.  Preserve the ordinary provenance while
+        # avoiding a duplicate lookup / Fourier-Motzkin pass.
+        prem_facts = list(prem_specs)
+        prem_facts.extend(("entail",) + q for q in entailments)
+    else:
+        prem_facts = [_need(s, i, rule, pf) for pf in prem_specs]
+        for q in entailments:
+            prem_facts.append(_entail_check(s, i, rule, q))
     made = spec["make"](s, *args)
     # Review (claude-9): a made fact names its fresh object by the rule's
     # base name ("d" in proposition_1). If an ARGUMENT has that same name
@@ -2996,6 +3005,34 @@ def apply_step(s, i, rule, args, bindings, allow_contradiction=False):
         return _apply_step_unchecked(s, i, rule, args, bindings)
     trial = s.copy()
     report = _apply_step_unchecked(trial, i, rule, args, bindings)
+    bad, witness = contradictory(trial)
+    if bad:
+        raise ContradictoryStep(i, rule, witness)
+    s.facts = trial.facts
+    s.la = trial.la
+    s.fresh = trial.fresh
+    s.declared = trial.declared
+    s.reserved = trial.reserved
+    s.rule_cache = trial.rule_cache
+    s.exclude_rules = trial.exclude_rules
+    s.proof_branch = trial.proof_branch
+    return report
+
+
+def apply_certified_step(s, i, rule, args, bindings):
+    """Apply a move whose premises were certified by action enumeration.
+
+    This is a separate search-only entry point.  It retains the ordinary
+    transactional consistency check and produces the same facts, arithmetic
+    rows, and provenance as ``apply_step``; only duplicate premise checks are
+    omitted.
+    """
+    if getattr(s, "proof_branch", False):
+        return _apply_step_unchecked(
+            s, i, rule, args, bindings, premises_certified=True)
+    trial = s.copy()
+    report = _apply_step_unchecked(
+        trial, i, rule, args, bindings, premises_certified=True)
     bad, witness = contradictory(trial)
     if bad:
         raise ContradictoryStep(i, rule, witness)

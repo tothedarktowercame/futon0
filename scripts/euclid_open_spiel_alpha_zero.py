@@ -97,22 +97,22 @@ class WinInOneEvaluator(mcts.Evaluator):
         self.cache = OrderedDict()
 
     def _winning_actions(self, state):
-        actions = tuple(state.legal_actions())
-        key = (np.asarray(state.observation_tensor()).tobytes(), actions)
+        key = state.logical_state_key()
         if key in self.cache:
             self.cache.move_to_end(key)
             return self.cache[key]
+        actions = tuple(state.legal_actions())
         wins = []
         for action in actions:
             child = state.clone()
             try:
-                child.apply_action(action)
+                child.apply_certified_action(action)
             except (euclid_spiel.eng.MissingPremise, TypeError, ValueError):
                 # The neutral enumerator checks stated premises and arithmetic
                 # entailments; the transactional consistency guard can still
                 # refuse a grounded candidate.  Such a candidate is not a win.
                 continue
-            if child.is_terminal() and child.returns()[0] > 0:
+            if child.goal_reached():
                 wins.append(action)
         result = tuple(wins)
         self.cache[key] = result
