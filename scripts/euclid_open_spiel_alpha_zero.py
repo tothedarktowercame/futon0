@@ -276,7 +276,7 @@ def main():
         model.load_checkpoint(args.eval_step)
         evaluator = maybe_win_in_one(
             evaluator_lib.AlphaZeroEvaluator(loaded_game, model), args.win_in_one)
-        wins = timeouts = 0
+        wins = timeouts = search_failures = 0
         win_records = []
 
         def evaluation_timeout(_signum, _frame):
@@ -317,11 +317,20 @@ def main():
                     })
             except TimeoutError:
                 timeouts += 1
+            except ValueError as exc:
+                if str(exc) != "max() iterable argument is empty":
+                    raise
+                # A timed-out/degenerate MCTS can leave a root with no child.
+                # It is an evaluation non-win, not a reason to lose the run's
+                # remaining receipts.
+                timeouts += 1
+                search_failures += 1
             finally:
                 signal.alarm(0)
         signal.signal(signal.SIGALRM, previous_handler)
         result = {"step": args.eval_step, "games": args.eval_games,
                   "wins": wins, "timeouts": timeouts,
+                  "search_failures": search_failures,
                   "verified_wins": len(win_records)}
         if args.eval_record is not None:
             args.eval_record.parent.mkdir(parents=True, exist_ok=True)
