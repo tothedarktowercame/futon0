@@ -213,25 +213,48 @@ def _pin_actor_cpu():
     os.sched_setaffinity(0, {cpus[ordinal % len(cpus)]})
 
 
+def _widen_after_model_init():
+    """Keep the small JAX pool, then let its threads use the whole CPU pool."""
+    cpus = _thread_cpu_pool()
+    original_init = alpha_zero._init_model_from_config
+    if not cpus:
+        return original_init
+
+    def bounded_init(config):
+        model = original_init(config)
+        os.sched_setaffinity(0, set(cpus))
+        return model
+
+    alpha_zero._init_model_from_config = bounded_init
+    return original_init
+
+
 def pinned_actor(**kwargs):
     _pin_actor_cpu()
-    return _PACKAGED_ACTOR(**kwargs)
+    original_init = _widen_after_model_init()
+    try:
+        return _PACKAGED_ACTOR(**kwargs)
+    finally:
+        alpha_zero._init_model_from_config = original_init
 
 
 def plain_weight_actor(**kwargs):
     """Spawn target that consumes learner-exported parameter arrays."""
     _pin_actor_cpu()
+    original_init = _widen_after_model_init()
     original_update = alpha_zero.update_checkpoint
     alpha_zero.update_checkpoint = actor_update_checkpoint
     try:
         return _PACKAGED_ACTOR(**kwargs)
     finally:
         alpha_zero.update_checkpoint = original_update
+        alpha_zero._init_model_from_config = original_init
 
 
 def win_in_one_actor(**kwargs):
     """Spawn target that installs the wrapper inside the actor process."""
     _pin_actor_cpu()
+    original_init = _widen_after_model_init()
     original_evaluator = evaluator_lib.AlphaZeroEvaluator
 
     def wrapped_evaluator(game, model):
@@ -242,11 +265,13 @@ def win_in_one_actor(**kwargs):
         return _PACKAGED_ACTOR(**kwargs)
     finally:
         evaluator_lib.AlphaZeroEvaluator = original_evaluator
+        alpha_zero._init_model_from_config = original_init
 
 
 def win_in_one_plain_weight_actor(**kwargs):
     """Spawn target combining mate detection and plain weight transport."""
     _pin_actor_cpu()
+    original_init = _widen_after_model_init()
     original_evaluator = evaluator_lib.AlphaZeroEvaluator
     original_update = alpha_zero.update_checkpoint
 
@@ -260,11 +285,13 @@ def win_in_one_plain_weight_actor(**kwargs):
     finally:
         alpha_zero.update_checkpoint = original_update
         evaluator_lib.AlphaZeroEvaluator = original_evaluator
+        alpha_zero._init_model_from_config = original_init
 
 
 def _root_win_actor(plain_weights, **kwargs):
     """Spawn target installing root-only mate detection in packaged bots."""
     _pin_actor_cpu()
+    original_model_init = _widen_after_model_init()
     original_init_bot = alpha_zero._init_bot
     original_update = alpha_zero.update_checkpoint
 
@@ -280,6 +307,7 @@ def _root_win_actor(plain_weights, **kwargs):
     finally:
         alpha_zero._init_bot = original_init_bot
         alpha_zero.update_checkpoint = original_update
+        alpha_zero._init_model_from_config = original_model_init
 
 
 def root_win_in_one_actor(**kwargs):
@@ -513,6 +541,10 @@ def main():
             return target
 
         alpha_zero._init_model_from_config = resume_init
+    if args.thread_cpus:
+        # The learner also creates its JAX pool while pinned to one CPU, then
+        # may use the full pool for compilation and gradient updates.
+        _widen_after_model_init()
     # bg.py stops a run with SIGTERM.  Turn that into the interruption the
     # packaged loop already handles: it broadcasts an exit message and joins
     # every actor in its finally block.  Without this bridge, SIGTERM kills the
