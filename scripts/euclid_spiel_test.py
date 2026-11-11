@@ -1,7 +1,11 @@
 from collections import deque
+import hashlib
 import json
+import os
 from pathlib import Path
 import random
+import subprocess
+import sys
 
 import pyspiel
 
@@ -21,6 +25,83 @@ import numpy as np
 
 def _game(cap=6):
     return pyspiel.load_game(f"euclid_book1(proposition=1,move_cap={cap})")
+
+
+def _enumerate_candidate_mode(state, validate):
+    codec = state._euclid_game.action_codec
+    allowed_rules = allowed_by_kind = free_variables = None
+    if codec:
+        allowed_rules = set(codec.rules)
+        allowed_by_kind = {
+            kind: set(names[:euclid_spiel.DENSE_KIND_CAPS[kind]])
+            for kind, names in codec._by_kind(state).items()
+        }
+        free_variables = {
+            rule: set(codec.layouts[rule][1]) for rule in allowed_rules
+        }
+    arguments = (
+        state._proposition, state.engine_state, state.initial_kinds,
+        len(state.history_moves), state._parent_legal_keys,
+        allowed_rules, allowed_by_kind, free_variables,
+        state._canonical_names())
+    if validate is None:
+        return euclid_spiel.enumerate_actions(*arguments)
+    return euclid_spiel.enumerate_actions(*arguments, validate=validate)
+
+
+def _candidate_regression_states():
+    root = (Path(__file__).resolve().parents[1]
+            / "holes/excursions/E-euclid-tutor-data/spiel")
+    dense = "dense_actions=true,alpha_zero_facade=true"
+
+    witness_game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=12,{dense})")
+    witness = witness_game.new_initial_state()
+    states = [witness.clone()]
+    for rule, args, bindings in json.loads(
+            (root / "rc13/demonstration.json").read_text()):
+        witness.apply_action_tuple(
+            (rule, tuple(args), tuple((a, b) for a, b in bindings)))
+        states.append(witness.clone())
+
+    prefix = root / "rc13/stage-2/prefix.json"
+    fixed_game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=4,{dense},"
+        f"start_file={prefix},start_perturb=2,start_perturb_rate=0.5,"
+        f"start_seed=2026111102)")
+    states.append(pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=4,{dense},"
+        f"start_file={prefix})").new_initial_state())
+    states.extend(fixed_game.new_initial_state() for _ in range(10))
+
+    rng = random.Random(20261111)
+    random_game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=5,{dense})")
+    for _case in range(30):
+        state = random_game.new_initial_state()
+        for _ply in range(rng.randrange(3)):
+            for _attempt in range(100):
+                action = state.sample_action_tuple(rng)
+                trial = state.clone()
+                try:
+                    trial.apply_action_tuple(action)
+                except euclid_spiel.eng.ContradictoryStep:
+                    continue
+                state = trial
+                break
+            else:
+                raise AssertionError("could not sample a playable prefix")
+        states.append(state)
+    return states
+
+
+def _candidate_corpus_digest():
+    payload = []
+    for state in _candidate_regression_states():
+        guarded = _enumerate_candidate_mode(state, True)
+        premise_certified = _enumerate_candidate_mode(state, False)
+        payload.append((guarded, premise_certified))
+    return hashlib.sha256(repr(payload).encode()).hexdigest()
 
 
 def test_actor_weight_snapshot_matches_parent_array_for_array(tmp_path):
@@ -212,6 +293,75 @@ def test_legal_actions_exclude_contradictory_superposition():
         raise AssertionError("reproduction no longer reaches the guard")
     state.legal_actions()
     assert refused not in state._actions
+
+
+def test_candidate_enumeration_modes_on_regression_corpus():
+    for state in _candidate_regression_states():
+        default = _enumerate_candidate_mode(state, None)
+        explicit_guarded = _enumerate_candidate_mode(state, True)
+        premise_certified = _enumerate_candidate_mode(state, False)
+        assert default == explicit_guarded
+        assert set(default) <= set(premise_certified)
+        assert default == sorted(default, key=lambda action: action)
+        assert premise_certified == sorted(premise_certified,
+                                           key=lambda action: action)
+
+
+def test_candidate_enumeration_is_deterministic_between_processes():
+    command = [
+        sys.executable, "-c",
+        "import euclid_spiel_test as t; print(t._candidate_corpus_digest())",
+    ]
+    environment = dict(os.environ, PYTHONHASHSEED="0")
+    first = subprocess.check_output(
+        command, cwd=Path(__file__).parent, env=environment, text=True,
+        timeout=300).strip()
+    second = subprocess.check_output(
+        command, cwd=Path(__file__).parent, env=environment, text=True,
+        timeout=300).strip()
+    assert first == second
+
+
+def test_premise_certified_superposition_is_refused_on_admission():
+    """The old alias exposure is planted below the canonical game view.
+
+    STEP1 prevents this state through ordinary play by quotienting ``x_2``
+    with ``d_2``.  Omitting that view here reconstructs LEGAL-1 and proves
+    that admission, rather than candidate generation, owns the guard.
+    """
+    prefix = (Path(__file__).resolve().parents[1]
+              / "holes/excursions/E-euclid-tutor-data/spiel/rc13/stage-2/prefix.json")
+    game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=4,dense_actions=true,"
+        f"alpha_zero_facade=true,start_file={prefix})")
+    state = game.new_initial_state()
+    state.apply_action_tuple(("off_line_strict_triangle",
+                              ("d_2", "b", "a", "L_1"), ()))
+    state.apply_action_tuple(("name_point", ("d_2",), (("x", "x_2"),)))
+    refused = (
+        "superposition",
+        ("a", "d_2", "x_2", "a", "b", "d_2",
+         "L_3", "L_3", "L_3", "L_1"),
+        (("AC'", "AC'_3"), ("BC'", "BC'_3"),
+         ("b'", "b'_3"), ("c'", "c'_3")),
+    )
+    arguments = (
+        state._proposition, state.engine_state, state.initial_kinds,
+        len(state.history_moves))
+    guarded = euclid_spiel.enumerate_actions(*arguments, validate=True)
+    premise_certified = euclid_spiel.enumerate_actions(
+        *arguments, validate=False)
+    assert refused not in guarded
+    assert refused in premise_certified
+    parent_facts = dict(state.engine_state.facts)
+    parent_rows = list(state.engine_state.la.rows)
+    successor, refusal = euclid_spiel.admit_candidate(
+        state.engine_state, len(state.history_moves), refused)
+    assert successor is None
+    assert isinstance(refusal, euclid_spiel.eng.ContradictoryStep)
+    assert refusal.witness == ("store-unsat", 204)
+    assert state.engine_state.facts == parent_facts
+    assert state.engine_state.la.rows == parent_rows
 
 
 def test_every_enumerated_move_applies_on_30_random_i2_positions():

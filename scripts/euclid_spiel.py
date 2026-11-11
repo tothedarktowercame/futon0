@@ -412,16 +412,37 @@ def enumerate_actions_reference(n, state, initial_kinds, ply,
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
 
+def admit_candidate(state, ply, action):
+    """Apply one premise-certified candidate to a copy of its parent.
+
+    Returns ``(successor, None)`` when the candidate is a playable game move,
+    or ``(None, refusal)`` when the engine guard refuses it (or it only adds a
+    fresh alias hidden by the canonical game view).  The parent is unchanged.
+    """
+    rule, args, bindings = action
+    successor = state.copy()
+    try:
+        report = eng.apply_certified_step(
+            successor, ply + 1, rule, args, dict(bindings))
+    except (eng.MissingPremise, TypeError, ValueError) as refusal:
+        return None, refusal
+    if _only_adds_bound_alias(report, bindings):
+        return None, ValueError("candidate only adds a canonical object alias")
+    return successor, None
+
+
 def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
                       allowed_rules=None, allowed_by_kind=None, free_variables=None,
-                      canonical_names=None):
-    """All playable non-case moves.
+                      canonical_names=None, validate=True):
+    """Premise-certified non-case moves, optionally checked by the guard.
 
     Premise enumeration is only a candidate generator.  In particular, a
     construction's conclusions can make the closed arithmetic store
     inconsistent even when every stated premise holds.  The ordinary engine
-    guard is authoritative, so certify each candidate by applying it to a
-    disposable state before advertising it as legal.
+    guard is authoritative.  The default validates every candidate before
+    advertising it as legal; candidate-scoring search can request the
+    deterministic premise-certified superset and call :func:`admit_candidate`
+    before adding a child.
     """
     accepted = []
     query_cache = {}
@@ -437,18 +458,14 @@ def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=(),
         if ((rule, args) not in parent_legal_keys
                 and not _entailments_hold(eng.CONSTRUCTIONS[rule], state, args, query_cache)):
             continue
-        trial = state.copy()
-        try:
+        if validate:
             # Candidate generation and _entailments_hold certified the
             # premises on this exact parent.  Keep the ordinary transactional
             # contradiction guard, but do not pay for those premise queries a
             # second time merely to validate the legal list.
-            report = eng.apply_certified_step(
-                trial, ply + 1, rule, args, dict(_bindings))
-        except (eng.MissingPremise, TypeError, ValueError):
-            continue
-        if _only_adds_bound_alias(report, _bindings):
-            continue
+            _successor, refusal = admit_candidate(state, ply, action)
+            if refusal is not None:
+                continue
         accepted.append(action)
     return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
 
