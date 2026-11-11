@@ -40,6 +40,7 @@ replay buffer 256, batch 64, Dirichlet root noise, non-acting second player.
 | L1 | 11-11 | LLM | Luna (codex-3) on the play page, with drawing | I.1-I.5 | 3 slices | I.1-I.4 solved; stuck at I.5 (no auxiliary construction) | ~/notes/euclid-cs/luna-run-1.md |
 | L2 | 11-11 | LLM | Luna, notation CLI (119629b), S5 | I.1 6, I.2 10, I.3 12, I.4 12, I.5 20 | 3 games each | I.1 solved in 3; I.2 confused by goal name `l` | ~/notes/euclid-cs/luna-notation-1.md |
 | L3 | 11-11 | LLM | L2 + existential goal wording (1a70ac6) | same | 3 games each | nothing solved: I.2 construction with a and c swapped (2 of 3 games); stops after 1-2 moves; I.5 opened with Pappus superposition(a,b,c,a,c,b) then stopped | same file, Round 2 |
+| SMT-1 | 11-11 | ENGINE | cvc5 + LeanEuclid's 112 SMT axioms (EuclidTheory.lean), givens + move facts only | logged positions | 5 s per query | I.2 witness: 8-move `follows` in 0.12 s, prefixes 0-7 `unknown`; Luna I.1 follows; Luna I.2/I.3/I.5 finals `unknown`; **Luna's four I.4 games (one move: superposition) `follows` in ~4 s where our engine says unsolved**: the engine needs two more deduction moves (assert_point_eq_on_ray, assert_point_eq_angle, euclid_engine.py:3404), LeanEuclid's proof ends superposition + euclid_finish. cvc5 never answered `sat`, so it confirms wins but cannot refute | SMT-1.md (8686325) |
 
 ## Standing decisions (Joe)
 
