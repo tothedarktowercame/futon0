@@ -8,6 +8,7 @@ splits are deliberately absent from this first wrapper.
 
 from __future__ import annotations
 
+import hashlib
 import itertools
 import json
 import os
@@ -36,14 +37,14 @@ _GAME_TYPE = pyspiel.GameType(
     provides_information_state_string=True,
     provides_information_state_tensor=False,
     provides_observation_string=True,
-    provides_observation_tensor=False,
+    provides_observation_tensor=True,
     parameter_specification={"proposition": 1, "move_cap": 12},
 )
 
 
 def _game_info(move_cap):
     return pyspiel.GameInfo(
-        num_distinct_actions=1_000_000,
+        num_distinct_actions=2_000_000_000,
         max_chance_outcomes=0,
         num_players=1,
         min_utility=0.0,
@@ -51,6 +52,22 @@ def _game_info(move_cap):
         utility_sum=None,
         max_game_length=move_cap,
     )
+
+
+MAX_OBJECTS = 32
+OBSERVATION_SIZE = 4096
+
+
+def stable_action_id(action):
+    """A state-independent id for a grounded `(rule, arguments)` move."""
+    rule, args, _bindings = action
+    payload = json.dumps([rule, list(args)], separators=(",", ":"), ensure_ascii=True).encode()
+    return int.from_bytes(hashlib.blake2b(payload, digest_size=8).digest(), "big") % 2_000_000_000
+
+
+def _stable_bucket(value, size):
+    payload = repr(value).encode("utf-8", "backslashreplace")
+    return int.from_bytes(hashlib.blake2b(payload, digest_size=8).digest(), "big") % size
 
 
 def _objects(state, initial):
@@ -290,6 +307,7 @@ class EuclidState(pyspiel.State):
         self.history_moves = list(history or [])
         self.initial_kinds = {o["name"]: o["kind"] for o in play.tr.objects_from_hyps(self._proposition)}
         self._actions = None
+        self._action_by_id = None
         self._parent_legal_keys = frozenset(parent_legal_keys)
 
     def clone(self):
@@ -297,7 +315,51 @@ class EuclidState(pyspiel.State):
             self._euclid_game, self.engine_state.copy(), self.history_moves, self._parent_legal_keys
         )
         copy._actions = self._actions
+        copy._action_by_id = self._action_by_id
         return copy
+
+    def _object_order(self):
+        ordered = []
+        for obj in play.tr.objects_from_hyps(self._proposition):
+            if obj["name"] not in ordered:
+                ordered.append(obj["name"])
+        for _rule, _args, bindings in self.history_moves:
+            for _base, name in bindings:
+                if name not in ordered:
+                    ordered.append(name)
+        for name in sorted(self.engine_state.declared):
+            if name not in ordered:
+                ordered.append(name)
+        if len(ordered) > MAX_OBJECTS:
+            raise ValueError(f"observation object cap {MAX_OBJECTS} exceeded")
+        return ordered
+
+    def observation_tensor(self, player=None):
+        """Neutral fixed-size encoding of object kinds, facts, and the goal."""
+        del player
+        tensor = np.zeros(OBSERVATION_SIZE, dtype=np.float32)
+        order = self._object_order()
+        index = {name: i for i, name in enumerate(order)}
+        kinds = _objects(self.engine_state, self.initial_kinds)
+        kind_index = {"point": 0, "line": 1, "circle": 2}
+        for i, name in enumerate(order):
+            if kinds.get(name) in kind_index:
+                tensor[i * 3 + kind_index[kinds[name]]] = 1
+
+        def canonical(value):
+            if isinstance(value, (tuple, list)):
+                return tuple(canonical(x) for x in value)
+            return ("object", index[value]) if value in index else value
+
+        fact_offset, fact_size = MAX_OBJECTS * 3, 2048
+        for fact in self.engine_state.facts:
+            slot = fact_offset + _stable_bucket(canonical(fact), fact_size)
+            tensor[slot] = min(1.0, tensor[slot] + 0.25)
+        goal_offset, goal_size = fact_offset + fact_size, 1024
+        for goal in play.GOALS[self._proposition]:
+            tensor[goal_offset + _stable_bucket(canonical(goal), goal_size)] = 1
+        tensor[goal_offset + goal_size + min(len(self.history_moves), self._move_cap)] = 1
+        return tensor
 
     def _object_list(self):
         return [{"name": name, "kind": kind} for name, kind in _objects(self.engine_state, self.initial_kinds).items()]
@@ -317,7 +379,13 @@ class EuclidState(pyspiel.State):
             self._actions = enumerate_actions(self._proposition, self.engine_state,
                                               self.initial_kinds, len(self.history_moves),
                                               self._parent_legal_keys)
-        return list(range(len(self._actions)))
+            self._action_by_id = {}
+            for grounded in self._actions:
+                action_id = stable_action_id(grounded)
+                previous = self._action_by_id.setdefault(action_id, grounded)
+                if previous != grounded:
+                    raise RuntimeError(f"stable action-id collision: {previous!r} and {grounded!r}")
+        return sorted(self._action_by_id)
 
     def apply_action_tuple(self, action):
         """Apply a grounded action returned by the neutral sampler."""
@@ -325,6 +393,7 @@ class EuclidState(pyspiel.State):
         eng.apply_step(self.engine_state, len(self.history_moves) + 1, rule, args, dict(bindings_tuple))
         self.history_moves.append((rule, args, bindings_tuple))
         self._actions = None
+        self._action_by_id = None
         self._parent_legal_keys = frozenset()
 
     def sample_action_tuple(self, rng=None):
@@ -335,17 +404,18 @@ class EuclidState(pyspiel.State):
     def _apply_action(self, action):
         if self._actions is None:
             self._legal_actions(0)
-        rule, args, bindings_tuple = self._actions[action]
+        rule, args, bindings_tuple = self._action_by_id[action]
         parent_keys = frozenset((r, a) for r, a, _b in self._actions)
         eng.apply_step(self.engine_state, len(self.history_moves) + 1, rule, args, dict(bindings_tuple))
         self.history_moves.append((rule, args, bindings_tuple))
         self._actions = None
+        self._action_by_id = None
         self._parent_legal_keys = parent_keys
 
     def _action_to_string(self, player, action):
         if self._actions is None:
             self._legal_actions(0)
-        rule, args, bindings = self._actions[action]
+        rule, args, bindings = self._action_by_id[action]
         made = ",".join(f"{k}={v}" for k, v in bindings)
         return f"{rule}({','.join(args)})" + (f" -> {made}" if made else "")
 
