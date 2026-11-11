@@ -150,6 +150,69 @@ class LinearArithmetic:
             self.rows.append(row)
         return True
 
+    def _equality_representatives(self):
+        """Representatives for atoms equated by simple zero-offset rows.
+
+        Most construction metric facts are ``x - y = 0``.  Their transitive
+        closure is substantially cheaper than asking Fourier--Motzkin whether
+        two such atoms are equal.  Rebuild only after this append-only row
+        list grows (or is replaced by a state copy).
+        """
+        if (getattr(self, "_eq_rows", None) is self.rows
+                and getattr(self, "_eq_count", None) == len(self.rows)):
+            return self._eq_reps
+        parent = {}
+
+        def find(x):
+            root = x
+            while parent.get(root, root) != root:
+                root = parent[root]
+            while parent.get(x, x) != x:
+                nxt = parent[x]
+                parent[x] = root
+                x = nxt
+            return root
+
+        def union(x, y):
+            rx, ry = find(x), find(y)
+            if rx != ry:
+                if ry < rx:
+                    rx, ry = ry, rx
+                parent[ry] = rx
+
+        for items, c, op in self.rows:
+            if op != "=" or c != 0 or len(items) != 2:
+                continue
+            (a, ca), (b, cb) = items
+            if ca == -cb and ca != 0:
+                parent.setdefault(a, a)
+                parent.setdefault(b, b)
+                union(a, b)
+        reps = {a: find(a) for a in parent}
+        self._eq_rows = self.rows
+        self._eq_count = len(self.rows)
+        self._eq_reps = reps
+        return reps
+
+    def _canonical_rows(self):
+        """Rows after rewriting atoms by simple-equality representatives."""
+        if (getattr(self, "_canon_rows_obj", None) is self.rows
+                and getattr(self, "_canon_rows_count", None) == len(self.rows)):
+            return self._canon_rows
+        reps = self._equality_representatives()
+        rows = set()
+        for items, c, op in self.rows:
+            coeffs = {}
+            for atom, coefficient in items:
+                atom = reps.get(atom, atom)
+                coeffs[atom] = coeffs.get(atom, 0) + coefficient
+            canonical_items, canonical_c = norm(coeffs, c)
+            rows.add((canonical_items, canonical_c, op))
+        self._canon_rows_obj = self.rows
+        self._canon_rows_count = len(self.rows)
+        self._canon_rows = rows
+        return rows
+
     def entails(self, coeffs, const, op):
         """Is `sum coeffs*atom ~ const` entailed? Decided by checking
         satisfiability of the store plus the negation (Fourier-Motzkin).
@@ -171,6 +234,32 @@ class LinearArithmetic:
         hit = self._ent.get(key)
         if hit is not None:
             return hit
+        # The overwhelmingly common equality query is x - y = 0.  Resolve
+        # it from the transitive closure of the store's equally-shaped rows
+        # before invoking the general exact eliminator.
+        items, c = norm(coeffs, -Fraction(const))
+        if op == "=" and c == 0 and len(items) == 2:
+            (a, ca), (b, cb) = items
+            if ca == -cb and ca != 0:
+                reps = self._equality_representatives()
+                if a in reps and b in reps and reps[a] == reps[b]:
+                    self._ent[key] = True
+                    return True
+        # Rewriting by those same equalities often exposes an existing
+        # inequality verbatim (especially positivity propagated across equal
+        # radii).  This is another exact witness, not an approximation.
+        reps = self._equality_representatives()
+        canonical_coeffs = {}
+        for atom, coefficient in items:
+            atom = reps.get(atom, atom)
+            canonical_coeffs[atom] = canonical_coeffs.get(atom, 0) + coefficient
+        canonical_items, canonical_c = norm(canonical_coeffs, c)
+        canonical_row = (canonical_items, canonical_c, op)
+        canonical_rows = self._canonical_rows()
+        if canonical_row in canonical_rows or \
+                (op == "<=" and (canonical_items, canonical_c, "=") in canonical_rows):
+            self._ent[key] = True
+            return True
         gkey = (tuple(self.rows), q)
         hit = _ENT_GLOBAL.get(gkey)
         if hit is not None:
@@ -179,7 +268,6 @@ class LinearArithmetic:
         # direct single-row witness: if the store contains this very row the
         # entailment holds trivially (an O(R) scan beats a Fourier-Motzkin
         # run; r_classify's radii comparisons hit this constantly)
-        items, c = norm(coeffs, -Fraction(const))
         if (items, c, op) in self.rows or \
                 (op == "<=" and (items, c, "=") in self.rows):
             self._ent[key] = True
@@ -5596,6 +5684,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
