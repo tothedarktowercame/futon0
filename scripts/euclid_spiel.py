@@ -636,7 +636,43 @@ class EuclidState(pyspiel.State):
         )
 
     def is_terminal(self):
-        return self.goal_reached() or len(self.history_moves) >= self._move_cap
+        if self.goal_reached() or len(self.history_moves) >= self._move_cap:
+            return True
+        # Dense action caps can leave a logically consistent position with no
+        # encodable continuation.  OpenSpiel requires such a dead end to be
+        # terminal; otherwise MCTS constructs an empty root and its caller
+        # attempts to select a child that does not exist.
+        if self._actions is not None:
+            return not self._action_by_id
+        # Every Book I palette currently contains arbitrary_point, a zero-arg
+        # construction that is always legal and has a compact action id.  It
+        # proves this uncached state is not a dead end without enumerating the
+        # (potentially very large) remainder of the action space.
+        if "arbitrary_point" in play.palette(self._proposition):
+            return False
+        allowed_rules = allowed_by_kind = free_variables = None
+        codec = self._euclid_game.action_codec
+        if codec:
+            allowed_rules = set(codec.rules)
+            allowed_by_kind = {
+                kind: set(names[:DENSE_KIND_CAPS[kind]])
+                for kind, names in codec._by_kind(self).items()
+            }
+            free_variables = {
+                rule: set(codec.layouts[rule][1]) for rule in allowed_rules
+            }
+        query_cache = {}
+        for action in _candidate_actions(
+                self._proposition, self.engine_state, self.initial_kinds,
+                len(self.history_moves), allowed_rules, allowed_by_kind,
+                free_variables):
+            rule, args, _bindings = action
+            if (not _entailments_hold(eng.CONSTRUCTIONS[rule], self.engine_state,
+                                      args, query_cache)):
+                continue
+            if codec is None or codec.encode(self, action) is not None:
+                return False
+        return True
 
     def current_player(self):
         return pyspiel.PlayerId.TERMINAL if self.is_terminal() else 0

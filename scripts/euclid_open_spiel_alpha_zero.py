@@ -145,6 +145,44 @@ def maybe_win_in_one(evaluator, enabled=True):
     return WinInOneEvaluator(evaluator) if enabled else evaluator
 
 
+class RootWinInOneBot:
+    """Choose a terminal win at the played root, never at search leaves."""
+
+    def __init__(self, wrapped, scanner):
+        self.wrapped = wrapped
+        self.scanner = scanner
+
+    def mcts_search(self, state):
+        wins = self.scanner._winning_actions(state)
+        if not wins:
+            return self.wrapped.mcts_search(state)
+        root = mcts.SearchNode(None, state.current_player(), 1.0)
+        root.explore_count = len(wins)
+        root.total_reward = float(len(wins))
+        probability = 1.0 / len(wins)
+        for action in wins:
+            child = mcts.SearchNode(action, state.current_player(), probability)
+            child.explore_count = 1
+            child.total_reward = 1.0
+            child.outcome = [1.0, -1.0]
+            root.children.append(child)
+        root.outcome = [1.0, -1.0]
+        return root
+
+    def step(self, state):
+        return self.mcts_search(state).best_child().action
+
+    def step_with_policy(self, state):
+        root = self.mcts_search(state)
+        chosen = root.best_child().action
+        return ([(child.action, child.explore_count / root.explore_count)
+                 for child in root.children], chosen)
+
+
+def root_win_in_one_bot(bot, evaluator):
+    return RootWinInOneBot(bot, WinInOneEvaluator(evaluator))
+
+
 _PACKAGED_ACTOR = alpha_zero.actor
 
 
@@ -189,6 +227,33 @@ def win_in_one_plain_weight_actor(**kwargs):
         evaluator_lib.AlphaZeroEvaluator = original_evaluator
 
 
+def _root_win_actor(plain_weights, **kwargs):
+    """Spawn target installing root-only mate detection in packaged bots."""
+    original_init_bot = alpha_zero._init_bot
+    original_update = alpha_zero.update_checkpoint
+
+    def wrapped_init_bot(config, game, evaluator_, evaluation):
+        bot = original_init_bot(config, game, evaluator_, evaluation)
+        return root_win_in_one_bot(bot, evaluator_)
+
+    alpha_zero._init_bot = wrapped_init_bot
+    if plain_weights:
+        alpha_zero.update_checkpoint = actor_update_checkpoint
+    try:
+        return _PACKAGED_ACTOR(**kwargs)
+    finally:
+        alpha_zero._init_bot = original_init_bot
+        alpha_zero.update_checkpoint = original_update
+
+
+def root_win_in_one_actor(**kwargs):
+    return _root_win_actor(False, **kwargs)
+
+
+def root_win_in_one_plain_weight_actor(**kwargs):
+    return _root_win_actor(True, **kwargs)
+
+
 def _orderly_shutdown(_signum, _frame):
     """Let OpenSpiel's training loop close and join every worker process."""
     raise KeyboardInterrupt
@@ -214,13 +279,19 @@ def main():
     parser.add_argument("--move-cap", type=int, default=6)
     parser.add_argument("--eval-game-seconds", type=int, default=60)
     parser.add_argument("--eval-record", type=Path)
-    parser.add_argument("--win-in-one", action=argparse.BooleanOptionalAction,
-                        default=True)
+    parser.add_argument("--win-in-one", nargs="?", const="all", default="all",
+                        choices=("off", "all", "root"))
+    parser.add_argument("--no-win-in-one", dest="win_in_one",
+                        action="store_const", const="off")
     args = parser.parse_args()
-    if args.win_in_one and args.resume_from is not None:
+    if args.win_in_one == "all" and args.resume_from is not None:
         alpha_zero.actor = win_in_one_plain_weight_actor
-    elif args.win_in_one:
+    elif args.win_in_one == "all":
         alpha_zero.actor = win_in_one_actor
+    elif args.win_in_one == "root" and args.resume_from is not None:
+        alpha_zero.actor = root_win_in_one_plain_weight_actor
+    elif args.win_in_one == "root":
+        alpha_zero.actor = root_win_in_one_actor
     elif args.resume_from is not None:
         alpha_zero.actor = plain_weight_actor
     start_param = (f",start_file={args.start_file.resolve()}"
@@ -274,8 +345,9 @@ def main():
             decouple_weight_decay=config.decouple_weight_decay,
         )
         model.load_checkpoint(args.eval_step)
-        evaluator = maybe_win_in_one(
-            evaluator_lib.AlphaZeroEvaluator(loaded_game, model), args.win_in_one)
+        evaluator = evaluator_lib.AlphaZeroEvaluator(loaded_game, model)
+        if args.win_in_one == "all":
+            evaluator = WinInOneEvaluator(evaluator)
         wins = timeouts = search_failures = 0
         win_records = []
 
@@ -293,6 +365,8 @@ def main():
                     child_selection_fn=mcts.SearchNode.puct_value,
                     dont_return_chance_node=True,
                 )
+                if args.win_in_one == "root":
+                    bot = root_win_in_one_bot(bot, evaluator)
                 while not state.is_terminal():
                     state.apply_action(bot.step(state))
                 if state.returns()[0] > 0:

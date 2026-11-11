@@ -7,6 +7,7 @@ import pyspiel
 import euclid_spiel  # registers euclid_book1
 import euclid_play
 from euclid_open_spiel_alpha_zero import (
+    RootWinInOneBot,
     WinInOneEvaluator,
     load_actor_weights,
     maybe_win_in_one,
@@ -405,6 +406,78 @@ def test_win_in_one_forces_stage_one_win_and_is_neutral_at_i2_start(tmp_path):
     refused = RefusedCandidate()
     assert np.array_equal(WinInOneEvaluator(wrapped).evaluate(refused),
                           wrapped.evaluate(refused))
+
+
+def test_dense_dead_end_is_terminal_draw():
+    state = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true,"
+        "alpha_zero_facade=true)"
+    ).new_initial_state()
+    # Model the exact boundary MCTS encountered: enumeration completed with no
+    # encodable action while neither the goal nor move cap held.
+    state._actions = []
+    state._action_by_id = {}
+    assert not state.goal_reached()
+    assert state.is_terminal()
+    assert state.returns() == [0.0, -0.0]
+
+
+def test_root_win_in_one_wins_stage_one_and_is_plain_without_win(tmp_path):
+    witness = [
+        ("line_from_points", ("a", "b")),
+        ("proposition_1", ("a", "b", "L_1")),
+        ("line_from_points", ("d_2", "a")),
+        ("line_from_points", ("d_2", "b")),
+        ("circle_from_points", ("b", "c")),
+        ("intersection_circle_line_extending_points", ("C_5", "L_4", "b", "d_2")),
+        ("circle_from_points", ("d_2", "g_6")),
+    ]
+    source = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true)"
+    ).new_initial_state()
+    prefix = []
+    for rule, args in witness:
+        source.legal_actions()
+        move = next(move for move in source._action_by_id.values()
+                    if move[0] == rule and move[1] == args)
+        prefix.append(move)
+        source.apply_action_tuple(move)
+    start_file = tmp_path / "root-stage-one.json"
+    start_file.write_text(json.dumps(prefix))
+    game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=3,dense_actions=true,"
+        f"alpha_zero_facade=true,start_file={start_file})"
+    )
+    for _ in range(10):
+        base = _FlatEvaluator()
+        plain = mcts.MCTSBot(game, 1.41, 2, base, solve=False,
+                             random_state=np.random.RandomState(13),
+                             child_selection_fn=mcts.SearchNode.puct_value,
+                             dont_return_chance_node=True)
+        bot = RootWinInOneBot(plain, WinInOneEvaluator(base))
+        state = game.new_initial_state()
+        state.apply_action(bot.step(state))
+        assert state.goal_reached()
+
+    initial_game = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=10,dense_actions=true,"
+        "alpha_zero_facade=true)"
+    )
+    state = initial_game.new_initial_state()
+    seed = 71
+    plain = mcts.MCTSBot(initial_game, 1.41, 2, _FlatEvaluator(), solve=False,
+                         random_state=np.random.RandomState(seed),
+                         child_selection_fn=mcts.SearchNode.puct_value,
+                         dont_return_chance_node=True)
+    wrapped_base = _FlatEvaluator()
+    wrapped_plain = mcts.MCTSBot(
+        initial_game, 1.41, 2, wrapped_base, solve=False,
+        random_state=np.random.RandomState(seed),
+        child_selection_fn=mcts.SearchNode.puct_value,
+        dont_return_chance_node=True)
+    root_only = RootWinInOneBot(
+        wrapped_plain, WinInOneEvaluator(wrapped_base))
+    assert root_only.step(state.clone()) == plain.step(state.clone())
 
 
 def test_certified_win_scan_matches_public_successors(tmp_path):
