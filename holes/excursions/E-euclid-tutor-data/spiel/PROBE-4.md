@@ -126,3 +126,42 @@ points.  Warm transfer increased throughput but not success.  This is a valid
 negative result for the stated 45-CPU-minute arms, unlike the cap-6 run, but it
 does not establish that I.2 is unlearnable with a larger search or training
 budget.
+
+## Probe 6: wide cap-10 I.2 run
+
+The wider run requested 12 actors and 60 wall minutes for each arm, with the
+same cap-10 game, 32 simulations, exploration noise and terminal-only reward
+as above.  The host's one-minute load was 25.91 after removing orphaned actors,
+so the arms ran sequentially.  Although `c07eca4` sped up the engine after the
+cold process had imported it, the warm arm ran from an isolated worktree at
+`9518a9a`; thus both arms used the same pre-speedup engine.  Each arm was
+pinned to 12 CPU cores.  The intended budget was 720 core-minutes per arm.
+
+Cold stopped after 2,569 seconds (42.8 wall minutes, about 514 core-minutes)
+when Orbax could not create a checkpoint-writer thread on the heavily loaded
+shared host (`RuntimeError: can't start new thread`).  This was an environment
+failure, not a game outcome.  Warm reached its 3,600-second timeout (about 720
+core-minutes).  The unequal realised budgets mean the rows below measure the
+two runs but are not a controlled equal-budget comparison.
+
+| arm / checkpoint | elapsed | self-play games | cumulative wins | greedy evaluation |
+|---|---:|---:|---:|---:|
+| cold step 155 | midpoint | 1,085 | 0 | 0/5 (0 timeouts) |
+| cold step 311 / final | 42.8 min | 2,177 | 0 | 0/5 (0 timeouts) |
+| warm step 394 | midpoint | 2,758 | 0 | 0/5 (0 timeouts) |
+| warm step 789 / final | 59.9 min | 5,523 | 0 | 0/5 (0 timeouts) |
+
+Neither arm ever won, so there is no first-win game to report.  I.1 trunk
+transfer substantially increased throughput, but it did not produce an I.2
+solution among 5,523 warm games.  Combined with the earlier arms, this remains
+a bounded negative result: packaged AlphaZero learned I.1, but none of these
+compact-game runs discovered I.2.  It does not show that I.2 is unreachable or
+unlearnable with more search, a different neutral representation, or a larger
+budget.
+
+Before this run, six orphan groups from the earlier probes were identified by
+open file descriptors into their `spiel/az4/*/log-actor-N.txt` files and
+stopped.  The runner now maps SIGTERM to the packaged loop's KeyboardInterrupt
+path, which broadcasts exit and joins its workers.  Both the cold error path
+and the warm timeout path left no process with an open descriptor into their
+output directories, demonstrating cleanup on both exits.
