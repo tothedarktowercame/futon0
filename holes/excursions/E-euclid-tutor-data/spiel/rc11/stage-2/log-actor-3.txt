@@ -1,0 +1,156 @@
+[2026-11-11 16:19:51.740] actor-3 started
+[2026-11-11 16:19:51.740] Initializing model
+[2026-11-11 16:19:54.981] Initializing bots
+[2026-11-11 16:19:54.982] Inference cache: CacheInfo(hits=0, misses=0, size=0, max_size=65536)
+[2026-11-11 16:19:54.982] Loading checkpoint 0
+[2026-11-11 16:19:55.178] 
+===================== Exception caught =====================
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 320, in _read_array_index_and_device_put
+    shard = await _read_shard(
+            ^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 268, in _read_shard
+    out = await asyncio.to_thread(_cast, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 863, in run_in_executor
+    executor.submit(func, *args), loop=self)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 179, in submit
+    self._adjust_thread_count()
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 202, in _adjust_thread_count
+    t.start()
+  File "/usr/lib/python3.12/threading.py", line 992, in start
+    _start_new_thread(self._bootstrap, ())
+RuntimeError: can't start new thread
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 170, in _watcher
+    return fn(config=config, logger=logger, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 313, in actor
+    if not update_checkpoint(logger, queue, model, az_evaluator):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/alpha_zero.py", line 288, in update_checkpoint
+    model.load_checkpoint(path)
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py", line 599, in load_checkpoint
+    self._state = self._checkpointer.restore(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 375, in restore
+    restored = self._restore(directory, args=ckpt_args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 389, in _restore
+    return self._handler.restore(directory, args=args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/standard_checkpoint_handler.py", line 265, in restore
+    return self._impl.restore(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/pytree_checkpoint_handler.py", line 886, in restore
+    return self._handler_impl.restore(directory, args=args)  # pyrefly: ignore[bad-argument-type]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 1109, in restore
+    restored_item = asyncio_utils.run_sync(
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 150, in run_sync
+    return _run_sync_via_new_loop(_coro_with_registration())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 108, in _run_sync_via_new_loop
+    return loop.run_until_complete(coro)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 136, in _coro_with_registration
+    return await coro
+           ^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 834, in _maybe_deserialize
+    deserialized_batches = await self._async_io_engine.execute_restore(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/async_io_engine.py", line 239, in execute_restore
+    deserialized_batches = await asyncio.gather(*deserialized_batches_ops)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1752, in deserialize
+    ret = await _deserialize_arrays(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1231, in _deserialize_arrays
+    (ret, logical_bytes), array_metadatas = await asyncio.gather(
+                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1221, in _async_deserialize
+    results = await asyncio.gather(*deserialize_ops)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 440, in async_deserialize
+    return await _read_and_create_array(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 380, in _read_and_create_array
+    shards_and_bytes_read = await asyncio.gather(*read_array_coros)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/joe/.venvs/openspiel/lib/python3.12/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 328, in _read_array_index_and_device_put
+    raise Exception(  # pylint: disable=broad-exception-raised
+Exception: Encountered error while reading array index: (slice(0, 32, 1), slice(0, 32, 1)). See full TensorStore details: <bound method pybind11_detail_function_record_v1_system_libstdcpp_gxx_abi_1xxx_use_cxx11_abi_1.spec of TensorStore({
+  'base': {
+    'driver': 'zarr',
+    'dtype': 'float32',
+    'fill_missing_data_reads': False,
+    'kvstore': {
+      'base': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc11/stage-2/checkpoint-0/',
+      },
+      'cache_pool': 'cache_pool#ocdbt',
+      'config': {
+        'compression': {'id': 'zstd'},
+        'max_decoded_node_bytes': 100000000,
+        'max_inline_value_bytes': 1024,
+        'uuid': 'a661e88683d2a1fe0402ab009fa8b7b7',
+        'version_tree_arity_log2': 4,
+      },
+      'driver': 'ocdbt',
+      'manifest': {
+        'driver': 'file',
+        'file_io_locking': {'mode': 'non_atomic'},
+        'file_io_mode': {},
+        'file_io_retries': {},
+        'file_io_sync': True,
+        'path': '/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc11/stage-2/checkpoint-0/',
+      },
+      'path': 'params.policy_head.torso.dense_layer.kernel.value/',
+    },
+    'metadata': {
+      'chunks': [32, 32],
+      'compressor': {'id': 'zstd', 'level': 1},
+      'dimension_separator': '.',
+      'dtype': '<f4',
+      'fill_value': None,
+      'filters': None,
+      'order': 'C',
+      'shape': [32, 32],
+      'zarr_format': 2,
+    },
+    'recheck_cached_data': False,
+    'recheck_cached_metadata': False,
+  },
+  'context': {
+    'cache_pool': {},
+    'cache_pool#ocdbt': {'total_bytes_limit': 100000000},
+    'data_copy_concurrency': {},
+    'file_io_concurrency': {'limit': 128},
+    'ocdbt_coordinator': {},
+  },
+  'driver': 'cast',
+  'dtype': 'float32',
+  'transform': {
+    'input_exclusive_max': [[32], [32]],
+    'input_inclusive_min': [0, 0],
+  },
+})>.
+
+============================================================
+[2026-11-11 16:19:55.178] actor-3 exiting

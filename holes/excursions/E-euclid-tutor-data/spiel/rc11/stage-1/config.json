@@ -1,0 +1,32 @@
+{
+  "actors": 12,
+  "checkpoint_freq": 1,
+  "decouple_weight_decay": false,
+  "eval_levels": 2,
+  "evaluation_window": 50,
+  "evaluators": 0,
+  "game": "euclid_book1(proposition=2,move_cap=3,dense_actions=true,alpha_zero_facade=true,start_file=/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc11/stage-1/prefix.json,start_perturb=2,start_perturb_rate=0.5,start_seed=2026111101)",
+  "learning_rate": 0.001,
+  "max_simulations": 32,
+  "max_steps": 100,
+  "nn_api_version": "nnx",
+  "nn_depth": 2,
+  "nn_model": "mlp",
+  "nn_width": 32,
+  "observation_shape": [
+    4096
+  ],
+  "output_size": 371361,
+  "path": "/home/joe/code/futon0/holes/excursions/E-euclid-tutor-data/spiel/rc11/stage-1",
+  "policy_alpha": 1.0,
+  "policy_epsilon": 0.25,
+  "quiet": true,
+  "replay_buffer_reuse": 4,
+  "replay_buffer_size": 256,
+  "temperature": 1.0,
+  "temperature_drop": 4,
+  "train_batch_size": 64,
+  "uct_c": 1.41,
+  "verbose": false,
+  "weight_decay": 0.0001
+}
