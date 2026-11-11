@@ -1,0 +1,8 @@
+........................                                                 [100%]
+=============================== warnings summary ===============================
+../../../.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34
+  /home/joe/.venvs/openspiel/lib/python3.12/site-packages/open_spiel/python/algorithms/alpha_zero/model_nnx.py:34: UserWarning: Pay attention that you've been using the `nnx` api
+    warnings.warn("Pay attention that you've been using the `nnx` api")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+24 passed, 1 warning in 577.25s (0:09:37)
