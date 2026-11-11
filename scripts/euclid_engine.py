@@ -322,8 +322,10 @@ class FMTooLarge(Exception):
 def _exdiv(a, b):
     """Exact division that stays int when it can (int/int `/` would be a
     float, and float cancellation once manufactured a false unsat)."""
-    if type(a) is int and type(b) is int and a % b == 0:
-        return a // b
+    if type(a) is int and type(b) is int:
+        if a % b == 0:
+            return a // b
+        return Fraction(a, b)
     return a / b
 
 
@@ -5684,5 +5686,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 

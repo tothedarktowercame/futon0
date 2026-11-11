@@ -202,3 +202,32 @@ manually infeasible outer state, and (4) preservation of contradiction inside
 that rely on that valid ordering consequence could fail and would need proof
 changes; that option should not be accepted merely because the current suites
 do not name the rule directly.
+
+## Arithmetic fix (P-euclid-engine-sound-2)
+
+The exact fault was `_exdiv`, the division helper used by equality and
+Fourier--Motzkin elimination.  It returned an integer for exactly divisible
+integer operands, but used Python `/` for every other pair; thus integer
+thirds became binary floats despite the function's exact-arithmetic contract.
+In the Probe 7 store, algebraically identical coefficients became values such
+as `-0.33333333333333326` and `-0.33333333333333337`.  Their residual
+`1.1102230246251565e-16` manufactured a strict inequality and made
+`between_order` fire.
+
+The source fix returns `Fraction(a, b)` whenever two integer operands do not
+divide evenly.  A ten-row reduction of the failing store now entails the
+required equality and does not entail either strict order.  An independent
+rational oracle test eliminates equalities by a full rescan and then performs
+textbook Fourier--Motzkin without using `_exdiv`, the indexed eliminator, or
+the engine caches.  Seeded stores produced by legal I.1, I.2, I.3 and I.5
+moves are checked against that oracle.  The test also substitutes the old
+division helper and demonstrates that the oracle rejects the old false strict
+answer, so it is not a same-implementation comparison.
+
+After the fix, both the five-move minimized Probe 7 trace and its original
+nine-move random trace remain feasible and do not reach I.2.  The frozen
+reference module required no textual change: it freezes the former
+`LinearArithmetic.entails` orchestration but deliberately imports the shared
+engine's exact feasibility implementation.  It therefore receives this
+soundness repair while continuing to compare the optimization-specific query
+path, and its equivalence suite still passes.
