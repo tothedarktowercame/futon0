@@ -11,9 +11,11 @@ from __future__ import annotations
 import itertools
 import json
 import os
+import random
 import sys
 
 import pyspiel
+import numpy as np
 from open_spiel.python.observation import IIGObserverForPublicInfoGame
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -92,24 +94,28 @@ def _unify(pattern, fact, variables, env):
     return out
 
 
-def _premise_environments(spec, state):
+def _premise_environments(spec, state, facts_by_head=None):
     variables = tuple(spec["args"])
     try:
         premises = spec["premises"](eng.State(), *variables)
     except Exception:
         premises = []
     envs = [{}]
-    facts = sorted(state.facts, key=repr)
+    if facts_by_head is None:
+        facts_by_head = {}
+        for fact in sorted(state.facts, key=repr):
+            if fact:
+                facts_by_head.setdefault(fact[0], []).append(fact)
+    variable_set = set(variables)
     for pattern in premises:
         if not isinstance(pattern, (tuple, list)) or not pattern or pattern[0] in ("either", "entail"):
             continue
         matches = []
         for env in envs:
-            for fact in facts:
-                if fact and fact[0] == pattern[0]:
-                    found = _unify(pattern, fact, set(variables), env)
-                    if found is not None:
-                        matches.append(found)
+            for fact in facts_by_head.get(pattern[0], ()):
+                found = _unify(pattern, fact, variable_set, env)
+                if found is not None:
+                    matches.append(found)
         envs = matches
         if not envs:
             break
@@ -135,31 +141,127 @@ def _fresh_bindings(spec, args, state, ply):
     return bindings
 
 
-def enumerate_actions(n, state, initial_kinds, ply):
-    """All accepted non-case moves, sorted by rule, args, and fresh names."""
+def _candidate_actions(n, state, initial_kinds, ply):
+    """Yield grounded candidates before arithmetic entailment checks."""
     kinds = _objects(state, initial_kinds)
     by_kind = {kind: sorted(name for name, k in kinds.items() if k == kind)
                for kind in ("point", "line", "circle")}
-    actions = []
+    facts_by_head = {}
+    for fact in sorted(state.facts, key=repr):
+        if fact:
+            facts_by_head.setdefault(fact[0], []).append(fact)
     for rule in sorted(play.palette(n)):
         spec = eng.CONSTRUCTIONS[rule]
         info = play.rule_info(rule)
         variables = tuple(spec["args"])
-        for env in _premise_environments(spec, state):
+        for env in _premise_environments(spec, state, facts_by_head):
             missing = [v for v in variables if v not in env]
             domains = [by_kind.get(info["arg_kinds"].get(v, "point"), []) for v in missing]
             for values in itertools.product(*domains):
                 full = dict(env, **dict(zip(missing, values)))
                 args = tuple(full[v] for v in variables)
                 bindings = _fresh_bindings(spec, args, state, ply)
-                if "entail" in spec:
-                    trial = state.copy()
-                    try:
-                        eng.apply_step(trial, ply + 1, rule, args, bindings)
-                    except (eng.MissingPremise, TypeError, ValueError):
-                        continue
-                actions.append((rule, args, tuple(sorted(bindings.items()))))
-    return sorted(set(actions), key=lambda action: (action[0], action[1], action[2]))
+                yield rule, args, tuple(sorted(bindings.items()))
+
+
+def _entailments_hold(spec, state, args, cache):
+    """Check each distinct arithmetic query once in this monotone state."""
+    for query in spec.get("entail", lambda _state, *_args: ())(state, *args):
+        key = repr(query)
+        if key not in cache:
+            try:
+                eng._entail_check(state, 0, "open_spiel_enumeration", query)
+            except (eng.MissingPremise, TypeError, ValueError):
+                cache[key] = False
+            else:
+                cache[key] = True
+        if not cache[key]:
+            return False
+    return True
+
+
+def enumerate_actions_reference(n, state, initial_kinds, ply):
+    """Probe-1 oracle: validate each entailment candidate by applying it."""
+    accepted = []
+    for action in _candidate_actions(n, state, initial_kinds, ply):
+        rule, args, bindings = action
+        if "entail" in eng.CONSTRUCTIONS[rule]:
+            trial = state.copy()
+            try:
+                eng.apply_step(trial, ply + 1, rule, args, dict(bindings))
+            except (eng.MissingPremise, TypeError, ValueError):
+                continue
+        accepted.append(action)
+    return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
+
+
+def enumerate_actions(n, state, initial_kinds, ply, parent_legal_keys=()):
+    """All accepted non-case moves, with repeated entailments and parent moves reused."""
+    accepted = []
+    query_cache = {}
+    parent_legal_keys = set(parent_legal_keys)
+    for action in _candidate_actions(n, state, initial_kinds, ply):
+        rule, args, _bindings = action
+        if ((rule, args) not in parent_legal_keys
+                and not _entailments_hold(eng.CONSTRUCTIONS[rule], state, args, query_cache)):
+            continue
+        accepted.append(action)
+    return sorted(set(accepted), key=lambda action: (action[0], action[1], action[2]))
+
+
+def sample_action(n, state, initial_kinds, ply, rng=None, max_attempts=10_000):
+    """Sample without materialising the legal set.
+
+    Each attempt chooses a rule uniformly, then a matching premise environment
+    uniformly, then each still-free typed argument uniformly. Rejection and
+    resampling conditions this neutral proposal distribution on legality; it
+    is not uniform over legal grounded moves.
+    """
+    rng = rng or random.Random()
+    kinds = _objects(state, initial_kinds)
+    by_kind = {kind: sorted(name for name, k in kinds.items() if k == kind)
+               for kind in ("point", "line", "circle")}
+    facts_by_head = {}
+    for fact in sorted(state.facts, key=repr):
+        if fact:
+            facts_by_head.setdefault(fact[0], []).append(fact)
+    rules = sorted(play.palette(n))
+    env_cache = {}
+    query_cache = {}
+    for _ in range(max_attempts):
+        rule = rng.choice(rules)
+        spec = eng.CONSTRUCTIONS[rule]
+        info = play.rule_info(rule)
+        variables = tuple(spec["args"])
+        if rule not in env_cache:
+            envs = _premise_environments(spec, state, facts_by_head)
+            # A fact may satisfy two syntactic joins. Do not weight that action
+            # twice merely because it has two derivations.
+            env_cache[rule] = [dict(items) for items in sorted(
+                {tuple(sorted(env.items())) for env in envs}
+            )]
+        envs = env_cache[rule]
+        if not envs:
+            continue
+        env = rng.choice(envs)
+        full = dict(env)
+        refused = False
+        for variable in variables:
+            if variable in full:
+                continue
+            domain = by_kind.get(info["arg_kinds"].get(variable, "point"), ())
+            if not domain:
+                refused = True
+                break
+            full[variable] = rng.choice(domain)
+        if refused:
+            continue
+        args = tuple(full[v] for v in variables)
+        if not _entailments_hold(spec, state, args, query_cache):
+            continue
+        bindings = _fresh_bindings(spec, args, state, ply)
+        return rule, args, tuple(sorted(bindings.items()))
+    raise RuntimeError(f"no legal action sampled in {max_attempts} neutral attempts")
 
 
 class EuclidGame(pyspiel.Game):
@@ -179,7 +281,7 @@ class EuclidGame(pyspiel.Game):
 
 
 class EuclidState(pyspiel.State):
-    def __init__(self, game, engine_state=None, history=None):
+    def __init__(self, game, engine_state=None, history=None, parent_legal_keys=()):
         super().__init__(game)
         self._euclid_game = game
         self._proposition = game.proposition
@@ -188,9 +290,12 @@ class EuclidState(pyspiel.State):
         self.history_moves = list(history or [])
         self.initial_kinds = {o["name"]: o["kind"] for o in play.tr.objects_from_hyps(self._proposition)}
         self._actions = None
+        self._parent_legal_keys = frozenset(parent_legal_keys)
 
     def clone(self):
-        copy = EuclidState(self._euclid_game, self.engine_state.copy(), self.history_moves)
+        copy = EuclidState(
+            self._euclid_game, self.engine_state.copy(), self.history_moves, self._parent_legal_keys
+        )
         copy._actions = self._actions
         return copy
 
@@ -210,16 +315,32 @@ class EuclidState(pyspiel.State):
         assert player == 0
         if self._actions is None:
             self._actions = enumerate_actions(self._proposition, self.engine_state,
-                                              self.initial_kinds, len(self.history_moves))
+                                              self.initial_kinds, len(self.history_moves),
+                                              self._parent_legal_keys)
         return list(range(len(self._actions)))
+
+    def apply_action_tuple(self, action):
+        """Apply a grounded action returned by the neutral sampler."""
+        rule, args, bindings_tuple = action
+        eng.apply_step(self.engine_state, len(self.history_moves) + 1, rule, args, dict(bindings_tuple))
+        self.history_moves.append((rule, args, bindings_tuple))
+        self._actions = None
+        self._parent_legal_keys = frozenset()
+
+    def sample_action_tuple(self, rng=None):
+        return sample_action(
+            self._proposition, self.engine_state, self.initial_kinds, len(self.history_moves), rng
+        )
 
     def _apply_action(self, action):
         if self._actions is None:
             self._legal_actions(0)
         rule, args, bindings_tuple = self._actions[action]
+        parent_keys = frozenset((r, a) for r, a, _b in self._actions)
         eng.apply_step(self.engine_state, len(self.history_moves) + 1, rule, args, dict(bindings_tuple))
         self.history_moves.append((rule, args, bindings_tuple))
         self._actions = None
+        self._parent_legal_keys = parent_keys
 
     def _action_to_string(self, player, action):
         if self._actions is None:
@@ -239,6 +360,32 @@ class EuclidState(pyspiel.State):
 
     def __str__(self):
         return json.dumps(self.history_moves, sort_keys=True)
+
+
+class NeutralRolloutEvaluator:
+    """MCTS evaluator whose rollouts use the rejection sampler, not legal_actions."""
+
+    def __init__(self, n_rollouts=1, seed=0, max_length=None):
+        self.n_rollouts = n_rollouts
+        self.max_length = max_length
+        self.rng = random.Random(seed)
+
+    def evaluate(self, state):
+        result = np.zeros(1)
+        for _ in range(self.n_rollouts):
+            working = state.clone()
+            length = 0
+            while not working.is_terminal():
+                working.apply_action_tuple(working.sample_action_tuple(self.rng))
+                length += 1
+                if self.max_length is not None and length >= self.max_length:
+                    break
+            result += np.array(working.returns())
+        return result / self.n_rollouts
+
+    def prior(self, state):
+        actions = state.legal_actions(state.current_player())
+        return [(action, 1.0 / len(actions)) for action in actions]
 
 
 pyspiel.register_game(_GAME_TYPE, EuclidGame)

@@ -1,4 +1,5 @@
 from collections import deque
+import random
 
 import pyspiel
 
@@ -39,3 +40,32 @@ def test_neutral_breadth_first_search_reaches_i1_goal():
 
 def test_open_spiel_random_sim_consistency():
     pyspiel.random_sim_test(_game(cap=4), num_sims=2, serialize=False, verbose=False)
+
+
+def test_incremental_actions_equal_reference_on_random_deep_states():
+    for proposition in (1, 2, 3):
+        game = pyspiel.load_game(f"euclid_book1(proposition={proposition},move_cap=6)")
+        state = game.new_initial_state()
+        rng = random.Random(700 + proposition)
+        for _ply in range(3):
+            sampled = state.sample_action_tuple(rng)
+            state.legal_actions()
+            state.apply_action(state._actions.index(sampled))
+            expected = euclid_spiel.enumerate_actions_reference(
+                proposition, state.engine_state, state.initial_kinds, len(state.history_moves)
+            )
+            state.legal_actions()
+            assert state._actions == expected
+
+
+def test_neutral_sampler_only_returns_legal_actions():
+    state = _game().new_initial_state()
+    legal = euclid_spiel.enumerate_actions_reference(
+        1, state.engine_state, state.initial_kinds, 0
+    )
+    rng = random.Random(20261111)
+    for _ in range(20):
+        action = state.sample_action_tuple(rng)
+        assert action in legal
+        child = state.clone()
+        child.apply_action_tuple(action)
