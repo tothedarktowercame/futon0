@@ -45,6 +45,7 @@ def main():
     parser.add_argument("--start-seed", type=int, default=0)
     parser.add_argument("--move-cap", type=int, default=6)
     parser.add_argument("--eval-game-seconds", type=int, default=60)
+    parser.add_argument("--eval-record", type=Path)
     args = parser.parse_args()
     start_param = (f",start_file={args.start_file.resolve()}"
                    if args.start_file is not None else "")
@@ -99,6 +100,7 @@ def main():
         model.load_checkpoint(args.eval_step)
         evaluator = evaluator_lib.AlphaZeroEvaluator(loaded_game, model)
         wins = timeouts = 0
+        win_records = []
 
         def evaluation_timeout(_signum, _frame):
             raise TimeoutError("greedy evaluation game exceeded its time limit")
@@ -116,14 +118,40 @@ def main():
                 )
                 while not state.is_terminal():
                     state.apply_action(bot.step(state))
-                wins += int(state.returns()[0] > 0)
+                if state.returns()[0] > 0:
+                    all_moves = state.initial_moves + state.history_moves
+                    fresh = euclid_spiel.play._start_state(args.proposition)
+                    for ply, (rule, move_args, bindings) in enumerate(all_moves, 1):
+                        euclid_spiel.eng.apply_step(
+                            fresh, ply, rule, move_args, dict(bindings))
+                    fresh_state = euclid_spiel.EuclidState(loaded_game, fresh)
+                    checked = fresh_state.goal_reached()
+                    objects = fresh_state._object_list()
+                    play_checked = euclid_spiel.play._goal_reached(
+                        args.proposition, fresh, objects)
+                    if not (checked and play_checked):
+                        raise AssertionError("evaluation win failed fresh referee replay")
+                    wins += 1
+                    win_records.append({
+                        "initial_moves": all_moves[:len(state.initial_moves)],
+                        "moves": all_moves[len(state.initial_moves):],
+                        "spiel_goal_reached": checked,
+                        "play_goal_reached": play_checked,
+                    })
             except TimeoutError:
                 timeouts += 1
             finally:
                 signal.alarm(0)
         signal.signal(signal.SIGALRM, previous_handler)
-        print(json.dumps({"step": args.eval_step, "games": args.eval_games,
-                          "wins": wins, "timeouts": timeouts}))
+        result = {"step": args.eval_step, "games": args.eval_games,
+                  "wins": wins, "timeouts": timeouts,
+                  "verified_wins": len(win_records)}
+        if args.eval_record is not None:
+            args.eval_record.parent.mkdir(parents=True, exist_ok=True)
+            with args.eval_record.open("w") as stream:
+                for record in win_records:
+                    stream.write(json.dumps(record) + "\n")
+        print(json.dumps(result))
         return
     if args.warm_from is not None:
         # OpenSpiel has no resume/transfer flag. Keep its training loop intact,
