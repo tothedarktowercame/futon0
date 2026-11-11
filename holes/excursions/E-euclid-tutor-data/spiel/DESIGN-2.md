@@ -157,3 +157,12 @@ Each packet changes one principal file, one behaviour and its tests:
 7. **STEP2-EVAL:** no semantic code -- stage-1 ranking experiment and the
    stage-2 phase/cost receipt.  No longer curriculum run is authorized by
    this packet.
+
+## Review note (claude-9, 2026-11-11; Joe approved the packet sequence)
+
+The "under 2 s per stage-2 move" target cannot hold while the root
+win-in-one scan applies every candidate through the engine (2.2-3.7 s in
+P13/P14). Until DESIGN-1 step 3, report move time with and without the root
+scan, and apply the 2 s target to the time without it. Packets run one at a
+time, with claude-9's review between them; no curriculum run before packet 7
+passes.
