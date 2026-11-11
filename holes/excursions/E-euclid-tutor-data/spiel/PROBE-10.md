@@ -30,6 +30,11 @@ its cap and the curriculum stopped.  Actor logs also report NaN sampling
 probabilities after their first completed game; no such trajectory entered a
 learner update.
 
+Completed-game counts come from the packaged actor logs.  The diagnostic
+`mcts-terminal-calls.jsonl` records calls on terminal MCTS clones and is
+retained only as evidence for why that instrumentation was rejected as a game
+counter.
+
 The clean start had 545 legal actions in each of ten measurements.  The ten
 fixed perturbed starts had respectively
 `545, 550, 961, 545, 550, 545, 971, 545, 545, 1250` legal actions.
