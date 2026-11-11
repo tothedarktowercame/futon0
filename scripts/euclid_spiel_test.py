@@ -422,6 +422,25 @@ def test_dense_dead_end_is_terminal_draw():
     assert state.returns() == [0.0, -0.0]
 
 
+def test_perturbed_clone_preserves_episode_move_cap(tmp_path):
+    prefix = tmp_path / "clone-prefix.json"
+    prefix.write_text("[]\n")
+    game = pyspiel.load_game(
+        f"euclid_book1(proposition=2,move_cap=4,dense_actions=true,"
+        f"alpha_zero_facade=true,start_file={prefix},start_perturb=2,"
+        f"start_perturb_rate=1.0,start_seed=3)"
+    )
+    state = game.new_initial_state()
+    assert len(state.initial_moves) > 0
+    assert state._move_cap == 4 + len(state.initial_moves)
+    assert state.clone()._move_cap == state._move_cap
+    rng = random.Random(13)
+    for _ in range(4):
+        state.apply_action(rng.choice(state.legal_actions()))
+    assert not state.is_terminal()
+    assert not state.clone().is_terminal()
+
+
 def test_root_win_in_one_wins_stage_one_and_is_plain_without_win(tmp_path):
     witness = [
         ("line_from_points", ("a", "b")),

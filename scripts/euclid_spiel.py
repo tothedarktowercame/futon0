@@ -561,6 +561,9 @@ class EuclidState(pyspiel.State):
             self._euclid_game, self.engine_state.copy(), self.history_moves,
             self._parent_legal_keys, self.initial_moves
         )
+        # Perturbed starts add their sampled prefix length to the per-episode
+        # cap.  The game-level cap does not contain that adjustment.
+        copy._move_cap = self._move_cap
         copy._actions = self._actions
         copy._action_by_id = self._action_by_id
         return copy
