@@ -137,7 +137,8 @@ def main():
         "tree_legal_enumeration": {
             "calls": counts["legal"],
             "seconds": timings["legal"],
-            "mean_seconds": timings["legal"] / counts["legal"],
+            "mean_seconds": (timings["legal"] / counts["legal"]
+                             if counts["legal"] else 0.0),
         },
         "network_inference": {
             "calls": counts["inference"],
