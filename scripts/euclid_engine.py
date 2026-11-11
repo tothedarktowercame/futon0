@@ -569,8 +569,11 @@ class State:
         # default; replay(..., exclude_rules=...) sets it, and copies made
         # by by_contra/by_cases inherit it.
         self.exclude_rules = frozenset()
+        self.proof_branch = False
 
     def assume(self, fact, why="hypothesis"):
+        if why in ("by_contra assumption", "by_cases assumption", "case"):
+            self.proof_branch = True
         names = {x for x in fact[1:] if isinstance(x, str)}
         if why in ("h", "hypothesis", "given"):
             # A genuine hypothesis asserts facts about objects that exist:
@@ -603,6 +606,7 @@ class State:
         s2.la.rows = list(self.la.rows)
         s2.rule_cache = dict(getattr(self, "rule_cache", {}))
         s2.exclude_rules = self.exclude_rules
+        s2.proof_branch = self.proof_branch
         return s2
 
     def new(self, base):
@@ -2748,7 +2752,7 @@ def _fact_holds(s, fact):
     return fact in s.facts
 
 
-def apply_step(s, i, rule, args, bindings):
+def _apply_step_unchecked(s, i, rule, args, bindings):
     """Apply one euclid_apply-style step. Returns a report dict.
     Raises MissingPremise if a premise is not in the closed state or an
     entailment premise fails the arithmetic."""
@@ -2974,6 +2978,38 @@ def apply_step(s, i, rule, args, bindings):
             "premises": prem_facts, "added": added, "closure_iters": iters}
 
 
+class ContradictoryStep(MissingPremise):
+    """An ordinary construction would make its outer state contradictory."""
+    def __init__(self, step, rule, witness):
+        super().__init__(step, rule, "contradictory state",
+                         f"(the resulting ordinary state is contradictory: {witness})")
+        self.witness = witness
+
+
+def apply_step(s, i, rule, args, bindings, allow_contradiction=False):
+    """Apply one construction transactionally outside proof branches.
+
+    Contradictions are proof objects inside by_contra/by_cases branches, but
+    an ordinary construction must preserve the consistency of the givens.
+    """
+    if allow_contradiction or getattr(s, "proof_branch", False):
+        return _apply_step_unchecked(s, i, rule, args, bindings)
+    trial = s.copy()
+    report = _apply_step_unchecked(trial, i, rule, args, bindings)
+    bad, witness = contradictory(trial)
+    if bad:
+        raise ContradictoryStep(i, rule, witness)
+    s.facts = trial.facts
+    s.la = trial.la
+    s.fresh = trial.fresh
+    s.declared = trial.declared
+    s.reserved = trial.reserved
+    s.rule_cache = trial.rule_cache
+    s.exclude_rules = trial.exclude_rules
+    s.proof_branch = trial.proof_branch
+    return report
+
+
 # ---------------------------------------------------------------------------
 # Contradiction detection
 # ---------------------------------------------------------------------------
@@ -3032,6 +3068,22 @@ def contradictory(s):
             if s.has(other):
                 return True, (fact, other)
     return False, None
+
+
+def contradictory_outer_state(s):
+    """Contradiction that invalidates ordinary play and metric goals.
+
+    A top-level `False` certified by by_contra is itself the conclusion of
+    propositions such as I.7, not inconsistent givens.  Every other witness,
+    including arithmetic unsatisfiability alongside such a conclusion, is a
+    poisoned outer state.
+    """
+    bad, witness = contradictory(s)
+    if bad and witness == (("false",),):
+        provenance = s.facts.get(("false",), (None,))[0]
+        if provenance == "by_contra":
+            return False, None
+    return bad, witness
 
 
 # ---------------------------------------------------------------------------
@@ -3104,7 +3156,7 @@ def _by_contra(s, i, entry):
             _assume_metric_or_fact(sub, f, "by_contra assumption")
         close(sub)  # assumptions must be closed before the steps run
         try:
-            run_steps(sub, steps, i + 1)
+            run_steps(sub, steps, i + 1, allow_contradiction=True)
         except MissingPremise as mp:
             # A stuck branch cannot claim a contradiction: report it as a
             # failed by_contra, naming the missing premise.
@@ -3194,7 +3246,7 @@ def _by_cases(s, i, entry):
             _assume_metric_or_fact(sub, f, "by_cases assumption")
         close(sub)  # assumptions must be closed before the steps run
         try:
-            run_steps(sub, steps, i + 1)
+            run_steps(sub, steps, i + 1, allow_contradiction=True)
         except MissingPremise as mp:
             # A stuck branch cannot claim the conclusions: report it as a
             # failed by_cases, naming the missing premise.
@@ -3217,7 +3269,7 @@ def _by_cases(s, i, entry):
             "conclusions": conclusions}
 
 
-def run_steps(s, steps, i0=1):
+def run_steps(s, steps, i0=1, allow_contradiction=False):
     """Driver loop shared by replay(), by_contra and by_cases branches.
     Steps are (rule, args, bindings), ("by_contra", branches, conclusions),
     or ("by_cases", branches, conclusions)."""
@@ -3228,7 +3280,8 @@ def run_steps(s, steps, i0=1):
         elif st[0] == "by_cases":
             rep.append(_by_cases(s, i, st))
         else:
-            rep.append(apply_step(s, i, st[0], st[1], st[2]))
+            rep.append(apply_step(s, i, st[0], st[1], st[2],
+                                  allow_contradiction=allow_contradiction))
     return rep
 
 
@@ -5686,4 +5739,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

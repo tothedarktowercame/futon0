@@ -2570,7 +2570,7 @@ def _run_branch13(s, facts, steps):
     for f in facts:
         eng._assume_metric_or_fact(sub, f, "by_cases assumption")
     eng.close(sub)
-    return eng.run_steps(sub, steps)
+    return eng.run_steps(sub, steps, allow_contradiction=True)
 
 
 def build_trace13_rows(hyps, steps):
@@ -2654,7 +2654,7 @@ def _run_branch14(s, facts, steps):
     for f in facts:
         eng._assume_metric_or_fact(sub, f, "by_contra assumption")
     eng.close(sub)
-    reps = eng.run_steps(sub, steps)
+    reps = eng.run_steps(sub, steps, allow_contradiction=True)
     eng.close(sub)
     return reps, sub
 
@@ -3537,7 +3537,7 @@ def build_trace25_rows(hyps, steps):
         for f in assume:
             eng._assume_metric_or_fact(sub, f, "by_contra assumption")
         eng.close(sub)
-        eng.run_steps(sub, bsteps)
+        eng.run_steps(sub, bsteps, allow_contradiction=True)
         ok, _w = eng.contradictory(sub)
         assert ok, "I.25 branch must end contradictory"
         for (r, a, b), rep in zip(bsteps, reps):

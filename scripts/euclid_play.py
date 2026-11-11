@@ -577,6 +577,9 @@ def student_error(err, rule=None):
                     % (f[1], f[2], f[1], f[2]))
         return "Not yet shown: " + fact_words(f)
     s = str(err)
+    if s == "contradictory state":
+        return ("This step would make the givens contradict each other, "
+                "so it was not kept.")
     m = re.match(r"^unknown rule '(.+)' \(not in I\.(\d+)'s palette\)$", s)
     if m:
         return ("There is no move called '%s' in I.%s — choose one from "
@@ -773,6 +776,8 @@ def _goal_witness(n, s, objects, xy=None, goals=None, given=None,
     named the engine's circle BCD.) wit_not_in: points a witness may
     NOT be bound to (the goal checklist passes the given points: c := b
     satisfies I.1's |ca| = |ab| trivially and must not count)."""
+    if eng.contradictory_outer_state(s)[0]:
+        return None
     goals = [tuple(g) for g in (GOALS[n] if goals is None else goals)]
     if given is None:
         given = {o["name"] for o in tr.objects_from_hyps(n)}

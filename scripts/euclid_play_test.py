@@ -148,6 +148,9 @@ def _walk_case_blocks(n, s, steps, refuted, found):
                           tuple(refuted)))
             for hyps, bsteps in st[1]:
                 sub = s.copy()
+                # This helper reconstructs a proof branch directly rather
+                # than through the engine's by_contra/by_cases handlers.
+                sub.proof_branch = True
                 for f in hyps:
                     eng._assume_metric_or_fact(sub, f, st[0])
                 eng.close(sub)

@@ -7,6 +7,7 @@ from pathlib import Path
 import random
 
 import pyspiel
+import pytest
 
 import euclid_engine as eng
 import euclid_play as play
@@ -195,3 +196,41 @@ def test_independent_oracle_detects_the_pre_fix_false_entailment(monkeypatch):
                      (eng.len_atom("g", "e"), -1))
     assert la.entails(coeffs, 0, "<")
     assert not _oracle_confirms(la.rows, coeffs, 0, "<")
+
+
+def test_contradictory_ordinary_move_is_refused_without_mutating_state(monkeypatch):
+    state = play._start_state(2)
+    before = (dict(state.facts), list(state.la.rows), state.fresh,
+              set(state.declared), set(state.reserved), dict(state.rule_cache),
+              state.exclude_rules, state.proof_branch)
+    monkeypatch.setitem(eng.CONSTRUCTIONS, "test_contradictory_move", {
+        "cite": "test-only",
+        "args": ("b", "c"),
+        "premises": lambda s, b, c: [("neq", b, c)],
+        "make": lambda s, b, c: [(None, [("_gt_len", b, b, b, b)])],
+    })
+    with pytest.raises(eng.ContradictoryStep) as caught:
+        eng.apply_step(state, 1, "test_contradictory_move", ("b", "c"), {})
+    after = (state.facts, state.la.rows, state.fresh,
+             state.declared, state.reserved, state.rule_cache,
+             state.exclude_rules, state.proof_branch)
+    assert after == before
+    assert play.student_error(caught.value.premise) == (
+        "This step would make the givens contradict each other, so it was not kept."
+    )
+
+
+def test_contradictory_outer_state_never_reaches_browser_or_spiel_goal():
+    state = play._start_state(2)
+    # Inject the impossible strict constant 0 < 0 test-only.
+    state.la.add({}, 0, "<")
+    assert eng.contradictory(state)[0]
+    objects = play.tr.objects_from_hyps(2)
+    assert not play._goal_reached(2, state, objects)
+
+    game = pyspiel.load_game(
+        "euclid_book1(proposition=2,move_cap=12,dense_actions=true)"
+    )
+    spiel_state = game.new_initial_state()
+    spiel_state.engine_state = state
+    assert not spiel_state.goal_reached()

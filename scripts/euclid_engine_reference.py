@@ -63,6 +63,7 @@ class State(engine.State):
         state.la.rows = list(self.la.rows)
         state.rule_cache = dict(getattr(self, "rule_cache", {}))
         state.exclude_rules = self.exclude_rules
+        state.proof_branch = self.proof_branch
         return state
 
 
@@ -76,4 +77,5 @@ def from_state(source):
     state.la.rows = list(source.la.rows)
     state.rule_cache = dict(getattr(source, "rule_cache", {}))
     state.exclude_rules = source.exclude_rules
+    state.proof_branch = source.proof_branch
     return state

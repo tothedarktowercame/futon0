@@ -509,6 +509,8 @@ class EuclidState(pyspiel.State):
         return [{"name": name, "kind": kind} for name, kind in _objects(self.engine_state, self.initial_kinds).items()]
 
     def goal_reached(self):
+        if eng.contradictory_outer_state(self.engine_state)[0]:
+            return False
         return play._goal_reached(self._proposition, self.engine_state, self._object_list(), None)
 
     def is_terminal(self):
