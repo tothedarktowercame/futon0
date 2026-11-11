@@ -511,7 +511,11 @@ class EuclidState(pyspiel.State):
     def goal_reached(self):
         if eng.contradictory_outer_state(self.engine_state)[0]:
             return False
-        return play._goal_reached(self._proposition, self.engine_state, self._object_list(), None)
+        given = {o["name"] for o in play.tr.objects_from_hyps(self._proposition)}
+        # same rule as the student checklist (euclid_play.py:1227): an
+        # existential witness may not be one of the given points
+        return play._goal_witness(self._proposition, self.engine_state, self._object_list(),
+                                  None, given=given, wit_not_in=given) is not None
 
     def is_terminal(self):
         return self.goal_reached() or len(self.history_moves) >= self._move_cap
