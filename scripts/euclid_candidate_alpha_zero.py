@@ -165,6 +165,13 @@ def _logical_state_key_sha256(state):
         repr(state.logical_state_key()).encode("utf-8")).hexdigest()
 
 
+def _release_game_resources(bot):
+    """Bound actor memory across variable-shape games."""
+    import jax
+    bot.clear_game_cache()
+    jax.clear_caches()
+
+
 def _current_snapshot(out):
     path = Path(out) / "snapshots/current.json"
     return json.loads(path.read_text()) if path.exists() else None
@@ -416,7 +423,7 @@ def actor_main(config_path, out, actor_id):
                  generation=generation, moves=len(state.history_moves),
                  stage=stage["name"], initial_moves=state.initial_moves,
                  history_moves=state.history_moves)
-            bot.clear_game_cache()
+            _release_game_resources(bot)
     _log(log, "shutdown", games=games, generation=generation)
 
 

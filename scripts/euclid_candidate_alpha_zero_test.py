@@ -31,6 +31,17 @@ def test_config_round_trip_records_every_field(tmp_path):
     assert set(json.loads(path.read_text())) == set(config.__dataclass_fields__)
 
 
+def test_game_boundary_releases_successors_and_jax_compilations(monkeypatch):
+    called = []
+    class Bot:
+        def clear_game_cache(self):
+            called.append("successors")
+    import jax
+    monkeypatch.setattr(jax, "clear_caches", lambda: called.append("jax"))
+    loop._release_game_resources(Bot())
+    assert called == ["successors", "jax"]
+
+
 def test_stage_mix_is_seeded_weighted_and_names_receipt_provenance():
     config = loop.Config(stage_mix=[
         {"name": "stage-1", "weight": 1},
