@@ -30,7 +30,22 @@ def notation(action):
     return body + (f" [{made}]" if made else "")
 
 
-def play_random(proposition, seed, plies=6, deadline=None):
+def choose_action(legal, rng, sampling="rule-uniform"):
+    if sampling == "move-uniform":
+        return legal[rng.randrange(len(legal))]
+    if sampling != "rule-uniform":
+        raise ValueError(f"unknown sampling distribution: {sampling}")
+    by_rule = {}
+    for action in legal:
+        by_rule.setdefault(action[0], []).append(action)
+    rules = sorted(by_rule)
+    rule = rules[rng.randrange(len(rules))]
+    groundings = by_rule[rule]
+    return groundings[rng.randrange(len(groundings))]
+
+
+def play_random(proposition, seed, plies=6, deadline=None,
+                sampling="rule-uniform"):
     rng = random.Random(seed)
     state, kinds = initial_state(proposition)
     start_facts = set(state.facts)
@@ -46,7 +61,7 @@ def play_random(proposition, seed, plies=6, deadline=None):
         closure_seconds += time.perf_counter() - t0
         if not legal:
             break
-        action = legal[rng.randrange(len(legal))]
+        action = choose_action(legal, rng, sampling)
         before = set(state.facts)
         successor, refusal = spiel.admit_candidate(state, ply, action)
         if refusal is not None:  # guarded enumeration promises this cannot occur
@@ -190,10 +205,11 @@ def canonical_key(goal, moves, needed):
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
-def records_for_run(proposition, seed, plies=6, deadline=None):
+def records_for_run(proposition, seed, plies=6, deadline=None,
+                    sampling="rule-uniform"):
     t0 = time.perf_counter()
     state, kinds, start_facts, made, moves, snapshots, closure = play_random(
-        proposition, seed, plies, deadline)
+        proposition, seed, plies, deadline, sampling)
     if len(moves) != plies:
         return [], {"runs": 0, "records": 0,
                     "closure_seconds": closure, "needed_seconds": 0.0,
@@ -222,6 +238,7 @@ def records_for_run(proposition, seed, plies=6, deadline=None):
             "proposition": proposition,
             "givens": sorted(start_facts, key=repr),
             "run_seed": seed,
+            "sampling": sampling,
             "moves": [{"notation": notation(a), "tuple": [a[0], list(a[1]), dict(a[2])]}
                       for a in moves],
             "goal": list(goal), "metric": metric,
@@ -243,7 +260,7 @@ def verify_record(record):
     return goal_holds(state, tuple(record["goal"]))
 
 
-def _worker(worker, out_dir, duration, seed):
+def _worker(worker, out_dir, duration, seed, sampling):
     path = Path(out_dir) / f"worker-{worker:02d}.jsonl"
     stats_path = Path(out_dir) / f"worker-{worker:02d}-stats.json"
     deadline = time.monotonic() + duration
@@ -255,7 +272,7 @@ def _worker(worker, out_dir, duration, seed):
             proposition = 1 + ((worker + run) % 3)
             records, one = records_for_run(
                 proposition, seed + worker * 10_000_000 + run,
-                deadline=deadline)
+                deadline=deadline, sampling=sampling)
             for record in records:
                 stream.write(json.dumps(record, separators=(",", ":")) + "\n")
             stream.flush()
@@ -265,11 +282,12 @@ def _worker(worker, out_dir, duration, seed):
     stats_path.write_text(json.dumps(stats, indent=2) + "\n")
 
 
-def run_parallel(out_dir, duration, workers, seed):
+def run_parallel(out_dir, duration, workers, seed, sampling="rule-uniform"):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     ctx = mp.get_context("spawn")
-    processes = [ctx.Process(target=_worker, args=(i, out, duration, seed))
+    processes = [ctx.Process(target=_worker,
+                             args=(i, out, duration, seed, sampling))
                  for i in range(workers)]
     for process in processes:
         process.start()
@@ -285,8 +303,10 @@ def main():
     parser.add_argument("--duration", type=int, default=1800)
     parser.add_argument("--workers", type=int, default=12)
     parser.add_argument("--seed", type=int, default=2026111201)
+    parser.add_argument("--sampling", choices=("move-uniform", "rule-uniform"),
+                        default="rule-uniform")
     args = parser.parse_args()
-    run_parallel(args.out, args.duration, args.workers, args.seed)
+    run_parallel(args.out, args.duration, args.workers, args.seed, args.sampling)
 
 
 if __name__ == "__main__":

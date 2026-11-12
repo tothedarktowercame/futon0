@@ -69,10 +69,31 @@ def _stored_goal(goal):
     return (mapping.get(goal[0], goal[0]),) + tuple(goal[1:])
 
 
+def _metric_relation(fact):
+    kind = fact[0].lstrip("_")
+    if kind in ("eq_len", "lt_len", "gt_len"):
+        left, right = eng.len_atom(*fact[1:3]), eng.len_atom(*fact[3:5])
+    elif kind in ("eq_ang", "gt_ang"):
+        left, right = eng.ang_atom(*fact[1:4]), eng.ang_atom(*fact[4:7])
+    else:
+        return None
+    if kind.startswith("eq_"):
+        return (kind, frozenset((left, right)))
+    if kind.startswith("lt_"):
+        return (kind.replace("lt_", "gt_"), right, left)
+    return (kind, left, right)
+
+
 def direct(goal, reports, needed):
     if not needed:
         return False
-    return _stored_goal(goal) in reports[max(needed)]["added"]
+    target = _metric_relation(goal)
+    for conclusion in reports[max(needed)]["added"]:
+        if _stored_goal(goal) == conclusion:
+            return True
+        if target is not None and target == _metric_relation(conclusion):
+            return True
+    return False
 
 
 def _angle_equivalence(state, left, right):

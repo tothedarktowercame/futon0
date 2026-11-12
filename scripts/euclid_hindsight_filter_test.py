@@ -37,3 +37,22 @@ def test_direct_output_and_naming_marker():
 def test_i1_equal_sides_is_not_trivial():
     row = rec(i1_moves(), ("_eq_len", "a", "c_3", "b", "c_3"), (0, 1, 2))
     assert f.classify(row) == []
+
+
+def test_direct_copied_length_modulo_segment_orientation():
+    moves = [
+        ("extend_point_longer", ("C", "c1", "c0", "c0", "d_4"), (("x", "x_5"),)),
+        ("proposition_2'", ("x_5", "c0", "x_5", "C"), (("d", "d_6"),)),
+    ]
+    # E1b example 4: the rule states the same equality with its sides and
+    # segment endpoints in the construction schema's orientation.
+    row = rec(moves, ("_eq_len", "c0", "x_5", "d_6", "x_5"), (0, 1), 3)
+    assert "direct" in f.classify(row)
+
+    moves2 = [
+        ("extend_point_longer", ("AB", "a", "b", "x_1", "x_2"), (("x", "x_3"),)),
+        ("proposition_2'", ("c1", "x_3", "b", "AB"), (("d", "d_4"),)),
+    ]
+    # E1b example 8.
+    row2 = rec(moves2, ("_eq_len", "b", "x_3", "c1", "d_4"), (0, 1), 3)
+    assert "direct" in f.classify(row2)

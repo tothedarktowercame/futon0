@@ -1,5 +1,6 @@
 import euclid_hindsight as h
 import euclid_engine as eng
+import random
 
 
 def i1_moves():
@@ -41,3 +42,11 @@ def test_canonical_key_ignores_made_names():
 def test_generated_records_replay():
     records, _stats = h.records_for_run(1, 17, plies=3)
     assert all(h.verify_record(record) for record in records)
+
+
+def test_rule_uniform_then_grounding_uniform():
+    actions = [("many", (str(i),), ()) for i in range(20)] + [("one", ("x",), ())]
+    rng = random.Random(7)
+    picked = [h.choose_action(actions, rng, "rule-uniform")[0] for _ in range(1000)]
+    assert 450 < picked.count("one") < 550
+    assert h.choose_action(actions, random.Random(1), "move-uniform") in actions
