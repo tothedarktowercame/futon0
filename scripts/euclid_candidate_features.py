@@ -248,6 +248,13 @@ def candidate_join_counts(state, candidates, cache=None):
             if cache is _LOOKAHEAD_CACHE:
                 cache.move_to_end(key)
             continue
+        made = {name for _base, name in action[2]}
+        if not made:
+            # A move that makes no object cannot unlock a join with its own
+            # result; skip the admission and child enumeration (review fix).
+            cache[key] = 0
+            counts.append(0)
+            continue
         successor, _refusal = spiel.admit_candidate(
             state.engine_state, len(state.history_moves), action)
         count = 0
@@ -258,7 +265,6 @@ def candidate_join_counts(state, candidates, cache=None):
             child._actions = None
             child._action_by_id = None
             child._parent_legal_keys = frozenset()
-            made = {name for _base, name in action[2]}
             for offered in _feature_candidates(child):
                 arguments = set(offered[1])
                 if arguments & made and arguments & before:
