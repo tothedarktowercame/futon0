@@ -30,7 +30,7 @@ def notation(action):
     return body + (f" [{made}]" if made else "")
 
 
-def play_random(proposition, seed, plies=6):
+def play_random(proposition, seed, plies=6, deadline=None):
     rng = random.Random(seed)
     state, kinds = initial_state(proposition)
     start_facts = set(state.facts)
@@ -38,6 +38,8 @@ def play_random(proposition, seed, plies=6):
     moves, snapshots = [], []
     closure_seconds = 0.0
     for ply in range(plies):
+        if deadline is not None and time.monotonic() >= deadline:
+            break
         t0 = time.perf_counter()
         legal = spiel.enumerate_actions(proposition, state, kinds, ply,
                                         validate=True)
@@ -188,10 +190,14 @@ def canonical_key(goal, moves, needed):
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
-def records_for_run(proposition, seed, plies=6):
+def records_for_run(proposition, seed, plies=6, deadline=None):
     t0 = time.perf_counter()
     state, kinds, start_facts, made, moves, snapshots, closure = play_random(
-        proposition, seed, plies)
+        proposition, seed, plies, deadline)
+    if len(moves) != plies:
+        return [], {"runs": 0, "records": 0,
+                    "closure_seconds": closure, "needed_seconds": 0.0,
+                    "wall_seconds": time.perf_counter() - t0}
     goals = [f for f in state.facts
              if f not in start_facts and _mentions(f, made)]
     metrics, bound = metric_goals(state, made)
@@ -199,6 +205,8 @@ def records_for_run(proposition, seed, plies=6):
     records = []
     needed_seconds = 0.0
     for goal in goals:
+        if deadline is not None and time.monotonic() >= deadline:
+            break
         metric = goal[0].startswith("_")
         n0 = time.perf_counter()
         if metric:
@@ -245,7 +253,9 @@ def _worker(worker, out_dir, duration, seed):
         run = 0
         while time.monotonic() < deadline:
             proposition = 1 + ((worker + run) % 3)
-            records, one = records_for_run(proposition, seed + worker * 10_000_000 + run)
+            records, one = records_for_run(
+                proposition, seed + worker * 10_000_000 + run,
+                deadline=deadline)
             for record in records:
                 stream.write(json.dumps(record, separators=(",", ":")) + "\n")
             stream.flush()
