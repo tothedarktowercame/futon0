@@ -242,7 +242,7 @@ def collate(records):
     if not records:
         raise ValueError("cannot collate an empty replay batch")
     features = candidate_model.batch_features(
-        [record.features for record in records])
+        [record.features for record in records], bucket=True)
     candidate_count = features["candidate_mask"].shape[1]
     targets = np.zeros((len(records), candidate_count), dtype=np.float32)
     row_mask = np.zeros(len(records), dtype=np.bool_)

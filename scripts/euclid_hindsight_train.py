@@ -102,9 +102,10 @@ def build_dataset(filtered, output):
     print(json.dumps(summary, sort_keys=True))
 
 
-def _batch(items):
+def _batch(items, shapes=None):
     import jax.numpy as jnp
-    arrays = models.batch_features([item["features"] for item in items])
+    arrays = models.batch_features([item["features"] for item in items],
+                                   bucket=shapes is None, shapes=shapes)
     width = arrays["candidate_mask"].shape[1]
     target = np.zeros((len(items), width), dtype=np.float32)
     for row, item in enumerate(items):
@@ -121,6 +122,8 @@ def train(dataset, out, duration, seed, batch_size, learning_rate):
         examples = [x for x in pickle.load(stream)["examples"]
                     if x["split"] == "train"]
     rng = random.Random(seed)
+    # One padded shape for the whole training set: the jitted step compiles once.
+    shapes = models.max_shapes([x["features"] for x in examples])
     model = models.CandidateModel(seed=seed)
     optimizer = nnx.Optimizer(model, optax.adam(learning_rate), wrt=nnx.Param)
 
@@ -139,8 +142,10 @@ def train(dataset, out, duration, seed, batch_size, learning_rate):
     deadline, step_number, curve = time.monotonic() + duration, 0, []
     while time.monotonic() < deadline:
         items = rng.sample(examples, min(batch_size, len(examples)))
-        loss = float(step(model, optimizer, *_batch(items)))
+        loss = float(step(model, optimizer, *_batch(items, shapes)))
         step_number += 1
+        if step_number % 250 == 0:  # periodic snapshot: a killed run keeps its latest model
+            models.save_plain_arrays(model, out / f"model-step-{step_number:06d}")
         if step_number == 1 or step_number % 25 == 0:
             row = {"step": step_number, "loss": loss, "elapsed": duration - max(0, deadline-time.monotonic())}
             curve.append(row)

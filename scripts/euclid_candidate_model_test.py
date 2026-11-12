@@ -169,3 +169,32 @@ def test_overfit_one_grounding_without_promoting_its_sibling():
     assert reached is not None, (rule, target)
     final = np.asarray(logits[0])
     assert final[target] > final[sibling]
+
+
+def test_bucketed_padding_preserves_outputs_and_bounds_shapes():
+    """D3-E2 OOM: per-batch padded shapes recompiled the jitted step every
+    batch.  Bucketing must leave every real logit and value unchanged and map
+    batches of different real sizes onto the same padded shape."""
+    state = _state(2, PREFIX)
+    candidates = _candidates(state)
+    small = _arrays(state, candidates[:37])
+    large = _arrays(state, candidates[:53])
+    model = candidate_model.CandidateModel(seed=7)
+    for items in ([small], [large], [small, large]):
+        plain_logits, plain_values = model(candidate_model.batch_features(items))
+        bucket_logits, bucket_values = model(
+            candidate_model.batch_features(items, bucket=True))
+        for row, item in enumerate(items):
+            width = len(item["candidate_mask"])
+            np.testing.assert_allclose(
+                np.asarray(bucket_logits[row, :width]),
+                np.asarray(plain_logits[row, :width]), rtol=1e-5, atol=1e-5)
+        np.testing.assert_allclose(np.asarray(bucket_values),
+                                   np.asarray(plain_values), rtol=1e-5, atol=1e-5)
+    a = candidate_model.batch_features([small], bucket=True)
+    b = candidate_model.batch_features([large], bucket=True)
+    # 37 and 53 candidates share the 64 bucket; every padded axis is a power of two
+    assert a["candidate_mask"].shape == b["candidate_mask"].shape == (1, 64)
+    for batch in (a, b):
+        for value in batch.values():
+            assert all(size & (size - 1) == 0 for size in value.shape[1:])

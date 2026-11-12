@@ -149,8 +149,33 @@ class CandidateModel(nnx.Module):
         return logits, nnx.tanh(value)
 
 
-def batch_features(items):
-    """Pad feature dictionaries and add a leading position dimension."""
+def _bucket(size):
+    """Round a padded size up to the next power of two; 0 stays 0 (an empty
+    candidate list is a value-only record)."""
+    return int(size) if size <= 1 else 1 << (int(size) - 1).bit_length()
+
+
+def max_shapes(items):
+    """Per-key maximum shape over feature dictionaries (for shapes=)."""
+    out = {}
+    for item in items:
+        for key, value in item.items():
+            shape = np.asarray(value).shape
+            old = out.get(key)
+            out[key] = shape if old is None else tuple(max(a, b) for a, b in zip(old, shape))
+    return out
+
+
+def batch_features(items, bucket=False, shapes=None):
+    """Pad feature dictionaries and add a leading position dimension.
+
+    With bucket=True every padded axis is rounded up to a power of two, so a
+    jitted training step sees a few shapes instead of a new one per batch
+    (D3-E2: per-batch shapes recompiled every step and the trainer was
+    OOM-killed at 24 GB).  With shapes={key: per-position shape} every
+    batch is padded to exactly that shape (one compilation for a fixed
+    dataset); an item larger than the given shape is an error.  Padding is
+    masked, so outputs are unchanged."""
     if not items:
         raise ValueError("at least one position is required")
     keys = items[0].keys()
@@ -164,6 +189,13 @@ def batch_features(items):
             raise ValueError(f"rank mismatch for {key}")
         shape = tuple(max(array.shape[axis] for array in arrays)
                       for axis in range(rank))
+        if shapes is not None:
+            fixed = tuple(shapes[key])
+            if len(fixed) != rank or any(s > f for s, f in zip(shape, fixed)):
+                raise ValueError(f"{key}: batch shape {shape} exceeds fixed {fixed}")
+            shape = fixed
+        elif bucket:
+            shape = tuple(_bucket(size) for size in shape)
         padded = np.zeros((len(arrays),) + shape, dtype=arrays[0].dtype)
         for index, array in enumerate(arrays):
             slices = (index,) + tuple(slice(0, size) for size in array.shape)
