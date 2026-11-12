@@ -38,3 +38,33 @@ def test_learned_attempt_is_budgeted_and_replayable():
 
 def test_feature_signature_cannot_receive_answer():
     assert list(inspect.signature(learner.feature_vector).parameters) == ["position", "goal", "move", "counters"]
+
+
+# --- added in review by claude-6 ---
+
+def test_completion_features_follow_the_position_after_a_move():
+    """The first version cached completing_moves on the position object and
+    kept using the start position's map after moves had been applied."""
+    a, b = eq.gen("a"), eq.gen("b")
+    goal = eq.Goal(eq.inv(eq.mul(a, b)), eq.mul(eq.inv(b), eq.inv(a)))
+    p = eq.start("group", goal, ("a", "b"))
+    learner.feature_vector(p, goal, eq.candidates(p)[0])  # fills the cache
+    rng = random.Random(0)
+    for _ in range(8):
+        eq.apply(p, setter.choose_move(p, rng, "merging(1)"))
+    live = eq.completing_moves(p)
+    differing = 0
+    for move in eq.candidates(p):
+        vector = learner.feature_vector(p, goal, move)
+        assert vector[0] == float(live[move].count)
+        assert vector[1] == float(live[move].merges)
+        differing += live[move].count > 0
+    assert differing  # the check is not vacuous: some move completes a rule
+
+
+def test_sampled_attempt_keeps_budget_on_a_goal_it_cannot_reach():
+    goal = eq.Goal(eq.gen("a"), eq.gen("b"))
+    class Flat:
+        def score(self, x): return 0.0
+    solved, moves = learner.learned_attempt("group", goal, ("a", "b"), Flat(), 3, 5)
+    assert not solved and len(moves) == 3

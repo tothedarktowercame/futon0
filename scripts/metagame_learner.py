@@ -73,10 +73,15 @@ def feature_vector(position: eq.Position, goal: eq.Goal, move: eq.Move,
     """
     counters = counters or {}
     left, right = _class(position, goal.left), _class(position, goal.right)
-    info_map = getattr(position, "_learner_completion_cache", None)
-    if info_map is None:
-        info_map = eq.completing_moves(position)
-        setattr(position, "_learner_completion_cache", info_map)
+    stamp = (len(position.terms),
+             len({position.find(i) for i in range(len(position.terms))}))
+    cached = getattr(position, "_learner_completion_cache", None)
+    if cached is None or cached[0] != stamp:
+        # A position only gains terms and merges classes, so this pair
+        # changes whenever the position does; a stale map is never reused.
+        cached = (stamp, eq.completing_moves(position))
+        setattr(position, "_learner_completion_cache", cached)
+    info_map = cached[1]
     info = info_map.get(move, eq.MoveCompletion(0, False))
     args = tuple(_class(position, a) for a in move.args)
     arg_classes = set(x for x in args if x is not None)
@@ -90,24 +95,30 @@ def feature_vector(position: eq.Position, goal: eq.Goal, move: eq.Move,
             if _pattern_matches(position, side, child) is not None:
                 matches += 1
 
-    trial = position.copy()
-    old_left = _class(trial, goal.left)
-    old_right = _class(trial, goal.right)
-    before_classes = {trial.find(i) for i in range(len(trial.terms))}
-    try:
-        eq.apply(trial, move)
-        after_left, after_right = _class(trial, goal.left), _class(trial, goal.right)
-        merged_left = int(old_left is not None and after_left != old_left)
-        merged_right = int(old_right is not None and after_right != old_right)
-    except ValueError:
-        merged_left = merged_right = 0
+    merged_left = merged_right = 0
+    if info.merges:
+        # Only a move that completes a merging rule instance can change any
+        # class: its new node is absent modulo current classes, so the first
+        # merge after it must come from a rule instance containing that node.
+        # Other moves leave the goal's classes alone and need no trial.
+        trial = position.copy()
+        old_left = _class(trial, goal.left)
+        old_right = _class(trial, goal.right)
+        try:
+            eq.apply(trial, move)
+            after_left, after_right = _class(trial, goal.left), _class(trial, goal.right)
+            merged_left = int(old_left is not None and after_left != old_left)
+            merged_right = int(old_right is not None and after_right != old_right)
+        except ValueError:
+            pass
     return [
         float(info.count), float(info.merges), float(merged_left),
         float(merged_right), float(left is not None and left in arg_classes),
         float(right is not None and right in arg_classes),
         float(bool(arg_classes & sub_classes)), float(matches > 0), float(matches),
-        float(counters.get("class_count", len(before_classes))),
-        float(counters.get("candidate_count", len(eq.candidates(position)))),
+        float(counters.get("class_count", stamp[1])),
+        float(counters["candidate_count"] if "candidate_count" in counters
+              else len(info_map)),
         float(counters.get("moves_played", 0)), float(counters.get("budget_left", 0)),
     ]
 
@@ -215,29 +226,44 @@ def build_training(records, excluded, theories):
     return torch.tensor(xs, dtype=torch.float32), torch.tensor(ys, dtype=torch.float32), used, drops
 
 
-class Logistic:
+class _Scaled:
+    """Inputs are standardised with the training mean and deviation."""
+    def scale(self, x):
+        return (x - self.mean) / self.std
+    def set_scale(self, x):
+        self.mean = x.mean(0); self.std = x.std(0).clamp_min(1e-6)
+        return self.scale(x)
+    def score(self, x):
+        with torch.no_grad():
+            row = self.scale(torch.tensor([x], dtype=torch.float32))
+            return float(self.model(row).item())
+    def score_many(self, xs):
+        with torch.no_grad():
+            rows = self.scale(torch.tensor(xs, dtype=torch.float32))
+            return self.model(rows).view(-1).tolist()
+
+
+class Logistic(_Scaled):
     def __init__(self, n):
         self.model = torch.nn.Linear(n, 1)
     def fit(self, x, y):
+        x = self.set_scale(x)
         torch.manual_seed(SEED); self.model.reset_parameters()
         opt = torch.optim.LBFGS(self.model.parameters(), max_iter=80, line_search_fn="strong_wolfe")
         def closure():
             opt.zero_grad(); loss = torch.nn.functional.binary_cross_entropy_with_logits(self.model(x).squeeze(1), y); loss.backward(); return loss
         opt.step(closure)
-    def score(self, x):
-        return float(self.model(torch.tensor([x], dtype=torch.float32)).item())
 
 
-class SmallMLP:
+class SmallMLP(_Scaled):
     def __init__(self, n):
         self.model = torch.nn.Sequential(torch.nn.Linear(n, 12), torch.nn.Tanh(), torch.nn.Linear(12, 1))
     def fit(self, x, y):
+        x = self.set_scale(x)
         torch.manual_seed(SEED + 1); self.model.apply(lambda m: m.reset_parameters() if hasattr(m, "reset_parameters") else None)
         opt = torch.optim.Adam(self.model.parameters(), lr=.02)
         for _ in range(100):
             opt.zero_grad(); loss = torch.nn.functional.binary_cross_entropy_with_logits(self.model(x).squeeze(1), y); loss.backward(); opt.step()
-    def score(self, x):
-        return float(self.model(torch.tensor([x], dtype=torch.float32)).item())
 
 
 def learned_attempt(theory, goal, generators, model, budget, seed, greedy=False):
@@ -248,7 +274,9 @@ def learned_attempt(theory, goal, generators, model, budget, seed, greedy=False)
         choices = eq.candidates(p)
         if not choices: break
         counters = {"class_count": len({p.find(i) for i in range(len(p.terms))}), "candidate_count": len(choices), "moves_played": step, "budget_left": budget-step}
-        scores = [model.score(feature_vector(p, goal, c, counters)) for c in choices]
+        vectors = [feature_vector(p, goal, c, counters) for c in choices]
+        scores = (model.score_many(vectors) if hasattr(model, "score_many")
+                  else [model.score(v) for v in vectors])
         if greedy:
             index = max(range(len(choices)), key=lambda i: (scores[i], str(choices[i])))
         else:
@@ -260,76 +288,170 @@ def learned_attempt(theory, goal, generators, model, budget, seed, greedy=False)
     return eq.entails(p, goal), moves
 
 
-def _rate(attempt):
-    return sum(bool(x) for x in attempt) / len(attempt) if attempt else 0.0
+# --- evaluation -----------------------------------------------------------
+# Revised by claude-6 in review: the first version scored every goal in one
+# process, re-ran the EQ-5 baselines, and did not finish.  This version runs a
+# fixed subsample of the EQ-5 test set in worker processes at budget 2n and
+# reads the baseline figures for the same goals from the EQ-5 results file.
+
+_WORKER = {}
 
 
-def evaluate(model, rows, kind, attempts=20):
+def _init_worker(models):
+    torch.set_num_threads(1)
+    _WORKER["models"] = models
+
+
+def _eval_goal(job):
+    eq5_index, row, model_name, multipliers, attempts = job
+    goal = _parse_goal(row); gens = _generators(goal)
+    model = _WORKER["models"][model_name]
+    out = []
+    for mult in multipliers:
+        budget = mult * row["needed_size"]
+        solved = []
+        for attempt in range(attempts):
+            seed = solver._stable_seed(SEED, eq5_index, model_name, mult, attempt)
+            ok, moves = learned_attempt(row["theory"], goal, gens, model, budget, seed)
+            assert len(moves) <= budget
+            solved.append(bool(ok))
+        ok, moves = learned_attempt(row["theory"], goal, gens, model, budget, 0,
+                                    greedy=True)
+        assert len(moves) <= budget
+        out.append({"index": eq5_index, "model": model_name, "mult": mult,
+                    "solved": solved, "greedy": bool(ok)})
+    return out
+
+
+def sample_test_rows(rows, theory, per_bin):
+    """Fixed subsample: the first per_bin EQ-5 rows of each needed-size bin."""
+    bins = {}
+    for index, row in enumerate(rows):
+        if row["theory"] == theory and not row.get("named"):
+            bins.setdefault(min(row["needed_size"], 7), []).append((index, row))
+    named = [(i, r) for i, r in enumerate(rows)
+             if r["theory"] == theory and r.get("named")]
+    return [x for size in sorted(bins) for x in bins[size][:per_bin]], named
+
+
+def baseline_rates(eq5_results, indices, mult):
+    """Mean EQ-5 solve rate per policy over exactly these goals."""
     out = {}
-    for size in sorted({min(r["needed_size"], 7) for r in rows}):
-        selected = [r for r in rows if min(r["needed_size"], 7) == size]
-        for mult in (1, 2, 4):
-            values = []
-            for index, row in enumerate(selected):
-                goal = _parse_goal(row); gens = _generators(goal); budget = mult * row["needed_size"]
-                for attempt in range(attempts):
-                    seed = solver._stable_seed(SEED, kind, index, mult, attempt)
-                    if kind in ("learned", "greedy"):
-                        solved, _ = learned_attempt(row["theory"], goal, gens, model, budget, seed, kind == "greedy")
-                    else:
-                        solved = solver.solve_attempt(row["theory"], goal, gens, kind, budget, seed).solved
-                    values.append(bool(solved))
-            out[(size, mult)] = _rate(values)
+    for policy in ("uniform", "completing", "merging"):
+        flags = [a["solved"] for i in indices for a in eq5_results[i]["attempts"]
+                 if a["policy"] == policy and a["multiplier"] == mult]
+        out[policy] = sum(flags) / len(flags) if flags else None
     return out
 
 
 def main():
+    import concurrent.futures
     parser = argparse.ArgumentParser()
     parser.add_argument("--eq4", type=Path, default=Path("/home/joe/code/storage/metagame/eq4"))
-    parser.add_argument("--eq5", type=Path, default=Path("/home/joe/code/storage/metagame/eq5/testset.jsonl.gz"))
+    parser.add_argument("--eq5", type=Path, default=Path("/home/joe/code/storage/metagame/eq5"))
     parser.add_argument("--out", type=Path, default=Path("/home/joe/code/storage/metagame/learn0"))
+    parser.add_argument("--note", type=Path, default=Path(__file__).parents[1] / "holes/excursions/E-metagame/LEARN-0.md")
+    parser.add_argument("--per-bin", type=int, default=20)
+    parser.add_argument("--attempts", type=int, default=5)
+    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--only", default=None, help="one held-out theory")
     args = parser.parse_args(); started = time.monotonic(); torch.set_num_threads(4)
     args.out.mkdir(parents=True, exist_ok=True)
-    records = load_records(args.eq4); test_keys = load_test_keys(args.eq5)
-    test_rows = []
-    with gzip.open(args.eq5, "rt") as stream:
-        test_rows = [json.loads(line) for line in stream if json.loads(line).get("theory") in ("group", "left_group", "exponent_two")]
-    reports = []
+    records = load_records(args.eq4)
+    test_keys = load_test_keys(args.eq5 / "testset.jsonl.gz")
+    with gzip.open(args.eq5 / "testset.jsonl.gz", "rt") as stream:
+        rows = [json.loads(line) for line in stream]
+    with gzip.open(args.eq5 / "results.jsonl.gz", "rt") as stream:
+        eq5_results = {r["index"]: r for r in map(json.loads, stream)}
+    everything = {"group", "left_group", "exponent_two", "monoid"}
+    report = {"features": FEATURE_NAMES, "temperature": TEMPERATURE,
+              "per_bin": args.per_bin, "attempts": args.attempts, "splits": []}
     for held in ("group", "left_group", "exponent_two"):
-        for label, train_theories in (("held_out", {"group", "left_group", "exponent_two", "monoid"} - {held}), ("in_theory", {"group", "left_group", "exponent_two", "monoid"})):
-            x, y, used, drops = build_training(records, test_keys, train_theories)
-            models = {"logistic": Logistic(len(FEATURE_NAMES)), "mlp": SmallMLP(len(FEATURE_NAMES))}
-            for model in models.values(): model.fit(x, y)
-            rows = [r for r in test_rows if r["theory"] == held]
-            for name, model in models.items():
-                for policy in ("learned", "greedy"):
-                    rates = evaluate(model, rows, policy)
-                    entry = {"held_out": held, "training": label, "model": name, "policy": policy, "rates": {f"{a}/{b}": v for (a,b),v in rates.items()}}
-                    if name == "logistic":
-                        entry["weights"] = [float(v) for v in model.model.weight.detach().view(-1)] + [float(model.model.bias.detach().item())]
-                    reports.append(entry)
-            for policy in ("uniform", "completing", "merging"):
-                rates = evaluate(None, rows, policy)
-                reports.append({"held_out": held, "training": label, "model": "baseline", "policy": policy, "rates": {f"{a}/{b}": v for (a,b),v in rates.items()}})
-            reports[-1]["training_examples"] = len(y); reports[-1]["records_used"] = used; reports[-1]["drops"] = drops
-    (args.out / "results.json").write_text(json.dumps({"features": FEATURE_NAMES, "temperature": TEMPERATURE, "results": reports, "seconds": time.monotonic()-started}, indent=2, sort_keys=True))
-    elapsed = time.monotonic()-started
-    write_receipt(args.out / "LEARN-0.md", reports, records, test_keys, elapsed)
-    write_receipt(Path("holes/excursions/E-metagame/LEARN-0.md"), reports, records, test_keys, elapsed)
+        if args.only and held != args.only:
+            continue
+        models, training = {}, {}
+        for label, theories in (("held_out", everything - {held}),
+                                ("in_theory", everything)):
+            x, y, used, drops = build_training(records, test_keys, theories)
+            training[label] = {"examples": len(y), "positives": int(y.sum()),
+                               "records": used, "drops": drops}
+            names = ("logistic", "mlp") if label == "held_out" else ("logistic",)
+            for name in names:
+                model = (Logistic if name == "logistic" else SmallMLP)(len(FEATURE_NAMES))
+                model.fit(x, y)
+                models[f"{label}/{name}"] = model
+        ordinary, named = sample_test_rows(rows, held, args.per_bin)
+        jobs = [(i, row, name, (2,), args.attempts)
+                for name in models for i, row in ordinary]
+        jobs += [(i, row, name, (2, 4), args.attempts)
+                 for name in models for i, row in named]
+        jobs.sort(key=lambda j: -j[1]["needed_size"])
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=args.workers, initializer=_init_worker,
+                initargs=(models,)) as pool:
+            results = [r for rs in pool.map(_eval_goal, jobs) for r in rs]
+        weights = {name: [float(v) for v in m.model.weight.detach().view(-1)]
+                   + [float(m.model.bias.detach().item())]
+                   for name, m in models.items() if name.endswith("logistic")}
+        split = {"held_out": held, "training": training, "weights": weights,
+                 "results": results,
+                 "goals": {i: {"needed_size": r["needed_size"],
+                               "named": r.get("named")}
+                           for i, r in ordinary + named}}
+        report["splits"].append(split)
+        (args.out / f"results-{held}.json").write_text(json.dumps(split, sort_keys=True))
+    report["seconds"] = time.monotonic() - started
+    write_receipt(args.note, report, eq5_results)
 
 
-def write_receipt(path, reports, records, test_keys, seconds):
-    lines = ["# LEARN-0 — goal-aware move scorer", "", "## Features", ""]
-    lines += [f"1. `{name}`" for name in FEATURE_NAMES]
-    lines += ["", f"Softmax temperature: `{TEMPERATURE}`. Seeds are fixed from `20261112` and EQ-5's stable-seed construction.", "", "## Training and evaluation", "", f"Records read: {len(records)}; EQ-5 exclusion keys: {len(test_keys)}.", "", "| held-out | training | model | policy | size/budget rates |", "|---|---|---|---|---|"]
-    for r in reports:
-        rates = ", ".join(f"{k}: {v:.1%}" for k,v in sorted(r["rates"].items()))
-        lines.append(f"| {r['held_out']} | {r['training']} | {r['model']} | {r['policy']} | {rates} |")
-    lines += ["", "## Logistic weights", ""]
-    for r in reports:
-        if r.get("model") == "logistic" and "weights" in r:
-            lines.append(f"- {r['held_out']} / {r['training']}: " + ", ".join(f"{x:.6g}" for x in r["weights"]))
-    lines += ["", "The named goals are included in the EQ-5 rows when their theory is held out; the JSON result preserves their per-attempt aggregate alongside the size bins.", "The largest-size frontier and the comparison with merging are read directly from the size/budget table: this is intentionally a null-safe report, so absent bins are reported as absent rather than imputed.", "", f"Wall time: {seconds:.1f}s.", ""]
+def write_receipt(path, report, eq5_results):
+    lines = ["# LEARN-0 — goal-aware move scorer, leave one theory out", "",
+             "## Features", ""]
+    lines += [f"{n}. `{name}`" for n, name in enumerate(FEATURE_NAMES, 1)]
+    lines += ["", f"Softmax temperature `{TEMPERATURE}`; inputs standardised with the training mean and deviation. "
+              f"Test goals: the first {report['per_bin']} EQ-5 rows of each needed-size bin of the held-out theory; "
+              f"{report['attempts']} sampled attempts and one greedy attempt per goal, budget 2n. "
+              "Baseline columns are the EQ-5 figures (20 attempts) for the same goals.", ""]
+    for split in report["splits"]:
+        held = split["held_out"]
+        lines += [f"## Held out: {held}", ""]
+        for label, t in split["training"].items():
+            lines.append(f"- training `{label}`: {t['records']} records, {t['examples']} examples ({t['positives']} positive), {t['drops']} dropped as not replayable.")
+        goals = {int(k): v for k, v in split["goals"].items()}
+        model_names = sorted({r["model"] for r in split["results"]})
+        lines += ["", "| needed | goals | uniform | completing | merging | "
+                  + " | ".join(f"{m} sampled | {m} greedy" for m in model_names) + " |",
+                  "|---:|---:|---:|---:|---:|" + "---:|---:|" * len(model_names)]
+        sizes = sorted({min(g["needed_size"], 7) for g in goals.values() if not g["named"]})
+        def cell(v):
+            return "—" if v is None else f"{v:.1%}"
+        for size in sizes:
+            idx = [i for i, g in goals.items() if not g["named"] and min(g["needed_size"], 7) == size]
+            base = baseline_rates(eq5_results, idx, 2)
+            cells = []
+            for m in model_names:
+                rs = [r for r in split["results"] if r["model"] == m and r["mult"] == 2 and r["index"] in idx]
+                flags = [f for r in rs for f in r["solved"]]
+                cells += [cell(sum(flags) / len(flags) if flags else None),
+                          cell(sum(r["greedy"] for r in rs) / len(rs) if rs else None)]
+            lines.append(f"| {size if size <= 6 else '>6'} | {len(idx)} | {cell(base['uniform'])} | {cell(base['completing'])} | {cell(base['merging'])} | " + " | ".join(cells) + " |")
+        lines += ["", "Named goals:", ""]
+        for i, g in goals.items():
+            if not g["named"]:
+                continue
+            for mult in (2, 4):
+                base = baseline_rates(eq5_results, [i], mult)
+                parts = []
+                for m in model_names:
+                    rs = [r for r in split["results"] if r["model"] == m and r["mult"] == mult and r["index"] == i]
+                    if rs:
+                        parts.append(f"{m} {sum(rs[0]['solved'])}/{len(rs[0]['solved'])} sampled, greedy {'solved' if rs[0]['greedy'] else 'failed'}")
+                lines.append(f"- `{g['named']}` at {mult}n: merging {cell(base['merging'])}, completing {cell(base['completing'])}; " + "; ".join(parts) + ".")
+        lines += ["", "Logistic weights (feature order as above, then bias):", ""]
+        for name, w in split["weights"].items():
+            lines.append(f"- `{name}`: " + ", ".join(f"{x:.3f}" for x in w))
+        lines.append("")
+    lines += [f"Wall time: {report['seconds']:.0f}s.", ""]
     path.write_text("\n".join(lines))
 
 
