@@ -128,3 +128,73 @@ PYTHONHASHSEED=0 python -m pytest -q scripts/euclid_hindsight_train_test.py
 The evaluation ran in a dedicated 12 GiB, 256-task scope and completed
 normally.  Its machine-readable result is
 `/home/joe/storage/euclidzero/d3-e4b/eval.json`.
+
+## E4b-2: temperature selection and prover rerun
+
+The prover now accepts a positive temperature `T` and uses
+`softmax(logits / T)` for path costs.  `T=1` preserves the E3 ordering.  An
+explicit optional hindsight goal drives both model features and the terminal
+test during temperature selection; omitting it retains the Book behavior.
+
+### Fixed Book-free selection
+
+Selection seed `2026111206` chose 40 state-disjoint held-out theorem records
+with needed size at least three: 20 single-fact and 20 conjunctive.  The size
+histogram is 26 of size 3, 12 of size 4, one of size 5, and one of size 6.
+The fixed records are:
+
+| IDs | Kind | Proposition / run seed / needed size |
+|---|---|---|
+| 0--2 | conjunctive | I.3 / 2056111224 / 3 |
+| 3--4 | conjunctive | I.3 / 2056111251 / 4 |
+| 5 | conjunctive | I.3 / 2056111266 / 4 |
+| 6--7 | conjunctive | I.3 / 2066111274 / 3 |
+| 8 | conjunctive | I.3 / 2106111252 / 3 |
+| 9, 11 | conjunctive | I.3 / 2126111259 / 4 |
+| 10 | conjunctive | I.3 / 2126111259 / 5 |
+| 12--13 | conjunctive | I.3 / 2136111204 / 3 |
+| 14 | conjunctive | I.3 / 2136111204 / 4 |
+| 15--18 | conjunctive | I.3 / 2136111243 / 3 |
+| 19 | conjunctive | I.3 / 2136111243 / 4 |
+| 20 | single | I.1 / 2036111235 / 4 |
+| 21 | single | I.1 / 2056111224 / 4 |
+| 22--23 | single | I.2 / 2036111260 / 3 |
+| 24 | single | I.2 / 2096111218 / 3 |
+| 25 | single | I.2 / 2136111220 / 6 |
+| 26--27 | single | I.2 / 2136111220 / 3 |
+| 28--30 | single | I.2 / 2136111271 / 3 |
+| 31--32 | single | I.3 / 2026111217 / 3 |
+| 33--34 | single | I.3 / 2026111229 / 4 |
+| 35--37 | single | I.3 / 2066111207 / 3 |
+| 38 | single | I.3 / 2076111206 / 3 |
+| 39 | single | I.3 / 2126111210 / 4 |
+
+The complete goals and canonical keys are in the ignored machine-readable
+receipt `/home/joe/storage/euclidzero/d3-e4b-2/selection.json`.
+
+### Environmental abort
+
+The 12-worker temperature run was launched once in
+`codex26-d3-e4b-temperature.scope` with `MemoryMax=24G`, `TasksMax=1024`,
+`PYTHONHASHSEED=0`, and the THREADS-1 environment.  During JAX CPU-client
+initialisation, multiple workers aborted with `pthread_create` error 11,
+including failures to create `tf_XLAExecute`, `tf_XLACompile`,
+`tf_XLAEigen`, and `tf_XLAPjRtCpuClient` threads.  LLVM likewise reported
+`pthread_create failed: Resource temporarily unavailable`.  The
+multiprocessing pool then repeatedly replaced the aborted workers.  The
+recorded parent session was interrupted to stop that respawn loop; the run
+was not relaunched, as required.
+
+No search finished and `temperature.jsonl` has zero receipts.  Consequently
+the selection table is:
+
+| Temperature | Completed records | Solved | Mean calls on solved |
+|---:|---:|---:|---:|
+| 1 | 0 / 40 | unavailable | unavailable |
+| 2 | 0 / 40 | unavailable | unavailable |
+| 4 | 0 / 40 | unavailable | unavailable |
+
+There is therefore no Book-free winning temperature.  The E3 problem matrix
+was not run: choosing an arbitrary temperature after this failure would
+violate the experiment's selection rule.  The temperature scope is inactive
+and no worker survives.
