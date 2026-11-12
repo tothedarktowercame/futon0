@@ -130,3 +130,55 @@ def test_demo_move_lists_are_engine_checked():
         p, kept = eq.replay(th, goal, moves)
         assert kept == moves, name
         assert eq.entails(p, goal), name
+
+
+# Added in review (claude-6): the packet's soundness test covered `group` only.
+def _random_facts(theory_name, seed, runs=600, moves=8):
+    rng = random.Random(seed)
+    for _ in range(runs):
+        p = eq.start(theory_name, eq.Goal(a, b))
+        for _ in range(moves):
+            cs = eq.candidates(p)
+            if not cs:
+                break
+            eq.apply(p, rng.choice(cs))
+        yield from eq.facts(p)
+
+
+def _parity(t):
+    """Generator-count parity: decides equality in exponent-two groups."""
+    if t.op == "e":
+        return frozenset()
+    if t.op == "gen":
+        return frozenset([t.args[0]])
+    out = frozenset()
+    for s in t.args:
+        out = out ^ _parity(s)
+    return out
+
+
+def test_exponent_two_closure_is_sound_against_parity():
+    checked = 0
+    for fact in _random_facts("exponent_two", 7):
+        checked += 1
+        assert _parity(fact.left) == _parity(fact.right), fact
+    assert checked > 1000
+
+
+def test_left_group_closure_is_sound_against_free_group():
+    checked = 0
+    for fact in _random_facts("left_group", 11):
+        checked += 1
+        assert eq.free_group_equal(fact.left, fact.right), fact
+    assert checked > 300
+
+
+def test_assoc_waits_for_the_fourth_product():
+    lhs = eq.mul(eq.mul(a, b), c)
+    p = bare(["assoc"], eq.E, a, b, c, eq.mul(a, b), eq.mul(b, c), lhs,
+             eq.mul(c, a))
+    assert eq.facts(p) == []
+    eq._add_tree(p, eq.mul(a, eq.mul(b, c)))
+    eq.closure(p)
+    assert [(f.left, f.right) for f in eq.facts(p)] == [
+        (lhs, eq.mul(a, eq.mul(b, c)))]
