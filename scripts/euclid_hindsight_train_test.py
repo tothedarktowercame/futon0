@@ -10,3 +10,9 @@ def test_action_signature_ignores_fresh_result_name():
     left=("circle_from_points",("a","b"),(("C","C_1"),))
     right=("circle_from_points",("a","b"),(("C","C_9"),))
     assert t.action_signature(left)==t.action_signature(right)
+
+
+def test_candidates_have_only_declared_feature_objects():
+    state = t._state(2)
+    objects = set(state._object_order())
+    assert all(set(action[1]) <= objects for action in t.candidates(state))

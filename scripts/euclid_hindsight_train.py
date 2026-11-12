@@ -21,10 +21,18 @@ import euclid_spiel
 
 
 def candidates(state):
-    return euclid_spiel.enumerate_actions(
+    generated = euclid_spiel.enumerate_actions(
         state._proposition, state.engine_state, state.initial_kinds,
         len(state.history_moves), canonical_names=state._canonical_names(),
         validate=False)
+    objects = set(state._object_order())
+    # The full engine generator can ground stated-input rules with RESERVED
+    # forward names.  Those names deliberately are not objects yet and hence
+    # have no candidate-object embedding.  The scorer's candidate space is
+    # the premise-certified, feature-encodable subset.
+    return [action for action in generated
+            if all(not isinstance(arg, str) or arg in objects
+                   for arg in action[1])]
 
 
 def action_signature(action):
