@@ -20,7 +20,7 @@ import euclid_candidate_features as feature_schema
 import euclid_candidate_model as candidate_model
 
 
-RECEIPT_FORMAT_VERSION = 1
+RECEIPT_FORMAT_VERSION = 2
 
 
 def _candidate_to_json(candidate):

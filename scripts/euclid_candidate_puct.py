@@ -24,6 +24,7 @@ class Node:
     prior: float = 1.0
     visits: int = 0
     value_sum: float = 0.0
+    network_value: float = 0.0
     expanded: bool = False
     dead_end: bool = False
     candidates: list = field(default_factory=list)
@@ -33,6 +34,10 @@ class Node:
     @property
     def value(self):
         return self.value_sum / self.visits if self.visits else 0.0
+
+    @property
+    def value_estimate(self):
+        return self.value if self.visits else self.network_value
 
 
 @dataclass(frozen=True)
@@ -67,7 +72,8 @@ def premise_certified_candidates(state):
 class CandidatePUCT:
     def __init__(self, model, *, simulations=32, uct_c=1.41,
                  root_win_in_one=True, dirichlet=None, temperature=0.0,
-                 widening=None, seed=0, jit_model=True):
+                 widening=None, first_play_reduction=0.0, seed=0,
+                 jit_model=True):
         self.model = model
         self.simulations = simulations
         self.uct_c = uct_c
@@ -75,6 +81,7 @@ class CandidatePUCT:
         self.dirichlet = dirichlet
         self.temperature = temperature
         self.widening = widening
+        self.first_play_reduction = float(first_play_reduction)
         self.random = np.random.RandomState(seed)
         self.admission_cache = {}
         self.last_stats = {}
@@ -111,6 +118,7 @@ class CandidatePUCT:
         logits, value = np.asarray(logits[0, :len(candidates)]), float(values[0])
         self._time("model", started)
 
+        node.network_value = value
         node.candidates = list(candidates)
         node.priors = self._softmax(logits)
         node.expanded = True
@@ -204,7 +212,8 @@ class CandidatePUCT:
             candidate = node.candidates[index]
             child = node.children.get(candidate)
             visits = child.visits if child is not None else 0
-            value = child.value if child is not None else 0.0
+            value = (child.value if child is not None and child.visits
+                     else node.value_estimate - self.first_play_reduction)
             score = (value + self.uct_c * node.priors[index]
                      * math.sqrt(parent) / (1 + visits))
             key = (score, -index)
@@ -216,7 +225,7 @@ class CandidatePUCT:
         if state.goal_reached():
             return 1.0
         if len(state.history_moves) >= state._move_cap:
-            return 0.0
+            return -1.0
         return None
 
     @staticmethod
@@ -247,17 +256,17 @@ class CandidatePUCT:
             if not node.expanded:
                 value, _winning = self._expand(node)
                 if node.dead_end:
-                    value = 0.0
+                    value = -1.0
                 break
             if node.dead_end:
-                value = 0.0
+                value = -1.0
                 break
 
             while True:
                 index = self._select(node)
                 if index is None:
                     node.dead_end = True
-                    value = 0.0
+                    value = -1.0
                     break
                 candidate = node.candidates[index]
                 child = node.children.get(candidate)
@@ -268,7 +277,7 @@ class CandidatePUCT:
                         self._renormalize(node)
                         if not node.candidates:
                             node.dead_end = True
-                            value = 0.0
+                            value = -1.0
                             break
                         continue
                     child = Node(child_state, prior=float(node.priors[index]))
@@ -294,7 +303,7 @@ class CandidatePUCT:
             return self._result(root, None, terminal, total_started)
         root_value, winning = self._expand(root, root=True)
         if root.dead_end:
-            return self._result(root, None, 0.0, total_started)
+            return self._result(root, None, -1.0, total_started)
         if winning:
             chosen = winning[0]
             counts = {candidate: 0 for candidate in root.candidates}

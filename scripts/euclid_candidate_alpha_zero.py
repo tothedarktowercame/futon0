@@ -30,6 +30,7 @@ class Config:
     temperature: float = 1.0
     temperature_drop: int = 4
     root_win_in_one: bool = True
+    first_play_reduction: float = 0.0
     buffer_size: int = 256
     batch_size: int = 8
     learning_rate: float = 0.001
@@ -297,6 +298,7 @@ def actor_main(config_path, out, actor_id):
     bot = candidate_puct.CandidatePUCT(
         model, simulations=config.simulations, uct_c=config.c_puct,
         root_win_in_one=config.root_win_in_one,
+        first_play_reduction=config.first_play_reduction,
         dirichlet=(config.dirichlet_epsilon, config.dirichlet_alpha),
         temperature=config.temperature, seed=config.seed + actor_id)
     receipt_path = replay.actor_receipt_path(Path(out) / "receipts", actor_id)
@@ -325,7 +327,7 @@ def actor_main(config_path, out, actor_id):
                     state, list(result.candidate_keys)).arrays
                 pending.append((arrays, result, len(state.history_moves)))
                 state.apply_action_tuple(result.candidate)
-            value = 1.0 if state.goal_reached() else 0.0
+            value = 1.0 if state.goal_reached() else -1.0
             for arrays, result, ply in pending:
                 writer.append(replay.ReplayRecord.from_search(
                     arrays, result, value, game_id=f"euclid-i{config.proposition}",
@@ -469,6 +471,7 @@ def evaluate_main(config_path, out, snapshot, games=None, game_seconds=None):
                 bot = candidate_puct.CandidatePUCT(
                     model, simulations=config.simulations, uct_c=config.c_puct,
                     root_win_in_one=config.root_win_in_one,
+                    first_play_reduction=config.first_play_reduction,
                     temperature=0.0, seed=config.seed + index)
                 while not state.is_terminal():
                     result = bot.search(state)

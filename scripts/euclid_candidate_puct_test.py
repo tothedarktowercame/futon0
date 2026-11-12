@@ -20,6 +20,80 @@ class FlatModel:
             batch, dtype=np.float32)
 
 
+class StubState:
+    def __init__(self, path=()):
+        self.path = tuple(path)
+        self.history_moves = list(path)
+        self._move_cap = 2
+
+    def clone(self):
+        return StubState(self.path)
+
+    def goal_reached(self):
+        return self.path == (("root", 20), ("reply", 0))
+
+
+class StubModel:
+    def __init__(self, value, planted=False):
+        self.value = value
+        self.planted = planted
+
+
+class StubPUCT(candidate_puct.CandidatePUCT):
+    def __init__(self, model, simulations, *, legacy=False):
+        super().__init__(model, simulations=simulations,
+                         root_win_in_one=False, jit_model=False)
+        self.legacy = legacy
+        self.found_win = False
+
+    def _expand(self, node, *, root=False):
+        if not node.state.path:
+            node.candidates = [("root", index) for index in range(300)]
+            if self.model.planted:
+                node.priors = np.full(300, 0.5 / 299)
+                node.priors[20] = 0.5
+            else:
+                node.priors = np.full(300, 1.0 / 300)
+        else:
+            node.candidates = [("reply", index) for index in range(20)]
+            node.priors = np.full(20, 1.0 / 20)
+        node.expanded = True
+        node.network_value = self.model.value
+        return self.model.value, ()
+
+    def _admit(self, state, candidate):
+        return StubState(state.path + (candidate,))
+
+    def _select(self, node):
+        if not self.legacy:
+            return super()._select(node)
+        best = None
+        for index in self._eligible(node):
+            candidate = node.candidates[index]
+            child = node.children.get(candidate)
+            visits = child.visits if child is not None else 0
+            value = child.value if child is not None else 0.0
+            score = (value + self.uct_c * node.priors[index]
+                     * np.sqrt(max(node.visits, 1)) / (1 + visits))
+            key = score, -index
+            if best is None or key > best[0]:
+                best = key, index
+        return best[1] if best is not None else None
+
+    def _terminal_value(self, state):
+        value = super()._terminal_value(state)
+        if value == 1.0:
+            self.found_win = True
+        return value
+
+
+def _stub_receipt(value, simulations, *, legacy=False, planted=False):
+    bot = StubPUCT(StubModel(value, planted), simulations, legacy=legacy)
+    result = bot.search(StubState())
+    return (sum(visit > 0 for visit in result.visit_counts),
+            bot.found_win, result)
+
+
 def _bot(**kwargs):
     return candidate_puct.CandidatePUCT(
         FlatModel(), simulations=kwargs.pop("simulations", 8),
@@ -119,7 +193,7 @@ def test_fixed_seed_visit_counts_and_aligned_policy_target():
     assert first.candidate in first.candidate_keys
 
 
-def test_empty_candidate_node_is_dead_end_value_zero():
+def test_empty_candidate_node_is_loss_value_negative_one():
     state = pyspiel.load_game(
         "euclid_book1(proposition=1,move_cap=5,dense_actions=true,"
         "alpha_zero_facade=true)"
@@ -131,4 +205,22 @@ def test_empty_candidate_node_is_dead_end_value_zero():
     assert result.candidate is None
     assert result.candidate_keys == ()
     assert result.visit_counts == ()
-    assert result.root_value == 0.0
+    assert result.root_value == -1.0
+
+
+def test_first_play_value_explores_and_planted_prior_finds_two_ply_win():
+    receipts = {}
+    for value in (0.0, 0.9):
+        for simulations in (32, 256):
+            receipts[(value, simulations, "before")] = _stub_receipt(
+                value, simulations, legacy=True)[:2]
+            receipts[(value, simulations, "after")] = _stub_receipt(
+                value, simulations)[:2]
+
+    assert receipts[(0.9, 32, "before")][0] < 32
+    assert not receipts[(0.9, 32, "before")][1]
+    assert receipts[(0.9, 32, "after")] == (32, False)
+    assert receipts[(0.9, 256, "after")] == (256, False)
+    planted = _stub_receipt(0.9, 32, planted=True)
+    assert planted[1]
+    assert planted[2].candidate == ("root", 20)

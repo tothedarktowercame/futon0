@@ -106,6 +106,16 @@ def test_padding_invariance_and_padded_logits_are_ignored():
 def test_version_mismatch_is_refused_clearly(tmp_path):
     path = replay.actor_receipt_path(tmp_path, 0)
     encoded = _record(_state()).to_json()
+    encoded["receipt_format_version"] = 1
+    path.write_text(json.dumps(encoded) + "\n")
+    try:
+        replay.read_receipts(path)
+    except ValueError as error:
+        assert "receipt format" in str(error)
+    else:
+        raise AssertionError("old 0/1 receipt format was accepted")
+
+    encoded = _record(_state()).to_json()
     encoded["schema_version"] += 1
     path.write_text(json.dumps(encoded) + "\n")
     try:
