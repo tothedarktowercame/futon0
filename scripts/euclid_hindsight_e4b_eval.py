@@ -11,6 +11,9 @@ import os
 import pickle
 from pathlib import Path
 import random
+import resource
+
+import numpy as np
 
 import euclid_candidate_model as models
 import euclid_hindsight_prove as prover
@@ -150,6 +153,44 @@ def run_temperatures(selection, snapshot, output, workers=12):
                 stream.write(json.dumps(result, sort_keys=True) + "\n")
 
 
+def _logsumexp(values):
+    values = np.asarray(values, dtype=np.float64)
+    maximum = float(values.max())
+    return maximum + float(np.log(np.exp(values - maximum).sum()))
+
+
+def calibrate(dataset, snapshot, output, legacy=False):
+    with gzip.open(dataset, "rb") as stream:
+        payload = pickle.load(stream)
+    held = [row for row in payload["examples"] if row["split"] == "heldout"]
+    _pin_for_jax()
+    model = models.CandidateModel(seed=2026111202)
+    if legacy:
+        train.load_legacy(model, snapshot)
+    else:
+        models.load_plain_arrays(model, snapshot)
+    _widen_after_jax()
+    temperatures = (0.5, 1.0, 1.5, 2.0, 3.0, 4.0)
+    sums = {temperature: 0.0 for temperature in temperatures}
+    for row in held:
+        batch = models.batch_features([row["features"]])
+        logits, _value = model(batch)
+        values = np.asarray(logits[0, :len(row["target"])], dtype=np.float64)
+        positive = np.flatnonzero(row["target"])
+        for temperature in temperatures:
+            scaled = values / temperature
+            sums[temperature] += (_logsumexp(scaled) -
+                                  _logsumexp(scaled[positive]))
+    result = {"positions": len(held), "legacy": legacy,
+              "temperatures": [{"temperature": temperature,
+                  "mean_nll": sums[temperature] / len(held)}
+                 for temperature in temperatures]}
+    result["selected"] = min(result["temperatures"],
+                             key=lambda row: row["mean_nll"])["temperature"]
+    Path(output).write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps(result, sort_keys=True))
+
+
 def _final_worker(task):
     problem, arm, snapshot, seed, temperature = task
     start = prover.problem_start(problem)
@@ -170,25 +211,31 @@ def _final_worker(task):
                               wall_seconds=2700, temperature=temperature)
     result.update({"problem": problem, "arm": arm, "seed": seed,
                    "temperature": temperature,
+                   "worker_pid": os.getpid(),
+                   "peak_rss_kib": resource.getrusage(
+                       resource.RUSAGE_SELF).ru_maxrss,
                    "replay_confirmed": prover.replay(start, result)
                    if result["solved"] else None})
     return result
 
 
-def run_final(mixed, e2b, temperature, output):
+def run_final(mixed, e2b, mixed_temperature, e2b_temperature, output,
+              workers=4):
     destination = Path(output)
     destination.parent.mkdir(parents=True, exist_ok=True)
     context = mp.get_context("spawn")
+    tasks = []
     for problem in ("i1", "i3", "i2-stage2", "i2"):
-        tasks = [(problem, "mixed", mixed, None, temperature),
-                 (problem, "e2b", e2b, None, temperature),
-                 (problem, "generation0", None, None, temperature)]
-        tasks += [(problem, f"random-{seed}", None, seed, temperature)
+        tasks += [(problem, "mixed", mixed, None, mixed_temperature),
+                  (problem, "e2b", e2b, None, e2b_temperature),
+                  (problem, "generation0", None, None, 1.0)]
+        tasks += [(problem, f"random-{seed}", None, seed, 1.0)
                   for seed in (2026111203, 2026111204, 2026111205)]
-        with context.Pool(len(tasks), initializer=_init_worker) as pool:
-            for result in pool.imap_unordered(_final_worker, tasks):
-                with destination.open("a") as stream:
-                    stream.write(json.dumps(result, sort_keys=True) + "\n")
+    with context.Pool(workers, initializer=_init_worker,
+                      maxtasksperchild=1) as pool:
+        for result in pool.imap_unordered(_final_worker, tasks):
+            with destination.open("a") as stream:
+                stream.write(json.dumps(result, sort_keys=True) + "\n")
 
 
 def main():
@@ -208,8 +255,15 @@ def main():
     final = sub.add_parser("final")
     final.add_argument("--mixed", required=True)
     final.add_argument("--e2b", required=True)
-    final.add_argument("--temperature", type=float, required=True)
+    final.add_argument("--mixed-temperature", type=float, required=True)
+    final.add_argument("--e2b-temperature", type=float, required=True)
+    final.add_argument("--workers", type=int, default=4)
     final.add_argument("--output", required=True)
+    calibration = sub.add_parser("calibrate")
+    calibration.add_argument("--dataset", required=True)
+    calibration.add_argument("--snapshot", required=True)
+    calibration.add_argument("--output", required=True)
+    calibration.add_argument("--legacy", action="store_true")
     smoke_parser = sub.add_parser("smoke")
     smoke_parser.add_argument("--workers", type=int, required=True)
     smoke_parser.add_argument("--output", required=True)
@@ -221,7 +275,11 @@ def main():
         run_temperatures(args.selection, args.snapshot, args.output,
                          workers=args.workers)
     elif args.command == "final":
-        run_final(args.mixed, args.e2b, args.temperature, args.output)
+        run_final(args.mixed, args.e2b, args.mixed_temperature,
+                  args.e2b_temperature, args.output, workers=args.workers)
+    elif args.command == "calibrate":
+        calibrate(args.dataset, args.snapshot, args.output,
+                  legacy=args.legacy)
     else:
         smoke(args.workers, args.output)
 
