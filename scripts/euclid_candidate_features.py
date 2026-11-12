@@ -17,9 +17,17 @@ import euclid_spiel as spiel
 
 
 SCHEMA_VERSION = 1
+VOCABULARY_EPOCH = 2
 CREATION_ORDER_CLIP = 31
 CONSTANT_BUCKETS = 64
 KIND_IDS = {"unknown": 0, "point": 1, "line": 2, "circle": 3}
+HINDSIGHT_GOAL_ARITIES = {
+    "_eq_ang": 6, "_eq_len": 4, "_gt_ang": 6, "_gt_len": 4,
+    "_lt_len": 4, "gte": 2, "inside": 2, "intersects_cc": 2,
+    "intersects_lc": 2, "neq": 2, "neq_line": 2,
+    "not_on_line": 2, "not_outside": 2, "on_circle": 2,
+    "outside": 2, "pos_len": 2, "radii": 3, "same_side": 3,
+}
 
 
 def _symbolic_rule_syntax(rule):
@@ -88,16 +96,26 @@ def _make_vocabulary():
 
     rule_ids = ids(rules, ["<pad>", "<none>"])
     predicate_ids = ids(predicates, ["<pad>", "<unk>"])
+    base_predicates = frozenset(predicate_ids)
     role_ids = ids(roles, ["<pad>", "<unk>"])
+    # Preserve every pre-E2 id so default feature tensors remain unchanged;
+    # append the synthetic-goal vocabulary at the end.
+    for predicate, arity in sorted(HINDSIGHT_GOAL_ARITIES.items()):
+        if predicate not in predicate_ids:
+            predicate_ids[predicate] = len(predicate_ids)
+        for position in range(arity):
+            role = f"goal:{predicate}:{position}"
+            if role not in role_ids:
+                role_ids[role] = len(role_ids)
     role_kinds = {
         key: sorted(votes, key=lambda kind: (-votes[kind], kind))[0]
         for key, votes in role_kind_votes.items()
     }
-    return rule_ids, predicate_ids, role_ids, syntax, role_kinds
+    return rule_ids, predicate_ids, role_ids, syntax, role_kinds, base_predicates
 
 
 (_RULE_IDS, _PREDICATE_IDS, _ROLE_IDS, _RULE_SYNTAX,
- _PREDICATE_ROLE_KINDS) = _make_vocabulary()
+ _PREDICATE_ROLE_KINDS, _BASE_PREDICATE_NAMES) = _make_vocabulary()
 
 
 @dataclass(frozen=True)
@@ -127,6 +145,7 @@ class Vocabulary:
 def _vocabulary():
     payload = {
         "schema_version": SCHEMA_VERSION,
+        "vocabulary_epoch": VOCABULARY_EPOCH,
         "rules": _RULE_IDS,
         "predicates": _PREDICATE_IDS,
         "roles": _ROLE_IDS,
@@ -200,7 +219,7 @@ def _constant(value):
     return kind, bucket
 
 
-def extract(state, candidates):
+def extract(state, candidates, goal=None):
     """Encode ``state`` and its ordered premise-certified ``candidates``."""
     canonical = state._canonical_names()
     objects = state._object_order()
@@ -254,7 +273,7 @@ def extract(state, candidates):
             object_parent[i, j] = object_index[parent]
             object_parent_mask[i, j] = True
 
-    goals = play.GOALS[state._proposition]
+    goals = play.GOALS[state._proposition] if goal is None else (tuple(goal),)
     given_names = {obj["name"] for obj in play.tr.objects_from_hyps(state._proposition)}
     existential = {arg for goal in goals for arg in goal[1:]
                    if isinstance(arg, str) and arg not in given_names}
@@ -300,7 +319,9 @@ def extract(state, candidates):
     arrays.update({
         "fact_mask": np.ones(len(facts), dtype=np.bool_),
         "fact_predicate": np.asarray([
-            _PREDICATE_IDS.get(_head(fact), _PREDICATE_IDS["<unk>"])
+            (_PREDICATE_IDS.get(_head(fact), _PREDICATE_IDS["<unk>"])
+             if _head(fact) in _BASE_PREDICATE_NAMES
+             else _PREDICATE_IDS["<unk>"])
             for fact in facts], dtype=np.int32),
         "fact_object": fact_object,
         "fact_object_mask": fact_object_mask,

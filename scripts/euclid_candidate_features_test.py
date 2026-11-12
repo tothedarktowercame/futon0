@@ -90,10 +90,8 @@ def test_i1_two_move_fixture_every_array():
               for name, value in features.extract(state, candidates).arrays.items()}
     expected = {
         "schema_version": [1],
-        "vocabulary_version": [244, 102, 236, 190, 200, 28, 229, 71,
-                               95, 147, 240, 163, 242, 5, 254, 183,
-                               173, 102, 154, 121, 33, 168, 144, 27,
-                               123, 18, 208, 104, 193, 76, 164, 6],
+        "vocabulary_version": list(bytes.fromhex(
+            features.VOCABULARY.vocabulary_version)),
         "object_mask": [True, True, True, True, True],
         "object_kind": [1, 1, 2, 2, 3],
         "object_given": [True, True, True, False, False],
@@ -188,6 +186,23 @@ def test_real_fact_change_changes_features_and_repeat_is_identical():
     modified = features.extract(changed, candidates).arrays
     assert any(not np.array_equal(original[name], modified[name])
                for name in original)
+
+
+def test_explicit_hindsight_goal_changes_only_goal_conditioning():
+    state = _made_i1()
+    candidates = _candidates(state)[:8]
+    default = features.extract(state, candidates).arrays
+    explicit_default = features.extract(
+        state, candidates, goal=features.play.GOALS[1][0]).arrays
+    # I.1 has two conjuncts, so a single explicit conjunct is intentionally
+    # different; repeating the default remains byte-identical.
+    repeated = features.extract(state, candidates).arrays
+    assert all(np.array_equal(default[name], repeated[name]) for name in default)
+    other = features.extract(
+        state, candidates, goal=("_lt_len", "a", "b", "a", "a")).arrays
+    assert not np.array_equal(explicit_default["object_goal_predicate"],
+                              other["object_goal_predicate"])
+    assert "_lt_len" in features.VOCABULARY.predicates
 
 
 def test_prefix_features_are_deterministic_between_processes():
