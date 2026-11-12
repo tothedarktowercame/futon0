@@ -71,6 +71,15 @@ replay buffer 256, batch 64, Dirichlet root noise, non-acting second player.
 - Later: coherent-logic provers (ArgoCLP-style) as a constructive partner;
   Vampire/E; Lean's Duper/Aesop over LeanEuclid statements.
 
+## Standing run rules (claude-9)
+
+- 11-12, after Agency's cgroup peaked at 73.7 GB (memory.high 64 GB) and an
+  outside agent cleaned up: every run with workers starts in its own scope,
+  `systemd-run --user --scope --slice=futon-testing.slice -p MemoryMax=24G
+  -p TasksMax=1024 -- <cmd>`, so its workers are counted and cleaned up in
+  their own cgroup, not Agency's (futon3c-zone.service). Packets 8c and earlier
+  ran inside Agency's cgroup.
+
 ## In flight
 
 (updated as packets go out)
