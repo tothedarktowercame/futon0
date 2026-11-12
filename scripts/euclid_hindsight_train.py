@@ -414,6 +414,41 @@ def rank_tuple(ranking, legal, indexes):
     return int(ranking[best]), rule_order.index(rule)+1, within
 
 
+def probability_and_rank(model, state, legal, indexes, goal=None):
+    """Return the best requested action's stable rank and softmax mass."""
+    from flax import nnx
+    batch = models.batch_features([features.extract(state, legal, goal=goal).arrays])
+    logits, _ = nnx.jit(lambda net, x: net(x))(model, batch)
+    values = np.asarray(logits[0, :len(legal)], dtype=np.float64)
+    shifted = values - values.max()
+    probabilities = np.exp(shifted) / np.exp(shifted).sum()
+    order = np.argsort(-values, kind="stable")
+    ranking = np.empty(len(order), dtype=int)
+    ranking[order] = np.arange(1, len(order) + 1)
+    best = min(indexes, key=lambda i: ranking[i])
+    return {"rank": int(ranking[best]), "probability": float(probabilities[best]),
+            "candidates": len(legal), "action": legal[best]}
+
+
+def i1_probe_positions():
+    after_one = _state(1)
+    after_one.apply_action_tuple(
+        ("circle_from_points", ("b", "a"), (("C", "C_1"),)))
+    legal_one = candidates(after_one)
+    second = [i for i, action in enumerate(legal_one)
+              if action[0] == "circle_from_points"
+              and action[1] == ("a", "b")]
+    after_two = after_one.clone()
+    after_two.apply_action_tuple(
+        ("circle_from_points", ("a", "b"), (("C", "C_2"),)))
+    legal_two = candidates(after_two)
+    intersection = [i for i, action in enumerate(legal_two)
+                    if action[0] == "intersection_circles"
+                    and action[1] == ("C_1", "C_2")]
+    return [("second-circle", after_one, legal_one, second),
+            ("intersection", after_two, legal_two, intersection)]
+
+
 def book_positions():
     i1 = _state(1)
     i1.apply_action_tuple(("circle_from_points", ("a","b"), (("C","C_1"),)))
@@ -436,21 +471,30 @@ def evaluate(dataset, trained, legacy, output, seed):
     fresh=models.CandidateModel(seed=seed); models_to_test["generation0"]=fresh
     trained_model=models.CandidateModel(seed=seed); models.load_plain_arrays(trained_model,trained); models_to_test["trained"]=trained_model
     old=models.CandidateModel(seed=seed); load_legacy(old,legacy); models_to_test["packet8b"]=old
-    result={"heldout":{},"book":{},"leakage":{}}
+    result={"heldout":{},"book":{},"probe":{},"leakage":{}}
     train_keys={x["state_key"] for x in payload["examples"] if x["split"]=="train"}
     test_keys={x["state_key"] for x in held}
     result["leakage"]={"heldout_in_train":len(train_keys & test_keys)}
     for name,model in models_to_test.items():
-        top1=top5=0
-        for item in held:
-            batch=models.batch_features([item["features"]]); logits,_=model(batch)
-            order=np.argsort(-np.asarray(logits[0,:len(item["target"])]),kind="stable")
-            positive=set(np.flatnonzero(item["target"])); top1+=bool(set(order[:1])&positive); top5+=bool(set(order[:5])&positive)
-        result["heldout"][name]={"positions":len(held),"top1":top1/len(held),"top5":top5/len(held)}
+        heldout_rows = {}
+        for kind in (None, "single", "conjunctive"):
+            selected = held if kind is None else [x for x in held if x.get("kind") == kind]
+            top1=top5=0
+            for item in selected:
+                batch=models.batch_features([item["features"]]); logits,_=model(batch)
+                order=np.argsort(-np.asarray(logits[0,:len(item["target"])]),kind="stable")
+                positive=set(np.flatnonzero(item["target"])); top1+=bool(set(order[:1])&positive); top5+=bool(set(order[:5])&positive)
+            heldout_rows[kind or "all"]={"positions":len(selected),
+                "top1":top1/len(selected),"top5":top5/len(selected)}
+        result["heldout"][name]=heldout_rows
         rows={}
         for label,state,legal,wins in book_positions():
             ranking=ranks(model,state,legal,None); rows[label]={"candidates":len(legal),"rank":rank_tuple(ranking,legal,wins),"state_key":state_key(state)}
         result["book"][name]=rows
+        result["probe"][name] = {
+            label: probability_and_rank(model, state, legal, wins, goal=None)
+            for label, state, legal, wins in i1_probe_positions()
+        }
     book_keys={row["state_key"] for rows in result["book"].values() for row in rows.values()}
     result["leakage"]["book_in_train"]=len(train_keys & book_keys)
     Path(output).write_text(json.dumps(result,indent=2)+"\n"); print(json.dumps(result))
