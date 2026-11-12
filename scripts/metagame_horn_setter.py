@@ -34,7 +34,8 @@ class GoalRecord:
                 "goal": atom_data(self.goal),
                 "needed": [move_data(x) for x in self.needed],
                 "needed_size": len(self.needed), "labels": list(self.labels),
-                "canonical_key": canonical_key(self.goal, self.givens)}
+                "canonical_key": canonical_key(self.goal, self.givens),
+                "orbit_key": orbit_key(self.goal, self.givens)}
 
 
 class CellDeadline(Exception):
@@ -166,6 +167,36 @@ def symmetric_keys(goals, n):
     return out
 
 
+def images(goal):
+    """The goal's A1/A14/neq_symm images, including itself (review fix,
+    claude-9: the first version labelled BOTH members of a mirror pair
+    "symmetric" and so dropped every theorem that has a mirror image)."""
+    if isinstance(goal, horn.Rel) and goal.name == "B":
+        return [goal, horn.Rel("B", tuple(reversed(goal.args)))]
+    if isinstance(goal, horn.Rel) and goal.name == "E":
+        a, b, c, d = goal.args
+        out = []
+        for s, t in (((a, b), (c, d)), ((c, d), (a, b))):
+            for s2 in (s, s[::-1]):
+                for t2 in (t, t[::-1]):
+                    out.append(horn.Rel("E", s2 + t2))
+        return out
+    return [goal]
+
+
+def orbit_key(goal, n):
+    """Canonical key of the goal's symmetry orbit, up to renaming givens."""
+    return min(canonical_key(x, n) for x in images(goal))
+
+
+def reflexive_label(goal):
+    """E(x,y,x,y), E(x,y,y,x) or E(x,x,y,y): true of any present points."""
+    if not (isinstance(goal, horn.Rel) and goal.name == "E"):
+        return False
+    a, b, c, d = goal.args
+    return {a, b} == {c, d} or (a == b and c == d)
+
+
 def _plain_ground(term):
     if term.op == "gen":
         return ("gen", term.args[0])
@@ -274,13 +305,18 @@ def classify_run(n, k, seed):
         moves.append(move)
     new_goals = [x for x in horn.facts(position)
                  if canonical_key(x, n) not in initial]
-    symmetric = symmetric_keys(new_goals, n)
-    records = []
+    orbits = {}
     for goal in new_goals:
+        orbits.setdefault(orbit_key(goal, n), []).append(goal)
+    records = []
+    for members in orbits.values():
+        goal = members[0]
+        # One needed-set computation per orbit: the members are A1/A14/neq_symm
+        # images and closure derives each from any other.
         proof = horn.needed("line", opening(n), moves, horn.Goal((goal,)))
         labels = []
-        if direct_label(n, goal, proof): labels.append("direct")
-        if canonical_key(goal, n) in symmetric: labels.append("symmetric")
+        if any(direct_label(n, x, proof) for x in members): labels.append("direct")
+        if reflexive_label(goal): labels.append("reflexive")
         if isinstance(goal, horn.Neq): labels.append("neq")
         records.append(GoalRecord(n, k, seed, goal, proof, tuple(labels)))
     return records, closure_times
@@ -300,7 +336,7 @@ def run_cell(n, k, seconds, base_seed, out):
             records, measured = classify_run(n, k, base_seed + runs)
             closures.extend(measured)
             for record in records:
-                all_records.setdefault(canonical_key(record.goal, n), record)
+                all_records.setdefault(orbit_key(record.goal, n), record)
             runs += 1
             if measured and max(measured) > 10:
                 break

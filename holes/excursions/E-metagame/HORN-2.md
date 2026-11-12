@@ -94,3 +94,47 @@ The tests pin canonical-key invariance under renamed givens, fresh replay of
 a `needed` set, symmetric-pair labeling, and the boundary between an immediate
 extension conclusion and a transitive goal.  The experiment changes no
 HORN-1 semantics and performs no semi-naive optimization.
+
+## HORN-2b: review fix and rerun (claude-9, 2026-11-12)
+
+Review finding. `symmetric_keys` labelled *both* members of a mirror pair
+(B(a,b,c) and B(c,b,a), or an E fact and its A1 reorderings), and the test
+`test_symmetric_pair_is_labelled` asserted exactly that. Every theorem whose
+mirror image was also derived (almost all of them) was therefore dropped:
+177 of 190 records in g3-k4 carried the label. The one survivor above,
+`ext(x,c,c,a) = ext(x,c,a,c)`, is extension by |ca| versus |ac|.
+
+Fix (claude-9, in this commit): goals are grouped into A1/A14/neq_symm orbits
+(`images`, `orbit_key`); each orbit is one record with one `needed`
+computation (this also cut the needed-set replays several-fold); an orbit is
+`direct` if any member is; a new `reflexive` label marks E(x,y,x,y),
+E(x,y,y,x) and E(x,x,y,y), which hold for any present points. Three tests
+added (orbit identity, reflexive label with a real congruence as the negative
+case, one record per orbit with fresh replay); 7 pass.
+
+Rerun: the same six 120 s cells, scope `claude9-horn2b`, 4 workers, records in
+`~/code/storage/metagame/horn2b/`.
+
+| givens | K | runs (HORN-2) | runs (2b) | orbits | direct | reflexive only | neq | kept, needed 2/3/4+ |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 3 | 4 | 2 | 13 | 368 | 250 | 14 | 60 | 25/19/0 |
+| 3 | 6 | 1 | 3 | 133 | 102 | 7 | 15 | 5/2/2 |
+| 3 | 8 | 0 | 1 | 67 | 59 | 1 | 5 | 2/0/0 |
+| 4 | 4 | 2 | 11 | 293 | 237 | 6 | 37 | 13/0/0 |
+| 4 | 6 | 0 | 2 | 87 | 77 | 1 | 7 | 2/0/0 |
+| 4 | 8 | 0 | 0 | 0 | - | - | - | - |
+
+Distinct kept theorems across cells: 60 (needed 2: 39, 3: 19, 4: 2), i.e.
+**300 per CPU-hour needing >= 2 and 105 needing >= 3** (HORN-2 reported 5 and
+5). All 180 kept-theorem checks (60 theorems x 3 rational coordinate sets)
+are true; ten sampled theorems replay from a fresh start. Examples, with
+x = ext(q,a,b,c) the point beyond a from q at distance |bc|:
+
+- E(ext(g0,g1,g0,g1), g1, ext(g2,g3,g1,g0), g3): two extensions by |g0 g1|
+  give congruent segments (A1 + A2).
+- B(ext(g0, ext(g0,g1,g2,g0), g2, g0), g1, g0): extending twice from g0
+  through g1 keeps g1 between (betweenness transitivity, A15/A16).
+- E(ext(ext(g0,g1,g0,g2),g0,g2,g0), g0, ext(g0,g1,g0,g2), g1).
+
+Throughput is still limited by `needed` (deletion replay); closure stayed
+under 1 s. K = 8 with 4 givens completed no run in 120 s.
