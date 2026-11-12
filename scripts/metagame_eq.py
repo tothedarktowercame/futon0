@@ -62,6 +62,12 @@ class Move:
 
 
 @dataclass(frozen=True)
+class MoveCompletion:
+    count: int
+    merges: bool
+
+
+@dataclass(frozen=True)
 class Goal:
     left: Term
     right: Term
@@ -397,6 +403,69 @@ def candidates(p: Position) -> list[Move]:
             if _lookup(p, op, args) is None:
                 out.append(Move(op, args))
     return sorted(out, key=lambda m: (m.op, tuple(map(str, m.args))))
+
+
+def _present_signatures(p: Position):
+    signatures = {}
+    for i, term in enumerate(p.terms):
+        if term.op == "gen":
+            continue
+        signatures.setdefault(
+            (term.op, tuple(p.find(p.ids[a]) for a in term.args)), p.find(i))
+    return signatures
+
+
+def _one_missing(pattern: Term, env: dict[str, int], signatures):
+    """Evaluate a pattern that may lack its root, but no deeper node."""
+    if pattern.op == "var":
+        return env[str(pattern.args[0])], None
+    args = []
+    for child in pattern.args:
+        value, missing = _one_missing(child, env, signatures)
+        if missing is not None:
+            return None, ("blocked",)
+        args.append(value)
+    signature = (pattern.op, tuple(args))
+    if signature in signatures:
+        return signatures[signature], None
+    return ("new", signature), signature
+
+
+def completing_moves(p: Position) -> dict[Move, MoveCompletion]:
+    """Count direct rule instances completed by every legal construction.
+
+    Variables range over classes already present in ``p``.  A construction
+    completes an instance when it is the sole absent operation node across
+    the two equation patterns.  The calculation indexes missing signatures;
+    it does not apply candidates to copied positions.
+    """
+    moves = candidates(p)
+    by_signature = {
+        (move.op, tuple(p.find(p.ids[a]) for a in move.args)): move
+        for move in moves
+    }
+    counts = {move: 0 for move in moves}
+    merges = {move: False for move in moves}
+    classes = sorted({p.find(i) for i in range(len(p.terms))})
+    signatures = _present_signatures(p)
+    for rule in p.theory.rules:
+        names = sorted(_pattern_variables(rule.left) |
+                       _pattern_variables(rule.right))
+        for values in product(classes, repeat=len(names)):
+            env = dict(zip(names, values))
+            left, left_missing = _one_missing(rule.left, env, signatures)
+            right, right_missing = _one_missing(rule.right, env, signatures)
+            missing = {x for x in (left_missing, right_missing)
+                       if x is not None}
+            if ("blocked",) in missing or len(missing) != 1:
+                continue
+            signature = next(iter(missing))
+            move = by_signature.get(signature)
+            if move is None:
+                continue
+            counts[move] += 1
+            merges[move] |= left != right
+    return {move: MoveCompletion(counts[move], merges[move]) for move in moves}
 
 
 def _is_candidate(p: Position, move: Move):

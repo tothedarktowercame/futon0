@@ -65,3 +65,18 @@ def test_stratified_sample_covers_needed_sizes():
                                          [eq.inv(eq.E)] * size, 1, size))
     sample = setter.stratified_sample(records, 3, 7)
     assert {len(record.needed) for record in sample} == {1, 2, 3}
+
+
+def test_probability_one_chooses_only_completing_moves():
+    c = eq.gen("c")
+    p = eq.start("group", eq.Goal(a, b), (a, b, c))
+    ab, bc = eq.mul(a, b), eq.mul(b, c)
+    for term in (ab, bc, eq.mul(ab, c)):
+        eq._add_tree(p, term)
+    eq.closure(p)
+    information = eq.completing_moves(p)
+    assert any(item.count for item in information.values())
+    rng = __import__("random").Random(20261112)
+    for _ in range(200):
+        move = setter.choose_move(p, rng, "completing(1)")
+        assert information[move].count > 0

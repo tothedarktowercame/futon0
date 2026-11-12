@@ -1,4 +1,5 @@
 import random
+from itertools import product
 
 import metagame_eq as eq
 
@@ -329,3 +330,89 @@ def test_random_theories_are_deterministic_and_run_200_moves():
                     eq._apply_candidate(p, move)
                     break
                 assert attempts < 10000
+
+
+def _brute_instances(p):
+    """Independent complete-instance enumerator for completing_moves tests."""
+    classes = sorted({p.find(i) for i in range(len(p.terms))})
+
+    def variables(pattern):
+        if pattern.op == "var":
+            return {str(pattern.args[0])}
+        return set().union(*(variables(x) for x in pattern.args), set())
+
+    def evaluate(pattern, env):
+        if pattern.op == "var":
+            return env[str(pattern.args[0])]
+        args = []
+        for child in pattern.args:
+            value = evaluate(child, env)
+            if value is None:
+                return None
+            args.append(value)
+        for i, term in enumerate(p.terms):
+            if term.op == pattern.op and tuple(p.find(p.ids[x]) for x in term.args) == tuple(args):
+                return p.find(i)
+        return None
+
+    out = {}
+    for rule_index, rule in enumerate(p.theory.rules):
+        names = sorted(variables(rule.left) | variables(rule.right))
+        for values in product(classes, repeat=len(names)):
+            env = dict(zip(names, values))
+            left, right = evaluate(rule.left, env), evaluate(rule.right, env)
+            if left is not None and right is not None:
+                out[(rule_index, tuple(values))] = (left, right)
+    return out
+
+
+def _brute_completing_moves(p):
+    before = _brute_instances(p)
+    before_classes = len({p.find(i) for i in range(len(p.terms))})
+    answer = {}
+    for move in eq.candidates(p):
+        q = p.copy()
+        q.add_term(eq.Term(move.op, move.args))
+        after = _brute_instances(q)
+        added = set(after) - set(before)
+        eq.closure(q)
+        after_classes = len({q.find(i) for i in range(len(q.terms))})
+        answer[move] = eq.MoveCompletion(len(added),
+                                         after_classes < before_classes + 1)
+    return answer
+
+
+def test_completing_moves_matches_brute_force_on_300_positions():
+    sources = [("group", 501), ("monoid", 502),
+               (eq.random_theory(17), 503), (eq.random_theory(23), 504)]
+    compared = 0
+    for theory_, seed in sources:
+        rng = random.Random(seed)
+        for _ in range(75):
+            th = eq.theory(theory_)
+            p = eq.Position(th)
+            for op, arity in th.signature:
+                if arity == 0:
+                    p.add_term(eq.Term(op))
+            p.add_term(a); p.add_term(b); eq.closure(p)
+            for _ in range(3):
+                choices = eq.candidates(p)
+                if choices:
+                    eq.apply(p, rng.choice(choices))
+            assert eq.completing_moves(p) == _brute_completing_moves(p)
+            compared += 1
+    assert compared == 300
+
+
+def test_only_the_missing_associative_product_completes_assoc():
+    p = eq.start("group", eq.Goal(a, b), (a, b, c))
+    ab, bc = eq.mul(a, b), eq.mul(b, c)
+    lhs, rhs = eq.mul(ab, c), eq.mul(a, bc)
+    for term in (ab, bc, lhs):
+        eq._add_tree(p, term)
+    eq.closure(p)
+    information = eq.completing_moves(p)
+    target = eq.Move("mul", (a, bc))
+    unrelated = eq.Move("inv", (c,))
+    assert information[target].count >= 1
+    assert information[unrelated].count == 0

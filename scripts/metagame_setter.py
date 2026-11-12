@@ -30,6 +30,7 @@ class Run:
     index: int
     terms: list[eq.Term]
     position: eq.Position
+    policy: str = "uniform"
 
 
 @dataclass
@@ -41,6 +42,7 @@ class GoalRecord:
     needed: list[eq.Term]
     seed: int
     run_index: int
+    policy: str = "uniform"
 
     def json(self):
         return {
@@ -52,6 +54,7 @@ class GoalRecord:
             "needed_size": len(self.needed),
             "seed": self.seed,
             "run_index": self.run_index,
+            "policy": self.policy,
         }
 
 
@@ -68,16 +71,44 @@ def empty_position(theory: str, n: int) -> eq.Position:
     return p
 
 
-def random_run(theory: str, n: int, k: int, seed: int, index: int) -> Run:
+def _policy_probability(policy: str):
+    if policy == "uniform":
+        return "uniform", 0.0
+    name, open_paren, value = policy.partition("(")
+    if name not in ("completing", "merging") or open_paren != "(" or not value.endswith(")"):
+        raise ValueError(f"unknown policy: {policy}")
+    probability = float(value[:-1])
+    if not 0 <= probability <= 1:
+        raise ValueError(f"policy probability outside [0,1]: {policy}")
+    return name, probability
+
+
+def choose_move(p: eq.Position, rng: random.Random, policy="uniform"):
+    choices = eq.candidates(p)
+    if not choices:
+        return None
+    name, probability = _policy_probability(policy)
+    if name != "uniform" and rng.random() < probability:
+        information = eq.completing_moves(p)
+        preferred = [move for move in choices
+                     if (information[move].count > 0 if name == "completing"
+                         else information[move].merges)]
+        if preferred:
+            return rng.choice(preferred)
+    return rng.choice(choices)
+
+
+def random_run(theory: str, n: int, k: int, seed: int, index: int,
+               policy="uniform") -> Run:
     rng = random.Random(seed)
     p = empty_position(theory, n)
     made = []
     for _ in range(k):
-        choices = eq.candidates(p)
-        if not choices:
+        move = choose_move(p, rng, policy)
+        if move is None:
             break
-        made.append(eq.apply(p, rng.choice(choices)))
-    return Run(theory, n, k, seed, index, made, p)
+        made.append(eq.apply(p, move))
+    return Run(theory, n, k, seed, index, made, p, policy)
 
 
 def _initial_mapping(p: eq.Position) -> dict[eq.Term, eq.Term]:
@@ -175,19 +206,19 @@ def classify_run(run: Run):
             continue
         proof = needed_terms(run.theory, goal, gens, run.terms)
         records.append(GoalRecord(run.theory, run.generator_count, run.k,
-                                  goal, proof, run.seed, run.index))
+                                  goal, proof, run.seed, run.index, run.policy))
     return trivial, records
 
 
 def _cell(args):
-    theory, n, k, seconds, base_seed = args
+    theory, n, k, seconds, base_seed, policy = args
     deadline = time.monotonic() + seconds
     index = goals_seen = trivial = 0
     records = {}
     started = time.monotonic()
     while time.monotonic() < deadline:
         seed = base_seed + index
-        run = random_run(theory, n, k, seed, index)
+        run = random_run(theory, n, k, seed, index, policy)
         fs = eq.facts(run.position)
         goals_seen += len(fs)
         ntrivial, found = classify_run(run)
@@ -196,7 +227,8 @@ def _cell(args):
             records.setdefault(canonical_goal(record.goal), record)
         index += 1
     elapsed = time.monotonic() - started
-    return {"theory": theory, "generators": n, "K": k, "runs": index,
+    return {"theory": theory, "generators": n, "K": k, "policy": policy,
+            "runs": index,
             "elapsed": elapsed, "goals_seen": goals_seen,
             "trivial": trivial, "records": list(records.values())}
 
@@ -339,6 +371,86 @@ def write_results(results, out_dir: Path, note: Path, seconds: float):
         "optimum": optimum, "fresh_replay": [verified, len(samples)]}, indent=2))
 
 
+def _has_identity_argument(term: eq.Term):
+    if term.op in ("gen", "e"):
+        return False
+    return any(arg == eq.E or _has_identity_argument(arg) for arg in term.args)
+
+
+def write_eq4_results(results, out_dir: Path, note: Path, seconds: float):
+    tables = {}
+    for cell in results:
+        key = (cell["theory"], cell["policy"])
+        table = tables.setdefault(key, {})
+        for record in cell["records"]:
+            table.setdefault(canonical_goal(record.goal), record)
+    for (theory, policy), table in tables.items():
+        target = out_dir / policy
+        target.mkdir(parents=True, exist_ok=True)
+        with gzip.open(target / f"{theory}.jsonl.gz", "wt") as stream:
+            for record in list(table.values())[:50000]:
+                stream.write(json.dumps(record.json(), sort_keys=True) + "\n")
+
+    lines = ["# EQ-4 — rule-completing setter policies", "",
+             (f"Each of 32 cells ran for {seconds:.0f} wall seconds with at most six "
+              "workers. Every non-uniform choice uses only the current rule statements, "
+              "their present instances, and the supplied probability."), "",
+             "## Cells", "",
+             "| theory | K | policy | runs | runs/s | trivial share | distinct non-trivial | needed 1/2/3/4/5/>5 |",
+             "|---|---:|---|---:|---:|---:|---:|---|"]
+    for cell in sorted(results, key=lambda c: (c["theory"], c["K"], c["policy"])):
+        hist = _hist(cell["records"])
+        share = cell["trivial"] / cell["goals_seen"] if cell["goals_seen"] else 0
+        lines.append(f"| {cell['theory']} | {cell['K']} | {cell['policy']} | {cell['runs']} | {cell['runs']/cell['elapsed']:.2f} | {share:.1%} | {len(cell['records'])} | {hist['1']}/{hist['2']}/{hist['3']}/{hist['4']}/{hist['5']}/{hist['more']} |")
+    lines += ["", "## Yield by theory and policy", "",
+              "Rates deduplicate goals across K. The ‘clean’ columns drop a goal if `e` occurs as an argument of any operation on either side.", "",
+              "| theory | policy | >=2/h | >=3/h | >=4/h | clean >=2/h | clean >=3/h | clean >=4/h |",
+              "|---|---|---:|---:|---:|---:|---:|---:|"]
+    for key in sorted(tables):
+        theory, policy = key
+        cpu_hours = sum(c["elapsed"] for c in results
+                        if (c["theory"], c["policy"]) == key) / 3600
+        records = list(tables[key].values())
+        clean = [r for r in records if not (_has_identity_argument(r.goal.left) or
+                                             _has_identity_argument(r.goal.right))]
+        rates = [sum(len(r.needed) >= n for r in group) / cpu_hours
+                 for group in (records, clean) for n in (2, 3, 4)]
+        lines.append(f"| {theory} | {policy} | " + " | ".join(f"{x:.1f}" for x in rates) + " |")
+
+    demos = _demo_keys()
+    appearances = []
+    for name, (theory, goal_key) in demos.items():
+        for (candidate_theory, policy), table in tables.items():
+            if candidate_theory == theory and goal_key in table:
+                record = table[goal_key]
+                appearances.append((name, policy, len(record.needed)))
+    lines += ["", "## Held-out DEMO goals", ""]
+    if appearances:
+        for name, policy, size in appearances:
+            lines.append(f"- `{name}` appeared under `{policy}` with needed size {size}; it is no longer held out.")
+    else:
+        lines.append("None of the three DEMO goals appeared under any policy.")
+
+    lines += ["", "## Fresh replay samples", ""]
+    for policy in sorted({c["policy"] for c in results}):
+        records = [r for (th, pol), table in tables.items() if pol == policy
+                   for r in table.values()]
+        sample = stratified_sample(records, 20, 20261112)
+        proved = 0
+        for record in sample:
+            p, _, _ = replay_terms(record.theory, record.goal,
+                                   generators(record.generator_count), record.needed)
+            proved += int(eq.entails(p, record.goal))
+        lines.append(f"- `{policy}`: {proved}/{len(sample)} sampled goals re-proved from their needed terms on a fresh start.")
+    lines += ["", "## Comparison", "",
+              "Packet 2’s uniform group reference was 183 distinct goals/CPU-hour needing at least two constructions and 23 needing at least three. The table above is the untuned comparison.", ""]
+    note.parent.mkdir(parents=True, exist_ok=True)
+    note.write_text("\n".join(lines))
+    (out_dir / "summary.json").write_text(json.dumps({
+        "cells": [{k: v for k, v in c.items() if k != "records"}
+                  for c in results]}, indent=2))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seconds", type=float, default=180)
@@ -347,18 +459,31 @@ def main():
                         default=Path("/home/joe/code/storage/metagame/eq2"))
     parser.add_argument("--note", type=Path,
                         default=Path(__file__).parents[1] / "holes/excursions/E-metagame/EQ-2.md")
+    parser.add_argument("--eq4", action="store_true")
     args = parser.parse_args()
     cells = []
     i = 0
-    for theory in ("group", "left_group", "exponent_two"):
-        for n in (2, 3):
-            for k in (6, 10, 14):
-                cells.append((theory, n, k, args.seconds,
-                              202611120000 + i * 10_000_000))
-                i += 1
+    if args.eq4:
+        for theory in ("group", "left_group", "exponent_two", "monoid"):
+            for k in (10, 14):
+                for policy in ("uniform", "completing(0.5)",
+                               "completing(0.8)", "merging(0.8)"):
+                    cells.append((theory, 2, k, args.seconds,
+                                  202611120000 + i * 10_000_000, policy))
+                    i += 1
+    else:
+        for theory in ("group", "left_group", "exponent_two"):
+            for n in (2, 3):
+                for k in (6, 10, 14):
+                    cells.append((theory, n, k, args.seconds,
+                                  202611120000 + i * 10_000_000, "uniform"))
+                    i += 1
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.workers) as pool:
         results = list(pool.map(_cell, cells))
-    write_results(results, args.out, args.note, args.seconds)
+    if args.eq4:
+        write_eq4_results(results, args.out, args.note, args.seconds)
+    else:
+        write_results(results, args.out, args.note, args.seconds)
 
 
 if __name__ == "__main__":
