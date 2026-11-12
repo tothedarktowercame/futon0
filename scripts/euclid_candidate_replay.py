@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import random
+import math
 
 from flax import nnx
 import jax
@@ -62,6 +63,8 @@ class ReplayRecord:
     ply: int
     start_kind: str
     seed: int
+    stage: str = "default"
+    logical_state_key_sha256: str = ""
     schema_version: int = feature_schema.SCHEMA_VERSION
     vocabulary_version: str = feature_schema.VOCABULARY.vocabulary_version
 
@@ -89,13 +92,14 @@ class ReplayRecord:
 
     @classmethod
     def from_search(cls, feature_arrays, result, eventual_value, *, game_id,
-                    ply, start_kind, seed):
+                    ply, start_kind, seed, stage="default",
+                    logical_state_key_sha256=""):
         return cls(
             {name: np.asarray(value).copy()
              for name, value in feature_arrays.items()},
             tuple(result.candidate_keys), tuple(result.visit_counts),
             float(eventual_value), str(game_id), int(ply), str(start_kind),
-            int(seed))
+            int(seed), str(stage), str(logical_state_key_sha256))
 
     def to_json(self):
         return {
@@ -103,7 +107,10 @@ class ReplayRecord:
             "schema_version": self.schema_version,
             "vocabulary_version": self.vocabulary_version,
             "provenance": {"game_id": self.game_id, "ply": self.ply,
-                           "start_kind": self.start_kind, "seed": self.seed},
+                           "start_kind": self.start_kind, "seed": self.seed,
+                           "stage": self.stage,
+                           "logical_state_key_sha256":
+                               self.logical_state_key_sha256},
             "candidate_keys": [_candidate_to_json(key)
                                for key in self.candidate_keys],
             "visits": list(self.visits),
@@ -134,7 +141,9 @@ class ReplayRecord:
             tuple(int(value) for value in encoded["visits"]),
             float(encoded["value"]), provenance["game_id"],
             int(provenance["ply"]), provenance["start_kind"],
-            int(provenance["seed"]), int(schema), vocabulary)
+            int(provenance["seed"]), provenance.get("stage", "default"),
+            provenance.get("logical_state_key_sha256", ""),
+            int(schema), vocabulary)
 
 
 class ReceiptWriter:
@@ -192,10 +201,30 @@ class ReplayBuffer:
     def extend(self, records):
         self.records.extend(records)
 
-    def sample(self, count):
+    def sample(self, count, *, min_stage_share=0.0, stages=()):
         if count < 0 or count > len(self.records):
             raise ValueError("sample size exceeds the replay buffer")
-        return self.random.sample(list(self.records), count)
+        records = list(self.records)
+        if not stages or min_stage_share <= 0:
+            return self.random.sample(records, count)
+        target = math.ceil(count * min_stage_share)
+        available = {
+            stage: [record for record in records if record.stage == stage]
+            for stage in stages
+        }
+        active = [stage for stage in stages if available[stage]]
+        if target * len(active) > count:
+            raise ValueError("minimum replay stage shares exceed the batch")
+        selected = []
+        for stage in active:
+            selected.extend(self.random.sample(
+                available[stage], min(target, len(available[stage]))))
+        selected_ids = {id(record) for record in selected}
+        remainder = [record for record in records
+                     if id(record) not in selected_ids]
+        selected.extend(self.random.sample(remainder, count - len(selected)))
+        self.random.shuffle(selected)
+        return selected
 
     def __len__(self):
         return len(self.records)

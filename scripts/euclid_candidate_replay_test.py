@@ -42,7 +42,7 @@ def _candidates(state):
         rules, by_kind, free, state._canonical_names(), validate=False)
 
 
-def _record(state, count=4, value=1.0, seed=7):
+def _record(state, count=4, value=1.0, seed=7, stage="default"):
     candidates = _candidates(state)[:count]
     arrays = feature_encoder.extract(state, candidates).arrays
     visits = tuple(range(count, 0, -1))
@@ -50,15 +50,18 @@ def _record(state, count=4, value=1.0, seed=7):
                              visit_counts=visits)
     return replay.ReplayRecord.from_search(
         arrays, result, value, game_id="euclid-i1", ply=len(state.history_moves),
-        start_kind="clean", seed=seed)
+        start_kind="clean", seed=seed, stage=stage,
+        logical_state_key_sha256=f"key-{seed}")
 
 
 def _assert_record_equal(left, right):
     assert left.candidate_keys == right.candidate_keys
     assert left.visits == right.visits
     assert left.value == right.value
-    assert (left.game_id, left.ply, left.start_kind, left.seed) == (
-        right.game_id, right.ply, right.start_kind, right.seed)
+    assert (left.game_id, left.ply, left.start_kind, left.seed, left.stage,
+            left.logical_state_key_sha256) == (
+        right.game_id, right.ply, right.start_kind, right.seed, right.stage,
+        right.logical_state_key_sha256)
     assert left.features.keys() == right.features.keys()
     for name in left.features:
         assert np.array_equal(left.features[name], right.features[name]), name
@@ -148,6 +151,25 @@ def test_seeded_bounded_buffer_is_uniform_and_evicts_oldest():
     assert [record.seed for record in first.records] == [2, 3, 4]
     assert [record.seed for record in first.sample(2)] == [
         record.seed for record in second.sample(2)]
+
+
+def test_seeded_buffer_reserves_minimum_share_for_each_available_stage():
+    records = ([_record(_state(), seed=index, stage="stage-1")
+                for index in range(10)] +
+               [_record(_state(True), seed=100 + index, stage="stage-2")
+                for index in range(10)])
+    buffer = replay.ReplayBuffer(capacity=30, seed=23)
+    buffer.extend(records)
+    sample = buffer.sample(
+        10, min_stage_share=0.3, stages=("stage-1", "stage-2"))
+    assert sum(record.stage == "stage-1" for record in sample) >= 3
+    assert sum(record.stage == "stage-2" for record in sample) >= 3
+
+    one_stage = replay.ReplayBuffer(capacity=30, seed=23)
+    one_stage.extend(records[:10])
+    assert {record.stage for record in one_stage.sample(
+        10, min_stage_share=0.3, stages=("stage-1", "stage-2"))} == {
+            "stage-1"}
 
 
 def test_zero_candidate_record_is_value_only():

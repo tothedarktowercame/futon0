@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
+import hashlib
 import json
 import os
 from pathlib import Path
+import random
 import signal
 import subprocess
 import sys
@@ -31,6 +33,9 @@ class Config:
     temperature_drop: int = 4
     root_win_in_one: bool = True
     first_play_reduction: float = 0.0
+    stage_mix: list | None = None
+    replay_min_stage_share: float = 0.0
+    initial_snapshot: str = ""
     buffer_size: int = 256
     batch_size: int = 8
     learning_rate: float = 0.001
@@ -102,6 +107,62 @@ def _game(config, *, seed_offset=0):
         f"start_perturb={config.start_perturb},"
         f"start_perturb_rate={config.start_perturb_rate},"
         f"start_seed={config.start_seed + seed_offset})")
+
+
+def _stage_entries(config):
+    entries = config.stage_mix or [{
+        "name": "default", "weight": 1.0,
+        "start_file": config.start_file,
+        "start_perturb": config.start_perturb,
+        "start_perturb_rate": config.start_perturb_rate,
+        "move_cap": config.move_cap,
+    }]
+    allowed = {"name", "weight", "start_file", "start_perturb",
+               "start_perturb_rate", "move_cap", "start_seed"}
+    names = set()
+    result = []
+    for raw in entries:
+        unknown = set(raw) - allowed
+        if unknown:
+            raise ValueError(f"unknown stage fields: {sorted(unknown)}")
+        entry = {
+            "name": str(raw["name"]), "weight": float(raw["weight"]),
+            "start_file": str(raw.get("start_file", config.start_file)),
+            "start_perturb": int(raw.get("start_perturb", config.start_perturb)),
+            "start_perturb_rate": float(raw.get(
+                "start_perturb_rate", config.start_perturb_rate)),
+            "move_cap": int(raw.get("move_cap", config.move_cap)),
+            "start_seed": int(raw.get("start_seed", config.start_seed)),
+        }
+        if not entry["name"] or entry["name"] in names:
+            raise ValueError("stage names must be nonempty and unique")
+        if entry["weight"] <= 0:
+            raise ValueError("stage weights must be positive")
+        names.add(entry["name"])
+        result.append(entry)
+    return result
+
+
+def _choose_stage(entries, rng):
+    point = rng.random() * sum(entry["weight"] for entry in entries)
+    for entry in entries:
+        point -= entry["weight"]
+        if point < 0:
+            return entry
+    return entries[-1]
+
+
+def _stage_config(config, entry):
+    return replace(
+        config, start_file=entry["start_file"],
+        start_perturb=entry["start_perturb"],
+        start_perturb_rate=entry["start_perturb_rate"],
+        move_cap=entry["move_cap"], start_seed=entry["start_seed"])
+
+
+def _logical_state_key_sha256(state):
+    return hashlib.sha256(
+        repr(state.logical_state_key()).encode("utf-8")).hexdigest()
 
 
 def _current_snapshot(out):
@@ -218,9 +279,12 @@ def learner_main(config_path, out):
     import euclid_candidate_replay as replay
 
     model = candidate_model.CandidateModel(seed=config.seed)
+    if config.initial_snapshot:
+        candidate_model.load_plain_arrays(model, config.initial_snapshot)
     optimizer = nnx.Optimizer(
         model, optax.adam(config.learning_rate), wrt=nnx.Param)
     buffer = replay.ReplayBuffer(config.buffer_size, config.seed)
+    stage_names = [entry["name"] for entry in _stage_entries(config)]
     generation = step = 0
     metadata = _publish_snapshot(model, out, generation, step)
     _log(log, "snapshot", **metadata)
@@ -229,7 +293,10 @@ def learner_main(config_path, out):
         new_records = _tail_receipts(Path(out) / "receipts", offsets)
         buffer.extend(new_records)
         if len(buffer) >= config.batch_size:
-            batch = replay.collate(buffer.sample(config.batch_size))
+            batch = replay.collate(buffer.sample(
+                config.batch_size,
+                min_stage_share=config.replay_min_stage_share,
+                stages=stage_names))
             (loss, components), gradients = nnx.value_and_grad(
                 replay.model_loss, has_aux=True)(
                     model, batch, config.l2_coefficient)
@@ -294,7 +361,13 @@ def actor_main(config_path, out, actor_id):
         raise RuntimeError("actor imported Orbax")
     _log(log, "snapshot_loaded", generation=generation,
          learner_step=metadata["learner_step"], orbax_imported=False)
-    game = _game(config, seed_offset=actor_id * 1_000_000)
+    stage_entries = _stage_entries(config)
+    stage_rng = random.Random(config.seed + actor_id * 1_000_000)
+    stage_games = {
+        entry["name"]: _game(
+            _stage_config(config, entry), seed_offset=actor_id * 1_000_000)
+        for entry in stage_entries
+    }
     bot = candidate_puct.CandidatePUCT(
         model, simulations=config.simulations, uct_c=config.c_puct,
         root_win_in_one=config.root_win_in_one,
@@ -310,6 +383,8 @@ def actor_main(config_path, out, actor_id):
                 generation = loaded
                 _log(log, "snapshot_loaded", generation=generation,
                      learner_step=metadata["learner_step"], orbax_imported=False)
+            stage = _choose_stage(stage_entries, stage_rng)
+            game = stage_games[stage["name"]]
             state = game.new_initial_state()
             pending = []
             while not stop and not state.is_terminal():
@@ -325,18 +400,22 @@ def actor_main(config_path, out, actor_id):
                 # stored tensors to the search's final deterministic keys.
                 arrays = feature_encoder.extract(
                     state, list(result.candidate_keys)).arrays
-                pending.append((arrays, result, len(state.history_moves)))
+                pending.append((arrays, result, len(state.history_moves),
+                                _logical_state_key_sha256(state)))
                 state.apply_action_tuple(result.candidate)
             value = 1.0 if state.goal_reached() else -1.0
-            for arrays, result, ply in pending:
+            for arrays, result, ply, state_key in pending:
                 writer.append(replay.ReplayRecord.from_search(
                     arrays, result, value, game_id=f"euclid-i{config.proposition}",
                     ply=ply, start_kind=("perturbed" if
                         len(state.initial_moves) > len(game.start_moves) else "clean"),
-                    seed=config.seed + actor_id))
+                    seed=config.seed + actor_id, stage=stage["name"],
+                    logical_state_key_sha256=state_key))
             games += 1
             _log(log, "game", game=games, positions=len(pending), value=value,
-                 generation=generation, moves=len(state.history_moves))
+                 generation=generation, moves=len(state.history_moves),
+                 stage=stage["name"], initial_moves=state.initial_moves,
+                 history_moves=state.history_moves)
     _log(log, "shutdown", games=games, generation=generation)
 
 

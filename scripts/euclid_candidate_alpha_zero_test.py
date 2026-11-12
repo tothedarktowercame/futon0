@@ -17,6 +17,9 @@ def test_config_round_trip_records_every_field(tmp_path):
         actors=3, simulations=9, c_puct=1.7, dirichlet_epsilon=0.2,
         dirichlet_alpha=0.4, temperature=0.8, temperature_drop=3,
         root_win_in_one=False, first_play_reduction=0.2,
+        stage_mix=[{"name": "near", "weight": 0.4,
+                    "start_file": "prefix.json", "start_perturb": 1}],
+        replay_min_stage_share=0.3, initial_snapshot="model",
         buffer_size=99, batch_size=5,
         learning_rate=0.002, l2_coefficient=0.003,
         snapshot_cadence=4, checkpoint_cadence=7, duration_seconds=12,
@@ -26,6 +29,34 @@ def test_config_round_trip_records_every_field(tmp_path):
     config.save(path)
     assert loop.Config.load(path) == config
     assert set(json.loads(path.read_text())) == set(config.__dataclass_fields__)
+
+
+def test_stage_mix_is_seeded_weighted_and_names_receipt_provenance():
+    config = loop.Config(stage_mix=[
+        {"name": "stage-1", "weight": 1},
+        {"name": "stage-2", "weight": 3},
+    ])
+    entries = loop._stage_entries(config)
+    import random
+    chosen = [loop._choose_stage(entries, random.Random(seed))["name"]
+              for seed in range(1000)]
+    assert 700 <= chosen.count("stage-2") <= 800
+
+    state_features = {
+        "schema_version": np.asarray([schema.SCHEMA_VERSION], np.int32),
+        "vocabulary_version": np.frombuffer(
+            bytes.fromhex(schema.VOCABULARY.vocabulary_version), np.uint8),
+        "candidate_mask": np.zeros(0, np.bool_),
+    }
+    record = replay.ReplayRecord(
+        state_features, (), (), -1.0, "game", 2, "perturbed", 17,
+        "stage-2", "abc123")
+    encoded = record.to_json()
+    assert encoded["provenance"]["stage"] == "stage-2"
+    assert encoded["provenance"]["logical_state_key_sha256"] == "abc123"
+    restored = replay.ReplayRecord.from_json(encoded)
+    assert (restored.stage, restored.logical_state_key_sha256) == (
+        "stage-2", "abc123")
 
 
 def test_snapshot_generation_is_verified_and_loads_array_for_array(tmp_path):
