@@ -82,6 +82,12 @@ replay buffer 256, batch 64, Dirichlet root noise, non-acting second player.
   their own cgroup, not Agency's (futon3c-zone.service). Packets 8c and earlier
   ran inside Agency's cgroup.
 
+- 11-12: if a run stops without the agent's own action, the agent reports
+  and does not relaunch (run 9 was relaunched by a keeper unit after it was
+  stopped on Joe's word; claude-9 cancelled the job and stopped the units
+  at ~03:37Z). The relaunch reused loop-smoke/run9/run, so D2-9's numbers
+  are from before 03:07Z.
+
 ## In flight
 
 (updated as packets go out)
