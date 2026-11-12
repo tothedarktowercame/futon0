@@ -50,3 +50,22 @@ def test_rule_uniform_then_grounding_uniform():
     picked = [h.choose_action(actions, rng, "rule-uniform")[0] for _ in range(1000)]
     assert 450 < picked.count("one") < 550
     assert h.choose_action(actions, random.Random(1), "move-uniform") in actions
+
+
+def test_two_fact_i1_goal_needs_all_three_moves_and_replays():
+    moves = i1_moves()
+    goals = (("_eq_len", "c_3", "a", "a", "b"),
+             ("_eq_len", "c_3", "b", "a", "b"))
+    needed = h.minimise_needed_many(1, moves, goals)
+    assert needed == (0, 1, 2)
+    assert h.auxiliary_moves(moves, needed, goals) == [0, 1]
+    assert h.i1_shape(moves, needed)
+    assert h.goals_hold(h.replay(1, moves, needed), goals)
+
+
+def test_conjunctive_canonical_key_is_order_independent():
+    moves = i1_moves()
+    one = ("_eq_len", "c_3", "a", "a", "b")
+    two = ("_eq_len", "c_3", "b", "a", "b")
+    assert h.canonical_key_many((one, two), moves, (0, 1, 2)) == \
+        h.canonical_key_many((two, one), moves, (0, 1, 2))

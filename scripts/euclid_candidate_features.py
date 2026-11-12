@@ -273,7 +273,12 @@ def extract(state, candidates, goal=None):
             object_parent[i, j] = object_index[parent]
             object_parent_mask[i, j] = True
 
-    goals = play.GOALS[state._proposition] if goal is None else (tuple(goal),)
+    if goal is None:
+        goals = play.GOALS[state._proposition]
+    elif goal and isinstance(goal[0], (tuple, list)):
+        goals = tuple(tuple(atom) for atom in goal)
+    else:
+        goals = (tuple(goal),)
     given_names = {obj["name"] for obj in play.tr.objects_from_hyps(state._proposition)}
     existential = {arg for goal in goals for arg in goal[1:]
                    if isinstance(arg, str) and arg not in given_names}

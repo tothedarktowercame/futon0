@@ -205,6 +205,15 @@ def test_explicit_hindsight_goal_changes_only_goal_conditioning():
     assert "_lt_len" in features.VOCABULARY.predicates
 
 
+def test_explicit_two_atom_goal_equals_i1_book_goal():
+    state = _made_i1()
+    candidates = _candidates(state)[:8]
+    default = features.extract(state, candidates).arrays
+    explicit = features.extract(
+        state, candidates, goal=list(features.play.GOALS[1])).arrays
+    assert all(np.array_equal(default[name], explicit[name]) for name in default)
+
+
 def test_prefix_features_are_deterministic_between_processes():
     command = [sys.executable, "-c",
                "import euclid_candidate_features_test as t; "

@@ -129,6 +129,11 @@ def goal_holds(state, goal):
     return state is not None and eng._fact_holds(state, goal)
 
 
+def goals_hold(state, goals):
+    return state is not None and all(eng._fact_holds(state, goal)
+                                     for goal in goals)
+
+
 def minimise_needed(proposition, moves, goal, initial=None):
     keep = set(range(len(moves))) if initial is None else set(initial)
     changed = True
@@ -137,6 +142,19 @@ def minimise_needed(proposition, moves, goal, initial=None):
         for index in sorted(keep):
             trial = keep - {index}
             if goal_holds(replay(proposition, moves, trial), goal):
+                keep = trial
+                changed = True
+    return tuple(sorted(keep))
+
+
+def minimise_needed_many(proposition, moves, goals, initial=None):
+    keep = set(range(len(moves))) if initial is None else set(initial)
+    changed = True
+    while changed:
+        changed = False
+        for index in sorted(keep):
+            trial = keep - {index}
+            if goals_hold(replay(proposition, moves, trial), goals):
                 keep = trial
                 changed = True
     return tuple(sorted(keep))
@@ -205,8 +223,95 @@ def canonical_key(goal, moves, needed):
     return json.dumps(payload, sort_keys=True, separators=(",", ":"))
 
 
+def canonical_key_many(goals, moves, needed):
+    names = {}
+    for index in needed:
+        _rule, _args, bindings = moves[index]
+        for _base, name in bindings:
+            names.setdefault(name, f"made{len(names)}")
+    renamed = [_rename(goal, names) for goal in goals]
+    renamed.sort(key=lambda goal: json.dumps(goal, sort_keys=True))
+    payload = {"goals": renamed,
+               "moves": [[moves[i][0], _rename(moves[i][1], names),
+                           _rename(moves[i][2], names)] for i in needed]}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
+
+def auxiliary_moves(moves, needed, goals):
+    mentioned = {value for goal in goals for value in goal[1:]
+                 if isinstance(value, str)}
+    result = []
+    for index in needed:
+        made = {name for _base, name in moves[index][2]}
+        if made and made.isdisjoint(mentioned):
+            result.append(index)
+    return result
+
+
+def i1_shape(moves, needed):
+    """Two object-producing moves, then a move using an output of each."""
+    if len(needed) != 3:
+        return False
+    first, second, third = needed
+    one = {name for _base, name in moves[first][2]}
+    two = {name for _base, name in moves[second][2]}
+    used = set(moves[third][1])
+    return bool(one and two and one & used and two & used)
+
+
+def _pair_records(proposition, seed, moves, state, kinds, made,
+                  eligible, bound, deadline, sampling):
+    """Construct joint goals from already E2-filtered single records."""
+    import euclid_hindsight_filter as filters
+    object_kinds = spiel._objects(state, kinds)
+    made_points = {name for name in made if object_kinds.get(name) == "point"}
+    parsed_moves = moves
+    _full_state, reports = filters.replay_with_reports(
+        proposition, parsed_moves, range(len(parsed_moves)))
+    out = []
+    for left, right in itertools.combinations(eligible, 2):
+        if deadline is not None and time.monotonic() >= deadline:
+            break
+        goals = (tuple(left["goal"]), tuple(right["goal"]))
+        if not any(_mentions(goal, made_points) for goal in goals):
+            continue
+        shared = ({x for x in goals[0][1:] if x in made_points} &
+                  {x for x in goals[1][1:] if x in made_points})
+        if not shared:
+            continue
+        initial = set(left["needed_move_indices"]) | set(right["needed_move_indices"])
+        needed = minimise_needed_many(proposition, moves, goals, initial)
+        if len(needed) < 2:
+            continue
+        direct = any(
+            filters.direct(goals[0], {index: reports[index]}, (index,)) and
+            filters.direct(goals[1], {index: reports[index]}, (index,))
+            for index in needed)
+        aux = auxiliary_moves(moves, needed, goals)
+        out.append({
+            "proposition": proposition,
+            "givens": left["givens"],
+            "run_seed": seed,
+            "sampling": sampling,
+            "moves": left["moves"],
+            "goal": [list(goal) for goal in goals],
+            "conjunctive": True,
+            "metric": any(goal[0].startswith("_") for goal in goals),
+            "needed_move_indices": list(needed),
+            "method": "union-then-deletion-replay",
+            "needed_size": len(needed),
+            "canonical_key": canonical_key_many(goals, moves, needed),
+            "metric_bound": bound,
+            "trivial_reasons": ["direct"] if direct else [],
+            "auxiliary_move_indices": aux,
+            "auxiliary_count": len(aux),
+            "i1_shape": i1_shape(moves, needed),
+        })
+    return out
+
+
 def records_for_run(proposition, seed, plies=6, deadline=None,
-                    sampling="rule-uniform"):
+                    sampling="rule-uniform", conjunctive=False):
     t0 = time.perf_counter()
     state, kinds, start_facts, made, moves, snapshots, closure = play_random(
         proposition, seed, plies, deadline, sampling)
@@ -234,6 +339,7 @@ def records_for_run(proposition, seed, plies=6, deadline=None,
         needed_seconds += time.perf_counter() - n0
         if len(needed) < 2:
             continue
+        auxiliary = auxiliary_moves(moves, needed, (goal,))
         records.append({
             "proposition": proposition,
             "givens": sorted(start_facts, key=repr),
@@ -246,7 +352,23 @@ def records_for_run(proposition, seed, plies=6, deadline=None,
             "needed_size": len(needed),
             "canonical_key": canonical_key(goal, moves, needed),
             "metric_bound": bound,
+            "auxiliary_move_indices": auxiliary,
+            "auxiliary_count": len(auxiliary),
         })
+    if conjunctive and (deadline is None or time.monotonic() < deadline):
+        import euclid_hindsight_filter as filters
+        eligible = []
+        for record in records:
+            if record["goal"][0] in ("pos_len", "neq"):
+                continue
+            reasons = filters.classify(record)
+            if not reasons:
+                eligible.append(record)
+        n0 = time.perf_counter()
+        records.extend(_pair_records(
+            proposition, seed, moves, state, kinds, made, eligible, bound,
+            deadline, sampling))
+        needed_seconds += time.perf_counter() - n0
     return records, {"runs": 1, "records": len(records),
                      "closure_seconds": closure,
                      "needed_seconds": needed_seconds,
@@ -257,10 +379,12 @@ def verify_record(record):
     moves = [(m["tuple"][0], tuple(m["tuple"][1]),
               tuple(sorted(m["tuple"][2].items()))) for m in record["moves"]]
     state = replay(record["proposition"], moves, record["needed_move_indices"])
+    if record.get("conjunctive"):
+        return goals_hold(state, tuple(tuple(goal) for goal in record["goal"]))
     return goal_holds(state, tuple(record["goal"]))
 
 
-def _worker(worker, out_dir, duration, seed, sampling):
+def _worker(worker, out_dir, duration, seed, sampling, conjunctive):
     path = Path(out_dir) / f"worker-{worker:02d}.jsonl"
     stats_path = Path(out_dir) / f"worker-{worker:02d}-stats.json"
     deadline = time.monotonic() + duration
@@ -272,7 +396,8 @@ def _worker(worker, out_dir, duration, seed, sampling):
             proposition = 1 + ((worker + run) % 3)
             records, one = records_for_run(
                 proposition, seed + worker * 10_000_000 + run,
-                deadline=deadline, sampling=sampling)
+                deadline=deadline, sampling=sampling,
+                conjunctive=conjunctive)
             for record in records:
                 stream.write(json.dumps(record, separators=(",", ":")) + "\n")
             stream.flush()
@@ -282,12 +407,13 @@ def _worker(worker, out_dir, duration, seed, sampling):
     stats_path.write_text(json.dumps(stats, indent=2) + "\n")
 
 
-def run_parallel(out_dir, duration, workers, seed, sampling="rule-uniform"):
+def run_parallel(out_dir, duration, workers, seed, sampling="rule-uniform",
+                 conjunctive=False):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     ctx = mp.get_context("spawn")
     processes = [ctx.Process(target=_worker,
-                             args=(i, out, duration, seed, sampling))
+                             args=(i, out, duration, seed, sampling, conjunctive))
                  for i in range(workers)]
     for process in processes:
         process.start()
@@ -305,8 +431,10 @@ def main():
     parser.add_argument("--seed", type=int, default=2026111201)
     parser.add_argument("--sampling", choices=("move-uniform", "rule-uniform"),
                         default="rule-uniform")
+    parser.add_argument("--conjunctive", action="store_true")
     args = parser.parse_args()
-    run_parallel(args.out, args.duration, args.workers, args.seed, args.sampling)
+    run_parallel(args.out, args.duration, args.workers, args.seed,
+                 args.sampling, args.conjunctive)
 
 
 if __name__ == "__main__":
