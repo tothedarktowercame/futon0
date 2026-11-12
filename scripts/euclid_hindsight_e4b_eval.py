@@ -238,6 +238,23 @@ def run_final(mixed, e2b, mixed_temperature, e2b_temperature, output,
                 stream.write(json.dumps(result, sort_keys=True) + "\n")
 
 
+def run_e5(mixed, output, workers=4):
+    """Run the fixed E5 transfer matrix with the E4b search protocol."""
+    destination = Path(output)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    context = mp.get_context("spawn")
+    tasks = []
+    for problem in ("i4", "i9", "i10", "i11", "i12", "i13", "i15"):
+        tasks += [(problem, "mixed", mixed, None, 1.5),
+                  (problem, "generation0", None, None, 1.0),
+                  (problem, "random-2026111203", None, 2026111203, 1.0)]
+    with context.Pool(workers, initializer=_init_worker,
+                      maxtasksperchild=1) as pool:
+        for result in pool.imap_unordered(_final_worker, tasks):
+            with destination.open("a") as stream:
+                stream.write(json.dumps(result, sort_keys=True) + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -267,6 +284,10 @@ def main():
     smoke_parser = sub.add_parser("smoke")
     smoke_parser.add_argument("--workers", type=int, required=True)
     smoke_parser.add_argument("--output", required=True)
+    e5 = sub.add_parser("e5")
+    e5.add_argument("--mixed", required=True)
+    e5.add_argument("--workers", type=int, default=4)
+    e5.add_argument("--output", required=True)
     args = parser.parse_args()
     if args.command == "select":
         select_records(args.dataset, args.single_file, args.conjunctive_glob,
@@ -280,6 +301,8 @@ def main():
     elif args.command == "calibrate":
         calibrate(args.dataset, args.snapshot, args.output,
                   legacy=args.legacy)
+    elif args.command == "e5":
+        run_e5(args.mixed, args.output, workers=args.workers)
     else:
         smoke(args.workers, args.output)
 

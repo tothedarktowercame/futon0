@@ -31,3 +31,9 @@ def test_temperature_one_preserves_e3_ordering():
     after = np.argsort(prove._softmax_costs(scores, temperature=1.0),
                        kind="stable")
     assert np.array_equal(after, before)
+
+
+def test_problem_start_accepts_later_book_propositions():
+    state = prove.problem_start("i15")
+    assert state._proposition == 15
+    assert not state.goal_reached()

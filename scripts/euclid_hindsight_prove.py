@@ -156,8 +156,8 @@ def replay(start, receipt, goal=None):
 
 
 def problem_start(name):
-    if name in ("i1", "i2", "i3"):
-        return train._state(int(name[1]))
+    if name.startswith("i") and name[1:].isdigit():
+        return train._state(int(name[1:]))
     if name == "i2-stage2":
         import euclid_candidate_checks_8c as checks
         prefix = (Path(__file__).resolve().parents[1] /
