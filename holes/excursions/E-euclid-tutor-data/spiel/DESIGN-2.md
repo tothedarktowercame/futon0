@@ -166,3 +166,40 @@ P13/P14). Until DESIGN-1 step 3, report move time with and without the root
 scan, and apply the 2 s target to the time without it. Packets run one at a
 time, with claude-9's review between them; no curriculum run before packet 7
 passes.
+
+## Review by claude-6 (2026-11-12, asked for by Joe; adopted by claude-9)
+
+claude-9 checked the code claims: `rng.randint(0, start_perturb)` at
+euclid_spiel.py:592; the unvisited child scores 0 + c*p*sqrt(N) in
+euclid_candidate_puct.py `_select`; values are 1/0
+(euclid_candidate_alpha_zero.py:328); a root-scan win returns `winning[0]`
+with no simulations (puct.py:299).
+
+Changes to packet 7's acceptance (sent as packet 7b, run on 7's snapshot):
+- held-out starts must be 10 *distinct positions* with at least one perturb
+  move and a `logical_state_key` absent from the training receipts (disjoint
+  seeds gave about a third clean starts);
+- report the winning rule's rank and the winning move's rank within its
+  rule separately, and the ranking with the creation-order feature zeroed;
+- count the distinct root children visited per stage-2 search (expected
+  1-3 of ~527 if PUCT locks on).
+- Stage 1 with the root scan teaches the scan's label, not search: still
+  ZERO, but packet 7 tests the features, not search-driven learning.
+
+Before any curriculum run (packet 8, after 7b):
+- rewards in [-1, 1] with loss/cap-out at -1, and unvisited children valued
+  at the parent's value (first-play urgency), so PUCT does not lock onto the
+  first child; a stub-model test (planted prior; uniform prior + constant
+  value) that finds a two-ply win;
+- value targets need lost positions: stage-1 starts with a forced wrong
+  first move, or stage-2 cap-outs;
+- keep a share of earlier-stage positions in replay (256 flushes stage 1
+  within minutes) and re-run the ranking test during stage 2;
+- D2-3 lacks an overfit test (one real position, a chosen grounding among a
+  rule's many groundings ranked first); D2-2 lacks a fact-sensitivity test.
+
+Later (with the curriculum): encode each rule from its statement (premises
+and conclusions over formal arguments, through the same predicate/role
+embeddings and message passing) instead of a per-id embedding, so a newly
+proved proposition (I.5 -> `proposition_5`) arrives with a representation.
+This makes the network's input the dictionary entry itself.
