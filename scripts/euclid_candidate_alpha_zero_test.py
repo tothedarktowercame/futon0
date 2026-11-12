@@ -14,7 +14,8 @@ def test_config_round_trip_records_every_field(tmp_path):
     config = loop.Config(
         proposition=2, move_cap=7, start_file="prefix.json",
         start_perturb=2, start_perturb_rate=0.5, start_seed=11,
-        actors=3, simulations=9, c_puct=1.7, dirichlet_epsilon=0.2,
+        actors=3, actor_restart_games=2, simulations=9, c_puct=1.7,
+        dirichlet_epsilon=0.2,
         dirichlet_alpha=0.4, temperature=0.8, temperature_drop=3,
         root_win_in_one=False, first_play_reduction=0.2,
         stage_mix=[{"name": "near", "weight": 0.4,

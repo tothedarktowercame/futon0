@@ -25,6 +25,7 @@ class Config:
     start_perturb_rate: float = 0.0
     start_seed: int = 0
     actors: int = 2
+    actor_restart_games: int = 0
     simulations: int = 4
     c_puct: float = 1.41
     dirichlet_epsilon: float = 0.25
@@ -424,6 +425,15 @@ def actor_main(config_path, out, actor_id):
                  stage=stage["name"], initial_moves=state.initial_moves,
                  history_moves=state.history_moves)
             _release_game_resources(bot)
+            if config.actor_restart_games and games >= config.actor_restart_games:
+                _log(log, "actor_restart", games=games,
+                     generation=generation)
+                os.execv(sys.executable, [
+                    sys.executable, str(Path(__file__).resolve()), "actor",
+                    "--config", str(Path(config_path).resolve()),
+                    "--out", str(Path(out).resolve()),
+                    "--actor-id", str(actor_id),
+                ])
     _log(log, "shutdown", games=games, generation=generation)
 
 
