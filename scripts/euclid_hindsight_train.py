@@ -124,7 +124,7 @@ def _points(atoms):
 
 
 def book_goal_match(record):
-    """Whether a record's goal states a Book goal of I.1, I.2 or I.3.
+    """Whether a record's goal states a Book goal of I.1 through I.25.
 
     Review fix (claude-9): the first version compared only with the record's
     own proposition, kept given points fixed and matched atom by atom, so
@@ -139,7 +139,7 @@ def book_goal_match(record):
                  features.play.tr.objects_from_hyps(record["proposition"])}
     actual_points = sorted(_points(actual))
     target = _goal_shape(actual, lambda x: x)
-    for book in (1, 2, 3):
+    for book in range(1, 26):
         expected = tuple(tuple(atom) for atom in features.play.GOALS[book])
         book_points = sorted(_points(expected))
         if len(book_points) != len(actual_points):

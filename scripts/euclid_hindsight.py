@@ -9,6 +9,7 @@ import multiprocessing as mp
 import os
 from pathlib import Path
 import random
+import signal
 import time
 
 import euclid_engine as eng
@@ -259,8 +260,28 @@ def i1_shape(moves, needed):
     return bool(one and two and one & used and two & used)
 
 
+class RecordTimeout(Exception):
+    """One needed-set replay exceeded its per-record wall budget."""
+
+
+def _record_alarm(_signum, _frame):
+    raise RecordTimeout
+
+
+def _timed_needed(seconds, function, *args):
+    if seconds is None:
+        return function(*args)
+    old_handler = signal.signal(signal.SIGALRM, _record_alarm)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        return function(*args)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_handler)
+
+
 def _pair_records(proposition, seed, moves, state, kinds, made,
-                  eligible, bound, deadline, sampling):
+                  eligible, bound, deadline, sampling, record_timeout=None):
     """Construct joint goals from already E2-filtered single records."""
     import euclid_hindsight_filter as filters
     object_kinds = spiel._objects(state, kinds)
@@ -268,7 +289,7 @@ def _pair_records(proposition, seed, moves, state, kinds, made,
     parsed_moves = moves
     _full_state, reports = filters.replay_with_reports(
         proposition, parsed_moves, range(len(parsed_moves)))
-    out = []
+    out, dropped = [], 0
     for left, right in itertools.combinations(eligible, 2):
         if deadline is not None and time.monotonic() >= deadline:
             break
@@ -280,7 +301,12 @@ def _pair_records(proposition, seed, moves, state, kinds, made,
         if not shared:
             continue
         initial = set(left["needed_move_indices"]) | set(right["needed_move_indices"])
-        needed = minimise_needed_many(proposition, moves, goals, initial)
+        try:
+            needed = _timed_needed(record_timeout, minimise_needed_many,
+                                   proposition, moves, goals, initial)
+        except RecordTimeout:
+            dropped += 1
+            continue
         if len(needed) < 2:
             continue
         direct = any(
@@ -307,35 +333,45 @@ def _pair_records(proposition, seed, moves, state, kinds, made,
             "auxiliary_count": len(aux),
             "i1_shape": i1_shape(moves, needed),
         })
-    return out
+    return out, dropped
 
 
 def records_for_run(proposition, seed, plies=6, deadline=None,
-                    sampling="rule-uniform", conjunctive=False):
+                    sampling="rule-uniform", conjunctive=False,
+                    record_timeout=None):
     t0 = time.perf_counter()
     state, kinds, start_facts, made, moves, snapshots, closure = play_random(
         proposition, seed, plies, deadline, sampling)
     if len(moves) != plies:
         return [], {"runs": 0, "records": 0,
                     "closure_seconds": closure, "needed_seconds": 0.0,
-                    "wall_seconds": time.perf_counter() - t0}
+                    "wall_seconds": time.perf_counter() - t0,
+                    "dropped_slow_replays": 0}
     goals = [f for f in state.facts
              if f not in start_facts and _mentions(f, made)]
     metrics, bound = metric_goals(state, made)
     goals.extend(metrics)
     records = []
+    dropped_slow_replays = 0
     needed_seconds = 0.0
     for goal in goals:
         if deadline is not None and time.monotonic() >= deadline:
             break
         metric = goal[0].startswith("_")
         n0 = time.perf_counter()
-        if metric:
-            needed = minimise_needed(proposition, moves, goal)
-            method = "deletion-replay"
-        else:
-            needed = provenance_needed(proposition, moves, snapshots, state, goal)
-            method = "fact-provenance"
+        try:
+            if metric:
+                needed = _timed_needed(record_timeout, minimise_needed,
+                                       proposition, moves, goal)
+                method = "deletion-replay"
+            else:
+                needed = _timed_needed(record_timeout, provenance_needed,
+                                       proposition, moves, snapshots, state, goal)
+                method = "fact-provenance"
+        except RecordTimeout:
+            dropped_slow_replays += 1
+            needed_seconds += time.perf_counter() - n0
+            continue
         needed_seconds += time.perf_counter() - n0
         if len(needed) < 2:
             continue
@@ -360,19 +396,24 @@ def records_for_run(proposition, seed, plies=6, deadline=None,
         eligible = []
         for record in records:
             if record["goal"][0] in ("pos_len", "neq"):
+                record["trivial_reasons"] = ["automatic-predicate"]
                 continue
             reasons = filters.classify(record)
+            record["trivial_reasons"] = reasons
             if not reasons:
                 eligible.append(record)
         n0 = time.perf_counter()
-        records.extend(_pair_records(
+        pairs, pair_dropped = _pair_records(
             proposition, seed, moves, state, kinds, made, eligible, bound,
-            deadline, sampling))
+            deadline, sampling, record_timeout)
+        records.extend(pairs)
+        dropped_slow_replays += pair_dropped
         needed_seconds += time.perf_counter() - n0
     return records, {"runs": 1, "records": len(records),
                      "closure_seconds": closure,
                      "needed_seconds": needed_seconds,
-                     "wall_seconds": time.perf_counter() - t0}
+                     "wall_seconds": time.perf_counter() - t0,
+                     "dropped_slow_replays": dropped_slow_replays}
 
 
 def verify_record(record):
@@ -384,36 +425,49 @@ def verify_record(record):
     return goal_holds(state, tuple(record["goal"]))
 
 
-def _worker(worker, out_dir, duration, seed, sampling, conjunctive):
+def _worker(worker, out_dir, duration, seed, sampling, conjunctive,
+            proposition_start, proposition_end, record_timeout):
     path = Path(out_dir) / f"worker-{worker:02d}.jsonl"
     stats_path = Path(out_dir) / f"worker-{worker:02d}-stats.json"
     deadline = time.monotonic() + duration
     stats = {"runs": 0, "records": 0, "closure_seconds": 0.0,
-             "needed_seconds": 0.0, "wall_seconds": 0.0}
+             "needed_seconds": 0.0, "wall_seconds": 0.0,
+             "dropped_slow_replays": 0, "by_proposition": {}}
     with path.open("a") as stream:
         run = 0
         while time.monotonic() < deadline:
-            proposition = 1 + ((worker + run) % 3)
+            proposition = proposition_start + (
+                (worker + run) % (proposition_end - proposition_start + 1))
             records, one = records_for_run(
                 proposition, seed + worker * 10_000_000 + run,
                 deadline=deadline, sampling=sampling,
-                conjunctive=conjunctive)
+                conjunctive=conjunctive, record_timeout=record_timeout)
             for record in records:
                 stream.write(json.dumps(record, separators=(",", ":")) + "\n")
             stream.flush()
-            for key in stats:
+            for key in one:
                 stats[key] += one[key]
+            by_prop = stats["by_proposition"].setdefault(
+                str(proposition), {key: 0 for key in one})
+            for key in one:
+                by_prop[key] += one[key]
+            # Persist each completed run.  A fixed-wall experiment may stop a
+            # worker while it is enumerating its next legal-action set.
+            stats_path.write_text(json.dumps(stats, indent=2) + "\n")
             run += 1
     stats_path.write_text(json.dumps(stats, indent=2) + "\n")
 
 
 def run_parallel(out_dir, duration, workers, seed, sampling="rule-uniform",
-                 conjunctive=False):
+                 conjunctive=False, proposition_start=1, proposition_end=3,
+                 record_timeout=None):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     ctx = mp.get_context("spawn")
     processes = [ctx.Process(target=_worker,
-                             args=(i, out, duration, seed, sampling, conjunctive))
+                             args=(i, out, duration, seed, sampling, conjunctive,
+                                   proposition_start, proposition_end,
+                                   record_timeout))
                  for i in range(workers)]
     for process in processes:
         process.start()
@@ -432,9 +486,13 @@ def main():
     parser.add_argument("--sampling", choices=("move-uniform", "rule-uniform"),
                         default="rule-uniform")
     parser.add_argument("--conjunctive", action="store_true")
+    parser.add_argument("--proposition-start", type=int, default=1)
+    parser.add_argument("--proposition-end", type=int, default=3)
+    parser.add_argument("--record-timeout", type=float)
     args = parser.parse_args()
     run_parallel(args.out, args.duration, args.workers, args.seed,
-                 args.sampling, args.conjunctive)
+                 args.sampling, args.conjunctive, args.proposition_start,
+                 args.proposition_end, args.record_timeout)
 
 
 if __name__ == "__main__":

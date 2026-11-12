@@ -1,6 +1,9 @@
 import euclid_hindsight as h
 import euclid_engine as eng
 import random
+import time
+
+import pytest
 
 
 def i1_moves():
@@ -69,3 +72,8 @@ def test_conjunctive_canonical_key_is_order_independent():
     two = ("_eq_len", "c_3", "b", "a", "b")
     assert h.canonical_key_many((one, two), moves, (0, 1, 2)) == \
         h.canonical_key_many((two, one), moves, (0, 1, 2))
+
+
+def test_per_record_timeout_interrupts_a_slow_replay():
+    with pytest.raises(h.RecordTimeout):
+        h._timed_needed(0.001, time.sleep, 0.02)

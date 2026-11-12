@@ -62,3 +62,13 @@ def test_book_goal_match_catches_i1_goal_from_other_givens():
                   "goal": [["_eq_len", "a", "b", "b", "c"],
                            ["_eq_len", "a", "c", "b", "c"]]}
     assert t.book_goal_match(given_only) is None
+
+
+def test_book_goal_match_covers_later_book_goals_and_rejects_near_miss():
+    matching = {"proposition": 4,
+                "goal": [["_eq_len", "b", "c", "e", "f"],
+                         ["_eq_ang", "a", "b", "c", "d", "e", "f"],
+                         ["_eq_ang", "a", "c", "b", "d", "f", "e"]]}
+    assert t.book_goal_match(matching)[0] == 4
+    matching["goal"][2][-1] = "a"
+    assert t.book_goal_match(matching) is None
