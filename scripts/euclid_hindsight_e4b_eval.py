@@ -7,6 +7,7 @@ import glob
 import gzip
 import json
 import multiprocessing as mp
+import os
 import pickle
 from pathlib import Path
 import random
@@ -17,6 +18,20 @@ import euclid_hindsight_train as train
 
 
 MODEL = None
+WORKER_CPUS = None
+
+
+def _pin_for_jax():
+    """Create each JAX CPU client while its worker sees one striped CPU."""
+    global WORKER_CPUS
+    WORKER_CPUS = tuple(sorted(os.sched_getaffinity(0)))
+    identity = mp.current_process()._identity
+    ordinal = identity[0] - 1 if identity else 0
+    os.sched_setaffinity(0, {WORKER_CPUS[ordinal % len(WORKER_CPUS)]})
+
+
+def _widen_after_jax():
+    os.sched_setaffinity(0, set(WORKER_CPUS))
 
 
 def _identity(proposition, seed, kind, goal):
@@ -74,8 +89,34 @@ def select_records(dataset, single_file, conjunctive_glob, output,
 
 def _init_model(snapshot):
     global MODEL
+    _pin_for_jax()
     MODEL = models.CandidateModel(seed=2026111202)
     models.load_plain_arrays(MODEL, snapshot)
+    _widen_after_jax()
+
+
+def _init_worker():
+    _pin_for_jax()
+
+
+def _task_count_worker(_task):
+    # Smoke constructs the same model/client as a search worker, then widens.
+    model = models.CandidateModel(seed=2026111202)
+    del model
+    _widen_after_jax()
+    return {"pid": os.getpid(),
+            "tasks": len(list(Path(f"/proc/{os.getpid()}/task").iterdir())),
+            "affinity": sorted(os.sched_getaffinity(0))}
+
+
+def smoke(workers, output):
+    context = mp.get_context("spawn")
+    with context.Pool(workers, initializer=_init_worker) as pool:
+        rows = pool.map(_task_count_worker, range(workers * 4), chunksize=1)
+    unique = {row["pid"]: row for row in rows}
+    Path(output).write_text(json.dumps({"workers_requested": workers,
+        "workers_seen": len(unique), "processes": list(unique.values())},
+        indent=2) + "\n")
 
 
 def _temperature_worker(task):
@@ -115,13 +156,16 @@ def _final_worker(task):
     if snapshot is not None:
         model = models.CandidateModel(seed=2026111202)
         models.load_plain_arrays(model, snapshot)
+        _widen_after_jax()
         result = prover.prove(start, model=model, max_calls=400,
                               wall_seconds=2700, temperature=temperature)
     elif arm == "generation0":
         model = models.CandidateModel(seed=2026111202)
+        _widen_after_jax()
         result = prover.prove(start, model=model, max_calls=400,
                               wall_seconds=2700, temperature=temperature)
     else:
+        _widen_after_jax()
         result = prover.prove(start, random_seed=seed, max_calls=400,
                               wall_seconds=2700, temperature=temperature)
     result.update({"problem": problem, "arm": arm, "seed": seed,
@@ -141,7 +185,7 @@ def run_final(mixed, e2b, temperature, output):
                  (problem, "generation0", None, None, temperature)]
         tasks += [(problem, f"random-{seed}", None, seed, temperature)
                   for seed in (2026111203, 2026111204, 2026111205)]
-        with context.Pool(len(tasks)) as pool:
+        with context.Pool(len(tasks), initializer=_init_worker) as pool:
             for result in pool.imap_unordered(_final_worker, tasks):
                 with destination.open("a") as stream:
                     stream.write(json.dumps(result, sort_keys=True) + "\n")
@@ -166,6 +210,9 @@ def main():
     final.add_argument("--e2b", required=True)
     final.add_argument("--temperature", type=float, required=True)
     final.add_argument("--output", required=True)
+    smoke_parser = sub.add_parser("smoke")
+    smoke_parser.add_argument("--workers", type=int, required=True)
+    smoke_parser.add_argument("--output", required=True)
     args = parser.parse_args()
     if args.command == "select":
         select_records(args.dataset, args.single_file, args.conjunctive_glob,
@@ -173,8 +220,10 @@ def main():
     elif args.command == "temperatures":
         run_temperatures(args.selection, args.snapshot, args.output,
                          workers=args.workers)
-    else:
+    elif args.command == "final":
         run_final(args.mixed, args.e2b, args.temperature, args.output)
+    else:
+        smoke(args.workers, args.output)
 
 
 if __name__ == "__main__":
