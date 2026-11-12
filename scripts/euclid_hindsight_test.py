@@ -17,6 +17,9 @@ def test_metric_needed_set_and_irrelevant_move():
     goal = ("_eq_len", "c_3", "a", "a", "b")
     assert eng._fact_holds(state, goal)
     assert h.minimise_needed(1, moves, goal) == (0, 1, 2)
+    goals, bound = h.metric_goals(state, {"C_1", "C_2", "c_3"})
+    assert ("_eq_len", "a", "b", "a", "c_3") in goals
+    assert bound["length_atoms"] == 3
 
     irrelevant = ("line_from_points", ("a", "b"), (("L", "L_4"),))
     moves.insert(2, irrelevant)

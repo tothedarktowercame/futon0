@@ -67,7 +67,9 @@ def metric_goals(state, made):
     the exact arithmetic rows.  Trivial comparisons of an atom with itself
     are deliberately absent.
     """
-    atoms = {atom for coeffs, _const, _op in state.la.rows for atom in coeffs}
+    # LinearArithmetic stores normalized rows as ((atom, coefficient), ...).
+    atoms = {atom for coeffs, _const, _op in state.la.rows
+             for atom, _coefficient in coeffs}
     lengths = sorted((a for a in atoms if a and a[0] == "len"), key=repr)
     angles = sorted((a for a in atoms if a and a[0] == "ang"), key=repr)
     out = []
