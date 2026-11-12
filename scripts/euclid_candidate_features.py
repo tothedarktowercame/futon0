@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
+from collections import OrderedDict
 import hashlib
 import json
 from pathlib import Path
@@ -219,7 +220,57 @@ def _constant(value):
     return kind, bucket
 
 
-def extract(state, candidates, goal=None):
+_LOOKAHEAD_CACHE = OrderedDict()
+_LOOKAHEAD_CACHE_LIMIT = 100_000
+
+
+def _feature_candidates(state):
+    generated = spiel.enumerate_actions(
+        state._proposition, state.engine_state, state.initial_kinds,
+        len(state.history_moves), canonical_names=state._canonical_names(),
+        validate=False)
+    objects = set(state._object_order())
+    return [action for action in generated
+            if all(not isinstance(arg, str) or arg in objects
+                   for arg in action[1])]
+
+
+def candidate_join_counts(state, candidates, cache=None):
+    """Count child moves joining a new result to a pre-existing object."""
+    cache = _LOOKAHEAD_CACHE if cache is None else cache
+    before = frozenset(state._object_order())
+    logical = state.logical_state_key()
+    counts = []
+    for action in candidates:
+        key = (logical, action)
+        if key in cache:
+            counts.append(cache[key])
+            if cache is _LOOKAHEAD_CACHE:
+                cache.move_to_end(key)
+            continue
+        successor, _refusal = spiel.admit_candidate(
+            state.engine_state, len(state.history_moves), action)
+        count = 0
+        if successor is not None:
+            child = state.clone()
+            child.engine_state = successor
+            child.history_moves.append(state._canonical_action(action))
+            child._actions = None
+            child._action_by_id = None
+            child._parent_legal_keys = frozenset()
+            made = {name for _base, name in action[2]}
+            for offered in _feature_candidates(child):
+                arguments = set(offered[1])
+                if arguments & made and arguments & before:
+                    count += 1
+        cache[key] = count
+        if cache is _LOOKAHEAD_CACHE and len(cache) > _LOOKAHEAD_CACHE_LIMIT:
+            cache.popitem(last=False)
+        counts.append(count)
+    return np.asarray(counts, dtype=np.float32)
+
+
+def extract(state, candidates, goal=None, lookahead=False):
     """Encode ``state`` and its ordered premise-certified ``candidates``."""
     canonical = state._canonical_names()
     objects = state._object_order()
@@ -380,4 +431,6 @@ def extract(state, candidates, goal=None):
         "candidate_conclusion_predicate": candidate_conclusion,
         "candidate_conclusion_mask": candidate_conclusion_mask,
     })
+    if lookahead:
+        arrays["candidate_join_count"] = candidate_join_counts(state, candidates)
     return CandidateFeatures(arrays)

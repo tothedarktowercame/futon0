@@ -214,6 +214,25 @@ def test_explicit_two_atom_goal_equals_i1_book_goal():
     assert all(np.array_equal(default[name], explicit[name]) for name in default)
 
 
+def test_lookahead_counts_join_unlocked_by_second_i1_circle():
+    state = pyspiel.load_game(
+        "euclid_book1(proposition=1,move_cap=6,dense_actions=true)"
+    ).new_initial_state()
+    state.apply_action_tuple((
+        "circle_from_points", ("b", "a"), (("C", "C_1"),)))
+    candidates = _candidates(state)
+    counts = features.candidate_join_counts(state, candidates, cache={})
+    second = next(i for i, action in enumerate(candidates)
+                  if action[0] == "circle_from_points"
+                  and action[1] == ("a", "b"))
+    assert counts[second] >= 1
+    zero = next(i for i, count in enumerate(counts) if count == 0)
+    encoded = features.extract(
+        state, [candidates[second], candidates[zero]], lookahead=True).arrays
+    assert encoded["candidate_join_count"][0] >= 1
+    assert encoded["candidate_join_count"][1] == 0
+
+
 def test_prefix_features_are_deterministic_between_processes():
     command = [sys.executable, "-c",
                "import euclid_candidate_features_test as t; "

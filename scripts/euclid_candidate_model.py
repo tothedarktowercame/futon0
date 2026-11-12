@@ -41,8 +41,9 @@ def _gather_objects(objects, indices):
 class CandidateModel(nnx.Module):
     """Two-round fact/object encoder with shared candidate and value heads."""
 
-    def __init__(self, *, width=WIDTH, seed=0):
+    def __init__(self, *, width=WIDTH, seed=0, lookahead=False):
         self.width = width
+        self.lookahead = bool(lookahead)
         rngs = nnx.Rngs(seed)
         vocab = feature_schema.VOCABULARY
         self.rule_embedding = nnx.Embed(len(vocab.rules), width, rngs=rngs)
@@ -64,6 +65,8 @@ class CandidateModel(nnx.Module):
             MLP(2 * width, 128, width, rngs=rngs) for _ in range(2)])
         self.candidate_head = MLP(6 * width, 128, width, rngs=rngs)
         self.candidate_logit = nnx.Linear(width, 1, rngs=rngs)
+        if self.lookahead:
+            self.lookahead_projection = nnx.Linear(1, width, rngs=rngs)
         self.value_hidden = nnx.Linear(2 * width, width, rngs=rngs)
         self.value_output = nnx.Linear(width, 1, rngs=rngs)
 
@@ -135,6 +138,9 @@ class CandidateModel(nnx.Module):
             self.predicate_embedding(arrays["candidate_conclusion_predicate"]),
             arrays["candidate_conclusion_mask"], axis=2)
         rule = self.rule_embedding(arrays["candidate_rule"])
+        if self.lookahead:
+            lookahead = jnp.log1p(arrays["candidate_join_count"])[..., None]
+            rule = rule + self.lookahead_projection(lookahead)
         repeated_global = jnp.broadcast_to(
             global_state[:, None, :],
             rule.shape[:-1] + (global_state.shape[-1],))

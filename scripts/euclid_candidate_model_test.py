@@ -67,6 +67,18 @@ def test_shapes_and_masks_for_zero_one_and_1200_candidates():
         assert batch["candidate_mask"].shape == (1, count)
 
 
+def test_optional_lookahead_model_consumes_join_counts():
+    state = _state()
+    arrays = _arrays(state, _candidates(state)[:3])
+    arrays["candidate_join_count"] = np.asarray([0, 1, 5], dtype=np.float32)
+    batch = candidate_model.batch_features([arrays])
+    model = candidate_model.CandidateModel(seed=7, lookahead=True)
+    logits, value = model(batch)
+    assert logits.shape == (1, 3)
+    assert np.isfinite(np.asarray(logits)).all()
+    assert np.isfinite(np.asarray(value)).all()
+
+
 def test_padding_changes_no_real_output():
     small = _arrays(_state(), _candidates(_state())[:3])
     large_state = _state(2, PREFIX)

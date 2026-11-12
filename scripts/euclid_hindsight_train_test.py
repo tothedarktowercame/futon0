@@ -28,3 +28,14 @@ def test_dataset_split_has_no_shared_logical_states():
     assert t.make_state_disjoint(examples) == (1, 1)
     assert ({x["state_key"] for x in examples if x["split"] == "train"} &
             {x["state_key"] for x in examples if x["split"] == "heldout"}) == set()
+
+
+def test_book_goal_match_accepts_atom_order_and_renamed_witness():
+    record = {
+        "proposition": 1,
+        "goal": [["_eq_len", "made_point", "b", "a", "b"],
+                 ["_eq_len", "made_point", "a", "a", "b"]],
+    }
+    assert t.book_goal_match(record) == {"c": "made_point"}
+    record["goal"][0][1] = "another_point"
+    assert t.book_goal_match(record) is None

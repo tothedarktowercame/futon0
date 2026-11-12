@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import glob
 import gzip
 import hashlib
+import itertools
 import json
 import pickle
 from pathlib import Path
@@ -65,6 +67,146 @@ def make_state_disjoint(examples):
             example["split"] = "train"
             moved += 1
     return len(shared_keys), moved
+
+
+def goal_atoms(goal):
+    if goal and isinstance(goal[0], (tuple, list)):
+        return tuple(tuple(atom) for atom in goal)
+    return (tuple(goal),)
+
+
+def book_goal_match(record):
+    """Match a record goal to its proposition goal, renaming witnesses only."""
+    proposition = record["proposition"]
+    expected = tuple(tuple(atom) for atom in features.play.GOALS[proposition])
+    actual = goal_atoms(record["goal"])
+    if len(actual) != len(expected):
+        return None
+    given = {obj["name"] for obj in
+             features.play.tr.objects_from_hyps(proposition)}
+    for ordered in itertools.permutations(actual):
+        mapping = {}
+        matched = True
+        for pattern, atom in zip(expected, ordered):
+            if len(pattern) != len(atom) or pattern[0] != atom[0]:
+                matched = False; break
+            for left, right in zip(pattern[1:], atom[1:]):
+                if left in given:
+                    if left != right:
+                        matched = False; break
+                elif mapping.setdefault(left, right) != right:
+                    matched = False; break
+            if not matched:
+                break
+        if matched and len(set(mapping.values())) == len(mapping):
+            return mapping
+    return None
+
+
+def _book_state_keys():
+    states = [_state(1), _state(2), _state(3)]
+    states.extend(row[1] for row in book_positions())
+    return {state_key(state) for state in states}
+
+
+def _record_notation(record):
+    needed = set(record["needed_move_indices"])
+    return {
+        "proposition": record["proposition"],
+        "seed": record["run_seed"],
+        "goal": record["goal"],
+        "moves": [move["notation"] for i, move in enumerate(record["moves"])
+                  if i in needed],
+    }
+
+
+def build_mixed_dataset(single_filtered, conjunctive_inputs, output,
+                        lookahead=False):
+    examples, counts, seen_records = [], {}, set()
+    excluded_goals, excluded_states = [], 0
+    paths = [(single_filtered, "single")]
+    paths += [(path, "conjunctive")
+              for path in sorted(glob.glob(conjunctive_inputs or ""))]
+    forbidden_states = _book_state_keys()
+    for path, expected_kind in paths:
+        with open(path) as stream:
+            for line in stream:
+                record = json.loads(line)
+                kind = "conjunctive" if record.get("conjunctive") else "single"
+                if kind != expected_kind:
+                    continue
+                identity = (record["proposition"], record["canonical_key"])
+                if identity in seen_records:
+                    continue
+                seen_records.add(identity)
+                atoms = goal_atoms(record["goal"])
+                if record.get("trivial_reasons") or any(
+                        atom[0] in ("pos_len", "neq") for atom in atoms):
+                    continue
+                match = book_goal_match(record)
+                if match is not None:
+                    excluded_goals.append(_record_notation(record))
+                    continue
+                split = split_for(record["proposition"], record["run_seed"])
+                moves = [(m["tuple"][0], tuple(m["tuple"][1]),
+                          tuple(sorted(m["tuple"][2].items())))
+                         for m in record["moves"]]
+                needed = list(record["needed_move_indices"])
+                state = _state(record["proposition"])
+                record_examples = 0
+                for offset, move_index in enumerate(needed):
+                    legal = candidates(state)
+                    remaining = {action_signature(moves[i])
+                                 for i in needed[offset:]}
+                    positive = [i for i, action in enumerate(legal)
+                                if action_signature(action) in remaining]
+                    key = state_key(state)
+                    if positive and key not in forbidden_states:
+                        target = np.zeros(len(legal), dtype=np.float32)
+                        target[positive] = 1.0 / len(positive)
+                        examples.append({
+                            "features": features.extract(
+                                state, legal, goal=record["goal"],
+                                lookahead=lookahead).arrays,
+                            "target": target, "split": split, "kind": kind,
+                            "proposition": record["proposition"],
+                            "seed": record["run_seed"], "goal": record["goal"],
+                            "state_key": key,
+                        })
+                        record_examples += 1
+                    elif positive:
+                        excluded_states += 1
+                    state.apply_action_tuple(moves[move_index])
+                if record_examples:
+                    counts[(split, kind)] = counts.get((split, kind), 0) + 1
+    shared_key_count, moved_examples = make_state_disjoint(examples)
+    payload = {"examples": examples,
+               "record_counts": {f"{s}:{k}": n for (s, k), n in counts.items()},
+               "vocabulary_version": features.VOCABULARY.vocabulary_version,
+               "lookahead": lookahead}
+    Path(output).parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(output, "wb", compresslevel=1) as stream:
+        pickle.dump(payload, stream, protocol=5)
+    summary = {
+        "records": sum(counts.values()), "examples": len(examples),
+        "train_examples": sum(x["split"] == "train" for x in examples),
+        "heldout_examples": sum(x["split"] == "heldout" for x in examples),
+        "examples_by_kind": {
+            kind: sum(x["kind"] == kind for x in examples)
+            for kind in ("single", "conjunctive")},
+        "heldout_by_kind": {
+            kind: sum(x["kind"] == kind and x["split"] == "heldout"
+                      for x in examples)
+            for kind in ("single", "conjunctive")},
+        "shared_state_keys_moved_to_train": shared_key_count,
+        "heldout_examples_moved_to_train": moved_examples,
+        "book_goal_records_excluded": len(excluded_goals),
+        "book_goal_exclusions": excluded_goals,
+        "book_state_examples_excluded": excluded_states,
+        "record_counts": payload["record_counts"], "lookahead": lookahead,
+    }
+    Path(str(output) + ".json").write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps(summary, sort_keys=True))
 
 
 def build_dataset(filtered, output):
@@ -133,7 +275,8 @@ def _batch(items, shapes=None):
     return arrays, jnp.asarray(target)
 
 
-def train(dataset, out, duration, seed, batch_size, learning_rate):
+def train(dataset, out, duration, seed, batch_size, learning_rate,
+          lookahead=False):
     from flax import nnx
     import jax
     import jax.numpy as jnp
@@ -141,10 +284,13 @@ def train(dataset, out, duration, seed, batch_size, learning_rate):
     with gzip.open(dataset, "rb") as stream:
         examples = [x for x in pickle.load(stream)["examples"]
                     if x["split"] == "train"]
+    if not lookahead:
+        for example in examples:
+            example["features"].pop("candidate_join_count", None)
     rng = random.Random(seed)
     # One padded shape for the whole training set: the jitted step compiles once.
     shapes = models.max_shapes([x["features"] for x in examples])
-    model = models.CandidateModel(seed=seed)
+    model = models.CandidateModel(seed=seed, lookahead=lookahead)
     optimizer = nnx.Optimizer(model, optax.adam(learning_rate), wrt=nnx.Param)
 
     def loss_fn(network, arrays, target):
@@ -175,7 +321,7 @@ def train(dataset, out, duration, seed, batch_size, learning_rate):
     (out / "summary.json").write_text(json.dumps(
         {"steps": step_number, "curve": curve, "value_weight": 0.0,
          "seed": seed, "batch_size": batch_size,
-         "learning_rate": learning_rate}, indent=2) + "\n")
+         "learning_rate": learning_rate, "lookahead": lookahead}, indent=2) + "\n")
 
 
 def load_legacy(model, source):
@@ -261,11 +407,13 @@ def evaluate(dataset, trained, legacy, output, seed):
 def main():
     p=argparse.ArgumentParser(); sub=p.add_subparsers(dest="cmd",required=True)
     b=sub.add_parser("build"); b.add_argument("--filtered",required=True); b.add_argument("--output",required=True)
-    t=sub.add_parser("train"); t.add_argument("--dataset",required=True); t.add_argument("--out",required=True); t.add_argument("--duration",type=int,default=2400); t.add_argument("--seed",type=int,default=2026111202); t.add_argument("--batch-size",type=int,default=16); t.add_argument("--learning-rate",type=float,default=1e-3)
+    bm=sub.add_parser("build-mixed"); bm.add_argument("--single-filtered",required=True); bm.add_argument("--conjunctive-inputs",required=True); bm.add_argument("--output",required=True); bm.add_argument("--lookahead",action="store_true")
+    t=sub.add_parser("train"); t.add_argument("--dataset",required=True); t.add_argument("--out",required=True); t.add_argument("--duration",type=int,default=2400); t.add_argument("--seed",type=int,default=2026111202); t.add_argument("--batch-size",type=int,default=16); t.add_argument("--learning-rate",type=float,default=1e-3); t.add_argument("--lookahead",action="store_true")
     e=sub.add_parser("eval"); e.add_argument("--dataset",required=True); e.add_argument("--trained",required=True); e.add_argument("--legacy",required=True); e.add_argument("--output",required=True); e.add_argument("--seed",type=int,default=2026111202)
     a=p.parse_args()
     if a.cmd=="build": build_dataset(a.filtered,a.output)
-    elif a.cmd=="train": train(a.dataset,a.out,a.duration,a.seed,a.batch_size,a.learning_rate)
+    elif a.cmd=="build-mixed": build_mixed_dataset(a.single_filtered,a.conjunctive_inputs,a.output,a.lookahead)
+    elif a.cmd=="train": train(a.dataset,a.out,a.duration,a.seed,a.batch_size,a.learning_rate,a.lookahead)
     else: evaluate(a.dataset,a.trained,a.legacy,a.output,a.seed)
 
 if __name__=="__main__": main()
