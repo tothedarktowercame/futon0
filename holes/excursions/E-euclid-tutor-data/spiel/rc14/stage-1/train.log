@@ -181,3 +181,5 @@ learner started
 [2026-11-11 21:06:27.200]
 [2026-11-11 21:06:27.200] Collecting trajectories
 [2026-11-11 21:06:32.742] learner exiting
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 72 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
