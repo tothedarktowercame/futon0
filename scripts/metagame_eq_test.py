@@ -182,3 +182,150 @@ def test_assoc_waits_for_the_fourth_product():
     eq.closure(p)
     assert [(f.left, f.right) for f in eq.facts(p)] == [
         (lhs, eq.mul(a, eq.mul(b, c)))]
+
+
+def _reference_closure(p):
+    """Frozen packet-1 closure, used only as the migration oracle."""
+    names = {r.name for r in p.theory.rules}
+    while True:
+        changed = False
+        signatures = {}
+        for i, t in enumerate(p.terms):
+            if t.op not in ("mul", "inv"):
+                continue
+            sig = (t.op, tuple(p.find(p.ids[x]) for x in t.args))
+            if sig in signatures:
+                changed |= p.union(signatures[sig], i)
+            else:
+                signatures[sig] = i
+        for h in p.theory.hypotheses:
+            changed |= eq._merge_if_present(p, h.left, h.right)
+        e_id = p.ids.get(eq.E)
+        reps = [p.terms[p.find(i)] for i in range(len(p.terms))]
+        for i in range(len(p.terms)):
+            x = reps[i]
+            if "left_identity" in names:
+                z = eq._lookup(p, "mul", (eq.E, x))
+                if z is not None:
+                    changed |= p.union(z, i)
+            if "right_identity" in names:
+                z = eq._lookup(p, "mul", (x, eq.E))
+                if z is not None:
+                    changed |= p.union(z, i)
+            xi = eq._lookup(p, "inv", (x,))
+            if xi is not None and e_id is not None:
+                ix = p.terms[p.find(xi)]
+                if "left_inverse" in names:
+                    z = eq._lookup(p, "mul", (ix, x))
+                    if z is not None:
+                        changed |= p.union(z, e_id)
+                if "right_inverse" in names:
+                    z = eq._lookup(p, "mul", (x, ix))
+                    if z is not None:
+                        changed |= p.union(z, e_id)
+            if "square_is_identity" in names and e_id is not None:
+                z = eq._lookup(p, "mul", (x, x))
+                if z is not None:
+                    changed |= p.union(z, e_id)
+        if "assoc" in names:
+            decompositions, mul_nodes = {}, []
+            for i, t in enumerate(p.terms):
+                if t.op == "mul":
+                    decompositions.setdefault(p.find(i), []).append(t.args)
+                    mul_nodes.append((i, t))
+            for lhs, outer in mul_nodes:
+                left, z = outer.args
+                for x, y in decompositions.get(p.find(p.ids[left]), ()):
+                    yz = eq._lookup(p, "mul", (y, z))
+                    if yz is None:
+                        continue
+                    rhs = eq._lookup(p, "mul", (x, p.terms[p.find(yz)]))
+                    if rhs is not None:
+                        changed |= p.union(lhs, rhs)
+        if not changed:
+            return
+
+
+def _partition(p):
+    classes = {}
+    for i, t in enumerate(p.terms):
+        classes.setdefault(p.find(i), set()).add(t)
+    return frozenset(frozenset(xs) for xs in classes.values())
+
+
+def test_data_rules_match_packet_one_closure_after_every_move():
+    compared = 0
+    for theory_name, seed in (("group", 101), ("left_group", 102),
+                              ("exponent_two", 103)):
+        rng = random.Random(seed)
+        for _ in range(2000):
+            new = eq.start(theory_name, eq.Goal(a, b))
+            old = new.copy()
+            for _ in range(8):
+                move = rng.choice(eq.candidates(new))
+                eq.apply(new, move)
+                args = tuple(old.representative_term(x) for x in move.args)
+                old.add_term(eq.Term(move.op, args))
+                _reference_closure(old)
+                compared += 1
+                assert _partition(new) == _partition(old)
+    print(f"compared {compared} old/new closure positions")
+    assert compared == 48000
+
+
+def test_monoid_signature_and_associativity_presence_condition():
+    p = eq.start("monoid", eq.Goal(a, b), (a, b, c))
+    assert all(move.op != "inv" for move in eq.candidates(p))
+    ab, bc = eq.mul(a, b), eq.mul(b, c)
+    lhs, rhs = eq.mul(ab, c), eq.mul(a, bc)
+    for term in (ab, bc, lhs):
+        eq._add_tree(p, term)
+    eq.closure(p)
+    assert rhs not in p.ids
+    eq._add_tree(p, rhs); eq.closure(p)
+    assert p.find(p.ids[lhs]) == p.find(p.ids[rhs])
+
+
+def test_commutative_group_rule_is_data():
+    p = eq.start("commutative_group", eq.Goal(a, b))
+    ab, ba = eq.mul(a, b), eq.mul(b, a)
+    eq._add_tree(p, ab); eq._add_tree(p, ba); eq.closure(p)
+    assert p.find(p.ids[ab]) == p.find(p.ids[ba])
+    assert any(name == "commutative" for name, _, _ in
+               eq.rule_statements("commutative_group"))
+
+
+def test_repeated_pattern_variable_requires_one_class():
+    repeated = eq.Rule("square", eq.mul(eq.X, eq.X), eq.E)
+    th = eq.Theory((repeated,))
+    aa, ab = eq.mul(a, a), eq.mul(a, b)
+    p = eq.start(th, eq.Goal(a, b))
+    eq._add_tree(p, aa); eq._add_tree(p, ab); eq.closure(p)
+    assert p.find(p.ids[aa]) == p.find(p.ids[eq.E])
+    assert p.find(p.ids[ab]) != p.find(p.ids[eq.E])
+    p.union(p.ids[a], p.ids[b]); eq.closure(p)
+    assert p.find(p.ids[ab]) == p.find(p.ids[eq.E])
+
+
+def test_random_theories_are_deterministic_and_run_200_moves():
+    for seed in range(50):
+        th = eq.random_theory(seed)
+        assert th == eq.random_theory(seed)
+        p = eq.Position(th)
+        for op, arity in th.signature:
+            if arity == 0:
+                p.add_term(eq.Term(op))
+        p.add_term(a); p.add_term(b); eq.closure(p)
+        rng = random.Random(seed)
+        for _ in range(200):
+            reps = [p.terms[i] for i in range(len(p.terms)) if p.find(i) == i]
+            operations = [(op, arity) for op, arity in th.signature if arity]
+            attempts = 0
+            while True:
+                op, arity = rng.choice(operations)
+                move = eq.Move(op, tuple(rng.choice(reps) for _ in range(arity)))
+                attempts += 1
+                if eq._is_candidate(p, move):
+                    eq._apply_candidate(p, move)
+                    break
+                assert attempts < 10000
