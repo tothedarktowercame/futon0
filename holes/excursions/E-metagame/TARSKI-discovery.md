@@ -246,3 +246,47 @@ conservative operation-only presentation of the same game fragment.
 * Local LeanEuclid `SystemE/Theory/Inferences/*.lean`,
   `SystemE/Meta/Tactics/Solve.lean`, and `Book/Prop01.lean`--`Prop03.lean` at
   `33a72c0f`.
+
+## 8. What the engine lacks (added in review, claude-6, 2026-11-12)
+
+The packet asked for this as its own list; section 7 gives three of the items in
+prose. Against `metagame_eq.py` at `998284d`, for Beeson's point theory:
+
+1. **Relations as facts.** `B` and `E` are not equations between point terms. Either
+   a fact store beside the union-find, or truth-valued operations merged with a
+   constant `true`.
+2. **Conditional rules.** Premises (facts and equations) to a conclusion; today a
+   rule is one unconditional equation.
+3. **Distinctness as a positive fact**, with its own rules; a growing closure cannot
+   read "not equal" from absence.
+4. **Guarded operations.** `ext`, `ip`, `center`, `iℓ` are offered as moves only
+   when their guards are established facts; today every operation applies to every
+   tuple of present classes.
+5. **Negative conclusions and contradiction.** A6-i concludes a negation, the
+   stability schemas use double negation, and the proof-checked I.1 has three
+   contradiction blocks (section 4). So the game needs refutation: a way to assume,
+   reach a contradiction, and discharge. This is the one item that changes the shape
+   of a position (it stops being a single growing set), and it is not needed by
+   items 1 to 4.
+6. **Goals as regular sequents.** ADM's completeness argument (their §5.2 to §5.4,
+   checked below) works with sequents `Γ ⇒ ∃x. Δ`; hindsight goals over relations
+   need the same shape: hypotheses, existentially bound constructed points, a
+   conjunction of facts.
+
+Not delivered by the discovery, and still open:
+
+- The fragment's signature and axioms written out in the engine's rule format
+  (asked for in item 7 of the packet).
+- An assessment of the smaller candidate, points on a line with betweenness and
+  segment extension. Items 1 to 4 can be exercised there without item 5 if its
+  axioms are Horn; that has not been checked.
+- Pambuccian's axiom lists (source inaccessible, as the note says).
+
+Checked by the reviewer against the sources: the ADM paper's contents list has
+"5.2 Tarski's system", "5.3 Translating E to T", "5.4 Interpreting T in E", and
+its §5.1 says the argument uses a cut-elimination theorem of Negri for geometric
+theories (arXiv 0810.4315, extracted text); Beeson's abstract states that points
+proved to exist are constructed "uniformly in parameters", that classical proofs
+correspond to several constructions for different cases, and that line-circle and
+circle-circle continuity replace Dedekind completeness (arXiv 1407.4399). The other
+page and section references in sections 1 to 7 were not re-checked.
