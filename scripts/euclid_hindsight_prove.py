@@ -23,8 +23,10 @@ import euclid_spiel
 PAGE_SIZE = 10
 
 
-def _softmax_costs(scores):
-    values = np.asarray(scores, dtype=np.float64)
+def _softmax_costs(scores, temperature=1.0):
+    if temperature <= 0:
+        raise ValueError("temperature must be positive")
+    values = np.asarray(scores, dtype=np.float64) / temperature
     shifted = values - values.max()
     log_z = math.log(float(np.exp(shifted).sum()))
     return -(shifted - log_z)
@@ -45,8 +47,8 @@ def _child(parent, action):
     return child, None
 
 
-def _model_scores(model, state, legal):
-    arrays = features.extract(state, legal, goal=None).arrays
+def _model_scores(model, state, legal, goal=None):
+    arrays = features.extract(state, legal, goal=goal).arrays
     batch = models.batch_features([arrays])
     logits, _ = model(batch)
     return np.asarray(logits[0, :len(legal)], dtype=np.float64)
@@ -63,8 +65,15 @@ class Node:
         self.costs = None
 
 
+def _goal_reached(state, goal):
+    if goal is None:
+        return state.goal_reached()
+    atoms = train.goal_atoms(goal)
+    return hindsight.goals_hold(state.engine_state, atoms)
+
+
 def prove(start, *, model=None, random_seed=None, max_calls=400,
-          wall_seconds=600, page_size=PAGE_SIZE):
+          wall_seconds=600, page_size=PAGE_SIZE, temperature=1.0, goal=None):
     """Return a receipt for one best-first search arm."""
     if (model is None) == (random_seed is None):
         raise ValueError("choose exactly one of model or random_seed")
@@ -88,8 +97,9 @@ def prove(start, *, model=None, random_seed=None, max_calls=400,
             if not legal:
                 continue
             scores = ([rng.random() for _ in legal]
-                      if model is None else _model_scores(model, node.state, legal))
-            costs = _softmax_costs(scores)
+                      if model is None else _model_scores(
+                          model, node.state, legal, goal=goal))
+            costs = _softmax_costs(scores, temperature)
             order = np.argsort(-np.asarray(scores), kind="stable")
             node.ordered = [legal[int(i)] for i in order]
             node.costs = [float(costs[int(i)]) for i in order]
@@ -108,7 +118,7 @@ def prove(start, *, model=None, random_seed=None, max_calls=400,
                 continue
             admitted += 1
             path = node.path + (action,)
-            if child.goal_reached():
+            if _goal_reached(child, goal):
                 result = path
                 frontier.clear()
                 break
@@ -137,12 +147,12 @@ def prove(start, *, model=None, random_seed=None, max_calls=400,
     }
 
 
-def replay(start, receipt):
+def replay(start, receipt, goal=None):
     state = start.clone()
     for raw in receipt["proof_tuples"]:
         action = raw[0], tuple(raw[1]), tuple(sorted(raw[2].items()))
         state.apply_action_tuple(action)
-    return state.goal_reached()
+    return _goal_reached(state, goal)
 
 
 def problem_start(name):
@@ -157,33 +167,38 @@ def problem_start(name):
 
 
 def run_arm(args):
-    problem, arm, snapshot, seed, max_calls, wall_seconds = args
+    problem, arm, snapshot, seed, max_calls, wall_seconds, temperature = args
     start = problem_start(problem)
     if arm == "trained":
         model = models.CandidateModel(seed=2026111202)
         models.load_plain_arrays(model, snapshot)
         receipt = prove(start, model=model, max_calls=max_calls,
-                        wall_seconds=wall_seconds)
+                        wall_seconds=wall_seconds, temperature=temperature)
     elif arm == "generation0":
         model = models.CandidateModel(seed=2026111202)
         receipt = prove(start, model=model, max_calls=max_calls,
-                        wall_seconds=wall_seconds)
+                        wall_seconds=wall_seconds, temperature=temperature)
     else:
         receipt = prove(start, random_seed=seed, max_calls=max_calls,
-                        wall_seconds=wall_seconds)
+                        wall_seconds=wall_seconds, temperature=temperature)
     receipt.update({"problem": problem, "arm": arm, "seed": seed,
+                    "temperature": temperature,
                     "replay_confirmed": replay(start, receipt) if receipt["solved"] else None})
     return receipt
 
 
-def run_suite(snapshot, output, max_calls=400, wall_seconds=600):
+def run_suite(snapshot, output, max_calls=400, wall_seconds=600,
+              temperature=1.0):
     problems = ("i1", "i3", "i2-stage2", "i2")
     rows = []
     context = mp.get_context("spawn")
     for problem in problems:
-        arms = [(problem, "trained", snapshot, None, max_calls, wall_seconds),
-                (problem, "generation0", snapshot, None, max_calls, wall_seconds)]
-        arms += [(problem, f"random-{seed}", snapshot, seed, max_calls, wall_seconds)
+        arms = [(problem, "trained", snapshot, None, max_calls, wall_seconds,
+                 temperature),
+                (problem, "generation0", snapshot, None, max_calls, wall_seconds,
+                 temperature)]
+        arms += [(problem, f"random-{seed}", snapshot, seed, max_calls,
+                  wall_seconds, temperature)
                  for seed in (2026111203, 2026111204, 2026111205)]
         with context.Pool(len(arms)) as pool:
             for row in pool.imap_unordered(run_arm, arms):
@@ -200,8 +215,10 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--max-calls", type=int, default=400)
     parser.add_argument("--wall-seconds", type=int, default=600)
+    parser.add_argument("--temperature", type=float, default=1.0)
     args = parser.parse_args()
-    run_suite(args.snapshot, args.output, args.max_calls, args.wall_seconds)
+    run_suite(args.snapshot, args.output, args.max_calls, args.wall_seconds,
+              args.temperature)
 
 
 if __name__ == "__main__":

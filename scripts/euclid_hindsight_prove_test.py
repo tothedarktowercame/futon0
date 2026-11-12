@@ -1,6 +1,7 @@
 import euclid_candidate_model as models
 import euclid_hindsight_prove as prove
 import euclid_hindsight_train as train
+import numpy as np
 
 
 def test_finds_i1_from_one_move_before_goal():
@@ -19,3 +20,14 @@ def test_random_order_is_reproducible():
     for key in ("solved", "network_calls", "nodes_expanded", "states_seen",
                 "admitted", "refused", "proof_length", "proof_tuples"):
         assert left[key] == right[key]
+
+
+def test_temperature_one_preserves_e3_ordering():
+    state = train._state(1)
+    legal = train.candidates(state)
+    model = models.CandidateModel(seed=2026111202)
+    scores = prove._model_scores(model, state, legal)
+    before = np.argsort(prove._softmax_costs(scores), kind="stable")
+    after = np.argsort(prove._softmax_costs(scores, temperature=1.0),
+                       kind="stable")
+    assert np.array_equal(after, before)
