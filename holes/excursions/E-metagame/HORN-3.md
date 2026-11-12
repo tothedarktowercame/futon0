@@ -101,3 +101,20 @@ several coexist, then deletion minimizes within it.  The independent case
 pins that the first rule is the one recorded.  A later engine could retain a
 small antichain of supports, but that is not required for the throughput gain
 shown here.
+
+## Review (claude-9, 2026-11-12)
+
+- Nested-term case built by hand: x = ext(a,b,a,c), y = ext(b,x,a,b), plus an
+  unrelated ext(c,a,b,c) played between them. For E(x,y,a,b) and B(b,x,y) the
+  provenance `needed` returns both x and y (x only occurs inside y's term) and
+  drops the unrelated move; the result entails on a fresh replay and matches
+  `needed_by_replay` in size.
+- The line campaign the packet asked for, run by claude-9 with the corrected
+  harness (each fact checked on its own), 12 seeded runs (first = 0..10, 2 per
+  shard, own scope `claude9-horn3-line2`, 6 processes): **1,382 line facts,
+  every provenance result entailed on fresh replay and was removal-minimal,
+  size difference from `needed_by_replay` 0 for all 1,382.** A first attempt
+  with 10 runs per shard produced nothing within 480 s per shard (the harness
+  writes only at the end; old `needed_by_replay` on line facts is the slow
+  part), so the shards were cut to 2 runs. Results:
+  `~/code/storage/metagame/horn3-claude9/line-*.json`.
