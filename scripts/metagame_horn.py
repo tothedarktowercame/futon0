@@ -77,6 +77,13 @@ class Goal:
     variables: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class Derivation:
+    """The first recorded reason for a ground fact."""
+    rule: str
+    premises: tuple[Atom, ...] = ()
+
+
 @dataclass
 class Position:
     theory: Theory
@@ -87,6 +94,10 @@ class Position:
     inconsistent: bool = False
     initial_givens: tuple[Term, ...] = ()
     initial_hypotheses: tuple[Atom, ...] = ()
+    derivations: dict[Atom, Derivation] = field(default_factory=dict)
+    derivation_keys: dict[Atom, Atom] = field(default_factory=dict)
+    term_moves: dict[Term, Move] = field(default_factory=dict)
+    contradiction_derivation: Derivation | None = None
 
     def add_term(self, term: Term):
         if term in self.ids:
@@ -123,7 +134,10 @@ class Position:
     def copy(self):
         return Position(self.theory, list(self.terms), dict(self.ids),
                         list(self.parent), set(self.relations), self.inconsistent,
-                        self.initial_givens, self.initial_hypotheses)
+                        self.initial_givens, self.initial_hypotheses,
+                        dict(self.derivations), dict(self.derivation_keys),
+                        dict(self.term_moves),
+                        self.contradiction_derivation)
 
 
 def _vars_term(term):
@@ -272,6 +286,57 @@ def _canonical_relations(position):
             for name, args in position.relations}
 
 
+def _class_term(position, cls):
+    return position.terms[position.find(cls)]
+
+
+def _ground(position, atom, env, signatures):
+    """Instantiate a rule atom as a stable, ground public atom."""
+    if isinstance(atom, Rel):
+        return Rel(atom.name, tuple(_class_term(position, _eval(position, x, env, signatures))
+                                    for x in atom.args))
+    left = _class_term(position, _eval(position, atom.left, env, signatures))
+    right = _class_term(position, _eval(position, atom.right, env, signatures))
+    if isinstance(atom, Neq):
+        return Neq(*sorted((left, right), key=str))
+    return Equation(left, right)
+
+
+def _normalize_term(position, term):
+    return position.representative_term(term) if term in position.ids else term
+
+
+def _normalize_atom(position, atom):
+    if isinstance(atom, Rel):
+        return Rel(atom.name, tuple(_normalize_term(position, x) for x in atom.args))
+    left, right = _normalize_term(position, atom.left), _normalize_term(position, atom.right)
+    if isinstance(atom, Neq):
+        return Neq(*sorted((left, right), key=str))
+    if str(right) < str(left):
+        left, right = right, left
+    return Equation(left, right)
+
+
+def _record(position, fact, rule, premises=()):
+    normalized = _normalize_atom(position, fact)
+    if normalized not in position.derivation_keys:
+        position.derivations[fact] = Derivation(rule, tuple(premises))
+        position.derivation_keys[normalized] = fact
+
+
+def _refresh_derivation_keys(position):
+    position.derivation_keys = {}
+    for fact in position.derivations:
+        position.derivation_keys.setdefault(_normalize_atom(position, fact), fact)
+
+
+def derivation(position, fact):
+    """Return the first recorded derivation equivalent to ``fact`` now."""
+    target = _normalize_atom(position, fact)
+    old = position.derivation_keys.get(target)
+    return None if old is None else (old, position.derivations[old])
+
+
 def closure(position):
     """Close congruence and Horn rules; record inconsistency, never raise it."""
     while True:
@@ -280,11 +345,19 @@ def closure(position):
         for idx, term in enumerate(position.terms):
             if term.op == "gen": continue
             sig = (term.op, tuple(position.find(position.ids[x]) for x in term.args))
-            if sig in signatures: changed |= position.union(signatures[sig], idx)
+            if sig in signatures:
+                other_idx = signatures[sig]
+                other = position.terms[other_idx]
+                premises = tuple(Equation(a, b) for a, b in zip(other.args, term.args)
+                                 if a != b)
+                equality = Equation(other, term)
+                _record(position, equality, "congruence", premises)
+                changed |= position.union(other_idx, idx)
             else: signatures[sig] = idx
         rewritten = _canonical_relations(position)
         if rewritten != position.relations:
             position.relations = rewritten; changed = True
+        _refresh_derivation_keys(position)
         if any(name == "neq" and args[0] == args[1]
                for name, args in position.relations):
             position.inconsistent = True
@@ -294,10 +367,23 @@ def closure(position):
                 conclusion = rule.conclusion
                 if isinstance(conclusion, Contradiction):
                     position.inconsistent = True
+                    if position.contradiction_derivation is None:
+                        premises = tuple(_ground(position, atom, env, signatures)
+                                         for atom in rule.premises)
+                        position.contradiction_derivation = Derivation(rule.name, premises)
                 elif isinstance(conclusion, Equation):
                     left = _eval(position, conclusion.left, env, signatures)
                     right = _eval(position, conclusion.right, env, signatures)
-                    changed |= position.union(left, right)
+                    ground = Equation(_class_term(position, left),
+                                      _class_term(position, right))
+                    if _normalize_atom(position, ground) not in position.derivation_keys:
+                        premises = tuple(_ground(position, atom, env, signatures)
+                                         for atom in rule.premises)
+                        _record(position, ground, rule.name, premises)
+                    merged = position.union(left, right)
+                    changed |= merged
+                    if merged:
+                        _refresh_derivation_keys(position)
                 else:
                     terms = conclusion.args if isinstance(conclusion, Rel) else (
                         conclusion.left, conclusion.right)
@@ -305,6 +391,14 @@ def closure(position):
                     name = conclusion.name if isinstance(conclusion, Rel) else "neq"
                     fact = (name, args)
                     if name == "neq": fact = (name, tuple(sorted(args)))
+                    ground = (Rel(name, tuple(_class_term(position, x) for x in args))
+                              if name != "neq" else
+                              Neq(*sorted((_class_term(position, x) for x in args),
+                                          key=str)))
+                    if _normalize_atom(position, ground) not in position.derivation_keys:
+                        premises = tuple(_ground(position, atom, env, signatures)
+                                         for atom in rule.premises)
+                        _record(position, ground, rule.name, premises)
                     if fact not in position.relations:
                         position.relations.add(fact); changed = True
         if not changed: return position
@@ -326,6 +420,8 @@ def start(theory_, hypotheses=(), givens=()):
             left, right = (_eval(position, x, env, signatures)
                            for x in (atom.left, atom.right))
             if left is None or right is None: raise ValueError("unknown hypothesis term")
+            _record(position, Equation(_class_term(position, left),
+                                        _class_term(position, right)), "hypothesis")
             position.union(left, right)
         else:
             terms = atom.args if isinstance(atom, Rel) else (atom.left, atom.right)
@@ -334,6 +430,10 @@ def start(theory_, hypotheses=(), givens=()):
             name = atom.name if isinstance(atom, Rel) else "neq"
             if name == "neq": args = tuple(sorted(args))
             position.relations.add((name, args))
+            ground = (Rel(name, tuple(_class_term(position, x) for x in args))
+                      if name != "neq" else
+                      Neq(*sorted((_class_term(position, x) for x in args), key=str)))
+            _record(position, ground, "hypothesis")
     return closure(position)
 
 
@@ -369,6 +469,7 @@ def apply(position, move):
     canonical = Move(move.op, tuple(position.representative_term(x) for x in move.args))
     if not _valid_move(position, canonical): raise ValueError(f"not a candidate: {move}")
     position.add_term(canonical.result)
+    position.term_moves.setdefault(canonical.result, canonical)
     closure(position)
     return not position.inconsistent
 
@@ -407,12 +508,119 @@ def replay(theory_, opening, moves):
     return position, kept
 
 
-def needed(theory_, opening, moves, goal):
+def needed_by_replay(theory_, opening, moves, goal):
+    """Original deletion minimizer, retained as the comparison oracle."""
     keep = list(moves)
     for move in list(moves):
         trial = [x for x in keep if x != move]
         position, _ = replay(theory_, opening, trial)
         if entails(position, goal): keep = trial
+    return keep
+
+
+_provenance_replay_cache = {}
+
+
+def _provenance_position(theory_, opening, moves):
+    key = (theory(theory_), opening.initial_hypotheses,
+           opening.initial_givens, tuple(moves))
+    found = _provenance_replay_cache.get(key)
+    if found is not None:
+        return found
+    found, _ = replay(theory_, opening, moves)
+    if len(_provenance_replay_cache) >= 32:
+        _provenance_replay_cache.pop(next(iter(_provenance_replay_cache)))
+    _provenance_replay_cache[key] = found
+    return found
+
+
+def _atom_terms(atom):
+    return atom.args if isinstance(atom, Rel) else (atom.left, atom.right)
+
+
+def _equality_path(position, left, right):
+    """Recorded merge edges connecting two equal terms, if one exists."""
+    graph = {}
+    for fact in position.derivations:
+        if isinstance(fact, Equation):
+            graph.setdefault(fact.left, []).append((fact.right, fact))
+            graph.setdefault(fact.right, []).append((fact.left, fact))
+    queue = [left]
+    previous = {left: None}
+    edge = {}
+    for node in queue:
+        if node == right:
+            break
+        for neighbor, fact in graph.get(node, ()):
+            if neighbor not in previous:
+                previous[neighbor] = node
+                edge[neighbor] = fact
+                queue.append(neighbor)
+    if right not in previous:
+        return ()
+    out, node = [], right
+    while previous[node] is not None:
+        out.append(edge[node]); node = previous[node]
+    return tuple(reversed(out))
+
+
+def provenance_moves(position, goal):
+    """Moves in the position's first recorded support for a ground goal."""
+    goal = goal if isinstance(goal, Goal) else Goal(tuple(goal))
+    selected = set()
+    seen_facts = set()
+    seen_terms = set()
+
+    def visit_term(term):
+        if term in seen_terms:
+            return
+        seen_terms.add(term)
+        move = position.term_moves.get(term)
+        if move is not None:
+            selected.add(move)
+        if term.op not in ("gen", "var"):
+            for argument in term.args:
+                visit_term(argument)
+
+    def visit_fact(fact):
+        normalized = _normalize_atom(position, fact)
+        if normalized in seen_facts:
+            return
+        seen_facts.add(normalized)
+        for term in _atom_terms(fact):
+            visit_term(term)
+        found = derivation(position, fact)
+        if found is not None:
+            stored, reason = found
+            for term in _atom_terms(stored):
+                visit_term(term)
+            for premise in reason.premises:
+                visit_fact(premise)
+        elif isinstance(fact, Equation):
+            for equality in _equality_path(position, fact.left, fact.right):
+                visit_fact(equality)
+
+    for atom in goal.atoms:
+        visit_fact(atom)
+    return selected
+
+
+def needed(theory_, opening, moves, goal):
+    """Removal-minimal proof, seeded by the recorded first derivation."""
+    final = _provenance_position(theory_, opening, moves)
+    support = provenance_moves(final, goal)
+    keep = [move for move in moves
+            if move in support or move.result in {x.result for x in support}]
+    # A missing reason must not change semantics: all moves are the safe
+    # candidate, and the retained replay oracle still minimizes it.
+    candidate, _ = replay(theory_, opening, keep)
+    if not entails(candidate, goal):
+        keep = list(moves)
+    for move in list(keep):
+        trial = [x for x in keep if x != move]
+        position, _ = replay(theory_, opening, trial)
+        if entails(position, goal):
+            keep = trial
     return keep
 
 
