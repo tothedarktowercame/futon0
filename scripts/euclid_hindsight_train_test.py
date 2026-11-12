@@ -72,3 +72,15 @@ def test_book_goal_match_covers_later_book_goals_and_rejects_near_miss():
     assert t.book_goal_match(matching)[0] == 4
     matching["goal"][2][-1] = "a"
     assert t.book_goal_match(matching) is None
+
+
+def test_book_goal_match_reads_angles_and_inequalities_in_any_order():
+    """Review (claude-9): I.4 stated with reversed angles, and I.19 stated as
+    a less-than, must still be recognised as Book goals."""
+    reversed_i4 = {"proposition": 4,
+                   "goal": [["_eq_len", "c", "b", "f", "e"],
+                            ["_eq_ang", "f", "e", "d", "c", "b", "a"],
+                            ["_eq_ang", "b", "c", "a", "e", "f", "d"]]}
+    assert t.book_goal_match(reversed_i4)[0] == 4
+    i19_as_lt = {"proposition": 19, "goal": ["_lt_len", "b", "a", "c", "a"]}
+    assert t.book_goal_match(i19_as_lt)[0] == 19

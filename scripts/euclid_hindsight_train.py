@@ -88,6 +88,34 @@ def _atom_variants(atom):
         return out
     if head == "between" and len(atom) == 4:
         return [atom, (head, atom[3], atom[2], atom[1])]
+    if head == "_eq_ang" and len(atom) == 7:
+        # angle pqr = angle stu; each angle reads the same backwards, and
+        # the two sides of the equation can swap (review fix, claude-9).
+        _, p, q, r, s, t, u = atom
+        out = []
+        for a1, a2 in (((p, q, r), (s, t, u)), ((s, t, u), (p, q, r))):
+            for x in (a1, a1[::-1]):
+                for y in (a2, a2[::-1]):
+                    out.append((head, *x, *y))
+        return out
+    flip = {"_gt_len": "_lt_len", "_lt_len": "_gt_len",
+            "_gt_ang": "_lt_ang", "_lt_ang": "_gt_ang"}
+    if head in ("_gt_len", "_lt_len") and len(atom) == 5:
+        _, p, q, r, t = atom
+        out = []
+        for h, s1, s2 in ((head, (p, q), (r, t)), (flip[head], (r, t), (p, q))):
+            for x in (s1, s1[::-1]):
+                for y in (s2, s2[::-1]):
+                    out.append((h, *x, *y))
+        return out
+    if head in ("_gt_ang", "_lt_ang") and len(atom) == 7:
+        _, p, q, r, s, t, u = atom
+        out = []
+        for h, a1, a2 in ((head, (p, q, r), (s, t, u)), (flip[head], (s, t, u), (p, q, r))):
+            for x in (a1, a1[::-1]):
+                for y in (a2, a2[::-1]):
+                    out.append((h, *x, *y))
+        return out
     return [atom]
 
 
