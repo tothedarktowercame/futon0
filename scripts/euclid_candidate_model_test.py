@@ -134,3 +134,38 @@ def test_gradients_reach_embeddings_and_value_and_step_reduces_loss():
     optimizer.update(model, gradients)
     after = _loss(model, batch, targets, values)
     assert float(after) < float(loss)
+
+
+def test_overfit_one_grounding_without_promoting_its_sibling():
+    state = _state(2, PREFIX)
+    candidates = _candidates(state)
+    by_rule = {}
+    for index, candidate in enumerate(candidates):
+        by_rule.setdefault(candidate[0], []).append(index)
+    initial_model = candidate_model.CandidateModel(seed=83)
+    arrays = _arrays(state, candidates)
+    batch = candidate_model.batch_features([arrays])
+    initial_logits, _ = initial_model(batch)
+    global_top = int(np.argmax(np.asarray(initial_logits[0])))
+    rule = "distinct_points"
+    indices = by_rule[rule]
+    assert len(indices) >= 5 and global_top not in indices
+    model = initial_model
+    ordered = sorted(indices, key=lambda index: -float(initial_logits[0, index]))
+    target = ordered[0]
+    sibling = ordered[1]
+    assert target != global_top
+    policy = jnp.zeros((1, len(candidates))).at[0, target].set(1)
+    optimizer = nnx.Optimizer(model, optax.adam(1e-2), wrt=nnx.Param)
+    reached = None
+    for step in range(1, 81):
+        _value, gradients = nnx.value_and_grad(_loss)(
+            model, batch, policy, jnp.asarray([0.0]))
+        optimizer.update(model, gradients)
+        logits, _ = model(batch)
+        if int(np.argmax(np.asarray(logits[0]))) == target:
+            reached = step
+            break
+    assert reached is not None, (rule, target)
+    final = np.asarray(logits[0])
+    assert final[target] > final[sibling]

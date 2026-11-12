@@ -174,6 +174,22 @@ def test_fact_numeric_constants_have_typed_stable_buckets():
                arrays["fact_constant_bucket"][row, 1:])
 
 
+def test_real_fact_change_changes_features_and_repeat_is_identical():
+    state = _made_i1()
+    candidates = _candidates(state)[:8]
+    original = features.extract(state, candidates).arrays
+    repeated = features.extract(state, candidates).arrays
+    assert all(np.array_equal(original[name], repeated[name])
+               for name in original)
+
+    changed = state.clone()
+    removed = next(iter(changed.engine_state.facts))
+    del changed.engine_state.facts[removed]
+    modified = features.extract(changed, candidates).arrays
+    assert any(not np.array_equal(original[name], modified[name])
+               for name in original)
+
+
 def test_prefix_features_are_deterministic_between_processes():
     command = [sys.executable, "-c",
                "import euclid_candidate_features_test as t; "
