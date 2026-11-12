@@ -36,6 +36,29 @@ def test_book_goal_match_accepts_atom_order_and_renamed_witness():
         "goal": [["_eq_len", "made_point", "b", "a", "b"],
                  ["_eq_len", "made_point", "a", "a", "b"]],
     }
-    assert t.book_goal_match(record) == {"c": "made_point"}
+    assert t.book_goal_match(record)[0] == 1
     record["goal"][0][1] = "another_point"
     assert t.book_goal_match(record) is None
+
+
+def test_book_goal_match_catches_i1_goal_from_other_givens():
+    """Review (claude-9): E4a found I.1's goal by random play from I.2's
+    givens; the first matcher compared only with the record's own goal."""
+    from_i2 = {"proposition": 2,
+               "goal": [["_eq_len", "a", "b", "b", "c_4"],
+                        ["_eq_len", "a", "c_4", "b", "c_4"]]}
+    assert t.book_goal_match(from_i2)[0] == 1
+    from_i3 = {"proposition": 3,
+               "goal": [["_eq_len", "c1", "c0", "d_9", "c1"],
+                        ["_eq_len", "d_9", "c0", "c0", "c1"]]}
+    assert t.book_goal_match(from_i3)[0] == 1
+    # Same shape but the second atom is about a different made point.
+    near_miss = {"proposition": 2,
+                 "goal": [["_eq_len", "a", "b", "b", "c_4"],
+                          ["_eq_len", "a", "d_5", "b", "d_5"]]}
+    assert t.book_goal_match(near_miss) is None
+    # A witness must be a made object, not a given point.
+    given_only = {"proposition": 2,
+                  "goal": [["_eq_len", "a", "b", "b", "c"],
+                           ["_eq_len", "a", "c", "b", "c"]]}
+    assert t.book_goal_match(given_only) is None

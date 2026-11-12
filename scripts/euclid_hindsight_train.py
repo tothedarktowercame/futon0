@@ -75,31 +75,83 @@ def goal_atoms(goal):
     return (tuple(goal),)
 
 
+def _atom_variants(atom):
+    """Orderings of an atom that state the same fact."""
+    head = atom[0]
+    if head == "_eq_len" and len(atom) == 5:
+        _, p, q, r, t = atom
+        out = []
+        for s1, s2 in (((p, q), (r, t)), ((r, t), (p, q))):
+            for a in (s1, s1[::-1]):
+                for b in (s2, s2[::-1]):
+                    out.append((head, *a, *b))
+        return out
+    if head == "between" and len(atom) == 4:
+        return [atom, (head, atom[3], atom[2], atom[1])]
+    return [atom]
+
+
+def _goal_shape(atoms, rename):
+    """A goal as (classes of equal segments, other atoms), points renamed.
+
+    Equal-length atoms are closed under transitivity, so |ab|=|bc|, |ac|=|bc|
+    and |ca|=|ab|, |cb|=|ab| (I.1) have the same shape."""
+    parent = {}
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            x = parent[x]
+        return x
+    others = set()
+    for atom in atoms:
+        if atom[0] == "_eq_len" and len(atom) == 5:
+            p, q, r, t = (rename(x) for x in atom[1:])
+            s1, s2 = frozenset((p, q)), frozenset((r, t))
+            parent[find(s1)] = find(s2)
+        else:
+            variants = [tuple(rename(x) if i else x for i, x in enumerate(v))
+                        for v in _atom_variants(atom)]
+            others.add(min(variants))
+    classes = {}
+    for seg in list(parent):
+        classes.setdefault(find(seg), set()).add(seg)
+    return (frozenset(frozenset(c) for c in classes.values() if len(c) > 1),
+            frozenset(others))
+
+
+def _points(atoms):
+    return {x for atom in atoms for x in atom[1:]}
+
+
 def book_goal_match(record):
-    """Match a record goal to its proposition goal, renaming witnesses only."""
-    proposition = record["proposition"]
-    expected = tuple(tuple(atom) for atom in features.play.GOALS[proposition])
+    """Whether a record's goal states a Book goal of I.1, I.2 or I.3.
+
+    Review fix (claude-9): the first version compared only with the record's
+    own proposition, kept given points fixed and matched atom by atom, so
+    I.1's goal reached by random play from I.2's givens (stated as
+    |ab|=|bc|, |ac|=|bc|) was not excluded.  Now every Book goal is tried;
+    Book given points map injectively to the record's own given points and
+    witnesses to made (non-given) objects; equal lengths compare as classes
+    of equal segments.  Returns (proposition, mapping) or None.
+    """
     actual = goal_atoms(record["goal"])
-    if len(actual) != len(expected):
-        return None
-    given = {obj["name"] for obj in
-             features.play.tr.objects_from_hyps(proposition)}
-    for ordered in itertools.permutations(actual):
-        mapping = {}
-        matched = True
-        for pattern, atom in zip(expected, ordered):
-            if len(pattern) != len(atom) or pattern[0] != atom[0]:
-                matched = False; break
-            for left, right in zip(pattern[1:], atom[1:]):
-                if left in given:
-                    if left != right:
-                        matched = False; break
-                elif mapping.setdefault(left, right) != right:
-                    matched = False; break
-            if not matched:
-                break
-        if matched and len(set(mapping.values())) == len(mapping):
-            return mapping
+    own_given = {obj["name"] for obj in
+                 features.play.tr.objects_from_hyps(record["proposition"])}
+    actual_points = sorted(_points(actual))
+    target = _goal_shape(actual, lambda x: x)
+    for book in (1, 2, 3):
+        expected = tuple(tuple(atom) for atom in features.play.GOALS[book])
+        book_points = sorted(_points(expected))
+        if len(book_points) != len(actual_points):
+            continue
+        book_given = {obj["name"] for obj in
+                      features.play.tr.objects_from_hyps(book)}
+        for image in itertools.permutations(actual_points):
+            mapping = dict(zip(book_points, image))
+            if any((k in book_given) != (v in own_given) for k, v in mapping.items()):
+                continue
+            if _goal_shape(expected, mapping.get) == target:
+                return book, mapping
     return None
 
 
