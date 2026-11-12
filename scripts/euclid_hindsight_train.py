@@ -53,6 +53,20 @@ def _state(proposition):
     return game.new_initial_state()
 
 
+def make_state_disjoint(examples):
+    """Move held-out copies of training states into the training split."""
+    train_keys = {x["state_key"] for x in examples if x["split"] == "train"}
+    shared_keys = train_keys & {
+        x["state_key"] for x in examples if x["split"] == "heldout"
+    }
+    moved = 0
+    for example in examples:
+        if example["split"] == "heldout" and example["state_key"] in shared_keys:
+            example["split"] = "train"
+            moved += 1
+    return len(shared_keys), moved
+
+
 def build_dataset(filtered, output):
     examples, counts, seen_records = [], {}, set()
     with open(filtered) as stream:
@@ -88,6 +102,10 @@ def build_dataset(filtered, output):
                         "state_key": state_key(state),
                     })
                 state.apply_action_tuple(moves[move_index])
+    # A split by run seed alone is not state-disjoint: independent runs can
+    # reach the same logical position.  Training owns every shared state so
+    # that evaluation contains no position the model trained on.
+    shared_key_count, moved_examples = make_state_disjoint(examples)
     payload = {"examples": examples,
                "record_counts": {f"{s}:{h}": n for (s, h), n in counts.items()},
                "vocabulary_version": features.VOCABULARY.vocabulary_version}
@@ -97,6 +115,8 @@ def build_dataset(filtered, output):
     summary = {"records": sum(counts.values()), "examples": len(examples),
                "train_examples": sum(x["split"] == "train" for x in examples),
                "heldout_examples": sum(x["split"] == "heldout" for x in examples),
+               "shared_state_keys_moved_to_train": shared_key_count,
+               "heldout_examples_moved_to_train": moved_examples,
                "record_counts": payload["record_counts"]}
     Path(str(output) + ".json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, sort_keys=True))
