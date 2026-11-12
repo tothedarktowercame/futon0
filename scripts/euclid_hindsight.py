@@ -460,7 +460,7 @@ def _worker(worker, out_dir, duration, seed, sampling, conjunctive,
 
 def run_parallel(out_dir, duration, workers, seed, sampling="rule-uniform",
                  conjunctive=False, proposition_start=1, proposition_end=3,
-                 record_timeout=None):
+                 record_timeout=None, hard_wall=False):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     ctx = mp.get_context("spawn")
@@ -471,9 +471,20 @@ def run_parallel(out_dir, duration, workers, seed, sampling="rule-uniform",
                  for i in range(workers)]
     for process in processes:
         process.start()
-    for process in processes:
-        process.join()
-    if any(process.exitcode != 0 for process in processes):
+    if hard_wall:
+        stop = time.monotonic() + duration
+        for process in processes:
+            process.join(max(0, stop - time.monotonic()))
+        for process in processes:
+            if process.is_alive():
+                process.terminate()
+        for process in processes:
+            process.join()
+    else:
+        for process in processes:
+            process.join()
+    allowed = (0, -signal.SIGTERM) if hard_wall else (0,)
+    if any(process.exitcode not in allowed for process in processes):
         raise SystemExit("one or more hindsight workers failed")
 
 
@@ -489,10 +500,11 @@ def main():
     parser.add_argument("--proposition-start", type=int, default=1)
     parser.add_argument("--proposition-end", type=int, default=3)
     parser.add_argument("--record-timeout", type=float)
+    parser.add_argument("--hard-wall", action="store_true")
     args = parser.parse_args()
     run_parallel(args.out, args.duration, args.workers, args.seed,
                  args.sampling, args.conjunctive, args.proposition_start,
-                 args.proposition_end, args.record_timeout)
+                 args.proposition_end, args.record_timeout, args.hard_wall)
 
 
 if __name__ == "__main__":
