@@ -198,3 +198,41 @@ There is therefore no Book-free winning temperature.  The E3 problem matrix
 was not run: choosing an arbitrary temperature after this failure would
 violate the experiment's selection rule.  The temperature scope is inactive
 and no worker survives.
+
+### E4b-2b: capped-worker rerun
+
+The authorized rerun applied THREADS-1's create-small-then-widen sequence to
+every prover process.  Each worker was striped onto one CPU before creating
+its JAX client and model, then restored to the inherited 32-CPU affinity.
+BLAS, OpenMP, TensorFlow, NumExpr, and XLA launch caps were all one.
+
+| Smoke | Workers seen | Tasks per worker | Scope tasks observed | Result |
+|---|---:|---:|---:|---|
+| small | 2 / 2 | 11, 11 | -- | pass |
+| full | 12 / 12 | 11 each | 137 | pass |
+
+This fixes the earlier `pthread_create` failure: all twelve JAX clients were
+created and no thread-creation error occurred.
+
+The fixed 40-record selection was then rerun once in
+`codex26-d3-e4b-temperature2.scope`, still with `MemoryMax=24G` and
+`TasksMax=1024`.  The task count stayed at 137, but twelve simultaneous
+best-first searches accumulated large frontiers.  At 12m17s the scope reached
+exactly 25,769,803,776 bytes (24.0 GiB), plus a 277.1 MiB swap peak.  systemd
+recorded `Result=oom-kill`; aggregate CPU was 2h26m38s.  The run stopped
+without agent action and was not relaunched.
+
+Three T=1 searches completed before the OOM; all three solved and freshly
+replayed (400 calls / 514.62s, 10 calls / 7.35s, and 6 calls / 1.09s).
+These are partial receipts, not a temperature comparison:
+
+| Temperature | Completed records | Solved among completed | Mean calls among completed solves |
+|---:|---:|---:|---:|
+| 1 | 3 / 40 | 3 | 138.7 |
+| 2 | 0 / 40 | unavailable | unavailable |
+| 4 | 0 / 40 | unavailable | unavailable |
+
+Because the Book-free selection remains incomplete, no temperature was
+chosen and the E3 matrix was not run.  Reducing worker concurrency would be
+the direct memory correction, but the packet says not to relaunch after an
+uncommanded stop.  The failed scope is inactive and no prover worker remains.
