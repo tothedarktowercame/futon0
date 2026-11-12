@@ -179,6 +179,13 @@ def test_guard_refusal_is_never_a_child_and_is_cached():
     assert bot._stats["admission_calls"] == 1
 
 
+def test_game_boundary_drops_cached_successor_states():
+    bot = _bot(simulations=1)
+    bot.admission_cache[("state", "move")] = object()
+    bot.clear_game_cache()
+    assert bot.admission_cache == {}
+
+
 def test_fixed_seed_visit_counts_and_aligned_policy_target():
     state = pyspiel.load_game(
         "euclid_book1(proposition=1,move_cap=5,dense_actions=true,"

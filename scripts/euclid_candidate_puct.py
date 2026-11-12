@@ -88,6 +88,10 @@ class CandidatePUCT:
         self._forward = (nnx.jit(lambda network, batch: network(batch))
                          if jit_model else lambda network, batch: network(batch))
 
+    def clear_game_cache(self):
+        """Drop successor states retained for a game that has ended."""
+        self.admission_cache.clear()
+
     @staticmethod
     def _softmax(logits):
         logits = np.asarray(logits, dtype=np.float64)

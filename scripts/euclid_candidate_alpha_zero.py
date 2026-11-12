@@ -416,6 +416,7 @@ def actor_main(config_path, out, actor_id):
                  generation=generation, moves=len(state.history_moves),
                  stage=stage["name"], initial_moves=state.initial_moves,
                  history_moves=state.history_moves)
+            bot.clear_game_cache()
     _log(log, "shutdown", games=games, generation=generation)
 
 
