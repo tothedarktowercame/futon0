@@ -236,3 +236,85 @@ Because the Book-free selection remains incomplete, no temperature was
 chosen and the E3 matrix was not run.  Reducing worker concurrency would be
 the direct memory correction, but the packet says not to relaunch after an
 uncommanded stop.  The failed scope is inactive and no prover worker remains.
+
+### E4b-2c: held-out calibration and four-worker matrix
+
+Temperature was selected without search or Book positions.  For every
+state-disjoint held-out example, the score was
+`-log(sum(softmax(logits / T)[positive candidates]))`; the tables report its
+mean.  Mixed used its 586-example held-out split and E2b used its own
+176-example split (migrated only to the current feature schema for scoring).
+
+| T | Mixed NLL | E2b NLL |
+|---:|---:|---:|
+| 0.5 | 5.7892 | 5.2705 |
+| 1.0 | 4.0824 | 3.4353 |
+| **1.5** | **3.9759** | **3.2064** |
+| 2.0 | 4.1456 | 3.3359 |
+| 3.0 | 4.5099 | 3.7622 |
+| 4.0 | 4.7641 | 4.1091 |
+
+Thus both learned arms used T=1.5.  Generation 0 and the three seeded random
+arms used T=1.  The receipts are
+`/home/joe/storage/euclidzero/d3-e4b-2/calibration-{mixed,e2b}.json`.
+
+The 24 searches ran once in `codex26-d3-e4b-final.scope`, with at most four
+workers, `MemoryMax=24G`, `TasksMax=1024`, the create-small-then-widen JAX
+thread cap, 400 opened nodes, and a 45-minute per-search safety limit.  All
+24 finished normally; none hit the safety limit.  RSS is the exact
+per-search worker high-water mark (a fresh process was used for every
+search).  The completed scope reports `Result=success` and is inactive.
+
+| Problem | Arm | Solved | Calls | Wall (s) | Proof moves | Peak RSS (MiB) |
+|---|---|---:|---:|---:|---:|---:|
+| I.1 | mixed | yes | 11 | 32.95 | 3 | 662.5 |
+| I.1 | E2b | yes | 94 | 148.09 | 3 | 1515.3 |
+| I.1 | generation 0 | yes | 26 | 35.29 | 3 | 707.4 |
+| I.1 | random 2026111203 | yes | 33 | 1.25 | 3 | 208.6 |
+| I.1 | random 2026111204 | yes | 187 | 12.00 | 3 | 273.2 |
+| I.1 | random 2026111205 | yes | 106 | 3.99 | 3 | 231.7 |
+| I.2 | mixed | yes | 400 | 298.51 | 4 | 2464.9 |
+| I.2 | E2b | yes | 400 | 389.99 | 4 | 2693.3 |
+| I.2 | generation 0 | no | 400 | 254.04 | -- | 1686.4 |
+| I.2 | random 2026111203 | no | 400 | 334.48 | -- | 796.7 |
+| I.2 | random 2026111204 | no | 400 | 253.31 | -- | 686.1 |
+| I.2 | random 2026111205 | no | 400 | 271.87 | -- | 715.3 |
+| I.2 stage 2 | mixed | yes | 400 | 1338.67 | 2 | 3144.9 |
+| I.2 stage 2 | E2b | yes | 400 | 1451.76 | 2 | 3510.6 |
+| I.2 stage 2 | generation 0 | yes | 400 | 568.19 | 2 | 2372.8 |
+| I.2 stage 2 | random 2026111203 | yes | 220 | 259.36 | 2 | 827.5 |
+| I.2 stage 2 | random 2026111204 | yes | 400 | 448.02 | 2 | 1090.0 |
+| I.2 stage 2 | random 2026111205 | yes | 70 | 82.93 | 2 | 415.4 |
+| I.3 | mixed | no | 400 | 714.28 | -- | 2201.9 |
+| I.3 | E2b | no | 400 | 736.51 | -- | 2221.4 |
+| I.3 | generation 0 | no | 400 | 409.51 | -- | 1573.0 |
+| I.3 | random 2026111203 | no | 400 | 701.47 | -- | 914.9 |
+| I.3 | random 2026111204 | no | 400 | 540.55 | -- | 880.6 |
+| I.3 | random 2026111205 | no | 400 | 589.60 | -- | 836.7 |
+
+Every one of the 14 reported proofs was replayed from its fresh problem
+start and confirmed by the game's goal check.  The point-named proofs are:
+
+| Problem / arm | Proof (in order) | Fresh replay |
+|---|---|---|
+| I.1 / mixed | `circle_from_points(a,b); circle_from_points(b,a); intersection_circles(C_1,C_2)` | yes |
+| I.1 / E2b | same as mixed | yes |
+| I.1 / generation 0 | the two circles in reverse order; `intersection_circles(C_1,C_2)` | yes |
+| I.1 / random 1203 | reverse circle order; `intersection_circles(C_2,C_1)` | yes |
+| I.1 / random 1204 | mixed circle order; `intersection_circles(C_2,C_1)` | yes |
+| I.1 / random 1205 | reverse circle order; `intersection_circles(C_1,C_2)` | yes |
+| I.2 / mixed | `line_from_points(a,b); proposition_1(b,a,L_1); off_line_strict_triangle(d_2,a,b,L_1); superposition(b,c,b,a,b,d_2,BC,BC,BC,L_1)` | yes |
+| I.2 / E2b | `line_from_points(b,a); proposition_1(a,b,L_1); off_line_strict_triangle(d_2,a,b,L_1); superposition(b,c,b,a,b,d_2,BC,BC,L_1,L_1)` | yes |
+| I.2 stage 2 / mixed | `off_line_strict_triangle(a,b,d_2,L_4); superposition(b,g_6,b,a,b,g_6,L_4,L_4,L_4,L_1)` | yes |
+| I.2 stage 2 / E2b | `off_line_strict_triangle(d_2,b,a,L_1); superposition(g_6,b,b,a,b,d_2,L_4,L_4,L_4,L_1)` | yes |
+| I.2 stage 2 / generation 0 | `circle_from_points(d_2,g_6); intersection_circle_line_extending_points(C_1,L_3,a,d_2)` | yes |
+| I.2 stage 2 / random 1203 | `off_line_strict_triangle(b,a,d_2,L_3); superposition(b,c,b,a,d_2,b,BC,BC,BC,L_3)` | yes |
+| I.2 stage 2 / random 1204 | same circle route as generation 0 | yes |
+| I.2 stage 2 / random 1205 | `off_line_strict_triangle(a,b,d_2,L_4); superposition(b,c,c,a,b,g_6,BC,BC,BC,L_1)` | yes |
+
+The mixed arm does beat every control on I.1: 11 calls versus generation
+0's 26 and random's 33/187/106.  It and E2b also solve I.2 from givens in
+four moves where generation 0 and all random arms fail at 400 calls.  Mixed
+does not uniquely solve a problem that E2b fails: both learned arms have the
+same solved-problem set.  No arm solves I.3, and all arms solve the DEMO-prefix
+I.2 stage-2 position.
