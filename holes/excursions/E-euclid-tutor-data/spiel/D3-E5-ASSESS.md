@@ -99,3 +99,11 @@ inferences already are. That is the "make the co-exact facts free" recipe of the
 applied to our own engine. It removes most candidates and a third to two thirds of each Book
 path at once. Measurable cheaply: rerun this probe on an engine variant where those moves are
 applied automatically.
+
+## E6a check on reading 3 (2026-11-13)
+
+The E6a data (D3-E6A.md) cites constructions often (I.1 5,379 records, I.10 3,110, I.3 799,
+I.9 735) but **never cites I.8 or I.13**, the fact-concluding propositions that the Book proofs of
+I.9, I.11, I.12 and I.15 rest on. Random runs rarely set up the congruent-triangle or
+line-meeting configuration those citations need. So retraining on it would not fix reading 3 for
+those propositions. E6b stays on hold.
