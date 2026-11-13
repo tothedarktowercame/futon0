@@ -7,7 +7,9 @@ personally sign off on any additions."
 - `~/code` is `chmod a-w`: no top-level entry can be created, renamed or deleted. Everything
   inside the repos stays writable, so ordinary work is unaffected.
 - `allowlist.tsv` lists every admitted entry (name, kind, remote or target), committed here.
-- `code-admit` is how Joe changes it: `clone <url> [name]`, `add <name>`, `remove <name>
+- `code-admit` is how Joe changes it (on PATH via `~/.local/bin/code-admit`; in Emacs,
+  `M-x code-admit` from `code-admit.el` here; shorthand `code-admit futon8` clones
+  tothedarktowercame/futon8): `clone <url> [name]`, `add <name>`, `remove <name>
   [dest]`, `lock`/`unlock`, `check`. Each change unlocks, acts, records, commits and relocks.
 - Agents ask Joe (in their reply or a bell) for an addition or removal and say why; they do not
   run `code-admit` or `chmod` themselves.
