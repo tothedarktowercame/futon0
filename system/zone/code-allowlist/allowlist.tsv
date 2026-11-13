@@ -50,4 +50,3 @@ storage	symlink	/home/joe/storage
 ukrn-services-simulation	repo	git@github.com:tothedarktowercame/ukrn-services-simulation.git
 voxterm	repo	git@github.com:tothedarktowercame/voxterm.git
 xtdb	repo	https://github.com/xtdb/xtdb.git
-zz-move-test	symlink	test
