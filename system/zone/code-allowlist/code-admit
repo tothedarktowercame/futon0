@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# code-admit — Joe signs off on additions to and removals from ~/code.
+#
+# ~/code is kept non-writable (chmod a-w) so that no top-level entry can be created, renamed
+# or deleted by accident; everything inside the repos stays writable. This script lifts the
+# lock for one change, makes it, records it in allowlist.tsv (beside this script, in futon0),
+# and locks again. Agents ask; Joe runs it.
+#
+#   code-admit clone <git-url> [name]   clone a repo into ~/code and admit it
+#   code-admit add <name> [note]        admit an entry Joe created by hand
+#   code-admit remove <name> [dest]     move an entry out (default dest: /tmp/code-removed/)
+#   code-admit lock | unlock            lock or unlock ~/code without changing anything
+#   code-admit check                    list entries not on the allowlist, and vice versa
+set -euo pipefail
+CODE="${CODE_DIR:-$HOME/code}"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+LIST="$HERE/allowlist.tsv"
+
+lock()   { chmod a-w "$CODE"; }
+unlock() { chmod u+w "$CODE"; }
+record() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$LIST"; sort -o "$LIST" "$LIST"; }
+unrecord() { grep -v -P "^\Q$1\E\t" "$LIST" > "$LIST.tmp" || true; mv "$LIST.tmp" "$LIST"; }
+commit() { git -C "$HERE" add "$LIST" && git -C "$HERE" commit -q -m "code-allowlist: $1" -- "$LIST" || true; }
+
+check() {
+  local bad=0
+  while IFS= read -r e; do
+    if ! cut -f1 "$LIST" | grep -qxF -- "$e"; then echo "not on allowlist: $e"; bad=1; fi
+  done < <(ls -A "$CODE")
+  while IFS=$'\t' read -r e _; do
+    [ -e "$CODE/$e" ] || [ -L "$CODE/$e" ] || { echo "on allowlist but missing: $e"; bad=1; }
+  done < "$LIST"
+  [ -w "$CODE" ] && { echo "~/code is writable (unlocked)"; bad=1; }
+  [ $bad -eq 0 ] && echo "ok: ~/code matches the allowlist and is locked"
+  return $bad
+}
+
+case "${1:-}" in
+  clone)  url="$2"; name="${3:-$(basename "$url" .git)}"
+          unlock; trap lock EXIT; git clone "$url" "$CODE/$name"
+          record "$name" repo "$url"; commit "admit $name"; echo "admitted $name";;
+  add)    name="$2"; [ -e "$CODE/$name" ] || { echo "no $CODE/$name" >&2; exit 1; }
+          kind=other; [ -d "$CODE/$name/.git" ] && kind=repo; [ -L "$CODE/$name" ] && kind=symlink
+          record "$name" "$kind" "${3:-}"; commit "admit $name"; echo "admitted $name";;
+  remove) name="$2"; dest="${3:-/tmp/code-removed}"; mkdir -p "$dest"
+          unlock; trap lock EXIT; mv -- "$CODE/$name" "$dest/"
+          unrecord "$name"; commit "remove $name"; echo "moved $name to $dest";;
+  lock)   lock; echo locked;;
+  unlock) unlock; echo "unlocked (run 'code-admit lock' when done)";;
+  check)  check;;
+  *)      sed -n '2,15p' "$0"; exit 2;;
+esac
