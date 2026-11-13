@@ -8,7 +8,8 @@
 #
 #   code-admit clone <git-url> [name]   clone a repo into ~/code and admit it
 #   code-admit add <name> [note]        admit an entry Joe created by hand
-#   code-admit remove <name> [dest]     move an entry out (default dest: /tmp/code-removed/)
+#   code-admit move <name> <dest>       move an entry out of ~/code into dest (e.g. ~/storage)
+#   code-admit remove <name> [dest]     same; default dest /tmp/code-removed/
 #   code-admit lock | unlock            lock or unlock ~/code without changing anything
 #   code-admit check                    list entries not on the allowlist, and vice versa
 #   code-admit <name>                   shorthand: clone git@github.com:tothedarktowercame/<name>.git
@@ -43,12 +44,12 @@ case "${1:-}" in
   add)    name="$2"; [ -e "$CODE/$name" ] || { echo "no $CODE/$name" >&2; exit 1; }
           kind=other; [ -d "$CODE/$name/.git" ] && kind=repo; [ -L "$CODE/$name" ] && kind=symlink
           record "$name" "$kind" "${3:-}"; commit "admit $name"; echo "admitted $name";;
-  remove) name="$2"; dest="${3:-/tmp/code-removed}"; mkdir -p "$dest"
+  remove|move) name="$2"; dest="${3:-/tmp/code-removed}"; dest="${dest/#\~/$HOME}"; mkdir -p "$dest"
           unlock; trap lock EXIT; mv -- "$CODE/$name" "$dest/"
           unrecord "$name"; commit "remove $name"; echo "moved $name to $dest";;
   lock)   lock; echo locked;;
   unlock) unlock; echo "unlocked (run 'code-admit lock' when done)";;
   check)  check;;
-  ""|-h|--help) sed -n '2,14p' "$(readlink -f "$0")"; exit 2;;
+  ""|-h|--help) sed -n '2,15p' "$(readlink -f "$0")"; exit 2;;
   *)      exec "$(readlink -f "$0")" clone "git@github.com:tothedarktowercame/$1.git" "$1";;
 esac
