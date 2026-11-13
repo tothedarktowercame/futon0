@@ -133,6 +133,9 @@
         "../futon4/dev/arxana-store.el"
         "../futon4/dev/arxana-docbook.el"
         "../futon4/dev/arxana-docbook-ui.el"
+        ;; The ※ prompt; its codes come from futon4/dev/mojira-codes.json (shared with
+        ;; code-server Mojira), which mojira-dispatch re-reads at every prompt.
+        "../futon4/dev/mojira-dispatch.el"
         "../futon4/dev/arxana-docbook-checkout.el"
         "../futon4/dev/arxana-docbook-remote.el"
         "../futon4/dev/arxana-docbook-toc.el"
