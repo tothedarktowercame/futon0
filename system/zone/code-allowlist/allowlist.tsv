@@ -1,0 +1,53 @@
+18_Category_theory_homological_algebra	repo	git@github.com:tothedarktowercame/18_Category_theory_homological_algebra.git
+AGENTS.md	config
+apm-frames	symlink	/home/joe/storage/apm-frames
+apm-lean	repo	git@github.com:tothedarktowercame/apm-lean.git
+bpm-lean	repo	git@github.com:tothedarktowercame/bpm-lean.git
+chatgpt-tui	repo	git@github-holtz:holtzermann17/chatgpt-tui.git
+.claude	config
+CLAUDE.md	config
+data	symlink	/home/joe/storage/data
+element-web-futon	repo	git@github.com:tothedarktowercame/element-web.git
+FloWrTester	repo	https://github.com/holtzermann17/FloWrTester.git
+futon0	repo	git@github.com:tothedarktowercame/futon0.git
+futon1bi	repo	lucy
+futon1b	repo	git@github.com:tothedarktowercame/futon1b.git
+futon1	repo	git@github.com:tothedarktowercame/futon1.git
+futon2a	repo	git@github.com:tothedarktowercame/futon2a.git
+futon2	repo	git@github.com:tothedarktowercame/futon2.git
+futon3a	repo	git@github.com:tothedarktowercame/futon3a.git
+futon3b	repo	git@github.com:tothedarktowercame/futon3b.git
+futon3c	repo	git@github.com:tothedarktowercame/futon3c.git
+futon3	repo	git@github.com:tothedarktowercame/futon3.git
+futon4a	repo	git@github.com:tothedarktowercame/futon4a.git
+futon4	repo	git@github.com:tothedarktowercame/futon4.git
+futon5a	repo	joe@lucy-joe:/home/git/repos/futon5a.git
+futon5	repo	git@github.com:tothedarktowercame/futon5.git
+futon6	repo	git@github.com:tothedarktowercame/futon6.git
+futon7a	repo	ssh://joe@85.159.211.210:2222/home/git/hel.git
+futon7	repo	git@github.com:tothedarktowercame/futon7.git
+giraffe-reread-requisitions	repo	git@github.com:tothedarktowercame/giraffe-reread-requisitions.git
+joe-homepage	repo	git@metameso.org:joe-homepage.git
+lean-c-markup	repo	git@github.com:tothedarktowercame/lean-c-markup.git
+lean-docs-align	repo	git@github.com:tothedarktowercame/lean-docs-align.git
+lean-dyncov	repo	git@github.com:tothedarktowercame/lean-dyncov.git
+LeanEuclid	symlink	/home/joe/storage/src/LeanEuclid
+lean-wiring	repo	fork
+marimo-zone	repo	git@github.com:tothedarktowercame/marimo-zone.git
+mastra-recall	repo	git@github.com:tothedarktowercame/mastra-recall.git
+mathlib4	repo	git@github.com:tothedarktowercame/mathlib4.git
+mathse-xtdb-benchmark	repo	git@github.com:tothedarktowercame/mathse-xtdb-benchmark.git
+mfuton-linux-binding	repo	fork
+mfuton-share	repo	git@github.com:electric-samurai/mfuton-share.git
+minus40	repo	git@github.com:tothedarktowercame/minus40.git
+mmca-clj	repo	git@github.com:tothedarktowercame/mmca-clj.git
+mmca	repo	git@github-holtz:holtzermann17/mmca.git
+p4ng	repo	git@github.com:tothedarktowercame/p4ng.git
+planetmath	symlink	/home/joe/storage/planetmath
+powerbi-tui	repo	git@github.com:tothedarktowercame/powerbi-tui.git
+reply-proforma.md	config
+storage	symlink	/home/joe/storage
+ukrn-services-simulation	repo	git@github.com:tothedarktowercame/ukrn-services-simulation.git
+voxterm	repo	git@github.com:tothedarktowercame/voxterm.git
+xtdb	repo	https://github.com/xtdb/xtdb.git
+zz-admit-test	symlink	test
