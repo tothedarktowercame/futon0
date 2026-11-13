@@ -74,6 +74,12 @@ def test_book_goal_match_covers_later_book_goals_and_rejects_near_miss():
     assert t.book_goal_match(matching) is None
 
 
+def test_book_goal_match_rejects_structured_arithmetic_arguments():
+    record = {"proposition": 4,
+              "goal": ["sublen", ["len", "a", "b"], "a", "c"]}
+    assert t.book_goal_match(record) is None
+
+
 def test_book_goal_match_reads_angles_and_inequalities_in_any_order():
     """Review (claude-9): I.4 stated with reversed angles, and I.19 stated as
     a less-than, must still be recognised as Book goals."""

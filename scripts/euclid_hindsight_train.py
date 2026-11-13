@@ -163,6 +163,13 @@ def book_goal_match(record):
     of equal segments.  Returns (proposition, mapping) or None.
     """
     actual = goal_atoms(record["goal"])
+    # Arithmetic closure also emits facts with structured terms (for example
+    # ``sublen (len a b) a c``).  Book goals are relations between named
+    # geometric objects, so such a record cannot match and must not enter the
+    # point-renaming search.
+    if any(not isinstance(argument, str)
+           for atom in actual for argument in atom[1:]):
+        return None
     own_given = {obj["name"] for obj in
                  features.play.tr.objects_from_hyps(record["proposition"])}
     actual_points = sorted(_points(actual))

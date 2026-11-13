@@ -6,6 +6,7 @@ from collections import Counter
 import json
 from pathlib import Path
 import random
+import re
 
 import euclid_hindsight as hindsight
 import euclid_hindsight_train as train
@@ -25,6 +26,8 @@ def analyse(root: Path, note: Path, sample_seed=2026111206):
     records = {p: Counter() for p in range(4, 26)}
     labels = {p: Counter() for p in range(4, 26)}
     book_matches = Counter()
+    earlier_citations = Counter()
+    records_with_earlier_citation = 0
     rng = random.Random(sample_seed)
     samples, eligible_seen = [], 0
     for path in sorted(root.glob("worker-*.jsonl")):
@@ -40,6 +43,17 @@ def analyse(root: Path, note: Path, sample_seed=2026111206):
                 if match is not None:
                     book_matches[(p, match[0])] += 1
                 if not reasons:
+                    cited = set()
+                    needed = set(row["needed_move_indices"])
+                    for move_index, move in enumerate(row["moves"]):
+                        if move_index not in needed:
+                            continue
+                        found = re.fullmatch(r"proposition_(\d+)'?", move["tuple"][0])
+                        if found and int(found.group(1)) < p:
+                            cited.add(int(found.group(1)))
+                    if cited:
+                        records_with_earlier_citation += 1
+                        earlier_citations.update(cited)
                     eligible_seen += 1
                     if len(samples) < 10:
                         samples.append(row)
@@ -72,6 +86,15 @@ def analyse(root: Path, note: Path, sample_seed=2026111206):
         lines.append(f"| I.{source} | I.{book} | {count} |")
     if not book_matches:
         lines.append("| — | — | 0 |")
+
+    lines += ["", "## Earlier-proposition citations", "",
+              f"Among non-trivial records, {records_with_earlier_citation} have a needed set containing at least one earlier `proposition_k` move. A record citing several earlier propositions contributes once to each corresponding row.", "",
+              "| cited proposition k | non-trivial records |",
+              "|---:|---:|"]
+    for proposition, count in sorted(earlier_citations.items()):
+        lines.append(f"| I.{proposition} | {count} |")
+    if not earlier_citations:
+        lines.append("| — | 0 |")
 
     lines += ["", "## Ten sampled non-trivial theorems", "",
               f"Reservoir sample seed: `{sample_seed}`.", ""]
