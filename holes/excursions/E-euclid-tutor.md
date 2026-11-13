@@ -1,11 +1,14 @@
 # Excursion: E-euclid-tutor
 
-**Status:** OPEN — proof-game prototype and first student-model pieces built overnight 2026-11-07 (Checkpoints 1–2).
+**Status:** OPEN — EuclidZero (the learned-prover line, Checkpoint 3) PAUSED 2026-11-13 pending a change of approach and outside review; proof game, Book I.1–I.25 replay and play page built (Checkpoints 1–3).
 **Date:** 2026-11-07
 **Owner:** claude-9 with Joe
 **Relates to:** `holes/missions/M-futonzero-prelim-practice.md` (the prelim tutor; its lessons live in
 `holes/labs/tutor/`, moved from apm-lean 2026-11-07), `futon2/docs/futonzero-alphazero.md` (FutonZero v1 and Fable's
-review), `futon6/holes/missions/M-futonzero-grounding.md` (why self-graded loops self-confirm).
+review), `futon6/holes/missions/M-futonzero-grounding.md` (why self-graded loops self-confirm),
+`holes/excursions/E-metagame/` (the domain-general sibling: equational and line-geometry games, a learner that
+transfers across theories; see Checkpoint 3), `holes/missions/M-futonzero-capability.md`,
+`M-futonzero-generative.md`, `M-futonzero-mvp.md`.
 **Why futon0 and not apm-lean:** apm-lean is public and is about the proofs. Tutor work lives here
 (Joe, 2026-11-07).
 
@@ -195,3 +198,96 @@ step motifs 6 passed; 0 failures. Certify tests need Lean and were run by zai-2 
 **Open:** I.10 (`proposition_9'`); I.6 by Lean's area argument rather than I.18; I.9's four stated inputs; clones fitted to
 real student steps (none collected yet); a prior that beats breadth-first search.
 **Next:** review mode in the viewer (in flight, zai-9); I.10 replay; first real-student trial of the envelope.
+
+### Checkpoint 3 — 2026-11-13 (EuclidZero: what a learned prover can and cannot do here; claude-9 with Joe)
+
+Written to be read on its own by an outside reviewer (Joe plans to ask GPT Astra or Fable for a change of
+approach). Every claim points to a file in `E-euclid-tutor-data/spiel/` (abbreviated `spiel/`) or another
+repository path; the trial-by-trial record is `spiel/LEDGER.md`.
+
+**Terms.**
+- *The game*: System E as implemented by our engine (`scripts/euclid_engine.py`; inventory
+  `E-euclid-tutor-data/system-e-inventory.md`). A position is a set of diagram and metric facts; a move applies a
+  construction rule or cites an earlier proposition, with point-named arguments ("I.4 abc def", not opaque ids);
+  closure derives consequences; the goal is the proposition's statement. The engine is the authority for legality and
+  for whether the goal holds. OpenSpiel wrapper: `scripts/euclid_spiel.py`.
+- *ZERO* vs *DEMO* (the distinction to report to Avigad): ZERO = learned from the rules alone (self-play or
+  self-generated theorems); DEMO = anything from Euclid's or LeanEuclid's proofs (prefixes, curricula, traces), even
+  when the search itself is ZERO. Every ledger row carries the label.
+- *Arms*: trained scorer, untrained network of the same shape ("generation 0", which turns out to act as a uniform
+  prior), random move order with fixed seeds.
+
+**What was done, 2026-11-08 to 11-13.**
+1. *Engine and play.* Book I.1–I.25 replay in the engine following LeanEuclid's own steps, with each SMT-closed
+   premise written out as a cited System E axiom; several soundness bugs were found and fixed on the way (list:
+   `~/notes/euclid-morning-report.md`, "Soundness findings"; `spiel/SOUNDNESS-1.md`). A play page (`viewer/play.html`,
+   served on :8100) lets a person play I.1–I.25 with refereed case splits. A strong LLM playtester (codex-1,
+   GPT-6 "Astra") solved I.1–I.25 in the game unaided mathematically; weaker models stopped at I.4–I.6, at the
+   first auxiliary construction (`~/notes/euclid-overnight-ledger.md`, slices 1–15). This is DEMO-in-the-weights: the
+   model has read Euclid.
+2. *AlphaZero on point-named moves (Probes 1–14, DESIGN-1, DESIGN-2; `spiel/PROBE-*.md`, `DESIGN-1.md`,
+   `DESIGN-2.md`).* ZERO self-play learned I.1 (PROBE-4: greedy 0/10 → 20/20). I.2 failed from scratch. A DEMO
+   curriculum (Book prefixes, staged backwards) passed stage 1 but not stage 2: search never visited the good child,
+   because the prior ranked it about 30th and all values tied near −1 (run 9, `LEDGER` D2-9, `CHECKS-8C.md`). No
+   transfer to I.1/I.3.
+3. *Self-generated theorems (DESIGN-3, claude-6's proposal; `spiel/DESIGN-3.md`, `D3-E1*.md`…`D3-E6A.md`).* Random
+   legal runs from a proposition's givens; facts derived on the way become hindsight goals; needed moves by provenance
+   or deletion replay; a goal-conditioned scorer is trained on "is this candidate needed"; Book propositions are held
+   out (records stating any Book goal are excluded, up to renaming and equivalent orderings). Data: E1c (single goals
+   from I.1–I.3 givens), E4a (two-fact goals), E6a (I.4–I.25 givens). Prover: best-first over pages of 10 candidates,
+   cost = summed −log softmax(logits / T), T chosen by calibration on held-out self-made theorems, 400 opened nodes.
+
+**Results (ZERO unless stated).**
+
+| Problem (from its givens) | Trained | Untrained | Random (3 seeds) | Where |
+|---|---|---|---|---|
+| I.1 | proved, 11 nodes | 26 | 33 / 187 / 106 | `D3-E4B.md` E4b-2c |
+| I.2 | **proved, 4 moves** (both trained arms) | not proved | none | E4b-2c |
+| I.3 | not proved | not proved | none | E4b-2c |
+| I.2 stage 2 (DEMO prefix) | proved | proved | proved | E4b-2c |
+| I.4, I.9–I.13, I.15 | none | none | none | `D3-E5.md` |
+
+- The I.2 proof: `line_from_points(a,b); proposition_1(b,a,L_1); off_line_strict_triangle(d_2,a,b,L_1);
+  superposition(b,c,b,a,b,d_2,…)`. It uses System E's superposition rule, which Euclid avoids in I.2 (his proof uses
+  circles). In System E, I.2 has a shorter proof than Euclid's.
+- One run per trained arm; the I.1 margin is a single sample.
+
+**Assessment (`spiel/D3-E5-ASSESS.md`, with the diagnostic).** A DEMO probe measured how each scorer ranks the moves
+of Euclid's own proof, step by step (`scripts/euclid_book_path_probe.py`). Path costs (sum of −log p): I.1 4.3,
+I.4 15.7, I.10 23.7, I.15 35.4, I.12 61.2, I.11 91.0, I.9 97.6; a 400-node search reaches about 10–15. Findings:
+- the untrained network is a uniform prior (its costs equal Σ log #candidates);
+- citations of earlier propositions rank very low (I.13 inside I.15: about 600th of 1,339), and the self-made data
+  never contains citations of I.8 or I.13 (`D3-E6A.md`: random runs do not set up their premises);
+- branching reaches thousands of candidates by step 5–10 (9,561 in I.9), mostly lines through pairs of points;
+- a third to two thirds of each Book path is near-free steps (a line through two existing points, restating a diagram
+  fact).
+Conclusion: training on self-made theorems helps near its data (I.1; I.2 by a shortcut) and does not reach Book-length
+proofs; more data of the same kind (E6b) is not worth running. The one lever identified is the game, not the scorer:
+make lines through existing points and restated diagram facts part of closure, as System E's diagram inferences are
+("make the co-exact facts free", `E-metagame` notes). Not yet measured.
+
+**Related lines that bear on a change of approach.**
+- `E-metagame/` (claude-6, then claude-9): the same self-generated-theorem method on small equational theories, where a
+  learner with symbol-free features *does* transfer to an unseen theory (`LEARN-0.md`: 65–81% vs 14–34% for the best
+  hand-written player on goals no theory trained on); lemma reuse (`EQ-6.md`); a guarded Horn engine for line geometry
+  and its theorem yield (`HORN-1..3.md`).
+- The Astra playtests (item 1 above): an LLM that plans in words, translates the plan into moves, and repairs from the
+  engine's refusals solved I.1–I.25. Which part of that is the loop and which the prior is unmeasured.
+- The tutor direction Joe chose on 2026-11-12 (prelims, self-study guides, ArSE question-and-answer with a Skeptic
+  descending and a Prover ascending; Dutilh Novaes): `~/notes/claude-9/expository/` (TEACHING-CRITERIA.md,
+  PLAN-arse-prelims.md, ARSE-SCHEMA.md). It does not depend on a learned Euclid prover.
+
+**Questions for an outside review.**
+1. Is a learned move scorer the right object at all, given branching of 10³–10⁴ and Book proofs of 6–12 steps, or
+   should effort go into the game (free closure for co-exact facts, macro moves for proved propositions) and a
+   symbolic search, as AlphaGeometry pairs a language model with a deductive database?
+2. How should citations of fact-concluding propositions (I.8, I.13) enter training, if random play never sets them up?
+3. Would an LLM proposer in Astra's loop, with the renaming control from the metagame, be the better ZERO-vs-DEMO
+   experiment than a small network?
+4. What would make a convincing report to Avigad: the I.2 superposition shortcut, the uniform-prior finding, the path-cost
+   diagnostic?
+
+**Test state:** prover tests 4 passed (77764be, codex-26); book-goal matcher 8 passed (0d6153c); hindsight generator 16
+passed (6572a2e). Long suites (engine/trace/play, 400+ tests) were not rerun for this checkpoint.
+**Paused:** E6b (retrain on I.4–I.25 data); the free-closure engine check awaits Joe's decision.
+**Next:** outside review of the questions above; then either the free-closure probe or a change of approach.
