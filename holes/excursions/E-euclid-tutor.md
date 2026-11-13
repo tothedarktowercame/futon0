@@ -222,8 +222,8 @@ repository path; the trial-by-trial record is `spiel/LEDGER.md`.
    premise written out as a cited System E axiom; several soundness bugs were found and fixed on the way (list:
    `~/notes/euclid-morning-report.md`, "Soundness findings"; `spiel/SOUNDNESS-1.md`). A play page (`viewer/play.html`,
    served on :8100) lets a person play I.1–I.25 with refereed case splits. A strong LLM playtester (codex-1,
-   GPT-6 "Astra") solved I.1–I.25 in the game unaided mathematically; weaker models stopped at I.4–I.6, at the
-   first auxiliary construction (`~/notes/euclid-overnight-ledger.md`, slices 1–15). This is DEMO-in-the-weights: the
+   GPT-6 "Astra") solved I.1–I.25 in the game unaided mathematically; weaker models stopped earlier (Luna at I.5's
+   auxiliary construction; Kimi reached I.6, then hit its own timeouts) (`~/notes/euclid-overnight-ledger.md`, slices 1–15). This is DEMO-in-the-weights: the
    model has read Euclid.
 2. *AlphaZero on point-named moves (Probes 1–14, DESIGN-1, DESIGN-2; `spiel/PROBE-*.md`, `DESIGN-1.md`,
    `DESIGN-2.md`).* ZERO self-play learned I.1 (PROBE-4: greedy 0/10 → 20/20). I.2 failed from scratch. A DEMO
