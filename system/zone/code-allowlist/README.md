@@ -11,8 +11,10 @@ personally sign off on any additions."
   `M-x code-admit` from `code-admit.el` here; shorthand `code-admit futon8` clones
   tothedarktowercame/futon8): `clone <url> [name]`, `add <name>`, `remove <name>
   [dest]`, `lock`/`unlock`, `check`. Each change unlocks, acts, records, commits and relocks.
-- Agents ask Joe (in their reply or a bell) for an addition or removal and say why; they do not
-  run `code-admit` or `chmod` themselves.
+- Agents ask through Emacs: `emacsclient --eval '(code-admit-request "<args>" "<why>" "<agent-id>")'`.
+  Joe sees a message, opens `M-x code-admit-requests`, and presses `a` (approve: runs
+  code-admit with those args) or `r` (reject, with a reason). Requests and decisions are kept in
+  `~/storage/code-admit/requests.tsv`. Agents do not run `code-admit` or `chmod` themselves.
 - `code-admit check` exits non-zero if an entry is missing from the allowlist, an allowlisted
   entry is missing, or the directory is unlocked. It is the probe for an M-ways-of-working way
   ("~/code holds only what Joe admitted"); not yet on a timer or in zone-health.
