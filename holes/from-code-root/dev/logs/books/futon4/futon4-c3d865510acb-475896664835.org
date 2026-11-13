@@ -1,0 +1,13 @@
+#+TITLE: dev/debug-fold-props.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-c3d865510acb-475896664835
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/debug-fold-props.el
+:PATH_STRING: Dev docs / dev/debug-fold-props.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

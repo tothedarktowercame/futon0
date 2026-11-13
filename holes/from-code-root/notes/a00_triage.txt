@@ -1,0 +1,3 @@
+a00J01 medium – Need Lᵖ convergence to L∞ requiring measure-theory limit lemmas; doable via existing `Lnorm` results but not trivial wiring.
+a00J02 hard – Requires Sobolev/Hardy-type boundary behavior for absolutely continuous functions and $L^2$ derivative, which Mathlib lacks.
+a00J03 quick – Uses standard change-of-variables/isometry lemmas for measure-preserving bijections already in Mathlib.

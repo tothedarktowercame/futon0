@@ -1,0 +1,10 @@
+t00J03 medium Computing the integral of the descended form on RP¹ reduces to standard S¹ orientation and change-of-variables lemmas Mathlib has.
+t00J04 medium Constructing a 1-form with prescribed value uses bump functions and showing closedness/non-closedness is manageable.
+t00J05 hard Describing universal covers and nontrivial maps for disk-attached tori needs covering-space/fundamental-group machinery missing.
+t00J06 hard Lifting torus maps to infinite covers of genus-2 surfaces requires advanced covering-space theory absent.
+t00J07 hard Computing π₁ and homology of RP² with a 2-cell attached hinges on cellular-homology tools not formalized.
+t00J08 hard Determining possible ranks using Nielsen–Schreier demands free-group theory Mathlib lacks.
+t01A01 hard Non-surjective self-maps of RP² being null-homotopic requires projective-plane covering arguments not available.
+t01A02 hard The homology and fixed-point statements for torus maps involve covering spaces and Lefschetz ideas absent.
+t01A03 hard Retraction questions on higher-genus surfaces need geometric-topology infrastructure.
+t01A04 hard Presentations and index-two subgroups for a circle-wedged torus require van Kampen and covering-space computations not in Mathlib.

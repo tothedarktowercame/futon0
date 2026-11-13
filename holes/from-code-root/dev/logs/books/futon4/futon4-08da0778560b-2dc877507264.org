@@ -1,0 +1,13 @@
+#+TITLE: dev/spine2-export.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-08da0778560b-2dc877507264
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/spine2-export.el
+:PATH_STRING: Dev docs / dev/spine2-export.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

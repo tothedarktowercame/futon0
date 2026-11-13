@@ -1,0 +1,10 @@
+t03J03 hard Classifying double covers of a nonorientable surface and lifting cylinders uses covering theory missing in Mathlib.
+t03J04 medium Explicit vector fields and Euler characteristics on Tⁿ plus local-diffeo degree arguments can be wired up with existing algebraic topology facts.
+t03J05 hard Embedding tori into genus-2 surface products with prescribed intersection numbers requires surface homology infrastructure absent.
+t03J06 medium Computing dω and evaluating the integral over B is a straightforward calculus exercise Mathlib can express.
+t91A01 hard Index arguments for zeros of vector fields invoke Poincaré–Hopf theory not formalized.
+t91A02 hard Covering-space obstructions between connected sums of projective planes need surface topology tools.
+t91A03 quick Mathlib already proves finite products of compact spaces are compact.
+t91A04 quick Banach’s contraction mapping theorem is implemented and directly applies.
+t91A05 hard The no-retraction theorem for the disk needs Brouwer degree machinery not available.
+t91A06 medium The Baire-category result for compact Hausdorff spaces follows from existing topological lemmas with some work.

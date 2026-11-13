@@ -1,0 +1,5 @@
+**WHAT IS REALLY BEING ASKED**
+- We have nonnegative, nondecreasing functions `f_n : ℝ → [0, ∞)` whose pointwise sum `f = ∑_{n=1}^\infty f_n` is finite everywhere. The goal is to prove that the derivative of the sum equals the sum of the derivatives almost everywhere: `f'(x) = ∑ f_n'(x)` for almost every `x`. In other words, we want to justify interchanging an infinite series with differentiation under monotonicity hypotheses.
+
+**WHY IT IS HARD**
+- Differentiation does not generally commute with infinite sums, so one needs the structure of monotone functions. Each `f_n` being nondecreasing implies (i) it is differentiable almost everywhere, and (ii) it defines a positive measure `df_n`. Students must recall that `df = ∑ df_n` and apply Lebesgue’s differentiation theorem or the Radon–Nikodym property to get `f' = ∑ f_n'` a.e. The trap is forgetting that pointwise convergence and nonnegativity alone are insufficient; the proof hinges on measure-theoretic differentiation of monotone functions and monotone convergence of measures.

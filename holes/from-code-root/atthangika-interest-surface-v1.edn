@@ -1,0 +1,910 @@
+;; atthangika-interest-surface-v1.edn (v1.3)
+;;
+;; Bipartite-graph REDUCE over 10 finalised EOI essays.
+;; Generated 2026-05-27 by claude-3 via bb merge-script — extends v1.2 with 4 new essays + new territories
+;; from 2026-05-26 supervised eoi-new run, without re-processing the existing 6 essays (compute-saving).
+;; Pending: per-essay annotations.edn for the 4 new essays (annotations.el present at engine-assembly time).
+;;
+{:interest-degree
+ {"arxana/interest-territory/semantic-publishing-active-documents" 2,
+  "arxana/interest-territory/writing-stories-in-3D-bob-brown-homage" 1,
+  "arxana/interest-territory/customer-as-missing-operational-ingredient"
+  1,
+  "arxana/interest-territory/peer-learning-and-distributed-collaboration"
+  10,
+  "arxana/interest-territory/sharing-vs-commerce-tension" 3,
+  "arxana/interest-territory/held-space-analytic-practice" 4,
+  "arxana/interest-territory/cross-substrate-invariance" 8,
+  "arxana/interest-territory/lakatosian-proof-discipline" 1,
+  "arxana/interest-territory/institutional-economics-ostrom" 1,
+  "arxana/interest-territory/bayesian-tradeoff-strategic-shape" 1,
+  "arxana/interest-territory/mission-lifecycle-as-AIF-path" 2,
+  "arxana/interest-territory/sociality-with-objects-knorr-cetina" 1,
+  "arxana/interest-territory/knowledge-commons-co-creation" 2,
+  "arxana/interest-territory/anatman-dissolution-of-stable-self" 1,
+  "arxana/interest-territory/closing-the-loop-on-AI-development" 3,
+  "arxana/interest-territory/technology-first-deliverable-shape" 1,
+  "arxana/interest-territory/agentic-coding-as-research-record" 7,
+  "arxana/interest-territory/vsat-as-thinking-tool" 2,
+  "arxana/interest-territory/mathematics-and-formal-verification" 3,
+  "arxana/interest-territory/patterns-as-tangent-vectors" 3,
+  "arxana/interest-territory/inspectability-interpretability-transparency"
+  1,
+  "arxana/interest-territory/intelligence-augmentation-not-autonomy" 2,
+  "arxana/interest-territory/buddhist-practice-computer-aided" 2,
+  "arxana/interest-territory/business-validation-via-preregistered-study"
+  1,
+  "arxana/interest-territory/atoms-of-the-future-symbolic-invariants"
+  2,
+  "arxana/interest-territory/outinnovate-non-london-as-feature" 1,
+  "arxana/interest-territory/non-financial-progress-indicators" 3,
+  "arxana/interest-territory/lean-prelim-passing-cycle-close" 1,
+  "arxana/interest-territory/constellational-thinking-fast-rhythm" 1,
+  "arxana/interest-territory/work-as-me-vs-work-as-hyperreal" 2,
+  "arxana/interest-territory/exotype-layer-with-mentor" 1,
+  "arxana/interest-territory/epistemology-of-self-representation" 2,
+  "arxana/interest-territory/hybrid-computing-neural-symbolic-divide"
+  1,
+  "arxana/interest-territory/sorry-factory-structured-absences" 1,
+  "arxana/interest-territory/writers-retreat-as-strategic-advance" 1,
+  "arxana/interest-territory/futonic-discipline" 1,
+  "arxana/interest-territory/basket-of-job-options-with-rope" 1,
+  "arxana/interest-territory/open-research-as-institution" 2,
+  "arxana/interest-territory/bootstrap-economic-self-financing" 1,
+  "arxana/interest-territory/baldwin-effect-genotype-phenotype" 2,
+  "arxana/interest-territory/glass-bead-game-as-heterodox-form" 1,
+  "arxana/interest-territory/commons-based-peer-production-benkler" 1,
+  "arxana/interest-territory/research-evaluation-discipline" 1,
+  "arxana/interest-territory/etik-as-anti-kitemark" 1,
+  "arxana/interest-territory/morphogenesis-natural-shape" 2,
+  "arxana/interest-territory/extended-mind-thesis-clark-chalmers" 1,
+  "arxana/interest-territory/speculative-vs-grounded-design" 2,
+  "arxana/interest-territory/anthropology-of-modern-mathematics" 1,
+  "arxana/interest-territory/practice-with-rope-before-free-solo" 1},
+ :top-interests-by-degree
+ [["arxana/interest-territory/peer-learning-and-distributed-collaboration"
+   10]
+  ["arxana/interest-territory/cross-substrate-invariance" 8]
+  ["arxana/interest-territory/agentic-coding-as-research-record" 7]
+  ["arxana/interest-territory/held-space-analytic-practice" 4]
+  ["arxana/interest-territory/sharing-vs-commerce-tension" 3]
+  ["arxana/interest-territory/closing-the-loop-on-AI-development" 3]
+  ["arxana/interest-territory/mathematics-and-formal-verification" 3]
+  ["arxana/interest-territory/patterns-as-tangent-vectors" 3]
+  ["arxana/interest-territory/non-financial-progress-indicators" 3]
+  ["arxana/interest-territory/semantic-publishing-active-documents" 2]
+  ["arxana/interest-territory/mission-lifecycle-as-AIF-path" 2]
+  ["arxana/interest-territory/knowledge-commons-co-creation" 2]
+  ["arxana/interest-territory/vsat-as-thinking-tool" 2]
+  ["arxana/interest-territory/intelligence-augmentation-not-autonomy"
+   2]
+  ["arxana/interest-territory/buddhist-practice-computer-aided" 2]],
+ :scope-note
+ "v1.3 — 10 essays finalised: 6 from v1.2 + 4 new (vsat-poc-scenarios-scenario-a-vsatelier, vsat-poc-scenarios-scenario-b-vsatarcs, glasgow-cogito-neurotech-RA-formal-application, anthropic-fellows-2026). 4 new essays added without re-processing existing 6 per Joe 2026-05-27 compute-saving directive. New territories surfaced during 2026-05-26 supervised eoi-new run: sociality-with-objects-knorr-cetina, extended-mind-thesis-clark-chalmers, anatman-dissolution-of-stable-self, research-evaluation-discipline, hybrid-computing-neural-symbolic-divide, customer-as-missing-operational-ingredient, practice-with-rope-before-free-solo, outinnovate-non-london-as-feature, glass-bead-game-as-heterodox-form, lakatosian-proof-discipline, inspectability-interpretability-transparency, anthropology-of-modern-mathematics, commons-based-peer-production-benkler, institutional-economics-ostrom, constellational-thinking-fast-rhythm, lean-prelim-passing-cycle-close, basket-of-job-options-with-rope, exotype-layer-with-mentor, writers-retreat-as-strategic-advance, knowledge-commons-co-creation (existing v1.2 climbed), speculative-vs-grounded-design (existing v1.2 climbed).",
+ :essay-degree
+ {"arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1" 5,
+  "arxana/essay/anthropic-fellows-2026-v1" 19,
+  "arxana/essay/glasgow-cogito-neurotech-RA-v1" 7,
+  "arxana/essay/vsat-poc-scenarios-scenario-b-vsatarcs-v1" 4,
+  "arxana/essay/operator-foreword-v1" 13,
+  "arxana/essay/anthropic-institute-analyst-v1" 5,
+  "arxana/essay/hyperreal-director-side-b-v1" 7,
+  "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1" 9,
+  "arxana/essay/hyperreal-director-side-a-v1" 7,
+  "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1" 21},
+ :generated "2026-05-27",
+ :bipartite-edges
+ [{:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/anthropology-of-modern-mathematics",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:anthropology-of-modern-mathematics"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/atoms-of-the-future-symbolic-invariants",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:atoms-of-the-future-symbolic-invariants"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/basket-of-job-options-with-rope",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:basket-of-job-options-with-rope"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/closing-the-loop-on-AI-development",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:closing-the-loop-on-AI-development"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/commons-based-peer-production-benkler",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:commons-based-peer-production-benkler"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/constellational-thinking-fast-rhythm",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:constellational-thinking-fast-rhythm"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest "arxana/interest-territory/exotype-layer-with-mentor",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:exotype-layer-with-mentor"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest "arxana/interest-territory/held-space-analytic-practice",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:held-space-analytic-practice"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:friction]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/institutional-economics-ostrom",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:institutional-economics-ostrom"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/intelligence-augmentation-not-autonomy",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:intelligence-augmentation-not-autonomy"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/lean-prelim-passing-cycle-close",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:lean-prelim-passing-cycle-close"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/mathematics-and-formal-verification",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:mathematics-and-formal-verification"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest "arxana/interest-territory/morphogenesis-natural-shape",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:morphogenesis-natural-shape"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/non-financial-progress-indicators",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:non-financial-progress-indicators"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:friction]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest "arxana/interest-territory/patterns-as-tangent-vectors",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:patterns-as-tangent-vectors"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:peer-learning-and-distributed-collaboration"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-fellows-2026-v1",
+   :interest
+   "arxana/interest-territory/writers-retreat-as-strategic-advance",
+   :annotation-ids
+   ["hx:v1.3:anthropic-fellows-2026-v1:writers-retreat-as-strategic-advance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/anthropic-institute-analyst-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:anthropic:interest:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities []}
+  {:essay "arxana/essay/anthropic-institute-analyst-v1",
+   :interest
+   "arxana/interest-territory/closing-the-loop-on-AI-development",
+   :annotation-ids ["hx:anthropic:interest:closing-the-loop"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities []}
+  {:essay "arxana/essay/anthropic-institute-analyst-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids
+   ["hx:anthropic:interest:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities []}
+  {:essay "arxana/essay/anthropic-institute-analyst-v1",
+   :interest "arxana/interest-territory/held-space-analytic-practice",
+   :annotation-ids
+   ["hx:anthropic:interest:held-space-analytic-practice"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities []}
+  {:essay "arxana/essay/anthropic-institute-analyst-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids ["hx:anthropic:interest:peer-learning"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities []}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/anatman-dissolution-of-stable-self",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:anatman-dissolution-of-stable-self"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/baldwin-effect-genotype-phenotype",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:baldwin-effect-genotype-phenotype"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/buddhist-practice-computer-aided",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:buddhist-practice-computer-aided"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/customer-as-missing-operational-ingredient",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:customer-as-missing-operational-ingredient"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/epistemology-of-self-representation",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:epistemology-of-self-representation"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/extended-mind-thesis-clark-chalmers",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:extended-mind-thesis-clark-chalmers"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/glass-bead-game-as-heterodox-form",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:glass-bead-game-as-heterodox-form"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest "arxana/interest-territory/held-space-analytic-practice",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:held-space-analytic-practice"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:friction]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/hybrid-computing-neural-symbolic-divide",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:hybrid-computing-neural-symbolic-divide"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/inspectability-interpretability-transparency",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:inspectability-interpretability-transparency"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest "arxana/interest-territory/lakatosian-proof-discipline",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:lakatosian-proof-discipline"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest "arxana/interest-territory/mission-lifecycle-as-AIF-path",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:mission-lifecycle-as-AIF-path"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest "arxana/interest-territory/open-research-as-institution",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:open-research-as-institution"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/outinnovate-non-london-as-feature",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:outinnovate-non-london-as-feature"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest "arxana/interest-territory/patterns-as-tangent-vectors",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:patterns-as-tangent-vectors"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:peer-learning-and-distributed-collaboration"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/practice-with-rope-before-free-solo",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:practice-with-rope-before-free-solo"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/research-evaluation-discipline",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:research-evaluation-discipline"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay
+   "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1",
+   :interest
+   "arxana/interest-territory/sociality-with-objects-knorr-cetina",
+   :annotation-ids
+   ["hx:v1.3:glasgow-cogito-neurotech-RA-formal-application-v1:sociality-with-objects-knorr-cetina"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:glasgow:interest:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities []}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids ["hx:glasgow:interest:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities []}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest
+   "arxana/interest-territory/epistemology-of-self-representation",
+   :annotation-ids
+   ["hx:glasgow:interest:epistemology-of-self-representation"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities []}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest "arxana/interest-territory/held-space-analytic-practice",
+   :annotation-ids
+   ["hx:glasgow:interest:held-space-analytic-practice"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities []}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest "arxana/interest-territory/open-research-as-institution",
+   :annotation-ids
+   ["hx:glasgow:interest:open-research-as-institution"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities []}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids ["hx:glasgow:interest:peer-learning"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities []}
+  {:essay "arxana/essay/glasgow-cogito-neurotech-RA-v1",
+   :interest
+   "arxana/interest-territory/sorry-factory-structured-absences",
+   :annotation-ids
+   ["hx:glasgow:interest:sorry-factory-structured-absences"],
+   :supporting-annotations 1,
+   :max-severity :low,
+   :polarities []}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:side-a:interest:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids ["hx:side-a:interest:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest "arxana/interest-territory/etik-as-anti-kitemark",
+   :annotation-ids ["hx:side-a:interest:etik-anti-kitemark"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest
+   "arxana/interest-territory/mathematics-and-formal-verification",
+   :annotation-ids
+   ["hx:side-a:interest:mathematics-and-formal-verification"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest
+   "arxana/interest-territory/non-financial-progress-indicators",
+   :annotation-ids
+   ["hx:side-a:interest:non-financial-progress-indicators"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids ["hx:side-a:interest:peer-learning"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-a-v1",
+   :interest
+   "arxana/interest-territory/work-as-me-vs-work-as-hyperreal",
+   :annotation-ids
+   ["hx:side-a:interest:work-as-me-vs-work-as-hyperreal"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest
+   "arxana/interest-territory/bootstrap-economic-self-financing",
+   :annotation-ids
+   ["hx:side-b:interest:bootstrap-economic-self-financing"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest
+   "arxana/interest-territory/business-validation-via-preregistered-study",
+   :annotation-ids
+   ["hx:side-b:interest:business-validation-via-preregistered-study"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids ["hx:side-b:interest:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest
+   "arxana/interest-territory/mathematics-and-formal-verification",
+   :annotation-ids
+   ["hx:side-b:interest:mathematics-and-formal-verification"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest
+   "arxana/interest-territory/non-financial-progress-indicators",
+   :annotation-ids
+   ["hx:side-b:interest:non-financial-progress-indicators"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids ["hx:side-b:interest:peer-learning"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:evidence-bearing]}
+  {:essay "arxana/essay/hyperreal-director-side-b-v1",
+   :interest
+   "arxana/interest-territory/work-as-me-vs-work-as-hyperreal",
+   :annotation-ids
+   ["hx:side-b:interest:work-as-me-vs-work-as-hyperreal"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:foreword:interest:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/atoms-of-the-future-symbolic-invariants",
+   :annotation-ids ["hx:foreword:interest:atoms-of-the-future"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/baldwin-effect-genotype-phenotype",
+   :annotation-ids
+   ["hx:foreword:interest:baldwin-effect-genotype-phenotype"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/buddhist-practice-computer-aided",
+   :annotation-ids
+   ["hx:foreword:interest:buddhist-practice-computer-aided"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/closing-the-loop-on-AI-development",
+   :annotation-ids
+   ["hx:foreword:interest:closing-the-loop-on-AI-development"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids ["hx:foreword:interest:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest "arxana/interest-territory/futonic-discipline",
+   :annotation-ids ["hx:foreword:interest:futonic-discipline"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/intelligence-augmentation-not-autonomy",
+   :annotation-ids
+   ["hx:foreword:interest:intelligence-augmentation-not-autonomy"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest "arxana/interest-territory/mission-lifecycle-as-AIF-path",
+   :annotation-ids
+   ["hx:foreword:interest:mission-lifecycle-as-AIF-path"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest "arxana/interest-territory/morphogenesis-natural-shape",
+   :annotation-ids
+   ["hx:foreword:interest:morphogenesis-natural-shape"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest "arxana/interest-territory/patterns-as-tangent-vectors",
+   :annotation-ids
+   ["hx:foreword:interest:patterns-as-tangent-vectors"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids
+   ["hx:foreword:interest:peer-learning-distributed-collaboration"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/operator-foreword-v1",
+   :interest
+   "arxana/interest-territory/semantic-publishing-active-documents",
+   :annotation-ids
+   ["hx:foreword:interest:semantic-publishing-active-documents"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest
+   "arxana/interest-territory/agentic-coding-as-research-record",
+   :annotation-ids
+   ["hx:vsat-poc:interest:agentic-coding-as-research-record"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:evidence-bearing]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest
+   "arxana/interest-territory/bayesian-tradeoff-strategic-shape",
+   :annotation-ids
+   ["hx:vsat-poc:interest:bayesian-tradeoff-strategic-shape"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest "arxana/interest-territory/knowledge-commons-co-creation",
+   :annotation-ids
+   ["hx:vsat-poc:interest:knowledge-commons-co-creation"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids
+   ["hx:vsat-poc:interest:peer-learning-multaka"
+    "hx:vsat-poc:interest:peeragogy-textbook-as-curriculum"],
+   :supporting-annotations 2,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest "arxana/interest-territory/sharing-vs-commerce-tension",
+   :annotation-ids
+   ["hx:vsat-poc:interest:sharing-vs-commerce-tension"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest
+   "arxana/interest-territory/speculative-vs-grounded-design",
+   :annotation-ids
+   ["hx:vsat-poc:interest:speculative-vs-grounded-design"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:friction]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest
+   "arxana/interest-territory/technology-first-deliverable-shape",
+   :annotation-ids ["hx:vsat-poc:interest:technology-first-as-tag"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest "arxana/interest-territory/vsat-as-thinking-tool",
+   :annotation-ids ["hx:vsat-poc:interest:vsat-as-thinking-tool"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1",
+   :interest
+   "arxana/interest-territory/writing-stories-in-3D-bob-brown-homage",
+   :annotation-ids
+   ["hx:vsat-poc:interest:writing-stories-in-3D-bob-brown"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1",
+   :interest "arxana/interest-territory/cross-substrate-invariance",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-a-vsatelier-v1:cross-substrate-invariance"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1",
+   :interest "arxana/interest-territory/knowledge-commons-co-creation",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-a-vsatelier-v1:knowledge-commons-co-creation"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-a-vsatelier-v1:peer-learning-and-distributed-collaboration"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1",
+   :interest "arxana/interest-territory/sharing-vs-commerce-tension",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-a-vsatelier-v1:sharing-vs-commerce-tension"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1",
+   :interest
+   "arxana/interest-territory/speculative-vs-grounded-design",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-a-vsatelier-v1:speculative-vs-grounded-design"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:friction]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-b-vsatarcs-v1",
+   :interest
+   "arxana/interest-territory/peer-learning-and-distributed-collaboration",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-b-vsatarcs-v1:peer-learning-and-distributed-collaboration"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-b-vsatarcs-v1",
+   :interest
+   "arxana/interest-territory/semantic-publishing-active-documents",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-b-vsatarcs-v1:semantic-publishing-active-documents"],
+   :supporting-annotations 1,
+   :max-severity :medium,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-b-vsatarcs-v1",
+   :interest "arxana/interest-territory/sharing-vs-commerce-tension",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-b-vsatarcs-v1:sharing-vs-commerce-tension"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}
+  {:essay "arxana/essay/vsat-poc-scenarios-scenario-b-vsatarcs-v1",
+   :interest "arxana/interest-territory/vsat-as-thinking-tool",
+   :annotation-ids
+   ["hx:v1.3:vsat-poc-scenarios-scenario-b-vsatarcs-v1:vsat-as-thinking-tool"],
+   :supporting-annotations 1,
+   :max-severity :high,
+   :polarities [:fit]}],
+ :essays
+ ["arxana/essay/anthropic-fellows-2026-v1"
+  "arxana/essay/anthropic-institute-analyst-v1"
+  "arxana/essay/glasgow-cogito-neurotech-RA-formal-application-v1"
+  "arxana/essay/glasgow-cogito-neurotech-RA-v1"
+  "arxana/essay/hyperreal-director-side-a-v1"
+  "arxana/essay/hyperreal-director-side-b-v1"
+  "arxana/essay/operator-foreword-v1"
+  "arxana/essay/vsat-poc-scenarios-2026-q2-q3-v1"
+  "arxana/essay/vsat-poc-scenarios-scenario-a-vsatelier-v1"
+  "arxana/essay/vsat-poc-scenarios-scenario-b-vsatarcs-v1"],
+ :interests
+ ["arxana/interest-territory/agentic-coding-as-research-record"
+  "arxana/interest-territory/anatman-dissolution-of-stable-self"
+  "arxana/interest-territory/anthropology-of-modern-mathematics"
+  "arxana/interest-territory/atoms-of-the-future-symbolic-invariants"
+  "arxana/interest-territory/baldwin-effect-genotype-phenotype"
+  "arxana/interest-territory/basket-of-job-options-with-rope"
+  "arxana/interest-territory/bayesian-tradeoff-strategic-shape"
+  "arxana/interest-territory/bootstrap-economic-self-financing"
+  "arxana/interest-territory/buddhist-practice-computer-aided"
+  "arxana/interest-territory/business-validation-via-preregistered-study"
+  "arxana/interest-territory/closing-the-loop-on-AI-development"
+  "arxana/interest-territory/commons-based-peer-production-benkler"
+  "arxana/interest-territory/constellational-thinking-fast-rhythm"
+  "arxana/interest-territory/cross-substrate-invariance"
+  "arxana/interest-territory/customer-as-missing-operational-ingredient"
+  "arxana/interest-territory/epistemology-of-self-representation"
+  "arxana/interest-territory/etik-as-anti-kitemark"
+  "arxana/interest-territory/exotype-layer-with-mentor"
+  "arxana/interest-territory/extended-mind-thesis-clark-chalmers"
+  "arxana/interest-territory/futonic-discipline"
+  "arxana/interest-territory/glass-bead-game-as-heterodox-form"
+  "arxana/interest-territory/held-space-analytic-practice"
+  "arxana/interest-territory/hybrid-computing-neural-symbolic-divide"
+  "arxana/interest-territory/inspectability-interpretability-transparency"
+  "arxana/interest-territory/institutional-economics-ostrom"
+  "arxana/interest-territory/intelligence-augmentation-not-autonomy"
+  "arxana/interest-territory/knowledge-commons-co-creation"
+  "arxana/interest-territory/lakatosian-proof-discipline"
+  "arxana/interest-territory/lean-prelim-passing-cycle-close"
+  "arxana/interest-territory/mathematics-and-formal-verification"
+  "arxana/interest-territory/mission-lifecycle-as-AIF-path"
+  "arxana/interest-territory/morphogenesis-natural-shape"
+  "arxana/interest-territory/non-financial-progress-indicators"
+  "arxana/interest-territory/open-research-as-institution"
+  "arxana/interest-territory/outinnovate-non-london-as-feature"
+  "arxana/interest-territory/patterns-as-tangent-vectors"
+  "arxana/interest-territory/peer-learning-and-distributed-collaboration"
+  "arxana/interest-territory/practice-with-rope-before-free-solo"
+  "arxana/interest-territory/research-evaluation-discipline"
+  "arxana/interest-territory/semantic-publishing-active-documents"
+  "arxana/interest-territory/sharing-vs-commerce-tension"
+  "arxana/interest-territory/sociality-with-objects-knorr-cetina"
+  "arxana/interest-territory/sorry-factory-structured-absences"
+  "arxana/interest-territory/speculative-vs-grounded-design"
+  "arxana/interest-territory/technology-first-deliverable-shape"
+  "arxana/interest-territory/vsat-as-thinking-tool"
+  "arxana/interest-territory/work-as-me-vs-work-as-hyperreal"
+  "arxana/interest-territory/writers-retreat-as-strategic-advance"
+  "arxana/interest-territory/writing-stories-in-3D-bob-brown-homage"],
+ :version 4}

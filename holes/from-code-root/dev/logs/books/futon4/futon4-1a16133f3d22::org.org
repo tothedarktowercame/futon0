@@ -1,0 +1,13 @@
+#+TITLE: Importing pattern libraries
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-1a16133f3d22::org
+:VERSION: org
+:OUTLINE_PATH: Pattern workflows / Importing pattern libraries
+:PATH_STRING: Pattern workflows / Importing pattern libraries
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

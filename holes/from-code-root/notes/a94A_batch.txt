@@ -1,0 +1,10 @@
+a94A03 medium Gaussian convolution as an approximate identity needs measurable-convolution lemmas that exist but require nontrivial norm estimates.
+a94A04 medium Showing vanishing moments force f=0 a.e. uses density of polynomials in L² plus Hilbert-space arguments already in Mathlib but with several steps.
+a94A05 hard The Vitali 5-covering lemma and its application to differentiability zero sets demand covering machinery not yet in Mathlib.
+a94A06 hard Residue-theorem contour integrations like ∫ x⁷/(1+x¹²) dx are outside current Mathlib complex-analysis tooling.
+a94A07 hard Proving injective entire maps are affine needs global theory of meromorphic functions at ∞ absent from Mathlib.
+a94A08 hard Controlling iterates by Schwarz lemma and Montel normality is beyond the current analytic dynamics support in Mathlib.
+a94A09 hard Uniqueness of fixed points in the unit disk uses argument principle/Brouwer degree tools missing in Mathlib.
+a94A10 medium Using conjugation symmetry and the open mapping theorem to keep f' nonzero on ℝ is doable with existing complex-analysis lemmas.
+a94J01 quick Absolute continuity of the integral for L¹ functions is already an API result in Mathlib’s measure theory.
+a94J02 hard Constructing an AC, strictly monotone function with derivative zero on a positive-measure set needs bespoke Cantor-type construction not mechanized.

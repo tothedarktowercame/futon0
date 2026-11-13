@@ -1,0 +1,10 @@
+m98J05 hard Solving the heat equation via Fourier transform requires harmonic-analysis/PDE machinery not available.
+m99A01 medium Finding Euler–Lagrange extremals for a simple quadratic functional can be done with existing calculus tools.
+m99A02 hard Sobolev membership and distributional derivatives of f(x)=-log^{1/3}|x| need missing PDE infrastructure.
+m99A03 hard Properties of compact normal operators and explicit counterexamples for powers require spectral theory not formalized.
+m99A04 quick Extending a uniformly continuous map from a dense subset to a completion is already in Mathlib.
+m99A05 medium Basic facts about weak convergence in normed spaces are supported by existing functional-analysis lemmas.
+m99A06 hard Existence of solutions to nonlinear convolution-type equations in L¹ needs heavy harmonic-analysis tools.
+m99J01 medium Contraction mapping and asymptotic limit arguments for the scalar ODE can be handled with current analysis API.
+m99J02 hard Distributional derivatives and delta identities require distribution theory not implemented.
+m99J03 hard Determining distributional limits of sequences of test-function functionals also relies on missing distribution infrastructure.

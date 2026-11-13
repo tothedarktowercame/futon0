@@ -1,0 +1,20 @@
+[{:kind :initial-plan
+  :summary "Captured the HtDP plan: compute the marginal by section integrals, split Lebesgue measure by the vanishing region of the marginal, and recover singularPart/rnDeriv by uniqueness."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}
+ {:kind :lean-delta
+  :summary "Closed the marginal theorem `τ = volume.withDensity tauDensity` by proving a general fst-withDensity lemma and evaluating the triangular fiber integral."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}
+ {:kind :lean-delta
+  :summary "Closed the measure-theoretic bridge: built the singular witness, proved the explicit decomposition of `volume`, and applied `eq_singularPart` / `eq_rnDeriv`."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}
+ {:kind :final-status
+  :summary "Final classification is proved: the package-local module `ApmCanaries.A02J04Full` builds with zero sorry and identifies the actual singularPart and Radon–Nikodym derivative."
+  :full-record? true
+  :sorry? false
+  :fully-closed? true}]

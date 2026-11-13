@@ -1,0 +1,13 @@
+#+TITLE: Quickstart
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-quickstart-20240606
+:VERSION: spine2-pilot
+:OUTLINE_PATH: Quickstart
+:PATH_STRING: Quickstart
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

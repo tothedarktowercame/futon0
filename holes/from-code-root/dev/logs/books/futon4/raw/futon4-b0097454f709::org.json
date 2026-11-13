@@ -1,0 +1,11 @@
+{
+  "doc_id": "futon4-b0097454f709",
+  "run_id": "futon4-b0097454f709::org",
+  "book_id": "futon4",
+  "version": "org",
+  "outline_path": [
+    "Logical model",
+    "Storage substrates",
+    "Current reality: EAV in Clojure (Datascript + XTDB)"
+  ]
+}

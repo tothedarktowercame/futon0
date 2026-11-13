@@ -1,0 +1,13 @@
+#+TITLE: dev/arxana-patterns.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-84dbf01f63a2-560d20c95402
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/arxana-patterns.el
+:PATH_STRING: Dev docs / dev/arxana-patterns.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

@@ -1,0 +1,13 @@
+#+TITLE: Downtime handling
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-9e9bac68f2b2::org
+:VERSION: org
+:OUTLINE_PATH: Downtime handling
+:PATH_STRING: Downtime handling
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

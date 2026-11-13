@@ -1,0 +1,10 @@
+#+TITLE: Document-based substrates
+:PROPERTIES:
+:DOC_ID: unknown
+:VERSION: org
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

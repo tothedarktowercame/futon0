@@ -1,0 +1,10 @@
+t91A07 hard Isolating fixed points using derivative eigenvalue conditions needs inverse-function/transversality tools absent.
+t91A08 medium Integrating α over T² and comparing pullbacks under linear maps is manageable with current vector-calculus lemmas.
+t91J01 hard Cantor-set vs irrationals surjection/injection questions require descriptive-set theory beyond Mathlib.
+t91J02 medium Showing S¹×S¹ ≇ S² uses fundamental-group or homology arguments already available.
+t91J03 medium Simple closed curves in an annulus can be analyzed with covering or winding-number arguments supported today.
+t91J04 quick Nested closed intervals in ℝ have nonempty intersection by completeness, already formalized.
+t91J05 hard Classifying finite covers of a triple torus (genus 3 surface) needs covering-space theory missing.
+t91J06 hard Identifying the limiting space from nested interval embeddings needs 1-manifold classification not formalized.
+t92J01 quick Union of connected subsets sharing a point is connected—standard lemma in Mathlib.
+t92J02 quick Continuous image of compact is compact and bijective continuous map from compact to Hausdorff is homeomorphism—already proved.

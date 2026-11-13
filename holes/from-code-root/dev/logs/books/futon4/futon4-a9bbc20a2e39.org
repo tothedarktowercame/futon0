@@ -1,0 +1,15 @@
+#+TITLE: QA checklist
+:PROPERTIES:
+:DOC_ID: futon4-a9bbc20a2e39
+:ENTRY_ID: futon4-a9bbc20a2e39::org
+:VERSION: org
+:OUTLINE_PATH: QA checklist
+:PATH_STRING: QA checklist
+:REPLACES: 
+:END:
+
+* Context
+#+BEGIN_SRC shell :exports code
+./dev/run-tests.sh
+#+END_SRC
+

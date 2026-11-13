@@ -1,0 +1,10 @@
+m96J03 hard Computing Δ of a characteristic function in distributions requires distribution theory absent from Mathlib.
+m96J04 hard Building operator examples with specified compactness/eigenvalue properties needs functional-analysis infrastructure not present.
+m96J05 hard Showing exp(D_ε) tends to translation via Fourier transform requires harmonic-analysis tools Mathlib lacks.
+m96J06 hard Solving the nonlinear functional equation on C([-2,2]) needs implicit-function theory unavailable.
+m97A01 hard Polar decompositions of compact operators and consequences for A* rely on missing spectral theory.
+m97A02 hard Applying implicit-function ideas to solve sin∘x + x∘cos = y requires Banach-space IFT not in Mathlib.
+m97A03 hard Integral equations with nonlinear kernels solved via contraction arguments need absent tools.
+m97A04 hard Deriving finite-difference schemes and uniqueness for two-point BVPs involves numerical-PDE machinery not formalized.
+m97A05 hard Distributional evaluations of integrals over anti-diagonals and their derivatives depend on missing distribution theory.
+m97A06 hard Euler–Lagrange and second-variation analysis for this functional goes beyond current calculus-of-variations support.

@@ -1,0 +1,13 @@
+#+TITLE: Current reality: EAV in Clojure (Datascript + XTDB)
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-b0097454f709::org
+:VERSION: org
+:OUTLINE_PATH: Logical model / Storage substrates / Current reality: EAV in Clojure (Datascript + XTDB)
+:PATH_STRING: Logical model / Storage substrates / Current reality: EAV in Clojure (Datascript + XTDB)
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

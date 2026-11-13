@@ -1,0 +1,13 @@
+#+TITLE: dev/check-parens.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-d87d00425195-ea2eec3874b2
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/check-parens.el
+:PATH_STRING: Dev docs / dev/check-parens.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

@@ -1,0 +1,69 @@
+Old futon1b clones to resync onto the purged history
+====================================================
+Written 2026-09-26. Background: ~/code/storage/_cleanup-2026-09-26/futon1b/README.md
+and the memory note futon1b-history-purge.md.
+
+On 2026-09-26 GitHub tothedarktowercame/futon1b was deleted and recreated
+with a rewritten history. Store slices, textprobe data and benchmark/receipt
+traces were dropped from every commit (new master 74bf1e5). Two machines
+still have clones of the OLD history that point at GitHub:
+
+  host       old HEAD   rewritten equivalent (same files)          notes
+  lucy-joe   8168ba8    92b1623c9f4c52e7efa87afed9216a9ec782df4c   idle, clean
+  metameso   c9c40f4    fa02123eb5768ce3c26559ec43ea9238e3499bb1   LIVE futon1b java process runs
+                                                                    from this checkout; untracked
+                                                                    chicago-store/ (the store itself)
+
+Neither had unique commits, stashes or tracked changes (checked 2026-09-26).
+Until these are resynced, NEVER force-push or push a new branch from them:
+that would put the purged data back on GitHub.
+
+Goal: move each checkout to the rewritten twin of the commit it is on now.
+The files are identical, so this is NOT a deploy: the running server sees no
+code change and should not be restarted. After this, a plain `git pull` there
+is an ordinary fast-forward to 74bf1e5. That pull is the deploy, and the
+operator schedules it separately.
+
+How to run, from zone (this server), one host at a time. Read the output
+before moving on:
+
+  ssh lucy-joe 'bash -s 92b1623c9f4c52e7efa87afed9216a9ec782df4c' < resync.sh
+  ssh metameso 'bash -s fa02123eb5768ce3c26559ec43ea9238e3499bb1' < resync.sh
+
+(Save the script between the resync.sh markers at the bottom as resync.sh first.) It stops without changing anything if
+the checkout has tracked changes, or if the old and new commits differ in
+anything other than purged files. Expected output ends with:
+  "tracked diff vs HEAD:" empty, status "## master...origin/master [behind N]",
+  "reachable purged data ...: 0" (a count of "From: joe" operator turns).
+
+Undo on a box:
+  git reset --mixed refs/archive/2026-09-26/futon1b-master-pre-purge
+  (then move files from data/ back), or restore from the bundle it writes to
+  ~/code/storage/_cleanup-2026-09-26/futon1b-pre-purge.bundle on that box.
+
+Afterwards: update ~/.claude/projects/-home-joe/memory/futon1b-history-purge.md
+(and its MEMORY.md line) to say the clones are resynced, and delete this file.
+
+----- resync.sh -----
+set -e
+NEW=$1; cd ~/code/futon1b
+OLD=$(git rev-parse HEAD)
+[ -z "$(git status --porcelain --untracked-files=no)" ] || { echo "ABORT: tracked changes"; exit 1; }
+B=~/code/storage/_cleanup-2026-09-26; mkdir -p $B
+git bundle create $B/futon1b-pre-purge.bundle --all >/dev/null 2>&1
+git bundle verify -q $B/futon1b-pre-purge.bundle >/dev/null 2>&1 && echo "bundle ok: $B/futon1b-pre-purge.bundle"
+git update-ref refs/archive/2026-09-26/futon1b-master-pre-purge $OLD
+git fetch -q --prune --force origin '+refs/heads/*:refs/remotes/origin/*'
+git fetch -q --prune --prune-tags --force origin '+refs/tags/*:refs/tags/*'
+git cat-file -e $NEW
+PURGED=$(git diff --name-only --diff-filter=D $OLD $NEW)
+OTHER=$(git diff --name-only $OLD $NEW | grep -v -x -F "$PURGED" || true)
+[ -z "$OTHER" ] || { echo "ABORT: non-purge differences: $OTHER"; exit 1; }
+n=0; for f in $PURGED; do [ -e "$f" ] && { mkdir -p "data/$(dirname $f)"; mv "$f" "data/$f"; n=$((n+1)); }; done
+for d in seed textprobe; do [ -d $d ] && [ -z "$(ls -A $d)" ] && rmdir $d; done
+git reset -q --mixed $NEW
+grep -qx 'data/' .git/info/exclude || echo 'data/' >> .git/info/exclude
+echo "moved $n files to data/; HEAD $(git rev-parse --short HEAD) was ${OLD:0:7}"
+echo "tracked diff vs HEAD: $(git diff --stat | tail -1)"; git status -sb | head -4
+echo "reachable purged data from branches/remotes: $(git log --branches --remotes -p | grep -c 'From: joe')"
+----- end resync.sh -----

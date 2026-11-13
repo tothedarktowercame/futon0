@@ -1,0 +1,10 @@
+m95A01 medium The Newton–Schulz iteration plus uniform-boundedness argument can be formalized with existing Banach-operator lemmas.
+m95A02 hard Fourier-basis descriptions of W^{1,2} together with Hölder/Ascoli estimates require Sobolev machinery not yet available.
+m95A03 hard Variational equivalence for Sturm–Liouville problems and existence relies on PDE infrastructure missing from Mathlib.
+m95A04 hard Distribution theory (definitions, derivatives, Banach spaces of distributions) is largely absent.
+m95A05 hard Proving existence/uniqueness from coercivity is essentially Lax–Milgram, currently unavailable.
+m95J01 medium Finite-dimensional weighted L² spaces and matrix representations are manageable with linear-algebra tools.
+m95J02 hard Constructing Laplacian fundamental solutions via radial ODEs exceeds current PDE support.
+m95J03 hard Jordan-form continuity, matrix exponentials via Jordan blocks, and IVP solutions need linear-algebra features not formalized.
+m95J04 medium Applying contraction-mapping techniques to the integral equation is feasible with existing analysis lemmas.
+m95J05 hard Distributional fundamental solutions even for first-order operators require distribution infrastructure absent from Mathlib.

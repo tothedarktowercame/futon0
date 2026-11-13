@@ -1,0 +1,358 @@
+{
+  "missions": [
+    {
+      "name": "M-self-representing-stack",
+      "path": "/home/joe/code/futon4/holes/missions/M-self-representing-stack.md",
+      "status": "COMPLETE",
+      "dates": {
+        "opened": "2026-02-22",
+        "re_opened": "2026-03-03",
+        "completed": "2026-03-04",
+        "verify_complete": "2026-02-27",
+        "instantiate_complete": "2026-03-01"
+      },
+      "core_thesis": "The futon stack already IS a hypergraph that agents inhabit; this mission makes that hypergraph navigable in Arxana so the system can browse its own self-representation rather than relying on portfolio reviews returning flat data.",
+      "load_bearing_quote": "The futon stack is not a system that needs a separate self-model bolted on — it IS a hypergraph that agents already inhabit (line 712)",
+      "subsystem_mappings": [
+        {"subsystem": "futon7", "role": "Markov blanket (external world boundary)", "timescale": "boundary", "source_line": 67},
+        {"subsystem": "futon0", "role": "Human-organism coupling surface", "timescale": "social", "source_line": 68},
+        {"subsystem": "futon3c", "role": "Social loop (real-time coordination)", "timescale": "social (seconds)", "source_line": 69},
+        {"subsystem": "futon3b", "role": "Task loop + Baldwin cycle (gate pipeline + library evolution)", "timescale": "fast + glacial", "source_line": 70},
+        {"subsystem": "futon3a", "role": "Interoception (pattern library query, internal state sensing)", "timescale": "on-demand", "source_line": 71},
+        {"subsystem": "futon1a", "role": "Memory (evidence store, XTDB)", "timescale": "persistent", "source_line": 72},
+        {"subsystem": "futon4", "role": "Self-model (Arxana, reflexivity, navigable self-representation)", "timescale": "reflective", "source_line": 73},
+        {"subsystem": "futon5", "role": "Generative model (wiring diagrams, AIF+ formalism — not yet active)", "timescale": "structural", "source_line": 74}
+      ],
+      "diagram_proposals": [
+        {"description": "AIF+ subsystem table mapping repo → role → timescale; explicitly recommends 'represent the entire futon stack as a single futon5 AIF+ diagram'", "form": "table + AIF+ wiring diagram", "source_line": 62},
+        {"description": "Cross-layer navigation arrow diagram: devmap component → missions → evidence trail → code files, with reverse arrows through patterns and reflection anchors", "form": "ASCII arrow diagram", "source_line": 290},
+        {"description": "Endpoint entity types table (Mission, Devmap, Prototype, Component, Evidence, Pattern, Clojure var, Repo/Subsystem) with identity patterns and XTDB-presence flags", "form": "table", "source_line": 510},
+        {"description": "Hyperedge / relation type schema: binary relations (covers, evidences, pattern-use, narrative-step, about-var) plus n-ary hyperedges (tension, reflection-snapshot, collection)", "form": "typed hypergraph", "source_line": 533},
+        {"description": "Three-layer logic architecture: reazon (session/Emacs) + core.logic (portfolio/futon3c) + XTDB queries (futon1a)", "form": "layered diagram", "source_line": 1034},
+        {"description": "Three-column model surfaced at re-opening: Knowledge creation (math) / Development process (project) / Code itself (reflection)", "form": "table", "source_line": 1174}
+      ],
+      "joe_interests_touched": [
+        "AIF (entire stack as single AIF+ organism)",
+        "self-representation / reflexivity",
+        "hypergraph browsing as 'world-is-hypergraph' pattern",
+        "pattern library and PSR/PUR discipline",
+        "evidence ledger / futon1a persistence",
+        "homoiconicity (frozen dynamics = evaluable Clojure forms in EDN)"
+      ],
+      "key_concepts": [
+        "Two self-images: aspirational (devmaps, missions) vs actual (code, evidence, commits)",
+        "Higgins' self-discrepancy theory — productive tension between ideal and actual",
+        "Hyperedges as frozen dynamics, not lists; carry force vectors as evaluable structure",
+        "Ted Nelson 'clusion as generalised transclusion: gather + transform + compose",
+        "Tension hyperedge = ideal + work-on-it + evidence (genuinely n-ary)",
+        "Narrative over annotation: ports learned by reading the story, not from a character sheet",
+        "Reflection-grounded scholia: every code claim resolves to ns/symbol/file/line/arglists/doc",
+        "間 (honest-interval) + 関 (gate-relation) vocabulary for tension tracing",
+        "Three-layer logic: reazon (Emacs/session) + core.logic (futon3c) + XTDB (futon1a)"
+      ],
+      "related_missions": [
+        "M-three-column-stack (resolves the three RE-OPENED gaps)",
+        "M-mission-control (produces the data MC navigates)",
+        "futon3 P11 System Self-Description",
+        "M-sliding-blackboard",
+        "Reanimation M9"
+      ],
+      "open_questions": [
+        "Whether tensions should appear as binary edges or n-ary hyperedges (resolved: binary by default, hyperedge when genuinely n-ary)",
+        "How to make hypergraph self-documenting via API queries (what edge types exist? what valid endpoint configurations?)",
+        "How drift detection works when a var moves or signature changes (resolved via reflection-snapshot staleness)"
+      ],
+      "verify_evidence": "21 hyperedges in XTDB (10 devmap + 9 tension + 1 reflection + 1 test); 1,524+ after M-three-column-stack ingestion",
+      "completion_caveat": "Re-opened because the 21 demo hyperedges were lost on XTDB restart, only the project column was addressed (not math, not code-as-domain), and no cross-column invariants existed. M-three-column-stack resolved all three gaps."
+    },
+    {
+      "name": "M-three-column-stack",
+      "path": "/home/joe/code/futon4/holes/missions/M-three-column-stack.md",
+      "status": "COMPLETE",
+      "dates": {
+        "opened": "2026-03-03",
+        "completed": "2026-03-04"
+      },
+      "core_thesis": "The self-representing stack has three representational domains (math/knowledge, project/development, code/reflection) — each a projection of the same AIF+ wiring diagram calculus — and cross-column invariants (not hyperedge counts) are the actual product.",
+      "load_bearing_quote": "Individual columns are databases. Cross-column invariants are what make the system a reasoning surface (line 138).",
+      "three_columns": [
+        {"column": "Knowledge creation (mathematics / structured reasoning)", "content": "proofs, definitions, conjectures, scopes, expressions, terms", "lives_in": "futon6 JSON, browsed via arxana-browser-hypergraph.el", "source_line": 39},
+        {"column": "Development process (project management)", "content": "missions, devmaps, prototypes, components, coverage, tensions, evidence trails", "lives_in": "futon3c (Mission Control), futon3/holes, futon1a (evidence store)", "source_line": 55},
+        {"column": "Code itself (reflection)", "content": "namespaces, vars, arglists, docstrings, dependency graphs, protocols, defmethod, source forms", "lives_in": "running JVM via futon3c reflection API", "source_line": 67}
+      ],
+      "subsystem_mappings": [
+        {"column": "Code", "components": "Namespaces/modules", "wires": "Dependency edges, type flows", "ports": "Entry points (M-x, API, CLI)", "I4_check": "Refactoring doesn't rewrite requirements", "source_line": 103},
+        {"column": "Math", "components": "Claims, definitions, scopes", "wires": "Inferential, conflict, preference edges", "ports": "Premises, conclusions", "I4_check": "FALSIFY-before-CONSTRUCT (Proof Peripheral)", "source_line": 104},
+        {"column": "Project", "components": "Missions, components", "wires": "Coverage, evidence, pattern-use edges", "ports": "Inputs (preconditions), outputs (deliverables)", "I4_check": "Already validated by futon5", "source_line": 105}
+      ],
+      "diagram_proposals": [
+        {"description": "AIF+ six structural invariants (I1 Boundary, I2 Obs-Action Asymmetry, I3 Timescale Separation, I4 Preference Exogeneity, I5 Model Adequacy, I6 Compositional Closure) as the structural language for cross-column checks", "form": "AIF+ wiring diagram with checked invariants", "source_line": 90},
+        {"description": "Three columns × pheno/geno/exo composition timescale mapping: Code=Phenotype/fast, Project=Genotype/medium, Math=Exotype/slow (glacial)", "form": "table aligning columns to AIF+ timescale bands", "source_line": 706},
+        {"description": "Entity type tables per column with identity patterns: post:<site>/<se-id>, mission:<repo>/<id>, var:<ns>/<symbol>", "form": "schema tables (§3.1)", "source_line": 432},
+        {"description": "Binary relations (covers, evidences, pattern-use, requires, defines, about-var, implements, entry-point) + n-ary hyperedges (tension, devmap, reflection, trace, invariant/violation, math/thread, coverage/analysis)", "form": "typed hypergraph schema", "source_line": 475},
+        {"description": "Data flow diagram: JSON + MC APIs + Reflection API → futon1a XTDB → core.logic → arxana-browser views", "form": "ASCII data-flow diagram", "source_line": 620}
+      ],
+      "joe_interests_touched": [
+        "AIF (AIF+ invariants I1–I6 grounding cross-column checks)",
+        "math expository writing / proof process (math column carries reasoning structure)",
+        "peer learning (capacity development trace: capability-goal relation Project↔Math)",
+        "commercial generalisation (any Clojure project / Java project / structured reasoning process)",
+        "Krowne tetrahedron (evidence apex echoes evidence-as-product framing)",
+        "pattern application (PUR trail invariant INV-2)"
+      ],
+      "key_concepts": [
+        "Three columns = three projections of one AIF+ wiring diagram calculus",
+        "Cross-column invariants ARE the product — not the data, not the hyperedges",
+        "Wiring diagram with certified invariants IS a proof of those invariants",
+        "Generalisation path: futon stack = instance #1; instance #2 = external codebase or business process",
+        "Five invariants implemented: INV-1 documented entry points, INV-2 PUR trail complete, INV-3 definition reference checked, INV-4 no circular deps, INV-5 FALSIFY before CONSTRUCT",
+        "Pheno-geno-exo timescale composition matches three-column decomposition",
+        "AIF dual usage: Active Inference Framework (control loop) + Argument Interchange Framework (reasoning structure)"
+      ],
+      "related_missions": [
+        "M-self-representing-stack (predecessor — built the plumbing)",
+        "futon5 mission validator (M-diagram-composition)",
+        "M-futonzero-mvp (capability-development goal as Project↔Math relation)",
+        "First Proof Sprint monograph (Figure 22.1 'The Argument')"
+      ],
+      "open_questions": [
+        "Math↔Code links omitted in v1 — to be added if symbolic computation in Clojure motivates them",
+        "Code column gaps: no protocol/defmethod/record reflection endpoints yet",
+        "Browser adapter to read futon1a from arxana-browser-hypergraph.el (vs JSON file)"
+      ],
+      "completion_evidence": "1,524+ hyperedges across three columns (182 math + 195 project + 1,162 code); 4 cross-column invariants with browsable violations; INV-1 and INV-4 violation→resolution loop demonstrated end-to-end"
+    },
+    {
+      "name": "M-the-futon-stack",
+      "path": "/home/joe/code/futon0/holes/missions/M-the-futon-stack.md",
+      "status": "ACTIVE",
+      "dates": {
+        "opened": "2025-11",
+        "mission_text_drafted": "2026-05-01",
+        "target_completion": "~2026-08 (paced by evidence, not velocity)",
+        "last_checkpoint": "2026-05-02"
+      },
+      "core_thesis": "The futon stack IS a homeostatic software agent — a software system that participates in its own homeostasis via an Active Inference loop where the precision substrate updates from evidence the system emits about itself. Argument + Invariants + Missions = generative model + precision + policy.",
+      "load_bearing_quote": "A homeostatic software agent... a free-energy-minimising organism whose own model is a participant in the world it's modelling (lines 14–16)",
+      "subsystem_mappings": [
+        {"shape": "subsumption-witness", "faculty": "forgetting — knowing what's superseded", "first_sibling": "obsolescence-recognition/autostash", "source_line": 33},
+        {"shape": "bounded-disposition", "faculty": "commitment-tracking — knowing what's pending decision", "first_sibling": "bounded-disposition/stash", "source_line": 34},
+        {"shape": "single-locus", "faculty": "self-identification — knowing which version is current", "first_sibling": "single-locus/mission-home", "source_line": 35},
+        {"shape": "reachable-from-boot", "faculty": "self-recovery — knowing it can rebuild from durable substrate", "first_sibling": "reachable-from-boot/evidence-store", "source_line": 36},
+        {"shape": "state-snapshot-witness", "faculty": "autobiographical memory — knowing what it was, queryable", "first_sibling": "state-snapshot-witness/inventory", "source_line": 37},
+        {"shape": "single-boundary", "faculty": "write-discipline — every emission via one route", "first_sibling": "single-boundary (evidence)", "source_line": 45},
+        {"shape": "evidence-per-turn", "faculty": "read-back integrity — every claim is verified-persisted", "first_sibling": "evidence-per-turn", "source_line": 46},
+        {"shape": "coverage-ratchet", "faculty": "monotonic vigilance — coverage cannot silently shrink", "first_sibling": "coverage-ratchet (inventory)", "source_line": 47},
+        {"shape": "family-canary", "faculty": "per-cycle pulse — every operational claim fires a signal", "first_sibling": "family-canary", "source_line": 48},
+        {"shape": "metabolic-balance", "faculty": "allostatic homeostasis — current mana balance + trajectory; felt-pressure when block-closure overdue", "first_sibling": "metabolic-balance/working-tree", "source_line": 56}
+      ],
+      "diagram_proposals": [
+        {"description": "View 1 — Runtime topology: one JVM, one launcher containing Agency/futon1a/Drawbridge/futon5-nonstarter/multi-watcher/commit-ingest/probe-taps/snapshot-probes/boot-checks; XTDB on disk; Emacs daemon separate; agent surfaces external", "form": "Mermaid flowchart TB", "source_line": 181},
+        {"description": "View 2 — Invariant taxonomy: five new + four predecessor + one graduated-drive shape; each shape's operational siblings with operational vs operational-when-enabled colouring", "form": "Mermaid flowchart LR", "source_line": 221},
+        {"description": "View 3 — The homeostatic loop: World → Boot-time checks/Probe-taps → :ok/:violation/:inactive → evidence store → Operator+agents → repair → World", "form": "Mermaid flowchart LR (closed-loop control system)", "source_line": 280},
+        {"description": "Cross-cutting threads inventory (CCT-1 canonical parser per data-object class) as table of artifact-class → parser → state → owning mission", "form": "table", "source_line": 333}
+      ],
+      "joe_interests_touched": [
+        "AIF (homeostatic agent thesis is core; argument=generative-model, invariants=precision, missions=policy)",
+        "operator inhabiting complexity with AI",
+        "consent gate / autopen (Q6 safety machinery)",
+        "blackboard backpressure (multi-watcher in one JVM)",
+        "war machine (Q5 autonomy phases)",
+        "trip journal / hinge-log",
+        "self-representation but at a different level than M-self-representing-stack"
+      ],
+      "key_concepts": [
+        "Ten shapes ≈ minimum cognitive faculties of a self-maintaining agent",
+        "Nine static-binding faculties + one graduated-drive (metabolic-balance)",
+        "operational-when-enabled vs operational distinction (Q1: invariant the operator can forget is not an invariant)",
+        "Seven verification questions (Q1 really invariant? Q2 cognitive function vs bookkeeping? Q3 efficient? Q4 stack set up to host? Q5 evidence of homeostat? Q6 kill-switch/debug? Q7 reasonable issue queue?)",
+        "Phase A→D autonomy migration (supervised → semi-autonomous → bounded-queue → 'sleep while it codes')",
+        "PI step has not yet fired against the substrate — central next move",
+        "Mission paced by evidence accumulation not velocity"
+      ],
+      "related_missions": [
+        "THE-STACK.md / Level-0 AIF.edn (futon5a)",
+        "M-invariant-queue-unstuck (predecessor invariants)",
+        "M-bounded-in-flight-state (tenth shape metabolic-balance)",
+        "M-war-machine (the active-inference layer)",
+        "M-portfolio-inference (PI step)",
+        "M-single-entry-point (orphan-JVM consolidation)",
+        "M-archaeology-control / M-single-locus / M-reachable-from-boot / M-state-snapshot-witness (sibling shape missions)"
+      ],
+      "open_questions": [
+        "Q2 — cognitive function vs bookkeeping (EFE comparison evidence does NOT exist yet)",
+        "Q3 — efficiency budget unstated and unmeasured",
+        "Q4 — does the surrounding stack make invariants satisfiable, not just check-able?",
+        "Q6 — kill-switch + debug surface + reversal protocol are concept-only",
+        "Whether single-meaning deserves promotion to an 11th faculty shape",
+        "Whether the scheduler should auto-start on JVM boot"
+      ],
+      "diagram_relevance": "Provides three already-drawn Mermaid views directly answering 'what is the stack' from three angles (topology, invariant skeleton, homeostatic loop). Highest signal for *how* the diagram is shaped."
+    },
+    {
+      "name": "M-stack-geometry",
+      "path": "/home/joe/code/futon5a/holes/missions/M-stack-geometry.md",
+      "status": "DERIVE→INSTANTIATE (multi-checkpoint, deliverables shipped)",
+      "dates": {
+        "opened": "2026-04-19",
+        "last_checkpoint": "2026-04-20 (Checkpoint 18)"
+      },
+      "core_thesis": "Three prior rationalisations (holistic-argument semantics, Mission Control observation, Portfolio Inference dynamics) are correct-but-non-spatial. The stack needs a topology layer — what is near what, at what granularity — rendered as a thing the operator can look at.",
+      "load_bearing_quote": "The futon stack has correct-but-non-spatial self-understanding. The operator cannot *see* the ~25-mission game map as a whole (lines 50–52)",
+      "four_layer_synthesis": [
+        {"layer": "Argument", "role": "semantics", "source": "three-pillars.md, S1–S6"},
+        {"layer": "Invariants", "role": "structure", "source": "pattern library + inventory"},
+        {"layer": "Missions", "role": "actions", "source": "Mission Control + Portfolio Inference"},
+        {"layer": "Evidence", "role": "grounds", "source": "futon1a"}
+      ],
+      "topology_layer_additions": [
+        {"from": "Semantics", "to": "landmarks (S1–S6 claims as reference points)"},
+        {"from": "Observation", "to": "node attributes (phase, devmap coverage)"},
+        {"from": "Dynamics", "to": "node colouring / flags (portfolio mode, adjacent-possible)"},
+        {"from": "Topology", "to": "positions + clusters + edges (embedding space, hierarchical tree, cross-refs)"}
+      ],
+      "diagram_proposals": [
+        {"description": "Mission embeddings in MiniLM-L6-v2 384-dim space; Ward hierarchical clustering over cosine distances; PCA projection to 2D; rendered in WebArxana", "form": "embedding-space scatter + dendrogram + force-directed graph", "source_line": 106},
+        {"description": "Two-condition clustering: (A) IDENTIFY signature vs (B) FULL-body signature, comparison reveals identification-drift", "form": "side-by-side dendrograms; A/B divergence per mission", "source_line": 395},
+        {"description": "Three-surface navigation: VSATARCS (narrative/what-is-this), WebArxana (structural/what-does-it-touch), Stereolithographic (thematic/what's-moving-and-why-coheres)", "form": "three-surface table", "source_line": 1855},
+        {"description": "VSAT 3D anthology (37 stories / 276 scenes; pillar-based + per-repo + cluster-derived leaves)", "form": "anthology stories with cross-story links", "source_line": 1749},
+        {"description": "Recursive Ward clustering — leaf-6-4-4 'portfolio/sorry' recovered exactly Joe's informal cluster (holistic-argument + Mission Control + Portfolio Inference) AND extended it by ten more stack-thinking-about-itself missions", "form": "recursive cluster tree (23 leaves per condition)", "source_line": 661},
+        {"description": "Sorry semilattice across 7 scales (devmap, mission, holistic-argument, structural-law, excursion, scene, technote) — 293 sorries with inhabited-ness axis", "form": "typed sorry registry as semilattice", "source_line": 1245},
+        {"description": "Holistic argument v3 as queries over the 293-sorry semilattice (Argument = root-sorry query, Invariants = promoted-sorry query, Missions = closure-in-progress query)", "form": "rendered argument-as-live-query", "source_line": 1531},
+        {"description": "Three browsing surfaces are projections of the same underlying topology", "form": "shared substrate with multiple viewers", "source_line": 880}
+      ],
+      "joe_interests_touched": [
+        "AIF (Portfolio Inference layer / EFE-ranked actions)",
+        "math expository writing (anthology stories, expository voice)",
+        "Krowne tetrahedron (evidence apex / sorry castle on foundations)",
+        "networked intelligence (cross-repo cluster crossings as edges)",
+        "pattern application (top-patterns per cluster centroid)",
+        "training infrastructure adjacent (superpod/ingest leaf)",
+        "peer learning (anthology as inhabitable surface)"
+      ],
+      "key_concepts": [
+        "Topology = what is near what at what granularity (the missing rationalisation)",
+        "MiniLM embedding space is shared across patterns AND missions AND landmarks",
+        "Sorry = open retrospective arrow (B→A); pattern = closed prescriptive arrow (A→B)",
+        "Semilattice not tree: capabilities multiply supported, sources gesture at many capabilities",
+        "Inhabited-ness axis: unnamed / spec-only / nascent / prototype / active / operational / settled / closed",
+        "Status vs inhabited-ness are orthogonal axes",
+        "VSAT hairball problem = loss-of-time-axis problem",
+        "Stereolithographic view = termite-mound semilattice accreted by stigmergy",
+        "futon1a POST /entity REPLACES props — must fetch-merge-upsert",
+        "Three-surface navigation: narrative / structural / thematic-temporal",
+        "Active fronts = priority signal + crossings (semilattice rejoin points)"
+      ],
+      "related_missions": [
+        "M-trip-journal (hinge-log apparatus, B→A observation stream)",
+        "M-a-sorry-enterprise (sorry topology, closure pressure)",
+        "M-learning-loop (B→A pattern mining)",
+        "M-hypergraph-operator (Click/Tick analytic layer above)",
+        "M-self-representing-stack (Arxana hypergraph predecessor)",
+        "M-stack-stereolithography (capability-status sibling)",
+        "M-mission-control + M-portfolio-inference (observation + dynamics layers)"
+      ],
+      "open_questions": [
+        "Layer-1 cross-ref edge ingest still deferred (clustering + closures turned out richer)",
+        "Stereolithographic frame-by-frame animation (Path B) not yet built",
+        "Pillar-leaf priority requires sorry-scale traversal",
+        "Scene-interop blocks (Portfolio Inference / Candidate Queue pointers) unwired",
+        "Commit-ID closure mining from 218 commits referencing mission IDs"
+      ],
+      "data_state": "110 mission-geom entities, 16 flat-cluster + 46 leaf-cluster entities, 293 sorry entities, 12 repo entities, ~1,000 relations including 69 :closes; anthology = 35 leaves; VSAT profile = 37 stories / 276 scenes",
+      "diagram_relevance": "By far the most direct precedent for 'a big diagram of the FUTON stack' — already produced WebArxana 2D, VSAT 3D, and anthology projections over the same substrate. Strongest empirical evidence for what works."
+    },
+    {
+      "name": "M-stack-stereolithography",
+      "path": "/home/joe/code/futon5a/holes/missions/M-stack-stereolithography.md",
+      "status": "INSTANTIATE (Checkpoint 6, 2026-04-30)",
+      "dates": {
+        "opened": "2026-04-26",
+        "last_checkpoint": "2026-04-30"
+      },
+      "core_thesis": "The stack has multiple good projections of capability, but no single printout that says, with provenance, 'here is what exists already' vs 'here is what is still coming out of the bath.' Use invariant families as canonical capability nodes; keep maturity (exists/emerging/declared) and pressure (none/active-repair/strategic) as separate axes.",
+      "load_bearing_quote": "exists already / emerging / declared — capabilities accrete; some are live and biting; some half-emerged; some only declared (lines 96–110)",
+      "subsystem_mappings": [
+        {"node_type": "invariant family", "status_mapping": ":operational → :exists-already", "source_line": 437},
+        {"node_type": "invariant family", "status_mapping": ":candidate → :declared", "source_line": 438},
+        {"node_type": "invariant family", "status_mapping": ":operational-but-bypassable → :emerging", "source_line": 439},
+        {"node_type": "invariant family", "status_mapping": ":operational-when-enabled → :emerging", "source_line": 440},
+        {"node_type": "invariant family", "status_mapping": ":candidate-with-live-exemplar → :emerging", "source_line": 441}
+      ],
+      "diagram_proposals": [
+        {"description": "Capability-row table: capability-id / label / status / pressure / precision-proxy / firm-exemplar / detail-count / repos / meta-invariants / source-refs / notes", "form": "structured EDN table + markdown printout", "source_line": 194},
+        {"description": "Three bands: Exists already / Emerging / Declared, with layer slice (I0→I4) and promotion slice (cleanup-evidence → candidate → exemplar → operational)", "form": "banded printout + DAG sub-slices", "source_line": 945},
+        {"description": "Vertical layered semilattice over all 19 families I0–I4, status-coloured (operational/bypassable/candidate); operational-only DAG slice; promotion loop", "form": "Mermaid flowchart TB with explicit ~~~ links to force vertical stack", "source_line": 1431},
+        {"description": "Piano roll prototype: each futon a vertical column; commits as dits, mission events as dahs; tight clusters fan via > with elision at 5+", "form": "multi-futon piano roll PDF, 11 futons × 6 months", "source_line": 1838},
+        {"description": "Two-stream method: Stream A declarative intent (inventories/missions/narrative) + Stream B behavioral recurrence (git archaeology)", "form": "dual-register evidence pipeline", "source_line": 853},
+        {"description": "Seven meta-invariants of the printer itself: no-dead-invariants, projection-parity, family-attachment-totality, pressure-is-not-maturity, promotion-traceability, layer-legibility, live-violation-actionability", "form": "constraints on the printer", "source_line": 718}
+      ],
+      "joe_interests_touched": [
+        "AIF (precision-proxy as AIF-style confidence; recurring AIF tick now live daily)",
+        "Krowne tetrahedron (closure pressure + aspiration debt; exists-already grounded in evidence)",
+        "training infrastructure / commercial readout (capability printer)",
+        "pattern application (stack-coherence patterns cited)",
+        "war machine (capability map feeds strategic dashboard)",
+        "evidence-backed maturity discipline"
+      ],
+      "key_concepts": [
+        "Capabilities accrete: status ≠ pressure (live violations don't demote operational families)",
+        "Invariant family is the canonical capability node",
+        "Semilattice-first with DAG slices (not DAG pretending to be whole truth)",
+        "Source precedence: live enforcement > family status > active violations > devmaps/missions/WM",
+        "Inventory/model drift is load-bearing — emit explicitly, don't auto-merge",
+        "Printout-first, viewer-second (peripheral pattern: surface earns inhabitation)",
+        "Precision-proxy combines expectation-drift + loss-severity + witness-quality + historical-repair-density + actionability-gradient",
+        "Frozen-tape stereolithograph (piano roll) vs live (M-live-geometric-stack)",
+        "The DAG is the spanning object for the stack as it is printed (commits-as-vertices)"
+      ],
+      "related_missions": [
+        "M-stack-geometry (sibling — mission topology and three-surface frame)",
+        "M-live-geometric-stack (substrate-2; phase 3 = commits-as-vertices DAG is what stereolithography prints)",
+        "M-war-machine (strategic dashboard consumer)",
+        "M-a-sorry-enterprise (sorry topology, closure pressure)",
+        "M-stack-inhabitation (inhabited vs uninhabited surfaces)",
+        "M-hypergraph-operator (downstream analytic reader)",
+        "M-futon-enrichment (rational reconstruction methodology)"
+      ],
+      "open_questions": [
+        "Whether v1 capability row embeds entire precision-proxy block or just keys",
+        "F-atomic-inspectable-units empty mission witness — vocabulary problem or premature family?",
+        "Whether one surface render is sufficient for closure or multi-surface required",
+        "Pillar leaf priority requires sorry-scale traversal"
+      ],
+      "current_data": "Whole-stack capability split: 9 exists-already / 5 emerging / 5 declared; 18 family rows; 4 worked examples (human-visible-inspectability, atomic-inspectable-units, cross-store-agreement, failure-locality); daily AIF tick running at 86400s",
+      "diagram_relevance": "Most directly answers 'what does the stack actually have' as a printable capability map; complements geometry's neighbourhood-clustering with capability-status-with-provenance. The Mermaid vertical render (1431) is a concrete prior art."
+    }
+  ],
+  "cross_mission_synthesis": {
+    "overlap": [
+      "M-self-representing-stack and M-three-column-stack are predecessor/successor on the same arc — the latter resolves three RE-OPENED gaps in the former (persistence, all three columns, cross-column invariants). Both treat the stack as a hypergraph and ground claims in reflection envelopes.",
+      "M-stack-geometry and M-stack-stereolithography are sibling — both publish over WebArxana/VSATARCS/VSAT, share the futon1a substrate and MiniLM embedding tooling, and both treat the stack as a semilattice not a tree.",
+      "M-the-futon-stack and M-three-column-stack converge on AIF+ invariants (I1–I6) as the structural language: three-column makes them check cross-column consistency; the-futon-stack makes them the cognitive faculties of a homeostatic agent.",
+      "All five missions agree the substrate is a hypergraph (futon1a XTDB), that maturity must be evidence-backed, and that the stack is a semilattice not a DAG."
+    ],
+    "complementarity": [
+      "M-the-futon-stack provides the most explicit subsystem table — futon7..futon0..futon3a..futon3b..futon3c..futon1a..futon4..futon5 mapped to AIF roles and timescales. This is the cleanest IDENTITY-layer mapping.",
+      "M-three-column-stack provides the schema and invariants — entity types per column, relation types, hyperedge types, INV-1..INV-5 with core.logic implementations. This is the cleanest DATA-MODEL layer.",
+      "M-self-representing-stack provides the navigation idiom — typed hyperedges, tension hyperedges as frozen dynamics, reflection-grounded scholia, 6-gate trace path. This is the cleanest BROWSING layer.",
+      "M-stack-geometry provides the empirical topology — 110 missions clustered, 293 sorries semilatticed, A/B divergence as identification-drift signal, anthology stories. This is the SPATIAL layer that has actually shipped.",
+      "M-stack-stereolithography provides the capability-status readout — exists-already/emerging/declared with pressure axis, invariant families as canonical nodes, vertical Mermaid render. This is the CAPABILITY-AUDIT layer.",
+      "Read together: identity (the-futon-stack) → schema (three-column) → navigation (self-representing) → topology (geometry) → capability-status (stereolithography). They stack."
+    ],
+    "tensions": [
+      "M-the-futon-stack frames the stack as a single homeostatic agent (one organism, AIF+ blanket); M-three-column-stack frames it as three columns (math/project/code) of one wiring diagram; M-stack-geometry frames it as a sorry semilattice across 7 scales. Not contradictory but the choice of CANONICAL NODE differs (subsystem-shape vs entity-type vs sorry-vs-capability).",
+      "M-stack-geometry committed to MiniLM embedding + cluster centroids as the topology — discovered force-directed-with-pins is sufficient. M-stack-stereolithography committed to vertical Mermaid TB semilattice with explicit ordering. Different visual idioms.",
+      "M-self-representing-stack proposed AIF+ subsystem diagram in futon5; the actual practice has been WebArxana + VSAT + piano-roll Mermaid + Mermaid TB. The futon5 AIF+ canonical diagram has NOT been built as such — it lives only in the table at line 67.",
+      "M-stack-geometry's three-surface table (narrative/structural/thematic) and M-stack-stereolithography's exists/emerging/declared bands are partly orthogonal: one is reading-mode, the other is capability-state. A unified diagram would need to carry both axes."
+    ],
+    "most_actionable_proposal": "Build the diagram as an Arxana-hypergraph-backed WebArxana view layered with Mermaid renders for printable sub-slices. Specifically: (1) one canonical futon1a substrate (already exists — 1,524+ hyperedges from three-column + 293 sorries + 110 missions + 16 invariant families); (2) the M-the-futon-stack AIF+ subsystem table at the apex (the cleanest 'big diagram' candidate — eight subsystems, AIF roles, timescales — already at futon4/holes/missions/M-self-representing-stack.md:67); (3) navigation projections per Joe's interests via existing WebArxana entity searches; (4) Mermaid TB sub-views (the three views in the-futon-stack and the vertical layered semilattice from stereolithography Checkpoint 2) for printable form. The single most under-leveraged artifact is the AIF+ subsystem table at line 67 of M-self-representing-stack — eight rows assigning each repo a role and timescale, never converted into a single rendered diagram. That table IS the big diagram waiting to be drawn; everything else is overlay.",
+    "diagram_form_recommendation_input": {
+      "if_form_is_Mermaid": "M-the-futon-stack already proves Mermaid is sufficient for runtime topology, invariant taxonomy, and homeostatic loop. M-stack-stereolithography Checkpoint 2 proves vertical TB layered semilattices work. Mermaid is the right form for PRINTABLE sub-slices.",
+      "if_form_is_Arxana_hypergraph": "M-self-representing-stack + M-three-column-stack + M-stack-geometry have already shipped the substrate. Arxana is the right form for NAVIGABLE / INTERACTIVE / CROSS-CUT views. The data is already there — diagram = configure the viewer, not build new substrate.",
+      "if_form_is_VSAT_anthology": "M-stack-geometry already shipped 37 stories / 276 scenes. VSAT is the right form for NARRATIVE / ONBOARDING / EXPOSITORY exploration.",
+      "if_form_is_single_canonical_picture": "The AIF+ subsystem table (M-self-representing-stack:67) is the unique candidate that has not yet been drawn. All other diagrams Joe has are at the parts level, not the whole-stack level.",
+      "recommendation": "The diagram should be COMPOUND: Arxana-hypergraph for navigation + Mermaid TB renders for printable canonical views + the AIF+ subsystem diagram (futon0..futon7 with AIF roles and timescales) at the apex as the 'big diagram'. Single-canonical-picture form would be a futon5 AIF+ wiring diagram OF THE STACK — which M-self-representing-stack identifies as the missing artifact ('the stack-level diagram would be the first instance where futon5 describes itself as part of the organism it specifies', line 92)."
+    }
+  }
+}

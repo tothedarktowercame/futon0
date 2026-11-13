@@ -1,0 +1,10 @@
+t93A04 hard – Needs Sard/transversality results for line preimages of smooth maps, not present in Mathlib.
+t93A05 hard – Null-homotopy into RP^3 and mod-2 intersection computations rely on missing homotopy/cohomology results.
+t93A06 hard – Differential-form primitives and torus integrals exceed current Mathlib manifold tools.
+t93J01 hard – Infinite product of spheres vs. R^3 separation demands dimension theory absent from Mathlib.
+t93J02 quick – Nested compact connected sets remain compact/connected via existing general topology lemmas.
+t93J03 hard – Klein-bottle fundamental group and embedding criteria require new covering-space and π₁ infrastructure.
+t93J04 medium – H₂(S²×S²) ≅ ℤ⊕ℤ is available, so distinguishing the two sphere factors is manageable with existing homology tools.
+t93J05 hard – Exterior derivative plus surface integrals over composite surfaces would need yet-unformalized differential-form integration.
+t93J06 hard – Hairy-ball–type obstructions for S² and S⁴ require characteristic-class theorems missing in Mathlib.
+t94A01 medium – Matching the weighted ℓ¹ metric to the product topology on ∏[0,1] fits within the current topology API but needs careful estimates.

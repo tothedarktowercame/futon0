@@ -1,0 +1,10 @@
+m94A02 medium Bounding real parts of eigenvalues by Hermitian-part eigenvalues follows from existing linear-algebra lemmas on Rayleigh quotients.
+m94A03 hard Sobolev-space membership of log|x| in varying dimensions needs PDE/Sobolev infrastructure not present.
+m94A04 hard Fréchet differentiability and invertibility of nonlinear operators between Lᵖ spaces isn’t formalized.
+m94A05 medium Contraction-mapping arguments for the nonlinear integral equation can be done with current analysis tools.
+m94J01 hard Distributional limits of translated delta derivatives require distribution theory Mathlib lacks.
+m94J02 hard Weighted power-series Banach-algebra and spectral analysis go beyond current functional-analysis libraries.
+m94J03 hard Resolvent estimates for compact Hermitian operators rely on spectral theory not yet available.
+m94J04 hard Distributional curls of piecewise-defined vector fields need generalized-derivative support absent from Mathlib.
+m94J05 medium Inverse-operator contraction arguments for the nonlinear boundary ODE are manageable with existing analysis tools.
+m94J06 hard Proving GL(X) inversion is Fréchet differentiable for general Banach spaces requires differentiable manifold theory not in Mathlib.

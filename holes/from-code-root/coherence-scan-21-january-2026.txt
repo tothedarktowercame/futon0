@@ -1,0 +1,18 @@
+ Coherence Scan Summary
+
+  - Workflow cadence: partial signals from org + git; weekly-rhythm and wip-cap need explicit
+    markers; sphere-equilibrium has a private signal in futon5a but no public instrumentation
+    yet.
+  - Devmap coherence: IFR/state/next present across all futons; prototype clause structure is
+    consistent; next[...] missing everywhere; evidence density drops sharply after F3; role/
+    tension/embedding markers not instrumented.
+  - Stack coherence: README↔devmap drift (“seven” vs “eight” futons); evidence-ledger and
+    triage are weakly signaled; futon1-determinism handled but not evidenced.
+  - Library coherence: template discipline is partial (@sigils missing in 25 files,
+    @references missing in 242); no library-wide README or ledger signals; embedding refresh/
+    differentiation mentioned but not logged.
+  - Patterns updated: workflow coherence patterns now include evidence recipes; new devmap-
+    coherence/status-keywords pattern defines status mapping + litany/system/worldview/myth
+    ladder.
+
+ 

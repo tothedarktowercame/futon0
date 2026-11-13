@@ -1,0 +1,13 @@
+#+TITLE: Storage bridge
+:PROPERTIES:
+:DOC_ID: futon4-storage-bridge
+:ENTRY_ID: futon4-storage-bridge-20240606
+:VERSION: spine2-pilot
+:OUTLINE_PATH: Storage bridge
+:PATH_STRING: Storage bridge
+:REPLACES: 
+:END:
+
+* Context
+Outlined the Futon storage bridge helpers, configuration knobs, and snapshot scopes for bridging to Futon1/XTDB.
+

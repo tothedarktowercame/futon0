@@ -1,0 +1,10 @@
+t02A01 hard Covering-space boundary counts on punctured tori require covering theory absent from Mathlib.
+t02A02 hard Classifying surfaces from edge-identification words needs surface-topology infrastructure not formalized.
+t02A03 hard Computing π₁ and homology of knot complements in genus-two bodies requires algebraic topology beyond Mathlib.
+t02A04 hard Proving every self-map has a fixed point on the 2-cell-attached torus uses Lefschetz degree theory not implemented.
+t02A05 medium Evaluating the given 2-form over translated unit spheres and minimizing it can be done with vector-calculus tools.
+t02A06 medium Truth/falsity of these statements uses standard manifold facts available (great-circle intersections, nonexistence of S²×S²≅S⁴, degree maps).
+t02A07 hard Showing Z is a submanifold and producing dense transverse parameters require transversality theory not present.
+t02A08 hard Constructing maps with prescribed intersection numbers on S²×S² relies on homology-degree calculations beyond current capabilities.
+t03J01 hard Retraction questions for double tori need surface fundamental-group/topology results missing.
+t03J02 hard Using van Kampen and Mayer–Vietoris on glued tori requires algebraic-topology machinery not available.

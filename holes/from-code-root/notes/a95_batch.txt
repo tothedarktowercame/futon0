@@ -1,0 +1,10 @@
+a95A05 medium Vanishing on the upper semicircle forces f≡0 by maximum-modulus/Schwarz reflection, which Mathlib can express with existing boundary lemmas.
+a95A06 hard Showing the lacunary series lacks analytic continuation exploits Fabry gap/natural boundary theory unavailable in Mathlib.
+a95A07 hard Computing ζ(2) via contour integrals and the argument principle requires complex integration machinery not yet formalized.
+a95A08 hard Length estimates for conformal images need isoperimetric-type inequalities beyond current Mathlib conformal-mapping tools.
+a95J01 hard Comparing injective self-maps of the disk via Schwarz-Pick/Koebe distortion is outside Mathlib’s current complex analysis reach.
+a95J02 hard Classifying entire functions with global lower bounds like |z|^λ needs advanced growth/zero arguments missing in Mathlib.
+a95J03 hard Bounding winding numbers of trigonometric-polynomial curves requires winding-number calculus not implemented.
+a95J04 hard Locating boundary poles and bounding coefficients demands meromorphic continuation theory and residue estimates missing from Mathlib.
+a95J05 medium Convergence in measure characterized via integrals of bounded continuous functions follows from existing measure-theory convergence lemmas.
+a95J06 medium Gluing absolute continuity across Cantor gaps uses measure-zero control and is manageable with current real-analysis tooling.

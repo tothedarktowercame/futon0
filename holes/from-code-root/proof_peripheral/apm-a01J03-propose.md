@@ -1,0 +1,5 @@
+**THE KEY INSIGHT**
+- View each nondecreasing `f_n` as the distribution function of a finite positive measure `μ_n`, so `f = ∑ f_n` corresponds to the sum measure `μ = ∑ μ_n`. By Lebesgue’s differentiation theorem (or Radon–Nikodym), the derivative of a monotone function equals the density of its measure almost everywhere. Since `μ = ∑ μ_n`, we get `f' = dμ/dx = ∑ dμ_n/dx = ∑ f_n'` almost everywhere. Equivalently, use monotone convergence on difference quotients: `f'(x) = lim_{h ↓ 0} (f(x+h)-f(x))/h = ∑ lim_{h ↓ 0} (f_n(x+h)-f_n(x))/h = ∑ f_n'(x)` at every point where all derivatives exist (which holds a.e. for monotone functions).
+
+**THE NAIVE APPROACH THAT FAILS**
+- A student might try to differentiate the series term-by-term using standard differentiation rules, assuming uniform convergence of `∑ f_n` or uniform convergence of the derivatives. However, monotone functions need not converge uniformly on ℝ, and the derivatives `f_n'` may fail to exist everywhere. Without invoking monotone convergence of measures or the “monotone functions are a.e. differentiable” theorem, the interchange of limits has no justification.

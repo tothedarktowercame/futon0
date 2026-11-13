@@ -1,0 +1,10 @@
+m00A02 hard Asymptotic expansion definitions and differentiation criteria need asymptotic-series infrastructure Mathlib lacks.
+m00A03 hard Hahn–Banach geometry and compact-operator spectral analysis (Riesz–Schauder) are not formalized.
+m00A04 hard Variational existence plus PDE weak-solution machinery requires Lax–Milgram tools missing in Mathlib.
+m00A05 medium Contraction-mapping-based IVP theory and global limit arguments can be done with existing metric- and ODE-tooling, albeit with work.
+m00A06 hard Extending the singular distribution |x|⁻¹ beyond test functions needs distribution theory not yet developed.
+m01J01 medium Open mapping and closed graph theorems already exist and only need careful restatement and linkage.
+m01J02 medium Orthogonal projection identities in Hilbert spaces are supported by current linear/functional-analysis lemmas.
+m01J03 hard Spectral convergence of powers of T* T to a projection requires compact-operator spectral theory absent from Mathlib.
+m01J04 hard Weak-convergence manipulations in Sobolev spaces demand PDE/functional-analysis infrastructure Mathlib lacks.
+m01J05 medium Contraction mapping plus Newton-iteration convergence is manageable with existing analysis tools.

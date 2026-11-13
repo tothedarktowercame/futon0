@@ -1,0 +1,10 @@
+b97A02 medium Finite-field automorphism group arguments and fixed fields use existing Mathlib Galois theory for rational function fields, though require some work.
+b97A03 hard Determining irreducibility, splitting behavior, Galois group, and subfields of x⁶+3 needs number-field infrastructure not present.
+b97A04 hard Structure of finite-dimensional algebras over ℂ via Wedderburn/Artin theory goes beyond current module APIs.
+b97J01 medium Definitions plus standard p-group center and nilpotency lemmas exist but require some organization.
+b97J02 hard Classifying 0-dimensional reduced rings as products of fields is deep commutative algebra absent from Mathlib.
+b97J03 hard Counting roots of irreducible polynomials inside subfields using Galois groups needs number-field tools not implemented.
+b97J04 hard Uniqueness of Jordan–Chevalley decomposition needs full linear algebraic group theory missing from Mathlib.
+b98A01 medium Coset actions and normalizer arguments can be formalized with existing group-action library.
+b98A02 hard Building maximal abelian subextensions and proving lattice equalities requires advanced field/Galois theory not available.
+b98A03 hard Conductor ideal and lying-over results for integral extensions exceed current commutative-algebra support.

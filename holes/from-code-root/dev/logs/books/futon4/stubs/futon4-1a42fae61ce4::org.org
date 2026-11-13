@@ -1,0 +1,10 @@
+#+TITLE: In-memory storage of one form or another
+:PROPERTIES:
+:DOC_ID: unknown
+:VERSION: org
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

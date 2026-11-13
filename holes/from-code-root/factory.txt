@@ -1,0 +1,98 @@
+Research & Development World
+
+Jellyfish: Claude Code bills hit $252 a month per developer as software factories automate code production among early adopters
+By Brian Buntz | October 27, 2026
+
+FacebookXLinkedInEmailShare
+
+
+Image adapted from Adobe Stock
+
+Coding agents now touch more than a quarter of the pull requests, or proposed code changes, at the typical company, and people still sign off on nearly every change that merges. In September, AI agents opened or committed code to 27.7% of pull requests at the median company in Jellyfish’s data, up from about 2% in January. Across companies, the median share of code written by AI tools was 29%, and the median share of merged pull requests approved on AI review alone was 0.5%. Software factories, pipelines in which agents pick, write, review and ship the work, remain concentrated among early adopters. Their share of pull requests rounded to 0.0% even at the 90th-percentile company.
+
+Jellyfish, a Boston company whose engineering-management platform pulls activity data from tools such as Git and Jira, drew those figures from more than 1,300 companies, 276,000 developers and 100 million pull requests for its October AI Engineering Trends report, released Oct. 27. Two-thirds to three-quarters of those companies sell software, said Nikolas Albarran, Jellyfish’s AI product lead; the rest are companies where software is a cost center.
+
+By late September, Claude Code spending reached a median of $63 per active developer per week, or $252 using the report’s four-week monthly conversion. At the 90th percentile, the report’s monthly equivalent reached $1,666.
+
+In an interview with R&D World, Albarran and Nicholas Arcolano, Jellyfish’s head of research, described the organizational work behind greater autonomy: building controls around agents, giving them useful context, and training developers to use them effectively.
+
+Chart of three levels of AI agent autonomy in September 2026, each ranked by company percentile: agent involvement at 27.7% for the median company and 57.9% at the 90th percentile; AI-only merges at 0.5% and 8.5%; factory-opened pull requests at 0.0% for both, and 9.4% at the 99th percentile.
+Credit: R&D World analysis of Jellyfish Research data
+
+What counts as a software factory
+Albarran breaks software development into planning and work definition, building and coding, review, and shipping. “A software factory, in short, is where you’ve automated each part so there’s little to no human involvement as work gets passed through those stages,” Albarran said. Hitachi established its Software Works in 1969, applying manufacturing principles to large-scale software development as it faced a shortage of skilled programmers and growing customer complaints about bugs.
+
+In most pipelines, people still pick the work. “Typically, with a human in the loop, the most obvious place for the human is choosing what work gets done and defining the intent and goal of the work,” Albarran said. In the most mature factories, “you’ve got an agent or an orchestrator creating tickets and then pushing them to an agent to start executing.” Handing over that choice signals trust, Albarran said: “That’s the signal to me that you’ve introduced the context and infrastructure so that you trust the agent to pick the thing that’s worth doing and then execute on it.”
+
+Arcolano described the payoff as the ability to “scale beyond the limits of human attention.” “If a person needs to be involved every step of the way, babysitting the process, then we’ve gotten as fast as we can get,” he said. “We’ve hit the limit.”
+
+His advice is to begin by delegating a complete task. “To break through that limit, you need to start offloading entire tasks,” Arcolano said. “Even if they’re simple and safe ones, that’s the place to start. You need to offload the whole job to the agent.”
+
+Area chart of the share of each company's merged pull requests merged with AI-only review, January 2025 to September 2026, by company percentile: 90th percentile 8.5%, 75th 3.2%, median 0.5%, 25th 0.0%.
+At the 90th-percentile company, 8.5% of merged pull requests went through on AI review with no human input in September, up from about 4% in January. The median company sat at 0.5%. Credit: Jellyfish Research
+
+A turning point in adoption came around the end of 2025, Arcolano said, as coding agents became reliable enough to handle more substantial work. OpenAI co-founder and former Tesla AI director Andrej Karpathy described a similar shift in a February post on X: “coding agents basically didn’t work before December and basically work since.” He recounted giving an agent a project to build a dashboard for his home cameras. It spent roughly 30 minutes researching solutions, resolving problems, writing and testing code, and setting up the services. “I didn’t touch anything,” he wrote.
+
+At the 99th-percentile company, software factories opened 9.4% of pull requests in September, up from roughly 1.7% in March.
+
+Area chart of the share of pull requests opened by a software factory, March to September 2026, by company percentile: 99th percentile rising to 9.4%, 95th at 0.3%, 90th at 0.0%.
+At the 99th-percentile company, software factories opened 9.4% of pull requests in September, up from about 1.7% in March. At the 90th percentile, the share rounded to 0.0%. Credit: Jellyfish Research
+
+Scaling that autonomy takes investment in the systems around the agents, Albarran said. “You have to build confidence and trust in the system.” Teams need enough context and controls to feel confident in what an agent produces, reviews and ships.
+
+One part of that investment is maintaining context files, the instructions coding agents read about a project and how to work within it. In Jellyfish’s analysis, engineers who edited those files six or more times merged 2.3 more pull requests a week compared with no edits, controlling for AI usage. Each doubling of context-file investment was associated with 29% more merged pull requests.
+
+Bar chart of additional pull requests merged per week by cumulative context-file edits: 0.7 for one edit, 1.1 for two to five edits, 2.3 for six or more, with a callout of 29% more pull requests per doubling of context-file investment.
+Engineers who edited agent context files six or more times merged 2.3 more pull requests a week than with no edits, controlling for AI usage. Credit: Jellyfish Research
+
+Bar chart of Cursor agent-skill invocations by category in September 2026: code review 14.9%, planning and tickets 11.9%, agent setup 9.4%, Git workflows 9.2%, writing code 9.1%, docs and comms 7.3%, tests 6.4%, deploy and ops 5.0%, data and analytics 4.8%, debugging 4.4%.
+In Cursor, code review drew 14.9% of classified agent-skill invocations in September and planning and tickets drew 11.9%. Credit: Jellyfish Research
+
+Future scaling hinges partly on governance
+Developers’ confidence in AI now outpaces their confidence in their employers’ ability to manage it. In Jellyfish’s survey of 1,417 developers at 30 companies, conducted from January through September, 88% agreed that AI coding tools helped their work, while 62% agreed that their organization effectively managed the risks of AI-generated code.
+
+Slope chart from 88% agreeing that AI coding tools have helped their work down to 62% agreeing their organization effectively manages AI-code risk, with one gray line per company and a bold line for all developers.
+In a survey of 1,417 developers at 30 companies, 88% agreed AI coding tools helped their work and 62% agreed their organization effectively manages the risks of AI-generated code. Each gray line is one company. Credit: Jellyfish Research
+
+Companies are making progress in pockets, Arcolano said. “Very few are figuring out how to scale it to everyone.” Bringing the rest of the organization along takes training and support that have struggled to keep pace with the tools.
+
+“It’s moved so fast that the human change-management part, the training and support, is lagging,” he said.
+
+Correction, Oct. 27, 2026: An earlier version of this article attributed comments to Adam Ferrari, Jellyfish’s senior vice president of engineering. They were made by Nikolas Albarran, Jellyfish’s AI product lead.
+
+Tell Us What You Think!
+You must be logged in to post a comment.
+
+Related ArticlesRead More >
+How Kimi K3.1 Pro stacks up against Claude Opus 5.5 and GPT-6 AstraClaude Duet phone notification reading: Morning, Nicole! For today: Health permit. Hiring decisions. Northfield renewal.Anthropic joins the race for AI agents that keep working between conversationsWho has access to Claude Mythos-tier models (and beyond) will redefine cybersecurity, including in R&DAbstract of modern high tech internet data center room with rows of racks with network and server hardware. 3d renderingA startup says it found hidden memory behavior in NVIDIA GPUs and is building a security layer around it
+rd newsletter
+EXPAND YOUR KNOWLEDGE AND STAY CONNECTED
+Get the latest info on technologies, trends, and strategies in Research & Development.
+GET THE ENEWSLETTER
+R&D World Digital Issues
+Fall 2026 issue
+Browse the most current issue of R&D World and back issues in an easy to use high quality format. Clip, share and download with the leading R&D magazine today.
+
+Back IssuesSubscribe
+R&D 100 Awards
+Research & Development World
+Subscribe to R&D World Magazine
+Sign up for R&D World’s newsletter
+Contact Us
+About Us
+Drug Discovery & Development
+Pharmaceutical Processing
+Global Funding Forecast
+Copyright © 2026 Arrowfly LLC. All Rights Reserved. The material on this site may not be reproduced, distributed, transmitted, cached or otherwise used, except with the prior written permission of Arrowfly
+Privacy Policy | Advertising | About Us
+
+R&D World Home
+Topics
+Technology
+R&D Market Pulse
+R&D 100
+Resources
+Global Funding Forecast
+Top Labs
+Advertise
+SUBSCRIBE

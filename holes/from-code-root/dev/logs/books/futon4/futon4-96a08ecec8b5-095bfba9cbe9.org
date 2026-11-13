@@ -1,0 +1,13 @@
+#+TITLE: dev/bootstrap2.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-96a08ecec8b5-095bfba9cbe9
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/bootstrap2.el
+:PATH_STRING: Dev docs / dev/bootstrap2.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

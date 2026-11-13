@@ -1,0 +1,10 @@
+a95J07 hard Vitali 5-covering and the differentiability-zero image estimate need covering machinery absent from Mathlib.
+a95J08 hard Young’s convolution inequality for L¹–Lᵖ on ℝ is not yet formalized.
+a96A01 hard Handling quasi-norms for 0<p≤1 and their limit requires log-integral estimates beyond current measure theory.
+a96A02 medium Verifying Hölder continuity and failure of absolute continuity for an explicit piecewise-linear function is doable with existing real-analysis tools.
+a96A03 medium Fatou plus duality arguments available in Mathlib handle weak compactness of the L² unit ball.
+a96A04 hard Heat-kernel smoothing and L²-approximation demand PDE/semigroup results not available.
+a96A05 medium The polynomial inequality follows from maximum-modulus arguments that Mathlib can formalize.
+a96A06 hard Relating contour integrals around the pole to asymptotics of derivatives at 0 needs advanced residue/series tools missing.
+a96A07 hard Showing boundary injectivity forces global univalence requires argument principle/winding-number machinery not in Mathlib.
+a96A08 hard Evaluating ∫ (sin πx)/(x²-x) via residues is beyond current complex-integration support.

@@ -1,0 +1,10 @@
+t93A04 hard Determining whether some line has preimage a submanifold relies on transversality/Sard theory not available.
+t93A05 hard Null-homotopies into RP³ and intersection-number arguments need homotopy/cohomology tools missing.
+t93A06 hard Differential-form descent, primitives, and integrals on the torus require manifold-form infrastructure absent.
+t93J01 hard Infinite products of spheres versus ℝ³ separation needs deep compactness/dimension theory beyond Mathlib.
+t93J02 quick Nested compact connected sets have compact connected intersection via standard lemmas already in Mathlib.
+t93J03 hard Klein-bottle π₁ computations and planar embedding criteria need covering-space tools not formalized.
+t93J04 medium Distinguishing S²×{p} and {p}×S² via homology/Künneth arguments is doable with current tools.
+t93J05 medium Computing dω and integrating over the specified surface is a manageable calculus exercise.
+t93J06 hard Hairy-ball type questions on S² and S⁴ need characteristic-class theory not implemented.
+t94A01 medium Showing the weighted ℓ¹ metric induces the product topology on ∏[0,1] is a standard ε–N argument Mathlib can support.

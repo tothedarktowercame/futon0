@@ -1,0 +1,13 @@
+#+TITLE: dev/arxana-patterns-ingest.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-577d83b5f38a-60cc16671af9
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/arxana-patterns-ingest.el
+:PATH_STRING: Dev docs / dev/arxana-patterns-ingest.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

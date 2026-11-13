@@ -1,0 +1,13 @@
+#+TITLE: Quickstart
+:PROPERTIES:
+:DOC_ID: futon4-quickstart
+:ENTRY_ID: futon4-quickstart-20240606
+:VERSION: spine2-pilot
+:OUTLINE_PATH: Quickstart
+:PATH_STRING: Quickstart
+:REPLACES: 
+:END:
+
+* Context
+Documented the futon4 quickstart (load bootstrap, build, configure futon4-base-url, enable sync, register buffers, capture scholia).
+

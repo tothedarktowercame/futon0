@@ -1,0 +1,13 @@
+#+TITLE: dev/test-overlay-outline.el
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-0e0cfd6ff43e-d872a7c4a16c
+:VERSION: def-doc
+:OUTLINE_PATH: Dev docs / dev/test-overlay-outline.el
+:PATH_STRING: Dev docs / dev/test-overlay-outline.el
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

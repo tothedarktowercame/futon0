@@ -1,0 +1,10 @@
+m93A03 medium Weak-plus-norm convergence implying norm convergence is standard Hilbert-space theory available in Mathlib.
+m93A04 hard Differentiability and invertibility of integral operators on C[0,1] require Fréchet-derivative machinery not formalized.
+m93J01 hard High-order finite-difference analysis for the Schrödinger operator needs Taylor-expansion tools not present.
+m93J02 hard Relating two Hölder seminorms on arbitrary compact subsets and discussing completeness goes beyond current topology/analysis APIs.
+m93J03 medium Contraction-mapping arguments for the nonlinear integral equation can be implemented with existing tools.
+m93J04 hard Showing a piecewise-defined kernel is a fundamental solution for a differential operator requires distribution theory absent from Mathlib.
+m93J05 hard Fourier-series truncation as an operator on Lᵖ and functional minimization need harmonic-analysis infrastructure not available.
+m93J06 hard Full ODE existence/regularity/parameter dependence theory isn’t formalized.
+m93J07 medium Providing concrete Banach-space counterexamples (ℓ^∞, Lᵖ, shift operators, etc.) is doable with existing constructions.
+m94A01 hard Quantifying Laplacian finite-difference errors via fourth derivatives needs multivariate Taylor expansions missing from Mathlib.

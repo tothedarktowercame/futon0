@@ -1,0 +1,10 @@
+m01J06 hard Calculus-of-variations Euler–Lagrange derivations and perturbation analysis go beyond Mathlib’s current PDE tools.
+m02A01 medium Definitions and basic relationships between weak and strong convergence can be expressed with existing functional-analysis lemmas.
+m02A02 hard Periodic Sobolev-space Hilbert structure, Poincaré inequality, and Poisson variational solutions require missing PDE infrastructure.
+m02A03 hard Logarithmic fundamental solutions for the 2D Laplacian and distributional identities are not formalized.
+m02A04 hard Asymptotic evaluation of parameter-dependent integrals lacks support in Mathlib.
+m02A05 hard Full calculus-of-variations treatment with Euler–Lagrange equations is beyond current libraries.
+m02A06 hard Nonlinear boundary value problems solved via contraction mappings on infinite intervals need PDE/Schauder theory not present.
+m02J01 hard Distribution primitives and derivative characterizations require distribution-theory APIs absent from Mathlib.
+m02J02 hard Identifying bases for various H₀¹ spaces needs Sobolev-space structural results not available.
+m02J03 medium Hilbert-space weak convergence lemmas (boundedness, norm convergence, convex combinations) can be formalized with existing tools.

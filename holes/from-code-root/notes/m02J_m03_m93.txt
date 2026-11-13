@@ -1,0 +1,10 @@
+m02J04 hard Calculus-of-variations Euler–Lagrange and minimal-surface problems exceed Mathlib’s current capabilities.
+m02J05 hard Orlicz-space structure (norm, convexity, Hölder) is absent from Mathlib.
+m02J06 hard Mollifier-based compactness proofs need functional-analytic infrastructure not available.
+m03J01 hard Variational solution operators for -Δu+u=F require Lax–Milgram/Sobolev theory missing.
+m03J02 medium Contraction-mapping and asymptotic arguments for the scalar ODE can be handled with existing analysis tools.
+m03J03 hard Distribution series, generalized derivatives, and non-distribution examples require distribution theory not implemented.
+m03J04 hard Closed-range/Banach-space duality results for general operators are beyond current functional-analysis support.
+m03J05 hard PDE boundary-value existence with nonlinearities needs Sobolev/variational machinery absent.
+m93A01 hard Compact Sobolev embeddings on S¹ and bounded/compact operator classification require deep functional analysis not in Mathlib.
+m93A02 hard Solving nonlinear equations via surjective linear parts plus bilinear perturbations needs advanced inverse-mapping results missing.

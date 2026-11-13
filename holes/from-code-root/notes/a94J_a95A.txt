@@ -1,0 +1,10 @@
+a94J03 quick Monotone-open equivalence on ℝ reduces to simple intermediate-value arguments already proven in Mathlib’s order-topology library.
+a94J04 hard Poisson kernel L²-boundedness/approximate identity and a.e. convergence require harmonic-analysis machinery absent from Mathlib.
+a94J05 medium Liouville’s theorem is available, so both constant conclusions follow with moderate setup.
+a94J06 medium Using \bar{\zeta}=1/\zeta on the unit circle plus Cauchy’s formula fits within existing contour integral lemmas.
+a94J07 hard Injectivity via Rouché over the unit disk needs winding-number/zero-count tools Mathlib lacks.
+a94J08 medium Bounding |f| below by |z|^{3/2} forces 1/f to extend entire and bounded, a Liouville-style argument that Mathlib can express.
+a95A01 hard Relating lower/upper Riemann integrals to the Lebesgue integral relies on still-missing bridges between the two theories.
+a95A02 hard Absolute continuity implies small-image outer measure and measurability uses covering/regularity lemmas not yet formalized.
+a95A03 medium Determining Lᵖ membership, total integral, and L² convolution bounds for a radial rational function uses available polar-coordinate estimates but with some work.
+a95A04 medium The mean-value property over symmetric intervals reduces to dyadic-partition arguments expressible with current measure theory.

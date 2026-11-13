@@ -1,0 +1,13 @@
+#+TITLE: Workflow notes
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-238a87a8789f::org
+:VERSION: org
+:OUTLINE_PATH: Workflow notes
+:PATH_STRING: Workflow notes
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

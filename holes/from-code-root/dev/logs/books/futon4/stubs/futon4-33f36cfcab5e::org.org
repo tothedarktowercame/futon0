@@ -1,0 +1,10 @@
+#+TITLE: Possible future: Triple-store substrate
+:PROPERTIES:
+:DOC_ID: unknown
+:VERSION: org
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

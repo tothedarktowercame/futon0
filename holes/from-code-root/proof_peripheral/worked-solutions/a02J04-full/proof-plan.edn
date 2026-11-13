@@ -1,0 +1,39 @@
+{:goal
+ "Compute the pushforward τ = μ ∘ P⁻¹ explicitly, then prove the singular part and Radon–Nikodym derivative of Lebesgue measure relative to τ."
+ :terms
+ [{:name "pushforward measure"
+   :meaning "the measure obtained by collapsing each vertical slice of the triangle onto its x-coordinate"
+   :needed-because "the problem cannot be solved until τ is written as a one-variable measure"}
+  {:name "support split"
+   :meaning "decompose m into the part on [0,1] and the part outside [0,1]"
+   :needed-because "the singular part is forced by the support of τ"}
+  {:name "reciprocal density"
+   :meaning "invert the positive pushforward density almost everywhere on the support"
+   :needed-because "this gives dm/dτ on the absolutely continuous part"}]
+ :strategy
+ [{:id :slice-the-fibers
+   :formal-dependency "Fubini/Tonelli plus the definition of Measure.map"
+   :informal-dependency "a projection problem should be solved by integrating over the forgotten coordinate"
+   :why-this-now "P(x,y)=x turns each fiber into a vertical segment of length x"
+   :lean-target "τ(E) = ∫_E (2 * x * 1_[0,1](x)) dx"
+   :mathlib-status "closed"
+   :critical-path true}
+  {:id :split-by-support
+   :formal-dependency "Measure.restrict decomposition and mutual singularity off the support"
+   :informal-dependency "outside the support of τ everything must be singular"
+   :why-this-now "the slice computation shows τ vanishes off [0,1]"
+   :lean-target "volume.singularPart τ = volume.restrict mSingSet"
+   :mathlib-status "closed"
+   :critical-path true}
+  {:id :invert-the-density
+   :formal-dependency "Radon–Nikodym reciprocal formula on the positive-density region"
+   :informal-dependency "reverse a positive density by taking its reciprocal almost everywhere"
+   :why-this-now "the pushforward density is 2x, positive a.e. on (0,1]"
+   :lean-target "dmDtau =ᵐ[τ] volume.rnDeriv τ"
+   :mathlib-status "closed"
+   :critical-path true}]
+ :stage-status
+ {:stage1 :done
+  :stage2 :done
+  :stage3 :done
+  :stage4 :done}}

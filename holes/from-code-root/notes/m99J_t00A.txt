@@ -1,0 +1,10 @@
+m99J04 hard Spectral-theorem statements and polar factorizations for compact self-adjoint operators rely on spectral theory absent from Mathlib.
+m99J05 medium Minimizing the quadratic functional via Riesz representation is doable with existing Hilbert-space tools.
+m99J06 hard Sobolev-space weak formulations, Galerkin approximations, and convergence results require missing PDE infrastructure.
+t00A01 hard Computing π₁ and homology of connected sums of homology spheres demands algebraic-topology machinery not formalized.
+t00A02 hard Classifying high-degree coverings of surfaces hinges on covering-space theory absent from Mathlib.
+t00A03 hard Pants decompositions and counting disjoint essential curves on genus g surfaces need surface topology infrastructure.
+t00A04 medium Showing a retraction forces non-null-homotopic inclusion follows from standard homotopy arguments Mathlib can express.
+t00A05 medium Exterior-derivative and line-integral computations on explicit forms can be handled with vector-calculus lemmas.
+t00J01 hard Statements involving orientability, Lefschetz numbers, and regular-value counting require manifold-degree theory not available.
+t00J02 hard Degree theory for maps of genus-two surfaces is outside current topology support.

@@ -1,0 +1,10 @@
+t01A05 hard Integration and intersection-number statements for covering maps need differential-topology machinery absent from Mathlib.
+t01A06 medium The explicit torus integral and existence/nonexistence of a 1-form with given pullback can be handled with vector-calculus tools.
+t01A07 hard Proving smoothness of a quartic hypersurface and computing intersection numbers in projective space requires algebraic-geometry infrastructure.
+t01A08 hard Deciding whether preimages of lines are submanifolds relies on transversality/Sard theory not available.
+t01J01 hard Constructing embedded annuli between homologous curves on a genus-2 surface needs surface topology not formalized.
+t01J02 hard Showing a covering induces isomorphisms on π_n for n≥2 requires higher-homotopy machinery missing.
+t01J03 hard Computing π₁ and H_i of the glued 3-manifold via van Kampen and Mayer–Vietoris needs unavailable algebraic topology.
+t01J04 medium Finding neighborhoods whose preimages are manifolds with boundary can be shown with existing local-chart arguments.
+t01J05 hard Partition-of-unity definitions exist, but linking nowhere-zero 1-forms to Euler characteristic zero uses Poincaré-Hopf not formalized.
+t01J06 medium Integrating the given 2-form over S² and analyzing closed extensions is doable with vector-calculus lemmas.

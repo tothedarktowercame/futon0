@@ -1,0 +1,10 @@
+m95J06 medium Norm limits and differentiability statements rely on standard finite-dimensional analysis and Hilbert-space calculus already in Mathlib.
+m95J07 hard Baire-category arguments for nowhere-differentiable functions plus continuity questions about linear operators require missing functional-analytic infrastructure.
+m96A01 hard Spectral properties of compact operators (finite-dimensional eigenspaces) are not formalized.
+m96A02 medium Contraction mapping theorem and its fixed-point consequences are already available tools.
+m96A03 medium Orthonormal-basis identities and the closed-range condition equivalence can be handled with existing Hilbert-space lemmas.
+m96A04 medium Using polarization and Riesz representation to promote adjointability to linear/continuous maps is manageable.
+m96A05 hard High-order finite-difference schemes and nonsingularity proofs involve numerical-PDE machinery not present.
+m96A06 hard Variational derivatives in Sobolev spaces and Sturm–Liouville existence need missing PDE infrastructure.
+m96J01 quick Properties of orthogonal projections onto closed subspaces are standard in Mathlib.
+m96J02 medium Relating second-order ODE solutions to Volterra integral equations is doable with existing integral/ODE tools.

@@ -1,0 +1,20 @@
+[{:kind :initial-plan
+  :summary "Captured the HtDP plan: compute the pushforward by slicing, split Lebesgue measure by the support of τ, then invert the density on the positive-density region."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}
+ {:kind :lean-delta
+  :summary "Created a non-placeholder Lean scaffold with tauDensity, dmDtau, mAcSet, and mSingSet, then closed the support and reciprocal-identity lemmas."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}
+ {:kind :lean-delta
+  :summary "Verified that the worked Lean file builds with zero sorry and proves the candidate algebraic answer, while isolating the missing Measure.map / withDensity / rnDeriv bridge as the only remaining formal gap."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}
+ {:kind :final-status
+  :summary "Final classification is partial: the informal proof is complete, the Lean scaffold is meaningful and nontrivial, but the exact pushforward/decomposition theorem has not yet been closed in Mathlib."
+  :full-record? true
+  :sorry? false
+  :fully-closed? false}]

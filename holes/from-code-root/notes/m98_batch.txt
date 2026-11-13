@@ -1,0 +1,10 @@
+m98A01 medium Definitions plus the standard open/closed graph implications already exist but require some wiring.
+m98A02 medium Bounded↔continuous and Neumann-series invertibility for \\|A\\|<1 can be proved with current Banach-space tools.
+m98A03 medium Fréchet differentiability of an integral operator on C([0,1]) is manageable using existing operator norms.
+m98A04 hard Convolution identities and smoothing properties in distribution spaces need missing distribution theory.
+m98A05 hard The Banach-space implicit function theorem and its PDE application aren’t formalized.
+m98A06 hard Calculus-of-variations extremal problems and Poincaré best constants require absent Sobolev machinery.
+m98J01 medium Open/closed graph theorems are present and just need careful restatement.
+m98J02 hard General distribution convolutions and PDE solutions exceed current functionality.
+m98J03 quick Orthogonal projections’ spectral/structural properties are already in Mathlib.
+m98J04 hard Deriving Euler–Lagrange equations and applying them to shortest paths needs calculus-of-variations infrastructure.

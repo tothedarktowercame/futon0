@@ -1,0 +1,13 @@
+#+TITLE: Pattern workflows
+:PROPERTIES:
+:DOC_ID: unknown
+:ENTRY_ID: futon4-ec46e35bad95::org
+:VERSION: org
+:OUTLINE_PATH: Pattern workflows
+:PATH_STRING: Pattern workflows
+:REPLACES: 
+:END:
+
+* Context
+- (no summary yet)
+

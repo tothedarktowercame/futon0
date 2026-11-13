@@ -1,0 +1,10 @@
+b98A04 hard Requires Artin–Wedderburn-style arguments about faithful modules over left artinian rings, not available in Mathlib.
+b98J01 hard Classifying groups of order 36 via normal Sylow structure and A₄ quotients needs group-classification machinery missing.
+b98J02 hard Ideal theory in integral closures and Galois actions on primes is beyond current commutative algebra and number theory.
+b98J03 hard Proving primitive element results and field-generation statements in this generality exceeds existing field-theory API.
+b98J04 hard Decomposing Wedderburn modules into simples and identifying annihilators requires Artin–Wedderburn results not formalized.
+b99A01 hard Combining boundary maximum-modulus statements with deep valuation-domain ideal theory is outside Mathlib’s scope.
+b99A02 medium Sylow subgroup normality arguments for order 5075 can be handled with existing finite group theory.
+b99A03 medium The minimal polynomial via Galois-orbit coefficients matches Mathlib’s `minpoly` and `algHom` tools.
+b99A04 medium Standard structure theory of modules over matrix algebras is doable with existing linear-algebra lemmas.
+m00A01 medium Hilbert-space projection and angle lemmas are already present but require some functional-analytic wiring.
