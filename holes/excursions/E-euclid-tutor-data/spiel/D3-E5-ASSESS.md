@@ -81,7 +81,8 @@ Readings:
    roughly 10-15. Every E5 proposition's Book path costs 16-98 under the mixed scorer.
 3. **Citations of earlier propositions rank very low**: proposition_13 at ranks 570-659 of 1,339
    (I.15), proposition_8 at 7,108 of 9,446 (I.11), proposition_3 at 239 of 541 (I.9). The
-   self-made training data from I.1-I.3's givens contains almost no such citations.
+   self-made training data came from the givens of I.1-I.3, whose move palettes offer only
+   propositions before them (I.1, I.2'), so citations of I.3, I.8 or I.13 never occur in it.
 4. **Branching grows with depth**: thousands of candidates by step 5-10 (9,561 in I.9), most of
    them line constructions through pairs of points.
 5. **Near-free steps are a third to two thirds of the path.** Removing their cost alone (not
