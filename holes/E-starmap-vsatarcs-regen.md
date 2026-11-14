@@ -1,5 +1,7 @@
 # Excursion: E-starmap-vsatarcs-regen
 
+**Status:** COMPLETE (set 2026-11-14 by claude-13 from Giraffe's latest reading, which read it as done but unmarked. Correct it if wrong.)
+
 **VERDICT (2026-10-09, provisional):** DONE — Exit condition states the doc-gap is closed and git records an operator close of the mission. _(WM status classification by zai-2, high confidence; not yet confirmed by the author.)_
 
 **Type:** E-prefix excursion (bounded scope-out, single-agent-owned end-to-end).

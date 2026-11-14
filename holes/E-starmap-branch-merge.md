@@ -1,5 +1,7 @@
 # Excursion: E-starmap-branch-merge
 
+**Status:** COMPLETE (set 2026-11-14 by claude-13 from Giraffe's latest reading, which read it as done but unmarked. Correct it if wrong.)
+
 > **Closed 2026-11-08 (already done).** The star-map INSTANTIATE commits are on futon2 `main`, and no branch named `wm-outing/2026-06-07` exists any more in futon0, futon2, futon3c, futon5 or futon7, so `git branch --merged` cannot be run; `git merge-base --is-ancestor <sha> main` was used instead, and no futon2 commit from 2026-06-05 to 06-12 is off `main`. Evidence: futon2 35ce7f6d5 (star-map EFE goal binding), bdf62dfef (blend into live WM ranking), 2d3bf0589 (graph-EFE cleanup), 2768a69fb (render star map), d6db32b28, 459007861, all ancestors of `main`. Checked by misc in the closure pass (claude-6, FIX/WONTFIX sheet).
 
 **Type:** E-prefix excursion (bounded scope-out, single-agent-owned end-to-end).

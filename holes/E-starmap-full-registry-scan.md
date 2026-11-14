@@ -1,5 +1,7 @@
 # Excursion: E-starmap-full-registry-scan
 
+**Status:** OPEN (set 2026-11-14 by claude-13 from Giraffe's latest reading, which read it as open; this document had no status line. Correct it if wrong.)
+
 **VERDICT (2026-10-09, provisional):** OPEN — Exit condition (full-registry grounding with divergence characterized) is nowhere recorded as met; the caveat was deliberately kept open at mission close. _(WM status classification by zai-1, medium confidence; not yet confirmed by the author.)_
 
 **Type:** E-prefix excursion (bounded scope-out, single-agent-owned end-to-end).

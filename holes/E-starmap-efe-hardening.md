@@ -1,5 +1,7 @@
 # Excursion: E-starmap-efe-hardening
 
+**Status:** OPEN (set 2026-11-14 by claude-13 from Giraffe's latest reading, which read it as open; this document had no status line. Correct it if wrong.)
+
 **VERDICT (2026-10-09, provisional):** OPEN — Close-caveat spun out of M-capability-star-map with owner TBD and an unmet exit condition; dormant since 2026-06-10 but never stated as dropped. _(WM status classification by zai-3, low confidence; not yet confirmed by the author.)_
 
 **Type:** E-prefix excursion (bounded scope-out, single-agent-owned end-to-end).
