@@ -1,5 +1,7 @@
 # M-capability-zones S1.5 handoff — the partition made visible before it is used
 
+**Status:** COMPLETE (set 2026-11-15 by claude-13 at Joe's request: delivered: M-capability-zones Checkpoint 2, futon2 9a57a61 / futon3c fb7c31a)
+
 **From:** claude-3 (owner seat) → **To:** codex-10 (you built S1; this continues it)
 **Mission:** `futon0/holes/missions/M-capability-zones.md` — re-read the amended
 mechanism paragraph and S1.5 slice; the **dimensional amendment is normative**

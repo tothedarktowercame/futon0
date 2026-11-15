@@ -1,5 +1,7 @@
 # M-capability-zones S1.5 — PCA-3 walk acceptance
 
+**Status:** COMPLETE (set 2026-11-15 by claude-13 at Joe's request: S1.5 accepted: M-capability-zones checkpoint records the walk verdict, and the mission is CLOSED)
+
 Date: 2026-07-19. Candidate partition: `pca3-v1`. Status: **candidate for
 operator walk; not deposited into G or any live store**.
 
