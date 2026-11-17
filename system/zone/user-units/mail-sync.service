@@ -1,0 +1,9 @@
+[Unit]
+Description=Sync hyperreal mail (mbsync) and index it (notmuch)
+
+[Service]
+Type=oneshot
+# If gpg-agent no longer holds the passphrase, skip quietly with a notice
+# instead of failing: Emacs shows "press U to unlock" (notmuch-setup.el).
+ExecStart=/bin/sh -c 'if gpg --batch --quiet --pinentry-mode error --decrypt %h/.password-store/firefox/hyperreal.enterprises/joseph.corneli@hyperreal.enterprises.gpg >/dev/null 2>&1; then mbsync -a && notmuch new; else echo "mail locked (gpg passphrase not cached); skipping sync. Unlock with U in notmuch"; fi'
+TimeoutStartSec=15min
