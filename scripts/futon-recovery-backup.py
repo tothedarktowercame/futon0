@@ -41,10 +41,26 @@ def git(path: Path, *args, env=None, check=False):
     return run(["git", "-C", str(path), *args], env=env, check=check)
 
 
+def git_add(path: Path, flag: str, names, env):
+    """git add FLAG for NAMES, passed on stdin: a few thousand untracked
+    files on the command line is "Argument list too long" and the whole
+    worktree's snapshot was held."""
+    p = subprocess.run(["git", "-C", str(path), "add", flag,
+                        "--pathspec-from-file=-", "--pathspec-file-nul"],
+                       input="\0".join(names), env=env, text=True,
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if p.returncode:
+        raise RuntimeError(f"git add {flag} ({len(names)} paths): {p.stderr.strip()}")
+
+
 def discover(code: Path):
     groups = {}
     for path in sorted(code.iterdir()):
-        if not path.is_dir() or path.name in EXCLUDE:
+        # A symlink at the top of ~/code points out of it (since 2026-11-13:
+        # apm-frames, data, planetmath -> ~/storage, LeanEuclid -> a reference
+        # clone). ~/storage is excluded by name above; reached through a link
+        # it was enumerated again as "apm-frames" and failed every run.
+        if path.is_symlink() or not path.is_dir() or path.name in EXCLUDE:
             continue
         common = git(path, "rev-parse", "--path-format=absolute", "--git-common-dir")
         if common.returncode:
@@ -119,7 +135,7 @@ def snapshot(path: Path, ref: str, cutoff: int):
         # temporary index.  Some linked worktrees contain large ignored build
         # trees; explicit changed paths keep snapshot cost proportional to WIP.
         if changed:
-            git(path, "add", "-u", "--", *changed, env=env, check=True)
+            git_add(path, "-u", changed, env)
         raw = git(path, "ls-files", "-z", "-o", "--exclude-standard", check=True).stdout
         included, excluded = [], []
         for name in filter(None, raw.split("\0")):
@@ -129,7 +145,7 @@ def snapshot(path: Path, ref: str, cutoff: int):
             else:
                 excluded.append(name)
         if included:
-            git(path, "add", "-f", "--", *included, env=env, check=True)
+            git_add(path, "-f", included, env)
         tree = git(path, "write-tree", env=env, check=True).stdout.strip()
     old = git(path, "rev-parse", "-q", "--verify", ref)
     if old.returncode == 0:

@@ -128,5 +128,52 @@ class RecoveryBackupTest(unittest.TestCase):
                 self.assertFalse(report["repos"][0]["ok"])
 
 
+    def _repo(self, path):
+        sh("git", "init", "-b", "main", str(path))
+        sh("git", "config", "user.name", "Fixture", cwd=path)
+        sh("git", "config", "user.email", "fixture@example.invalid", cwd=path)
+        (path / "base.txt").write_text("base\n")
+        sh("git", "add", "base.txt", cwd=path)
+        sh("git", "commit", "-m", "base", cwd=path)
+
+    def _run(self, tmp_path, code):
+        hub = tmp_path / "hub"
+        hub.mkdir()
+        receipt = tmp_path / "receipt.json"
+        subprocess.run(["python3", str(SCRIPT), "--code", str(code), "--hub", str(hub),
+                        "--state", str(tmp_path / "state.json"), "--receipt", str(receipt)],
+                       text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return json.loads(receipt.read_text())
+
+    def test_symlink_out_of_code_is_not_a_code_repository(self):
+        with tempfile.TemporaryDirectory(prefix="recovery-backup-") as td:
+            tmp_path = Path(td)
+            code = tmp_path / "code"
+            code.mkdir()
+            self._repo(code / "project")
+            outside = tmp_path / "storage"
+            self._repo(outside)
+            (outside / "frames").mkdir()
+            (code / "apm-frames").symlink_to(outside / "frames")
+            report = self._run(tmp_path, code)
+            self.assertEqual(["project"], [row["repo"] for row in report["repos"]])
+
+    def test_thousands_of_long_untracked_paths_are_snapshotted(self):
+        with tempfile.TemporaryDirectory(prefix="recovery-backup-") as td:
+            tmp_path = Path(td)
+            code = tmp_path / "code"
+            code.mkdir()
+            repo = code / "project"
+            self._repo(repo)
+            deep = repo / ("d" * 200) / ("e" * 200)
+            deep.mkdir(parents=True)
+            for n in range(6000):            # ~2.6 MB of path arguments
+                (deep / ("%05d-" % n + "f" * 20)).write_text("x")
+            report = self._run(tmp_path, code)
+            (row,) = report["repos"][0]["worktrees"]
+            self.assertEqual("written", row["status"], row)
+            self.assertEqual(6000, row["included"])
+
+
 if __name__ == "__main__":
     unittest.main()
