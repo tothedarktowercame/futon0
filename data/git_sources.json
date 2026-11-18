@@ -1,8 +1,6 @@
 {
   "repos": [
     {"label": "futon0", "path": "..", "sphere": "infra"},
-    {"label": "futon1", "path": "../../futon1", "sphere": "storage"},
-    {"label": "futon1a", "path": "../../futon1a", "sphere": "storage"},
     {"label": "futon1b", "path": "../../futon1b", "sphere": "storage"},
     {"label": "futon2", "path": "../../futon2", "sphere": "rhythm"},
     {"label": "futon3", "path": "../../futon3", "sphere": "devmaps"},
