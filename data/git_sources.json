@@ -3,6 +3,7 @@
     {"label": "futon0", "path": "..", "sphere": "infra"},
     {"label": "futon1b", "path": "../../futon1b", "sphere": "storage"},
     {"label": "futon2", "path": "../../futon2", "sphere": "rhythm"},
+    {"label": "futon2a", "path": "../../futon2a", "sphere": "rhythm"},
     {"label": "futon3", "path": "../../futon3", "sphere": "devmaps"},
     {"label": "futon3a", "path": "../../futon3a", "sphere": "devmaps"},
     {"label": "futon3b", "path": "../../futon3b", "sphere": "devmaps"},
