@@ -18,6 +18,19 @@
 (add-to-list 'load-path "/home/joe/code/futon3c/emacs/")
 (add-to-list 'load-path "/home/joe/code/futon7/holes/")
 
+;; The Mozilla incubator form (futon4a, M-arxana-incubator).  Joe 2026-11-20,
+;; after a restart: "the futon4a incubator isn't in my futon auto/hot loads".
+;; M-x futon4a-incubator offers to restore the autosaved session.
+(add-to-list 'load-path "/home/joe/code/futon4a/lisp/")
+(autoload 'futon4a-incubator "futon4a-incubator" nil t)
+(autoload 'futon4a-incubator-restore-autosave "futon4a-incubator" nil t)
+(autoload 'futon4a-incubator-restore-version "futon4a-incubator" nil t)
+(with-eval-after-load 'futon4a-incubator
+  ;; the parts the main file does not require itself
+  (dolist (f '(futon4a-incubator-frames futon4a-incubator-turns
+               futon4a-clip-derivation futon4a-incubator-together))
+    (require f nil t)))
+
 ;; M-x report-futon-bug: one-line bug report with context gathered for you.
 (autoload 'report-futon-bug "report-futon-bug" nil t)
 (autoload 'futon-bug-feed-attach "report-futon-bug" nil t)
@@ -176,7 +189,13 @@
 	"../futon3c/emacs/session-mode.el"
 	"../futon3c/emacs/turn-stepper.el"
 	"../futon3c/emacs/xiang-trace.el"
-	"../futon3c/emacs/xiaoxiang-preview.el"))
+	"../futon3c/emacs/xiaoxiang-preview.el"
+	"../futon4a/lisp/futon4a-incubator.el"
+	"../futon4a/lisp/futon4a-incubator-layers.el"
+	"../futon4a/lisp/futon4a-incubator-provenance.el"
+	"../futon4a/lisp/futon4a-incubator-editorial.el"
+	"../futon4a/lisp/futon4a-incubator-autosave.el"
+	"../futon4a/lisp/futon4a-incubator-holes.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
