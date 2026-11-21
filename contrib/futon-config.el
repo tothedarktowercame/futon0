@@ -322,7 +322,11 @@
 (setq arxana-lab-futon1-server "http://localhost:7071/api/alpha")
 (setq arxana-evidence-server   "http://localhost:7071/api/alpha")
 
-(global-set-key (kbd "※") #'arxana-browser-home)
+;; ※ is the Mojira prompt (futon4/dev/mojira-dispatch.el, codes in
+;; mojira-codes.json); Arxana home is its code "a".  Until 2026-11-21 this line
+;; bound ※ to arxana-browser-home and, loaded last, hid ※ m p (Joe 2026-11-21).
+(when (require 'mojira-dispatch nil t)
+  (global-set-key (kbd "※") #'mojira-dispatch))
 
 (provide 'futon-config)
 
