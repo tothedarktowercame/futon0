@@ -31,6 +31,12 @@
                futon4a-clip-derivation futon4a-incubator-together))
     (require f nil t)))
 
+;; Sessionista: entity marks and workplan item links in every agent REPL
+;; (claude, codex, kimi, zai).  Joe 2026-11-21: "turn on sessionista-mode and
+;; add it to my futon config".  Its rule fetch is asynchronous.
+(when (require 'futon4a-sessionista nil t)
+  (global-sessionista-mode 1))
+
 ;; M-x report-futon-bug: one-line bug report with context gathered for you.
 (autoload 'report-futon-bug "report-futon-bug" nil t)
 (autoload 'futon-bug-feed-attach "report-futon-bug" nil t)
@@ -195,7 +201,8 @@
 	"../futon4a/lisp/futon4a-incubator-provenance.el"
 	"../futon4a/lisp/futon4a-incubator-editorial.el"
 	"../futon4a/lisp/futon4a-incubator-autosave.el"
-	"../futon4a/lisp/futon4a-incubator-holes.el"))
+	"../futon4a/lisp/futon4a-incubator-holes.el"
+	"../futon4a/lisp/futon4a-sessionista.el"))
 
 (setq my-chatgpt-shell-hot-reload-include-defaults t)
 
